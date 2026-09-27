@@ -230,33 +230,43 @@ theorem typeBFanEntry_of_decoratedHandoff
 
 
 set_option maxHeartbeats 8000000 in
-/-- `lem:absorbed-germ-fan-data` (ii) (node `[177]`): at every selected
-half-edge `ε` outside the subcubic candidates, the two corridor segments at the
-first heavy centre `z` of `ε`'s retained corridor are the arms of an admissible
-decorated handoff envelope `(Y, {z})` over the counted remainder core `Y` of
-`coldAbsorbedRemainderCore` (the paper's `lem:typeA-high-degree-handoff`
-configuration).  Everything except the existence of `Y` is proved here from G's
-facts: the incidences are distinct neighbours of `z`, the segments are simple
-walks avoiding `z`, the arms are cut at their first entry into `Y`, and the
-fan-safe and admissibility clauses come from the counterexample and node
-`[14]`/`[25]`--`[27]`. -/
-theorem absorbedGermDecoratedAssignedSupport
+/-- `lem:absorbed-germ-fan-data` (ii) (node `[177]`, yes arm): at a selected
+half-edge `ε` of G, if a counted remainder core `Y` exists at the first heavy
+centre `z` of `ε`'s retained corridor (`AbsorbedRemainderCoreAt`), then the two
+corridor segments at `z` are the arms of an admissible decorated handoff
+envelope `(Y, {z})` (the paper's `lem:typeA-high-degree-handoff`
+configuration).  Everything is proved from G's facts: the incidences are
+distinct neighbours of `z`, the segments are simple walks avoiding `z`, the
+arms are cut at their first entry into `Y`, and the fan-safe and admissibility
+clauses come from the counterexample and node `[14]`/`[25]`--`[27]`. -/
+theorem absorbedHandoffAt_of_remainderCore
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (uncompressible : UncompressibleStatement data object)
     (normalized : RemainderNormalizedStatement data object)
-    (fanData : AbsorbedGermFanDataStatement data object)
-    (degenerate : ¬ data.LengthOK 2) :
-    AbsorbedGermDecoratedAssignedSupportStatement data object := by
+    (degenerate : ¬ data.LengthOK 2)
+    (routing : ColdFailureRoutingStatement data object)
+    (epsilon : ColdEligibleHalfEdge data object)
+    (firstIndex : (coldOccurrenceCorridorAt data object
+      (coldRoutedClassified data object routing) epsilon).Segment)
+    (firstBound : firstIndex.1 ≤ coldRoutedTraceEnd data object routing epsilon)
+    (high : data.threshold < object.degree
+      ((coldOccurrenceCorridorAt data object
+        (coldRoutedClassified data object routing) epsilon).head firstIndex))
+    (earlierBound : ∀ earlier : (coldOccurrenceCorridorAt data object
+        (coldRoutedClassified data object routing) epsilon).Segment,
+      earlier.1 < firstIndex.1 →
+        object.degree ((coldOccurrenceCorridorAt data object
+          (coldRoutedClassified data object routing) epsilon).head earlier) ≤
+          data.threshold)
+    (neighboursCubic : ∀ neighbour : object.Vertex,
+      object.graph.Adj ((coldOccurrenceCorridorAt data object
+        (coldRoutedClassified data object routing) epsilon).head firstIndex)
+          neighbour →
+        object.degree neighbour = data.threshold)
+    (coreAt : AbsorbedRemainderCoreAt data object routing epsilon firstIndex) :
+    ∃ handoff, AbsorbedHandoffAt data object routing epsilon handoff := by
   classical
   letI : FinEnum object.Vertex := object.vertices
-  simp only [AbsorbedGermDecoratedAssignedSupportStatement]
-  change AbsorbedGermFanDataStatement data object at fanData
-  simp only [AbsorbedGermFanDataStatement] at fanData
-  obtain ⟨routing, fanData⟩ := fanData
-  refine ⟨routing, ?_⟩
-  intro epsilon notCandidate
-  obtain ⟨firstIndex, firstBound, high, earlierBound,
-      neighboursCubic⟩ := fanData epsilon notCandidate
   let classified := coldRoutedClassified data object routing
   let corridor := coldOccurrenceCorridorAt data object classified epsilon
   let centre := corridor.head firstIndex
@@ -265,8 +275,7 @@ theorem absorbedGermDecoratedAssignedSupport
     object.graph.Adj centre neighbour →
       object.degree neighbour = data.threshold) at neighboursCubic
   obtain ⟨core, connected, coreInside, centreOut, meetsEntry, meetsExit⟩ :=
-    Contracts.Spine.coldAbsorbedRemainderCore data object routing epsilon
-      notCandidate firstIndex firstBound high earlierBound
+    coreAt
   have outside : Graph.ColdCorridor.IsOutsideComponent object
       (coldCorridorWindows data object)
       (coldOccurrenceComponentAt data object classified epsilon) :=
@@ -370,48 +379,208 @@ theorem typeBAbsorbedHalfEdge_split
   | none => exact Or.inr selected
   | some epsilon => exact Or.inl ⟨epsilon, selected⟩
 
-/-- **Node `[177]`, the charge of every discarded half-edge**
+/-- The least high index of a corridor is unique: two heavy indices whose
+earlier indices are all at the baseline coincide. -/
+theorem absorbedFirstIndex_unique
+    {routing : ColdFailureRoutingStatement data object}
+    {epsilon : ColdEligibleHalfEdge data object}
+    {first second : (coldOccurrenceCorridorAt data object
+      (coldRoutedClassified data object routing) epsilon).Segment}
+    (firstHigh : data.threshold < object.degree
+      ((coldOccurrenceCorridorAt data object
+        (coldRoutedClassified data object routing) epsilon).head first))
+    (firstEarlier : ∀ earlier : (coldOccurrenceCorridorAt data object
+        (coldRoutedClassified data object routing) epsilon).Segment,
+      earlier.1 < first.1 →
+        object.degree ((coldOccurrenceCorridorAt data object
+          (coldRoutedClassified data object routing) epsilon).head earlier) ≤
+          data.threshold)
+    (secondHigh : data.threshold < object.degree
+      ((coldOccurrenceCorridorAt data object
+        (coldRoutedClassified data object routing) epsilon).head second))
+    (secondEarlier : ∀ earlier : (coldOccurrenceCorridorAt data object
+        (coldRoutedClassified data object routing) epsilon).Segment,
+      earlier.1 < second.1 →
+        object.degree ((coldOccurrenceCorridorAt data object
+          (coldRoutedClassified data object routing) epsilon).head earlier) ≤
+          data.threshold) :
+    first = second := by
+  rcases lt_trichotomy first.1 second.1 with lt | eq | gt
+  · exact absurd (secondEarlier first lt) (not_le.mpr firstHigh)
+  · exact Fin.ext eq
+  · exact absurd (firstEarlier second gt) (not_le.mpr secondHigh)
+
+/-- **Node `[177]`'s test is the existence of the counted core.**  At G's
+canonical absorbed half-edge `ε` (outside node `[153]`'s candidates, with the
+`[175]` fan data), the canonical absorbed handoff of `ε` is defined exactly
+when a counted remainder core exists at `ε`'s heavy centre. -/
+theorem canonicalAbsorbedHandoff_isSome_iff_core
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (uncompressible : UncompressibleStatement data object)
+    (normalized : RemainderNormalizedStatement data object)
+    (degenerate : ¬ data.LengthOK 2)
+    (fanData : AbsorbedGermFanDataStatement data object)
+    (routing : ColdFailureRoutingStatement data object)
+    (epsilon : ColdEligibleHalfEdge data object)
+    (notCandidate : Sum.inl epsilon ∉ coldRoutedCandidates data object routing)
+    (firstIndex : (coldOccurrenceCorridorAt data object
+      (coldRoutedClassified data object routing) epsilon).Segment)
+    (high : data.threshold < object.degree
+      ((coldOccurrenceCorridorAt data object
+        (coldRoutedClassified data object routing) epsilon).head firstIndex))
+    (earlierBound : ∀ earlier : (coldOccurrenceCorridorAt data object
+        (coldRoutedClassified data object routing) epsilon).Segment,
+      earlier.1 < firstIndex.1 →
+        object.degree ((coldOccurrenceCorridorAt data object
+          (coldRoutedClassified data object routing) epsilon).head earlier) ≤
+          data.threshold) :
+    (canonicalAbsorbedHandoff data object epsilon).isSome ↔
+      AbsorbedRemainderCoreAt data object routing epsilon firstIndex := by
+  classical
+  constructor
+  · intro isSome
+    obtain ⟨handoff, handoffEq⟩ := Option.isSome_iff_exists.mp isSome
+    obtain ⟨_routing', handoffAt⟩ :=
+      canonicalAbsorbedHandoff_spec_of_eq_some handoffEq
+    obtain ⟨index, centreEq, _bound, indexHigh, indexEarlier, _cubic,
+      connected, inside, centreOut, _different, envelope, coreEq, decorationsEq,
+      assignedEq, entryArm, exitArm, _simple, _admissible⟩ := handoffAt
+    have same : index = firstIndex :=
+      absorbedFirstIndex_unique (routing := routing)
+        (by rw [← centreEq]; exact indexHigh) indexEarlier high earlierBound
+    subst same
+    have centreMem : handoff.1 ∈ envelope.decorations := by
+      rw [decorationsEq]; exact Finset.mem_singleton_self _
+    have lands : ∀ first ∈ envelope.assigned handoff.1, ∀ tail : List object.Vertex,
+        (∀ vertex ∈ envelope.arm handoff.1 first, vertex ∈ tail) →
+        ∃ vertex ∈ tail, vertex ∈ handoff.2 := by
+      intro first member tail sub
+      obtain ⟨terminal, lastEq, terminalIn⟩ :=
+        envelope.arm_lands handoff.1 centreMem first member
+      exact ⟨terminal, sub _ (List.mem_of_getLast? lastEq), coreEq ▸ terminalIn⟩
+    refine ⟨handoff.2, connected, inside, centreEq ▸ centreOut,
+      lands ((coldOccurrenceCorridorAt data object
+        (coldRoutedClassified data object routing) epsilon).entryNeighbour index.1)
+        ?_ _ ?_,
+      lands ((coldOccurrenceCorridorAt data object
+        (coldRoutedClassified data object routing) epsilon).exitNeighbour index.1)
+        ?_ _ ?_⟩
+    · rw [assignedEq]; simp
+    · intro vertex member
+      rw [entryArm] at member
+      exact List.mem_of_mem_take member
+    · rw [assignedEq]; simp
+    · intro vertex member
+      rw [exitArm] at member
+      exact List.mem_of_mem_take member
+  · intro coreAt
+    change AbsorbedGermFanDataStatement data object at fanData
+    simp only [AbsorbedGermFanDataStatement] at fanData
+    obtain ⟨_routing', fanData⟩ := fanData
+    obtain ⟨index, bound, indexHigh, indexEarlier, neighboursCubic⟩ :=
+      fanData epsilon notCandidate
+    have same : index = firstIndex :=
+      absorbedFirstIndex_unique (routing := routing) indexHigh indexEarlier high
+        earlierBound
+    subst same
+    obtain ⟨_, handoffEq, _⟩ := canonicalAbsorbedHandoff_spec routing
+      (absorbedHandoffAt_of_remainderCore avoids uncompressible normalized
+        degenerate routing epsilon index bound indexHigh indexEarlier
+        neighboursCubic coreAt)
+    simp [handoffEq]
+
+/-- **Node `[177]`'s decision** at G's canonical absorbed half-edge `ε` (the
+`[175]` yes arm): the counted remainder core at `ε`'s heavy centre exists (the
+canonical absorbed handoff is defined) or it does not. -/
+theorem absorbedHandoffCore_split
+    (outside : TypeBAbsorbedHalfEdgeStatement data object) :
+    AbsorbedHandoffCoreStatement data object ∨
+      AbsorbedHandoffCoreAbsentStatement data object := by
+  obtain ⟨epsilon, edgeEq⟩ := outside
+  cases handoffEq : canonicalAbsorbedHandoff data object epsilon with
+  | none => exact Or.inr ⟨epsilon, edgeEq, handoffEq⟩
+  | some handoff => exact Or.inl ⟨epsilon, edgeEq, by simp [handoffEq]⟩
+
+/-- **Node `[177]`, the charge of every discarded half-edge with a counted core**
 (`lem:absorbed-germ-fan-data`: "every half-edge it discards is charged to the
-Type B ledger"): every selected half-edge outside the subcubic candidates has its
-own pinned absorbed Type B support `(Y_ε, H_ε)`, `H_ε = {z_ε} ∪ centres(Y_ε)`
-(`def:typeB-assigned-ledger`), and that support's negative part is charged to
-the surplus of `H_ε` (`lem:typeB-bridge-deficit-bound`). -/
+Type B ledger"): every selected half-edge `ε` outside the subcubic candidates
+whose canonical absorbed handoff `(z_ε, Y_ε)` is defined (the `[177]` yes
+configuration at `ε`) has its own pinned absorbed Type B support
+`(Y_ε, H_ε)`, `H_ε = {z_ε} ∪ centres(Y_ε)` (`def:typeB-assigned-ledger`), and
+that support's negative part is charged to the surplus of `H_ε`
+(`lem:typeB-bridge-deficit-bound`).  A half-edge without a counted core is
+charged by the (F4) count instead (`absorbedF4Charge`). -/
 theorem typeBAbsorbedCharge
-    (supports : AbsorbedGermDecoratedAssignedSupportStatement data object)
     (baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex)
     (massSlack :
       data.threshold + 2 + data.dischargeScale ≤
         data.bridgeMassFactor * data.dischargeScale) :
     TypeBAbsorbedChargeStatement data object := by
   classical
-  intro epsilon outside
-  obtain ⟨routing, notCandidate⟩ := outside
-  obtain ⟨_routing, witnesses⟩ := supports
-  obtain ⟨⟨centre, core⟩, handoffEq, _handoff⟩ :=
-    canonicalAbsorbedHandoff_spec routing (witnesses epsilon notCandidate)
+  intro epsilon _outside centre core handoffEq
   obtain ⟨high, inside⟩ := absorbedHandoff_facts handoffEq
-  refine ⟨core, centre, ?_, high, inside, ?_⟩
+  refine ⟨?_, high, inside, ?_⟩
   · simp [canonicalTypeBAbsorbedSupportAt, handoffEq]
   · intro residual
     exact Graph.TypeBEnvelopeCharge.bridgeDeficitBound_assigned object core
       _ massSlack baseline centres_subset_absorbedAssignedCentres residual
 
-/-- Node `[177]`: at `G`'s canonical absorbed half-edge `ε`, which lies outside
-the subcubic candidates, its pinned charge (`typeBAbsorbedCharge`) gives the
-absorbed Type B support `(Y, {z} ∪ centres(Y))`: the counted remainder core of
-its canonical envelope `(Y, {z})` and its assigned fan centres. -/
-theorem typeBAbsorbedLane_of_halfEdge
+/-- Node `[177]`, yes arm: at `G`'s canonical absorbed half-edge `ε`, whose
+canonical absorbed handoff `(z, Y)` is defined, its pinned charge
+(`typeBAbsorbedCharge`) gives the absorbed Type B support
+`(Y, {z} ∪ centres(Y))`: the counted remainder core of its canonical envelope
+`(Y, {z})` and its assigned fan centres. -/
+theorem typeBAbsorbedLane_of_core
     (fails : ExactCollisionFailsStatement data object)
     (fanData : AbsorbedGermFanDataStatement data object)
     (charge : TypeBAbsorbedChargeStatement data object)
-    (outside : TypeBAbsorbedHalfEdgeStatement data object) :
+    (core : AbsorbedHandoffCoreStatement data object) :
     ∃ core centres, TypeBAbsorbedLane data object core centres := by
   classical
-  obtain ⟨epsilon, edgeEq⟩ := outside
-  obtain ⟨core, centre, supportEq, _facts⟩ :=
-    charge epsilon (canonicalChoice_spec_of_eq_some edgeEq)
+  obtain ⟨epsilon, edgeEq, isSome⟩ := core
+  obtain ⟨⟨centre, core⟩, handoffEq⟩ := Option.isSome_iff_exists.mp isSome
+  obtain ⟨supportEq, _facts⟩ :=
+    charge epsilon (canonicalChoice_spec_of_eq_some edgeEq) centre core handoffEq
   refine ⟨core, absorbedAssignedCentres data object centre core, fails, fanData, ?_⟩
   simp [canonicalTypeBAbsorbedSupport, edgeEq, supportEq]
+
+/-- **Node `[177]`, no arm: the (F4) charge** (user-approved extension of the
+cold (F4) exact-count repair).  At `G`'s canonical absorbed half-edge `ε` with
+no counted core, on node `[219]`'s canonical extraction: no counted remainder
+core exists at `ε`'s heavy centre, `ε` is one of the corridor-loss units (it is
+not a candidate, and the non-candidates number exactly the corridor loss), and
+the corridor loss is within `(δ+1)·B_cold·σ(G)`. -/
+theorem absorbedF4Charge
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (uncompressible : UncompressibleStatement data object)
+    (normalized : RemainderNormalizedStatement data object)
+    (degenerate : ¬ data.LengthOK 2)
+    (fanData : AbsorbedGermFanDataStatement data object)
+    (germCandidates : ColdGermCandidatesStatement data object)
+    (absent : AbsorbedHandoffCoreAbsentStatement data object) :
+    AbsorbedF4ChargeStatement data object := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  obtain ⟨epsilon, edgeEq, handoffNone⟩ := absent
+  obtain ⟨routing, notCandidate⟩ := canonicalChoice_spec_of_eq_some edgeEq
+  obtain ⟨extraction, extractionEq, _routing', witness⟩ :=
+    coldGermExtraction?_spec_of_candidates data object germCandidates
+  simp only [ColdGermFamilyWitness] at witness
+  obtain ⟨_incidenceEq, _candidatesEq, _family, _extracted, _charged, total,
+    _selected, lossBound, _quantitative⟩ := witness
+  refine ⟨epsilon, edgeEq, handoffNone, routing, ?_, extraction, extractionEq,
+    Finset.mem_sdiff.2 ⟨Finset.mem_univ _, notCandidate⟩, ?_, lossBound⟩
+  · intro firstIndex _bound high earlier coreAt
+    have isSome := (canonicalAbsorbedHandoff_isSome_iff_core avoids uncompressible
+      normalized degenerate fanData routing epsilon notCandidate firstIndex high
+      earlier).2 coreAt
+    rw [handoffNone] at isSome
+    exact Bool.false_ne_true isSome
+  · have := Finset.card_sdiff_add_card_inter
+      (Finset.univ : Finset (ColdGermOccurrence data object))
+      (coldRoutedCandidates data object routing)
+    rw [Finset.univ_inter] at this
+    omega
 
 /-- Node `[177]` → `[65]`: the absorbed Type B support enters the common Type B
 entry with its assigned high centres, `z` among them. -/
@@ -423,15 +592,15 @@ theorem typeBFanEntry_of_absorbedLane {core centres : Finset object.Vertex}
   exact Or.inl ⟨core, _, Or.inr (Or.inr lane),
     ⟨centre, centre_mem_absorbedAssignedCentres⟩, TypeBAbsorbedLane.high lane⟩
 
-/-- Node `[175]` yes → `[177]` → `[65]`. -/
-theorem typeBFanEntry_of_absorbedHalfEdge
+/-- Node `[175]` yes → `[177]` yes → `[65]`. -/
+theorem typeBFanEntry_of_absorbedCore
     (fails : ExactCollisionFailsStatement data object)
     (fanData : AbsorbedGermFanDataStatement data object)
     (charge : TypeBAbsorbedChargeStatement data object)
-    (outside : TypeBAbsorbedHalfEdgeStatement data object) :
+    (core : AbsorbedHandoffCoreStatement data object) :
     TypeBFanEntryStatement data object := by
   obtain ⟨_core, _centres, lane⟩ :=
-    typeBAbsorbedLane_of_halfEdge fails fanData charge outside
+    typeBAbsorbedLane_of_core fails fanData charge core
   exact typeBFanEntry_of_absorbedLane lane
 
 /-- Node `[144]` → `[65]`: the same-token handoff of G on the strict-surplus arm

@@ -117,21 +117,29 @@ noncomputable def AbsorbedHandoffAt (data : Parameters)
               (handoffUncompressible data object)
               (handoffWindowFree data object) envelope
 
-/-- Node `[177]`, `lem:absorbed-germ-fan-data` (ii), the decorated handoff fan
-data at the heavy centre.  For every selected branch-excess half-edge `ε`
-outside the subcubic candidate set, the corridor segments at `ε`'s first heavy
-centre are the arms of an admissible decorated handoff envelope over a
-remainder core (`AbsorbedHandoffAt`). -/
-noncomputable def AbsorbedGermDecoratedAssignedSupportStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  letI : FinEnum object.Vertex := object.vertices
-  let Eligible := ColdEligibleHalfEdge data object
-  exact ∃ routing : ColdFailureRoutingStatement data object,
-    let candidates := coldRoutedCandidates data object routing
-    ∀ epsilon : Eligible,
-      Sum.inl epsilon ∉ candidates →
-      ∃ handoff, AbsorbedHandoffAt data object routing epsilon handoff
+/-- **The counted remainder core at `ε`'s heavy centre** (the configuration
+`lem:absorbed-germ-fan-data` (ii) asserts, tex 7926-7952, read through
+`lem:typeA-high-degree-handoff` and `def:decorated-fan-envelope`): a connected
+`Y ⊆ R(P₀)` with `z ∉ Y` which both corridor segments at the corridor vertex
+`z` of index `firstIndex` enter.  Node `[177]` decides this at G's canonical
+absorbed half-edge (`AbsorbedHandoffCoreStatement` /
+`AbsorbedHandoffCoreAbsentStatement`); given such `Y`, the admissible envelope
+`AbsorbedHandoffAt` is built from G's facts
+(`Contracts.TypeB.absorbedHandoffAt_of_remainderCore`). -/
+noncomputable def AbsorbedRemainderCoreAt (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (routing : ColdFailureRoutingStatement data object)
+    (epsilon : ColdEligibleHalfEdge data object)
+    (firstIndex : (coldOccurrenceCorridorAt data object
+      (coldRoutedClassified data object routing) epsilon).Segment) : Prop :=
+  let corridor := coldOccurrenceCorridorAt data object
+    (coldRoutedClassified data object routing) epsilon
+  ∃ core : Finset object.Vertex,
+    Graph.SupportComponents.Connected.ConnectedOn object core ∧
+      core ⊆ object.remainderSupport (canonicalWindowPacking data object) ∧
+      corridor.head firstIndex ∉ core ∧
+      (∃ vertex ∈ corridor.entryTail firstIndex.1, vertex ∈ core) ∧
+      ∃ vertex ∈ corridor.exitTail firstIndex.1, vertex ∈ core
 
 /-- **The registered discharge profile of the Type B fan ledger**
 (`def:typeB-multiclosed-residual`): baseline `δ`, discharge rate `α = 1/s` at

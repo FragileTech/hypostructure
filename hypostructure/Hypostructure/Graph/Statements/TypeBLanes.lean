@@ -146,24 +146,89 @@ noncomputable def TypeBAbsorbedHalfEdgeAbsentStatement (data : Parameters)
 /-- **Node `[177]`, every discarded half-edge is charged to Type B**
 (`lem:absorbed-germ-fan-data`, tex 7933: "every half-edge it discards is charged
 to the Type B ledger"): every selected half-edge `ε` outside node `[153]`'s
-subcubic candidates has its own pinned absorbed Type B support
+subcubic candidates whose canonical absorbed handoff `(z_ε, Y_ε)` is defined has
+its own pinned absorbed Type B support
 `canonicalTypeBAbsorbedSupportAt ε = (Y_ε, H_ε)` --- the counted remainder core
 `Y_ε` of its envelope `(Y_ε, {z_ε})`, and `H_ε = {z_ε} ∪ centres(Y_ε)`, the
 high-degree fan centres whose surplus is assigned to it
 (`def:typeB-assigned-ledger`, `def:canonical-decomp`) --- with `z_ε` high and
 `Y_ε` inside the canonical remainder, and that support's negative part is
-charged to the surplus of `H_ε` (`lem:typeB-bridge-deficit-bound`). -/
+charged to the surplus of `H_ε` (`lem:typeB-bridge-deficit-bound`).  A
+half-edge without a counted core is charged by the (F4) count instead
+(`AbsorbedF4ChargeStatement`, node `[177]` no). -/
 noncomputable def TypeBAbsorbedChargeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ epsilon : ColdEligibleHalfEdge data object,
     AbsorbedHalfEdgeOutside data object epsilon →
-      ∃ core centre,
+      ∀ centre core,
+        canonicalAbsorbedHandoff data object epsilon = some (centre, core) →
         canonicalTypeBAbsorbedSupportAt data object epsilon =
           some (core, absorbedAssignedCentres data object centre core) ∧
         Graph.IsHighCentre object data.threshold centre ∧
         core ⊆ object.remainderSupport (canonicalWindowPacking data object) ∧
         TypeBBridgeDeficitBoundAt data object core
           (absorbedAssignedCentres data object centre core)
+
+/-- Node `[177]`, yes (`lem:absorbed-germ-fan-data` (ii)): at G's canonical
+absorbed half-edge `ε`, a counted remainder core `Y` exists at `ε`'s heavy
+centre `z` -- the canonical absorbed handoff `(z, Y)` of `ε` is defined
+(`canonicalAbsorbedHandoff`, the canonical choice of `AbsorbedHandoffAt`; it is
+defined exactly when `AbsorbedRemainderCoreAt` holds at `z`,
+`Contracts.TypeB.canonicalAbsorbedHandoff_isSome_iff_core`).  This arm enters
+Type B at `[65]` with the support `(Y, {z} ∪ centres(Y))`. -/
+noncomputable def AbsorbedHandoffCoreStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ epsilon, canonicalTypeBAbsorbedHalfEdge data object = some epsilon ∧
+    (canonicalAbsorbedHandoff data object epsilon).isSome
+
+/-- Node `[177]`, no: at G's canonical absorbed half-edge `ε` there is no
+counted remainder core at its heavy centre (the canonical absorbed handoff is
+undefined).  User-approved extension of the cold (F4) exact-count repair
+(`lean-vs-paper-discrepancies.md`, "User-approved repairs"): `ε` is charged by
+the exact (F4) count to node `[219]`'s corridor loss
+(`AbsorbedF4ChargeStatement`), not through the Type B handoff. -/
+noncomputable def AbsorbedHandoffCoreAbsentStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ epsilon, canonicalTypeBAbsorbedHalfEdge data object = some epsilon ∧
+    canonicalAbsorbedHandoff data object epsilon = none
+
+/-- **The (F4) charge of an absorbed half-edge without a counted core**
+(node `[177]`, no arm; user-approved extension of the cold (F4) exact-count
+repair).  At G's canonical absorbed half-edge `ε`, on node `[153]`'s routing:
+
+* no counted remainder core exists at `ε`'s heavy centre `z` (the least high
+  vertex of `ε`'s trace prefix): `¬ AbsorbedRemainderCoreAt` at that index;
+* `ε` is one of node `[219]`'s corridor-loss units of the canonical extraction
+  `coldGermExtraction?`: it lies outside the routed candidates, and the
+  non-candidate occurrences number exactly the corridor loss (each selected
+  unit is counted once, as a candidate or as loss);
+* that loss is within the exact (F4) bound
+  `corridorLoss ≤ (δ+1)·B_cold·σ(G)` already paid by node `[153]`'s
+  inequalities. -/
+noncomputable def AbsorbedF4ChargeStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  exact ∃ epsilon, canonicalTypeBAbsorbedHalfEdge data object = some epsilon ∧
+    canonicalAbsorbedHandoff data object epsilon = none ∧
+    ∃ routing : ColdFailureRoutingStatement data object,
+      let corridor := coldOccurrenceCorridorAt data object
+        (coldRoutedClassified data object routing) epsilon
+      let candidates := coldRoutedCandidates data object routing
+      (∀ firstIndex : corridor.Segment,
+        firstIndex.1 ≤ coldRoutedTraceEnd data object routing epsilon →
+        data.threshold < object.degree (corridor.head firstIndex) →
+        (∀ earlier : corridor.Segment, earlier.1 < firstIndex.1 →
+          object.degree (corridor.head earlier) ≤ data.threshold) →
+        ¬ AbsorbedRemainderCoreAt data object routing epsilon firstIndex) ∧
+      ∃ extraction, coldGermExtraction? data object = some extraction ∧
+        (Sum.inl epsilon : ColdGermOccurrence data object) ∈
+          (Finset.univ : Finset (ColdGermOccurrence data object)) \ candidates ∧
+        ((Finset.univ : Finset (ColdGermOccurrence data object)) \
+          candidates).card = extraction.2 ∧
+        extraction.2 ≤ (data.threshold + 1) *
+          Graph.ColdCorridor.overlapBound data.threshold data.coldSignature *
+            object.degreeSurplus data.threshold
 
 /-- Node `[65]` at the `[64]` entry: the ordinary Type B support `(X₀, H(X₀))`
 is negative and carries a high centre (`def:canonical-decomp`). -/

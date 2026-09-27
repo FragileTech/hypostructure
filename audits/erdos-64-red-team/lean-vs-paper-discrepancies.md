@@ -1801,27 +1801,104 @@ keeps the paper claim and the [144a] representation.
   to a cold corridor, and no construction of the paper yields a connected core
   in `R` avoiding `z` that both segments enter.  Even corridor containment in
   `R` would not suffice (`z` may separate the segments' parts of `R`).
-- **The configuration `z` = the entry foot (`i = 0`).**  There the entry-side
-  segment is the stub `ε` itself, `[ε's window endpoint] ⊆ X_cold`, which meets
-  no vertex of `R`, so the claim would fail.  Whether a G reaching `[177]` can
-  have it is not decided: the three routes applied to "`z` is the foot of an
-  eligible `ε`" give nothing -- (1) the foot's window neighbour has degree `3`
-  and `[10]` only forbids heavy-heavy edges, so no incompatible structure;
-  (2) the heavy vertices adjacent to ambient-cubic windows are counted by the
-  surplus `σ(G)` but not excluded; (3) no smaller representative arises.  No
-  G-configuration consistent with all ledger facts at `[177]` is exhibited, so
-  this is an open construction, not a paper error.
-- **Three routes on `¬X`** (X = a connected `Y ⊆ R`, `z ∉ Y`, entered by both
-  segments): (1) incompatible structure -- a segment that reaches its boundary
-  stub without meeting `R \ {z}` crosses only hot / non-ambient-cubic cold
-  windows and `X_cold`, which contradicts no arm (no accepted cycle, no
-  baseline or bridgelessness violation is produced); (2) overload -- no count on
-  the ledger bounds how many segment vertices lie outside `R`; (3)
-  compressibility -- the failure of `X` produces no smaller representative of a
-  support.  The concrete configuration at G is `z` = the entry foot
-  (`i = 0`), whose entry-side segment is `[ε's window endpoint] ⊆ X_cold`.
-- **Tag.** `sorry`, `OPEN-CONSTRUCTION [177] tex:7932`, in
-  `Graph/Contracts/Spine/ColdSubcubicCharge.lean` (`coldAbsorbedRemainderCore`).
+- **Construction attempt at G (fix2-177, 2026-09-27).**  The canonical
+  candidate is: follow each corridor segment at `z` to its first vertex of
+  `R(P₀)`, and let `Y` be the component of `G[R(P₀) \ {z}]` containing those
+  entries.  Requirement by requirement at G's objects:
+  - *`Y ⊆ R`, `Y` connected, `z ∉ Y`*: by construction, provided the entries
+    exist.
+  - *Simple paths, admissibility*: already proved from G's facts in
+    `absorbedGermDecoratedAssignedSupport` (`entryTail_nodup`/`exitTail_nodup`,
+    `vertexAt_not_mem_*Tail`, `entryNeighbour_ne_exitNeighbour`, fan-safety from
+    `avoids`, admissibility from `[14]`/`[25]`--`[27]`).
+  - *Each segment reaches `R`*: **fails in general.**  The corridor lives in
+    `G − X_cold` (C2 ruling), so its inside vertices may lie in hot or
+    non-ambient-cubic cold windows of `P₀`, and both segments end at a stub
+    endpoint in `X_cold ⊆ ⋃P₀`.  A segment whose inside vertices all lie in
+    windows meets no vertex of `R`.
+  - *Both entries in one component of `G[R \ {z}]`*: fails in general (the two
+    sides may be joined only through `z` and windows).
+  - *`z ∈ R`?*  Not needed: `H ⊆ V_{≥4}(G)` and the hook only needs `z ∉ Y`;
+    a heavy `z` inside a hot / non-ambient-cubic window is allowed by both the
+    paper and the Lean.
+- **The heavy entry foot, proved at G** (`Contracts.Spine.coldAbsorbedRemainderCore_heavyEntryFoot`,
+  `Graph/Contracts/Spine/ColdSubcubicCharge.lean`; vocabulary-free input
+  `Corridor.entryTail_zero_not_meets`, `Graph/ColdCorridorTails.lean`).  For
+  every eligible selected half-edge `ε` of G whose foot `ε.2` has degree above
+  the baseline: `ε ∉ coldRoutedCandidates` (the foot lies in every prefix
+  support), `firstIndex = 0` satisfies every hypothesis of the hook (within the
+  trace prefix, heavy head, no earlier index), and the hook's conclusion is
+  **false** there: `entryTail 0 = [ε.1]` with `ε.1 ∈ X_cold ⊆ ⋃P₀`, so it meets
+  no subset of `R(P₀)`.  Hence, at G, the hook is equivalent on this
+  configuration to "no selected half-edge of G has a heavy foot".
+- **The paper claims `i = 0` (checked 2026-09-27).**  The tex has no separate
+  treatment of a heavy foot.  `def:cold-corridor-first-failure` defines the
+  first failure as "the first initial segment ... at which ... (F4) the corridor
+  first enters a declared Type B handoff envelope" (tex 7213, 7222), with
+  segment `0` an initial segment; `lem:cold-germ-extraction` removes "Type B,
+  and route-8 handoff incidences" wholesale and says "If a candidate support
+  contains a vertex of degree at least `4`, then the corresponding corridor
+  first enters the high-degree handoff ledger" (tex 7318, 7330-7331); and
+  `lem:absorbed-germ-fan-data` (ii) covers every `J` that "contains a vertex
+  `z` of degree at least `4`" with "the corridor enters `z` through one of its
+  incidences and leaves through another ... the segments of the corridor on
+  either side of `z` are two connector tails separated at `z`, which is the
+  decorated handoff configuration of `lem:typeA-high-degree-handoff`"
+  (tex 7926-7930, 7949-7951).  At `i = 0` the entering incidence is `ε`
+  itself, and no other core, envelope, or `σ(G)` charge is given for it
+  (the only `σ(G)` charge is node `[153]`'s bounded-arm loss, which (ii) says
+  is "charged to the Type B ledger", tex 7937-7939).  So the hook is not an
+  overstatement at `i = 0`: it is the paper's claim, restated faithfully.
+- **`i ≥ 1` is not rescued.**  Removing `i = 0` would not remove the failure of
+  "each arm reaches `R`": for `i ≥ 1` the entry side is inside vertices
+  `0..i−1` of `K ⊆ G − X_cold`, and the exit side inside vertices `i+1..` of
+  `K`, each ending at a stub endpoint in `X_cold`.  Under the C2 ruling these
+  inside vertices may all lie in hot or non-ambient-cubic windows of `P₀`
+  (maximality of `P₀` even pushes corridor vertices into windows), and no
+  ledger fact at `[177]` places one of them in `R`.
+- **Three routes on "some selected `ε` of G has a heavy foot `z`"**, run at
+  G's objects: the configuration is `z ∈ V_{≥4}(G)` adjacent to an interior
+  vertex `x` of an ambient-cubic cold window `P ∈ P₀ \ P_hot`, via a selected
+  interior stub.  (1) Structure: `[10]` (independence of `V_{≥4}`) and
+  `lem:deletion-critical` need `d_G(x) = 3`, which ambient-cubicity supplies;
+  `coldWindowStubStructure` says `x` has exactly one external stub, which is
+  `xz`; `P₀` maximality, bridgelessness, minimum degree and target avoidance
+  constrain neither `d_G(z)` nor the stub's other endpoint; the (F4) registry
+  fires at segment `0` (that is the absorbed case itself, not a contradiction).
+  (2) Overload: such `ε` are at most `Σ_{z ∈ V_{≥4}} d_G(z) ≤ (δ+1)σ(G)` (the
+  registry's exact count), which is within every bound on the ledger at
+  `[177]`; one occurrence overloads nothing.  (3) Compressibility: the
+  configuration is a single edge `xz`; it yields no smaller support with the
+  same response, so neither `K .uncompressible` nor `K .selection` is
+  contradicted.  All three fail with the configuration in hand.
+- **Completeness inventory** (root → `[177]`): `R` and `P₀`
+  (`remainderSupport`, `canonicalWindowPacking`), `P_hot`/`P_cold`
+  (`canonicalHotWindows`/`canonicalColdWindows`), `X_cold`
+  (`coldCorridorWindows`), `[10]` (`.slackIndependent`), `[14]`, `[22]`,
+  `[25]`--`[27]` (remainder normalization), ambient cubicity
+  (`K .coldAmbientCubic`), the stub structure (`coldWindowStubStructure`), the
+  cold corridor, its states and first failures (`K .coldCorridorState`,
+  `K .coldFirstFailureOccurrence`, `K .coldFailureRouting`), the (F4) registry
+  (`ColdDeclaredHandoffSupport`), `[153]`'s candidates, the absorbed split and
+  fan data `[175]` (`K .absorbedGermFanData`, including `neighboursCubic`), the
+  canonical pieces of `R` and the Type A supports / exit-(7) envelopes `[108]`.
+  The paper's remaining objects on the path (`def:cold-skeleton-excess`,
+  `def:cold-bounded-germ`, `lem:cold-corridor-first-failure`) are represented
+  by those keys.  None constrains the degree of a selected stub's foot or ties
+  a remainder component to a cold corridor.
+- **Outcome.**  `Y` is not constructible from G's facts at `[177]`: on the
+  heavy-entry-foot configuration it provably does not exist (Lean above), and
+  that configuration is not refuted by any of the three routes.  It is not a
+  PAPER-ERROR because the configuration is not shown to occur in G; it stays
+  an OPEN CONSTRUCTION whose exact content is now "G has no selected half-edge
+  with a heavy foot" (for `i = 0`) together with the hot-window case for
+  `i > 0`.
+- **Status (2026-09-27): closed by user-approved repair.**  The hook
+  `coldAbsorbedRemainderCore` and its `sorry` are deleted.  Node `[177]` now
+  decides the existence of `Y` at G's canonical absorbed half-edge; the no arm
+  is charged by the exact (F4) count (see "User-approved repairs", "[177]
+  extension of the (F4) exact-count repair").  The obstruction analysis above
+  is kept as the reason for the repair.
 - **The Type B support of the absorbed lane, `(Y_X, H_X)` (integration of
   fix2-TB and fix2-SC, 2026-09-27).**  The envelope's decorations stay `{z}`;
   the Type B support the lane publishes (`canonicalTypeBAbsorbedSupportAt`,
@@ -1848,7 +1925,10 @@ keeps the paper claim and the [144a] representation.
   (`TypeBAbsorbedLane.centres_subset`), so the B2 ledger (`typeBB2LedgerAt`),
   the bridge-deficit bound and the per-`ε` charge `K .typeBAbsorbedCharge`
   (idx 2800, `typeBAbsorbedCharge`) are proved as before, with no new predicate
-  and no new `sorry`.  fix2-TB's former "`centres(J) ⊆ {z}`" proof applied to
+  and no new `sorry`.  Since fix2-177 the charge is stated at every selected
+  half-edge whose canonical absorbed handoff `(z, Y)` is defined, and the
+  `[177]` yes row enters `[65]` with `(Y, {z} ∪ centres(Y))` read from it; the
+  half-edges without a counted core take the `[177]` no arm (the (F4) charge).  fix2-TB's former "`centres(J) ⊆ {z}`" proof applied to
   its prefix core `J ∋ z` and is superseded by the `(z, Y)` envelope.
 
 ### [82] `c ≤ 1` without B2: "`N₀(X) ≥ 0`" (tex 1020, `lem:typeB-exclusion` tex 14349, `rem:typeB-status`)
@@ -2541,3 +2621,54 @@ disjunct `ContextEquivalent ρ₁ ρ₂`.
   (tex 7326-7329, 7926-7930) uses exactly "the corridor reaches a vertex of
   degree ≥ 4"; with this registry the paper's charge argument goes through as
   written.
+
+### [177] extension of the (F4) exact-count repair: absorbed half-edges without a counted core (user-approved, 2026-09-27)
+
+- **Paper.** `lem:absorbed-germ-fan-data` (ii) (tex 7926-7952) routes every
+  absorbed half-edge `ε` (first-failure support meeting `V_{≥4}(G)`) through
+  the decorated handoff of `lem:typeA-high-degree-handoff` at its heavy centre
+  `z`, which needs a counted remainder core `Y ⊆ R(P₀)`, `z ∉ Y`, entered by
+  both corridor segments at `z`.  The paper never constructs `Y` for a cold
+  corridor, and at G it can fail to exist: the heavy entry foot (`i = 0`,
+  `Contracts.Spine.coldAbsorbedRemainderCore_heavyEntryFoot`) and segments whose
+  vertices all lie in windows of `P₀` (open construction [177], below).
+- **Ruling.** When `Y` exists, keep the paper's Type B handoff.  When it does
+  not, charge `ε` by the exact (F4) count
+  `#{ε ∉ candidates} ≤ corridorLoss ≤ (δ+1)·B_cold·σ(G)` published at `[219]`
+  (`K .coldGermCandidates`), not through Type B.
+- **Lean (live).**
+  - `Statements/TypeB.lean`: `AbsorbedRemainderCoreAt` (the core `Y` at the
+    heavy centre).  `Statements/TypeBLanes.lean`: `AbsorbedHandoffCoreStatement`
+    / `AbsorbedHandoffCoreAbsentStatement` (node `[177]`'s decision at G's
+    canonical absorbed half-edge: its canonical absorbed handoff is defined or
+    not) and `AbsorbedF4ChargeStatement` (no arm).
+  - Keys (idx 3100-3102): `K .absorbedHandoffCore`, `K .absorbedHandoffCoreAbsent`
+    (decision `absorbedHandoffCoreDichotomy`, reading `K .typeBAbsorbedHalfEdge`,
+    split at the one pinned `ε`), `K .absorbedF4Charge` (row
+    `absorbedF4ChargeRow`).
+  - Contracts (`Contracts/TypeB/Entry.lean`):
+    `absorbedHandoffAt_of_remainderCore` (given `Y`, the admissible envelope
+    `AbsorbedHandoffAt (z, Y)` from G's facts), `absorbedFirstIndex_unique`,
+    `canonicalAbsorbedHandoff_isSome_iff_core` (the decision is exactly "a core
+    `Y` exists at `z`"), `absorbedHandoffCore_split`, `typeBAbsorbedLane_of_core`,
+    `typeBFanEntry_of_absorbedCore` (yes arm, `[177]` → `[65]`, support
+    `(Y, {z})`), `absorbedF4Charge` (no arm).
+  - Assembly (`Assembly/Absorbed/Residual.lean`): at both `[175]` yes sites,
+    `[177]` yes runs the Type B entry and charge tail; `[177]` no publishes
+    `K .absorbedF4Charge` and ends at the local cold exclusion
+    `K .coldBranchClosed` (`[187]`), as the `[175]` no arm does.
+- **Why the (F4) bound absorbs these half-edges, with no double count.**  The
+  cold argument's inequalities never used the Type B charge: node `[153]`'s
+  witness (`ColdGermFamilyWitness`) partitions the selected occurrences exactly
+  as `#selected = #candidates + corridorLoss` (every non-candidate, in
+  particular every absorbed `ε`, is one corridor-loss unit, counted once), and
+  the linear arm (`coldGermFamilyPositive`: `corridorLoss < #selected`) and the
+  bounded arm (`densityCapLinear_of_coldMassBounded`) use only
+  `corridorLoss ≤ (δ+1)·B_cold·σ(G)`.  `AbsorbedF4ChargeStatement` records at
+  G that `ε ∈ univ \ candidates`, that `#(univ \ candidates) = corridorLoss`
+  of the canonical extraction `coldGermExtraction?`, and the bound.  No extra
+  term arises, and on the no arm `ε` is not also sent to Type B.
+- **Merge note.**  The split is on `canonicalAbsorbedHandoff ε` only; the
+  absorbed support built from it on the yes arm (`canonicalTypeBAbsorbedSupportAt`,
+  now `(Y, {z})`) can be widened to `H := {z} ∪ centres(Y)` without touching
+  the split.

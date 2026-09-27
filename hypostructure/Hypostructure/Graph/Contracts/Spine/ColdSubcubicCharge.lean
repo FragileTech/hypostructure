@@ -129,62 +129,71 @@ theorem coldSubcubicFirstFailureGerm (data : Parameters)
   · exact (coldHandoffOccurrence_not_subcubic data object routing epsilon
       handoff subcubic).elim
 
-/-- **`lem:absorbed-germ-fan-data` (ii), the counted remainder core at `z`**
-(tex 7926-7952; `lem:typeA-high-degree-handoff`, tex 11110-11131;
-`def:decorated-fan-envelope`, tex 10898-10925; `lem:decorated-fan-admissibility`,
-tex 11150-11158).
+/-- **A configuration of G on node `[177]`'s no arm: the heavy entry foot.**
 
-The paper's claim at G: for a selected half-edge `ε` of G outside node `[153]`'s
-subcubic candidates, whose retained corridor first meets a vertex `z` of degree
-above the baseline at index `i` (`firstIndex`), "the segments of the corridor on
-either side of `z` are two connector tails separated at `z`, which is the
-decorated handoff configuration of `lem:typeA-high-degree-handoff`".  That
-configuration is an envelope `(Y, {z})` whose arms are the connector tails from
-the two first neighbours of `z` "to their first-entry data in" the counted core
-`Y`, with `Y ⊆ R` a connected `P₁₃`-free remainder core (`def:decorated-fan-envelope`)
-and `z ∉ Y` ("the only new vertices counted outside `Y` are the decorations",
-tex 11155).  So the claim needs a connected remainder core `Y ⊆ R(P₀)`, `z ∉ Y`,
-which both corridor segments at `z` (`Corridor.entryTail` / `Corridor.exitTail`)
-enter.
-
-Recorded as an open construction (`lean-vs-paper-discrepancies.md#open-constructions`,
-[177] tex:7932): in `lem:typeA-high-degree-handoff` the core is the Type A
-support `X` the tails return to; a cold corridor has no such support.  Its two
-segments at `z` run to the corridor's two boundary stubs, whose window endpoints
-lie in ambient-cubic cold windows of `P₀`, outside `R`; nothing on G's ledger at
-this node (the routed classification, `[10]`, the remainder normalization)
-provides a connected remainder core avoiding `z` that both segments enter.
-When `z` is the entry foot (`i = 0`) the entry-side segment is the stub `ε`
-itself and enters no vertex of `R` at all. -/
-theorem coldAbsorbedRemainderCore (data : Parameters)
+`lem:absorbed-germ-fan-data` (ii) asserts a counted remainder core `Y ⊆ R(P₀)`,
+`z ∉ Y`, entered by both corridor segments at `ε`'s heavy centre `z`
+(`AbsorbedRemainderCoreAt`); the paper never constructs it for a cold corridor.
+At G's retained classification (`K .coldFailureRouting`), let `ε` be a
+selected half-edge of G whose outside endpoint (the foot of its corridor) has
+degree above the baseline.  Then `ε` is not one of node `[153]`'s subcubic
+candidates, its heavy centre is the foot (`firstIndex = 0`: within the trace
+prefix, no earlier index), and no such core exists there: the entry-side
+corridor segment at the foot is `[ε's window endpoint]`, which lies in
+`X_cold ⊆ ⋃P₀` and so meets no subset of `R(P₀)`.  Such `ε` fall on node
+`[177]`'s no arm and are charged by the exact (F4) count
+(`AbsorbedF4ChargeStatement`; `lean-vs-paper-discrepancies.md`, "User-approved
+repairs"). -/
+theorem coldAbsorbedRemainderCore_heavyEntryFoot (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (routing : ColdFailureRoutingStatement data object)
     (epsilon : ColdEligibleHalfEdge data object)
-    (_notCandidate : Sum.inl epsilon ∉ coldRoutedCandidates data object routing)
-    (firstIndex : (coldOccurrenceCorridorAt data object
-      (coldRoutedClassified data object routing) epsilon).Segment)
-    (_firstBound : firstIndex.1 ≤ coldRoutedTraceEnd data object routing epsilon)
-    (_high : data.threshold < object.degree
-      ((coldOccurrenceCorridorAt data object
-        (coldRoutedClassified data object routing) epsilon).head firstIndex))
-    (_earlier : ∀ earlier : (coldOccurrenceCorridorAt data object
-        (coldRoutedClassified data object routing) epsilon).Segment,
-      earlier.1 < firstIndex.1 →
-        object.degree ((coldOccurrenceCorridorAt data object
-          (coldRoutedClassified data object routing) epsilon).head earlier) ≤
-          data.threshold) :
-    ∃ core : Finset object.Vertex,
-      Graph.SupportComponents.Connected.ConnectedOn object core ∧
-        core ⊆ object.remainderSupport (canonicalWindowPacking data object) ∧
-        (coldOccurrenceCorridorAt data object
-          (coldRoutedClassified data object routing) epsilon).head firstIndex ∉ core ∧
-        (∃ vertex ∈ (coldOccurrenceCorridorAt data object
-            (coldRoutedClassified data object routing) epsilon).entryTail firstIndex.1,
-          vertex ∈ core) ∧
-        ∃ vertex ∈ (coldOccurrenceCorridorAt data object
-            (coldRoutedClassified data object routing) epsilon).exitTail firstIndex.1,
-          vertex ∈ core := by
-  -- OPEN-CONSTRUCTION [177] tex:7932 — see lean-vs-paper-discrepancies.md#open-constructions
-  sorry
+    (heavyFoot : data.threshold < object.degree epsilon.1.2) :
+    Sum.inl epsilon ∉ coldRoutedCandidates data object routing ∧
+      ∃ firstIndex : (coldOccurrenceCorridorAt data object
+          (coldRoutedClassified data object routing) epsilon).Segment,
+        firstIndex.1 = 0 ∧
+        firstIndex.1 ≤ coldRoutedTraceEnd data object routing epsilon ∧
+        data.threshold < object.degree
+          ((coldOccurrenceCorridorAt data object
+            (coldRoutedClassified data object routing) epsilon).head firstIndex) ∧
+        (∀ earlier : (coldOccurrenceCorridorAt data object
+            (coldRoutedClassified data object routing) epsilon).Segment,
+          earlier.1 < firstIndex.1 →
+            object.degree ((coldOccurrenceCorridorAt data object
+              (coldRoutedClassified data object routing) epsilon).head earlier) ≤
+              data.threshold) ∧
+        ¬ ∃ core : Finset object.Vertex,
+          core ⊆ object.remainderSupport (canonicalWindowPacking data object) ∧
+            ∃ vertex ∈ (coldOccurrenceCorridorAt data object
+                (coldRoutedClassified data object routing) epsilon).entryTail
+                  firstIndex.1,
+              vertex ∈ core := by
+  classical
+  let classified := coldRoutedClassified data object routing
+  let corridor := coldOccurrenceCorridorAt data object classified epsilon
+  have stubEq : corridor.entryStub = (epsilon.1.2, epsilon.1.1) :=
+    (coldOccurrenceStateFacts data object classified epsilon).2.1
+  have footEq : corridor.head ⟨0, Nat.succ_pos _⟩ = epsilon.1.2 := by
+    rw [← Graph.ColdCorridor.Corridor.vertexAt_eq_head,
+      Graph.ColdCorridor.Corridor.vertexAt_zero, stubEq]
+  refine ⟨?_, ⟨0, Nat.succ_pos _⟩, rfl, Nat.zero_le _, footEq ▸ heavyFoot,
+    fun earlier before => absurd before (Nat.not_lt_zero _), ?_⟩
+  · intro member
+    simp only [coldRoutedCandidates, Finset.mem_filter, Finset.mem_univ,
+      true_and] at member
+    have footIn := Graph.ColdCorridor.Corridor.foot_mem_prefixSupport corridor
+      (coldRoutedTraceEnd data object routing epsilon)
+    rw [stubEq] at footIn
+    exact absurd (member.2 _ footIn) (not_le.mpr heavyFoot)
+  · rintro ⟨core, inside, meets⟩
+    refine Graph.ColdCorridor.Corridor.entryTail_zero_not_meets corridor ?_ meets
+    refine Finset.disjoint_left.mpr fun {vertex} inCore inWindows => ?_
+    have notW := Graph.FiniteObject.notMem_windowSupport_of_mem_remainderSupport (inside inCore)
+    obtain ⟨window, windowMem, vertexMem⟩ :=
+      (Graph.ColdCorridor.mem_windowsOf object _ vertex).1 inWindows
+    have packed : window ∈ canonicalWindowPacking data object :=
+      (Finset.mem_sdiff.mp (Finset.mem_filter.mp windowMem).1).1
+    exact notW (Graph.FiniteObject.mem_windowSupport packed vertexMem)
 
 end Hypostructure.Graph.Contracts.Spine
