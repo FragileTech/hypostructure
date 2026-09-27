@@ -1450,7 +1450,7 @@ free side.
 | `TypeBSublinearOutcome` | [187] (Type B sublinear failure) | 2080 | 62 |
 | `Route8QuotientOutcome` | [187] ([348], route-8 quotient failure) | 2080 | 64 |
 | `Route8RateFailsOutcome` | [187] (private-carrier rate failure) | 12 | 42 |
-| `ColdBranchClosedOutcome` | [187] (local cold-terminal exclusion) | 104 | 57 |
+| `ColdBranchClosedOutcome` | [187] (local cold-terminal exclusion) | 104 | 57 generic; product 100 paths (69–83), 4 singletons (63–67) |
 | `Node153ResidualOutcome` | [153] | 23 | 42 |
 | `Node162ResidualOutcome` | [162] | 2 | 46 |
 | `Node54ResidualOutcome` | [54] | 6 | 40 |
@@ -2836,8 +2836,8 @@ free side.
 ### Node [187] (local cold-terminal exclusion) (thm:main (vi), tex 369-378)
 
 - **Configuration at G.** The local cold-terminal exclusion of thm:cold-branch-quantitative-closure without a global terminal contradiction.
-- **Lean.** `ColdBranchClosedOutcome` (`Assembly/Residuals.lean`); return theorem `coldBranchClosedReturn`; reached by 104 paths (distinct ledger histories from the root).
-- **Facts carried (57).**
+- **Lean.** Generic residual `ColdBranchClosedOutcome` (`Assembly/Residuals.lean`, return theorem `coldBranchClosedReturn`): the facts common to all 104 paths. The 104 paths (distinct ledger histories from the root) have 104 distinct fact sets, split in `Assembly/Residuals/ColdBranchClosedOutcome.lean` into the absorbed-germ product `ColdBranchClosedOutcome_product` (100 paths, an exact 4 × 5 × 5 product of arm blocks) and 4 linear-cold-mass singletons.
+- **Generic facts, carried on every path (57).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -2895,30 +2895,127 @@ free side.
   55. `K .coldSameInterfaceTable`: `lem:cold-same-interface-table`: the finite same-interface table of G's silent configurations.
   56. `K .coldBranchClosed`: `thm:cold-branch-quantitative-closure`, local part: the local cold-terminal exclusion at G (no global terminal contradiction).
   57. `K .absorbedGermFanData`: Node `[177]`, `lem:absorbed-germ-fan-data` (ii): every selected branch-excess half-edge outside node `[153]`'s exact subcubic candidate class meets a vertex of degree above the threshold, a heavy centre, and is decorated handoff fan data for Type B.
-- **On some paths only, not carried (42).** Gated by an arm of:
-  - [163] on the absorbed residual; [163] neutral configuration: `coldCanonicalNeutralConfiguration`, `coldCanonicalReplacementSwap`, `coldCanonicalReplacementTrivial`.
-  - [153] linear / bounded cold mass: `coldMassBounded`, `coldMassLinear`, `densityCap`.
-  - [50] low arm, local-type coordinate (lem:dominant-type): `dominantRootedType`, `localTypeCoordinateNonrepetitive`, `localTypeCoordinateRepetitive`.
-  - [50] remainder entropy: `entropyPackageDemand`, `remainderEntropyHigh`, `remainderEntropyLow`.
-  - [57]/[173] exact collision: `absorbedConfigurationResidual`, `exactCollisionFails`.
-  - [177] counted core: `absorbedF4Charge`, `absorbedHandoffCoreAbsent`.
-  - [154] G2 test: `coldGermNoneDistinguishing`, `coldGermSomeDistinguishing`.
-  - [162] heavy entry: `coldHeavyEntryTerminal`, `denseColdCorridorsTerminal`.
-  - [175] positive germ: `coldNoPositiveGerm`, `coldPositiveGerm`.
-  - [146] theta < 1/78: `coldRoute8AtOrAbove`, `coldRoute8Below`.
-  - [160] first test (tau < 1/4): `denseDeficiencyAtOrAbove`, `denseDeficiencyBelow`.
-  - [50] low arm, root-wedge split (lem:dominant-type): `dominantRootedTypeWedgeFree`, `dominantRootedWedgeType`.
-  - [160] second test / route-8 entry rate: `route8Rate`, `route8RateFails`.
-  - [175] read at [177]: `typeBAbsorbedHalfEdge`, `typeBAbsorbedHalfEdgeAbsent`.
-  - [158] window package realized: `windowPackageRealized`, `windowPackageUnrealized`.
-  - [175] positive germ; [154] G2 test; [153] linear / bounded cold mass: `coldAbsorbedNeutralConfiguration`.
-  - [175] positive germ; [153] linear / bounded cold mass: `coldGermFamilyPositive`.
-  - [154] G1 test: `coldGermNoneRealizing`.
-  - [175] positive germ; [175] read at [177]: `coldSelectedFamilyEmpty`.
-  - [53] entropy cap: `entropyCapBound`.
-  - [50] low arm, root-wedge split (lem:dominant-type); [50] low arm, local-type coordinate (lem:dominant-type): `independentObstructionTranslates`.
-  - [53] entropy cap; [50] remainder entropy: `largeBudgetResidual`.
-  - [153] linear / bounded cold mass; [146] theta < 1/78; [160] first test (tau < 1/4); [53] entropy cap; [50] remainder entropy: `netDeficiencyCap`.
+- **Absorbed-germ product `ColdBranchClosedOutcome_product`** (100 paths through `selectedAbsorbedGermResidual`): `ColdBranchClosedOutcome ∧ ColdBranchClosedAbsorbedCommon ∧ (E1 ∨ E2 ∨ E3 ∨ E4) ∧ (W1 ∨ … ∨ W5) ∧ (X1 ∨ … ∨ X5)`, `.toGeneric` = first conjunct; return theorem `coldBranchClosedProductReturn`, which takes one `coldBranchClosed<Block>Return history` per family. Checked against the key-path dump: every one of the 100 paths has exactly generic ∪ absorbed-common ∪ one block of each family, all 4 × 5 × 5 = 100 combinations occur, and no key is lost. Total facts per path: 69–83.
+  - **Absorbed-common `ColdBranchClosedAbsorbedCommon` (5), on all 100 absorbed-germ paths:**
+    - `K .absorbedConfigurationResidual`: Node `[174]`, `lem:exact-collision-test`, the consequence of the failed collision: the failure witness packing `P` of `[173]` satisfies `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`, `A = netChargeCoefficient`, the manuscript's `C ≥ (n − 73|𝒫_hot| − 4(σ_W − σ_R))/73` without subtraction: the residual carries linearly many cold windows.
+    - `K .exactCollisionFails`: Node `[173]`, `lem:exact-collision-test`, no arm: node `[56]`'s collision, decided exactly on the current object, fails at some maximal packing — the absorbed-germ residual `[174]`.
+    - `K .largeBudgetResidual`: Node `[53]`, no arm — node `[55]`, Residual C: the joint package still fits the skeleton budget, and the branch is the large-budget residual.
+    - `K .netDeficiencyCap`: Node `[56]`: exact cleared finite form of the large-budget net-deficiency cap.
+    - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census alone, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13` with the `o(|R|)` allowance, `rem:route8-carrier-margin`), read from the arm's density fact.
+  - **Family `ColdBranchClosedEntropyArm`**: the entropy-side arm ([50], [53]).
+    - **E1 `ColdBranchClosedEntropyHighCap`** (3 facts; return `coldBranchClosedEntropyHighCapReturn`): [50] remainder entropy high, with the [53] entropy cap.
+      - `K .entropyCapBound`: Node `[54]`: the independently realized window/remainder code fits in the labelled skeleton class. This is the exact bound contradicted by the active arm of `eq:entropy-cap`.
+      - `K .entropyPackageDemand`: Node `[52]`: the window package and the remainder accounting, joined. `eq:feasibility`'s left-hand side in exact integer form — the joint window/remainder/curvature coordinate family realizes at least `2^{rate·p}·n^{|R|/d}·2^{c_Ω·r_Ω(R)}` states.
+      - `K .remainderEntropyHigh`: Node `[50]`, yes arm — node `[51]`, the high-entropy remainder branch: `η(R) ≥ (1/d)·log₂ n`, i.e. the remainder's realized target-complete states number at least `n^{|R|/d}` (`prop:two-budget` (a)).
+    - **E2 `ColdBranchClosedEntropyLowNonrepetitive`** (2 facts; return `coldBranchClosedEntropyLowNonrepetitiveReturn`): [50] remainder entropy low, local-type coordinate non-repetitive.
+      - `K .localTypeCoordinateNonrepetitive`: `prop:two-budget` (c): the same literal coordinate is not structurally repetitive. This arm passes unchanged to the large-budget analysis.
+      - `K .remainderEntropyLow`: Node `[50]`, no arm: `η(R) < (1/d)·log₂ n`, the low-entropy branch `prop:two-budget` (b) and (c) share.
+    - **E3 `ColdBranchClosedEntropyLowWedgeFree`** (4 facts; return `coldBranchClosedEntropyLowWedgeFreeReturn`): [50] remainder entropy low, local-type coordinate repetitive, dominant rooted type wedge-free.
+      - `K .dominantRootedType`: `lem:dominant-type`: the repetitive coordinate has a single rooted radius-two type outside only the registered finite `o(n)` allowance.
+      - `K .dominantRootedTypeWedgeFree`: The wedge-free subarm after `lem:dominant-type`; the manuscript makes no translate-rank claim and passes this arm to the large-budget analysis.
+      - `K .localTypeCoordinateRepetitive`: `prop:two-budget` (b): on the low-entropy residual, the radius-two rooted-type coordinate lies below the exact finite relabelling threshold.
+      - `K .remainderEntropyLow`: Node `[50]`, no arm: `η(R) < (1/d)·log₂ n`, the low-entropy branch `prop:two-budget` (b) and (c) share.
+    - **E4 `ColdBranchClosedEntropyLowWedgeType`** (5 facts; return `coldBranchClosedEntropyLowWedgeTypeReturn`): [50] remainder entropy low, local-type coordinate repetitive, dominant rooted wedge type.
+      - `K .dominantRootedType`: `lem:dominant-type`: the repetitive coordinate has a single rooted radius-two type outside only the registered finite `o(n)` allowance.
+      - `K .dominantRootedWedgeType`: The literal incoming wedge subarm of `lem:translates-independent`: the preceding executor proved the dominant rooted type and the decision found an internal root wedge in that same type.
+      - `K .independentObstructionTranslates`: Nodes `[51]`--`[52]`, `lem:translates-independent`: a dominant rooted radius-`r` type with an internal root wedge admits a maximal `2r`-separated family of translates. Its radius-`r` balls are disjoint, the radius-`2r` balls cover the dominant centres, and full obstruction rank gives the exact finite inequality whose asymptotic form is `r_Ω(R) ≥ c_r|R| - o(|R|)`.
+      - `K .localTypeCoordinateRepetitive`: `prop:two-budget` (b): on the low-entropy residual, the radius-two rooted-type coordinate lies below the exact finite relabelling threshold.
+      - `K .remainderEntropyLow`: Node `[50]`, no arm: `η(R) < (1/d)·log₂ n`, the low-entropy branch `prop:two-budget` (b) and (c) share.
+  - **Family `ColdBranchClosedWindowArm`**: the window/test arm ([158], [160], [146], [153]).
+    - **W1 `ColdBranchClosedWindowRealizedThetaAtOrAbove`** (4 facts; return `coldBranchClosedWindowRealizedThetaAtOrAboveReturn`): [158] window package realized, [146] theta at or above 1/78 (with [153] bounded cold mass and its density cap).
+      - `K .coldMassBounded`: Node `[153]`, complementary arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
+      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
+      - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in the object's own dyadic scale.
+      - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
+    - **W2 `ColdBranchClosedWindowRealizedThetaBelow`** (2 facts; return `coldBranchClosedWindowRealizedThetaBelowReturn`): [158] window package realized, [146] theta below 1/78.
+      - `K .coldRoute8Below`: Node `[146]`, yes: the canonical packing lies below the route-8 private-carrier threshold.
+      - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
+    - **W3 `ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaAtOrAbove`** (5 facts; return `coldBranchClosedWindowUnrealizedTauAtOrAboveThetaAtOrAboveReturn`): [158] window package unrealized, [160] tau at or above 1/4, [146] theta at or above 1/78 (with [153] bounded cold mass and its density cap).
+      - `K .coldMassBounded`: Node `[153]`, complementary arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
+      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
+      - `K .denseDeficiencyAtOrAbove`: Its exact complement: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
+      - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in the object's own dyadic scale.
+      - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
+    - **W4 `ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaBelow`** (3 facts; return `coldBranchClosedWindowUnrealizedTauAtOrAboveThetaBelowReturn`): [158] window package unrealized, [160] tau at or above 1/4, [146] theta below 1/78.
+      - `K .coldRoute8Below`: Node `[146]`, yes: the canonical packing lies below the route-8 private-carrier threshold.
+      - `K .denseDeficiencyAtOrAbove`: Its exact complement: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
+      - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
+    - **W5 `ColdBranchClosedWindowUnrealizedTauBelow`** (2 facts; return `coldBranchClosedWindowUnrealizedTauBelowReturn`): [158] window package unrealized, [160] tau below 1/4.
+      - `K .denseDeficiencyBelow`: On the `[21]` unrealized residual: `prop:negative-net-charge`'s exact large-budget net-deficiency comparison holds at the fixed maximal packing — the manuscript's `τ(θ) < 1/4` deficiency reading with the exact `√n` allowance, i.e. the inequality node `[56]` supplies to `[57]`--`[62]`.
+      - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
+  - **Family `ColdBranchClosedExitArm`**: the absorbed-germ exit ([175], [154], [163], [177]).
+    - **X1 `ColdBranchClosedExitNoGermCharged`** (4 facts; return `coldBranchClosedExitNoGermChargedReturn`): `Absorbed/Residual.lean` exit 1: [175] no positive germ, [175] read at [177] Type B absorbed half-edge, [177] counted core absent (F4 charge).
+      - `K .absorbedF4Charge`: Node `[177]`, no arm: the half-edge is charged by the exact (F4) count to node `[219]`'s corridor loss (user-approved (F4) repair extension).
+      - `K .absorbedHandoffCoreAbsent`: Node `[177]`, no: no counted remainder core at that heavy centre.
+      - `K .coldNoPositiveGerm`: Node `[175]`, no arm: every selected corridor meets a high-degree vertex.
+      - `K .typeBAbsorbedHalfEdge`: Node `[175]`, yes, read at `[177]`: some selected corridor meets a high-degree vertex --- `G`'s canonical absorbed half-edge exists.
+    - **X2 `ColdBranchClosedExitNoGermSubcubic`** (3 facts; return `coldBranchClosedExitNoGermSubcubicReturn`): `Absorbed/Residual.lean` exit 2: [175] no positive germ, [175] read at [177] no Type B absorbed half-edge (subcubic).
+      - `K .coldNoPositiveGerm`: Node `[175]`, no arm: every selected corridor meets a high-degree vertex.
+      - `K .coldSelectedFamilyEmpty`: Node `[176]` on the arm with no positive germ and no absorbed half-edge: G's selected cold branch-excess family is empty and G has no ambient-cubic cold window.
+      - `K .typeBAbsorbedHalfEdgeAbsent`: Node `[175]`, no: every selected corridor is subcubic (no absorbed half-edge).
+    - **X3 `ColdBranchClosedExitGermDistinguished`** (4 facts; return `coldBranchClosedExitGermDistinguishedReturn`): `Absorbed/Residual.lean` exit 3: [175] positive germ, [154] G1 none realizing, [154] G2 some distinguishing.
+      - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
+      - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
+      - `K .coldGermSomeDistinguishing`: Node `[154]`, second binary test on the no-G1 arm (G2): some configuration of the extracted active family is hit-distinguished.
+      - `K .coldPositiveGerm`: 
+    - **X4 `ColdBranchClosedExitGermCanonicalCharged`** (11 facts; return `coldBranchClosedExitGermCanonicalChargedReturn`): `Absorbed/Residual.lean` exit 4: [175] positive germ, [154] none realizing and none distinguishing, [163] canonical neutral configuration, [175] read at [177] Type B absorbed half-edge, [177] counted core absent (F4 charge).
+      - `K .absorbedF4Charge`: Node `[177]`, no arm: the half-edge is charged by the exact (F4) count to node `[219]`'s corridor loss (user-approved (F4) repair extension).
+      - `K .absorbedHandoffCoreAbsent`: Node `[177]`, no: no counted remainder core at that heavy centre.
+      - `K .coldAbsorbedNeutralConfiguration`: Node `[176]` on the absorbed-configuration residual (`lem:absorbed-germ-fan-data` (i)): on the G2-silent arm, the neutral equal-length configuration of G's silent extracted family, an (F5) configuration (terminal or repeated-state); the dense-residual terminality of node `[162]` is not assumed.
+      - `K .coldCanonicalNeutralConfiguration`: Node `[163]`, no-arm: no neutral zero-increment germ of the incoming extracted family has a graph-realized second strand; its `E` is therefore the canonical-replacement case of `[165]`--`[166]`.
+      - `K .coldCanonicalReplacementSwap`: Node `[165]`: for every neutral configuration, replacing `Q` by a distinct canonical representative `E` gives a baseline, target-avoiding graph with the same vertex and edge counts, while `E` strictly precedes `Q` in the fixed canonical piece order.
+      - `K .coldCanonicalReplacementTrivial`: Node `[166]`: refined minimality forces every neutral configuration's canonical replacement to be the corridor piece itself, `E = Q`.
+      - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
+      - `K .coldGermNoneDistinguishing`: Node `[154]`, the exact complement of `coldGermSomeDistinguishing`: every active configuration is silent (G3 or the equal-length table).
+      - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
+      - `K .coldPositiveGerm`: 
+      - `K .typeBAbsorbedHalfEdge`: Node `[175]`, yes, read at `[177]`: some selected corridor meets a high-degree vertex --- `G`'s canonical absorbed half-edge exists.
+    - **X5 `ColdBranchClosedExitGermCanonicalSubcubic`** (9 facts; return `coldBranchClosedExitGermCanonicalSubcubicReturn`): `Absorbed/Residual.lean` exit 5: [175] positive germ, [154] none realizing and none distinguishing, [163] canonical neutral configuration, [175] read at [177] no Type B absorbed half-edge (subcubic).
+      - `K .coldAbsorbedNeutralConfiguration`: Node `[176]` on the absorbed-configuration residual (`lem:absorbed-germ-fan-data` (i)): on the G2-silent arm, the neutral equal-length configuration of G's silent extracted family, an (F5) configuration (terminal or repeated-state); the dense-residual terminality of node `[162]` is not assumed.
+      - `K .coldCanonicalNeutralConfiguration`: Node `[163]`, no-arm: no neutral zero-increment germ of the incoming extracted family has a graph-realized second strand; its `E` is therefore the canonical-replacement case of `[165]`--`[166]`.
+      - `K .coldCanonicalReplacementSwap`: Node `[165]`: for every neutral configuration, replacing `Q` by a distinct canonical representative `E` gives a baseline, target-avoiding graph with the same vertex and edge counts, while `E` strictly precedes `Q` in the fixed canonical piece order.
+      - `K .coldCanonicalReplacementTrivial`: Node `[166]`: refined minimality forces every neutral configuration's canonical replacement to be the corridor piece itself, `E = Q`.
+      - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
+      - `K .coldGermNoneDistinguishing`: Node `[154]`, the exact complement of `coldGermSomeDistinguishing`: every active configuration is silent (G3 or the equal-length table).
+      - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
+      - `K .coldPositiveGerm`: 
+      - `K .typeBAbsorbedHalfEdgeAbsent`: Node `[175]`, no: every selected corridor is subcubic (no absorbed half-edge).
+- **Linear-cold-mass singletons** (one path each, each `ColdBranchClosedOutcome ∧` its extra facts, with `.toGeneric`):
+  - **`ColdBranchClosedOutcome_linearDenseAtOrAbove`** (66 facts: 57 generic + 9; return `coldBranchClosed_linearDenseAtOrAboveReturn`): [153] linear cold mass through `nearCubicDenseLinear` after `nearCubicDensePassAtOrAbove`: [158] unrealized, [160] tau at or above 1/4, [146] theta at or above, [162] heavy entry, [154] none realizing / some distinguishing.
+    - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
+    - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
+    - `K .coldGermSomeDistinguishing`: Node `[154]`, second binary test on the no-G1 arm (G2): some configuration of the extracted active family is hit-distinguished.
+    - `K .coldHeavyEntryTerminal`: Node `[162]`, test arm: a retained corridor of G first failing at a heavy centre before its terminal segment is still terminal.
+    - `K .coldMassLinear`: Node `[153]`, exact form of "for all sufficiently large `n`": the cold mass exceeds the two branch-excess slacks, so the extracted germ family is positive (`lem:cold-germ-extraction`).
+    - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
+    - `K .denseColdCorridorsTerminal`: Node `[162]`: every return corridor of the dense hot/cold pass is the terminal (F5) subcase because its selected shortest path lies in the induced-window-free normalized remainder.
+    - `K .denseDeficiencyAtOrAbove`: Its exact complement: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
+    - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
+  - **`ColdBranchClosedOutcome_linearDenseRateFailed`** (67 facts: 57 generic + 10; return `coldBranchClosed_linearDenseRateFailedReturn`): [153] linear cold mass through `nearCubicDenseLinear` after `nearCubicDensePassRateFailed`: [158] unrealized, [160] tau below 1/4 and route-8 rate failing, [146] theta at or above, [162] heavy entry, [154] none realizing / some distinguishing.
+    - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
+    - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
+    - `K .coldGermSomeDistinguishing`: Node `[154]`, second binary test on the no-G1 arm (G2): some configuration of the extracted active family is hit-distinguished.
+    - `K .coldHeavyEntryTerminal`: Node `[162]`, test arm: a retained corridor of G first failing at a heavy centre before its terminal segment is still terminal.
+    - `K .coldMassLinear`: Node `[153]`, exact form of "for all sufficiently large `n`": the cold mass exceeds the two branch-excess slacks, so the extracted germ family is positive (`lem:cold-germ-extraction`).
+    - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
+    - `K .denseColdCorridorsTerminal`: Node `[162]`: every return corridor of the dense hot/cold pass is the terminal (F5) subcase because its selected shortest path lies in the induced-window-free normalized remainder.
+    - `K .denseDeficiencyBelow`: On the `[21]` unrealized residual: `prop:negative-net-charge`'s exact large-budget net-deficiency comparison holds at the fixed maximal packing — the manuscript's `τ(θ) < 1/4` deficiency reading with the exact `√n` allowance, i.e. the inequality node `[56]` supplies to `[57]`--`[62]`.
+    - `K .route8RateFails`: The complement of the rate reading on an arm whose density fact does not decide it (`3/13 ≤ τ`): the manuscript's delicate density interval (row 2 of the cold-branch ledger), carried as its own branch.
+    - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
+  - **`ColdBranchClosedOutcome_linearRealizedDistinguished`** (63 facts: 57 generic + 6; return `coldBranchClosed_linearRealizedDistinguishedReturn`): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / some distinguishing.
+    - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
+    - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
+    - `K .coldGermSomeDistinguishing`: Node `[154]`, second binary test on the no-G1 arm (G2): some configuration of the extracted active family is hit-distinguished.
+    - `K .coldMassLinear`: Node `[153]`, exact form of "for all sufficiently large `n`": the cold mass exceeds the two branch-excess slacks, so the extracted germ family is positive (`lem:cold-germ-extraction`).
+    - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
+    - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
+  - **`ColdBranchClosedOutcome_linearRealizedSilent`** (63 facts: 57 generic + 6; return `coldBranchClosed_linearRealizedSilentReturn`): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing.
+    - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
+    - `K .coldGermNoneDistinguishing`: Node `[154]`, the exact complement of `coldGermSomeDistinguishing`: every active configuration is silent (G3 or the equal-length table).
+    - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
+    - `K .coldMassLinear`: Node `[153]`, exact form of "for all sufficiently large `n`": the cold mass exceeds the two branch-excess slacks, so the extracted germ family is positive (`lem:cold-germ-extraction`).
+    - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
+    - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
 
 <a id="residual-153"></a>
 
