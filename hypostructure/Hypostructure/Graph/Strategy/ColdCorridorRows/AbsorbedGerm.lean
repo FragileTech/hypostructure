@@ -76,16 +76,15 @@ noncomputable def absorbedGermDichotomy
       .inr ⟨positive⟩)
     positiveFresh emptyFresh
 
-/-- Node `[177]` on `[175]`'s positive arm.  The node-`[153]` package already
-contains the exact candidate/loss identity and the `B_cold·σ(G)` loss bound;
-the per-incidence split supplies the least-high witness on its complement.
-This owner combines those two previously proved facts in the ledger.  It is
-run before the decorated-envelope owner, so a mixed family publishes its
-complete case-(ii) accounting without re-proving node `[153]`. -/
+/-- Node `[177]`: the per-incidence split of `[175]` supplies the least-high
+witness on the complement of node `[153]`'s routed candidate set.  The
+candidate/loss accounting stays node `[153]`'s own ledger fact
+(`K .coldGermCandidates`, at its canonical extraction); it is not copied here.
+It is run before the decorated-envelope owner. -/
 @[reducible] noncomputable def absorbedGermFanDataRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.absorbedGermFanData
-    { Requires := [K .absorbedGermSplit, K .coldGermCandidates]
+    { Requires := [K .absorbedGermSplit]
       Produces := [K .absorbedGermFanData]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -93,8 +92,7 @@ complete case-(ii) accounting without re-proving node `[153]`. -/
     (fun inputs =>
       .cons (key := K .absorbedGermFanData)
         ⟨Contracts.Spine.absorbedGermFanData_of_split data.toParameters
-          inputs.current.object (inputs.get (K .absorbedGermSplit)).down
-          (inputs.get (K .coldGermCandidates)).down⟩
+          inputs.current.object (inputs.get (K .absorbedGermSplit)).down⟩
         .nil)
 
 /-- Node `[176]`: the positive class chosen at `[175]` is the exact candidate

@@ -2,6 +2,7 @@ import Hypostructure.Core.Strategy.FactOnlyStrategy
 import Hypostructure.Core.Strategy.MinimalCounterexampleScope
 import Hypostructure.Graph.Statements.Parameters
 import Hypostructure.Graph.Statements.Spine
+import Hypostructure.Graph.Statements.BranchD
 import Hypostructure.Graph.Statements.TypeA
 import Hypostructure.Graph.Statements.TypeB
 import Hypostructure.Graph.Statements.RouteEightPinned
@@ -9,6 +10,8 @@ import Hypostructure.Graph.Statements.SurplusPair
 import Hypostructure.Graph.Statements.TypeBLanes
 import Hypostructure.Graph.Statements.SurplusPairRouting
 import Hypostructure.Graph.Statements.SurplusPairCode
+import Hypostructure.Graph.Statements.ColdGerm
+import Hypostructure.Graph.Statements.SpineDominantType
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -360,13 +363,6 @@ inductive Key where
   `β(G) = m - n + 1` satisfies `2β(G) ≥ n + 2`.  This is the manuscript's
   division-free form of `β(G) ≥ n/2 + 1`. -/
   | cycleRankConstraint
-  /-- Node `[11]`, `lem:degree-profile-fibres`: every target-complete
-  identification of two boundaried pieces stays inside one boundary-degree
-  fibre. -/
-  | degreeProfileFibres
-  /-- Node `[12]`, `lem:context-universality`: every target-complete
-  identification has the same target response in every outside context. -/
-  | targetCompleteContextUniversality
   /-- Node `[13]`, `lem:replacement`: no proper atom admits a strictly smaller
   boundary-signature-preserving replacement with one-way obstruction
   inclusion. -/
@@ -421,13 +417,6 @@ inductive Key where
   maximal packing: the declared raw curvature coordinates are exact, so their
   labelled family has exactly `W₂(R)` entries. -/
   | exactResponseProfile
-  /-- Node `[31]`, `def:admissible-rank-quotient` at the definition's own
-  generality — every declared coordinate family on every connected support that
-  carries it: a rank-reducing admissible rank quotient is represented by a
-  strictly smaller proper representative or by a strictly smaller admissible
-  closed representative.  The raw curvature family at the remainder of a maximal
-  packing, which node `[31]` reads, is one instance of it. -/
-  | admissibleRankQuotient
   /-- Node `[31]`, `def:curvature-target-rank` at the remainder of every
   maximal packing: `r_Ω(R)` is attained by a surviving subfamily of raw
   curvature tests and bounds every surviving subfamily. -/
@@ -448,17 +437,12 @@ inductive Key where
   target-dependence, and `lem:curvature-dependence-routing` opens its proof by
   choosing a certificate for that dependence: an admissible rank quotient on a
   connected determination support, rank-reducing on the raw curvature tests.
-  That certificate is the object nodes `[36]`, `[38]` and `[40]` route. -/
+  That certificate, `branchCertificate? data G` (at the canonical packing and
+  node `[19]`'s test), is the one object nodes `[36]`--`[45]` route. -/
   | branchDependence
-  /-- Node `[35]`, `lem:separated-testers`: corresponding internal wedges in
-  vertex-disjoint isomorphic rooted balls can be tested only by the outside
-  side of their boundaried decomposition; any quotient identifying the two
-  wedge labels is context-universal or has a concrete target-defect witness. -/
-  | separatedTesters
-  /-- Node `[36]`, yes arm: the determination the certificate makes is valid
-  against every outside context, and the states it identifies lie in one
-  boundary-degree fibre (`lem:context-universality`,
-  `lem:degree-profile-fibres`).  This is the residual node `[38]` consumes. -/
+  /-- Node `[36]`, yes arm: the determination the certificate of `G` makes is
+  valid against every outside context (`lem:context-universality`).  This is
+  the residual node `[38]` consumes. -/
   | contextUniversal
   /-- Node `[36]`, no arm — the terminal `[37]`: some pair of states the
   certificate identifies is separated by a concrete outside context.  This is
@@ -484,13 +468,13 @@ inductive Key where
   delocalizes globally and the quotient is a closed exact-profile quotient. -/
   | globalDelocalization
   /-- Node `[44]`: `lem:smearing-support-repair`'s identity
-  `s = p − 2 + 2β − σ` for a delayed compensation component of the
-  delocalization support, at every `1`--`3` repair network up to surplus. -/
+  `s = p − 2 + 2β − σ` at every delayed compensation component of the support
+  of the certificate of `G`. -/
   | repairIdentity
   /-- Node `[45]`: the global profile barrier `lem:no-silent-global-smearing`
   raises against a whole-graph dependence — the closed clause of
-  `def:admissible-rank-quotient` yields either a proper-support replacement or
-  a strictly smaller admissible closed representative. -/
+  `def:admissible-rank-quotient` yields a strictly smaller admissible closed
+  representative of the certificate's whole-graph quotient. -/
   | globalBarrier
   | coldCorridorState
   | coldSameInterfaceTable
@@ -864,13 +848,10 @@ inductive Key where
   and receiver still identified after exit `(7)` also fails. -/
   | typeASilentExitSevenFree
   | coldFailureCycle
-  | coldFailureDefect
-  /-- The concrete sparse-exit half of (F2), cached separately so the
-  surviving-residual classifier does not reopen the context-equivalence
-  contract stored under `coldFailureDefect`. -/
+  /-- `lem:cold-corridor-first-failure` (ii): an (F2) pair of prefixes of one
+  of G's corridors is a target-defective quotient. -/
   | coldFailureDefectRoute
   | coldFailureCompression
-  | coldFailureHandoff
   | coldFailureRouting
   | coldFirstFailureOccurrence
   | coldExchangeBound
@@ -917,10 +898,6 @@ inductive Key where
   labelled skeletons of the current object's class — the residual on which the
   manuscript's `[21]` sentence fails, carried as a branch of its own. -/
   | windowPackageUnrealized
-  /-- Node `[159]`: the no-arm of `[158]`, after comparison with the labelled
-  skeleton class: the canonical window-package demand strictly exceeds the
-  exact skeleton budget. -/
-  | densePackingOverflow
   /-- On the `[21]` unrealized residual: `prop:negative-net-charge`'s exact
   large-budget net-deficiency comparison holds at the fixed maximal packing —
   the manuscript's `τ(θ) < 1/4` deficiency reading with the exact `√n`
@@ -1027,7 +1004,6 @@ inductive Key where
   | coldSelectedBranchExcess
   | coldAmbientCubicStubExcess
   | coldHandoffTransfer
-  | coldGermExtraction
   | coldPositiveGerm
   | coldGermRouted
   | coldBranchClosed
@@ -1643,10 +1619,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SlackIndependentStatement data.toParameters object
   | .cycleRankConstraint, object =>
       CycleRankConstraintStatement object
-  | .degreeProfileFibres, object =>
-      DegreeProfileFibresStatement data.toParameters object
-  | .targetCompleteContextUniversality, object =>
-      TargetCompleteContextUniversalityStatement data.toParameters object
   | .replacementExclusion, object =>
       ReplacementExclusionStatement data.toParameters object
   | .uncompressible, object =>
@@ -1686,8 +1658,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       WedgeSupplyStatement data.toParameters object
   | .exactResponseProfile, object =>
       ExactResponseProfileStatement data.toParameters object
-  | .admissibleRankQuotient, object =>
-      AdmissibleRankQuotientStatement data.toParameters object
   | .curvatureTargetRank, object =>
       CurvatureTargetRankStatement data.toParameters object
   | .targetRankCircuit, object =>
@@ -1698,8 +1668,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       CurvatureFullRankStatement data.toParameters object
   | .branchDependence, object =>
       BranchDependenceStatement data.toParameters object
-  | .separatedTesters, object =>
-      SeparatedTestersStatement data.toParameters object
   | .contextUniversal, object =>
       ContextUniversalStatement data.toParameters object
   | .contextDefect, object =>
@@ -1713,7 +1681,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .globalDelocalization, object =>
       GlobalDelocalizationStatement data.toParameters object
   | .repairIdentity, object =>
-      RepairIdentityStatement object
+      RepairIdentityStatement data.toParameters object
   | .globalBarrier, object =>
       GlobalBarrierStatement data.toParameters object
   | .coldCorridorState, object =>
@@ -1738,14 +1706,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- an accepted one would be an accepted cycle of the selected object.
       -- Node `[1]` says there is none, so (F1) never occurs.
       ColdFailureCycleStatement data.toParameters object
-  | .coldFailureDefect, object =>
-      -- `lem:cold-corridor-first-failure` (ii), through
-      -- `lem:context-universality`.  The first clause retains the manuscript's
-      -- concrete result: the two actual prefix pieces and their distinguishing
-      -- context form sparse exit (b), including its rank-reducing attempted
-      -- quotient.  The second clause is the complementary all-context equality
-      -- used by the local replacement after (F2) is excluded.
-      ColdFailureDefectStatement data.toParameters object
   | .coldFailureDefectRoute, object =>
       ColdFailureDefectRoutesStatement data.toParameters object
   | .coldFailureCompression, object =>
@@ -1755,8 +1715,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- equal response against every outside context -- and node `[14]`'s
       -- `cor:uncompressible` forbids it.  So (F3) never occurs.
       ColdFailureCompressionStatement data.toParameters object
-  | .coldFailureHandoff, object =>
-      ColdFailureHandoffStatement object
   | .coldFailureRouting, object =>
       ColdFailureRoutingStatement data.toParameters object
   | .coldFirstFailureOccurrence, object =>
@@ -1787,8 +1745,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       WindowPackageRealizedStatement data.toParameters object
   | .windowPackageUnrealized, object =>
       WindowPackageUnrealizedStatement data.toParameters object
-  | .densePackingOverflow, object =>
-      DensePackingOverflowStatement data.toParameters object
   | .denseDeficiencyBelow, object =>
       DenseDeficiencyBelowStatement data.toParameters object
   | .denseDeficiencyAtOrAbove, object =>
@@ -1855,8 +1811,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- first high-degree head is transferred to the already named high-degree
       -- ledger before the disjoint extraction is run.
       ColdFirstHighHandoffStatement data.toParameters object
-  | .coldGermExtraction, object =>
-      ColdGermExtractionStatement data.toParameters object
   | .coldPositiveGerm, object =>
       ColdPositiveGermStatement data.toParameters object
   | .coldGermRouted, object =>
@@ -2398,8 +2352,6 @@ def label : Key → String
   | .tightEndpoint => "tightEndpoint"
   | .slackIndependent => "slackIndependent"
   | .cycleRankConstraint => "cycleRankConstraint"
-  | .degreeProfileFibres => "degreeProfileFibres"
-  | .targetCompleteContextUniversality => "targetCompleteContextUniversality"
   | .replacementExclusion => "replacementExclusion"
   | .uncompressible => "uncompressible"
   | .windowFree => "windowFree"
@@ -2416,13 +2368,11 @@ def label : Key → String
   | .stubSupply => "stubSupply"
   | .wedgeSupply => "wedgeSupply"
   | .exactResponseProfile => "exactResponseProfile"
-  | .admissibleRankQuotient => "admissibleRankQuotient"
   | .curvatureTargetRank => "curvatureTargetRank"
   | .targetRankCircuit => "targetRankCircuit"
   | .curvatureRankDrop => "curvatureRankDrop"
   | .curvatureFullRank => "curvatureFullRank"
   | .branchDependence => "branchDependence"
-  | .separatedTesters => "separatedTesters"
   | .contextUniversal => "contextUniversal"
   | .contextDefect => "contextDefect"
   | .atomCompression => "atomCompression"
@@ -2510,10 +2460,8 @@ def label : Key → String
   | .typeAExitSevenFree => "typeAExitSevenFree"
   | .typeASilentExitSevenFree => "typeASilentExitSevenFree"
   | .coldFailureCycle => "coldFailureCycle"
-  | .coldFailureDefect => "coldFailureDefect"
   | .coldFailureDefectRoute => "coldFailureDefectRoute"
   | .coldFailureCompression => "coldFailureCompression"
-  | .coldFailureHandoff => "coldFailureHandoff"
   | .coldFailureRouting => "coldFailureRouting"
   | .coldFirstFailureOccurrence => "coldFirstFailureOccurrence"
   | .coldExchangeBound => "coldExchangeBound"
@@ -2530,7 +2478,6 @@ def label : Key → String
   | .coldReturnCorridors => "coldReturnCorridors"
   | .windowPackageRealized => "windowPackageRealized"
   | .windowPackageUnrealized => "windowPackageUnrealized"
-  | .densePackingOverflow => "densePackingOverflow"
   | .denseDeficiencyBelow => "denseDeficiencyBelow"
   | .denseDeficiencyAtOrAbove => "denseDeficiencyAtOrAbove"
   | .denseColdCorridorsTerminal => "denseColdCorridorsTerminal"
@@ -2558,7 +2505,6 @@ def label : Key → String
   | .coldSelectedBranchExcess => "coldSelectedBranchExcess"
   | .coldAmbientCubicStubExcess => "coldAmbientCubicStubExcess"
   | .coldHandoffTransfer => "coldHandoffTransfer"
-  | .coldGermExtraction => "coldGermExtraction"
   | .coldPositiveGerm => "coldPositiveGerm"
   | .coldGermRouted => "coldGermRouted"
   | .coldBranchClosed => "coldBranchClosed"
@@ -2733,9 +2679,6 @@ example : label .noProperBaseline = "noProperBaseline" := rfl
 example : label .tightEndpoint = "tightEndpoint" := rfl
 example : label .slackIndependent = "slackIndependent" := rfl
 example : label .cycleRankConstraint = "cycleRankConstraint" := rfl
-example : label .degreeProfileFibres = "degreeProfileFibres" := rfl
-example : label .targetCompleteContextUniversality =
-    "targetCompleteContextUniversality" := rfl
 example : label .replacementExclusion = "replacementExclusion" := rfl
 example : label .uncompressible = "uncompressible" := rfl
 example : label .mersenneReturn = "mersenneReturn" := rfl
@@ -2758,7 +2701,6 @@ example : label .targetRankCircuit = "targetRankCircuit" := rfl
 example : label .curvatureRankDrop = "curvatureRankDrop" := rfl
 example : label .curvatureFullRank = "curvatureFullRank" := rfl
 example : label .branchDependence = "branchDependence" := rfl
-example : label .separatedTesters = "separatedTesters" := rfl
 example : label .contextUniversal = "contextUniversal" := rfl
 example : label .contextDefect = "contextDefect" := rfl
 example : label .atomCompression = "atomCompression" := rfl
@@ -2858,10 +2800,8 @@ example : label .typeASilentExitSevenFree = "typeASilentExitSevenFree" := rfl
 example : label .typeAExitSevenHandoff = "typeAExitSevenHandoff" := rfl
 example : label .typeAExitSevenFree = "typeAExitSevenFree" := rfl
 example : label .coldFailureCycle = "coldFailureCycle" := rfl
-example : label .coldFailureDefect = "coldFailureDefect" := rfl
 example : label .coldFailureDefectRoute = "coldFailureDefectRoute" := rfl
 example : label .coldFailureCompression = "coldFailureCompression" := rfl
-example : label .coldFailureHandoff = "coldFailureHandoff" := rfl
 example : label .coldFailureRouting = "coldFailureRouting" := rfl
 example : label .coldFirstFailureOccurrence = "coldFirstFailureOccurrence" := rfl
 example : label .coldExchangeBound = "coldExchangeBound" := rfl
@@ -2874,7 +2814,6 @@ example : label .coldNeutralEqualLengthTerminal =
     "coldNeutralEqualLengthTerminal" := rfl
 example : label .windowPackageRealized = "windowPackageRealized" := rfl
 example : label .windowPackageUnrealized = "windowPackageUnrealized" := rfl
-example : label .densePackingOverflow = "densePackingOverflow" := rfl
 example : label .denseDeficiencyBelow = "denseDeficiencyBelow" := rfl
 example : label .denseDeficiencyAtOrAbove = "denseDeficiencyAtOrAbove" := rfl
 example : label .coldWindowStubStructure = "coldWindowStubStructure" := rfl
@@ -2894,7 +2833,6 @@ example : label .blockedCompressionBound = "blockedCompressionBound" := rfl
 example : label .blockedCompressionCap = "blockedCompressionCap" := rfl
 example : label .blockedBarrierOverlap = "blockedBarrierOverlap" := rfl
 example : label .coldHandoffTransfer = "coldHandoffTransfer" := rfl
-example : label .coldGermExtraction = "coldGermExtraction" := rfl
 example : label .coldPositiveGerm = "coldPositiveGerm" := rfl
 example : label .coldGermRouted = "coldGermRouted" := rfl
 example : label .coldBranchClosed = "coldBranchClosed" := rfl
@@ -3034,7 +2972,6 @@ example : label .exactCubicBaselineBudget = "exactCubicBaselineBudget" := rfl
 example : label .incrementalSkeletonRoom = "incrementalSkeletonRoom" := rfl
 example : label .skeletonDominates = "skeletonDominates" := rfl
 example : label .exactResponseProfile = "exactResponseProfile" := rfl
-example : label .admissibleRankQuotient = "admissibleRankQuotient" := rfl
 example : label .barrierEnumeration = "barrierEnumeration" := rfl
 -- F4 keys
 example : label .freePairCountFails = "freePairCountFails" := rfl
@@ -3094,8 +3031,6 @@ def idx : Key → Nat
   | .tightEndpoint => 3
   | .slackIndependent => 4
   | .cycleRankConstraint => 425
-  | .degreeProfileFibres => 322
-  | .targetCompleteContextUniversality => 323
   | .replacementExclusion => 223
   | .coldMassLinear => 224
   | .coldMassBounded => 225
@@ -3103,7 +3038,6 @@ def idx : Key → Nat
   | .coldReturnCorridors => 227
   | .windowPackageRealized => 228
   | .windowPackageUnrealized => 229
-  | .densePackingOverflow => 337
   | .denseDeficiencyBelow => 230
   | .denseDeficiencyAtOrAbove => 231
   | .denseColdCorridorsTerminal => 403
@@ -3141,7 +3075,6 @@ def idx : Key → Nat
   | .curvatureRankDrop => 19
   | .curvatureFullRank => 20
   | .branchDependence => 21
-  | .separatedTesters => 324
   | .contextUniversal => 22
   | .contextDefect => 23
   | .atomCompression => 24
@@ -3229,10 +3162,8 @@ def idx : Key → Nat
   | .typeBDecoratedAssignedSupport => 220
   | .typeAExitSevenFree => 125
   | .coldFailureCycle => 64
-  | .coldFailureDefect => 65
   | .coldFailureDefectRoute => 422
   | .coldFailureCompression => 66
-  | .coldFailureHandoff => 67
   | .coldFailureRouting => 68
   | .coldFirstFailureOccurrence => 404
   | .coldExchangeBound => 177
@@ -3249,7 +3180,6 @@ def idx : Key → Nat
   | .coldAmbientCubicStubExcess => 180
   | .coldPositiveGerm => 182
   | .coldHandoffTransfer => 69
-  | .coldGermExtraction => 70
   | .coldGermRouted => 71
   | .coldBranchClosed => 176
   | .coldGermSomeRealizing => 602
@@ -3373,7 +3303,6 @@ def idx : Key → Nat
   | .incrementalSkeletonRoom => 205
   | .skeletonDominates => 206
   | .exactResponseProfile => 207
-  | .admissibleRankQuotient => 208
   | .targetRankCircuit => 210
   | .remainderRelabelingEntropy => 501
   | .relabelingDensityCap => 502
@@ -3424,8 +3353,6 @@ def ofIdx : Nat → Key
   | 3 => .tightEndpoint
   | 4 => .slackIndependent
   | 425 => .cycleRankConstraint
-  | 322 => .degreeProfileFibres
-  | 323 => .targetCompleteContextUniversality
   | 223 => .replacementExclusion
   | 224 => .coldMassLinear
   | 225 => .coldMassBounded
@@ -3433,7 +3360,6 @@ def ofIdx : Nat → Key
   | 227 => .coldReturnCorridors
   | 228 => .windowPackageRealized
   | 229 => .windowPackageUnrealized
-  | 337 => .densePackingOverflow
   | 230 => .denseDeficiencyBelow
   | 231 => .denseDeficiencyAtOrAbove
   | 403 => .denseColdCorridorsTerminal
@@ -3473,7 +3399,6 @@ def ofIdx : Nat → Key
   | 19 => .curvatureRankDrop
   | 20 => .curvatureFullRank
   | 21 => .branchDependence
-  | 324 => .separatedTesters
   | 22 => .contextUniversal
   | 23 => .contextDefect
   | 24 => .atomCompression
@@ -3555,10 +3480,8 @@ def ofIdx : Nat → Key
   | 62 => .typeAExitThreeCollision
   | 63 => .typeAExitThreeFree
   | 64 => .coldFailureCycle
-  | 65 => .coldFailureDefect
   | 422 => .coldFailureDefectRoute
   | 66 => .coldFailureCompression
-  | 67 => .coldFailureHandoff
   | 68 => .coldFailureRouting
   | 404 => .coldFirstFailureOccurrence
   | 177 => .coldExchangeBound
@@ -3575,7 +3498,6 @@ def ofIdx : Nat → Key
   | 180 => .coldAmbientCubicStubExcess
   | 182 => .coldPositiveGerm
   | 69 => .coldHandoffTransfer
-  | 70 => .coldGermExtraction
   | 71 => .coldGermRouted
   | 176 => .coldBranchClosed
   | 602 => .coldGermSomeRealizing
@@ -3704,7 +3626,6 @@ def ofIdx : Nat → Key
   | 205 => .incrementalSkeletonRoom
   | 206 => .skeletonDominates
   | 207 => .exactResponseProfile
-  | 208 => .admissibleRankQuotient
   | 210 => .targetRankCircuit
   | 211 => .barrierEnumeration
   -- F4 keys
@@ -3781,11 +3702,6 @@ def name : Key → Lean.Name
   | .cycleRankConstraint =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "cycleRankConstraint") 425
-  | .degreeProfileFibres =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "degreeProfileFibres") 322
-  | .targetCompleteContextUniversality =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "targetCompleteContextUniversality") 323
   | .replacementExclusion =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "replacementExclusion") 223
   | .coldMassLinear =>
@@ -3800,8 +3716,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "windowPackageRealized") 228
   | .windowPackageUnrealized =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "windowPackageUnrealized") 229
-  | .densePackingOverflow =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "densePackingOverflow") 337
   | .denseDeficiencyBelow =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "denseDeficiencyBelow") 230
   | .denseDeficiencyAtOrAbove =>
@@ -3883,8 +3797,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "curvatureFullRank") 20
   | .branchDependence =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "branchDependence") 21
-  | .separatedTesters =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "separatedTesters") 324
   | .contextUniversal =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "contextUniversal") 22
   | .contextDefect =>
@@ -4097,16 +4009,12 @@ def name : Key → Lean.Name
         "typeASilentExitSevenFree") 511
   | .coldFailureCycle =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldFailureCycle") 64
-  | .coldFailureDefect =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "coldFailureDefect") 65
   | .coldFailureDefectRoute =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "coldFailureDefectRoute") 422
   | .coldFailureCompression =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "coldFailureCompression") 66
-  | .coldFailureHandoff =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "coldFailureHandoff") 67
   | .coldFailureRouting =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldFailureRouting") 68
   | .coldFirstFailureOccurrence =>
@@ -4143,8 +4051,6 @@ def name : Key → Lean.Name
         "coldAmbientCubicStubExcess") 180
   | .coldHandoffTransfer =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldHandoffTransfer") 69
-  | .coldGermExtraction =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermExtraction") 70
   | .coldPositiveGerm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldPositiveGerm") 182
   | .coldGermRouted =>
@@ -4454,9 +4360,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "skeletonDominates") 206
   | .exactResponseProfile =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "exactResponseProfile") 207
-  | .admissibleRankQuotient =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "admissibleRankQuotient") 208
   | .targetRankCircuit =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "targetRankCircuit") 210
   | .remainderRelabelingEntropy =>

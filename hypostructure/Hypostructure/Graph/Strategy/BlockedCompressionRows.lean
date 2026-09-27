@@ -62,29 +62,6 @@ noncomputable def scaleAdditivityDichotomy
         data.windowBarrier_sum_semantic additive⟩)
     additiveFresh overlapFresh
 
-/-! ## Node `[159]`: the exact dense-packing residual -/
-
-/-- **Node `[159]`, `def:window-realization-test`.**  The no-arm of `[158]`
-denies precisely the window-package realization clause.  The identity map on
-the labelled skeleton class has range equal to the exact skeleton budget, so
-`lem:skeleton-dominates` turns that denial into the manuscript's single strict
-display.  The stronger remainder-and-curvature retained code remains solely in
-`K .hotColdPartition`; it is not bundled into this node. -/
-@[reducible] noncomputable def densePackingOverflowRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.densePackingOverflow
-    { Requires := [K .windowPackageUnrealized, K .skeletonDominates]
-      Produces := [K .densePackingOverflow]
-      requiresUnique := by key_fresh
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      .cons (key := K .densePackingOverflow)
-        ⟨Contracts.Spine.densePackingOverflow_of_unrealized data.toParameters
-          inputs.current.object (inputs.get (K .windowPackageUnrealized)).down
-          (inputs.get (K .skeletonDominates)).down.1⟩
-        .nil)
-
 /-! ## Node `[171]`: `lem:blocked-graphs-compress` -/
 
 /-- **Node `[171]`, `lem:blocked-graphs-compress`.**  Expose the exact
@@ -111,11 +88,12 @@ compression inequality and its skeleton-budget consequence. -/
             inputs.current.object (inputs.get (K .blockedClassMember)).down
             compressionBound⟩ .nil))
 
-/-- The dense-packing residual is the strict reverse of node `[171]`'s
-published terminal budget consequence. -/
-noncomputable instance instIncompatibleDensePackingOverflowCompressionCap :
+/-- The dense-packing residual `[159]` (`K .windowPackageUnrealized`,
+`2^{b_P} > |𝒢_{n,m}|`) is the strict reverse of node `[171]`'s published
+terminal budget consequence. -/
+noncomputable instance instIncompatibleWindowPackageUnrealizedCompressionCap :
     Incompatible (Input BranchState Presentation presentation data)
-      (K .densePackingOverflow) (K .blockedCompressionCap) where
+      (K .windowPackageUnrealized) (K .blockedCompressionCap) where
   contradiction := fun _input overflow cap =>
     (Nat.not_lt_of_ge cap.down) overflow.down
 

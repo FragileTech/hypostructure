@@ -46,18 +46,19 @@ theorem remainderRelabelingEntropy_of_normalized (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (normalized : RemainderNormalizedStatement data object) :
     RemainderRelabelingEntropyStatement data object :=
-  fun packing valid maximal support inside => by
+  fun support inside => by
+    have spec := canonicalWindowPacking_spec data object
     have windowFree : ∀ inner : Finset object.Vertex,
         inner ⊆ support →
         ¬ object.InducesWindow data.windowOrder inner := by
       intro inner innerInside
-      exact (normalized packing valid maximal inner
+      exact (normalized _ spec.1 spec.2.2 inner
         (innerInside.trans inside)).1
     have coreFree : ∀ inner : Finset object.Vertex,
         inner ⊆ support →
         ¬ Graph.MinimumDegreeAtLeast data.threshold (object.induce inner) := by
       intro inner innerInside
-      exact (normalized packing valid maximal inner
+      exact (normalized _ spec.1 spec.2.2 inner
         (innerInside.trans inside)).2
     have orbit :=
       Graph.LabelledRelabeling.factorial_le_remainderStateCount_mul_stabilizer
@@ -77,10 +78,11 @@ theorem boundaryDemand_of_baseline (data : Parameters)
     BoundaryDemandStatement data object :=
   have lower : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex :=
     fun vertex => le_trans baseline (object.minDegree_le_degree vertex)
-  fun packing valid =>
-    ⟨object.positiveDeficiency_le_boundaryIncidence
-        (object.remainderSupport packing) data.threshold lower,
-      object.boundaryIncidence_add_internal_mass_le valid lower⟩
+  ⟨object.positiveDeficiency_le_boundaryIncidence
+      (object.remainderSupport (canonicalWindowPacking data object))
+      data.threshold lower,
+    object.boundaryIncidence_add_internal_mass_le
+      (canonicalWindowPacking_spec data object).1 lower⟩
 
 /-- **Node `[29]`, `lem:stub-positive`.**  The boundary-demand chain with the
 object's own surplus in place of the windows', and the near-cubic ceiling
@@ -93,11 +95,11 @@ theorem stubSupply_of_boundaryDemand (data : Parameters)
     StubSupplyStatement data object := by
   have lower : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex :=
     fun vertex => le_trans baseline (object.minDegree_le_degree vertex)
-  intro packing valid
-  have links := demand packing valid
+  have links := demand
   have windowSurplus :=
     object.ambientSurplus_le_degreeSurplus
-      (Graph.FiniteObject.windowSupport packing) data.threshold lower
+      (Graph.FiniteObject.windowSupport (canonicalWindowPacking data object))
+      data.threshold lower
   have globalSurplus :
       object.degreeSurplus data.threshold ≤
         data.surplusThreshold object.vertexCount := ceiling
@@ -111,21 +113,17 @@ theorem wedgeSupply_of_stubSupply (data : Parameters)
     (three_le_threshold : 3 ≤ data.threshold)
     (stubSupply : StubSupplyStatement data object) :
     WedgeSupplyStatement data object := by
-  have supply : ∀ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing →
-      ∀ support : Finset object.Vertex,
-        support ⊆ object.remainderSupport packing →
+  have supply : ∀ support : Finset object.Vertex,
         data.threshold * support.card ≤
           object.internalWedgeCount support +
             2 * object.positiveDeficiency support data.threshold :=
-    fun _packing _valid support _inside =>
+    fun support =>
       object.baseline_mul_card_le_internalWedgeCount_add_two_mul_positiveDeficiency
         support data.threshold three_le_threshold
-  refine ⟨supply, fun packing valid => ?_⟩
-  have wedge :=
-    supply packing valid (object.remainderSupport packing)
-      (Finset.Subset.refl _)
-  have ceiling := stubSupply packing valid
+  refine ⟨fun support _inside => supply support, ?_⟩
+  have wedge := supply
+    (object.remainderSupport (canonicalWindowPacking data object))
+  have ceiling := stubSupply
   omega
 
 /-- **Node `[31]`, `def:curvature-target-rank`.**  At the remainder of every
@@ -134,8 +132,8 @@ subfamily and bounds every surviving subfamily. -/
 theorem curvatureTargetRank_attained (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     CurvatureTargetRankStatement data object :=
-  fun packing _valid _card =>
-    ⟨Graph.FiniteObject.exists_attaining_curvatureTargetRank
+  let packing := canonicalWindowPacking data object
+  ⟨Graph.FiniteObject.exists_attaining_curvatureTargetRank
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object
         (object.remainderSupport packing),
@@ -154,9 +152,10 @@ theorem targetRankCircuit_of_curvatureTargetRank (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (rank : CurvatureTargetRankStatement data object) :
     TargetRankCircuitStatement data object :=
-  fun packing valid card => by
+  by
     classical
-    obtain ⟨_attained, maximal⟩ := rank packing valid card
+    let packing := canonicalWindowPacking data object
+    obtain ⟨_attained, maximal⟩ := rank
     refine ⟨fun independent subset survives maximum test testMem outside => ?_,
       fun noDependence => ?_⟩
     · -- `𝓘 ∪ {a}` does not survive: its size would exceed `r_Ω(R)`.

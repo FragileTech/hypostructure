@@ -9,7 +9,10 @@ import Hypostructure.Graph.Statements.TypeBLanes
 import Hypostructure.Graph.Statements.CanonicalRouteEight
 import Hypostructure.Graph.Statements.RouteEightPinned
 import Hypostructure.Graph.Statements.CanonicalCold
+import Hypostructure.Graph.Statements.ColdGerm
 import Hypostructure.Graph.Statements.CanonicalBranchD
+import Hypostructure.Graph.Statements.SpineDominantType
+import Hypostructure.Graph.Statements.BranchD
 import Hypostructure.Fixtures.Route8OpenBoundarySaturated
 import Hypostructure.Core.Prelude
 import Hypostructure.Core.Problem
@@ -111,6 +114,7 @@ import Hypostructure.Graph.PrimitiveCarrier
 import Hypostructure.Graph.FiniteEdgeBudget
 import Hypostructure.Graph.SupportComponents
 import Hypostructure.Graph.OneThreeRepair
+import Hypostructure.Graph.RepairNetwork
 import Hypostructure.Graph.Isomorphism
 import Hypostructure.Graph.Induced
 import Hypostructure.Graph.InducedPath

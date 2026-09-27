@@ -194,18 +194,6 @@ theorem branchCertificate?_eq_none_iff (data : Parameters)
   unfold branchCertificate?
   split <;> simp_all
 
-/-- A canonical certificate is a witness of node `[21]` (at the canonical
-packing), so the pinned object is the one `BranchDependenceStatement`
-asserts. -/
-theorem branchDependence_of_branchCertificateSpec (data : Parameters)
-    (object : Graph.FiniteObject.{u})
-    {certificate : BranchCertificateData data object}
-    (spec : BranchCertificateSpec data object certificate) :
-    BranchDependenceStatement data object := by
-  obtain ⟨_, valid, card, drop, certified, minimal⟩ := spec
-  exact ⟨_, valid, card, drop, certificate.test, certificate.determiners,
-    certificate.quotient, certificate.supportData, certified, minimal⟩
-
 /-- The connected determination support `Z` of the canonical certificate,
 read by nodes `[24]`--`[28]` (`quotient.support`). -/
 noncomputable def branchCertificateSupport? (data : Parameters)

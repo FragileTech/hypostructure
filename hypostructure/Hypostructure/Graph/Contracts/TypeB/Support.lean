@@ -208,9 +208,8 @@ complements. -/
 theorem netChargeCap_not_exactCollisionFails
     (cap : NetChargeCapStatement data object)
     (fails : ExactCollisionFailsStatement data object) : False := by
-  obtain ⟨packing, valid, card, nonnegative⟩ := fails
   exact (object.not_negativeNetCharge_iff _ data.threshold data.dischargeScale).mpr
-    nonnegative (cap packing valid card)
+    fails cap
 
 theorem ordinary_decorated_exclusive
     {core centres core' centres' : Finset object.Vertex}

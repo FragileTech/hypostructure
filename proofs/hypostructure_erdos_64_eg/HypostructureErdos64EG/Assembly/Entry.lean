@@ -1,7 +1,6 @@
 import Hypostructure.Graph.Strategy.SpineRows.ContractionCritical
 import Hypostructure.Graph.Strategy.SpineRows.CubicBaseline
 import Hypostructure.Graph.Strategy.SpineRows.CycleRankConstraint
-import Hypostructure.Graph.Strategy.SpineRows.DegreeProfileFibres
 import Hypostructure.Graph.Strategy.SpineRows.DeletionCriticality
 import Hypostructure.Graph.Strategy.SpineRows.GadgetClosure
 import Hypostructure.Graph.Strategy.SpineRows.InterfaceReplacement
@@ -11,7 +10,6 @@ import Hypostructure.Graph.Strategy.SpineRows.ObstructionPacking
 import Hypostructure.Graph.Strategy.SpineRows.RelabelingDensityCap
 import Hypostructure.Graph.Strategy.SpineRows.ReplacementExclusion
 import Hypostructure.Graph.Strategy.SpineRows.ReturnAvoidance
-import Hypostructure.Graph.Strategy.SpineRows.TargetCompleteContextUniversality
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseSurplusExit
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseTargetDefectStructure
 import HypostructureErdos64EG.Assembly.Basic
@@ -43,16 +41,13 @@ universe u w
 -- EG-NODE [17] maximal disjoint induced-$P_{13}$ packing $\mathcal P$
 -- EG-NODE [18] $P_{13}$ label algebra: $399$ labels; relations $C_s$; obstruction tensor $\Omega_2$
 -- EG-NODE [7] power-of-two cycle
--- EG-NODE [11] boundaried pieces; boundary degree profile $\mathbf d_\partial$
--- EG-NODE [12] context-universality for target-complete identifications
 -- EG-NODE [16] HSS theorem gives target cycle
 noncomputable def selectedEntryPrefix
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected [EGSelectionKey]) :
     ExactLedger EGInput.{u} selected
       [K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
-        K .replacementExclusion, K .targetCompleteContextUniversality,
-        K .degreeProfileFibres,
+        K .replacementExclusion,
         K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline,
         K .returnAvoidance, K .contractionCritical, K .gadgetClosure,
@@ -113,22 +108,10 @@ noncomputable def selectedEntryPrefix
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           h3 (by
             key_fresh)
-      let h11 :=
-        (degreeProfileFibresRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          hRank (by
-            key_fresh)
-      let h12 :=
-        (targetCompleteContextUniversalityRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          h11 (by
-            key_fresh)
       let h13 :=
         (replacementExclusionRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run h12 (by
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run hRank (by
             key_fresh)
       let h4 :=
         (interfaceReplacementRow (BranchState := BranchState)

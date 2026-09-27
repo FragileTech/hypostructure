@@ -19,9 +19,10 @@ variable [FactSystem (Input BranchState Presentation presentation data)]
 
 /-! ## Node `[36]`: the context-validity test
 
-The literal post-`[35]` ledger retains the one inclusion-minimal determination
-certificate selected at `[33]` and now also carries `lem:separated-testers`.
-Node `[36]` asks the paper's exact question of that certificate: does its
+The literal post-`[35]` ledger retains node `[21]`'s fact, whose one
+inclusion-minimal determination certificate is `branchCertificate? data G`.
+Node `[36]` reads that fact and asks the paper's exact question of that
+certificate, and of no other: does its
 determination remain valid against every outside context?  The no arm exhibits
 an identified pair and a distinguishing context; the yes arm records context
 universality for that same certificate.  Boundary-fibre preservation is already

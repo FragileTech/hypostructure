@@ -25,7 +25,7 @@ noncomputable def denseDeficiencyDichotomy
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger
       (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .densePackingOverflow) known]
+    [FactKeys.Has (K .windowPackageUnrealized) known]
     (belowFresh : K .denseDeficiencyBelow ∉ known)
     (atOrAboveFresh : K .denseDeficiencyAtOrAbove ∉ known) :
     Decision (K .denseDeficiencyBelow) (K .denseDeficiencyAtOrAbove) previous := by

@@ -26,7 +26,7 @@ maximum `2r`-separated set of those centres.  Maximality covers the dominant set
 by radius-`2r` balls; the radius-`r` balls are pairwise disjoint; and
 `SubcubicReach.card_reach_le` gives the manuscript's exact bound
 `b' = 1 + 3(2^(2r)-1)`.  Distinct centres give distinct raw wedge labels, and
-the full-rank equality carried by the dominant-wedge fact identifies their
+the full-rank equality of `K .dominantRootedType` identifies their
 supply with `r_Ω(R)`.  The row is a thin adapter for
 `Contracts.Spine.independentObstructionTranslates_of_dominantRootedWedgeType`.
 
@@ -48,15 +48,18 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.independentObstructionTranslates
-    { Requires := [K .dominantRootedWedgeType]
+    { Requires := [K .cubicBaseline, K .dominantRootedType,
+        K .dominantRootedWedgeType]
       Produces := [K .independentObstructionTranslates]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .independentObstructionTranslates)
         ⟨Contracts.Spine.independentObstructionTranslates_of_dominantRootedWedgeType
-          data.toParameters inputs.current.object data.threshold_eq_three
+          data.toParameters inputs.current.object
+          (inputs.get (K .cubicBaseline)).down
+          (inputs.get (K .dominantRootedType)).down
           (inputs.get (K .dominantRootedWedgeType)).down⟩
         .nil)
     0 0

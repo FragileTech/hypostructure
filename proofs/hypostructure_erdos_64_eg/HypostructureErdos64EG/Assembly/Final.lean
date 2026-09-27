@@ -25,7 +25,6 @@ noncomputable def selectedNearCubicBranch
     (history : ExactLedger EGInput.{u} selected
       [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .windowPresent, K .uncompressible, K .replacementExclusion,
-        K .targetCompleteContextUniversality, K .degreeProfileFibres,
         K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     SelectedNearCubicBoundary selected := by

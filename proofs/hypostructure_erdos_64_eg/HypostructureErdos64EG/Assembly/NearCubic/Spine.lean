@@ -18,7 +18,6 @@ import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
 import Hypostructure.Graph.Strategy.SpineRows.RemainderRelabelingEntropy
 import Hypostructure.Graph.Strategy.SpineRows.Route8RateDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.RouteEightNetDeficiencyCap
-import Hypostructure.Graph.Strategy.SpineRows.SeparatedTesters
 import Hypostructure.Graph.Strategy.SpineRows.StubSupply
 import Hypostructure.Graph.Strategy.SpineRows.TargetRankCircuit
 import Hypostructure.Graph.Strategy.SpineRows.WedgeSupply
@@ -60,9 +59,9 @@ universe u w
 noncomputable abbrev nearCubicResidualAKeys : FactKeys EGInput.{u} :=
   [K .remainderNormalized, K .remainderRelabelingEntropy, K .boundaryDemand,
     K .stubSupply, K .wedgeSupply, K .exactResponseProfile,
-    K .admissibleRankQuotient, K .curvatureTargetRank, K .targetRankCircuit,
+    K .curvatureTargetRank, K .targetRankCircuit,
     K .curvatureRankDrop, K .curvatureFullRank, K .branchDependence,
-    K .separatedTesters, K .contextDefect, K .contextUniversal,
+    K .contextDefect, K .contextUniversal,
     K .atomCompression, K .delocalizedSupport, K .properDelocalization,
     K .globalDelocalization, K .repairIdentity, K .globalBarrier, closed]
 
@@ -78,9 +77,8 @@ noncomputable abbrev nearCubicResidualBKeys : FactKeys EGInput.{u} :=
     netChargeContinuationKeys
 
 /-- Branch D, nodes `[36]`--`[46]`, on the literal ledger returned by node
-`[35]`.  The displayed state at `[35]` repeats `[33]` verbatim, while the
-separate `separatedTestersRow` appends exactly `lem:separated-testers` without
-altering that state.  The context-validity decision `[36]` with its
+`[35]`.  The displayed state at `[35]` repeats `[33]` verbatim: node `[21]`'s
+one certificate `branchCertificate? data G`, which every later test reads.  The context-validity decision `[36]` with its
 target-defect terminal `[37]`, the atom-compression test `[38]` with its
 terminal `[39]`, the delocalization scope `[40]`/`[41]` with its proper-support
 terminal `[42]`, and the whole-graph route `[43]`--`[45]` closed at `[46]`.
@@ -97,15 +95,15 @@ Every terminal is a framework closure over the ledger of its arm. -/
 -- EG-NODE [44] $1$--$3$ repair identity $s=p-2+2\beta-\sigma$
 -- EG-NODE [45] target / replacement / global profile barrier
 -- EG-NODE [46] rank-drop branch closed
+-- EG-NODE [11] boundaried pieces; boundary degree profile $\mathbf d_\partial$
 -- EG-NODE [12] context-universality for target-complete identifications
 theorem nearCubicRankDropCloses
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .branchDependence) known]
     [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .degreeProfileFibres) known]
-    [FactKeys.Has (K .targetCompleteContextUniversality) known]
     [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .selection) known]
     (fresh : List.Disjoint
       [K .contextDefect, K .contextUniversal, K .atomCompression,
@@ -176,12 +174,11 @@ noncomputable def nearCubicFullRank
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .degreeProfileFibres) known]
-    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint nearCubicResidualAKeys.{u} known := by key_fresh) :
     ExactLedger EGInput.{u} selected
       (K .curvatureFullRank :: K .targetRankCircuit :: K .exactResponseProfile ::
-        K .admissibleRankQuotient :: K .curvatureTargetRank :: K .wedgeSupply ::
+        K .curvatureTargetRank :: K .wedgeSupply ::
         K .stubSupply :: K .boundaryDemand :: K .remainderRelabelingEntropy ::
         K .remainderNormalized :: known) :=
   let remainder :=
@@ -227,12 +224,7 @@ noncomputable def nearCubicFullRank
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) spineData).run
           dropHistory (by key_fresh)
-      let tested :=
-        (separatedTestersRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) spineData).run
-          dependence (by key_fresh)
-      (nearCubicRankDropCloses tested).elim
+      (nearCubicRankDropCloses dependence).elim
   | .right fullRankHistory => fullRankHistory
 
 /-- The route-8 continuation `[57]`--`[124]` entered from the `[24]` arm.  It

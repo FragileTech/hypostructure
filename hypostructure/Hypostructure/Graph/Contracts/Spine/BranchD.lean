@@ -1,11 +1,10 @@
-import Hypostructure.Graph.Statements.Spine
+import Hypostructure.Graph.Statements.BranchD
 
 /-!
 # Contracts: the rank split and Branch D, `[32]`--`[46]`
 
 Proof-agnostic contract lemmas for `lem:target-rank-circuit`'s finite split,
-`lem:curvature-dependence-routing`, `lem:separated-testers`,
-`lem:context-universality`, `lem:proper-smearing`,
+`lem:curvature-dependence-routing`, `lem:context-universality`, `lem:proper-smearing`,
 `lem:smearing-support-repair` and `lem:no-silent-global-smearing`.  Each lemma
 is stated over a `Graph.FiniteObject` with the registered `Parameters` as a
 parameter and every paper hypothesis explicit; its conclusion is exactly the
@@ -35,12 +34,11 @@ theorem curvatureRankDrop_of_rankBelow (data : Parameters)
     CurvatureRankDropStatement data object := by
   classical
   let packing := canonicalWindowPacking data object
-  have packingSpec := Classical.choose_spec
-    (object.exists_windowPacking_card_eq data.windowOrder)
-  have valid : object.IsWindowPacking data.windowOrder packing := packingSpec.1
+  have valid : object.IsWindowPacking data.windowOrder packing :=
+    (canonicalWindowPacking_spec data object).1
   have packingCard : packing.card = object.windowPackingNumber data.windowOrder :=
-    packingSpec.2
-  have extract := (circuit packing valid packingCard).1
+    (canonicalWindowPacking_spec data object).2.1
+  have extract := circuit.1
   have attained := Graph.FiniteObject.exists_attaining_curvatureTargetRank
     (Graph.MinimumDegreeAtLeast data.threshold)
     (Graph.HasCycleWithLength data.LengthOK) object
@@ -89,11 +87,10 @@ theorem curvatureFullRank_of_not_rankBelow (data : Parameters)
     CurvatureFullRankStatement data object := by
   classical
   let packing := canonicalWindowPacking data object
-  have packingSpec := Classical.choose_spec
-    (object.exists_windowPacking_card_eq data.windowOrder)
-  have valid : object.IsWindowPacking data.windowOrder packing := packingSpec.1
+  have valid : object.IsWindowPacking data.windowOrder packing :=
+    (canonicalWindowPacking_spec data object).1
   have packingCard : packing.card = object.windowPackingNumber data.windowOrder :=
-    packingSpec.2
+    (canonicalWindowPacking_spec data object).2.1
   have attained := Graph.FiniteObject.exists_attaining_curvatureTargetRank
     (Graph.MinimumDegreeAtLeast data.threshold)
     (Graph.HasCycleWithLength data.LengthOK) object
@@ -121,20 +118,22 @@ theorem curvatureFullRank_of_not_rankBelow (data : Parameters)
           (object := object) (support := object.remainderSupport packing)
   exact Nat.le_of_not_gt notBelow
 
-/-- **Nodes `[33]`/`[35]`** (`lem:curvature-dependence-routing`).  The
-rank-drop arm contains a concrete determination; among all certificates for
-that determined coordinate, one has an inclusion-minimal connected declared
-support. -/
+/-- **Nodes `[33]`/`[35]`** (`lem:curvature-dependence-routing`, tex 9204).
+Node `[19]`'s determined test at the canonical packing (the canonical choice
+`curvatureRankDropTest?`) has a concrete determination; among all certificates
+for that test, one has an inclusion-minimal connected declared support. -/
 theorem branchDependence_of_curvatureRankDrop (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (drop : CurvatureRankDropStatement data object) :
     BranchDependenceStatement data object := by
   classical
   letI : Fintype object.Vertex := @FinEnum.instFintype _ object.vertices
-  rcases drop with
-    ⟨packing, _canonical, valid, packingCard, below, test, testMember,
-      determiners, determinersSubset, finite, proper, declared,
-      functional, reducing, determines⟩
+  obtain ⟨test, testEq, valid, packingCard, below, testMember, determiners,
+      determinersSubset, finite, proper, declared, functional, reducing,
+      determines⟩ :=
+    curvatureRankDropTest?_spec data object
+      ((curvatureRankDrop_iff_exists_testSpec data object).1 drop)
+  let packing := canonicalWindowPacking data object
   let support := object.remainderSupport packing
   let family := object.internalWedgeFamily support
   let supportData := family
@@ -148,9 +147,7 @@ theorem branchDependence_of_curvatureRankDrop (data : Parameters)
         determiners declared supportData :=
     ⟨testMember, determinersSubset, finite, proper, functional,
       reducing, determines, rfl, supportDataCarried⟩
-  refine ⟨packing, valid, packingCard, below, test, ?_⟩
-  dsimp only
-  set Supports :=
+  let Supports :=
     object.vertexFinset.powerset.filter
       fun candidateSupport =>
         ∃ basis candidate,
@@ -158,17 +155,6 @@ theorem branchDependence_of_curvatureRankDrop (data : Parameters)
             ∃ candidateSupportData,
               DeterminationCertificate data object
                 packing test basis candidate candidateSupportData
-  change ∃ selectedDeterminers selectedQuotient selectedSupportData,
-    DeterminationCertificate data object packing test
-          selectedDeterminers selectedQuotient selectedSupportData ∧
-      ∀ smaller : Finset object.Vertex,
-        smaller ⊂ selectedQuotient.support →
-          ∀ narrower : remainderQuotient data object packing,
-            narrower.support = smaller →
-              ∀ narrowerDeterminers narrowerSupportData,
-                ¬ DeterminationCertificate data object
-                  packing test narrowerDeterminers narrower
-                    narrowerSupportData
   have inhabited : declared.support ∈ Supports := by
     simp only [Supports, Finset.mem_filter, Finset.mem_powerset]
     exact ⟨by intro vertex _; simp, determiners, declared, rfl,
@@ -182,8 +168,8 @@ theorem branchDependence_of_curvatureRankDrop (data : Parameters)
   obtain ⟨chosenDeterminers, chosen, supportEq,
     chosenSupportData, chosenCertified⟩ := leastInSupports
   subst leastSupport
-  refine ⟨chosenDeterminers, chosen, chosenSupportData,
-    chosenCertified, ?_⟩
+  refine ⟨⟨test, chosenDeterminers, chosen, chosenSupportData⟩,
+    testEq, valid, packingCard, below, chosenCertified, ?_⟩
   intro smaller strict narrower narrowerSupport narrowerDeterminers
     narrowerSupportData narrowerCertified
   have carried : smaller ∈ Supports := by
@@ -191,120 +177,66 @@ theorem branchDependence_of_curvatureRankDrop (data : Parameters)
     exact ⟨by intro vertex _; simp, narrowerDeterminers, narrower,
       narrowerSupport, narrowerSupportData, narrowerCertified⟩
   have minimum := least smaller carried
-  exact absurd (Finset.card_lt_card strict) (by omega)
+  have strict' : smaller ⊂ chosen.support := strict
+  exact absurd (Finset.card_lt_card strict') (by omega)
 
-/-- **Node `[35]`, `lem:separated-testers`.**  An owned decomposition whose
-piece side covers two disjoint balls leaves every internal outside vertex in
-their complement; for an attempted quotient identifying their labels, every
-identified pair is context-universal or one has a concrete target defect. -/
-theorem separatedTesters (data : Parameters) (object : Graph.FiniteObject.{u}) :
-    SeparatedTestersStatement data object := by
-  classical
-  intro packing _valid _packingCard radius u v _uMem _vMem
-  dsimp only
-  intro leftWedge rightWedge _leftMem _rightMem _leftRoot _rightRoot
-    _sameType _disjoint
-  constructor
-  · intro decomposition pieceCovers represented _separates internal
-    constructor <;> intro inBall
-    · obtain ⟨inside, same⟩ :=
-        (pieceCovers _).mp (Or.inl inBall)
-      have impossible :
-          Graph.pieceEmbedding decomposition.piece
-              decomposition.outside inside =
-            Graph.contextEmbedding decomposition.piece
-              decomposition.outside (.inr internal) := by
-        apply decomposition.vertexEquiv.injective
-        simpa [Graph.OwnedDecomposition.pieceIntoAmbient] using same
-      cases inside <;>
-        simp [Graph.pieceEmbedding, Graph.contextEmbedding] at impossible
-    · obtain ⟨inside, same⟩ :=
-        (pieceCovers _).mp (Or.inr inBall)
-      have impossible :
-          Graph.pieceEmbedding decomposition.piece
-              decomposition.outside inside =
-            Graph.contextEmbedding decomposition.piece
-              decomposition.outside (.inr internal) := by
-        apply decomposition.vertexEquiv.injective
-        simpa [Graph.OwnedDecomposition.pieceIntoAmbient] using same
-      cases inside <;>
-        simp [Graph.pieceEmbedding, Graph.contextEmbedding] at impossible
-  · intro attempt _identified
-    by_cases universal :
-        ∀ left right : Graph.BoundaryPiece
-            (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
-              object attempt.support),
-          attempt.Identifies left right →
-            Graph.Response.ContextEquivalent
-              (Graph.HasCycleWithLength data.LengthOK) left right
-    · exact Or.inl universal
-    · right
-      push Not at universal
-      obtain ⟨left, right, sameValues, failure⟩ := universal
-      exact ⟨left, right, sameValues,
-        Graph.Response.targetDefect_of_not_contextEquivalent failure⟩
+/-- The certificate of `G` carries node `[21]`'s rank reduction on the raw
+curvature tests. -/
+theorem branchCertificate_rankReducing {data : Parameters}
+    {object : Graph.FiniteObject.{u}}
+    {certificate : BranchCertificateData data object}
+    (eq : branchCertificate? data object = some certificate) :
+    certificate.quotient.toRankQuotient.RankReducingOn
+      ↑(remainderCurvatureTests object (canonicalWindowPacking data object)) :=
+  (branchCertificate?_spec_of_eq_some data object eq).2.2.2.2.1.2.2.2.2.2.1
 
-/-- **Node `[36]`, the context-validity test.**  The inclusion-minimal
-certificate of `[33]` is valid against every outside context, or some pair it
-identifies has a concrete distinguishing (target-defect) context. -/
+/-- **Node `[36]`, the context-validity test**, at the one certificate of `G`:
+it is valid against every outside context, or some pair it identifies has a
+concrete distinguishing (target-defect) context. -/
 theorem contextDefect_or_contextUniversal (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (dependence : BranchDependenceStatement data object) :
     ContextDefectStatement data object ∨ ContextUniversalStatement data object := by
   classical
-  obtain ⟨packing, valid, packingCard, _below, test, determiners, quotient,
-    supportData, certified, minimal⟩ := dependence
-  by_cases universal :
-      ∀ left right, Identified quotient left right →
-        Graph.Response.ContextEquivalent
-          (Graph.HasCycleWithLength data.LengthOK) left right
-  · exact .inr ⟨packing, valid, packingCard, test, determiners, quotient,
-      supportData, certified, minimal, universal⟩
-  · refine .inl ⟨packing, valid, packingCard, test, determiners, quotient,
-      supportData, certified, minimal, ?_⟩
+  obtain ⟨certificate, eq, -⟩ := branchCertificate?_spec data object dependence
+  by_cases universal : CertificateContextUniversal data certificate
+  · exact .inr ⟨certificate, eq, universal⟩
+  · refine .inl ⟨certificate, eq, ?_⟩
+    unfold CertificateContextUniversal at universal
     push Not at universal
     obtain ⟨left, right, identified, failure⟩ := universal
     exact ⟨left, right, identified,
       Graph.Response.targetDefect_of_not_contextEquivalent failure⟩
 
-/-- **The terminal `[37]` is uninhabited** (`lem:context-universality`).  The
-certificate's admissible quotient is context-universal on its identified
-pairs, so no outside context distinguishes an identified pair. -/
+/-- **The terminal `[37]` is uninhabited** (`lem:context-universality`;
+`lem:no-silent-global-smearing`, second paragraph).  The certificate's quotient
+is admissible, hence context-universal on its identified pairs, so no outside
+context distinguishes an identified pair. -/
 theorem contextDefect_false (data : Parameters) (object : Graph.FiniteObject.{u})
     (defect : ContextDefectStatement data object) : False := by
-  obtain ⟨_packing, _valid, _packingCard, _test, _determiners, quotient,
-    _supportData, _certificate, _minimal, left, right, identified,
-    outside, distinguishes⟩ := defect
-  exact distinguishes (quotient.contextUniversal left right identified outside)
+  obtain ⟨certificate, _eq, left, right, identified, outside, distinguishes⟩ :=
+    defect
+  exact distinguishes
+    (certificate.quotient.contextUniversal left right identified outside)
 
-/-- **Node `[38]`: is the determination certified already at `C`?**  A
-context-universal certificate is target-complete (degree-profile fibres and
-target-complete context universality).  If its support lies in the remainder,
-it misses a window vertex, so `def:admissible-rank-quotient` supplies a
-strictly smaller proper representative (`[39]`); otherwise its support
-strictly enlarges the remainder (`[40]`). -/
+/-- **Node `[38]`: is the determination certified already at `C = R(P₀)`?**
+If the certificate's support lies in the remainder, it misses a window vertex of
+the nonempty canonical packing, so `def:admissible-rank-quotient` supplies a
+strictly smaller proper representative (`[39]`); otherwise its support strictly
+enlarges the remainder (`[40]`). -/
 theorem atomCompression_or_delocalizedSupport (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (universalFact : ContextUniversalStatement data object)
-    (fibres : DegreeProfileFibresStatement data object)
-    (completeUniversality : TargetCompleteContextUniversalityStatement data object)
-    (maximalPacking : MaximalPackingStatement data object) :
+    (universal : ContextUniversalStatement data object)
+    (packingPositive : 0 < object.windowPackingNumber data.windowOrder) :
     AtomCompressionStatement data object ∨ DelocalizedSupportStatement data object := by
   classical
-  obtain ⟨packing, valid, packingCard, test, determiners, quotient, supportData,
-    certified, _minimal, universal⟩ := universalFact
-  have packingPositive := maximalPacking.1
-  have complete : TargetCompleteAt data quotient := by
-    intro left right identified
-    have targetComplete : Graph.Response.TargetComplete
-        Graph.BoundaryPiece.boundaryDegreeProfile
-        (Graph.HasCycleWithLength data.LengthOK) left right :=
-      ⟨quotient.fibrewise left right identified,
-        universal left right identified⟩
-    exact ⟨fibres quotient.support left right targetComplete,
-      completeUniversality quotient.support left right targetComplete⟩
-  by_cases inside : quotient.support ⊆ object.remainderSupport packing
-  · have packingNonempty : packing.Nonempty :=
+  obtain ⟨certificate, eq, -⟩ := universal
+  have valid := (branchCertificate?_spec_of_eq_some data object eq).2.1
+  have packingCard := (branchCertificate?_spec_of_eq_some data object eq).2.2.1
+  have reducing := branchCertificate_rankReducing eq
+  let quotient := certificate.quotient
+  by_cases inside : quotient.support ⊆ canonicalRemainder data object
+  · have packingNonempty : (canonicalWindowPacking data object).Nonempty :=
       Finset.card_pos.mp (packingCard ▸ packingPositive)
     obtain ⟨member, memberMem⟩ := packingNonempty
     have windowNonempty :=
@@ -318,77 +250,59 @@ theorem atomCompression_or_delocalizedSupport (data : Parameters)
       exact
         (object.notMem_windowSupport_of_mem_remainderSupport vertexInRemainder)
           (object.mem_windowSupport memberMem vertexMem)
-    have reducing : quotient.toRankQuotient.RankReducingOn
-        ↑(remainderCurvatureTests object packing) :=
-      certified.2.2.2.2.2.1
-    have replacement := quotient.properRepresentative supportProper reducing
-    exact .inl ⟨packing, valid, quotient,
-      ⟨test, determiners, supportData, certified⟩, complete, inside,
-      replacement⟩
-  · exact .inr ⟨packing, valid, quotient,
-      ⟨test, determiners, supportData, certified⟩, complete, inside,
+    exact .inl ⟨certificate, eq, inside,
+      quotient.properRepresentative supportProper reducing⟩
+  · exact .inr ⟨certificate, eq, inside,
       remainderSupport_ssubset_delocalizationSupport data quotient inside⟩
 
-/-- **Node `[41]`: is the enlarged support proper in `G`?**  If the
-quotient's connected determination support `Z` misses a vertex, the rank
-reduction yields a strictly smaller proper representative (`[42]`,
-`lem:proper-smearing`); otherwise `Z = G` (`[43]`). -/
+/-- **Node `[41]`: is the certificate's support `Z` proper in `G`?**  If it
+misses a vertex, the rank reduction yields a strictly smaller proper
+representative (`[42]`, `lem:proper-smearing`); otherwise `Z = G` (`[43]`). -/
 theorem properDelocalization_or_globalDelocalization (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (delocalized : DelocalizedSupportStatement data object) :
     ProperDelocalizationStatement data object ∨
       GlobalDelocalizationStatement data object := by
   classical
-  obtain ⟨packing, valid, quotient, certificate, complete, outside, _enlarged⟩ :=
-    delocalized
-  by_cases proper : ∃ vertex, vertex ∉ quotient.support
-  · obtain ⟨vertex, vertexOutside⟩ := proper
-    obtain ⟨test, determiners, supportData, certified⟩ := certificate
-    have reducing : quotient.toRankQuotient.RankReducingOn
-        ↑(remainderCurvatureTests object packing) :=
-      certified.2.2.2.2.2.1
-    have replacement :=
-      quotient.properRepresentative ⟨vertex, vertexOutside⟩ reducing
-    exact .inl ⟨packing, valid, quotient,
-      ⟨test, determiners, supportData, certified⟩, complete, outside,
-      vertex, vertexOutside, replacement⟩
+  obtain ⟨certificate, eq, -⟩ := delocalized
+  by_cases proper : ∃ vertex, vertex ∉ certificate.quotient.support
+  · exact .inl ⟨certificate, eq, proper,
+      certificate.quotient.properRepresentative proper
+        (branchCertificate_rankReducing eq)⟩
   · push Not at proper
-    exact .inr ⟨packing, valid, quotient, certificate, complete, outside, proper⟩
+    exact .inr ⟨certificate, eq, proper⟩
 
-/-- **Node `[44]`, `lem:smearing-support-repair`.**  A delayed compensation
-component with `p` boundary leaves, `s` internal vertices, cycle rank `β` and
-surplus `σ` satisfies `s = p − 2 + 2β − σ`, by the handshake identity and the
-cycle-rank formula. -/
-theorem repairIdentity (object : Graph.FiniteObject.{u}) :
-    RepairIdentityStatement object := by
-  dsimp only [RepairIdentityStatement]
-  intro component _componentOnActiveSupport
-  have handshake :
-      (3 : Int) * component.internal.card + component.surplus +
-          component.boundary.card =
-        2 * component.object.edgeCount := by
-    exact_mod_cast component.handshake
-  have rank := component.cycleRank_cast
-  rw [component.vertexCard_eq] at rank
-  push_cast at rank
-  linarith
+/-- **Node `[44]`, `lem:smearing-support-repair`**, at the certificate of the
+whole-graph arm: at the cubic baseline every vertex of `G` has degree at least
+three, so each delayed compensation component of its support is a `1`--`3`
+repair network, and `s = p − 2 + 2β − σ`. -/
+theorem repairIdentity_of_globalDelocalization (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (global : GlobalDelocalizationStatement data object)
+    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+    (cubic : CubicBaselineStatement data) :
+    RepairIdentityStatement data object := by
+  obtain ⟨certificate, eq, -⟩ := global
+  refine ⟨certificate, eq, fun component =>
+    Graph.RepairNetwork.repairIdentity _ component ?_⟩
+  intro vertex _
+  have atLeast : data.threshold ≤ object.degree vertex :=
+    le_trans baseline (object.minDegree_le_degree vertex)
+  rw [cubic.1] at atLeast
+  exact atLeast
 
-/-- **Node `[45]`, `lem:no-silent-global-smearing`.**  A whole-graph
-rank-reducing dependence has, by the closed clause of
+/-- **Node `[45]`, `lem:no-silent-global-smearing`.**  The certificate's
+whole-graph rank-reducing quotient has, by the closed clause of
 `def:admissible-rank-quotient`, a strictly smaller admissible closed
 representative. -/
 theorem globalBarrier_of_globalDelocalization (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (global : GlobalDelocalizationStatement data object) :
     GlobalBarrierStatement data object := by
-  dsimp only [GlobalBarrierStatement]
-  obtain ⟨packing, _valid, quotient, certificate, _complete, _outside,
-    covers⟩ := global
-  obtain ⟨_test, _determiners, _supportData, certified⟩ := certificate
-  have reducing : quotient.toRankQuotient.RankReducingOn
-      ↑(remainderCurvatureTests object packing) :=
-    certified.2.2.2.2.2.1
-  exact quotient.closedRepresentative covers reducing
+  obtain ⟨certificate, eq, covers⟩ := global
+  exact ⟨certificate, eq,
+    certificate.quotient.closedRepresentative covers
+      (branchCertificate_rankReducing eq)⟩
 
 /-- The selected minimal counterexample, as the context the replacement
 lemma is stated against. -/
@@ -425,10 +339,9 @@ theorem atomCompression_selection_false
     (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
     (selected : SelectionStatement BranchState Presentation presentation data object)
     (compression : AtomCompressionStatement data object) : False := by
-  obtain ⟨_packing, _valid, quotient, _certificate, _complete, _inside,
-    replacement⟩ := compression
+  obtain ⟨certificate, _eq, _inside, replacement⟩ := compression
   exact not_replacementSupport_of_selection BranchState Presentation presentation
-    data object state baseline selected quotient.support replacement
+    data object state baseline selected certificate.quotient.support replacement
 
 /-- **The terminal `[42]`** (`lem:proper-smearing`).  The proper enlarged
 support `Z ⊊ G` carries a target-complete rank reduction, hence a
@@ -440,10 +353,9 @@ theorem properDelocalization_selection_false
     (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
     (selected : SelectionStatement BranchState Presentation presentation data object)
     (smearing : ProperDelocalizationStatement data object) : False := by
-  obtain ⟨_packing, _valid, quotient, _certificate, _complete, _outside,
-    _vertex, _vertexOutside, replacement⟩ := smearing
+  obtain ⟨certificate, _eq, _proper, replacement⟩ := smearing
   exact not_replacementSupport_of_selection BranchState Presentation presentation
-    data object state baseline selected quotient.support replacement
+    data object state baseline selected certificate.quotient.support replacement
 
 /-- **The terminal `[46]`** (`lem:no-silent-global-smearing`).  Selection
 minimality puts the target in the strictly smaller closed representative,
@@ -455,7 +367,8 @@ theorem globalBarrier_selection_false
     (object : Graph.FiniteObject.{u})
     (selected : SelectionStatement BranchState Presentation presentation data object)
     (barrier : GlobalBarrierStatement data object) : False := by
-  obtain ⟨representative, smaller, representativeBaseline, transfer⟩ := barrier
+  obtain ⟨_certificate, _eq, representative, smaller, representativeBaseline,
+    transfer⟩ := barrier
   exact selected.1 (transfer (selected.2 representative smaller representativeBaseline))
 
 end Hypostructure.Graph.Contracts.Spine

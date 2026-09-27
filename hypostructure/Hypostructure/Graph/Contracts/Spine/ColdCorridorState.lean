@@ -560,7 +560,6 @@ theorem coldGermCandidates_of_routing (data : Parameters)
     (thresholdEq : data.threshold = 3)
     (threeLeOrder : 3 ≤ data.windowOrder)
     (routing : ColdFailureRoutingStatement data object)
-    (extraction : ColdGermExtractionStatement data object)
     (handoff : ColdFirstHighHandoffStatement data object) :
     ColdGermCandidatesStatement data object := by
   classical
@@ -626,10 +625,6 @@ theorem coldGermCandidates_of_routing (data : Parameters)
             exact right.property.2 (targetSame.symm ▸ left.property.2)
         | inr right =>
             exact congrArg Sum.inr (Subtype.ext same)
-  change ColdExchangeBoundStatement data object ∧
-    Graph.ColdCorridor.ColdGermOccurrenceExtractionLocal data.coldSignature
-      data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object at extraction
   have candidateFamily :
       Graph.ColdCorridor.CandidateGermOccurrenceFamily data.coldSignature
         data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
@@ -758,7 +753,11 @@ theorem coldGermCandidates_of_routing (data : Parameters)
             (fun _window windowMem => (Finset.mem_filter.1 windowMem).2)
             vertex
   obtain ⟨disjointFamily, extracted⟩ :=
-    extraction.2 Occurrence (Classical.decEq Occurrence) incidence candidates
+    (Graph.ColdCorridor.coldGermOccurrenceExtractionLocal
+      (S := data.coldSignature) (threshold := data.threshold)
+      (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+      (Target := Graph.HasCycleWithLength data.LengthOK) (object := object))
+      Occurrence (Classical.decEq Occurrence) incidence candidates
       candidateFamily
   have failureClassified : ∀ epsilon : Eligible,
       (∀ vertex ∈ (corridorAt epsilon).prefixSupport (traceEnd epsilon),

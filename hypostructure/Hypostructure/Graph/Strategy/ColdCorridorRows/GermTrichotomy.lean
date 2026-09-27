@@ -36,21 +36,20 @@ G2 for every surviving length-changing germ. -/
       producesUnique := by key_fresh
       producesNonempty := by simp }
     (fun inputs =>
-      let candidates := (inputs.get (K .coldGermCandidates)).down
       let avoids := (inputs.get (K .selection)).down.1
       let uncompressible := (inputs.get (K .uncompressible)).down
       .cons (key := K .coldGermRealized)
-        ⟨Contracts.Spine.coldGermRealized_of_candidates data.toParameters
-          inputs.current.object avoids candidates⟩
+        ⟨Contracts.Spine.coldGermRealized_of_avoids data.toParameters
+          inputs.current.object avoids⟩
         (.cons (key := K .coldGermDistinguished)
-          ⟨Contracts.Spine.coldGermDistinguished_of_candidates data.toParameters
-            inputs.current.object candidates⟩
+          ⟨Contracts.Spine.coldGermDistinguished_holds data.toParameters
+            inputs.current.object⟩
           (.cons (key := K .coldGermSilent)
             ⟨Contracts.Spine.coldGermSilent_of_uncompressible data.toParameters
               inputs.current.object uncompressible⟩
             (.cons (key := K .coldGermRouted)
-              ⟨Contracts.Spine.coldGermRouted_of_candidates data.toParameters
-                inputs.current.object avoids uncompressible candidates⟩
+              ⟨Contracts.Spine.coldGermRouted_of_uncompressible data.toParameters
+                inputs.current.object avoids uncompressible⟩
               .nil))))
 
 /-! ## Node `[157]`, `lem:cold-same-interface-table` and
@@ -70,10 +69,10 @@ survive their smear and are routed the same way; and the table is finite. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .coldSameInterfaceTable)
-        ⟨Contracts.Spine.coldSameInterfaceTable_of_candidates data.toParameters
-          inputs.current.object (inputs.get (K .selection)).down.1
-          (inputs.get (K .uncompressible)).down
-          (inputs.get (K .coldGermCandidates)).down⟩
+        ⟨Contracts.Spine.coldSameInterfaceTable_of_uncompressible
+          data.toParameters inputs.current.object
+          (inputs.get (K .selection)).down.1
+          (inputs.get (K .uncompressible)).down⟩
         .nil)
 
 /-! ## Node `[168]`: the stub structure of the ambient-cubic cold windows

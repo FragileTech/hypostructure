@@ -17,9 +17,10 @@ variable {data : Data.{u}}
 
 variable [FactSystem (Input BranchState Presentation presentation data)]
 
-/-! The dominant type has exactly the manuscript's next local dichotomy: its
-root contains an internal wedge or it does not.  Both outputs retain the same
-packing, dominant fibre, root, count, and type-equality witnesses. -/
+/-! The dominant type has exactly the manuscript's next local dichotomy: the
+root of the canonical dominant type `canonicalDominantRootedType?` that node
+`[431]` fixed contains an internal wedge or it does not.  Both arms name that
+one pair. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def dominantRootedTypeWedgeDichotomy
     {current : Input BranchState Presentation presentation data}

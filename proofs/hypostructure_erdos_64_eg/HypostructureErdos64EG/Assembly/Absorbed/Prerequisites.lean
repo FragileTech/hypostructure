@@ -34,14 +34,14 @@ noncomputable def selectedAbsorbedGermPrerequisites
     (fresh : List.Disjoint
       [K .coldReturnCorridors, K .coldCorridorState,
         K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
-        K .coldFailureCycle, K .coldFailureDefect, K .coldFailureDefectRoute,
-        K .coldFailureCompression, K .coldFailureHandoff, K .coldHandoffTransfer,
-        K .coldFailureRouting, K .coldExchangeBound, K .coldGermExtraction,
+        K .coldFailureCycle, K .coldFailureDefectRoute,
+        K .coldFailureCompression, K .coldHandoffTransfer,
+        K .coldFailureRouting, K .coldExchangeBound,
         K .coldGermCandidates] known := by key_fresh) :
     ExactLedger EGInput.{u} selected
-      (K .coldGermCandidates :: K .coldExchangeBound :: K .coldGermExtraction ::
-        K .coldFailureRouting :: K .coldHandoffTransfer :: K .coldFailureHandoff ::
-        K .coldFailureCompression :: K .coldFailureDefect ::
+      (K .coldGermCandidates :: K .coldExchangeBound ::
+        K .coldFailureRouting :: K .coldHandoffTransfer ::
+        K .coldFailureCompression ::
         K .coldFailureDefectRoute :: K .coldFailureCycle ::
         K .coldFirstFailureOccurrence :: K .denseColdCorridorsTerminal ::
         K .coldCorridorState :: K .coldReturnCorridors :: known) :=

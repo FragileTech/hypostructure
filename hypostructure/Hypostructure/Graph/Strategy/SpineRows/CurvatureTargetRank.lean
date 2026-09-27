@@ -21,7 +21,7 @@ variable [FactSystem (Input BranchState Presentation presentation data)]
 
 `def:exact-response-profile`, `def:admissible-rank-quotient`,
 `def:functional-rank-quotient`, `def:curvature-target-rank`, at the atom
-remainder `R` of every maximal packing.
+remainder `R₀` of the fixed maximum packing `P₀`.
 
 * The declared raw curvature coordinates of `R` (clause (D4) of
   `def:declared-coordinate-signature`) are its internal length-two wedges,
@@ -78,8 +78,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.curvatureTargetRank
     { Requires := []
-      Produces := [K .exactResponseProfile, K .admissibleRankQuotient,
-        K .curvatureTargetRank]
+      Produces := [K .exactResponseProfile, K .curvatureTargetRank]
       requiresUnique := by simp
       producesUnique := by key_fresh
       producesNonempty := by simp }
@@ -87,18 +86,13 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       .cons (key := K .exactResponseProfile)
         (show Value BranchState Presentation presentation data
             .exactResponseProfile inputs.current from
-          ⟨fun packing _valid _card =>
-            Graph.FiniteObject.internalWedgeFamily_card inputs.current.object
-              (inputs.current.object.remainderSupport packing)⟩)
-        (.cons (key := K .admissibleRankQuotient)
-          (show Value BranchState Presentation presentation data
-              .admissibleRankQuotient inputs.current from
-            ⟨fun _Coordinate _family _coordinateSupport quotient reducing =>
-              quotient.localize reducing⟩)
-          (.cons (key := K .curvatureTargetRank)
-            ⟨Contracts.Spine.curvatureTargetRank_attained data.toParameters
-              inputs.current.object⟩
-            .nil)))
+          ⟨Graph.FiniteObject.internalWedgeFamily_card inputs.current.object
+              (inputs.current.object.remainderSupport
+                (canonicalWindowPacking data.toParameters inputs.current.object))⟩)
+        (.cons (key := K .curvatureTargetRank)
+          ⟨Contracts.Spine.curvatureTargetRank_attained data.toParameters
+            inputs.current.object⟩
+          .nil))
     0 0
 
 end Hypostructure.Graph.Strategy.Spine

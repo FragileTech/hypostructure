@@ -27,9 +27,8 @@ output are the exact-ledger facts named in the manifest.
 
 Part III of the manuscript repeats the Branch-D state of node `[33]` verbatim
 at node `[35]`, with the incoming edge labelled `from [33]`.  Hence `[35]`
-does not publish a second `branchDependence` fact.  It does, however, carry the
-separate labelled fact `lem:separated-testers`; `separatedTestersRow` below
-appends exactly that fact before node `[36]` tests the same certificate. -/
+does not publish a second `branchDependence` fact; node `[36]` tests the same
+certificate. -/
 @[reducible] noncomputable def branchDependenceRow
     (data : Data.{u}) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=

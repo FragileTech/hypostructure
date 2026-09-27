@@ -24,7 +24,9 @@ upstream existence fails.
 
 ## The objects
 
-* `coldGermExtraction?` — node `[153]`/`[219]`'s disjoint germ family together
+* (defined in `Statements/Spine.lean`, next to `ColdGermCandidatesStatement`,
+  because node `[406]`'s pointwise configuration there reads it)
+  `coldGermExtraction?` — node `[153]`/`[219]`'s disjoint germ family together
   with its corridor loss: `Classical.choose` of the `∃ disjointFamily
   corridorLoss` of `ColdGermCandidatesStatement`, whose incidence and candidate
   set are already pinned by equations to the routed ones
@@ -51,113 +53,6 @@ namespace Hypostructure.Graph.Strategy.Spine
 open Hypostructure
 
 universe u
-
-/-! ## The extracted disjoint germ family of node `[153]` -/
-
-/-- The `∃ disjointFamily corridorLoss`-body of `ColdGermCandidatesStatement`
-(node `[219]`, `lem:cold-germ-extraction`), with the incidence and candidate
-set at their pinned routed values. -/
-noncomputable def ColdGermExtractionSpec (data : Parameters)
-    (object : Graph.FiniteObject.{u})
-    (extraction : Finset (ColdGermOccurrence data object) × Nat) : Prop :=
-  ∃ routing : ColdFailureRoutingStatement data object,
-    ColdGermFamilyWitness data object routing
-      (coldRoutedOccurrenceIncidence data object routing)
-      (coldRoutedCandidates data object routing) extraction.1 extraction.2
-
-/-- Node `[219]` is literally the existence of its extraction at the routed
-incidence and candidates. -/
-theorem coldGermCandidates_iff_exists_extractionSpec (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    ColdGermCandidatesStatement data object ↔
-      ∃ extraction, ColdGermExtractionSpec data object extraction := by
-  classical
-  constructor
-  · intro candidates
-    unfold ColdGermCandidatesStatement at candidates
-    obtain ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-      witness⟩ := candidates
-    have witness' := witness
-    simp only [ColdGermFamilyWitness] at witness'
-    obtain ⟨incidenceEq, candidatesEq, -⟩ := witness'
-    subst incidenceEq
-    subst candidatesEq
-    exact ⟨(disjointFamily, corridorLoss), routing, witness⟩
-  · rintro ⟨extraction, routing, witness⟩
-    unfold ColdGermCandidatesStatement
-    exact ⟨routing, _, _, extraction.1, extraction.2, witness⟩
-
-/-- **The canonical extraction of node `[153]`**: `Classical.choose` of node
-`[219]`'s disjoint family and corridor loss. -/
-noncomputable def coldGermExtraction? (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Option (Finset (ColdGermOccurrence data object) × Nat) := by
-  classical
-  exact if h : ∃ extraction, ColdGermExtractionSpec data object extraction then
-    some (Classical.choose h) else none
-
-theorem coldGermExtraction?_spec (data : Parameters)
-    (object : Graph.FiniteObject.{u})
-    (h : ∃ extraction, ColdGermExtractionSpec data object extraction) :
-    ∃ extraction, coldGermExtraction? data object = some extraction ∧
-      ColdGermExtractionSpec data object extraction := by
-  classical
-  refine ⟨Classical.choose h, ?_, Classical.choose_spec h⟩
-  simp [coldGermExtraction?, h]
-
-theorem coldGermExtraction?_spec_of_eq_some (data : Parameters)
-    (object : Graph.FiniteObject.{u})
-    {extraction : Finset (ColdGermOccurrence data object) × Nat}
-    (eq : coldGermExtraction? data object = some extraction) :
-    ColdGermExtractionSpec data object extraction := by
-  classical
-  unfold coldGermExtraction? at eq
-  split at eq
-  · next h =>
-      cases eq
-      exact Classical.choose_spec h
-  · cases eq
-
-theorem coldGermExtraction?_eq_none_iff (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    coldGermExtraction? data object = none ↔
-      ¬ ∃ extraction, ColdGermExtractionSpec data object extraction := by
-  classical
-  unfold coldGermExtraction?
-  split <;> simp_all
-
-/-- On node `[219]`'s ledger the canonical extraction exists. -/
-theorem coldGermExtraction?_spec_of_candidates (data : Parameters)
-    (object : Graph.FiniteObject.{u})
-    (candidates : ColdGermCandidatesStatement data object) :
-    ∃ extraction, coldGermExtraction? data object = some extraction ∧
-      ColdGermExtractionSpec data object extraction :=
-  coldGermExtraction?_spec data object
-    ((coldGermCandidates_iff_exists_extractionSpec data object).1 candidates)
-
-/-- The canonical greedy disjoint germ family (the first projection). -/
-noncomputable def coldGermDisjointFamily? (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Option (Finset (ColdGermOccurrence data object)) :=
-  (coldGermExtraction? data object).map Prod.fst
-
-/-- Its canonical corridor loss (the second projection). -/
-noncomputable def coldGermCorridorLoss? (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Option Nat :=
-  (coldGermExtraction? data object).map Prod.snd
-
-/-- **A germ of the canonical extracted family**: the incidence of some
-occurrence of the one fixed family `coldGermDisjointFamily?`.  The routing
-fact is a proposition, so the routed incidence does not depend on its proof. -/
-noncomputable def CanonicalActiveColdGerm (data : Parameters)
-    (object : Graph.FiniteObject.{u})
-    (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object) : Prop :=
-  ∃ extraction, coldGermExtraction? data object = some extraction ∧
-    ∃ routing : ColdFailureRoutingStatement data object,
-      ∃ occurrence ∈ extraction.1,
-        coldRoutedOccurrenceIncidence data object routing occurrence = germ
 
 /-! ## The marked neutral equal-length germ of node `[406]` -/
 

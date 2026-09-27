@@ -145,15 +145,15 @@ noncomputable def nearCubicColdCandidates
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .coldCorridorState) known]
     (fresh : List.Disjoint
-      [K .coldFirstFailureOccurrence, K .coldFailureCycle, K .coldFailureDefect,
+      [K .coldFirstFailureOccurrence, K .coldFailureCycle,
         K .coldFailureDefectRoute, K .coldFailureCompression,
-        K .coldFailureHandoff, K .coldHandoffTransfer, K .coldFailureRouting,
-        K .coldExchangeBound, K .coldGermExtraction, K .coldGermCandidates]
+        K .coldHandoffTransfer, K .coldFailureRouting,
+        K .coldExchangeBound, K .coldGermCandidates]
       known := by key_fresh) :
     ExactLedger EGInput.{u} selected
-      (K .coldGermCandidates :: K .coldExchangeBound :: K .coldGermExtraction ::
-        K .coldFailureRouting :: K .coldHandoffTransfer :: K .coldFailureHandoff ::
-        K .coldFailureCompression :: K .coldFailureDefect ::
+      (K .coldGermCandidates :: K .coldExchangeBound ::
+        K .coldFailureRouting :: K .coldHandoffTransfer ::
+        K .coldFailureCompression ::
         K .coldFailureDefectRoute :: K .coldFailureCycle ::
         K .coldFirstFailureOccurrence :: known) :=
   let occurrence :=
@@ -165,11 +165,8 @@ noncomputable def nearCubicColdCandidates
   let failureCompression :=
     (coldFailureCompressionRow (data := spineData)).run failureDefect
       (by key_fresh)
-  let failureHandoff :=
-    (coldFailureHandoffRow (data := spineData)).run failureCompression
-      (by key_fresh)
   let handoffTransfer :=
-    (coldHandoffTransferRow (data := spineData)).run failureHandoff
+    (coldHandoffTransferRow (data := spineData)).run failureCompression
       (by key_fresh)
   let routed :=
     (coldFirstFailureRoutingRow (data := spineData)).run handoffTransfer
@@ -191,16 +188,16 @@ noncomputable def nearCubicColdGermFamily
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]
     (fresh : List.Disjoint
-      [K .coldFirstFailureOccurrence, K .coldFailureCycle, K .coldFailureDefect,
+      [K .coldFirstFailureOccurrence, K .coldFailureCycle,
         K .coldFailureDefectRoute, K .coldFailureCompression,
-        K .coldFailureHandoff, K .coldHandoffTransfer, K .coldFailureRouting,
-        K .coldExchangeBound, K .coldGermExtraction, K .coldGermCandidates,
+        K .coldHandoffTransfer, K .coldFailureRouting,
+        K .coldExchangeBound, K .coldGermCandidates,
         K .coldGermFamilyPositive] known := by key_fresh) :
     ExactLedger EGInput.{u} selected
       (K .coldGermFamilyPositive :: K .coldGermCandidates ::
-        K .coldExchangeBound :: K .coldGermExtraction :: K .coldFailureRouting ::
-        K .coldHandoffTransfer :: K .coldFailureHandoff ::
-        K .coldFailureCompression :: K .coldFailureDefect ::
+        K .coldExchangeBound :: K .coldFailureRouting ::
+        K .coldHandoffTransfer ::
+        K .coldFailureCompression ::
         K .coldFailureDefectRoute :: K .coldFailureCycle ::
         K .coldFirstFailureOccurrence :: known) :=
   (coldGermFamilyPositiveRow (data := spineData)).run
@@ -239,7 +236,6 @@ noncomputable def nearCubicColdTable
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .coldGermCandidates) known]
-    [FactKeys.Has (K .coldGermExtraction) known]
     (fresh : List.Disjoint
       [K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
         K .coldGermRouted, K .coldSameInterfaceTable, K .coldBranchClosed]

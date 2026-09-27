@@ -23,8 +23,6 @@ Public names remain in `Hypostructure.Graph.Strategy.Spine`.
 | `noProperBaselineRow` | 1540 | [NoProperBaseline.lean:27](NoProperBaseline.lean#L27) |
 | `deletionCriticalityRow` | 1591 | [DeletionCriticality.lean:34](DeletionCriticality.lean#L34) |
 | `cycleRankConstraintRow` | 1645 | [CycleRankConstraint.lean:27](CycleRankConstraint.lean#L27) |
-| `degreeProfileFibresRow` | 1700 | [DegreeProfileFibres.lean:33](DegreeProfileFibres.lean#L33) |
-| `targetCompleteContextUniversalityRow` | 1731 | [TargetCompleteContextUniversality.lean:28](TargetCompleteContextUniversality.lean#L28) |
 | `bridgelessRow` | 1762 | [Bridgeless.lean:28](Bridgeless.lean#L28) |
 | `replacementExclusionRow` | 1820 | [ReplacementExclusion.lean:38](ReplacementExclusion.lean#L38) |
 | `interfaceReplacementRow` | 1908 | [InterfaceReplacement.lean:20](InterfaceReplacement.lean#L20) |
@@ -44,7 +42,6 @@ Public names remain in `Hypostructure.Graph.Strategy.Spine`.
 | `targetRankCircuitRow` | 2869 | [TargetRankCircuit.lean:29](TargetRankCircuit.lean#L29) |
 | `curvatureRankDichotomy` | 2944 | [CurvatureRankDichotomy.lean:28](CurvatureRankDichotomy.lean#L28) |
 | `branchDependenceRow` | 3054 | [BranchDependence.lean:32](BranchDependence.lean#L32) |
-| `separatedTestersRow` | 3146 | [SeparatedTesters.lean:34](SeparatedTesters.lean#L34) |
 | `contextValidityDichotomy` | 3211 | [ContextValidityDichotomy.lean:29](ContextValidityDichotomy.lean#L29) |
 | `atomCompressionDichotomy` | 3297 | [AtomCompressionDichotomy.lean:50](AtomCompressionDichotomy.lean#L50) |
 | `delocalizationScopeDichotomy` | 3413 | [DelocalizationScopeDichotomy.lean:28](DelocalizationScopeDichotomy.lean#L28) |

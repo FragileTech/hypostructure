@@ -1893,45 +1893,44 @@ def TerminalLengthChangingFamily (S : DeclaredSignature) (threshold : Nat)
     CandidateGermFamily S threshold Baseline Target object candidates ∧
       ∀ germ ∈ candidates, germ.increment < 0 ∧ ¬ germ.Distinguishing
 
-/-- A same-interface table row that has not routed to a handoff or
-distinguishing defect. -/
+/-- A same-interface table row that has not routed to the declared handoff
+registry `Handoff` or to a distinguishing defect. -/
 def TerminalTableRow (S : DeclaredSignature)
-    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u}) :
-    Prop :=
-  ∃ Handoff : Finset object.Vertex → Prop,
-    ∃ row : TableRow S Baseline Target object Handoff,
-      ¬ Handoff row.support ∧ ¬ row.Distinguishing
+    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
+    (Handoff : Finset object.Vertex → Prop) : Prop :=
+  ∃ row : TableRow S Baseline Target object Handoff,
+    ¬ Handoff row.support ∧ ¬ row.Distinguishing
 
-/-- A short self-return table row that has not routed to a handoff or
-distinguishing defect. -/
+/-- A short self-return table row that has not routed to the declared handoff
+registry `Handoff` or to a distinguishing defect. -/
 def TerminalSelfReturn (S : DeclaredSignature) (LengthOK : Nat → Prop)
-    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u}) :
-    Prop :=
-  ∃ Handoff : Finset object.Vertex → Prop,
-    ∃ self : SelfReturn S LengthOK Baseline Target object Handoff,
-      ¬ Handoff self.row.support ∧ ¬ self.row.Distinguishing
+    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
+    (Handoff : Finset object.Vertex → Prop) : Prop :=
+  ∃ self : SelfReturn S LengthOK Baseline Target object Handoff,
+    ¬ Handoff self.row.support ∧ ¬ self.row.Distinguishing
 
-/-- The local terminal patterns of the cold oval on one residual. -/
+/-- The local terminal patterns of the cold oval on one residual, against the
+residual's declared handoff registry `Handoff`. -/
 def TerminalColdResidual (S : DeclaredSignature) (threshold : Nat)
     (LengthOK : Nat → Prop) (Baseline Target : FiniteObject.{u} → Prop)
-    (object : FiniteObject.{u}) : Prop :=
+    (object : FiniteObject.{u}) (Handoff : Finset object.Vertex → Prop) : Prop :=
   TerminalLengthChangingFamily S threshold Baseline Target object ∨
-    TerminalTableRow S Baseline Target object ∨
-      TerminalSelfReturn S LengthOK Baseline Target object
+    TerminalTableRow S Baseline Target object Handoff ∨
+      TerminalSelfReturn S LengthOK Baseline Target object Handoff
 
 /-- No local terminal cold pattern remains on this residual. -/
 def NoTerminalColdResidual (S : DeclaredSignature) (threshold : Nat)
     (LengthOK : Nat → Prop) (Baseline Target : FiniteObject.{u} → Prop)
-    (object : FiniteObject.{u}) : Prop :=
-  ¬ TerminalColdResidual S threshold LengthOK Baseline Target object
+    (object : FiniteObject.{u}) (Handoff : Finset object.Vertex → Prop) : Prop :=
+  ¬ TerminalColdResidual S threshold LengthOK Baseline Target object Handoff
 
 /-- The cold oval closes once the length-changing germs and the finite
-same-interface table have been routed on the current residual. -/
+same-interface table have been routed on the current residual, against its
+declared handoff registry. -/
 theorem noTerminalColdResidual_of_routing {S : DeclaredSignature}
     {threshold : Nat} {LengthOK : Nat → Prop}
     {Baseline Target : FiniteObject.{u} → Prop} {object : FiniteObject.{u}}
-    (_extraction :
-      ColdGermOccurrenceExtractionLocal S threshold Baseline Target object)
+    {Handoff : Finset object.Vertex → Prop}
     (routed :
       ∀ germ : BoundedGerm S Baseline Target object,
         germ.increment < 0 →
@@ -1940,16 +1939,14 @@ theorem noTerminalColdResidual_of_routing {S : DeclaredSignature}
               (profile : BoundaryPiece germ.atom.interface → Profile),
               ¬ Response.TargetComplete profile Target germ.piece germ.canonical)
     (table :
-      ∀ Handoff : Finset object.Vertex → Prop,
-        ∀ row : TableRow S Baseline Target object Handoff,
-          ¬ row.Realizing ∧ (Handoff row.support ∨ row.Distinguishing))
+      ∀ row : TableRow S Baseline Target object Handoff,
+        ¬ row.Realizing ∧ (Handoff row.support ∨ row.Distinguishing))
     (selfReturns :
-      ∀ Handoff : Finset object.Vertex → Prop,
-        ∀ self : SelfReturn S LengthOK Baseline Target object Handoff,
-          SurvivesSmear LengthOK (S.windowOrder - 1) self.outsideLength ∧
-            ¬ self.row.Realizing ∧
-              (Handoff self.row.support ∨ self.row.Distinguishing)) :
-    NoTerminalColdResidual S threshold LengthOK Baseline Target object := by
+      ∀ self : SelfReturn S LengthOK Baseline Target object Handoff,
+        SurvivesSmear LengthOK (S.windowOrder - 1) self.outsideLength ∧
+          ¬ self.row.Realizing ∧
+            (Handoff self.row.support ∨ self.row.Distinguishing)) :
+    NoTerminalColdResidual S threshold LengthOK Baseline Target object Handoff := by
   classical
   intro terminal
   rcases terminal with terminalFamily | terminalTable | terminalSelf
@@ -1957,12 +1954,12 @@ theorem noTerminalColdResidual_of_routing {S : DeclaredSignature}
     obtain ⟨germ, memberCandidates⟩ := Finset.card_pos.mp candidateFamily.1
     exact (terminal germ memberCandidates).2
       (routed germ (terminal germ memberCandidates).1).1
-  · rcases terminalTable with ⟨Handoff, row, noHandoff, noDistinguishing⟩
-    rcases (table Handoff row).2 with handoff | distinguishing
+  · rcases terminalTable with ⟨row, noHandoff, noDistinguishing⟩
+    rcases (table row).2 with handoff | distinguishing
     · exact noHandoff handoff
     · exact noDistinguishing distinguishing
-  · rcases terminalSelf with ⟨Handoff, self, noHandoff, noDistinguishing⟩
-    rcases (selfReturns Handoff self).2.2 with handoff | distinguishing
+  · rcases terminalSelf with ⟨self, noHandoff, noDistinguishing⟩
+    rcases (selfReturns self).2.2 with handoff | distinguishing
     · exact noHandoff handoff
     · exact noDistinguishing distinguishing
 

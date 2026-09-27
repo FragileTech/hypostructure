@@ -84,9 +84,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **828**.
+Compiled declarations: **820**.
 
-Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 168, **Minimum-degree cycle spine vocabulary** 422, **Sealed topology** 6, **Sealed total closure** 12, **Typed partial topology and sealed completion** 16.
+Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 168, **Minimum-degree cycle spine vocabulary** 414, **Sealed topology** 6, **Sealed total closure** 12, **Typed partial topology and sealed completion** 16.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -4175,17 +4175,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.admissibleRankQuotient`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.atomCompression`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4538,29 +4527,7 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.coldFailureDefect`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.coldFailureDefectRoute`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.coldFailureHandoff`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -4638,17 +4605,6 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.coldGermDistinguished`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.coldGermExtraction`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -5055,17 +5011,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.degreeProfileFibres`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.delocalizedSupport`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -5100,17 +5045,6 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.denseDeficiencyBelow`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.densePackingOverflow`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -6518,17 +6452,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.separatedTesters`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.singleOpenPortSuppressionWitness`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -6706,17 +6629,6 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.surplusAtOrBelow`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.targetCompleteContextUniversality`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -7992,16 +7904,11 @@ Expr → optParam (Array Expr) #[] → MetaM (Array Expr)
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
               [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.contextUniversal) known] →
-                [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.degreeProfileFibres)
-                      known] →
-                  [Core.Residual.FactKeys.Has
-                        (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.targetCompleteContextUniversality) known] →
-                    [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.maximalPacking)
-                          known] →
-                      Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.atomCompression ∉ known →
-                        Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.delocalizedSupport ∉ known →
-                          Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.atomCompression)
-                            (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.delocalizedSupport) previous
+                [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.maximalPacking) known] →
+                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.atomCompression ∉ known →
+                    Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.delocalizedSupport ∉ known →
+                      Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.atomCompression)
+                        (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.delocalizedSupport) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.B2AssignmentDichotomy`
@@ -8404,7 +8311,7 @@ Expr → optParam (Array Expr) #[] → MetaM (Array Expr)
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.densePackingOverflow)
+              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.windowPackageUnrealized)
                     known] →
                 Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.denseDeficiencyBelow ∉ known →
                   Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.denseDeficiencyAtOrAbove ∉ known →
