@@ -69,9 +69,9 @@ theorem typeBFanEntry_of_highSurplus
     TypeBFanEntryStatement data object := by
   obtain ⟨piece, lane⟩ := typeBOrdinaryLane_of_highSurplus cap surplus
   obtain ⟨centre, member, high⟩ := exists_highCentre_of_ambientSurplus_pos lane.2.2
-  exact Or.inl (Or.inl ⟨piece, _, lane,
+  exact Or.inl ⟨piece, _, Or.inl lane,
     ⟨centre, Graph.TypeBRefinedSupport.mem_centres.2 ⟨member, high⟩⟩,
-    TypeBOrdinaryLane.high lane⟩)
+    TypeBOrdinaryLane.high lane⟩
 
 /-- The decorated Type B support `(X₀, {z})` of node `[108]`: on the Type A arm
 `σ(X₀) = 0` of `[62]` and the exit-`(7)` arm of `[107]` at `X₀`, the canonical
@@ -189,8 +189,8 @@ theorem typeBFanEntry_of_decoratedLane {core centres : Finset object.Vertex}
     TypeBFanEntryStatement data object := by
   obtain ⟨_piece, separator, _separatorEq, centresEq⟩ :=
     decoratedSupport_eq_some lane.2.1
-  exact Or.inl (Or.inr (Or.inl ⟨core, centres, lane,
-    ⟨separator, by simp [centresEq]⟩, TypeBDecoratedLane.high lane⟩))
+  exact Or.inl ⟨core, centres, Or.inr (Or.inl lane),
+    ⟨separator, by simp [centresEq]⟩, TypeBDecoratedLane.high lane⟩
 
 /-- The decorated handoff of node `[108]` enters node `[65]`. -/
 theorem typeBFanEntry_of_decoratedHandoff
@@ -252,8 +252,8 @@ theorem absorbedGermDecoratedAssignedSupport
   change (∀ neighbour : object.Vertex,
     object.graph.Adj centre neighbour →
       object.degree neighbour = data.threshold) at neighboursCubic
-  refine ⟨centre, ⟨routing, epsilon, rfl, firstIndex, rfl,
-    firstBound, high, earlierBound, neighboursCubic, ?_⟩⟩
+  refine ⟨centre, firstIndex, rfl, firstBound, high, earlierBound,
+    neighboursCubic, ?_⟩
   let traceEnd := coldRoutedTraceEnd data object routing epsilon
   change firstIndex.1 ≤ traceEnd at firstBound
   let core := corridor.prefixSupport traceEnd
@@ -403,26 +403,61 @@ theorem absorbedGermDecoratedAssignedSupport
 
 
 
-/-- Node `[177]` → `[65]`: on the failed-collision arm of `[173]`, every selected
-half-edge outside the subcubic candidates has its canonical absorbed support,
-whose single centre is high. -/
-theorem typeBFanEntry_of_absorbedGermFanData
+/-- **Node `[175]`, read at `[177]`**: some selected corridor meets a
+high-degree vertex (`G`'s canonical absorbed half-edge exists), or every
+selected corridor is subcubic.  The two arms are the two values of the one
+canonical object `canonicalTypeBAbsorbedHalfEdge`. -/
+theorem typeBAbsorbedHalfEdge_split
+    (_fanData : AbsorbedGermFanDataStatement data object) :
+    TypeBAbsorbedHalfEdgeStatement data object ∨
+      TypeBAbsorbedHalfEdgeAbsentStatement data object := by
+  cases selected : canonicalTypeBAbsorbedHalfEdge data object with
+  | none => exact Or.inr selected
+  | some epsilon => exact Or.inl ⟨epsilon, selected⟩
+
+/-- Node `[177]`: at `G`'s canonical absorbed half-edge `ε`, which lies outside
+the subcubic candidates, node `[177]`'s decorated handoff at `ε` gives the
+absorbed Type B support `(prefix of ε, {first high centre})`. -/
+theorem typeBAbsorbedLane_of_halfEdge
     (fails : ExactCollisionFailsStatement data object)
     (fanData : AbsorbedGermFanDataStatement data object)
-    (supports : AbsorbedGermDecoratedAssignedSupportStatement data object) :
-    TypeBFanEntryStatement data object := by
+    (supports : AbsorbedGermDecoratedAssignedSupportStatement data object)
+    (outside : TypeBAbsorbedHalfEdgeStatement data object) :
+    ∃ core centres, TypeBAbsorbedLane data object core centres := by
   classical
-  obtain ⟨routing, witnesses⟩ := supports
-  refine Or.inl (Or.inr (Or.inr ⟨⟨fails, fanData, routing, ?_⟩, ?_⟩))
-  · intro epsilon notCandidate
-    obtain ⟨centre, centreEq, _⟩ :=
-      canonicalAbsorbedCentre_spec routing (witnesses epsilon notCandidate)
-    simp [canonicalTypeBAbsorbedSupport, routing, centreEq]
-  · intro epsilon core centres lane
-    obtain ⟨_routing, _notCandidate, support⟩ := id lane
-    obtain ⟨centre, _centreEq, rfl⟩ := absorbedSupport_eq_some support
-    exact ⟨⟨centre, Finset.mem_singleton_self centre⟩,
-      TypeBAbsorbedLane.high lane⟩
+  obtain ⟨epsilon, edgeEq⟩ := outside
+  obtain ⟨routing, notCandidate⟩ := canonicalChoice_spec_of_eq_some edgeEq
+  obtain ⟨_routing, witnesses⟩ := supports
+  obtain ⟨centre, centreEq, _handoff⟩ :=
+    canonicalAbsorbedCentre_spec routing (witnesses epsilon notCandidate)
+  refine ⟨(coldOccurrenceCorridorAt data object
+      (coldRoutedClassified data object routing) epsilon).prefixSupport
+        (coldRoutedTraceEnd data object routing epsilon), {centre}, fails,
+    fanData, ?_⟩
+  simp [canonicalTypeBAbsorbedSupport, edgeEq, canonicalTypeBAbsorbedSupportAt,
+    routing, centreEq]
+
+/-- Node `[177]` → `[65]`: the absorbed Type B support enters the common Type B
+entry with its single high centre. -/
+theorem typeBFanEntry_of_absorbedLane {core centres : Finset object.Vertex}
+    (lane : TypeBAbsorbedLane data object core centres) :
+    TypeBFanEntryStatement data object := by
+  obtain ⟨_epsilon, _edgeEq, supportAt⟩ := absorbedSupport_eq_some lane.2.2
+  obtain ⟨_routing, centre, _centreEq, rfl, _coreEq⟩ :=
+    absorbedSupportAt_eq_some supportAt
+  exact Or.inl ⟨core, {centre}, Or.inr (Or.inr lane),
+    ⟨centre, Finset.mem_singleton_self centre⟩, TypeBAbsorbedLane.high lane⟩
+
+/-- Node `[175]` yes → `[177]` → `[65]`. -/
+theorem typeBFanEntry_of_absorbedHalfEdge
+    (fails : ExactCollisionFailsStatement data object)
+    (fanData : AbsorbedGermFanDataStatement data object)
+    (supports : AbsorbedGermDecoratedAssignedSupportStatement data object)
+    (outside : TypeBAbsorbedHalfEdgeStatement data object) :
+    TypeBFanEntryStatement data object := by
+  obtain ⟨_core, _centres, lane⟩ :=
+    typeBAbsorbedLane_of_halfEdge fails fanData supports outside
+  exact typeBFanEntry_of_absorbedLane lane
 
 /-- Node `[144]` → `[65]`: the same-token handoff of G on the strict-surplus arm
 of `[19]` enters the common Type B entry at G's canonical same-token support. -/

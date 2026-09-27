@@ -93,4 +93,15 @@ theorem typeBBridgeSublinear
     (fun piece pieceMem _pieceNotEmpty => groupedComponents piece pieceMem)
   simpa [Graph.TypeBEnvelopeCharge.route8Deficit] using atMostTwice
 
+/-- The `[113]`-style test of `prop:typeB-bridge-sublinear`, read after the
+bridge-sublinear fact at the same fixed packing `P₀` and the same canonical role
+unions: the tested hypotheses hold, or they fail (the Part IX bridge-residual
+state). -/
+theorem typeBSublinear_split
+    (_bridge : TypeBBridgeSublinearStatement data object) :
+    TypeBSublinearHypotheses data object ∨
+      TypeBSublinearResidualStatement data object := by
+  classical
+  exact em _
+
 end Hypostructure.Graph.Contracts.TypeB

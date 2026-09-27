@@ -19,15 +19,16 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def triangularShoulderCompletionRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.triangularShoulderCompletion
-    { Requires := [K .highCentreNormalForm]
+    { Requires := [K .highCentreNormalForm, K .cubicBaseline]
       Produces := [K .triangularShoulderCompletion]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .triangularShoulderCompletion)
         ⟨Contracts.TypeB.triangularShoulderCompletion (inputs.get (K .highCentreNormalForm)).down
-          data.threshold_eq_three data.three_le_threshold inputs.current.baseline⟩
+          (inputs.get (K .cubicBaseline)).down.1
+          (le_of_eq (inputs.get (K .cubicBaseline)).down.1.symm) inputs.current.baseline⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

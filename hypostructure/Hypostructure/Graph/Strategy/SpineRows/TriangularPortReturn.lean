@@ -19,7 +19,8 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def triangularPortReturnRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.triangularPortReturn
-    { Requires := [K .bridgeless, K .selection, K .highCentreNormalForm, K .triangularShoulderCompletion]
+    { Requires := [K .bridgeless, K .selection, K .highCentreNormalForm,
+        K .triangularShoulderCompletion, K .cubicBaseline]
       Produces := [K .triangularPortReturn]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -29,7 +30,8 @@ variable {data : Data.{u}}
         ⟨Contracts.TypeB.triangularPortReturn (inputs.get (K .bridgeless)).down
           (inputs.get (K .selection)).down.1 (inputs.get (K .highCentreNormalForm)).down
           (inputs.get (K .triangularShoulderCompletion)).down
-          data.threshold_eq_three data.lengthOK_iff_powerOfTwo⟩
+          (inputs.get (K .cubicBaseline)).down.1
+          (inputs.get (K .cubicBaseline)).down.2.2.2.2.2.1⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

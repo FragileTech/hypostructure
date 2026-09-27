@@ -140,36 +140,6 @@ negation on the remainder of the fixed maximum packing
   existential) and splits on `σ(X₀) = 0`: `K .typeALowSurplus` /
   `K .typeBHighSurplus`, exact complements at `X₀`.  No divergence remains.
 
-## [65]–[85]: Type B facts are stated over the support family, not per entry lane
-
-*Family F2 (Type B).*
-
-- **Paper** (diagram tex:950–1035; `def:typeB-assigned-ledger`,
-  `def:decorated-fan-envelope`, `lem:absorbed-germ-fan-data`,
-  `lem:same-token-bottleneck-routing`). Node [65] receives one assigned Type B
-  support `X = (Y_X, H_X)` from [64], [66]/[108], [177] or [144]; nodes
-  [67]–[85] reason about that support.
-- **Lean.** `TypeBSupport` (`hypostructure/Hypostructure/Graph/Statements/TypeB.lean`)
-  is the family of all assigned supports of the object in the three entry forms
-  (`TypeBCanonicalForm`, `TypeBAbsorbedForm`, `TypeBSameTokenForm`). Every
-  Type B key is stated over this family: row facts are universal over it, and
-  each decision ([68] `typeBFanDegreeDichotomy`, [71]/[80]
-  `fanCertificateDichotomy`, [72]/[81] `directCycleDichotomy` and
-  `b2AssignmentDichotomy`) is a family predicate and its exact negation, proved
-  exact by `typeBFanDegreeFourCentres_iff_not_heavy`,
-  `typeBFanCertificateResidual_iff_not_marked`,
-  `typeBFanDirectCycleFree_iff_not_directCycle` and
-  `typeBB2Obstruction_iff_not_choice` (`Graph/Contracts/TypeB/`). The previous
-  three-lane Or keys (canonical | absorbed | same-token) are gone; so are the
-  lane `rcases` inside decisions.
-- **Why at least as strong.** Every universal fact holds in particular at the
-  entering support, so no paper fact about X is weakened. The decisions are
-  exhaustive and exclusive on one pinned object (the family is a definable
-  predicate of the object, not a chosen witness). Each argument is one
-  contract lemma instead of three lane copies. The terminal at [72]
-  (a direct configuration is an accepted cycle) closes on either arm of the
-  family exactly as the paper closes it for X.
-
 ## [69]: routed local dichotomy on the heavy arm
 
 *Family F2 (Type B).*
@@ -186,10 +156,18 @@ negation on the remainder of the fixed maximum packing
   `HeavyCentreRoutedAlternative` at every heavy assigned centre: either a
   fan-compatible open pair together with `CompatiblePairRoutes` in every
   profile at the centre, or a family of exactly `d_G(h) − 2 ≥ 3` triangular
-  ports together with `TriangularPortsRoute` (`D_B ≥ (5k−19)/4`). Contract
-  `Contracts.TypeB.heavyCentreRoutedAlternative`. The degree-four arm keeps the
-  compatible-pair and fan-closed routing of `cor:degree-four-local-activation`.
-  Paper-exact; no deviation remains.
+  ports together with `TriangularPortsRoute`
+  (`D_B ≥ ((s+1)k − (s(δ+2) − 1))/s`, the paper's `(5k−19)/4` at `δ = 3`,
+  `s = 4`). Contract `Contracts.TypeB.heavyCentreRoutedAlternative`. The
+  degree-four arm keeps the compatible-pair and fan-closed routing of
+  `cor:degree-four-local-activation`. Paper-exact; no deviation remains.
+- **Final pass (TB).** The routing statements no longer quantify over
+  arbitrary load profiles or write numerals: they are at the registered
+  discharge profile `typeBDischargeProfile data` (`α = 1/s`, `s =
+  data.dischargeScale`), the normal form is at `data.threshold`, the heavy
+  guard is `δ + 1 < d_G(h)`, and the contracts read `δ = 3`, `s = 4` from
+  `K .cubicBaseline`.  `lem:triangular-cross-shoulder` states its high
+  shoulder as `δ < d_G(s)`.
 
 ## [70]: fan-safe graph and certificate cap are one fact
 
@@ -216,56 +194,82 @@ negation on the remainder of the fixed maximum packing
 *Family F2 (Type B).*
 
 - **Paper** (tex:976–979, 1020–1023; `prop:typeB-bridge-reduction`). The B2 yes
-  edge goes [74] → [76] → [77]; [74] is not a diamond.
+  edge goes [74] → [76] → [77]; [74] is not a diamond.  The fan-mass arms go
+  [75] → [76] and [84] → [85].
 - **Previous Lean.** `typeBExclusionDichotomy` split on the sign of the
   remaining core charge and closed the nonnegative arm inline
-  (`NearCubicCertificate`), an arm that was uninhabitable (its `Holds`
-  contained both the support's negative charge and `N₀ ≥ 0`).
-- **Lean now.** Two rows in paper order: `typeBExcludedRow` ([74],
-  `prop:typeB-bridge-reduction`: a B2 ledger with nonnegative remaining core
-  gives `N₀(X) ≥ 0`) and `typeBExclusionResidualRow` ([76]: a canonical support
-  is negative, so its B2 ledger leaves a negative post-ledger core), then the
-  mass row and the route-8 continuation [77]. This is the paper's topology; no
-  deviation remains.
-- **G-repair.** All three keys are about the one canonical B2 ledger
-  `canonicalTypeBDisjointChoice data G Y_X H_X` of the Type B support, read
-  from `K .typeBDisjointLedger` (d2ded0e's `[76]` also read that key's
-  ledger).  The d2ded0e decision's yes arm is not restored: it was
-  unreachable and was closed by a hand-built `False`.
+  (`NearCubicCertificate`), an arm that was uninhabitable.  Later, the fan-mass
+  arms went straight from [75]/[84] to route 8, and a content-free mass key
+  (`typeBExclusionResidualMass`, idx 188) followed [76].
+- **Lean now.** [74] `typeBExcludedRow` (`prop:typeB-bridge-reduction`: a B2
+  ledger with nonnegative remaining core gives `N₀(X) ≥ 0`), then [76]/[85]
+  `K .typeBExclusionResidual`, then route 8 [77].  [76]/[85] is one statement
+  (`TypeBExclusionResidualStatement`) reached from all three arms: if B2 holds
+  at the support, a negative canonical core keeps a negative post-ledger core
+  on its canonical B2 ledger (its deficit is carried only through route 8);
+  if B2 fails or a centre is a fan-certificate residual centre, every assigned
+  centre is charged to its surplus (`def:typeB-residual-mass`), whose total is
+  the sublinear bridge mass of `prop:typeB-bridge-sublinear`.  Producers:
+  `typeBExclusionResidualRow` (reads `K .typeBDisjointLedger`,
+  `K .typeBExcluded`), `typeBCertificateMassExclusionRow` (reads
+  `K .fanCertificateResidualMass`, [75]/[84] → [76]/[85]) and
+  `typeBObstructionMassExclusionRow` (reads `K .typeBOverlapObstructionMass`).
+  Key 188 is deleted.  This is the paper's topology.
+- **G-repair.** All keys are about the one canonical B2 ledger
+  `canonicalTypeBDisjointChoice data G Y_X H_X` of the Type B support.
 
 ## [65]--[85]: the Type B support is the one support fixed by the entry
 
-*Family F2 (Type B), G-repair.*
+*Family F2 (Type B), G-repair and final pass.*
 
 - **Paper** (tex 961, `def:typeB-assigned-ledger` tex 12909). Node [65]
   receives one assigned support `X = (Y_X, H_X)`, and every node
   [67]--[85] speaks about that `X`.
-- **Previous Lean.** Every key quantified over a family `TypeBSupport` of
-  arbitrary maximal packings and envelopes; `({a}, {h})` for any high `h`
-  was a member, so the family was "all high vertices of G".  No decision
-  read its predecessor.
 - **Lean now** (`Statements/TypeBLanes.lean`). Each entry form is a lane
-  pinned to R0's canonical object of G: ordinary `(X₀, H(X₀))`
+  pinned to a canonical object of G: ordinary `(X₀, H(X₀))`
   (`canonicalTypeBOrdinarySupport`, on `K .netChargeCap` and `σ(X₀) > 0`),
   decorated `(X₀, {z})` (`canonicalTypeBDecoratedSupport` with its canonical
-  envelope, on `K .netChargeCap` and `σ(X₀) = 0`), absorbed `X_ε`
-  (`canonicalTypeBAbsorbedSupport ε`, on `K .exactCollisionFails` with the
-  [175] data), and the [144] same-token handoff (on `K .surplusAbove`; no
-  continuation runs there).  The lanes are mutually exclusive
-  (`Contracts.TypeB.ordinary_decorated_exclusive`,
-  `netChargeCap_not_exactCollisionFails`; the same-token lane by
-  `surplusAbove`/`surplusAtOrBelow`), so each decision's two arms
-  `TypeBLaneSome P` / `TypeBLaneAll ¬P` are exact complements at the one
-  support (`TypeBLaneSome.not_all`).  Decisions read their d2ded0e
-  predecessor: [68] `typeBFanEntry`, [71] `fanCertificateCap`, [72]
-  `fanCertificateMarked`, B2 `typeBDirectCycleFree`; [70] reads
-  `typeBFanEntry`, [69] `typeBFanHeavyCentre`, the global-local bridge
-  `typeBOverlapObstruction`, its mass `typeBGlobalLocalBridge`.  The window
-  union is `W₀ = windowSupport P₀` and the fan envelope is
-  `canonicalEnvelope G h` throughout; the bridge statements are at `P₀` and
-  at G's canonical piece collections.
+  envelope, on `K .netChargeCap` and `σ(X₀) = 0`), absorbed
+  (`canonicalTypeBAbsorbedSupport`, on `K .exactCollisionFails` with the [175]
+  fan data), and the [144] same-token handoff at `canonicalSameTokenSupport`
+  (on `K .surplusAbove`; no continuation runs there).
+  - The absorbed support is the support of **one** canonical half-edge,
+    `canonicalTypeBAbsorbedHalfEdge` (the canonical choice of a selected
+    half-edge outside node [153]'s subcubic candidates): its core is that
+    half-edge's retained first-failure prefix, i.e. the counted core of the
+    [177] envelope, and its centre is the least high vertex of that prefix
+    (`AbsorbedHandoffAt`, read at the half-edge itself, so the centre lies in
+    the core).  The lane is nonempty exactly on the [175] yes arm: the [177]
+    entry reads `K .typeBAbsorbedHalfEdge` ("some selected corridor meets a
+    high-degree vertex", decided by `typeBAbsorbedHalfEdgeDichotomy` from
+    `K .absorbedGermFanData`).
+  - Every Type B key is `TypeBLaneAt P = ∃ Y H, TypeBLaneMember Y H ∧ P Y H`.
+    The lanes are mutually exclusive and each has one support
+    (`Contracts.TypeB.TypeBLaneMember.unique`, from
+    `ordinary_decorated_exclusive` and `netChargeCap_not_exactCollisionFails`),
+    so a decision splits `P` / `¬P` at that one support
+    (`TypeBLaneAt.split`, `TypeBLaneAt.not_and_not`).  The same-token disjunct
+    of [65] is separated from the continuation lanes by the
+    `K .surplusAtOrBelow` read of [68]/[70] (`typeBLanes_of_entry`); no lemma
+    states that exclusivity.
+  - Decisions read their predecessor: [68] `typeBFanEntry` (and
+    `surplusAtOrBelow`), [71]/[80] `fanCertificateCap`, the direct-cycle test
+    `fanCertificateMarked`, [72] B2 and [81] `typeBDirectCycleFree`,
+    `prop:typeB-bridge-sublinear`'s test (`typeBSublinearDichotomy`)
+    `typeBBridgeSublinear`.
+  - [81] on the degree-four arm is the paper's test (tex 1019): `c ≤ 1` at
+    every assigned centre, or `c ≥ 2` with the B2 disjoint choice
+    (`K .typeBDegreeFourLedger`), against `c ≥ 2` and B2 fails, with its
+    minimal overlap obstruction (`K .typeBDegreeFourOverlap`, [83]);
+    `c` is the closed count at the canonical fan envelope.  The heavy arm
+    keeps [72]'s B2 test.
+  - The window union is `W₀ = windowSupport P₀`, and the bridge statements
+    are at `P₀` and at G's canonical piece collections.  The presentation
+    facts (accepted quadrilateral, dyadic target, fan-cap, deficit and
+    bridge-mass slacks) are published once with `K .cubicBaseline`
+    (`TypeBPresentationStatement`) and read with `inputs.get`.
 - **Triangular keys** (`def:triangular-fan-core`, tex 2378; tex 2413, 2452,
-  2489, 2521). They are stated at a *heavy* center (`d_G(h) ≥ 5`,
+  2489, 2521). They are stated at a *heavy* center (`d_G(h) > δ + 1`,
   `def:heavy-center-triangular-port` tex 2223), and so run on the heavy arm
   [69], feeding `prop:triangular-port-typeB-routing` (tex 13780); the
   degree-four arm runs only the routings used by
@@ -546,6 +550,36 @@ canonical homogeneous pattern at that token
   before the joint balance.  The paper's `[186]` exclusion (168.22) is the same
   contradiction stated one node later.  Kernel-checked; the visible lane still
   reaches the open node `[186]`.
+
+## Remaining divergences (not admitted under the exception), family F2
+
+- **[175] no, read at [177].** When no selected half-edge lies outside node
+  [153]'s subcubic candidates (`K .typeBAbsorbedHalfEdgeAbsent`), the paper's
+  [175] no arm is [176] (closed by [154]--[157], [165]--[168]).  The Lean
+  cannot close it here: the [176] closures are F5's facts on the
+  `K .coldPositiveGerm` arm, and on the `K .coldNoPositiveGerm` arm this case
+  means that there is no selected half-edge at all.  The ledger continues to
+  the open route-8 boundary (`selectedTypeBRoute8Continuation`) without
+  entering Type B; it no longer enters [65] with an empty absorbed family.
+- **[82], the `c ≤ 1` case.** "Certificate-closed; `N₀(X) ≥ 0`"
+  (`lem:typeB-exclusion`, Step 1: the closed fan neighbourhood carries
+  nonnegative charge) is not published.  On the [81] yes arm the B2 ledger
+  facts are published whenever B2 holds (`TypeBDisjointLedgerStatement` is
+  conditional on the disjoint choice), and [85] is the same
+  `K .typeBExclusionResidual` fact as on the other arms.
+- **[73]/[74]/[76] on the absorbed lane.** The global-local reflection,
+  B2(a)--(d) hygiene and the [76] B2-paid residual are stated for a core that
+  is a canonical piece of `P₀` (`∀ piece, piece.vertices = Y → …`).  On the
+  absorbed lane the core is a first-failure prefix, not a canonical piece,
+  so those clauses are vacuous there.  The paper states them for any connected
+  assigned support.  Same as d2ded0e.
+- **The fan envelope.** Every lane evaluates the B1 entry, the degree-four
+  profile and the residual mass at `canonicalEnvelope G h`, the closed 2-ball
+  of the centre.  On the decorated and absorbed lanes the paper's assigned fan
+  envelope is the handoff envelope's assigned set.  The B1 and mass
+  inequalities used are proved for every envelope, so they hold at the 2-ball;
+  the closed count `c` at the 2-ball can exceed the count at the handoff
+  envelope.
 
 ## Remaining divergences (not admitted under the exception), family F5
 

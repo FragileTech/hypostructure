@@ -28,7 +28,8 @@ universe u w
 /-- Every key committed from `[177]` on: the fan data, its Type B entry, and the
 Type B / route-8 charge tail. -/
 noncomputable abbrev netChargeFanDataKeys : FactKeys EGInput.{u} :=
-  [K .absorbedGermFanData, K .typeBFanEntry, K .netChargeLocalization,
+  [K .absorbedGermFanData, K .typeBAbsorbedHalfEdge,
+    K .typeBAbsorbedHalfEdgeAbsent, K .typeBFanEntry, K .netChargeLocalization,
     K .netChargeNonNegative, K .netChargeNegative, K .negativeSupport,
     K .typeALowSurplus, K .typeBHighSurplus, K .typeABoundedSupport,
     K .typeAReceiverRouting, K .typeASaturatedReceiver,
@@ -53,7 +54,8 @@ noncomputable abbrev netChargeFanDataKeys : FactKeys EGInput.{u} :=
     K .fanCertificateResidualMass, K .typeBDirectCycle, K .typeBDirectCycleFree,
     K .typeBB2Choice, K .typeBOverlapObstruction, K .typeBHybridEntry,
     K .typeBDisjointLedger, K .typeBBridgeMass, K .typeBBridgeSublinear,
-    K .typeBExcluded, K .typeBExclusionResidual, K .typeBExclusionResidualMass,
+    K .typeBExcluded, K .typeBExclusionResidual, K .typeBDegreeFourLedger,
+    K .typeBDegreeFourOverlap,
     K .typeBOverlapObstructionMass, K .typeBFanDegreeFourProfile,
     K .triangularFanCore, K .typeBDecoratedAssignedSupport,
     K .route8ResidualProfile, K .route8BasinBurden,
@@ -109,12 +111,29 @@ noncomputable def selectedAbsorbedFanData
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .absorbedGermSplit) known]
     (fresh : List.Disjoint netChargeFanDataKeys.{u} known := by key_fresh) :
-    SelectedAbsorbedGermBoundary selected :=
+    SelectedAbsorbedGermBoundary selected := by
   let fanData :=
     (absorbedGermFanDataRow (data := spineData)).run history (by key_fresh)
-  let fanEntry :=
-    (absorbedGermFanEnvelopeRow (data := spineData)).run fanData (by key_fresh)
-  Assembly.Internal.selectedAbsorbedFanChargeContinuation fanEntry
+  -- `[175]` read at `[177]`: does some selected corridor meet a high-degree
+  -- vertex, i.e. does `G` have an absorbed half-edge outside the subcubic
+  -- candidates?
+  match typeBAbsorbedHalfEdgeDichotomy (data := spineData) fanData
+      (by key_fresh) (by key_fresh) with
+  | .right subcubicHistory =>
+      -- Every selected corridor is subcubic: there is no absorbed Type B
+      -- support, and the ledger continues to the open route-8 boundary.
+      let routed :=
+        (typeAReceiverRoutingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          subcubicHistory (by key_fresh)
+      exact selectedTypeBRoute8Continuation routed
+  | .left outsideHistory =>
+      let fanEntry :=
+        (absorbedGermFanEnvelopeRow (data := spineData)).run outsideHistory
+          (by key_fresh)
+      exact Assembly.Internal.selectedAbsorbedFanChargeContinuation fanEntry
+        (by key_fresh)
         (by key_fresh)
         (by key_fresh)
         (by key_fresh)

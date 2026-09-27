@@ -32,4 +32,22 @@ variable {data : Data.{u}}
           (inputs.get (K .typeBOverlapObstruction)).down⟩
         .nil)
 
+/-- Node `[83]`, `prop:typeB-global-local-bridge` on the `[81]` no arm. -/
+@[reducible] noncomputable def typeBDegreeFourGlobalLocalBridgeRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeBDegreeFourGlobalLocalBridge
+    { Requires := [K .typeBDegreeFourOverlap, K .selection,
+        K .highCentreNormalForm]
+      Produces := [K .typeBGlobalLocalBridge]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .typeBGlobalLocalBridge)
+        ⟨Contracts.TypeB.typeBGlobalLocalBridge_of_degreeFour
+          (inputs.get (K .selection)).down.1
+          (inputs.get (K .highCentreNormalForm)).down
+          (inputs.get (K .typeBDegreeFourOverlap)).down⟩
+        .nil)
+
 end Hypostructure.Graph.Strategy.Spine

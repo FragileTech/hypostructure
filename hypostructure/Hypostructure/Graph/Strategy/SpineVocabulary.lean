@@ -1084,9 +1084,18 @@ inductive Key where
   /-- Nodes `[83]`/`[84]`: the fan-mass bound instantiated at the selected
   minimal overlap obstruction. -/
   | typeBOverlapObstructionMass
-  /-- Nodes `[76]`/`[85]`: the fan-mass bound instantiated at the selected
-  failure of the disjoint B2 ledger. -/
-  | typeBExclusionResidualMass
+  /-- Node `[175]`, yes, read at `[177]`: some selected corridor meets a
+  high-degree vertex --- `G`'s canonical absorbed half-edge exists. -/
+  | typeBAbsorbedHalfEdge
+  /-- Node `[175]`, no: every selected corridor is subcubic (no absorbed
+  half-edge). -/
+  | typeBAbsorbedHalfEdgeAbsent
+  /-- Node `[81]`, yes: `c ≤ 1` at every assigned centre, or `c ≥ 2` with the B2
+  disjoint choice, at the degree-four Type B support. -/
+  | typeBDegreeFourLedger
+  /-- Node `[81]`, no → `[83]`: some assigned centre has `c ≥ 2` and B2 fails;
+  minimal Type B overlap obstruction. -/
+  | typeBDegreeFourOverlap
   /-- Nodes `[73]`/`[75]` and `[83]`/`[84]`: the Type B residual fan-mass facts
   for certificate residuals, overlap obstructions, and grouped decorated
   envelope residuals. -/
@@ -2038,8 +2047,14 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeBFanCertificateResidualMassStatement data.toParameters object
   | .typeBOverlapObstructionMass, object =>
       TypeBOverlapObstructionMassStatement data.toParameters object
-  | .typeBExclusionResidualMass, object =>
-      TypeBExclusionResidualMassStatement data.toParameters object
+  | .typeBAbsorbedHalfEdge, object =>
+      TypeBAbsorbedHalfEdgeStatement data.toParameters object
+  | .typeBAbsorbedHalfEdgeAbsent, object =>
+      TypeBAbsorbedHalfEdgeAbsentStatement data.toParameters object
+  | .typeBDegreeFourLedger, object =>
+      TypeBDegreeFourLedgerStatement data.toParameters object
+  | .typeBDegreeFourOverlap, object =>
+      TypeBDegreeFourOverlapStatement data.toParameters object
   | .typeBBridgeMass, object =>
       TypeBBridgeMassStatement data.toParameters object
   | .typeBBridgeSublinear, object =>
@@ -2525,7 +2540,10 @@ def label : Key → String
   | .typeBGlobalLocalBridge => "typeBGlobalLocalBridge"
   | .fanCertificateResidualMass => "fanCertificateResidualMass"
   | .typeBOverlapObstructionMass => "typeBOverlapObstructionMass"
-  | .typeBExclusionResidualMass => "typeBExclusionResidualMass"
+  | .typeBAbsorbedHalfEdge => "typeBAbsorbedHalfEdge"
+  | .typeBAbsorbedHalfEdgeAbsent => "typeBAbsorbedHalfEdgeAbsent"
+  | .typeBDegreeFourLedger => "typeBDegreeFourLedger"
+  | .typeBDegreeFourOverlap => "typeBDegreeFourOverlap"
   | .typeBBridgeMass => "typeBBridgeMass"
   | .typeBBridgeSublinear => "typeBBridgeSublinear"
   | .typeBExcluded => "typeBExcluded"
@@ -2853,7 +2871,10 @@ example : label .typeBOverlapObstruction = "typeBOverlapObstruction" := rfl
 example : label .typeBGlobalLocalBridge = "typeBGlobalLocalBridge" := rfl
 example : label .fanCertificateResidualMass = "fanCertificateResidualMass" := rfl
 example : label .typeBOverlapObstructionMass = "typeBOverlapObstructionMass" := rfl
-example : label .typeBExclusionResidualMass = "typeBExclusionResidualMass" := rfl
+example : label .typeBAbsorbedHalfEdge = "typeBAbsorbedHalfEdge" := rfl
+example : label .typeBAbsorbedHalfEdgeAbsent = "typeBAbsorbedHalfEdgeAbsent" := rfl
+example : label .typeBDegreeFourLedger = "typeBDegreeFourLedger" := rfl
+example : label .typeBDegreeFourOverlap = "typeBDegreeFourOverlap" := rfl
 example : label .typeBBridgeMass = "typeBBridgeMass" := rfl
 example : label .typeBBridgeSublinear = "typeBBridgeSublinear" := rfl
 example : label .typeBExcluded = "typeBExcluded" := rfl
@@ -3199,7 +3220,10 @@ def idx : Key → Nat
   | .typeBGlobalLocalBridge => 447
   | .fanCertificateResidualMass => 186
   | .typeBOverlapObstructionMass => 187
-  | .typeBExclusionResidualMass => 188
+  | .typeBAbsorbedHalfEdge => 2100
+  | .typeBAbsorbedHalfEdgeAbsent => 2101
+  | .typeBDegreeFourLedger => 2102
+  | .typeBDegreeFourOverlap => 2103
   | .typeBBridgeMass => 85
   | .typeBBridgeSublinear => 189
   | .typeBExcluded => 166
@@ -3517,7 +3541,10 @@ def ofIdx : Nat → Key
   | 447 => .typeBGlobalLocalBridge
   | 186 => .fanCertificateResidualMass
   | 187 => .typeBOverlapObstructionMass
-  | 188 => .typeBExclusionResidualMass
+  | 2100 => .typeBAbsorbedHalfEdge
+  | 2101 => .typeBAbsorbedHalfEdgeAbsent
+  | 2102 => .typeBDegreeFourLedger
+  | 2103 => .typeBDegreeFourOverlap
   | 85 => .typeBBridgeMass
   | 189 => .typeBBridgeSublinear
   | 166 => .typeBExcluded
@@ -4098,9 +4125,18 @@ def name : Key → Lean.Name
   | .typeBOverlapObstructionMass =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBOverlapObstructionMass") 187
-  | .typeBExclusionResidualMass =>
+  | .typeBAbsorbedHalfEdge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
-        "typeBExclusionResidualMass") 188
+        "typeBAbsorbedHalfEdge") 2100
+  | .typeBAbsorbedHalfEdgeAbsent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBAbsorbedHalfEdgeAbsent") 2101
+  | .typeBDegreeFourLedger =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBDegreeFourLedger") 2102
+  | .typeBDegreeFourOverlap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBDegreeFourOverlap") 2103
   | .typeBBridgeMass =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBBridgeMass") 85
   | .typeBBridgeSublinear =>

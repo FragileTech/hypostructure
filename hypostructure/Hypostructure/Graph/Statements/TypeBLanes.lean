@@ -15,17 +15,17 @@ on `G`:
   `canonicalTypeBOrdinarySupport`, on the `K .netChargeCap` arm of `[57]`;
 * decorated (`[107]` yes → `[108]` → `[66]`): `X = (X₀, {z})`,
   `canonicalTypeBDecoratedSupport`, on the `K .netChargeCap` arm of `[57]`;
-* absorbed (`[173]` no → `[177]`): for each selected half-edge `ε`,
-  `X_ε = canonicalTypeBAbsorbedSupport ε`, on the `K .exactCollisionFails` arm;
+* absorbed (`[173]` no → `[175]` yes → `[177]`): `X = canonicalTypeBAbsorbedSupport`,
+  the support of `G`'s canonical selected half-edge outside the subcubic
+  candidates, on the `K .exactCollisionFails` arm;
 * same-token (`[144]` → `[144a]`): `X = canonicalSameTokenSupport`, at which
   the `[144]` handoff holds, on the `K .surplusAbove` arm of `[19]`.  No part
   of the continuation `[67]`--`[85]` runs there.
 
-Every key of the continuation `[67]`--`[85]` is `TypeBLaneAll P` (a fact at
-the lane's support) or `TypeBLaneSome P` (a decision's positive arm): the
-predicate `P` is evaluated at exactly the lane's canonical `(Y_X, H_X)`.  A
-decision reads its predecessor key, destructures its lane and splits `P` at
-that lane's support (d2ded0e's argument path).
+Every key of the continuation `[67]`--`[85]` is `TypeBLaneAt P`: the predicate
+`P` is evaluated at exactly the lane's one canonical `(Y_X, H_X)`.  A decision
+reads its predecessor key, destructures its lane and splits `P`/`¬P` at that one
+support (d2ded0e's argument path).
 
 The quantitative bridge statements (`prop:typeB-bridge-reduction`,
 `def:typeB-residual-mass`, `prop:typeB-bridge-sublinear`) are stated at the
@@ -60,46 +60,29 @@ def TypeBDecoratedLane (core centres : Finset object.Vertex) : Prop :=
     object.ambientSurplus core data.threshold = 0 ∧
     (canonicalTypeBDecoratedEnvelope data object).isSome
 
-/-- **The absorbed lane at one selected half-edge** `[177]` → `[65]`:
-`X_ε = (V(germ ε), {first high centre})`. -/
-def TypeBAbsorbedLane (epsilon : ColdEligibleHalfEdge data object)
-    (core centres : Finset object.Vertex) : Prop :=
-  ∃ routing : ColdFailureRoutingStatement data object,
-    Sum.inl epsilon ∉ coldRoutedCandidates data object routing ∧
-      canonicalTypeBAbsorbedSupport data object epsilon = some (core, centres)
-
-/-- Node `[177]` entered: on the failed-collision arm of `[173]`, with the
-`[175]` fan data, every selected half-edge outside the subcubic candidates has
-its canonical absorbed support. -/
-def TypeBAbsorbedEntered : Prop :=
+/-- **The absorbed lane** `[177]` → `[65]`: on the failed-collision arm of `[173]`,
+with the `[175]` fan data, `X = (Y_X, H_X)` is the absorbed support of `G`'s
+canonical absorbed half-edge `ε` (`canonicalTypeBAbsorbedSupport`): `ε`'s
+retained first-failure prefix and its first high centre.  It exists exactly when
+some selected corridor meets a high-degree vertex (`K .typeBAbsorbedHalfEdge`). -/
+def TypeBAbsorbedLane (core centres : Finset object.Vertex) : Prop :=
   ExactCollisionFailsStatement data object ∧
     AbsorbedGermFanDataStatement data object ∧
-    ∃ routing : ColdFailureRoutingStatement data object,
-      ∀ epsilon : ColdEligibleHalfEdge data object,
-        Sum.inl epsilon ∉ coldRoutedCandidates data object routing →
-          (canonicalTypeBAbsorbedSupport data object epsilon).isSome
+    canonicalTypeBAbsorbedSupport data object = some (core, centres)
 
-/-- **A fact at the Type B support of `G`**: `P` holds at the lane's
-canonical support (at every absorbed support, on the absorbed lane). -/
-def TypeBLaneAll (P : Finset object.Vertex → Finset object.Vertex → Prop) :
-    Prop :=
-  (∃ core centres, TypeBOrdinaryLane data object core centres ∧ P core centres) ∨
-    (∃ core centres, TypeBDecoratedLane data object core centres ∧
-      P core centres) ∨
-    (TypeBAbsorbedEntered data object ∧
-      ∀ epsilon core centres, TypeBAbsorbedLane data object epsilon core centres →
-        P core centres)
+/-- `(Y, H)` is the Type B support of `G`, in one of the continuation lanes. -/
+def TypeBLaneMember (core centres : Finset object.Vertex) : Prop :=
+  TypeBOrdinaryLane data object core centres ∨
+    TypeBDecoratedLane data object core centres ∨
+    TypeBAbsorbedLane data object core centres
 
-/-- **A positive decision arm at the Type B support of `G`**: `P` holds at the
-lane's canonical support (at some absorbed support, on the absorbed lane). -/
-def TypeBLaneSome (P : Finset object.Vertex → Finset object.Vertex → Prop) :
+/-- **A fact at the Type B support of `G`**: `P` holds at the one canonical
+support `(Y_X, H_X)` of the lane `G` is on.  Every lane has at most one support
+and the lanes are mutually exclusive, so a decision splits `P`/`¬P` at exactly
+that support. -/
+def TypeBLaneAt (P : Finset object.Vertex → Finset object.Vertex → Prop) :
     Prop :=
-  (∃ core centres, TypeBOrdinaryLane data object core centres ∧ P core centres) ∨
-    (∃ core centres, TypeBDecoratedLane data object core centres ∧
-      P core centres) ∨
-    (TypeBAbsorbedEntered data object ∧
-      ∃ epsilon core centres, TypeBAbsorbedLane data object epsilon core centres ∧
-        P core centres)
+  ∃ core centres, TypeBLaneMember data object core centres ∧ P core centres
 
 /-- The B2 disjoint choice of a support at `P₀` (`def:typeB-bridge-statements`
 B2(a)--(c), tex 14119): the `Classical.choice` of the B2 yes arm at `(Y, H)`.
@@ -126,13 +109,27 @@ canonical first separator escapes physically, with core `Y` and decorations
 `H`. -/
 def TypeBFanEntryStatement (data : Parameters) (object : Graph.FiniteObject.{u}) :
     Prop :=
-  TypeBLaneAll data object (fun _core centres =>
+  TypeBLaneAt data object (fun _core centres =>
       centres.Nonempty ∧
         ∀ centre ∈ centres, Graph.IsHighCentre object data.threshold centre) ∨
     (SurplusAboveStatement data object ∧
       ∃ core centres,
         canonicalSameTokenSupport data object = some (core, centres) ∧
           SameTokenHandoffAt data object core centres)
+
+/-- Node `[175]`, yes (tex 927, `lem:absorbed-germ-fan-data` (ii)): some selected
+corridor meets a high-degree vertex, i.e. `G`'s canonical absorbed half-edge (a
+selected half-edge outside node `[153]`'s subcubic candidates) exists.  This is
+the arm that enters Type B at `[177]`. -/
+noncomputable def TypeBAbsorbedHalfEdgeStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ epsilon, canonicalTypeBAbsorbedHalfEdge data object = some epsilon
+
+/-- Node `[175]`, no: every selected corridor is subcubic --- every selected
+half-edge is a node-`[153]` candidate, so there is no absorbed half-edge. -/
+noncomputable def TypeBAbsorbedHalfEdgeAbsentStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  canonicalTypeBAbsorbedHalfEdge data object = none
 
 /-- Node `[65]` at the `[64]` entry: the ordinary Type B support `(X₀, H(X₀))`
 is negative and carries a high centre (`def:canonical-decomp`). -/
@@ -165,14 +162,14 @@ noncomputable abbrev TypeBDecoratedAssignedSupportStatement (data : Parameters)
 `d_G(h) > δ + 1`. -/
 def TypeBFanHeavyCentreStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneSome data object (fun _core centres =>
+  TypeBLaneAt data object (fun _core centres =>
     ∃ centre ∈ centres, data.threshold + 1 < object.degree centre)
 
 /-- Node `[68]`, no → `[78]`: every assigned centre of the Type B support has
 degree `δ + 1`. -/
 def TypeBFanDegreeFourCentresStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneAll data object (fun _core centres =>
+  TypeBLaneAt data object (fun _core centres =>
     ∀ centre ∈ centres, object.degree centre = data.threshold + 1)
 
 /-- Node `[69]` (`cor:heavy-center-local-dichotomy`, tex 2322): at the heavy
@@ -180,7 +177,7 @@ arm's Type B support, every heavy assigned centre carries the routed local
 dichotomy. -/
 def TypeBFanLocalDichotomyStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneSome data object (fun _core centres =>
+  TypeBLaneAt data object (fun _core centres =>
     (∃ centre ∈ centres, data.threshold + 1 < object.degree centre) ∧
       ∀ centre ∈ centres, data.threshold + 1 < object.degree centre →
         HeavyCentreRoutedAlternative data object centre)
@@ -189,7 +186,7 @@ def TypeBFanLocalDichotomyStatement (data : Parameters)
 centre of the Type B support carries the degree-four fan profile. -/
 def TypeBFanDegreeFourProfileStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneAll data object (fun _core centres =>
+  TypeBLaneAt data object (fun _core centres =>
     ∀ centre ∈ centres, DegreeFourFanProfile data object centre)
 
 /-! ## Nodes `[70]`--`[72]`, `[80]`--`[81]` -/
@@ -199,7 +196,7 @@ graph and the certificate-marked cap at every assigned centre of the Type B
 support. -/
 noncomputable def TypeBFanCertificateCapStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneAll data object (fun _core centres =>
+  TypeBLaneAt data object (fun _core centres =>
     ∀ centre ∈ centres,
       FanSafeAt data object centre ∧
         ∀ _marking : Graph.FanCertificateLabelling object data.windowOrder centre,
@@ -210,7 +207,7 @@ noncomputable def TypeBFanCertificateCapStatement (data : Parameters)
 the Type B support carries a fan-certificate labelling, under the cap. -/
 noncomputable def TypeBFanCertificateMarkedStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneAll data object (fun _core centres =>
+  TypeBLaneAt data object (fun _core centres =>
     ∀ centre ∈ centres,
       ∃ _marking : Graph.FanCertificateLabelling object data.windowOrder centre,
         object.degree centre ≤
@@ -220,7 +217,7 @@ noncomputable def TypeBFanCertificateMarkedStatement (data : Parameters)
 fan-certificate residual centre. -/
 noncomputable def TypeBFanCertificateResidualStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneSome data object (fun _core centres =>
+  TypeBLaneAt data object (fun _core centres =>
     ∃ centre ∈ centres, Graph.IsHighCentre object data.threshold centre ∧
       IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre))
 
@@ -229,7 +226,7 @@ tex 13647): every assigned centre of the Type B support carries the hybrid B1
 entry at its canonical fan envelope over `W₀ = windowSupport P₀`. -/
 noncomputable def TypeBFanHybridEntryStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneAll data object (fun _core centres =>
+  TypeBLaneAt data object (fun _core centres =>
     ∀ centre ∈ centres,
       HybridB1Entry data object centre
         (Graph.TypeBProfileSchedule.canonicalEnvelope object centre)
@@ -240,7 +237,7 @@ tex 13398): some assigned centre of the Type B support carries a direct
 fan-window configuration at `P₀`. -/
 noncomputable def TypeBFanDirectCycleStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneSome data object (fun _core centres =>
+  TypeBLaneAt data object (fun _core centres =>
     ∃ centre ∈ centres, Graph.IsHighCentre object data.threshold centre ∧
       Graph.TypeBDirectCycle.DirectCycleConfiguration object data.windowOrder
         data.LengthOK (canonicalWindowPacking data object) centre)
@@ -249,7 +246,7 @@ noncomputable def TypeBFanDirectCycleStatement (data : Parameters)
 (`def:direct-cycle-free-closed-pair`, tex 13379). -/
 noncomputable def TypeBFanDirectCycleFreeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneAll data object (fun _core centres =>
+  TypeBLaneAt data object (fun _core centres =>
     ∀ centre ∈ centres, Graph.IsHighCentre object data.threshold centre →
       Graph.TypeBDirectCycle.DirectCycleFree object data.windowOrder
         data.LengthOK (canonicalWindowPacking data object) centre)
@@ -258,7 +255,7 @@ noncomputable def TypeBFanDirectCycleFreeStatement (data : Parameters)
 the assigned centres of the Type B support admit a disjoint choice at `P₀`. -/
 noncomputable def TypeBB2ChoiceStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneAll data object (fun core centres =>
+  TypeBLaneAt data object (fun core centres =>
     Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
       data.dischargeScale (canonicalWindowPacking data object) core centres
       centres)
@@ -267,7 +264,34 @@ noncomputable def TypeBB2ChoiceStatement (data : Parameters)
 Type B support carries a minimal overlap obstruction at `P₀`. -/
 noncomputable def TypeBB2ObstructionStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneSome data object (fun core centres =>
+  TypeBLaneAt data object (fun core centres =>
+    Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object data.threshold
+      data.dischargeScale (canonicalWindowPacking data object) core centres))
+
+/-- Node `[81]`, yes (degree-four arm, tex 1019: "`c ≤ 1`, or `c ≥ 2` with B2
+disjoint ledger?"): at the direct-cycle-free Type B support every assigned
+centre has at most one cubic-closed neighbour in its canonical fan envelope, or
+the assigned centres admit a B2 disjoint choice at `P₀`. -/
+noncomputable def TypeBDegreeFourLedgerStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  TypeBLaneAt data object (fun core centres =>
+    (∀ centre ∈ centres,
+      Graph.TypeBFanIncidence.closedCount object data.threshold
+        (Graph.TypeBProfileSchedule.canonicalEnvelope object centre) centre ≤ 1) ∨
+    Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
+      data.dischargeScale (canonicalWindowPacking data object) core centres
+      centres)
+
+/-- Node `[81]`, no → `[83]` (tex 1021: "`c ≥ 2` and B2 fails; minimal Type B
+overlap obstruction"): some assigned centre of the Type B support has at least
+two cubic-closed neighbours, and the support carries a minimal overlap
+obstruction at `P₀` (`lem:typeB-bridge-to-overlap`). -/
+noncomputable def TypeBDegreeFourOverlapStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  TypeBLaneAt data object (fun core centres =>
+    (∃ centre ∈ centres,
+      2 ≤ Graph.TypeBFanIncidence.closedCount object data.threshold
+        (Graph.TypeBProfileSchedule.canonicalEnvelope object centre) centre) ∧
     Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object data.threshold
       data.dischargeScale (canonicalWindowPacking data object) core centres))
 
@@ -276,7 +300,7 @@ support, every minimal overlap obstruction, when its core is a canonical piece
 of `P₀`, inherits the five global-to-local constraints. -/
 noncomputable def TypeBGlobalLocalBridgeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneSome data object (fun core centres =>
+  TypeBLaneAt data object (fun core centres =>
     Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object data.threshold
       data.dischargeScale (canonicalWindowPacking data object) core centres) ∧
     ∀ piece : Graph.TypeBRefinedSupport.CanonicalPiece object
@@ -292,13 +316,17 @@ noncomputable def TypeBGlobalLocalBridgeStatement (data : Parameters)
 /-! ## Nodes `[73]`--`[76]`, `[82]`--`[85]` -/
 
 /-- Node `[74]`/`[82]`, B2(a)--(d) on the one disjoint choice of the Type B
-support: its entries refine their candidate charge; when the core is a
-canonical piece of `P₀` whose high centres are assigned, the canonical B2
-ledger has its exact augmented refinement, its post-ledger core hygiene
+support, whenever B2 holds there (`[74]`: the B2 yes arm; `[82]`: its B2-paid
+case): its entries refine their candidate charge; when the core is a canonical
+piece of `P₀` whose high centres are assigned, the canonical B2 ledger has its
+exact augmented refinement, its post-ledger core hygiene
 (`lem:typeB-postledger-core-hygiene`) and its grouped envelope coverage. -/
 noncomputable abbrev TypeBDisjointLedgerStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneAll data object (fun core centres =>
+  TypeBLaneAt data object (fun core centres =>
+    Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
+      data.dischargeScale (canonicalWindowPacking data object) core centres
+      centres →
     (∃ choice, canonicalTypeBChoice data object core centres = some choice ∧
       ∀ centre (member : centre ∈ centres),
         (choice.entry centre member).EntryRefines data.threshold
@@ -318,57 +346,66 @@ support's canonical B2 ledger: a nonnegative remaining core charge gives
 `N₀(Y_X) ≥ 0`. -/
 noncomputable abbrev TypeBExcludedStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneAll data object (fun core centres =>
+  TypeBLaneAt data object (fun core centres =>
     ∀ ledger, canonicalTypeBDisjointChoice data object core centres = some ledger →
       0 ≤ RemainingCoreCharge data object ledger →
         object.NonNegativeNetCharge core data.threshold data.dischargeScale)
 
-/-- Node `[76]`/`[85]`: a negative Type B support whose core is a canonical piece
-of `P₀` keeps a negative post-ledger core on its canonical B2 ledger; its
-deficit is carried only through the route-`8` residual `[77]`. -/
+/-- **Node `[76]`/`[85]`**, `lem:typeB-exclusion` with `thm:branch-kill` at the
+Type B support: Type B cannot carry the linear deficit outside route `8`.  If B2
+holds, a negative support whose core is a canonical piece of `P₀` keeps a
+negative post-ledger core on its canonical B2 ledger, whose deficit is carried
+only through the route-`8` residual `[77]`; if B2 fails or some assigned centre
+is a fan-certificate residual centre, the support is a Type B bridge residual
+and every assigned centre is charged to its assigned surplus
+(`def:typeB-residual-mass`), whose total is the sublinear bridge mass of
+`[85]`/`prop:typeB-bridge-sublinear`.  It is reached from `[74]` (the B2 arm)
+and from `[75]`/`[84]` (the fan-mass arms). -/
 noncomputable abbrev TypeBExclusionResidualStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneAll data object (fun core centres =>
-    ∀ piece : Graph.TypeBRefinedSupport.CanonicalPiece object
+  TypeBLaneAt data object (fun core centres =>
+    (∀ piece : Graph.TypeBRefinedSupport.CanonicalPiece object
         (canonicalWindowPacking data object),
       piece.vertices = core →
       Graph.TypeBRefinedSupport.centres object data.threshold core ⊆ centres →
       object.NegativeNetCharge core data.threshold data.dischargeScale →
+      Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
+        data.dischargeScale (canonicalWindowPacking data object) core centres
+        centres →
       ∃ ledger, canonicalTypeBDisjointChoice data object piece.vertices centres =
           some ledger ∧
         ledger.ExactAugmentedLedgerRefinement ∧
         PostLedgerComponents data object ledger ∧
-        ¬ 0 ≤ RemainingCoreCharge data object ledger)
+        ¬ 0 ≤ RemainingCoreCharge data object ledger) ∧
+    ((¬ Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
+          data.dischargeScale (canonicalWindowPacking data object) core centres
+          centres ∨
+        ∃ centre ∈ centres,
+          IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre)) →
+      ∀ centre ∈ centres, CentreBridgeMassBound data object centre))
 
 /-- Nodes `[75]`/`[84]` (`def:typeB-residual-mass`, tex 14682): at the
-certificate-residual arm's Type B support, the fan-certificate residual centre
-is charged to its assigned surplus. -/
+certificate-residual arm's Type B support, which has a fan-certificate residual
+centre, every fan-certificate residual centre is charged to its assigned
+surplus. -/
 noncomputable def TypeBFanCertificateResidualMassStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneSome data object (fun _core centres =>
-    ∃ centre ∈ centres, Graph.IsHighCentre object data.threshold centre ∧
-      IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre) ∧
-      CentreBridgeMassBound data object centre)
+  TypeBLaneAt data object (fun _core centres =>
+    (∃ centre ∈ centres, Graph.IsHighCentre object data.threshold centre ∧
+      IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre)) ∧
+    ∀ centre ∈ centres,
+      IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre) →
+        CentreBridgeMassBound data object centre)
 
 /-- Nodes `[73]`/`[75]`, `[83]`/`[84]`: at the B2-failure arm's Type B support,
 which carries a minimal overlap obstruction, the assigned centres are charged
 to their surplus. -/
 noncomputable abbrev TypeBOverlapObstructionMassStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneSome data object (fun core centres =>
+  TypeBLaneAt data object (fun core centres =>
     Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object data.threshold
         data.dischargeScale (canonicalWindowPacking data object) core centres) ∧
       ∀ centre ∈ centres, CentreBridgeMassBound data object centre)
-
-/-- Nodes `[76]`/`[85]`: when the canonical B2 ledger of the Type B support
-leaves a negative remaining core, its assigned centres are charged to their
-surplus. -/
-noncomputable abbrev TypeBExclusionResidualMassStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBLaneAll data object (fun core centres =>
-    ∀ ledger, canonicalTypeBDisjointChoice data object core centres = some ledger →
-      ¬ 0 ≤ RemainingCoreCharge data object ledger →
-        ∀ centre ∈ centres, CentreBridgeMassBound data object centre)
 
 /-! ## The bridge statements at `P₀` -/
 

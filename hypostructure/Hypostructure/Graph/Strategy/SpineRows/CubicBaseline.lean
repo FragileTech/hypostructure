@@ -58,7 +58,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun _inputs =>
       .cons (key := K .cubicBaseline)
         ⟨data.threshold_eq_three, data.dischargeScale_eq_four,
-          data.degenerateClosureRejected, data.windowRate_eq_barrier⟩ .nil)
+          data.degenerateClosureRejected, data.windowRate_eq_barrier,
+          data.quadrilateralAccepted, data.lengthOK_iff_powerOfTwo,
+          data.fanCapSlack, data.highCentreDeficitSlack,
+          data.bridgeMassSlack⟩ .nil)
     0 0
 
 end Hypostructure.Graph.Strategy.Spine

@@ -20,7 +20,7 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def bridgeFanMassRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.bridgeFanMass
-    { Requires := []
+    { Requires := [K .cubicBaseline]
       Produces := [K .typeBBridgeMass]
       requiresUnique := by simp
       producesUnique := by simp
@@ -29,7 +29,7 @@ variable {data : Data.{u}}
       .cons (key := K .typeBBridgeMass)
         ⟨Contracts.TypeB.typeBBridgeMass (fun vertex => le_trans inputs.current.baseline
             (inputs.current.object.minDegree_le_degree vertex))
-          data.bridgeMassSlack⟩
+          (inputs.get (K .cubicBaseline)).down.2.2.2.2.2.2.2.2⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

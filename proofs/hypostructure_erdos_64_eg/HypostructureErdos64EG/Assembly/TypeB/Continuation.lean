@@ -98,7 +98,8 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
     (ledgerFresh : K .typeBDisjointLedger ∉ known := by key_fresh)
     (excludedFresh : K .typeBExcluded ∉ known := by key_fresh)
     (exclusionResidualFresh : K .typeBExclusionResidual ∉ known := by key_fresh)
-    (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known := by key_fresh)
+    (degreeFourLedgerFresh : K .typeBDegreeFourLedger ∉ known := by key_fresh)
+    (degreeFourOverlapFresh : K .typeBDegreeFourOverlap ∉ known := by key_fresh)
     (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by
       key_fresh)
     (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known := by
@@ -193,6 +194,7 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
       let localDichotomy := (typeBFanLocalDichotomyRow (data := spineData)).run
         triangularRouting (by key_fresh)
       exact Assembly.Internal.selectedTypeBCertificateContinuation localDichotomy
+        false
   | .right degreeFourHistory =>
       -- `[78]`--`[79]`: the degree-four fan profile and the fan-closed port
       -- routing of `cor:degree-four-local-activation` (tex 2336): alternative
@@ -209,5 +211,6 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
       let pairRouting := (compatiblePairTypeBRoutingRow (data := spineData)).run
         fanClosedRouting (by key_fresh)
       exact Assembly.Internal.selectedTypeBCertificateContinuation pairRouting
+        true
 
 end HypostructureErdos64EG

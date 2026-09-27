@@ -47,28 +47,25 @@ abbrev handoffWindowFree (data : Parameters) (object : Graph.FiniteObject.{u}) :
     ∀ internal : Finset object.Vertex, internal ⊆ support →
       ¬ Graph.MinimumDegreeAtLeast data.threshold (object.induce internal)
 
-/-- The exact case-(ii) handoff of `lem:absorbed-germ-fan-data` for one selected
-branch-excess half-edge.  Besides retaining the literal first-high corridor
-datum, it carries the manuscript destination: an actual
-`DecoratedHandoff.Envelope` whose counted core is the connected first-failure
-prefix, lies in the canonical remainder, and satisfies the common decorated
-handoff admissibility interface.  The routing and first-high indices retain
-the source coordinates used by the later Type B decisions; the envelope is
-the handoff payload. -/
-noncomputable def AbsorbedGermFanEnvelopeWitness (data : Parameters)
+/-- The exact case-(ii) handoff of `lem:absorbed-germ-fan-data` at one selected
+branch-excess half-edge `ε`, at node `[153]`'s retained routing.  `centre` is the
+least high vertex of `ε`'s own first-failure prefix (its node-`[10]` neighbours
+sit at the baseline), and that prefix is the counted core of an actual
+`DecoratedHandoff.Envelope` with decoration `{centre}`: connected, inside the
+canonical remainder, admissible, with two distinct assigned first neighbours.
+Everything is read at `ε` itself, so the core is `ε`'s prefix and contains the
+centre. -/
+noncomputable def AbsorbedHandoffAt (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object)
+    (routing : ColdFailureRoutingStatement data object)
+    (epsilon : ColdEligibleHalfEdge data object)
     (centre : object.Vertex) : Prop := by
   classical
   letI : FinEnum object.Vertex := object.vertices
-  exact ∃ routing : ColdFailureRoutingStatement data object,
-    ∃ epsilon : ColdEligibleHalfEdge data object,
+  exact
     let classified := coldRoutedClassified data object routing
     let corridor := coldOccurrenceCorridorAt data object classified epsilon
     let traceEnd := coldRoutedTraceEnd data object routing epsilon
-    germ = coldOccurrenceIncidence data object classified epsilon ∧
     ∃ firstIndex : corridor.Segment,
       centre = corridor.head firstIndex ∧
       firstIndex.1 ≤ traceEnd ∧
@@ -97,34 +94,38 @@ noncomputable def AbsorbedGermFanEnvelopeWitness (data : Parameters)
 
 /-- Node `[177]`, `lem:absorbed-germ-fan-data` (ii), the decorated handoff fan
 support at the first high centre.  For every selected branch-excess half-edge
-`ε` outside the subcubic candidate set, the retained first-failure prefix is a
-connected subset of the canonical remainder and supplies the counted core.
-The retained high vertex is its decoration; its actual neighbours are the
-assigned first-neighbour set, with simple arms landing in that core and the
-common fan-safe and admissibility conditions.  Thus every indexed datum has
-the concrete decorated-envelope payload consumed at the Type B entry. -/
+`ε` outside the subcubic candidate set, `ε`'s retained first-failure prefix is a
+connected subset of the canonical remainder and supplies the counted core; the
+least high vertex of that prefix is its decoration (`AbsorbedHandoffAt`). -/
 noncomputable def AbsorbedGermDecoratedAssignedSupportStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
   letI : FinEnum object.Vertex := object.vertices
   let Eligible := ColdEligibleHalfEdge data object
   exact ∃ routing : ColdFailureRoutingStatement data object,
-    let classified := coldRoutedClassified data object routing
-    let incidence := coldOccurrenceIncidence data object classified
     let candidates := coldRoutedCandidates data object routing
     ∀ epsilon : Eligible,
       Sum.inl epsilon ∉ candidates →
-      ∃ centre, AbsorbedGermFanEnvelopeWitness data object
-        (incidence epsilon) centre
+      ∃ centre, AbsorbedHandoffAt data object routing epsilon centre
+
+/-- **The registered discharge profile of the Type B fan ledger**
+(`def:typeB-multiclosed-residual`): baseline `δ`, discharge rate `α = 1/s` at
+the registered discharge scale `s`, and the registered entropy denominator.  The
+closed-neighbour deficit reads only `α`; no statement quantifies over another
+profile. -/
+def typeBDischargeProfile (data : Parameters) :
+    Graph.ReceiverLoad.LoadCapacityProfile where
+  baselineDegree := data.threshold
+  loadMultiplier := data.dischargeScale
+  remainderEntropyThresholdDenominator := data.entropyDenominator
 
 /-- `cor:compatible-pair-typeB-routing` at one assigned profile and one
-fan-compatible open pair. -/
-def CompatiblePairRoutes (object : Graph.FiniteObject.{u})
+fan-compatible open pair, at the registered discharge rate `α = 1/s`:
+`D_B(𝔉_h) ≥ (k+1)α - 1 > 0`. -/
+def CompatiblePairRoutes (data : Parameters) (object : Graph.FiniteObject.{u})
     (profile : Graph.TypeBFanClosedPorts.Profile object)
     (left right : object.Vertex) : Prop :=
-  ∀ (ledger : Graph.ReceiverLoad.LoadCapacityProfile)
-      (_normal : Graph.NormalForm object 3 profile.marked.fan.hub),
-    ledger.loadMultiplier = 4 →
+  Graph.NormalForm object data.threshold profile.marked.fan.hub →
     Graph.FanCompatible object profile.marked.fan.hub left right →
     left ∈ profile.remainder →
     right ∈ profile.remainder →
@@ -136,29 +137,32 @@ def CompatiblePairRoutes (object : Graph.FiniteObject.{u})
         shoulder ∈ profile.envelope) →
     2 ≤ profile.closedCount ∧
       ((object.degree profile.marked.fan.hub : ℚ) + 1) *
-          (1 / (ledger.loadMultiplier : ℚ)) - 1
-        ≤ profile.closedNeighbourDeficit ledger ∧
-      0 < profile.closedNeighbourDeficit ledger
+          (1 / (data.dischargeScale : ℚ)) - 1
+        ≤ profile.closedNeighbourDeficit (typeBDischargeProfile data) ∧
+      0 < profile.closedNeighbourDeficit (typeBDischargeProfile data)
 
 /-- `prop:triangular-port-typeB-routing` at one assigned profile and one
-family of `k - 2` triangular ports. -/
-def TriangularPortsRoute (object : Graph.FiniteObject.{u})
+family of `k - 2` triangular ports at a heavy centre `k > δ + 1`, at the
+registered discharge rate: `D_B(𝔉_h) ≥ ((s+1)k - (s(δ+2) - 1))/s`, the
+manuscript's `(5k - 19)/4` at `δ = 3`, `s = 4`. -/
+def TriangularPortsRoute (data : Parameters) (object : Graph.FiniteObject.{u})
     (profile : Graph.TypeBFanClosedPorts.Profile object)
     (ports : Finset object.Vertex) : Prop :=
-  ∀ (ledger : Graph.ReceiverLoad.LoadCapacityProfile)
-      (_normal : Graph.NormalForm object 3 profile.marked.fan.hub),
-    ledger.loadMultiplier = 4 →
+  Graph.NormalForm object data.threshold profile.marked.fan.hub →
     ports ⊆ Graph.triangularEndpoints object profile.marked.fan.hub →
     ports.card = object.degree profile.marked.fan.hub - 2 →
-    5 ≤ object.degree profile.marked.fan.hub →
+    data.threshold + 1 < object.degree profile.marked.fan.hub →
     (∀ endpoint ∈ ports, endpoint ∈ profile.remainder) →
     (∀ endpoint ∈ ports, ∀ shoulder,
       Graph.IsShoulder object profile.marked.fan.hub endpoint shoulder →
         shoulder ∈ profile.envelope) →
     ports.card ≤ profile.closedCount ∧
-      (5 * (object.degree profile.marked.fan.hub : ℚ) - 19) / 4 ≤
-        profile.closedNeighbourDeficit ledger ∧
-      0 < profile.closedNeighbourDeficit ledger
+      (((data.dischargeScale : ℚ) + 1) *
+            (object.degree profile.marked.fan.hub : ℚ) -
+          ((data.dischargeScale : ℚ) * ((data.threshold : ℚ) + 2) - 1)) /
+          (data.dischargeScale : ℚ) ≤
+        profile.closedNeighbourDeficit (typeBDischargeProfile data) ∧
+      0 < profile.closedNeighbourDeficit (typeBDischargeProfile data)
 
 /-- **A Type B fan-window profile of `G` at the fixed packing**
 (`def:typeB-window-incidence-profile`, `def:fan-closed-port`): its recorded
@@ -184,13 +188,13 @@ def HeavyCentreRoutedAlternative (data : Parameters)
         ∀ profile : Graph.TypeBFanClosedPorts.Profile object,
           IsFixedTypeBProfile data object profile →
           profile.marked.fan.hub = centre →
-            CompatiblePairRoutes object profile left right) ∨
+            CompatiblePairRoutes data object profile left right) ∨
     (∃ ports ⊆ Graph.triangularEndpoints object centre,
       ports.card = object.degree centre - 2 ∧ 3 ≤ ports.card ∧
         ∀ profile : Graph.TypeBFanClosedPorts.Profile object,
           IsFixedTypeBProfile data object profile →
           profile.marked.fan.hub = centre →
-            TriangularPortsRoute object profile ports)
+            TriangularPortsRoute data object profile ports)
 
 /-- `lem:same-center-open-port-compatibility` on the selected residual object.
 The paper's port hypotheses are all explicit; the conclusion is the canonical
@@ -392,9 +396,10 @@ def TriangularFirstLandingStatement (data : Parameters)
 /-- `lem:triangular-cross-shoulder` on the target-safe selected object.
 An edge between two distinct shoulder pairs is represented by the literal
 cross-incidence predicate in both orientations.  The first conclusion is the
-paper's high-shoulder arm after its quadrilateral arm is discharged by target
-safety; the second is the stated matching-size consequence on the residual
-where every shoulder has degree below four. -/
+paper's high-shoulder arm (a shoulder above the baseline) after its
+quadrilateral arm is discharged by target safety; the second is the stated
+matching-size consequence on the residual where every shoulder sits at the
+baseline. -/
 def TriangularCrossShoulderStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ centre : object.Vertex,
@@ -431,11 +436,11 @@ def TriangularCrossShoulderStatement (data : Parameters)
                         ∃ shoulder,
                           (shoulder ∈ shoulders first ∨
                             shoulder ∈ shoulders second) ∧
-                          4 ≤ object.degree shoulder) ∧
+                          data.threshold < object.degree shoulder) ∧
                   ((∀ shoulder,
                       (shoulder ∈ shoulders first ∨
                         shoulder ∈ shoulders second) →
-                      object.degree shoulder < 4) →
+                      object.degree shoulder ≤ data.threshold) →
                     ∀ source target source' target',
                       between source target → between source' target' →
                         source = source' ∧ target = target')
@@ -594,26 +599,27 @@ def CompatiblePairFanClosureStatement (data : Parameters)
         shoulder ∈ profile.envelope) →
     profile.IsFanClosed left ∧ profile.IsFanClosed right ∧ left ≠ right
 
-/-- `prop:fan-closed-port-typeB-routing`, in the canonical upstream form. -/
+/-- `prop:fan-closed-port-typeB-routing`, in the canonical upstream form, at
+the registered discharge rate `α = 1/s`: `r ≥ 2` fan-closed ports give
+`D_B(𝔉_h) ≥ r - (δ - (k+1)α) ≥ (k+1)α - 1 > 0`. -/
 def FanClosedPortTypeBRoutingStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ profile : Graph.TypeBFanClosedPorts.Profile object,
     IsFixedTypeBProfile data object profile →
-    ∀ (ledger : Graph.ReceiverLoad.LoadCapacityProfile)
-      (normal : Graph.NormalForm object 3 profile.marked.fan.hub),
-    ledger.loadMultiplier = 4 →
+    Graph.NormalForm object data.threshold profile.marked.fan.hub →
     ∀ ports : Finset object.Vertex,
       (∀ vertex ∈ ports, profile.IsFanClosed vertex) →
       2 ≤ ports.card →
       ports.card ≤ profile.closedCount ∧
         (ports.card : ℚ) -
-            (3 - ((object.degree profile.marked.fan.hub : ℚ) + 1) *
-              (1 / (ledger.loadMultiplier : ℚ)))
-          ≤ profile.closedNeighbourDeficit ledger ∧
+            ((data.threshold : ℚ) -
+              ((object.degree profile.marked.fan.hub : ℚ) + 1) *
+                (1 / (data.dischargeScale : ℚ)))
+          ≤ profile.closedNeighbourDeficit (typeBDischargeProfile data) ∧
         ((object.degree profile.marked.fan.hub : ℚ) + 1) *
-            (1 / (ledger.loadMultiplier : ℚ)) - 1
-          ≤ profile.closedNeighbourDeficit ledger ∧
-        0 < profile.closedNeighbourDeficit ledger
+            (1 / (data.dischargeScale : ℚ)) - 1
+          ≤ profile.closedNeighbourDeficit (typeBDischargeProfile data) ∧
+        0 < profile.closedNeighbourDeficit (typeBDischargeProfile data)
 
 /-- `cor:compatible-pair-typeB-routing`, in the canonical upstream form. -/
 def CompatiblePairTypeBRoutingStatement (data : Parameters)
@@ -621,7 +627,7 @@ def CompatiblePairTypeBRoutingStatement (data : Parameters)
   ∀ profile : Graph.TypeBFanClosedPorts.Profile object,
     IsFixedTypeBProfile data object profile →
     ∀ left right : object.Vertex,
-    CompatiblePairRoutes object profile left right
+    CompatiblePairRoutes data object profile left right
 
 /-- `prop:triangular-port-typeB-routing`, in the canonical upstream form.
 The family has the manuscript's exact size `k - 2`; every endpoint is recorded
@@ -632,7 +638,7 @@ def TriangularPortTypeBRoutingStatement (data : Parameters)
   ∀ profile : Graph.TypeBFanClosedPorts.Profile object,
     IsFixedTypeBProfile data object profile →
     ∀ ports : Finset object.Vertex,
-    TriangularPortsRoute object profile ports
+    TriangularPortsRoute data object profile ports
 
 /-- The local B1 incidence calculation (`lem:typeB-hybrid-incidence-budget`,
 `lem:typeB-hybrid-B1`) at one marked high centre and one fan envelope. -/

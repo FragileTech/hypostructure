@@ -21,14 +21,15 @@ law makes every neighbour cubic. -/
 @[reducible] noncomputable def highCentreNormalFormRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.highCentreNormalForm
-    { Requires := [K .selection, K .tightEndpoint]
+    { Requires := [K .selection, K .tightEndpoint, K .cubicBaseline]
       Produces := [K .highCentreNormalForm]
       requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .highCentreNormalForm)
-        ⟨Contracts.TypeB.highCentreNormalForm (inputs.get (K .selection)).down.1 data.quadrilateralAccepted
+        ⟨Contracts.TypeB.highCentreNormalForm (inputs.get (K .selection)).down.1
+          (inputs.get (K .cubicBaseline)).down.2.2.2.2.1
           (inputs.get (K .tightEndpoint)).down⟩
         .nil)
 

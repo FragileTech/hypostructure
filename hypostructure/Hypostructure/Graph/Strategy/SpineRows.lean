@@ -132,7 +132,6 @@ import Hypostructure.Graph.Strategy.SpineRows.TypeBBridgeReduction
 import Hypostructure.Graph.Strategy.SpineRows.TypeBBridgeSublinear
 import Hypostructure.Graph.Strategy.SpineRows.TypeBDecoratedAssignedSupport
 import Hypostructure.Graph.Strategy.SpineRows.TypeBExclusion
-import Hypostructure.Graph.Strategy.SpineRows.TypeBExclusionResidualMass
 import Hypostructure.Graph.Strategy.SpineRows.TypeBFanDegreeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeBFanDegreeFourProfile
 import Hypostructure.Graph.Strategy.SpineRows.TypeBFanLocalDichotomy
