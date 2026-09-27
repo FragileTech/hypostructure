@@ -157,8 +157,109 @@ theorem unretained_package_overflow (data : Parameters) (object : Graph.FiniteOb
   exact ⟨ULift.{u} (Graph.PackedWindowRealization.Skeleton object.vertexCount
     object.edgeCount), ULift.up, range ▸ fits.1, range ▸ fits.2⟩
 
+/-- **The outer room of `G` at `R₀`**: `C(C(n,2) − C(|R₀|,2), m − e(G[R₀]))`, the
+number of ways to place `G`'s `m − e(G[R₀])` edges not inside the remainder
+`R₀ = R(P₀)` of the fixed packing on the pairs not inside `R₀`. -/
+noncomputable def remainderOuterRoom (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Nat :=
+  (object.vertexCount.choose 2 -
+      (object.remainderSupport (canonicalWindowPacking data object)).card.choose 2).choose
+    (object.edgeCount -
+      object.internalEdgeCount (object.remainderSupport (canonicalWindowPacking data object)))
+
+/-- **The remainder glue at `G`, on disjoint supports**
+(`lem:remainder-glue-injection`, every outer edge set): the remainder states of
+`R₀` on the pairs inside `R₀`, times every placement of `G`'s outer edges on the
+pairs outside `R₀`, are distinct labelled skeletons of `G`'s class `𝒢_{n,m}`:
+`RS(R₀) · remainderOuterRoom ≤ skeletonBudget`. -/
+theorem remainderStates_mul_outerRoom_le (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    remainderStates data object (canonicalWindowPacking data object) *
+        remainderOuterRoom data object ≤
+      Graph.skeletonBudget object :=
+  Graph.RemainderGlue.remainderStateCount_mul_outerRoom_le_skeletonBudget
+    data.windowOrder data.threshold _ _
+
+/-- **The joint realization at `G` by the glue on disjoint supports.**  The
+remainder states of `R₀` live on the pairs inside `R₀`; if the window package
+of `P₀` and the forced obstruction bits of node `[48]` fit in the outer room
+(`2^{rate·s·p₁₃} · 2^{K|R|−o(|R|)} ≤ remainderOuterRoom`), they are carried by
+the outer pairs, disjoint from `R₀`, and the product family is realized by
+distinct skeletons of `G`'s class: node `[54]`'s bound holds. -/
+theorem entropyCapBound_of_outerRoom (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (room :
+      2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+            (canonicalWindowPacking data object).card) *
+          2 ^ forcedObstructionBits data object ≤
+        remainderOuterRoom data object) :
+    EntropyCapBoundStatement data object := by
+  change jointPackageDemand data object * 2 ^ forcedObstructionBits data object ≤
+    Graph.skeletonBudget object
+  refine le_trans ?_ (remainderStates_mul_outerRoom_le data object)
+  unfold jointPackageDemand
+  calc 2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+            (canonicalWindowPacking data object).card) *
+          remainderStates data object (canonicalWindowPacking data object) *
+        2 ^ forcedObstructionBits data object
+      = remainderStates data object (canonicalWindowPacking data object) *
+          (2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+              (canonicalWindowPacking data object).card) *
+            2 ^ forcedObstructionBits data object) := by ring
+    _ ≤ _ := Nat.mul_le_mul_left _ room
+
+/-- **The obstruction at `G` on `[54]`'s branch.**  On the active arm of node
+`[53]` the outer room of `G` at `R₀` is strictly smaller than the window package
+of `P₀` times the forced obstruction bits: the glue on disjoint supports (the
+only realization map the paper builds on this path) cannot carry the product
+family.  With `remainderStates_mul_outerRoom_le`, `[53]`-active gives
+`RS · room ≤ B < RS · 2^{rate·s·p₁₃} · 2^F`. -/
+theorem outerRoom_lt_of_entropyCapActive (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (active : EntropyCapActiveStatement data object) :
+    remainderOuterRoom data object <
+      2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+            (canonicalWindowPacking data object).card) *
+        2 ^ forcedObstructionBits data object := by
+  by_contra fits
+  push Not at fits
+  exact (Nat.not_lt_of_ge (entropyCapBound_of_outerRoom data object fits)) active
+
+/-- **The independence premise of `prop:entropy-high-theta` is the bound
+itself.**  In the finite form of `lem:independent-target-entropy` /
+`lem:skeleton-dominates` (a state map on `G`'s labelled skeleton class whose
+range has at least the family's number of states), the premise "the window
+package of `P₀`, the remainder bits and the forced obstruction bits form one
+independently target-testable family arising canonically from `𝒢_{n,m}`" is
+equivalent to node `[54]`'s bound `demand · 2^F ≤ skeletonBudget`.  So on the
+active arm of `[53]` (its strict negation) the premise is refuted by `G`'s
+ledger, and the paper's step (2) at `[54]` is its own conclusion. -/
+theorem jointRealization_iff_entropyCapBound (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (dominates : SkeletonDominatesStatement object) :
+    (∃ (State : Type u)
+        (stateOf : Graph.PackedWindowRealization.Skeleton
+          object.vertexCount object.edgeCount → State),
+        jointPackageDemand data object * 2 ^ forcedObstructionBits data object ≤
+          Nat.card (Set.range stateOf)) ↔
+      EntropyCapBoundStatement data object := by
+  constructor
+  · rintro ⟨State, stateOf, realized⟩
+    exact realized.trans (dominates.2 State stateOf)
+  · intro bound
+    refine ⟨ULift.{u} (Graph.PackedWindowRealization.Skeleton object.vertexCount
+      object.edgeCount), ULift.up, ?_⟩
+    have range : Nat.card (Set.range (ULift.up.{u} :
+        Graph.PackedWindowRealization.Skeleton object.vertexCount object.edgeCount →
+          _)) = Graph.skeletonBudget object := by
+      rw [Set.range_eq_univ.mpr (fun x => ⟨x.down, rfl⟩), Nat.card_univ,
+        Nat.card_ulift, dominates.1]
+    rw [range]
+    exact bound
+
 /-- **Node `[54]`, `prop:entropy-high-theta`'s independence claim, on the arm
-where the window package of `P₀` is not retained.**
+where the window package of `P₀` is not retained and the outer room of `G` at
+`R₀` cannot carry it.**
 
 The paper's claim (tex 9921): *"the window package of
 `lem:p13-window-package`, the remainder bits, and the forced-obstruction bits
@@ -170,10 +271,14 @@ contradicting `lem:independent-target-entropy`, `lem:skeleton-dominates`."*
 (`jointPackageDemand`).  `lem:independent-target-entropy` needs a family
 "arising canonically from graphs in a labelled graph class"; the paper never
 constructs a realization of the window package of `P₀`, the remainder states
-and the forced obstruction bits by one labelled class -- it asserts it.  On
-[54]'s own branch (`[53]` active) the full retained code already exceeds the
-budget, so this arm is the only one reached.  Stated at the selected minimal
-counterexample `G`; its negation does not follow from its hypotheses
+and the forced obstruction bits by one labelled class -- it asserts it.  The
+joint realization *is* constructed at `G` whenever it fits the outer pairs of
+`R₀` (`entropyCapBound_of_outerRoom`, the glue on disjoint supports); this hook
+is the complementary configuration `remainderOuterRoom < 2^{rate·s·p₁₃}·2^F`,
+which is exactly the one reached on `[54]`'s branch
+(`outerRoom_lt_of_entropyCapActive`).  There the premise is equivalent to the
+conclusion (`jointRealization_iff_entropyCapBound`).  Stated at the selected
+minimal counterexample `G`; its negation does not follow from its hypotheses
 (`lean-vs-paper-discrepancies.md#open-constructions`). -/
 theorem entropyCapBound_unretained
     {BranchState : Graph.FiniteObject.{u} → Type v}
@@ -181,6 +286,11 @@ theorem entropyCapBound_unretained
     (data : Parameters) (object : Graph.FiniteObject.{u})
     (_selected : SelectionStatement BranchState Presentation presentation data object)
     (_unretained : ¬ WindowFamilyRealized data object (canonicalWindowPacking data object))
+    (_noRoom :
+      remainderOuterRoom data object <
+        2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+              (canonicalWindowPacking data object).card) *
+          2 ^ forcedObstructionBits data object)
     (_cost : ForcedCurvatureCostStatement data object)
     (_high : RemainderEntropyHighStatement data object)
     (_package : EntropyPackageDemandStatement data object) :
@@ -194,8 +304,10 @@ fits the labelled skeleton budget.**  If the window package of `P₀` is retaine
 the package rate puts the window part below its retained code, node `[48]` puts
 the forced bits below the exact curvature code the retained code carries, and
 the realized-code and skeleton-dominance clauses put that code below the
-budget.  If it is not retained, the bound is the paper's independence claim on
-that arm (`entropyCapBound_unretained`). -/
+budget.  If it is not retained and the window package with the forced bits fits
+the outer room of `G` at `R₀`, the glue on disjoint supports realizes the
+product (`entropyCapBound_of_outerRoom`); otherwise the bound is the paper's
+independence claim on that configuration (`entropyCapBound_unretained`). -/
 theorem entropyCapBound_of_hotColdPartition
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation}
@@ -223,6 +335,13 @@ theorem entropyCapBound_of_hotColdPartition
           (Nat.pow_le_pow_right (by omega) (Nat.mul_le_mul_right _ rateLe)))
         (Nat.pow_le_pow_right (by omega) forcedLe)
     exact demandLe.trans (retainedCodeLe.trans (dominates.2 State stateOf))
-  · exact entropyCapBound_unretained data object selected retained cost high demand
+  · by_cases room :
+        2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+              (canonicalWindowPacking data object).card) *
+            2 ^ forcedObstructionBits data object ≤
+          remainderOuterRoom data object
+    · exact entropyCapBound_of_outerRoom data object room
+    · exact entropyCapBound_unretained data object selected retained
+        (Nat.lt_of_not_le room) cost high demand
 
 end Hypostructure.Graph.Contracts.Spine

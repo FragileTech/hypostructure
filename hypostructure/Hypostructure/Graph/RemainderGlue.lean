@@ -52,6 +52,28 @@ theorem internalEdgeCount_le_edgeCount (support : Finset object.Vertex) :
 
 end FiniteObject
 
+/-- A remainder candidate is an `e`-edge labelled graph on `|R|` vertices, so
+the remainder class has at most `C(C(|R|,2), e)` members. -/
+theorem remainderStateCount_le_choose (order threshold deficiencyCap edgeCount size : Nat) :
+    remainderStateCount order threshold deficiencyCap edgeCount size ≤
+      (size.choose 2).choose edgeCount := by
+  classical
+  unfold remainderStateCount
+  refine le_trans (Nat.card_le_card_of_injective
+    (fun candidate : RemainderClass order threshold deficiencyCap edgeCount size =>
+      (⟨candidate.val, candidate.property.2.2.2⟩ :
+        PackedWindowRealization.Skeleton size edgeCount)) ?_)
+    (le_of_eq (PackedWindowRealization.card_skeleton size edgeCount))
+  intro left right same
+  exact Subtype.ext (congrArg Subtype.val same :)
+
+/-- One term of Vandermonde's identity: `C(a,i)·C(b,j) ≤ C(a+b, i+j)`. -/
+theorem choose_mul_choose_le_add_choose (a b i j : Nat) :
+    a.choose i * b.choose j ≤ (a + b).choose (i + j) := by
+  rw [Nat.add_choose_eq]
+  exact Finset.single_le_sum (f := fun ij : Nat × Nat => a.choose ij.1 * b.choose ij.2)
+    (a := (i, j)) (fun _ _ => Nat.zero_le _) (Finset.mem_antidiagonal.mpr rfl)
+
 namespace RemainderGlue
 
 variable {object : FiniteObject.{u}}
@@ -273,6 +295,39 @@ theorem remainderStateCount_le_skeletonBudget (order threshold deficiencyCap : N
     (le_of_eq (PackedWindowRealization.card_skeleton object.vertexCount object.edgeCount))
   intro left right same
   exact Subtype.ext (glue_injective support (congrArg Subtype.val same))
+
+/-- **The glue on disjoint supports realizes a product.**  A candidate of the
+remainder class fills the pairs inside `support`; any `m − e(G[R])` of the
+`C(n,2) − C(|R|,2)` pairs not inside `support` fill the rest.  Distinct pairs
+(candidate, outer edge set) give distinct labelled graphs on `[n]` with `m`
+edges (their inside and outside parts are recovered), so
+
+  `|𝒢(R)| · C(C(n,2) − C(|R|,2), m − e(G[R])) ≤ C(C(n,2), m)`.
+
+`remainderStateCount_le_skeletonBudget` is the single-outer-set case (the
+object's own outer edges).  Proved by counting: the candidate is an
+`e(G[R])`-edge labelled graph on `|R|` vertices, and the product is one term of
+Vandermonde's identity for `C(C(|R|,2) + (C(n,2) − C(|R|,2)), m)`. -/
+theorem remainderStateCount_mul_outerRoom_le_skeletonBudget
+    (order threshold deficiencyCap : Nat) (support : Finset object.Vertex) :
+    remainderStateCount order threshold deficiencyCap
+        (object.internalEdgeCount support) support.card *
+      (object.vertexCount.choose 2 - support.card.choose 2).choose
+        (object.edgeCount - object.internalEdgeCount support) ≤
+      skeletonBudget object := by
+  have cardLe : support.card ≤ object.vertexCount := by
+    letI : FinEnum object.Vertex := object.vertices
+    classical
+    have := Finset.card_le_univ support
+    simpa [FiniteObject.vertexCount, FinEnum.card_eq_fintypeCard] using this
+  have chooseLe : support.card.choose 2 ≤ object.vertexCount.choose 2 :=
+    Nat.choose_le_choose 2 cardLe
+  have edgeLe := object.internalEdgeCount_le_edgeCount support
+  refine le_trans (Nat.mul_le_mul_right _
+    (remainderStateCount_le_choose order threshold deficiencyCap _ _)) ?_
+  refine le_of_le_of_eq (choose_mul_choose_le_add_choose _ _ _ _) ?_
+  unfold skeletonBudget
+  rw [Nat.add_sub_cancel' chooseLe, Nat.add_sub_cancel' edgeLe]
 
 end RemainderGlue
 

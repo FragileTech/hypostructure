@@ -1022,6 +1022,89 @@ only for a claim proved false at G.
   - The numeric model above is supporting evidence only; the primary
     justification is the named failing step (2).
 
+- **Addendum (2026-09-27, fix2-54): the joint realization built at G, and where it stops.**
+  - *Inventory (tex path root → [54], Lean key / decl).* `G` minimal: `K .selection`;
+    `P₀` maximal packing, `R₀ = R(P₀)`: `canonicalWindowPacking_spec`
+    (`Statements/Spine.lean:352`), `K .maximalPacking`; `[13]`/`[25]`--`[27]`
+    remainder normalized (componentwise `P₁₃`-free, no internal 3-core):
+    `K .remainderNormalized` (`Strategy/SpineRows/RemainderNormalization.lean:41`);
+    `[21]` enumeration / `lem:p13-window-package` rate: `K .windowPackageSeparated`;
+    `lem:skeleton-dominates`: `K .skeletonDominates` (`Statements/SurplusPair.lean:1266`);
+    `[158]` `K .windowPackageRealized`/`Unrealized`; `[22]` `K .hotColdPartition`
+    (`WindowFamilyRealized`, `Statements/Spine.lean:399`); `[24]` `K .densityCap`
+    (`Statements/Spine.lean:2863`) or `[160]`'s `K .denseDeficiencyBelow` /
+    `K .coldRoute8Below`; `[34]`/`[47]` `K .curvatureFullRank`; `lem:wedge-lower`
+    `K .wedgeSupply`; `[48]` `K .forcedCurvatureCost` (`forcedObstructionBits`,
+    `Statements/Spine.lean:498`); `[50]`/`[51]` `K .remainderEntropyHigh`
+    (`remainderStates`, `Statements/Spine.lean:294`); `[52]` `K .entropyPackageDemand`
+    (`jointPackageDemand`, `Statements/Spine.lean:487`); `[53]` `K .entropyCapActive`;
+    `lem:remainder-glue-injection`: `RemainderGlue.remainderStateCount_le_skeletonBudget`.
+    Missing before this pass: the glue with *every* outer edge set (the relation
+    `B ≥ RS·C(C(n,2)−C(|R₀|,2), m−e(R₀))` above was stated, not proved).  Now built:
+    `Graph.RemainderGlue.remainderStateCount_mul_outerRoom_le_skeletonBudget`
+    (vocabulary-free, `Graph/RemainderGlue.lean`) and, at `G`,
+    `Contracts.Spine.remainderStates_mul_outerRoom_le` with
+    `remainderOuterRoom = C(C(n,2)−C(|R₀|,2), m−e(G[R₀]))`.
+  - *The construction (proved).* Supports are split into the pairs inside `R₀`
+    (carrying the remainder state `H ∈ 𝒢(R₀)`) and the pairs not inside `R₀`
+    (carrying everything else).  `Contracts.Spine.entropyCapBound_of_outerRoom`:
+    if `2^{rate·s·p₁₃}·2^F ≤ remainderOuterRoom`, the window package of `P₀` and
+    the forced bits are carried on the outer pairs, the product with the
+    remainder states is realized by distinct skeletons of `G`'s class, and `[54]`'s
+    bound holds.  The unretained arm of `entropyCapBound_of_hotColdPartition` now
+    splits on this room at `G`; the hook `entropyCapBound_unretained` carries the
+    complementary hypothesis `remainderOuterRoom < 2^{rate·s·p₁₃}·2^F`.
+  - *Why disjoint supports stop there (explicit configuration at G).* The forced
+    bits are not carried by the windows: `forcedObstructionBits` is the full-rank
+    cost of `R₀`'s own curvature tests (`r_Ω(R₀)`, `lem:full-rank`), a function of
+    the glued adjacency matrix (`lem:skeleton-dominates`' proof: every auxiliary
+    datum is a function of it), so with the outer pairs fixed it is determined by
+    `H`: it adds no states beyond `RS` unless the outer pairs vary.  The only room
+    for the window package and the forced bits is therefore the outer room, and
+    `Contracts.Spine.outerRoom_lt_of_entropyCapActive` proves that on `[54]`'s
+    branch (`[53]` active) `remainderOuterRoom < 2^{rate·s·p₁₃}·2^F` at `G`: the
+    hook is reached exactly in that configuration.
+  - *Three routes on `¬X` at that configuration.* (1) Incompatible structure:
+    `¬X` is a numeric relation among `n, m, p₁₃, |R₀|, e(G[R₀]), def⁺(R₀)` and
+    `RS = |𝒢(R₀)|`; `[13]`/`[25]` (window-free, no 3-core), the packing's
+    maximality and `P₁₃`-freeness of `R₀` are already inside `𝒢(R₀)`'s definition
+    and only bound `RS` from *below* at `G` (`G[R₀] ∈ 𝒢(R₀)`), while the hook needs
+    `RS ≤ B/(2^{rate·s·p₁₃}·2^F)` from *above*; no fact on the path gives an upper
+    bound on `RS` beyond `C(C(|R₀|,2), e(G[R₀]))` (`remainderStateCount_le_choose`),
+    and that bound gives only the outer room again (Vandermonde).  (2) Bound
+    overload: the proved relation is `RS·room ≤ B`, and on the branch
+    `room < 2^{rate·s·p₁₃}·2^F`; nothing is overloaded.  (3) Compressibility: a
+    dependent pair (a forced bit determined by `H`) identifies no two supports of
+    `G`; it only says the product is not a product.  All three fail.
+  - *Circularity (Lean).* `Contracts.Spine.jointRealization_iff_entropyCapBound`:
+    in its finite form (a state map on `𝒢_{n,m}` with range ≥ the family's count)
+    the paper's step (2) is *equivalent* to `[54]`'s bound, i.e. to the negation of
+    `[53]`-active.  So on every arm of `[54]` the paper's premise is its
+    conclusion; the retained arm is proved only because `[22]` supplies it as an
+    independent ledger fact (`WindowFamilyRealized P₀`).  On the `[158]`-no arms
+    this is sharper: `[159]`'s `B < 2^{b_P}` refutes it before `[53]` is decided.
+  - *Wiring against the tex diagram.* Part IV draws `[53]` yes → `[54]`; `[25]` is
+    reached from `[24]` (bounded arm of `[153]`) and from `[161]` ("continue at
+    [25]"), and the Lean arms `nearCubicLargeBudgetDensityCap` (`[158]`-yes) and
+    `nearCubicLargeBudgetDenseRate` (`[161]`) match.  Part XII (tex 1327-1340)
+    draws, on the dense pass `[162]`, `[53]` active → `[164]`
+    (`def:all-cold-comparison`, closed by `lem:remainder-glue-injection`); the Lean
+    arms `nearCubicLargeBudgetRateFailed`, `nearCubicLargeBudgetColdRate` and
+    `nearCubicLargeBudgetDensityCap` called from `Survivor/Unrealized.lean` close
+    `[53]`-active with the same `[54]` row (the `EG-NODE [164]` tag sits on those
+    helpers).  Not rewired: `[164]`'s proof (tex 7843-7850) bounds only `|𝒢(R)|`
+    ("the window package contributing nothing", the forced bits "realized inside
+    `𝒢(R)` and not charged again", i.e. the `K = 0`, hot-only reading that the
+    paper's own `eq:entropy-cap` and the approved exact `[53]` do not use), so a
+    separate `[164]` terminal against `K .entropyCapActive` needs exactly this
+    hook's bound and would add a second `sorry`.  The circularity is the paper's,
+    not a Lean miswiring; `[164]` is the paper's own acknowledgement that on these
+    arms only the glue (`RS ≤ B`) is available.
+  - *Outcome.* The `sorry` stays (`OPEN-CONSTRUCTION [54] tex:9921`), narrowed to
+    `remainderOuterRoom < 2^{rate·s·p₁₃}·2^F`.  The missing fact about `G` is an
+    upper bound on the remainder class, `RS(R₀)·2^{rate·s·p₁₃}·2^F ≤ B`: the paper
+    only ever supplies the lower bound `RS ≥ n^{|R₀|/d}` (`[50]` high arm).
+
 ### [144] `lem:same-token-bottleneck-routing`, parallel and cubic-first-separator cases (tex 5585-5620)
 
 - **Paper claim.** The two same-label demands' response coordinates "lie in the
