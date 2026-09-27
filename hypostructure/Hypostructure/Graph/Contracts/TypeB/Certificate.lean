@@ -25,59 +25,45 @@ variable {data : Parameters} {object : Graph.FiniteObject.{u}}
 /-! ## Certificate labelling -/
 
 /-- **Nodes `[71]`/`[80]`**: at the capped Type B support, every assigned
-centre carries a fan-certificate labelling, or one of them is a fan-certificate
-residual centre. -/
+centre carries G's canonical fan-certificate labelling, or one of them is a
+fan-certificate residual centre (the canonical labelling is absent there). -/
 theorem fanCertificate_split
     (cap : TypeBFanCertificateCapStatement data object) :
     TypeBFanCertificateMarkedStatement data object ∨
       TypeBFanCertificateResidualStatement data object := by
-  rcases TypeBLaneAt.split (fun _core centres => ∃ centre ∈ centres,
-      IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre))
-      cap with residual | marked
-  · refine Or.inr (TypeBLaneAt.imp (fun _core _centres member holds => ?_)
-      residual)
-    obtain ⟨centre, centreMember, unmarked⟩ := holds.2
-    exact ⟨centre, centreMember, TypeBLaneMember.high member centre centreMember,
-      unmarked⟩
+  rcases TypeBLaneAt.split (fun _core centres => ∀ centre ∈ centres,
+      (canonicalFanCertificateLabelling data object centre).isSome)
+      cap with marked | residual
   · refine Or.inl (TypeBLaneAt.imp (fun _core _centres _member holds => ?_)
       marked)
     intro centre centreMember
-    have labelled : Nonempty
-        (Graph.FanCertificateLabelling object data.windowOrder centre) := by
-      by_contra none
-      exact holds.2 ⟨centre, centreMember, not_nonempty_iff.mp none⟩
-    obtain ⟨marking⟩ := labelled
-    exact ⟨marking, (holds.1 centre centreMember).2 marking⟩
+    obtain ⟨marking, markingEq⟩ :=
+      Option.isSome_iff_exists.mp (holds.2 centre centreMember)
+    exact ⟨marking, markingEq, (holds.1 centre centreMember).2 marking markingEq⟩
+  · refine Or.inr (TypeBLaneAt.imp (fun _core _centres member holds => ?_)
+      residual)
+    have notAll := holds.2
+    push Not at notAll
+    obtain ⟨centre, centreMember, absent⟩ := notAll
+    exact ⟨centre, centreMember, TypeBLaneMember.high member centre centreMember,
+      Option.not_isSome_iff_eq_none.mp absent⟩
 
 /-! ## Direct fan-window cycles -/
 
-/-- **Nodes `[72]`/`[81]`, first half**: at the marked Type B support, some
-assigned centre carries a direct fan-window configuration at `P₀`, or none
-does. -/
-theorem directCycle_split
+/-- **Nodes `[72]`/`[81]`, the direct cycles inside the local fan-window
+ledger** (`lem:typeB-direct-fan-window-cycles`, `lem:typeB-two-window-cycles`):
+a direct fan-window configuration at `P₀` builds a cycle of accepted length,
+which the selection denies, so every assigned centre of the marked Type B
+support is direct-cycle free. -/
+theorem typeBFanDirectCycleFree
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (marked : TypeBFanCertificateMarkedStatement data object) :
-    TypeBFanDirectCycleStatement data object ∨
-      TypeBFanDirectCycleFreeStatement data object := by
-  rcases TypeBLaneAt.split (fun _core centres => ∃ centre ∈ centres,
-      Graph.IsHighCentre object data.threshold centre ∧
-        Graph.TypeBDirectCycle.DirectCycleConfiguration object data.windowOrder
-          data.LengthOK (canonicalWindowPacking data object) centre)
-      marked with cycle | free
-  · exact Or.inl (TypeBLaneAt.imp (fun _ _ _ holds => holds.2) cycle)
-  · exact Or.inr (TypeBLaneAt.imp (fun _core _centres _member holds centre
-        centreMember high configuration =>
-      holds.2 ⟨centre, centreMember, high, configuration⟩) free)
-
-/-- A direct fan-window configuration at `P₀` builds a cycle of accepted
-length. -/
-theorem hasCycleWithLength_of_typeBFanDirectCycle
-    (cycle : TypeBFanDirectCycleStatement data object) :
-    Graph.HasCycleWithLength data.LengthOK object := by
-  obtain ⟨_core, _centres, _member, _centre, _centreMember, _high, configuration⟩ :=
-    cycle
-  exact Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
-    (canonicalWindowPacking_spec data object).1
-    configuration
+    TypeBFanDirectCycleFreeStatement data object :=
+  TypeBLaneAt.imp (fun _core _centres _member holds =>
+      ⟨holds, fun _centre _centreMember configuration =>
+        avoids (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
+          (canonicalWindowPacking_spec data object).1 configuration)⟩)
+    marked
 
 /-! ## The hybrid B1 fan ledger -/
 
@@ -115,10 +101,10 @@ theorem hybridB1Entry
     exact Graph.TypeBHybridIncidence.positive_deficit_of_two_le_closedCount
       _ _ _ _ _ twoLe high deficitSlack
 
-/-- **Nodes `[72]`/`[81]`, B1**: the local B1 ledger at every marked assigned
-centre of the Type B support, at its canonical fan envelope over `W₀`: the
-marking caps the degree by the label packing number, which the registered
-discharge scale covers. -/
+/-- **Nodes `[72]`/`[81]`, B1**: the local B1 ledger at every assigned centre of
+the direct-cycle-free, certificate-marked Type B support, at its assigned fan
+envelope over `W₀`: the marking caps the degree by the label packing number,
+which the registered discharge scale covers. -/
 theorem typeBFanHybridEntry
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (quadrilateral : data.LengthOK 4)
@@ -129,38 +115,56 @@ theorem typeBFanHybridEntry
     (deficitSlack :
       data.dischargeScale * data.threshold <
         2 * data.dischargeScale + (data.threshold + 2))
-    (marked : TypeBFanCertificateMarkedStatement data object) :
+    (free : TypeBFanDirectCycleFreeStatement data object) :
     TypeBFanHybridEntryStatement data object := by
   refine TypeBLaneAt.imp (fun _core _centres member holds centre centreMember => ?_)
-    marked
-  obtain ⟨_marking, capped⟩ := holds centre centreMember
+    free
+  obtain ⟨_marking, _markingEq, capped⟩ := holds.1 centre centreMember
   exact hybridB1Entry avoids quadrilateral three deficitSlack
     (TypeBLaneMember.high member centre centreMember)
     (le_trans (Nat.succ_le_succ capped) fanCapSlack) _ _
 
 /-! ## The B2 disjoint ledger -/
 
-/-- **Nodes `[72]`/`[81]`, B2** (`lem:typeB-bridge-to-overlap`): at the
-direct-cycle-free Type B support, the assigned centres admit a disjoint choice
-at `P₀`, or the support carries a minimal overlap obstruction. -/
+/-- The canonical minimal overlap obstruction of a certificate-marked support
+whose B2 disjoint choice fails (`lem:typeB-bridge-to-overlap`). -/
+theorem canonicalOverlapObstruction_of_not_hasDisjointChoice
+    {core centres : Finset object.Vertex}
+    (member : TypeBLaneMember data object core centres)
+    (failure : ¬ Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
+      data.dischargeScale (canonicalWindowPacking data object) core centres
+      centres) :
+    ∃ obstruction, canonicalOverlapObstruction data object core centres =
+      some obstruction :=
+  canonicalOverlapObstruction_spec
+    ((not_hasDisjointChoice_iff_overlapObstruction
+      (TypeBLaneMember.high member)).mp failure)
+
+/-- **Node `[72]`: local fan-window ledger complete; B2 disjointness holds?**
+At the Type B support of the B1 fact (with its `[71]` marking), B2 holds, or the
+support carries G's canonical minimal overlap obstruction
+(`lem:typeB-bridge-to-overlap`). -/
 theorem b2_split
-    (free : TypeBFanDirectCycleFreeStatement data object) :
+    (hybrid : TypeBFanHybridEntryStatement data object)
+    (marked : TypeBFanCertificateMarkedStatement data object) :
     TypeBB2ChoiceStatement data object ∨ TypeBB2ObstructionStatement data object := by
   rcases TypeBLaneAt.split (fun core centres =>
-      ¬ Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
+      Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
         data.dischargeScale (canonicalWindowPacking data object) core centres
-        centres) free with fails | holds
+        centres) (TypeBLaneAt.and hybrid marked) with holds | fails
+  · exact Or.inl (TypeBLaneAt.imp (fun _core _centres _member holds =>
+      ⟨holds.1.1, holds.1.2, holds.2⟩) holds)
   · exact Or.inr (TypeBLaneAt.imp (fun _core _centres member failure =>
-      (not_hasDisjointChoice_iff_overlapObstruction
-        (TypeBLaneMember.high member)).mp failure.2) fails)
-  · exact Or.inl (TypeBLaneAt.imp (fun _ _ _ holds => not_not.mp holds.2) holds)
+      ⟨failure.1.2, canonicalOverlapObstruction_of_not_hasDisjointChoice member
+        failure.2⟩) fails)
 
-/-- **Node `[81]`** (degree-four arm, tex 1019): at the direct-cycle-free Type B
-support, every assigned centre has `c ≤ 1`, or the assigned centres admit a B2
-disjoint choice; otherwise some centre has `c ≥ 2` and B2 fails, so the support
-carries a minimal overlap obstruction (`lem:typeB-bridge-to-overlap`). -/
+/-- **Node `[81]`** (degree-four arm, tex 1019): at the Type B support of the B1
+fact (with its `[71]` marking), every assigned centre has `c ≤ 1` or B2 holds;
+otherwise some centre has `c ≥ 2` and B2 fails, so the support carries G's
+canonical minimal overlap obstruction (`lem:typeB-bridge-to-overlap`). -/
 theorem degreeFourLedger_split
-    (free : TypeBFanDirectCycleFreeStatement data object) :
+    (hybrid : TypeBFanHybridEntryStatement data object)
+    (marked : TypeBFanCertificateMarkedStatement data object) :
     TypeBDegreeFourLedgerStatement data object ∨
       TypeBDegreeFourOverlapStatement data object := by
   rcases TypeBLaneAt.split (fun core centres =>
@@ -169,28 +173,98 @@ theorem degreeFourLedger_split
           (typeBFanEnvelope core centres centre) centre ≤ 1) ∨
       Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
         data.dischargeScale (canonicalWindowPacking data object) core centres
-        centres) free with holds | fails
-  · exact Or.inl (TypeBLaneAt.imp (fun _ _ _ holds => holds.2) holds)
+        centres) (TypeBLaneAt.and hybrid marked) with holds | fails
+  · refine Or.inl (TypeBLaneAt.imp (fun _core _centres _member holds => ?_) holds)
+    rcases holds.2 with small | choice
+    · exact ⟨holds.1.1, Or.inl small⟩
+    · exact ⟨holds.1.1, Or.inr ⟨holds.1.2, choice⟩⟩
   · refine Or.inr (TypeBLaneAt.imp (fun _core _centres member failure => ?_) fails)
     have noneSmall := failure.2
     push Not at noneSmall
     obtain ⟨⟨centre, centreMember, two⟩, noChoice⟩ := noneSmall
-    exact ⟨⟨centre, centreMember, two⟩,
-      (not_hasDisjointChoice_iff_overlapObstruction
-        (TypeBLaneMember.high member)).mp noChoice⟩
+    exact ⟨⟨centre, centreMember, two⟩, failure.1.2,
+      canonicalOverlapObstruction_of_not_hasDisjointChoice member noChoice⟩
 
-/-- **Node `[82]`**, `lem:typeB-exclusion` Step 1 on the degree-four arm: a
-centre of degree `δ + 1` with at most one cubic-closed neighbour has
-`s·D_B = s·c − s·δ + (δ + 2) ≤ 0` at the registered `δ = 3`, `s = 4`, so its
-marked fan is certificate-closed; otherwise the `[81]` yes arm is B2-paid. -/
+/-- **B2(a)--(d) at a B2 support** (`def:typeB-bridge-statements`): the canonical
+disjoint choice refines every candidate charge, and --- the core's high centres
+being assigned on every lane --- the canonical B2 ledger exists with its exact
+augmented refinement, its post-ledger hygiene and its grouped envelope. -/
+theorem typeBB2LedgerAt
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex)
+    (uncompressible : UncompressibleStatement data object)
+    (normalized : RemainderNormalizedStatement data object)
+    {core centres : Finset object.Vertex}
+    (member : TypeBLaneMember data object core centres)
+    (b2 : TypeBB2At data object core centres) :
+    TypeBB2LedgerAt data object core centres := by
+  classical
+  refine ⟨b2, ?_, ?_⟩
+  · obtain ⟨selected, selectedEq⟩ := canonicalTypeBChoice_spec b2.2
+    exact ⟨selected, selectedEq, fun centre centreMember =>
+      (Graph.TypeBRefinedSupport.mem_candidateFamily_iff.mp
+        (selected.eligible centre centreMember)).2.entryRefines⟩
+  · obtain ⟨ledger, ledgerEq⟩ := canonicalTypeBDisjointChoice_spec
+      ⟨b2.2, TypeBLaneMember.high member, TypeBLaneMember.centres_subset member⟩
+    obtain ⟨components, grouped⟩ := disjointLedgerCoreClosure avoids baseline
+      uncompressible normalized (TypeBLaneMember.core_subset_remainder member)
+      ledger
+    exact ⟨ledger, ledgerEq, ledger.exactAugmentedLedgerRefinement, components,
+      grouped⟩
+
+/-- `prop:typeB-bridge-reduction` as an inequality: on any B2 ledger of the
+support, the remaining core carries the whole deficit,
+`Σ_{remaining core} ch ≤ s·No(X)`. -/
+theorem remainingCoreCharge_le
+    {core centres : Finset object.Vertex}
+    (ledger : Graph.TypeBRefinedSupport.DisjointLedger object data.threshold
+      data.dischargeScale (canonicalWindowPacking data object) core centres) :
+    RemainingCoreCharge data object ledger ≤
+      typeBScaledNetCharge data object core centres :=
+  Graph.TypeBEnvelopeCharge.remainingCore_le_scaledNetCharge ledger
+    ledger.exactAugmentedLedgerRefinement
+
+/-- **Node `[74]`**, B2(a)--(d) on the B2 yes arm of `[72]`: the B2 fact at the
+Type B support makes it B2-paid. -/
+theorem typeBDisjointLedger
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex)
+    (uncompressible : UncompressibleStatement data object)
+    (normalized : RemainderNormalizedStatement data object)
+    (choice : TypeBB2ChoiceStatement data object) :
+    TypeBDisjointLedgerStatement data object :=
+  TypeBLaneAt.imp (fun _core _centres member holds =>
+      typeBB2LedgerAt avoids baseline uncompressible normalized member holds.2)
+    choice
+
+/-- **Node `[74]`**, `prop:typeB-bridge-reduction` on the canonical B2 ledger of
+the Type B support: its remaining core carries the whole deficit. -/
+theorem typeBExcluded (ledgers : TypeBDisjointLedgerStatement data object) :
+    TypeBExcludedStatement data object :=
+  TypeBLaneAt.imp (fun _core _centres _member holds => by
+      obtain ⟨_b2, _choice, ledger, ledgerEq, _exact, _components, _grouped⟩ :=
+        holds
+      exact ⟨ledger, ledgerEq, remainingCoreCharge_le ledger⟩)
+    ledgers
+
+/-- **Node `[82]`**, `lem:typeB-exclusion` Step 1 on the degree-four arm, and
+`prop:typeB-bridge-reduction` on its B2-paid case: a centre of degree `δ + 1`
+with at most one cubic-closed neighbour has `s·D_B = s·c − s·δ + (δ + 2) ≤ 0` at
+the registered `δ = 3`, `s = 4`, so its marked fan is certificate-closed;
+otherwise the `[81]` yes arm is B2-paid and its remaining core carries the whole
+deficit. -/
 theorem typeBDegreeFourClosed
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex)
+    (uncompressible : UncompressibleStatement data object)
+    (normalized : RemainderNormalizedStatement data object)
     (thresholdEq : data.threshold = 3) (scaleEq : data.dischargeScale = 4)
     (degreeFour : TypeBFanDegreeFourCentresStatement data object)
     (ledger : TypeBDegreeFourLedgerStatement data object) :
     TypeBDegreeFourClosedStatement data object := by
-  refine TypeBLaneAt.imp (fun _core _centres _member both => ?_)
+  refine TypeBLaneAt.imp (fun _core _centres member both => ?_)
     (TypeBLaneAt.and degreeFour ledger)
-  rcases both.2 with small | paid
+  rcases both.2.2 with small | paid
   · refine Or.inl ⟨small, fun centre centreMember => ?_⟩
     have degree := both.1 centre centreMember
     have count := small centre centreMember
@@ -200,20 +274,25 @@ theorem typeBDegreeFourClosed
     rw [degree, thresholdEq, scaleEq]
     push_cast
     omega
-  · exact Or.inr paid
+  · have ledgerAt := typeBB2LedgerAt avoids baseline uncompressible normalized
+      member paid
+    obtain ⟨_b2, _choice, selected, selectedEq, _exact, _components, _grouped⟩ :=
+      id ledgerAt
+    exact Or.inr ⟨ledgerAt, selected, selectedEq, remainingCoreCharge_le selected⟩
 
 /-- `prop:typeB-global-local-bridge`: at the B2-failure support, target safety,
 the normal form at every demand, and the direct-cycle exclusion forced by
 target safety give all five clauses of `lem:typeB-global-local-reflection` at
-every minimal overlap obstruction of the support, whose core lies in the
+G's canonical minimal overlap obstruction of the support, whose core lies in the
 remainder of `P₀`. -/
 theorem typeBGlobalLocalBridge
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (normal : HighCentreNormalFormStatement data object)
     (obstructed : TypeBB2ObstructionStatement data object) :
     TypeBGlobalLocalBridgeStatement data object := by
-  refine TypeBLaneAt.imp (fun _core _centres member present =>
-    ⟨present, fun obstruction => ?_⟩) obstructed
+  refine TypeBLaneAt.imp (fun _core _centres member present => ?_) obstructed
+  obtain ⟨marked, obstruction, obstructionEq⟩ := present
+  refine ⟨marked, obstruction, obstructionEq, ?_⟩
   have directFree : ∀ hub ∈ obstruction.demands,
       Graph.TypeBDirectCycle.DirectCycleFree object data.windowOrder
         data.LengthOK (canonicalWindowPacking data object) hub := by
@@ -242,61 +321,6 @@ theorem typeBGlobalLocalBridge_of_degreeFour
   typeBGlobalLocalBridge avoids normal
     (TypeBLaneAt.imp (fun _ _ _ holds => holds.2) overlap)
 
-/-- **Node `[74]`/`[82]`**, `def:typeB-bridge-statements` B2(a)--(d) at the Type B
-support, whenever B2 holds there: its canonical disjoint choice refines every
-candidate charge; when the core's high centres are assigned, the
-canonical B2 ledger has its exact augmented refinement, and remainder
-normalization gives the post-ledger hygiene of
-`lem:typeB-postledger-core-hygiene` and the grouped decorated envelope of
-B2(d).  `fact` is the predecessor at the support (the B2 yes arm `[72]`, or the
-`[81]` yes arm). -/
-theorem typeBDisjointLedger
-    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex)
-    (uncompressible : UncompressibleStatement data object)
-    (normalized : RemainderNormalizedStatement data object)
-    {Q : Finset object.Vertex → Finset object.Vertex → Prop}
-    (fact : TypeBLaneAt data object Q) :
-    TypeBDisjointLedgerStatement data object := by
-  classical
-  refine TypeBLaneAt.imp (fun core centres member _holds hasChoice => ⟨?_, ?_⟩) fact
-  · obtain ⟨selected, selectedEq⟩ := canonicalTypeBChoice_spec hasChoice
-    exact ⟨selected, selectedEq, fun centre centreMember =>
-      (Graph.TypeBRefinedSupport.mem_candidateFamily_iff.mp
-        (selected.eligible centre centreMember)).2.entryRefines⟩
-  · intro subset
-    obtain ⟨ledger, ledgerEq⟩ := canonicalTypeBDisjointChoice_spec
-      ⟨hasChoice, TypeBLaneMember.high member, subset⟩
-    obtain ⟨components, grouped⟩ := disjointLedgerCoreClosure avoids baseline
-      uncompressible normalized (TypeBLaneMember.core_subset_remainder member)
-      ledger
-    exact ⟨ledger, ledgerEq, ledger.exactAugmentedLedgerRefinement, components,
-      grouped⟩
-
-/-- `prop:typeB-bridge-reduction`: the exact augmented refinement of a B2
-disjoint ledger pays every selected entry, so a nonnegative remaining core
-charge gives `N₀ ≥ 0`. -/
-theorem nonNegativeNetCharge_of_remainingCoreCharge
-    {core centres : Finset object.Vertex}
-    (ledger : Graph.TypeBRefinedSupport.DisjointLedger object data.threshold
-      data.dischargeScale (canonicalWindowPacking data object) core centres)
-    (clean : 0 ≤ RemainingCoreCharge data object ledger) :
-    object.NonNegativeNetCharge core data.threshold data.dischargeScale := by
-  have selectedNonnegative : (0 : Int) ≤ ledger.selectedEntryPayment₂ := by
-    rw [Graph.TypeBRefinedSupport.DisjointLedger.selectedEntryPayment₂]
-    refine Finset.sum_nonneg ?_
-    intro centre _member
-    exact (ledger.entry_isCandidate centre.1 centre.2).entryRefines
-  exact Graph.TypeBEnvelopeCharge.nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg_of_selectedEntryPayment₂_nonnegative
-    ledger ledger.exactAugmentedLedgerRefinement selectedNonnegative clean
-
-/-- **Node `[74]`/`[82]`**, `prop:typeB-bridge-reduction` on the canonical B2
-ledger of the Type B support. -/
-theorem typeBExcluded (ledgers : TypeBDisjointLedgerStatement data object) :
-    TypeBExcludedStatement data object :=
-  TypeBLaneAt.imp (fun _core _centres _member _holds ledger _ledgerEq clean =>
-    nonNegativeNetCharge_of_remainingCoreCharge ledger clean) ledgers
-
 /-! ## The Type B residual mass -/
 
 /-- `def:typeB-residual-mass` at one high centre: the negative part of its
@@ -311,81 +335,100 @@ theorem centreBridgeMassBound
     CentreBridgeMassBound data object core centres centre :=
   Graph.TypeBEnvelopeCharge.envelopeNegativePart_le _ high massSlack
 
-/-- **Nodes `[75]`/`[84]`**: every fan-certificate residual centre of the
-certificate-residual support is charged to the bridge fan mass. -/
+/-- `lem:typeB-bridge-deficit-bound` at the Type B support of `G`: the core's
+high centres are assigned on every lane. -/
+theorem typeBBridgeDeficitBoundAt
+    (baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex)
+    (massSlack :
+      data.threshold + 2 + data.dischargeScale ≤
+        data.bridgeMassFactor * data.dischargeScale)
+    {core centres : Finset object.Vertex}
+    (member : TypeBLaneMember data object core centres) :
+    TypeBBridgeDeficitBoundAt data object core centres :=
+  fun residual => Graph.TypeBEnvelopeCharge.bridgeDeficitBound_assigned object
+    core centres massSlack baseline (TypeBLaneMember.centres_subset member) residual
+
+/-- **Nodes `[75]`/`[84]`**: the certificate-residual support is a Type B bridge
+residual (`def:typeB-bridge-statements` (i)); its negative part is charged to
+its assigned surplus (`lem:typeB-bridge-deficit-bound`). -/
 theorem typeBFanCertificateResidualMass
+    (baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex)
     (massSlack :
       data.threshold + 2 + data.dischargeScale ≤
         data.bridgeMassFactor * data.dischargeScale)
     (residual : TypeBFanCertificateResidualStatement data object) :
     TypeBFanCertificateResidualMassStatement data object :=
   TypeBLaneAt.imp (fun _core _centres member holds =>
-      ⟨holds, fun centre centreMember _unmarked =>
-        centreBridgeMassBound massSlack
-          (TypeBLaneMember.high member centre centreMember)⟩) residual
+      ⟨holds, typeBBridgeDeficitBoundAt baseline massSlack member⟩) residual
 
-/-- **Nodes `[73]`/`[75]`, `[83]`/`[84]`**: the centres of the obstructed
-support are charged to the bridge fan mass. -/
+/-- **Nodes `[73]`/`[75]`, `[83]`/`[84]`**: the obstructed support is a Type B
+bridge residual (`def:typeB-bridge-statements` (ii)); its negative part is
+charged to its assigned surplus (`lem:typeB-bridge-deficit-bound`). -/
 theorem typeBOverlapObstructionMass
+    (baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex)
     (massSlack :
       data.threshold + 2 + data.dischargeScale ≤
         data.bridgeMassFactor * data.dischargeScale)
     (reflected : TypeBGlobalLocalBridgeStatement data object) :
     TypeBOverlapObstructionMassStatement data object :=
   TypeBLaneAt.imp (fun _core _centres member holds =>
-    ⟨holds.1, fun centre centreMember =>
-      centreBridgeMassBound massSlack
-        (TypeBLaneMember.high member centre centreMember)⟩) reflected
+    ⟨holds.1, holds.2, typeBBridgeDeficitBoundAt baseline massSlack member⟩)
+    reflected
 
-/-- The B2-paid half of node `[76]`/`[85]`, from the node-`[74]`/`[82]` ledger
-facts at the support: a negative support whose high centres are assigned keeps a negative
-remaining core on its canonical B2 ledger, by the bridge reduction on that same
-ledger. -/
-theorem exclusionResidual_of_ledgers
-    (ledgers : TypeBDisjointLedgerStatement data object)
-    (excluded : TypeBExcludedStatement data object) :
-    TypeBLaneAt data object (fun core centres =>
-      Graph.TypeBRefinedSupport.centres object data.threshold core ⊆ centres →
-        object.NegativeNetCharge core data.threshold data.dischargeScale →
-        Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
-          data.dischargeScale (canonicalWindowPacking data object) core centres
-          centres →
-        ∃ ledger, canonicalTypeBDisjointChoice data object core centres =
-            some ledger ∧
-          ledger.ExactAugmentedLedgerRefinement ∧
-          PostLedgerComponents data object ledger ∧
-          ¬ 0 ≤ RemainingCoreCharge data object ledger) := by
-  refine TypeBLaneAt.imp (fun core centres _member both subset
-      negative hasChoice => ?_) (TypeBLaneAt.and ledgers excluded)
-  obtain ⟨ledger, ledgerEq, exact, components, _grouped⟩ :=
-    (both.1 hasChoice).2 subset
-  refine ⟨ledger, ledgerEq, exact, components, fun clean => ?_⟩
-  exact ((object.not_negativeNetCharge_iff core data.threshold
-    data.dischargeScale).mpr (both.2 ledger ledgerEq clean)) negative
+/-- A canonical minimal overlap obstruction refutes B2 at the support. -/
+theorem not_typeBB2At_of_obstruction {core centres : Finset object.Vertex}
+    {obstruction}
+    (_obstructionEq : canonicalOverlapObstruction data object core centres =
+      some obstruction) :
+    ¬ TypeBB2At data object core centres := fun b2 =>
+  obstruction.noDisjointChoice
+    (hasDisjointChoice_mono obstruction.demands_subset b2.2)
 
-/-- **Node `[76]`/`[85]`** on the B2 arm (`[74]` → `[76]`, `[82]` → `[85]`): the
-B2-paid deficit stays in the route-`8` remaining core (from the ledger facts),
-and a bridge-residual support has every assigned centre charged to its
-surplus. -/
+/-- A fan-certificate residual centre refutes B2 at the support (B2 is stated
+for supports without fan-certificate residual centres). -/
+theorem not_typeBB2At_of_residual {core centres : Finset object.Vertex}
+    (residual : ∃ centre ∈ centres, Graph.IsHighCentre object data.threshold centre ∧
+      canonicalFanCertificateLabelling data object centre = none) :
+    ¬ TypeBB2At data object core centres := by
+  rintro ⟨marked, _choice⟩
+  obtain ⟨centre, centreMember, _high, absent⟩ := residual
+  obtain ⟨_marking, markingEq, _capped⟩ := marked centre centreMember
+  rw [absent] at markingEq
+  cases markingEq
+
+/-- **Node `[76]`** on the B2 arm (`[74]` → `[76]`): the B2-paid support's
+remaining core carries the whole deficit (the ledger fact and the bridge
+reduction of `[74]`). -/
 theorem typeBExclusionResidual
-    (massSlack :
-      data.threshold + 2 + data.dischargeScale ≤
-        data.bridgeMassFactor * data.dischargeScale)
     (ledgers : TypeBDisjointLedgerStatement data object)
     (excluded : TypeBExcludedStatement data object) :
     TypeBExclusionResidualStatement data object :=
-  TypeBLaneAt.imp (fun _core _centres member paid =>
-      ⟨paid, fun _residual centre centreMember =>
-        centreBridgeMassBound massSlack
-          (TypeBLaneMember.high member centre centreMember)⟩)
-    (exclusionResidual_of_ledgers ledgers excluded)
+  TypeBLaneAt.imp (fun _core _centres _member both => Or.inl both)
+    (TypeBLaneAt.and ledgers excluded)
 
-/-- **Node `[76]`/`[85]`** on a fan-mass arm (`[75]` → `[76]`, `[84]` → `[85]`):
-the bridge-residual support's assigned centres are charged to their surplus,
-and, were B2 to hold at it, its deficit would stay in the route-`8` remaining
-core of its canonical B2 ledger (the bridge reduction on that ledger).  `mass`
-is the `[75]`/`[84]` fact at the support. -/
-theorem typeBExclusionResidual_of_fanMass
+/-- **Node `[76]`/`[85]`** on the certificate-residual fan-mass arm (`[75]` →
+`[76]`, `[84]` → `[85]`): B2 fails and the `[75]`/`[84]` charge applies. -/
+theorem typeBExclusionResidual_of_certificateMass
+    (mass : TypeBFanCertificateResidualMassStatement data object) :
+    TypeBExclusionResidualStatement data object :=
+  TypeBLaneAt.imp (fun _core _centres _member holds =>
+      Or.inr ⟨not_typeBB2At_of_residual holds.1, holds.2⟩) mass
+
+/-- **Node `[76]`/`[85]`** on the B2-failure fan-mass arm (`[73]` → `[75]` →
+`[76]`, `[83]` → `[84]` → `[85]`): B2 fails at the canonical obstruction and the
+`[75]`/`[84]` charge applies. -/
+theorem typeBExclusionResidual_of_obstructionMass
+    (mass : TypeBOverlapObstructionMassStatement data object) :
+    TypeBExclusionResidualStatement data object :=
+  TypeBLaneAt.imp (fun _core _centres _member holds => by
+      obtain ⟨_marked, ⟨_obstruction, obstructionEq, _reflected⟩, bound⟩ := holds
+      exact Or.inr ⟨not_typeBB2At_of_obstruction obstructionEq, bound⟩) mass
+
+/-- **Node `[85]`** on the `[82]` arm: a B2-paid support keeps its deficit in the
+remaining core; a certificate-closed support at which B2 fails is a Type B
+bridge residual (`def:typeB-bridge-statements` (ii)) charged by
+`lem:typeB-bridge-deficit-bound`, and one at which B2 holds is B2-paid. -/
+theorem typeBExclusionResidual_of_degreeFourClosed
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex)
     (uncompressible : UncompressibleStatement data object)
@@ -393,15 +436,30 @@ theorem typeBExclusionResidual_of_fanMass
     (massSlack :
       data.threshold + 2 + data.dischargeScale ≤
         data.bridgeMassFactor * data.dischargeScale)
-    {Q : Finset object.Vertex → Finset object.Vertex → Prop}
-    (mass : TypeBLaneAt data object Q) :
+    (closed : TypeBDegreeFourClosedStatement data object) :
     TypeBExclusionResidualStatement data object := by
-  have ledgers := typeBDisjointLedger avoids baseline uncompressible normalized mass
-  have excluded := typeBExcluded ledgers
-  exact TypeBLaneAt.imp (fun _core _centres member paid =>
-      ⟨paid, fun _residual centre centreMember =>
-        centreBridgeMassBound massSlack
-          (TypeBLaneMember.high member centre centreMember)⟩)
-    (exclusionResidual_of_ledgers ledgers excluded)
+  classical
+  refine TypeBLaneAt.imp (fun _core _centres member holds => ?_) closed
+  rcases holds with _certificateClosed | paid
+  · by_cases b2 : TypeBB2At data object _core _centres
+    · have ledgerAt := typeBB2LedgerAt avoids baseline uncompressible normalized
+        member b2
+      obtain ⟨_b2, _choice, selected, selectedEq, _exact, _components, _grouped⟩ :=
+        id ledgerAt
+      exact Or.inl ⟨ledgerAt, selected, selectedEq, remainingCoreCharge_le selected⟩
+    · exact Or.inr ⟨b2, typeBBridgeDeficitBoundAt baseline massSlack member⟩
+  · exact Or.inl paid
+
+/-- **Node `[77]`**, the Type B entry into route `8`: a negative Type B support
+hands a negative remaining core to route `8` on the B2 arm (its remaining core
+carries the whole deficit, `[76]`), or is a bridge residual charged to its
+surplus. -/
+theorem typeBRoute8Entry
+    (exclusion : TypeBExclusionResidualStatement data object) :
+    TypeBRoute8EntryStatement data object :=
+  TypeBLaneAt.imp (fun _core _centres _member holds negative => by
+      rcases holds with ⟨_ledgerAt, ledger, ledgerEq, carried⟩ | residual
+      · exact Or.inl ⟨ledger, ledgerEq, lt_of_le_of_lt carried negative⟩
+      · exact Or.inr residual) exclusion
 
 end Hypostructure.Graph.Contracts.TypeB

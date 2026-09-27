@@ -52,7 +52,34 @@ theorem typeBBridgeReduction
           negative
     exact Or.inl ⟨ledger, ledgerEq, ledger.exactAugmentedLedgerRefinement,
       notClean, components, grouped⟩
-  · exact Or.inr obstruction
+  · exact Or.inr (canonicalOverlapObstruction_spec obstruction)
+
+/-- G's route-`8` pieces of a support carry exactly the pieces on which the Type A
+routing and unsaturation pair fails: off them every piece is a bridge residual
+component. -/
+theorem bridgeResidual_of_not_mem_route8 {support : Finset object.Vertex}
+    {piece : Graph.SupportComponents.Connected.Component object support}
+    (member : piece ∈ object.canonicalPieces support)
+    (notRoute8 : piece ∉ canonicalBridgeRoute8Pieces data object support) :
+    Graph.TypeBEnvelopeCharge.BridgeResidualComponentAt object
+      (object.pieceSupport support piece) data.threshold data.dischargeScale := by
+  classical
+  by_contra failure
+  exact notRoute8 (by
+    unfold canonicalBridgeRoute8Pieces
+    exact Finset.mem_filter.mpr ⟨member, failure⟩)
+
+/-- When every piece of a support is a bridge residual component, G's route-`8`
+pieces of it are empty. -/
+theorem route8Pieces_eq_empty {support : Finset object.Vertex}
+    (components : ∀ piece ∈ object.canonicalPieces support,
+      Graph.TypeBEnvelopeCharge.BridgeResidualComponentAt object
+        (object.pieceSupport support piece) data.threshold data.dischargeScale) :
+    canonicalBridgeRoute8Pieces data object support = ∅ := by
+  classical
+  unfold canonicalBridgeRoute8Pieces
+  exact Finset.filter_eq_empty_iff.mpr fun piece member failure =>
+    failure (components piece member)
 
 /-- `def:typeB-residual-mass`, `lem:typeB-bridge-deficit-bound`,
 `lem:typeB-bridge-with-route8-core` and `lem:decorated-envelope-with-route8-core`
@@ -69,14 +96,18 @@ theorem typeBBridgeMass
     · exact Graph.TypeBEnvelopeCharge.envelopeNegativePart_le _ high massSlack
     · exact Graph.TypeBEnvelopeCharge.bridgeDeficitBound object _ massSlack
         baseline residual.1 residual.2
-  · intro route8 route8Surplus components
-    exact Graph.TypeBEnvelopeCharge.bridgeResidualMass_le_route8 object _ route8
-      massSlack baseline route8Surplus components
-  · intro ordinaryRoute8 groupedRoute8 ordinarySurplus groupedSurplus
-      ordinaryComponents groupedComponents
+  · intro _remainder _route8 route8Surplus
+    exact Graph.TypeBEnvelopeCharge.bridgeResidualMass_le_route8 object _ _
+      massSlack baseline route8Surplus
+      (fun piece member notRoute8 =>
+        bridgeResidual_of_not_mem_route8 member notRoute8)
+  · intro _ordinaryRoute8 _groupedRoute8 ordinarySurplus groupedSurplus
     exact Graph.TypeBEnvelopeCharge.bridgeResidualMass_le_twice object _ _
-      ordinaryRoute8 groupedRoute8 massSlack baseline ordinarySurplus
-      groupedSurplus ordinaryComponents groupedComponents
+      _ _ massSlack baseline ordinarySurplus groupedSurplus
+      (fun piece member notRoute8 =>
+        bridgeResidual_of_not_mem_route8 member notRoute8)
+      (fun piece member notRoute8 =>
+        bridgeResidual_of_not_mem_route8 member notRoute8)
 
 /-- `prop:typeB-bridge-sublinear` at the two canonical role unions of `P₀`:
 with no route-`8` core extracted, the bridge residual mass of both roles is at
@@ -88,10 +119,13 @@ theorem typeBBridgeSublinear
     TypeBBridgeSublinearStatement data object := by
   refine ⟨?_, nearCubic⟩
   intro ordinaryComponents groupedComponents
-  have atMostTwice := bridge.2.2 ∅ ∅ (by simp) (by simp)
-    (fun piece pieceMem _pieceNotEmpty => ordinaryComponents piece pieceMem)
-    (fun piece pieceMem _pieceNotEmpty => groupedComponents piece pieceMem)
-  simpa [Graph.TypeBEnvelopeCharge.route8Deficit] using atMostTwice
+  have ordinaryEmpty := route8Pieces_eq_empty ordinaryComponents
+  have groupedEmpty := route8Pieces_eq_empty groupedComponents
+  have atMostTwice := bridge.2.2
+    (by intro piece member; simp [ordinaryEmpty] at member)
+    (by intro piece member; simp [groupedEmpty] at member)
+  simpa [ordinaryEmpty, groupedEmpty, Graph.TypeBEnvelopeCharge.route8Deficit]
+    using atMostTwice
 
 /-- The `[113]`-style test of `prop:typeB-bridge-sublinear`, read after the
 bridge-sublinear fact at the same fixed packing `P₀` and the same canonical role

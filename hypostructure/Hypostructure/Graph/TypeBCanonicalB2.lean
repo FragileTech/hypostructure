@@ -1,6 +1,5 @@
 import Hypostructure.Graph.TypeBCanonicalCarrier
 import Hypostructure.Graph.OrdinaryDeficiencyReserve
-import Hypostructure.Graph.TypeBProfileSchedule
 
 /-!
 # Canonical refined Type B support ledger
@@ -18,7 +17,6 @@ open Hypostructure
 open Hypostructure.Graph
 open Hypostructure.Graph.TypeBFanIncidence
 open Hypostructure.Graph.TypeBHybridIncidence
-open Hypostructure.Graph.TypeBProfileSchedule
 open Hypostructure.Graph.TypeBCanonicalCarrier
 open scoped BigOperators
 
@@ -180,10 +178,26 @@ charge of their far endpoints. -/
 structure LocalReserveBlock (object : FiniteObject.{u}) where
   vertices : Finset object.Vertex
 
+/-- **The assigned fan envelope `E_h` of a demand `h` of the support
+`X = (Y_X, H_X)`** (`def:marked-typeB-fan`, `def:typeB-assigned-ledger`,
+`lem:typeB-bridge-deficit-bound`): the centre together with the assigned support
+`Y_X ∪ H_X`.  A fan neighbour of `h` is cubic-closed exactly when its two non-`h`
+incidences are assigned to this support.  Every B2 candidate entry of `h` is
+evaluated on this one envelope: the candidate ledger of
+`def:typeB-candidate-ledger` is a ledger *of `X`*. -/
+noncomputable def fanEnvelope (piece assigned : Finset object.Vertex)
+    (hub : object.Vertex) : Finset object.Vertex := by
+  classical
+  exact insert hub (piece ∪ assigned)
+
+/-- The literal candidate data of `def:typeB-candidate-ledger` at one demand:
+the fan envelope it is evaluated on, together with (a) the assigned non-centre
+set `A_h` of a certificate-closed fan, or (b) the local reserve block and the
+chosen non-window incidences of a positive-deficit fan. -/
 inductive CandidateData (object : FiniteObject.{u}) where
-  | certificate (profile : TypeBFanClosedPorts.Profile object)
+  | certificate (envelope : Finset object.Vertex)
       (assigned : Finset object.Vertex)
-  | positive (profile : TypeBFanClosedPorts.Profile object)
+  | positive (envelope : Finset object.Vertex)
       (localReserve : LocalReserveBlock object)
       (chosenNonWindow : Finset (object.Vertex × object.Vertex))
 
@@ -193,10 +207,11 @@ variable {threshold dischargeScale : Nat}
 variable {packing : Finset (Finset object.Vertex)}
 variable {piece assigned : Finset object.Vertex} {hub : object.Vertex}
 
-def profile (data : CandidateData object) : TypeBFanClosedPorts.Profile object :=
+/-- The fan envelope the candidate is evaluated on. -/
+def envelope (data : CandidateData object) : Finset object.Vertex :=
   match data with
-  | .certificate profile _ => profile
-  | .positive profile _ _ => profile
+  | .certificate envelope _ => envelope
+  | .positive envelope _ _ => envelope
 
 def localReserve (data : CandidateData object) : LocalReserveBlock object :=
   match data with
@@ -213,8 +228,8 @@ noncomputable def chargedVertices (data : CandidateData object)
     (threshold : Nat) (hub : object.Vertex) : Finset object.Vertex :=
   match data with
   | .certificate _ assigned => assigned
-  | .positive profile localReserve _ =>
-      closedNeighbours object threshold profile.envelope hub ∪
+  | .positive envelope localReserve _ =>
+      closedNeighbours object threshold envelope hub ∪
         localReserve.vertices
 
 /-- The canonical window incidences and precisely those non-window incidences
@@ -224,21 +239,21 @@ noncomputable def selectedIncidences (data : CandidateData object)
     (hub : object.Vertex) : Finset (object.Vertex × object.Vertex) :=
   match data with
   | .certificate _ _ => ∅
-  | .positive profile _ chosenNonWindow =>
-      windowIncidenceSet object threshold profile.envelope
+  | .positive envelope _ chosenNonWindow =>
+      windowIncidenceSet object threshold envelope
           (object.windowSupport packing) hub ∪
         chosenNonWindow
 
 noncomputable def localReserveVertexUniverse
-    (profile : TypeBFanClosedPorts.Profile object)
+    (envelope : Finset object.Vertex)
     (threshold : Nat) (packing : Finset (Finset object.Vertex))
     (piece assigned : Finset object.Vertex)
     (hub : object.Vertex) :
     Finset object.Vertex :=
-  (((nonWindowIncidenceSet object threshold profile.envelope
+  (((nonWindowIncidenceSet object threshold envelope
       (object.windowSupport packing) hub).image Prod.snd) ∩ piece) \
     (assigned ∪
-      closedNeighbours object threshold profile.envelope hub)
+      closedNeighbours object threshold envelope hub)
 
 /-- Vertex atoms at both endpoints of every selected incidence. -/
 noncomputable def incidenceEndpointAtoms
@@ -287,9 +302,9 @@ def PaysHybridB1 (data : CandidateData object)
     (packing : Finset (Finset object.Vertex)) (hub : object.Vertex) : Prop :=
   match data with
   | .certificate _ _ => True
-  | .positive profile _ chosen =>
+  | .positive envelope _ chosen =>
       TypeBHybridIncidence.nonWindowDemand object threshold dischargeScale
-          profile.envelope (object.windowSupport packing) hub ≤
+          envelope (object.windowSupport packing) hub ≤
         (dischargeScale : Int) * (chosen.card : Int)
 
 /-- The candidate's exact common-scale subledger contribution.  Incidences
@@ -307,15 +322,18 @@ def EntryRefines (data : CandidateData object)
     (piece : Finset object.Vertex) (hub : object.Vertex) : Prop :=
   0 ≤ data.entryPayment₂ threshold dischargeScale piece hub
 
-/-- Eligibility is a finite test of the two manuscript candidate variants.
-The positive case scans actual `Y_X` vertex blocks and tests their charge; no
-local block is postulated. -/
+/-- Eligibility is a finite test of the two manuscript candidate variants of
+`def:typeB-candidate-ledger` at one demand `h ∈ H_X` of the support
+`X = (Y_X, H_X) = (piece, assigned)`: the entry is evaluated on the fan
+envelope `E_h` of `X` itself (`fanEnvelope piece assigned hub`), and `h` is a
+high-degree centre of `X`.  The positive case scans actual `Y_X` vertex blocks
+and tests their charge; no local block is postulated. -/
 def IsCandidate (data : CandidateData object)
     (threshold dischargeScale : Nat)
     (packing : Finset (Finset object.Vertex))
     (piece assigned : Finset object.Vertex) (hub : object.Vertex) : Prop :=
-  data.profile ∈ profileCandidatesWith object (object.windowSupport packing) ∧
-  data.profile.marked.fan.hub = hub ∧
+  data.envelope = fanEnvelope piece assigned hub ∧
+  Graph.IsHighCentre object threshold hub ∧
   hub ∈ assigned ∧
   data.chargedVertices threshold hub ⊆ piece ∧
   Disjoint (data.chargedVertices threshold hub)
@@ -323,15 +341,15 @@ def IsCandidate (data : CandidateData object)
   data.EntryRefines threshold dischargeScale piece hub ∧
   data.PaysHybridB1 threshold dischargeScale packing hub ∧
   match data with
-  | .certificate profile assigned =>
-      IsCertificateClosed object threshold dischargeScale profile.envelope hub ∧
-        assigned ⊆ TypeBMarkedFan.neighbourRim object hub
-  | .positive profile localReserve chosenNonWindow =>
-      0 < scaledDeficit object threshold dischargeScale profile.envelope hub ∧
+  | .certificate envelope assigned =>
+      IsCertificateClosed object threshold dischargeScale envelope hub ∧
+        ∀ vertex ∈ assigned, object.graph.Adj hub vertex
+  | .positive envelope localReserve chosenNonWindow =>
+      0 < scaledDeficit object threshold dischargeScale envelope hub ∧
         localReserve.vertices ⊆
-          localReserveVertexUniverse profile threshold packing piece assigned hub ∧
+          localReserveVertexUniverse envelope threshold packing piece assigned hub ∧
         chosenNonWindow ⊆
-          nonWindowIncidenceSet object threshold profile.envelope
+          nonWindowIncidenceSet object threshold envelope
             (object.windowSupport packing) hub
 
 theorem IsCandidate.chargedVertices_subset
@@ -360,23 +378,23 @@ theorem IsCandidate.paysHybridB1 {data : CandidateData object}
 /-- Paying the exact remaining non-window demand implies the complete B1
 half-incidence inequality by the definition of that remaining demand. -/
 theorem paysHybridB1_total
-    (profile : TypeBFanClosedPorts.Profile object)
+    (envelope : Finset object.Vertex)
     (localReserve : LocalReserveBlock object)
     (chosenNonWindow : Finset (object.Vertex × object.Vertex))
-    (pays : (CandidateData.positive profile localReserve chosenNonWindow).PaysHybridB1
+    (pays : (CandidateData.positive envelope localReserve chosenNonWindow).PaysHybridB1
       threshold dischargeScale packing hub) :
-    2 * scaledDeficit object threshold dischargeScale profile.envelope hub ≤
+    2 * scaledDeficit object threshold dischargeScale envelope hub ≤
       (dischargeScale : Int) *
         ((TypeBHybridIncidence.windowIncidences object threshold
-            profile.envelope (object.windowSupport packing) hub : Int) +
+            envelope (object.windowSupport packing) hub : Int) +
           (chosenNonWindow.card : Int)) := by
   have demandLower :
-      2 * scaledDeficit object threshold dischargeScale profile.envelope hub -
+      2 * scaledDeficit object threshold dischargeScale envelope hub -
           (dischargeScale : Int) *
             (TypeBHybridIncidence.windowIncidences object threshold
-              profile.envelope (object.windowSupport packing) hub : Int) ≤
+              envelope (object.windowSupport packing) hub : Int) ≤
         TypeBHybridIncidence.nonWindowDemand object threshold dischargeScale
-          profile.envelope (object.windowSupport packing) hub := by
+          envelope (object.windowSupport packing) hub := by
     simp only [TypeBHybridIncidence.nonWindowDemand]
     exact le_max_right _ _
   simp only [PaysHybridB1] at pays
@@ -386,23 +404,23 @@ theorem paysHybridB1_total
 subledger contribution is nonnegative, and the chosen non-window incidence
 carriers pay both the total hybrid deficit and its non-window remainder. -/
 theorem positiveCandidate_localB1
-    (profile : TypeBFanClosedPorts.Profile object)
+    (envelope : Finset object.Vertex)
     (localReserve : LocalReserveBlock object)
     (chosenNonWindow : Finset (object.Vertex × object.Vertex))
-    (eligible : (CandidateData.positive profile localReserve chosenNonWindow).IsCandidate
+    (eligible : (CandidateData.positive envelope localReserve chosenNonWindow).IsCandidate
       threshold dischargeScale packing piece assigned hub) :
-    0 ≤ (CandidateData.positive profile localReserve chosenNonWindow).entryPayment₂
+    0 ≤ (CandidateData.positive envelope localReserve chosenNonWindow).entryPayment₂
         threshold dischargeScale piece hub ∧
-      2 * scaledDeficit object threshold dischargeScale profile.envelope hub ≤
+      2 * scaledDeficit object threshold dischargeScale envelope hub ≤
           (dischargeScale : Int) *
             ((TypeBHybridIncidence.windowIncidences object threshold
-                profile.envelope (object.windowSupport packing) hub : Int) +
+                envelope (object.windowSupport packing) hub : Int) +
               (chosenNonWindow.card : Int)) ∧
         TypeBHybridIncidence.nonWindowDemand object threshold dischargeScale
-            profile.envelope (object.windowSupport packing) hub ≤
+            envelope (object.windowSupport packing) hub ≤
           (dischargeScale : Int) * (chosenNonWindow.card : Int) := by
   refine ⟨eligible.entryRefines, ?_⟩
-  exact ⟨paysHybridB1_total profile localReserve chosenNonWindow
+  exact ⟨paysHybridB1_total envelope localReserve chosenNonWindow
       eligible.paysHybridB1,
     by simpa [PaysHybridB1] using eligible.paysHybridB1⟩
 
@@ -410,16 +428,16 @@ theorem positiveCandidate_localB1
 charges of its selected vertices; the chosen incidence set remains the B1
 payment certificate and contributes no second copy of core charge. -/
 theorem positive_entryPayment₂_eq
-    (profile : TypeBFanClosedPorts.Profile object)
+    (envelope : Finset object.Vertex)
     (localReserve : LocalReserveBlock object)
     (chosenNonWindow : Finset (object.Vertex × object.Vertex))
     (disjoint : Disjoint
-      (closedNeighbours object threshold profile.envelope hub)
+      (closedNeighbours object threshold envelope hub)
       localReserve.vertices) :
-    (CandidateData.positive profile localReserve chosenNonWindow).entryPayment₂
+    (CandidateData.positive envelope localReserve chosenNonWindow).entryPayment₂
         threshold dischargeScale piece hub =
       2 * (scaledCentreCharge object threshold dischargeScale hub +
-        ∑ vertex ∈ closedNeighbours object threshold profile.envelope hub,
+        ∑ vertex ∈ closedNeighbours object threshold envelope hub,
           scaledCoreCharge object threshold dischargeScale piece vertex) +
         localReserveCapacity₂ localReserve threshold dischargeScale piece := by
   rw [entryPayment₂, chargedVertices,
@@ -436,25 +454,26 @@ noncomputable def isCandidateDecidable (data : CandidateData object)
 
 end CandidateData
 
-/-- The exhaustive finite raw schedule.  Both `A_h` and `Q` range over every
-finite subset of their literal graph-derived universes. -/
+/-- The exhaustive finite raw schedule at one demand `h` of `X = (piece,
+assigned)`, on the fan envelope `E_h` of `X`.  Both `A_h` and `Q` range over
+every finite subset of their literal graph-derived universes: `A_h` over the
+neighbours of `h` in `Y_X \ H_X`, `Q` over the local reserve universe. -/
 noncomputable def candidateDataSchedule (object : FiniteObject.{u})
     (threshold : Nat) (packing : Finset (Finset object.Vertex))
     (piece assigned : Finset object.Vertex) (hub : object.Vertex) :
     List (CandidateData object) :=
-  (profileCandidatesWith object (object.windowSupport packing)).flatMap
-    fun profile =>
-      ((((TypeBMarkedFan.neighbourRim object hub ∩ piece) \
-          assigned).powerset.toList.map
-        fun assigned => CandidateData.certificate profile assigned) ++
-      ((CandidateData.localReserveVertexUniverse profile threshold packing piece
-          assigned hub).powerset.toList.flatMap
-        fun localReserveVertices =>
-          (nonWindowIncidenceSet object threshold profile.envelope
-            (object.windowSupport packing) hub).powerset.toList.map
-              fun chosenNonWindow =>
-                CandidateData.positive profile ⟨localReserveVertices⟩
-                  chosenNonWindow))
+  let envelope := fanEnvelope piece assigned hub
+  ((((object.orderedNeighbors hub).toFinset ∩ piece) \
+      assigned).powerset.toList.map
+    fun assigned => CandidateData.certificate envelope assigned) ++
+  ((CandidateData.localReserveVertexUniverse envelope threshold packing piece
+      assigned hub).powerset.toList.flatMap
+    fun localReserveVertices =>
+      (nonWindowIncidenceSet object threshold envelope
+        (object.windowSupport packing) hub).powerset.toList.map
+          fun chosenNonWindow =>
+            CandidateData.positive envelope ⟨localReserveVertices⟩
+              chosenNonWindow)
 
 noncomputable def candidateFamily (object : FiniteObject.{u})
     (threshold dischargeScale : Nat)

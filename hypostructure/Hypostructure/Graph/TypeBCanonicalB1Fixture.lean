@@ -10,23 +10,23 @@ example {object : FiniteObject.{u}} {threshold dischargeScale : ℕ}
     {packing : Finset (Finset object.Vertex)}
     {piece : CanonicalPiece object packing}
     {assigned : Finset object.Vertex} {hub : object.Vertex}
-    (profile : TypeBFanClosedPorts.Profile object)
+    (envelope : Finset object.Vertex)
     (localReserve : LocalReserveBlock object)
     (chosenNonWindow : Finset (object.Vertex × object.Vertex))
-    (eligible : (CandidateData.positive profile localReserve chosenNonWindow).IsCandidate
+    (eligible : (CandidateData.positive envelope localReserve chosenNonWindow).IsCandidate
       threshold dischargeScale packing piece.vertices assigned hub) :
-    0 ≤ (CandidateData.positive profile localReserve chosenNonWindow).entryPayment₂
+    0 ≤ (CandidateData.positive envelope localReserve chosenNonWindow).entryPayment₂
         threshold dischargeScale piece.vertices hub ∧
       2 * TypeBFanIncidence.scaledDeficit object threshold dischargeScale
-          profile.envelope hub ≤
+          envelope hub ≤
         (dischargeScale : Int) *
           ((TypeBHybridIncidence.windowIncidences object threshold
-              profile.envelope (object.windowSupport packing) hub : Int) +
+              envelope (object.windowSupport packing) hub : Int) +
             (chosenNonWindow.card : Int)) ∧
       TypeBHybridIncidence.nonWindowDemand object threshold dischargeScale
-          profile.envelope (object.windowSupport packing) hub ≤
+          envelope (object.windowSupport packing) hub ≤
         (dischargeScale : Int) * (chosenNonWindow.card : Int) :=
-  CandidateData.positiveCandidate_localB1 profile localReserve chosenNonWindow
+  CandidateData.positiveCandidate_localB1 envelope localReserve chosenNonWindow
     eligible
 
 example {object : FiniteObject.{u}} {threshold dischargeScale : ℕ}

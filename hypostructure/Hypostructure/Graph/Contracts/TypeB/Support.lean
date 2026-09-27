@@ -72,20 +72,14 @@ theorem absorbedSupportAt_eq_some {epsilon : ColdEligibleHalfEdge data object}
     {core centres : Finset object.Vertex}
     (support : canonicalTypeBAbsorbedSupportAt data object epsilon =
       some (core, centres)) :
-    ∃ routing : ColdFailureRoutingStatement data object,
-      ∃ centre, canonicalAbsorbedCentre data object epsilon = some centre ∧
-        centres = {centre} ∧
-        core = (coldOccurrenceCorridorAt data object
-          (coldRoutedClassified data object routing) epsilon).prefixSupport
-            (coldRoutedTraceEnd data object routing epsilon) := by
+    ∃ centre, canonicalAbsorbedHandoff data object epsilon = some (centre, core) ∧
+      centres = {centre} := by
   classical
   unfold canonicalTypeBAbsorbedSupportAt at support
-  split at support
-  · next routing =>
-      obtain ⟨centre, centreEq, pair⟩ := Option.map_eq_some_iff.mp support
-      simp only [Prod.mk.injEq] at pair
-      exact ⟨routing, centre, centreEq, pair.2.symm, pair.1.symm⟩
-  · cases support
+  obtain ⟨pair, pairEq, same⟩ := Option.map_eq_some_iff.mp support
+  simp only [Prod.mk.injEq] at same
+  obtain ⟨rfl, rfl⟩ := same
+  exact ⟨pair.1, pairEq, rfl⟩
 
 theorem absorbedSupport_eq_some {core centres : Finset object.Vertex}
     (support : canonicalTypeBAbsorbedSupport data object = some (core, centres)) :
@@ -93,14 +87,19 @@ theorem absorbedSupport_eq_some {core centres : Finset object.Vertex}
       canonicalTypeBAbsorbedSupportAt data object epsilon = some (core, centres) :=
   Option.bind_eq_some_iff.mp support
 
-/-- The first-high centre of an absorbed half-edge is high. -/
-theorem absorbedCentre_high {epsilon : ColdEligibleHalfEdge data object}
-    {centre : object.Vertex}
-    (selected : canonicalAbsorbedCentre data object epsilon = some centre) :
-    Graph.IsHighCentre object data.threshold centre := by
-  obtain ⟨_routing, witness⟩ := canonicalAbsorbedCentre_spec_of_eq_some selected
-  obtain ⟨_firstIndex, _centreEq, _indexLe, high, _tail⟩ := witness
-  exact high
+/-- The pinned case-(ii) handoff of a selected half-edge: its centre is high, it
+lies in its core, it is the only high vertex of its core, and the core lies in
+the canonical remainder. -/
+theorem absorbedHandoff_facts {epsilon : ColdEligibleHalfEdge data object}
+    {centre : object.Vertex} {core : Finset object.Vertex}
+    (selected : canonicalAbsorbedHandoff data object epsilon = some (centre, core)) :
+    Graph.IsHighCentre object data.threshold centre ∧ centre ∈ core ∧
+      Graph.TypeBRefinedSupport.centres object data.threshold core ⊆ {centre} ∧
+      core ⊆ object.remainderSupport (canonicalWindowPacking data object) := by
+  obtain ⟨_routing, witness⟩ := canonicalAbsorbedHandoff_spec_of_eq_some selected
+  obtain ⟨_firstIndex, _centreEq, _indexLe, high, _earlier, _cubic, _coreEq,
+    centreCore, onlyCentre, _connected, inside, _envelope⟩ := witness
+  exact ⟨high, centreCore, onlyCentre, inside⟩
 
 /-! ## Lane membership -/
 
@@ -190,12 +189,20 @@ theorem TypeBAbsorbedLane.high {core centres : Finset object.Vertex}
     ∀ centre ∈ centres, Graph.IsHighCentre object data.threshold centre := by
   obtain ⟨_fails, _fanData, support⟩ := lane
   obtain ⟨_epsilon, _edgeEq, supportAt⟩ := absorbedSupport_eq_some support
-  obtain ⟨_routing, centre, centreEq, rfl, _coreEq⟩ :=
-    absorbedSupportAt_eq_some supportAt
+  obtain ⟨centre, handoffEq, rfl⟩ := absorbedSupportAt_eq_some supportAt
   intro vertex member
   rw [Finset.mem_singleton] at member
   subst member
-  exact absorbedCentre_high centreEq
+  exact (absorbedHandoff_facts handoffEq).1
+
+/-- On the absorbed lane the core's only high vertex is the assigned centre. -/
+theorem TypeBAbsorbedLane.centres_subset {core centres : Finset object.Vertex}
+    (lane : TypeBAbsorbedLane data object core centres) :
+    Graph.TypeBRefinedSupport.centres object data.threshold core ⊆ centres := by
+  obtain ⟨_fails, _fanData, support⟩ := lane
+  obtain ⟨_epsilon, _edgeEq, supportAt⟩ := absorbedSupport_eq_some support
+  obtain ⟨centre, handoffEq, rfl⟩ := absorbedSupportAt_eq_some supportAt
+  exact (absorbedHandoff_facts handoffEq).2.2.1
 
 theorem TypeBLaneMember.high {core centres : Finset object.Vertex}
     (member : TypeBLaneMember data object core centres) :
@@ -222,14 +229,21 @@ theorem TypeBLaneMember.core_subset_remainder {core centres : Finset object.Vert
     rw [← pieceEq]
     exact object.pieceSupport_subset _ component
   · obtain ⟨_fails, _fanData, support⟩ := lane
-    obtain ⟨epsilon, _edgeEq, supportAt⟩ := absorbedSupport_eq_some support
-    obtain ⟨routing, centre, centreEq, _centresEq, coreEq⟩ :=
-      absorbedSupportAt_eq_some supportAt
-    obtain ⟨_routing', handoff⟩ := canonicalAbsorbedCentre_spec_of_eq_some centreEq
-    obtain ⟨_firstIndex, _centreEq', _indexLe, _high, _earlier, _cubic,
-      _connected, inside, _envelope⟩ := handoff
-    rw [coreEq]
-    exact inside
+    obtain ⟨_epsilon, _edgeEq, supportAt⟩ := absorbedSupport_eq_some support
+    obtain ⟨_centre, handoffEq, _centresEq⟩ := absorbedSupportAt_eq_some supportAt
+    exact (absorbedHandoff_facts handoffEq).2.2.2
+
+/-- **On every lane the core's high centres are assigned**: `H_X` contains the
+high vertices of `Y_X` (`def:canonical-decomp`).  Ordinary: `H_X` is exactly
+the core's centres; decorated: the core `X₀` carries no surplus; absorbed: the
+core is the prefix through `z`, whose only high vertex is `z`. -/
+theorem TypeBLaneMember.centres_subset {core centres : Finset object.Vertex}
+    (member : TypeBLaneMember data object core centres) :
+    Graph.TypeBRefinedSupport.centres object data.threshold core ⊆ centres := by
+  rcases member with lane | lane | lane
+  · exact (TypeBOrdinaryLane.canonical lane).choose_spec.2.2.2.2
+  · exact (TypeBDecoratedLane.canonical lane).choose_spec.2.2.2.2
+  · exact TypeBAbsorbedLane.centres_subset lane
 
 /-! ## Exclusivity of the lanes -/
 

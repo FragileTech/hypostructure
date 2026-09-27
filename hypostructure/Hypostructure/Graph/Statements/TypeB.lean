@@ -1,5 +1,4 @@
 import Hypostructure.Graph.Statements.TypeA
-import Hypostructure.Graph.TypeBProfileSchedule
 
 /-!
 # Statements: TypeB
@@ -49,17 +48,19 @@ abbrev handoffWindowFree (data : Parameters) (object : Graph.FiniteObject.{u}) :
 
 /-- The exact case-(ii) handoff of `lem:absorbed-germ-fan-data` at one selected
 branch-excess half-edge `ε`, at node `[153]`'s retained routing.  `centre` is the
-least high vertex of `ε`'s own first-failure prefix (its node-`[10]` neighbours
-sit at the baseline), and that prefix is the counted core of an actual
-`DecoratedHandoff.Envelope` with decoration `{centre}`: connected, inside the
-canonical remainder, admissible, with two distinct assigned first neighbours.
-Everything is read at `ε` itself, so the core is `ε`'s prefix and contains the
-centre. -/
+least high vertex `z` of `ε`'s own first-failure prefix (its node-`[10]`
+neighbours sit at the baseline).  The first failure of `ε`'s corridor occurs on
+entering `z` (`def:cold-corridor-first-failure` (F4): the corridor first enters
+a declared Type B handoff envelope), so the counted core `core` is the prefix of
+`ε`'s corridor through `z`: its only high vertex is `z` (no second high vertex
+of `J` after `z`).  It is the counted core of an actual
+`DecoratedHandoff.Envelope` with decoration `{z}`: connected, inside the
+canonical remainder, admissible, with two distinct assigned first neighbours. -/
 noncomputable def AbsorbedHandoffAt (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (routing : ColdFailureRoutingStatement data object)
     (epsilon : ColdEligibleHalfEdge data object)
-    (centre : object.Vertex) : Prop := by
+    (centre : object.Vertex) (core : Finset object.Vertex) : Prop := by
   classical
   letI : FinEnum object.Vertex := object.vertices
   exact
@@ -74,7 +75,9 @@ noncomputable def AbsorbedHandoffAt (data : Parameters)
           object.degree (corridor.head earlier) ≤ data.threshold) ∧
         (∀ neighbour : object.Vertex, object.graph.Adj centre neighbour →
           object.degree neighbour = data.threshold) ∧
-      let core := corridor.prefixSupport traceEnd
+      core = corridor.prefixSupport firstIndex.1 ∧
+      centre ∈ core ∧
+      Graph.TypeBRefinedSupport.centres object data.threshold core ⊆ {centre} ∧
       Graph.SupportComponents.Connected.ConnectedOn object core ∧
         core ⊆ object.remainderSupport
           (canonicalWindowPacking data object) ∧
@@ -94,9 +97,9 @@ noncomputable def AbsorbedHandoffAt (data : Parameters)
 
 /-- Node `[177]`, `lem:absorbed-germ-fan-data` (ii), the decorated handoff fan
 support at the first high centre.  For every selected branch-excess half-edge
-`ε` outside the subcubic candidate set, `ε`'s retained first-failure prefix is a
-connected subset of the canonical remainder and supplies the counted core; the
-least high vertex of that prefix is its decoration (`AbsorbedHandoffAt`). -/
+`ε` outside the subcubic candidate set, `ε`'s first-failure prefix through its
+least high vertex `z` is a connected subset of the canonical remainder and
+supplies the counted core, with decoration `{z}` (`AbsorbedHandoffAt`). -/
 noncomputable def AbsorbedGermDecoratedAssignedSupportStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
@@ -106,7 +109,7 @@ noncomputable def AbsorbedGermDecoratedAssignedSupportStatement (data : Paramete
     let candidates := coldRoutedCandidates data object routing
     ∀ epsilon : Eligible,
       Sum.inl epsilon ∉ candidates →
-      ∃ centre, AbsorbedHandoffAt data object routing epsilon centre
+      ∃ centre core, AbsorbedHandoffAt data object routing epsilon centre core
 
 /-- **The registered discharge profile of the Type B fan ledger**
 (`def:typeB-multiclosed-residual`): baseline `δ`, discharge rate `α = 1/s` at
@@ -169,24 +172,116 @@ def TriangularPortsRoute (data : Parameters) (object : Graph.FiniteObject.{u})
 `def:typeB-residual-mass`): the centre together with the assigned support
 `Y ∪ H`.  A fan neighbour `u` of `h` is cubic-closed exactly when its two
 non-`h` incidences are assigned to that support, i.e. `u` has internal degree
-`3` in the assigned fan envelope. -/
-noncomputable def typeBFanEnvelope {object : Graph.FiniteObject.{u}}
+`3` in the assigned fan envelope.  It is literally the envelope on which the B2
+candidate entries of `(Y, H)` are evaluated
+(`TypeBRefinedSupport.fanEnvelope`). -/
+noncomputable abbrev typeBFanEnvelope {object : Graph.FiniteObject.{u}}
     (core centres : Finset object.Vertex) (centre : object.Vertex) :
-    Finset object.Vertex := by
-  classical
-  exact insert centre (core ∪ centres)
+    Finset object.Vertex :=
+  Graph.TypeBRefinedSupport.fanEnvelope core centres centre
 
 /-- **The assigned Type B fan-window profile of the support `(Y, H)`**
-(`def:typeB-window-incidence-profile`, `def:fan-closed-port`): its recorded
-window is the packed-window union `W₀ = windowSupport P₀` of the canonical
-maximal packing, and its envelope is the assigned fan envelope of its centre
-in `(Y, H)`.  Only the certificate labelling of the marked fan is left free. -/
+(`def:typeB-window-incidence-profile`, `def:fan-closed-port`): its centre is an
+assigned centre of `H`, its recorded window is the packed-window union
+`W₀ = windowSupport P₀` of the canonical maximal packing, and its envelope is the
+assigned fan envelope of its centre in `(Y, H)`.  Only the certificate labelling
+of the marked fan is left free. -/
 def IsFixedTypeBProfile (data : Parameters) (object : Graph.FiniteObject.{u})
     (core centres : Finset object.Vertex)
     (profile : Graph.TypeBFanClosedPorts.Profile object) : Prop :=
-  profile.window =
+  profile.marked.fan.hub ∈ centres ∧
+    profile.window =
       Graph.FiniteObject.windowSupport (canonicalWindowPacking data object) ∧
     profile.envelope = typeBFanEnvelope core centres profile.marked.fan.hub
+
+/-- **G's canonical fan-certificate labelling at a centre** (node `[71]`,
+`def:marked-typeB-fan`): the `Classical.choice` of a fan-certificate labelling
+`S_h : N(h) → 𝓛` of `h` in `G`, or `none` when `h` carries none (a
+fan-certificate residual centre). -/
+noncomputable def canonicalFanCertificateLabelling (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (centre : object.Vertex) :
+    Option (Graph.FanCertificateLabelling object data.windowOrder centre) := by
+  classical
+  exact if h : Nonempty (Graph.FanCertificateLabelling object data.windowOrder centre)
+    then some (Classical.choice h) else none
+
+theorem canonicalFanCertificateLabelling_eq_none_iff {data : Parameters}
+    {object : Graph.FiniteObject.{u}} {centre : object.Vertex} :
+    canonicalFanCertificateLabelling data object centre = none ↔
+      IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre) := by
+  classical
+  unfold canonicalFanCertificateLabelling
+  split
+  · next h => simp only [reduceCtorEq, false_iff, not_isEmpty_iff]; exact h
+  · next h => simpa using h
+
+/-- **The assigned centres of `(Y, H)` are certificate-marked at `[71]`**: every
+`h ∈ H` carries G's canonical fan-certificate labelling, and the label packing
+caps its degree (`lem:fan-certificate`: `d_G(h) ≤ 8`, the registered cap). -/
+def TypeBCertificateMarkedAt (data : Parameters) (object : Graph.FiniteObject.{u})
+    (centres : Finset object.Vertex) : Prop :=
+  ∀ centre ∈ centres,
+    ∃ marking, canonicalFanCertificateLabelling data object centre = some marking ∧
+      object.degree centre ≤ Graph.WindowCurvature.fanPackingCap data.windowOrder
+
+/-- **B2 at the support `(Y, H)`** (`def:typeB-bridge-statements` B2(a)--(c),
+`def:typeB-candidate-ledger`, tex 14119): the support has no fan-certificate
+residual centre (every demand is certificate-marked at `[71]`), and the demands
+`H` admit a choice of candidate entries --- each evaluated on the assigned fan
+envelope `E_h` of `(Y, H)` --- with pairwise disjoint ledger supports. -/
+def TypeBB2At (data : Parameters) (object : Graph.FiniteObject.{u})
+    (core centres : Finset object.Vertex) : Prop :=
+  TypeBCertificateMarkedAt data object centres ∧
+    Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
+      data.dischargeScale (canonicalWindowPacking data object) core centres centres
+
+/-- **G's canonical minimal overlap obstruction of `(Y, H)`**
+(`def:typeB-overlap-obstruction`, `lem:typeB-bridge-to-overlap`): the
+`Classical.choice` of a minimal Type B overlap obstruction among the demands `H`
+at `P₀`, or `none`. -/
+noncomputable def canonicalOverlapObstruction (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (core centres : Finset object.Vertex) :
+    Option (Graph.TypeBRefinedSupport.OverlapObstruction object data.threshold
+      data.dischargeScale (canonicalWindowPacking data object) core centres) := by
+  classical
+  exact if h : Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
+      data.threshold data.dischargeScale (canonicalWindowPacking data object) core
+      centres) then some (Classical.choice h) else none
+
+theorem canonicalOverlapObstruction_spec {data : Parameters}
+    {object : Graph.FiniteObject.{u}} {core centres : Finset object.Vertex}
+    (present : Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
+      data.threshold data.dischargeScale (canonicalWindowPacking data object) core
+      centres)) :
+    ∃ obstruction, canonicalOverlapObstruction data object core centres =
+      some obstruction := by
+  classical
+  unfold canonicalOverlapObstruction
+  exact ⟨_, dif_pos present⟩
+
+/-- **`lem:typeB-bridge-deficit-bound` at the support `(Y, H)`** (tex 14803):
+when the non-window core carries no route-`8` residual profile --- the Type A
+routing and unsaturation pair on `Y` off its own centres
+(`BridgeResidualComponentAt`) --- the negative part is charged to the assigned
+surplus, `No₋(X) ≤ F·Σ_{h ∈ H}(d_G(h) − δ)`, written subtraction-free at the
+discharge scale:
+`|Y| + s·σ(H) ≤ s·def⁺(Y) + F·s·σ(H)` with `σ(H) = ambientSurplus H`. -/
+def TypeBBridgeDeficitBoundAt (data : Parameters) (object : Graph.FiniteObject.{u})
+    (core centres : Finset object.Vertex) : Prop :=
+  Graph.TypeBEnvelopeCharge.BridgeResidualComponentAt object core data.threshold
+      data.dischargeScale →
+    core.card + data.dischargeScale * object.ambientSurplus centres data.threshold ≤
+      data.dischargeScale * object.positiveDeficiency core data.threshold +
+        data.bridgeMassFactor * data.dischargeScale *
+          object.ambientSurplus centres data.threshold
+
+/-- **`s·No(X)` of the support `X = (Y, H)`** (`def:net-charge`,
+`def:typeB-assigned-ledger`): `s·def⁺(Y) − s·σ(H) − |Y|`. -/
+noncomputable def typeBScaledNetCharge (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (core centres : Finset object.Vertex) : Int :=
+  ((data.dischargeScale * object.positiveDeficiency core data.threshold : Nat) : Int) -
+    ((data.dischargeScale * object.ambientSurplus centres data.threshold : Nat) : Int) -
+    (core.card : Int)
 
 /-- The two routed alternatives of node `[69]` at one heavy centre:
 `cor:heavy-center-local-dichotomy` with each alternative carried to fan-closed
@@ -249,12 +344,60 @@ def DegreeFourFanProfile (data : Parameters) (object : Graph.FiniteObject.{u})
         (data.dischargeScale : Int) * (data.threshold : Int) +
         ((data.threshold : Int) + 2)
 
+/-! ### G's canonical triangular fan core
+
+`def:triangular-fan-core` at a heavy centre `h` and a family of triangular ports
+of `h` (given by their endpoints): the shoulder pair of a port is
+`N_G(x) \ {h}`, the core is `{h} ∪ ports ∪ shoulders`, and the four incidence
+relations are the completion, central, cross-triangular and outside edges.
+These are G's own objects; the lane facts below are stated at them. -/
+
+/-- The shoulders `N_G(x) \ {h}` of the triangular port with endpoint `x` at `h`. -/
+noncomputable def triangularShoulders (object : Graph.FiniteObject.{u})
+    (centre endpoint : object.Vertex) : Finset object.Vertex := by
+  classical
+  exact (object.orderedNeighbors endpoint).toFinset.erase centre
+
+/-- The triangular fan core `{h} ∪ ports ∪ shoulders`. -/
+noncomputable def triangularCore (object : Graph.FiniteObject.{u})
+    (centre : object.Vertex) (ports : Finset object.Vertex) :
+    Finset object.Vertex := by
+  classical
+  exact insert centre (ports ∪ ports.biUnion (triangularShoulders object centre))
+
+/-- A shoulder completion edge: an edge at a shoulder other than the two edges
+inside its triangular port. -/
+def triangularCompletion (object : Graph.FiniteObject.{u}) (centre : object.Vertex)
+    (ports : Finset object.Vertex) (endpoint shoulder target : object.Vertex) : Prop :=
+  endpoint ∈ ports ∧ shoulder ∈ triangularShoulders object centre endpoint ∧
+    object.graph.Adj shoulder target ∧ target ≠ endpoint ∧
+      target ∉ triangularShoulders object centre endpoint
+
+/-- A central completion edge: it lands at the centre. -/
+def triangularCentral (object : Graph.FiniteObject.{u}) (centre : object.Vertex)
+    (ports : Finset object.Vertex) (endpoint shoulder target : object.Vertex) : Prop :=
+  triangularCompletion object centre ports endpoint shoulder target ∧ target = centre
+
+/-- A cross-triangular completion edge: it lands at a shoulder of another port. -/
+def triangularCrossTriangular (object : Graph.FiniteObject.{u})
+    (centre : object.Vertex) (ports : Finset object.Vertex)
+    (endpoint shoulder target : object.Vertex) : Prop :=
+  triangularCompletion object centre ports endpoint shoulder target ∧
+    ∃ other ∈ ports, other ≠ endpoint ∧
+      target ∈ triangularShoulders object centre other
+
+/-- An outside completion edge: it leaves the core and avoids `N_G(h)`. -/
+def triangularOutside (object : Graph.FiniteObject.{u}) (centre : object.Vertex)
+    (ports : Finset object.Vertex) (endpoint shoulder target : object.Vertex) : Prop :=
+  triangularCompletion object centre ports endpoint shoulder target ∧
+    target ∉ triangularCore object centre ports ∧ ¬ object.graph.Adj centre target
+
 /-- `def:triangular-fan-core` on the active object.  Ports are represented by
 their endpoints because the centre is fixed.  The shoulder finset is exactly
 `N_G(x) \setminus {h}`; the core is the paper's induced vertex set, so the
 ambient graph supplies its induced adjacency.  The four incidence relations
 record precisely completion, central, cross-triangular, and outside edges. -/
-def TriangularFanCoreStatement (data : Parameters)
+def TriangularFanCoreLaw (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ centre : object.Vertex,
     data.threshold + 1 < object.degree centre →
@@ -351,7 +494,7 @@ def TriangularPortReturnStatement (data : Parameters)
 /-- `lem:triangular-first-landing`, stated for the literal predicates supplied
 by `def:triangular-fan-core`.  The three displayed arms include their mutual
 exclusions, so “exactly one” is part of the proposition rather than prose. -/
-def TriangularFirstLandingStatement (data : Parameters)
+def TriangularFirstLandingLaw (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ centre : object.Vertex,
     data.threshold + 1 < object.degree centre →
@@ -413,7 +556,7 @@ paper's high-shoulder arm (a shoulder above the baseline) after its
 quadrilateral arm is discharged by target safety; the second is the stated
 matching-size consequence on the residual where every shoulder sits at the
 baseline. -/
-def TriangularCrossShoulderStatement (data : Parameters)
+def TriangularCrossShoulderLaw (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ centre : object.Vertex,
     data.threshold + 1 < object.degree centre →

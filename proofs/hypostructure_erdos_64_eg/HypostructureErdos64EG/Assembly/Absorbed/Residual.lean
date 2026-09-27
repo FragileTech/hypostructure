@@ -50,7 +50,7 @@ noncomputable abbrev netChargeFanEntryKeys : FactKeys EGInput.{u} :=
     K .typeBFanDegreeFourCentres, K .typeBFanLocalDichotomy,
     K .sameCenterOpenPortCompatibility, K .fanCertificateCap,
     K .fanCertificateMarked, K .fanCertificateResidual,
-    K .fanCertificateResidualMass, K .typeBDirectCycle, K .typeBDirectCycleFree,
+    K .fanCertificateResidualMass, K .typeBRoute8Entry, K .typeBDirectCycleFree,
     K .typeBB2Choice, K .typeBOverlapObstruction, K .typeBHybridEntry,
     K .typeBDisjointLedger, K .typeBBridgeMass, K .typeBBridgeSublinear,
     K .typeBExcluded, K .typeBExclusionResidual, K .typeBDegreeFourLedger,
@@ -78,7 +78,7 @@ noncomputable abbrev netChargeFanEntryKeys : FactKeys EGInput.{u} :=
     K .route8JointBalance, K .route8TwoCarrierExit,
     K .route8UnifiedTwoCarrierExit, K .route8StageRate,
     K .route8UnpaidTwoCarrier, K .route8UnpaidWitnessFree,
-    K .typeBGlobalLocalBridge, K .fanClosedPort, K .compatiblePairFanClosure,
+    K .typeBGlobalLocalBridge, K .compatiblePairFanClosure,
     K .fanClosedPortTypeBRouting, K .compatiblePairTypeBRouting,
     K .triangularPortTypeBRouting, K .triangularShoulderCompletion,
     K .triangularPortReturn, K .triangularFirstLanding,
@@ -102,7 +102,8 @@ noncomputable abbrev netChargeFanEntryKeys : FactKeys EGInput.{u} :=
 Type B / route-8 charge tail. -/
 noncomputable abbrev netChargeFanDataKeys : FactKeys EGInput.{u} :=
   K .absorbedGermFanData :: K .typeBAbsorbedHalfEdge ::
-    K .typeBAbsorbedHalfEdgeAbsent :: netChargeFanEntryKeys.{u}
+    K .typeBAbsorbedHalfEdgeAbsent :: K .typeBAbsorbedCharge ::
+      netChargeFanEntryKeys.{u}
 
 /-- **Node `[177]`**: on the `[175]` yes arm (`K .typeBAbsorbedHalfEdge`), the
 decorated handoff fan data at the first high centre of `G`'s canonical absorbed
@@ -131,13 +132,18 @@ noncomputable def selectedAbsorbedFanData
     [FactKeys.Has (K .absorbedGermSplit) known]
     [FactKeys.Has (K .absorbedGermFanData) known]
     [FactKeys.Has (K .typeBAbsorbedHalfEdge) known]
-    (fresh : List.Disjoint netChargeFanEntryKeys.{u} known := by key_fresh) :
+    (fresh : List.Disjoint netChargeFanEntryKeys.{u} known := by key_fresh)
+    (chargeFresh : K .typeBAbsorbedCharge ∉ known := by key_fresh) :
     SelectedAbsorbedGermBoundary selected := by
+  -- `[177]`: every selected half-edge outside the subcubic candidates is
+  -- charged to the Type B ledger at its own pinned absorbed support.
+  let charged :=
+    (typeBAbsorbedChargeRow (data := spineData)).run history (by key_fresh)
+  -- `[177]` → `[65]`: the canonical absorbed half-edge enters Type B.
   let fanEntry :=
-    (absorbedGermFanEnvelopeRow (data := spineData)).run history
+    (absorbedGermFanEnvelopeRow (data := spineData)).run charged
       (by key_fresh)
   exact Or.inl <| Assembly.Internal.selectedAbsorbedFanChargeContinuation fanEntry
-        (by key_fresh)
         (by key_fresh)
         (by key_fresh)
         (by key_fresh)

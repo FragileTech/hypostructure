@@ -1,5 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineRows.B2AssignmentDichotomy
-import Hypostructure.Graph.Strategy.SpineRows.DirectCycleDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.TypeBDirectCycleFree
 import Hypostructure.Graph.Strategy.SpineRows.DisjointPostLedgerComponents
 import Hypostructure.Graph.Strategy.SpineRows.FanCertificateCap
 import Hypostructure.Graph.Strategy.SpineRows.FanCertificateDichotomy
@@ -26,25 +26,26 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
-/-- **The common Type B certificate walk `[70]`--`[77]` / `[80]`--`[85]`.**
+/-- **The common Type B certificate walk `[71]`--`[77]` / `[80]`--`[85]`.**
 
-`[70]` reads the node-`[65]` entry and publishes the fan-safe graph and the
-certificate cap at its Type B support.  `[71]`/`[80]` reads the cap and decides
-the certificate labelling at that support; its residual arm is charged to the
-fan mass `[75]`/`[84]` and then `[76]`/`[85]`.  On the marked arm the direct
-fan-window configurations are decided first (their arm closes against the
-selection), then the local B1 ledger is published.
+`[70]` has published the fan-safe graph and the certificate cap at the Type B
+support of the `[69]`/`[79]` arm fact.  `[71]`/`[80]` reads the cap and decides
+G's canonical certificate labelling at that support; its residual arm is
+charged to the fan mass `[75]`/`[84]` and then `[76]`/`[85]`.  On the marked arm
+the local fan-window ledger is completed: the direct fan-window cycles are
+excluded (a fact, `lem:typeB-direct-fan-window-cycles`) and the B1 ledger is
+published.
 
 * Heavy arm (`degreeFour = none`), `[72]`: B2 disjointness holds?  B2 success
   is the bridge reduction `[74]` and `[76]`; B2 failure is the minimal overlap
   obstruction `[73]`, reflected and charged to the fan mass `[75]`, then `[76]`.
-* Degree-four arm (`degreeFour` carries the `[78]` fact), `[81]`: `c ≤ 1`, or `c ≥ 2` with B2?
-  The yes arm is `[82]` (the B2 ledger whenever B2 holds, and the bridge
-  reduction) and `[85]`; the no arm is `[83]`, reflected and charged to the fan
-  mass `[84]`, then `[85]`.
+* Degree-four arm (`degreeFour` carries the `[78]` fact), `[81]`: `c ≤ 1`, or
+  `c ≥ 2` with B2?  The yes arm is `[82]` (certificate-closed or B2-paid) and
+  `[85]`; the no arm is `[83]`, reflected and charged to the fan mass `[84]`,
+  then `[85]`.
 
-Every open arm continues to the route-8 cores `[77]` on its own ledger. -/
--- EG-NODE [70] fan-safe graph, \(P_{13}\) certificate graph, and certificate-marked cap \(d_G(h)\le8\)
+Every arm enters the route-8 cores `[77]` through the Type B entry, which reads
+the `[76]`/`[85]` fact on its own ledger. -/
 -- EG-NODE [71] certificate labelling present?
 -- EG-NODE [72] local fan-window ledger complete; B2 disjointness holds?
 -- EG-NODE [73] B2 disjointness fails: minimal Type B overlap obstruction
@@ -61,7 +62,7 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     (degreeFour : Option (FactKeys.Has (K .typeBFanDegreeFourCentres) known))
-    [FactKeys.Has (K .typeBFanEntry) known]
+    [FactKeys.Has (K .fanCertificateCap) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
@@ -70,12 +71,11 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .cubicBaseline) known]
     (closureFresh : closed ∉ known := by key_fresh)
-    (capFresh : K .fanCertificateCap ∉ known := by key_fresh)
     (markedFresh : K .fanCertificateMarked ∉ known := by key_fresh)
     (residualFresh : K .fanCertificateResidual ∉ known := by key_fresh)
     (certificateMassFresh : K .fanCertificateResidualMass ∉ known := by
       key_fresh)
-    (cycleFresh : K .typeBDirectCycle ∉ known := by key_fresh)
+    (route8EntryFresh : K .typeBRoute8Entry ∉ known := by key_fresh)
     (freeFresh : K .typeBDirectCycleFree ∉ known := by key_fresh)
     (hybridFresh : K .typeBHybridEntry ∉ known := by key_fresh)
     (choiceFresh : K .typeBB2Choice ∉ known := by key_fresh)
@@ -137,98 +137,83 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
     (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
     (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh) :
     SelectedRouteEightBoundary selected := by
-  -- `[70]`: the fan-safe graph and the certificate-marked cap.
-  let capped := (fanCertificateCapRow (data := spineData)).run history
-    (by key_fresh)
   -- `[71]`/`[80]`: certificate labelling present?
-  match fanCertificateDichotomy (data := spineData) capped
+  match fanCertificateDichotomy (data := spineData) history
       (by key_fresh) (by key_fresh) with
   | .right residualHistory =>
-      -- `[75]`/`[84]`: every fan-certificate residual centre is charged to the
-      -- bridge fan mass; `[76]`/`[85]`: the support is a Type B bridge residual.
+      -- `[75]`/`[84]`: the fan-certificate residual support is charged to its
+      -- assigned surplus; `[76]`/`[85]`: B2 fails there; `[77]`.
       let mass := (fanCertificateResidualMassRow (data := spineData)).run
         residualHistory (by key_fresh)
       let closedMass := (typeBCertificateMassExclusionRow (data := spineData)).run
         mass (by key_fresh)
-      exact selectedTypeBRoute8Continuation closedMass
+      exact selectedTypeBRoute8Entry closedMass
   | .left markedHistory =>
-      -- The local fan-window ledger is complete exactly when no direct
-      -- configuration occurs; a direct configuration is an accepted cycle.
-      match directCycleDichotomy (data := spineData) markedHistory
-          (by key_fresh) (by key_fresh) with
-      | .left cycleHistory =>
-          exact ((closeIncompatible cycleHistory (K .selection)
-            (K .typeBDirectCycle) (by key_fresh)).elimClosed
-              (by infer_instance)).elim
-      | .right freeHistory =>
-          -- The local B1 ledger of every marked centre.
-          let hybrid := (hybridEntryRow (data := spineData)).run freeHistory
-            (by key_fresh)
-          cases degreeFour with
-          | none =>
-              -- `[72]`: B2 disjointness holds?
-              match b2AssignmentDichotomy (data := spineData) hybrid
-                  (by key_fresh) (by key_fresh) with
-              | .left choiceHistory =>
-                  -- `[74]`: the B2 refinement and the bridge reduction;
-                  -- `[76]`: the negative post-ledger residual.
-                  let ledger :=
-                    (disjointPostLedgerComponentsRow (data := spineData)).run
-                      choiceHistory (by key_fresh)
-                  let excluded := (typeBExcludedRow (data := spineData)).run
-                    ledger (by key_fresh)
-                  let residual :=
-                    (typeBExclusionResidualRow (data := spineData)).run
-                      excluded (by key_fresh)
-                  exact selectedTypeBRoute8Continuation residual
-              | .right obstructionHistory =>
-                  -- `[73]`: the minimal overlap obstruction and its
-                  -- global-to-local reflection; `[75]`: charged to the fan
-                  -- mass; `[76]`.
-                  let reflected :=
-                    (typeBGlobalLocalBridgeRow (data := spineData)).run
-                      obstructionHistory (by key_fresh)
-                  let mass :=
-                    (typeBOverlapObstructionMassRow (data := spineData)).run
-                      reflected (by key_fresh)
-                  let closedMass :=
-                    (typeBObstructionMassExclusionRow (data := spineData)).run
-                      mass (by key_fresh)
-                  exact selectedTypeBRoute8Continuation closedMass
-          | some degreeFourCentres =>
-              letI := degreeFourCentres
-              -- `[81]`: `c ≤ 1`, or `c ≥ 2` with B2 disjoint ledger?
-              match degreeFourLedgerDichotomy (data := spineData) hybrid
-                  (by key_fresh) (by key_fresh) with
-              | .left ledgerHistory =>
-                  -- `[82]`: certificate-closed (`lem:typeB-exclusion` Step 1)
-                  -- or B2-paid (the B2 ledger whenever B2 holds, and the
-                  -- bridge reduction); `[85]`.
-                  let closedHistory :=
-                    (typeBDegreeFourClosedRow (data := spineData)).run
-                      ledgerHistory (by key_fresh)
-                  let ledger :=
-                    (degreeFourDisjointLedgerRow (data := spineData)).run
-                      closedHistory (by key_fresh)
-                  let excluded := (typeBExcludedRow (data := spineData)).run
-                    ledger (by key_fresh)
-                  let residual :=
-                    (typeBExclusionResidualRow (data := spineData)).run
-                      excluded (by key_fresh)
-                  exact selectedTypeBRoute8Continuation residual
-              | .right overlapHistory =>
-                  -- `[83]`: `c ≥ 2` and B2 fails, the minimal overlap
-                  -- obstruction and its reflection; `[84]`: charged to the fan
-                  -- mass; `[85]`.
-                  let reflected :=
-                    (typeBDegreeFourGlobalLocalBridgeRow (data := spineData)).run
-                      overlapHistory (by key_fresh)
-                  let mass :=
-                    (typeBOverlapObstructionMassRow (data := spineData)).run
-                      reflected (by key_fresh)
-                  let closedMass :=
-                    (typeBObstructionMassExclusionRow (data := spineData)).run
-                      mass (by key_fresh)
-                  exact selectedTypeBRoute8Continuation closedMass
+      -- The local fan-window ledger: the direct fan-window cycles are excluded
+      -- at every assigned centre, and the local B1 ledger is published.
+      let free := (typeBDirectCycleFreeRow (data := spineData)).run markedHistory
+        (by key_fresh)
+      let hybrid := (hybridEntryRow (data := spineData)).run free
+        (by key_fresh)
+      cases degreeFour with
+      | none =>
+          -- `[72]`: local fan-window ledger complete; B2 disjointness holds?
+          match b2AssignmentDichotomy (data := spineData) hybrid
+              (by key_fresh) (by key_fresh) with
+          | .left choiceHistory =>
+              -- `[74]`: the B2-paid ledger and the bridge reduction; `[76]`:
+              -- the remaining core carries the whole deficit; `[77]`.
+              let ledger :=
+                (disjointPostLedgerComponentsRow (data := spineData)).run
+                  choiceHistory (by key_fresh)
+              let excluded := (typeBExcludedRow (data := spineData)).run
+                ledger (by key_fresh)
+              let residual :=
+                (typeBExclusionResidualRow (data := spineData)).run
+                  excluded (by key_fresh)
+              exact selectedTypeBRoute8Entry residual
+          | .right obstructionHistory =>
+              -- `[73]`: the minimal overlap obstruction and its
+              -- global-to-local reflection; `[75]`: charged to the fan
+              -- mass; `[76]`; `[77]`.
+              let reflected :=
+                (typeBGlobalLocalBridgeRow (data := spineData)).run
+                  obstructionHistory (by key_fresh)
+              let mass :=
+                (typeBOverlapObstructionMassRow (data := spineData)).run
+                  reflected (by key_fresh)
+              let closedMass :=
+                (typeBObstructionMassExclusionRow (data := spineData)).run
+                  mass (by key_fresh)
+              exact selectedTypeBRoute8Entry closedMass
+      | some degreeFourCentres =>
+          letI := degreeFourCentres
+          -- `[81]`: `c ≤ 1`, or `c ≥ 2` with B2 disjoint ledger?
+          match degreeFourLedgerDichotomy (data := spineData) hybrid
+              (by key_fresh) (by key_fresh) with
+          | .left ledgerHistory =>
+              -- `[82]`: certificate-closed (`lem:typeB-exclusion` Step 1) or
+              -- B2-paid (the bridge reduction); `[85]`; `[77]`.
+              let closedHistory :=
+                (typeBDegreeFourClosedRow (data := spineData)).run
+                  ledgerHistory (by key_fresh)
+              let residual :=
+                (typeBDegreeFourExclusionResidualRow (data := spineData)).run
+                  closedHistory (by key_fresh)
+              exact selectedTypeBRoute8Entry residual
+          | .right overlapHistory =>
+              -- `[83]`: `c ≥ 2` and B2 fails, the minimal overlap
+              -- obstruction and its reflection; `[84]`: charged to the fan
+              -- mass; `[85]`; `[77]`.
+              let reflected :=
+                (typeBDegreeFourGlobalLocalBridgeRow (data := spineData)).run
+                  overlapHistory (by key_fresh)
+              let mass :=
+                (typeBOverlapObstructionMassRow (data := spineData)).run
+                  reflected (by key_fresh)
+              let closedMass :=
+                (typeBObstructionMassExclusionRow (data := spineData)).run
+                  mass (by key_fresh)
+              exact selectedTypeBRoute8Entry closedMass
 
 end HypostructureErdos64EG

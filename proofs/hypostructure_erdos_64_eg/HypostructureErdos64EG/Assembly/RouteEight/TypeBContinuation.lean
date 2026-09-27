@@ -5,6 +5,7 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedNegative
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExclusion
 import Hypostructure.Graph.Strategy.SpineRows.TypeBBridgeReduction
 import Hypostructure.Graph.Strategy.SpineRows.TypeBBridgeSublinear
+import Hypostructure.Graph.Strategy.SpineRows.TypeBExclusion
 import HypostructureErdos64EG.Assembly.RouteEight.Local
 
 /-!
@@ -155,5 +156,77 @@ noncomputable def selectedTypeBRoute8Continuation
     (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh) :
     SelectedRouteEightBoundary selected :=
   selectedRouteEightUnifiedResidual (selectedRouteEightBridgePrefix history)
+
+/-- **Node `[77]`, the Type B entry into route `8`** (tex 979: "route-8 cores
+continue in Part IX").  It reads the `[76]`/`[85]` fact of the Type B support
+(`K .typeBExclusionResidual`) and publishes its route-8 cores: a negative Type B
+support hands the negative remaining core of its canonical B2 ledger to route
+`8`, or is a bridge residual charged to its surplus.  The branch then continues
+through the route-`8` census of Part IX on the same ledger. -/
+-- EG-NODE [77] route-8 cores continue in Part IX
+noncomputable def selectedTypeBRoute8Entry
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .typeBExclusionResidual) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    (route8EntryFresh : K .typeBRoute8Entry ∉ known := by key_fresh)
+    (bridgeMassFresh : K .typeBBridgeMass ∉ known := by key_fresh)
+    (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by key_fresh)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by key_fresh)
+    (typeAExclusionFresh : K .typeAExclusion ∉ known := by key_fresh)
+    (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known := by
+      key_fresh)
+    (piecesClassifiedFresh : K .route8PiecesClassified ∉ known := by
+      key_fresh)
+    (extractedCensusFresh : K .route8ExtractedEntryCensus ∉ known := by
+      key_fresh)
+    (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known := by key_fresh)
+    (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by
+      key_fresh)
+    (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known := by key_fresh)
+    (quotientFreeFresh : K .route8QuotientFree ∉ known := by key_fresh)
+    (quotientResidualFresh : K .route8QuotientResidual ∉ known := by
+      key_fresh)
+    (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known := by key_fresh)
+    (peelingFresh : K .route8PeelingDescent ∉ known := by key_fresh)
+    (stageRateFresh : K .route8StageRate ∉ known := by key_fresh)
+    (stageFailedFresh : K .route8StageRateFailed ∉ known := by key_fresh)
+    (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by
+      key_fresh)
+    (unifiedExitFresh : K .route8UnifiedTwoCarrierExit ∉ known := by
+      key_fresh)
+    (closureFresh : closed ∉ known := by key_fresh)
+    (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
+    (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
+      key_fresh)
+    (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known := by
+      key_fresh)
+    (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by key_fresh)
+    (windowBlockersFresh : K .route8WindowBlockers ∉ known := by key_fresh)
+    (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by
+      key_fresh)
+    (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by
+      key_fresh)
+    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
+    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      key_fresh)
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
+      key_fresh)
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
+      key_fresh)
+    (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh) :
+    SelectedRouteEightBoundary selected :=
+  let entry :=
+    (typeBRoute8EntryRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by key_fresh)
+  selectedTypeBRoute8Continuation entry
 
 end HypostructureErdos64EG

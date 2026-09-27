@@ -50,23 +50,23 @@ theorem CandidateData.packedWindowIncidences_subset_localWindowBoundaryIncidence
   have selected := (Finset.mem_filter.mp member).1
   have window := (Finset.mem_filter.mp member).2
   cases data with
-  | certificate profile assigned =>
+  | certificate envelope assigned =>
       simp [CandidateData.packedWindowIncidences,
         CandidateData.selectedIncidences] at member
-  | positive profile localReserve chosenNonWindow =>
+  | positive envelope localReserve chosenNonWindow =>
       have chargedSubset :
           CandidateData.chargedVertices
-              (.positive profile localReserve chosenNonWindow)
+              (.positive envelope localReserve chosenNonWindow)
               threshold hub ⊆ core :=
         candidate.2.2.2.1
       have chosenSubset :
           chosenNonWindow ⊆
             TypeBHybridIncidence.nonWindowIncidenceSet object threshold
-              profile.envelope (object.windowSupport packing) hub :=
+              envelope (object.windowSupport packing) hub :=
         candidate.2.2.2.2.2.2.2.2.2
       have windowMember :
           incidence ∈ TypeBHybridIncidence.windowIncidenceSet object threshold
-            profile.envelope (object.windowSupport packing) hub := by
+            envelope (object.windowSupport packing) hub := by
         rcases Finset.mem_union.mp selected with inWindow | inLocalQ
         · exact inWindow
         · have nonWindow := chosenSubset inLocalQ
@@ -74,7 +74,7 @@ theorem CandidateData.packedWindowIncidences_subset_localWindowBoundaryIncidence
             ((Finset.mem_filter.mp nonWindow).2)
       have incidenceMember := (Finset.mem_filter.mp windowMember).1
       rcases (TypeBHybridIncidence.mem_incidences_iff
-          object threshold profile.envelope (object.windowSupport packing)
+          object threshold envelope (object.windowSupport packing)
             hub incidence).mp incidenceMember with ⟨ownerClosed, farMember⟩
       have ownerInPiece : incidence.1 ∈ core := by
         apply chargedSubset

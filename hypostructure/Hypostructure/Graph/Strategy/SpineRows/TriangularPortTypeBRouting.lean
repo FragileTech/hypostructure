@@ -21,7 +21,7 @@ alternative routes to fan-closed ports with
 @[reducible] noncomputable def triangularPortTypeBRoutingRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.triangularPortTypeBRouting
-    { Requires := [K .fanClosedPort, K .fanClosedPortTypeBRouting, K .cubicBaseline]
+    { Requires := [K .fanClosedPortTypeBRouting, K .cubicBaseline]
       Produces := [K .triangularPortTypeBRouting]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -30,7 +30,6 @@ alternative routes to fan-closed ports with
       .cons (key := K .triangularPortTypeBRouting)
         ⟨Contracts.TypeB.triangularPortTypeBRouting (data := data.toParameters)
           (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.1.2.1
-          (inputs.get (K .fanClosedPort)).down
           (inputs.get (K .fanClosedPortTypeBRouting)).down⟩
         .nil)
 

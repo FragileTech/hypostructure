@@ -19,10 +19,10 @@ variable {data : Parameters} {object : Graph.FiniteObject.{u}}
 
 /-- `def:triangular-fan-core` at every heavy centre and nonempty family of
 triangular ports. -/
-theorem triangularFanCore
+theorem triangularFanCoreLaw
     (normal : HighCentreNormalFormStatement data object)
     (thresholdEq : data.threshold = 3) :
-    TriangularFanCoreStatement data object := by
+    TriangularFanCoreLaw data object := by
   intro centre centreHeavy ports portsNonempty triangular
   classical
   let shoulders : object.Vertex →
@@ -572,9 +572,9 @@ theorem triangularPortReturn
 
 /-- `lem:triangular-first-landing`: a shoulder completion edge lands centrally,
 cross-triangularly, or outside, and exactly one of these. -/
-theorem triangularFirstLanding
+theorem triangularFirstLandingLaw
     (shoulderCompletion : TriangularShoulderCompletionStatement data object) :
-    TriangularFirstLandingStatement data object := by
+    TriangularFirstLandingLaw data object := by
   classical
   intro centre centreHeavy ports portsNonempty portsSubset shoulders core
     completion central crossTriangular outside shoulderSpec coreSpec
@@ -710,11 +710,11 @@ theorem triangularFirstLanding
 /-- `lem:triangular-cross-shoulder` on a target-avoiding object: at the cubic
 baseline `δ = 3` a shoulder with four distinct neighbours is above the
 baseline. -/
-theorem triangularCrossShoulder
+theorem triangularCrossShoulderLaw
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (quadrilateral : data.LengthOK 4)
     (thresholdEq : data.threshold = 3) :
-    TriangularCrossShoulderStatement data object := by
+    TriangularCrossShoulderLaw data object := by
   classical
   intro centre centreHeavy ports portsNonempty portsSubset shoulders
     crossTriangular shoulderSpec crossSpec first firstMem second secondMem
@@ -889,5 +889,71 @@ theorem triangularCrossShoulder
         (Or.inl sameSource)
     exact ((Nat.not_le_of_lt high) (low shoulder shoulderMem)).elim
 
+
+/-! ### At the heavy centres of the Type B support of `G` -/
+
+/-- `def:triangular-fan-core` at the heavy assigned centres of the Type B support
+of the `[68]` heavy arm, at G's canonical shoulders. -/
+theorem triangularFanCore
+    (normal : HighCentreNormalFormStatement data object)
+    (thresholdEq : data.threshold = 3)
+    (heavy : TypeBFanHeavyCentreStatement data object) :
+    TriangularFanCoreStatement data object := by
+  classical
+  refine TypeBLaneAt.imp (fun _core _centres _member _heavy centre _centreMember
+      centreHeavy ports portsNonempty triangular endpoint endpointMem => ?_) heavy
+  obtain ⟨shoulders, _core, _completion, _central, _cross, _outside, shoulderSpec,
+      _coreSpec, _completionSpec, _centralSpec, _crossSpec, _outsideSpec⟩ :=
+    triangularFanCoreLaw normal thresholdEq centre centreHeavy ports portsNonempty
+      triangular
+  have same : shoulders endpoint = triangularShoulders object centre endpoint := by
+    ext vertex
+    rw [(shoulderSpec endpoint endpointMem).1 vertex]
+    have triangularMem := triangular endpointMem
+    have centreEndpoint :=
+      (Graph.mem_triangularEndpoints_iff.mp triangularMem).1
+    simp [triangularShoulders, Graph.IsShoulder, object.mem_orderedNeighbors_iff,
+      and_comm]
+  rw [← same]
+  exact shoulderSpec endpoint endpointMem
+
+/-- `lem:triangular-first-landing` at the heavy assigned centres of the Type B
+support, on G's canonical triangular fan core. -/
+theorem triangularFirstLanding
+    (shoulderCompletion : TriangularShoulderCompletionStatement data object)
+    (fanCore : TriangularFanCoreStatement data object) :
+    TriangularFirstLandingStatement data object := by
+  classical
+  refine TypeBLaneAt.imp (fun _core _centres _member holds centre centreMember
+      centreHeavy ports portsNonempty triangular => ?_) fanCore
+  exact triangularFirstLandingLaw shoulderCompletion centre centreHeavy ports
+    portsNonempty triangular (triangularShoulders object centre)
+    (triangularCore object centre ports)
+    (triangularCompletion object centre ports)
+    (triangularCentral object centre ports)
+    (triangularCrossTriangular object centre ports)
+    (triangularOutside object centre ports)
+    (holds centre centreMember centreHeavy ports portsNonempty triangular)
+    (fun vertex => by simp [triangularCore])
+    (fun _ _ _ => Iff.rfl) (fun _ _ _ => Iff.rfl) (fun _ _ _ => Iff.rfl)
+    (fun _ _ _ => Iff.rfl)
+
+/-- `lem:triangular-cross-shoulder` at the heavy assigned centres of the Type B
+support, on G's canonical cross-triangular incidences. -/
+theorem triangularCrossShoulder
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (quadrilateral : data.LengthOK 4)
+    (thresholdEq : data.threshold = 3)
+    (fanCore : TriangularFanCoreStatement data object) :
+    TriangularCrossShoulderStatement data object := by
+  classical
+  refine TypeBLaneAt.imp (fun _core _centres _member holds centre centreMember
+      centreHeavy ports portsNonempty triangular => ?_) fanCore
+  exact triangularCrossShoulderLaw avoids quadrilateral thresholdEq centre
+    centreHeavy ports portsNonempty triangular (triangularShoulders object centre)
+    (triangularCrossTriangular object centre ports)
+    (holds centre centreMember centreHeavy ports portsNonempty triangular)
+    (fun endpoint shoulder target => by
+      simp only [triangularCrossTriangular, triangularCompletion, and_assoc])
 
 end Hypostructure.Graph.Contracts.TypeB

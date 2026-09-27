@@ -50,7 +50,7 @@ noncomputable def selectedTypeBHighSurplusContinuation
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
-    (cycleFresh : K .typeBDirectCycle ∉ known := by key_fresh)
+    (route8EntryFresh : K .typeBRoute8Entry ∉ known := by key_fresh)
     (freeFresh : K .typeBDirectCycleFree ∉ known := by key_fresh)
     (choiceFresh : K .typeBB2Choice ∉ known := by key_fresh)
     (obstructionFresh : K .typeBOverlapObstruction ∉ known := by key_fresh)
@@ -102,7 +102,6 @@ noncomputable def selectedTypeBHighSurplusContinuation
     (certificateMassFresh : K .fanCertificateResidualMass ∉ known := by key_fresh)
     (degreeFourProfileFresh : K .typeBFanDegreeFourProfile ∉ known := by key_fresh)
     (triangularCoreFresh : K .triangularFanCore ∉ known := by key_fresh)
-    (fanClosedFresh : K .fanClosedPort ∉ known := by key_fresh)
     (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by key_fresh)
     (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known := by key_fresh)
     (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known := by key_fresh)
@@ -119,6 +118,9 @@ noncomputable def selectedTypeBHighSurplusContinuation
   -- `[65]`: the ordinary Type B assigned support.
   let assigned := (typeBAssignedSupportRow (data := spineData)).run history
     (by key_fresh)
-  exact Assembly.Internal.selectedTypeBFanContinuation assigned
+  -- `[65]`: the Type B entry read from the assigned support.
+  let entry := (typeBAssignedEntryRow (data := spineData)).run assigned
+    (by key_fresh)
+  exact Assembly.Internal.selectedTypeBFanContinuation entry
 
 end HypostructureErdos64EG
