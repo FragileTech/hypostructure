@@ -24,6 +24,9 @@ noncomputable def route8CarrierDichotomy
     (previous :
       @ExactLedger (Input BranchState Presentation presentation data)
         _ (factSystem BranchState Presentation presentation data) current known)
+    [@FactKeys.Has (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .route8NoSmallCoreEntry) known]
     (twoFresh : K .route8TwoCarrierEntry ∉ known)
     (noTwoFresh : K .route8NoTwoCarrierEntry ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
@@ -35,6 +38,11 @@ noncomputable def route8CarrierDichotomy
     `Hypostructure.Graph.Strategy.Spine.route8CarrierDichotomy
     (by
       classical
+      letI : FactSystem (Input BranchState Presentation presentation data) :=
+        factSystem BranchState Presentation presentation data
+      -- `[115]`, no arm: every entry of `𝒳_A` has at least two essential
+      -- incidences; the two-support test is asked of the same entries.
+      have _noSmall := (previous.get (K .route8NoSmallCoreEntry)).down
       let packing := canonicalWindowPacking data.toParameters current.object
       let support := current.object.remainderSupport packing
       let routeEight := (current.object.canonicalPieces support).filter

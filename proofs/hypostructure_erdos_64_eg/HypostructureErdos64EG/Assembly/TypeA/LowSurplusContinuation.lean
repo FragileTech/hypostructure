@@ -60,8 +60,6 @@ noncomputable abbrev typeALowSurplusKeys : FactKeys EGInput.{u} :=
     K .typeAExitSixGlobal,
     K .typeAExitSevenHandoff,
     K .typeAExitSevenFree,
-    K .typeASilentExitSevenFree,
-    K .typeAExitEightNotSilent,
     K .highCentreNormalForm,
     K .typeBDecoratedAssignedSupport,
     K .typeBFanEntry,
@@ -102,8 +100,6 @@ noncomputable abbrev typeALowSurplusKeys : FactKeys EGInput.{u} :=
     K .route8OpenBoundarySaturated,
     K .route8DemandUnitCount,
     K .route8WindowBlockers,
-    K .windowShadowSignature,
-    K .windowShadowSingletonTail,
     K .windowShadowHitCycle,
     K .windowShadowHitExcluded,
     K .route8UnpaidExitFourResidual,
@@ -144,7 +140,21 @@ noncomputable abbrev typeALowSurplusKeys : FactKeys EGInput.{u} :=
     K .route8UnifiedTwoCarrierExit,
     K .route8StageRate,
     K .route8UnpaidTwoCarrier,
-    K .route8UnpaidWitnessFree]
+    K .route8UnpaidWitnessFree,
+    K .typeAPeeledSaturatedReceiver,
+    K .typeAPeeledUnsaturatedDischarge,
+    K .typeAPeeledVisibleEntry,
+    K .typeAPeeledNoVisibleEntry,
+    K .typeAPeeledSilentExcess,
+    K .typeAPeeledExitOneReturn,
+    K .typeAPeeledExitOneFree,
+    K .typeAPeeledExitTwoTheta,
+    K .typeAPeeledExitTwoFree,
+    K .typeAPeeledExitThreeCollision,
+    K .typeAPeeledExitThreeFree,
+    K .typeAExitThreeCycle,
+    K .typeAExitSevenEnvelope,
+    K .route8GlobalSqueeze]
 
 /-- **Nodes `[63]`, `[86]`--`[94]`: the Type A entry**, on the `[62]` Type A arm
 (index-polymorphic).
@@ -154,7 +164,7 @@ noncomputable abbrev typeALowSurplusKeys : FactKeys EGInput.{u} :=
 `P₁₃`-free, with `diam(X) ≤ 11` and `|X| ≤ 6142`.  `[88]`: receiver routing and
 the threshold algebra.  `[89]`: is some receiver saturated?  No: `[90]`
 `L(w) ≤ s·q(w) − 1`, `[91]` `|X| ≤ s·def⁺(X)`, and `[92]` closes against
-`[86]`.  Yes: `lem:typeA-port-return`, then `[93]`: does a saturated receiver
+`[86]`.  `[89]` reads `[88]`.  Yes: `lem:typeA-port-return`, then `[93]`: does a saturated receiver
 see `s` visible receiver-entry returns at one port?  Yes → exits `[95]`--`[100]`
 and the shared exit segment; no → `[94]` `S_sil^exc(X) ≥ s·D_A(X)` and the same
 exit segment from `[101]`. -/
@@ -173,6 +183,7 @@ noncomputable def selectedTypeALowSurplusContinuation
     [FactKeys.Has (K .negativeSupport) known]
     [FactKeys.Has (K .typeALowSurplus) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .netChargeCap) known]

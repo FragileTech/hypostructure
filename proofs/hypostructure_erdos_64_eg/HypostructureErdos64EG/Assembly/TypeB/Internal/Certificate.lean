@@ -61,7 +61,6 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .highCentreNormalForm) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
-    [FactKeys.Has (K .typeAReceiverRouting) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .cubicBaseline) known]
@@ -114,10 +113,6 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
       key_fresh)
     (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by key_fresh)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known := by key_fresh)
-    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known := by
-      key_fresh)
-    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by
-      key_fresh)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by
       key_fresh)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by

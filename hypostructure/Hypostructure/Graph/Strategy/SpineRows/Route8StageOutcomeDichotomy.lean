@@ -44,13 +44,15 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- **Node `[123]`**: decided by case analysis on the reduced-rate test at the
-terminal stage. -/
+/-- **Node `[123]`**: reads the node-`[123]` descent fact
+(`K .route8PeelingDescent`, the terminal stage `route8DescentChain` with its
+recorded peel chain) and decides the reduced-rate test at that stage. -/
 noncomputable def route8StageOutcomeDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .route8PeelingDescent) known]
     (rateFresh : K .route8StageRate ∉ known)
     (failedFresh : K .route8StageRateFailed ∉ known) :
     Decision (K .route8StageRate) (K .route8StageRateFailed) previous :=
@@ -59,6 +61,10 @@ noncomputable def route8StageOutcomeDichotomy
     (Classical.choice (show Nonempty
         ((K .route8StageRate).At current ⊕
           (K .route8StageRateFailed).At current) from by
+      -- The stage the rate test is asked at is the terminal stage the
+      -- descent fact certifies.
+      obtain ⟨_chainValid, _accounting, _ends⟩ :=
+        (previous.get (K .route8PeelingDescent)).down
       by_cases rate : Route8StageRateStatement data.toParameters current.object
       · exact ⟨.inl ⟨rate⟩⟩
       · exact ⟨.inr ⟨rate⟩⟩))

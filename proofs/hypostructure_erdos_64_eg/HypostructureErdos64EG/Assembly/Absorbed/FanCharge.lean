@@ -67,7 +67,6 @@ noncomputable def Assembly.Internal.selectedAbsorbedFanChargeContinuation
     (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known)
     (cubicFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
     (extractedFresh : K .route8ExtractedEntryCensus ∉ known)
-    (routingFresh : K .typeAReceiverRouting ∉ known := by key_fresh)
     (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by key_fresh)
     (typeAExclusionFresh : K .typeAExclusion ∉ known := by key_fresh)
     (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known := by
@@ -88,8 +87,6 @@ noncomputable def Assembly.Internal.selectedAbsorbedFanChargeContinuation
     (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known := by key_fresh)
     (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by key_fresh)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known := by key_fresh)
-    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known := by key_fresh)
-    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by key_fresh)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by key_fresh)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by key_fresh)
     (demandResidualFresh : K .route8StageRate ∉ known := by key_fresh)
@@ -108,11 +105,6 @@ noncomputable def Assembly.Internal.selectedAbsorbedFanChargeContinuation
    :
     SelectedRouteEightBoundary selected := by
   letI := cubicFresh
-  let routed :=
-    (typeAReceiverRoutingRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by key_fresh)
-  exact Assembly.Internal.selectedTypeBFanContinuation routed
+  exact Assembly.Internal.selectedTypeBFanContinuation history
 
 end HypostructureErdos64EG

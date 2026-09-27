@@ -275,43 +275,57 @@ negation on the remainder of the fixed maximum packing
 
 ## [89], [93], [95], [97], [99], [101], [103], [105], [107]: now paper-exact at the fixed objects
 
-*Family F1 (Type A).*
+*Family F1 (Type A); final fix pass TA.*
 
 - **Paper** (diagram tex:1057–1077 and 1081–1103; `def:typeA-saturated-exits`
   tex:10811).  Each diamond asks its question of the fixed `X`, `w`, port and
   `P₄(w)`.
 - **Lean.**  Every Type A key is pinned (`Statements/TypeA.lean`,
-  `AtTypeASupport` / `AtVisiblePort` / `AtExitReceiver` / `AtTerminalState`)
-  to the canonical objects of `G` (`Statements/CanonicalTypeA.lean`): `X₀`,
-  the node-`[89]` receiver, the node-`[93]` visible receiver and its
-  overloaded port, the exit-chain receiver, and the terminal set of the
-  canonical witnessed peeling sequence.  Every decision reads its predecessor
-  key and splits at those objects (d2ded0e's argument path); both keys are the
-  node's predicate and its negation at the same objects.  No divergence
-  remains.  Exit `(3)` keeps d2ded0e's collision of the canonical packing
-  `P₀` (coordinator ruling), which is also the absorbing clause of the `[108]`
-  envelope.
+  `AtTypeASupport` / `AtVisiblePort` / `AtExitReceiver` / `AtTerminalState` /
+  `AtPeeledVisiblePort`) to the canonical objects of `G`
+  (`Statements/CanonicalTypeA.lean`): `X₀`, the node-`[89]` receiver, the
+  node-`[93]` visible receiver and its overloaded port, the exit-chain receiver,
+  the terminal receiver of the recompute-`L₄` retest
+  (`canonicalTerminalReceiverAt`) and its terminal set.  Every decision reads
+  its predecessor key (`[89]` ← `[88]`, `[97]` ← `[95]`-no, `[99]` ← `[97]`-no)
+  and splits at those objects; both keys are the node's predicate and its
+  negation.  `[88]` is pinned at `X₀` (`ZeroSurplusRoutingAt`, from node
+  `[13]` and `[63]`).  Exit `(3)` is the paper's: two receiver-entry returns
+  through the pinned port fail `C_s` at a common packed window of `P₀`
+  (`ExitThreeThrough`), closed at `[100]` by the accepted cycle
+  (`K .typeAExitThreeCycle`).  Exit `(7)` is asked at the terminal state's
+  receiver and eligible loads (`ExitSevenAt`), and node `[108]` is its own row
+  (`K .typeAExitSevenEnvelope`: the canonical separation of `X₀` is the one of
+  that state, and its decorated handoff fan envelope exists), read by the Type B
+  entry.  No divergence remains.
 
 ## [102] → [89]: the recompute-`L₄` loop is realized by its terminating outcome
 
-*Family F1 (Type A).*
+*Family F1 (Type A); final fix pass TA.*
 
 - **Paper** (diagram tex:1070 and 1095, "recompute `L₄`";
-  `lem:typeA-exit4-discharge` tex:11628; `lem:typeA-saturated-handoff`
-  tex:11753).  After a peel the receiver is tested again at `[89]`; the loop
-  is finite because every peel lowers `L₄(w)`.
-- **Lean.**  An append-only ledger cannot commit the same keys twice.  The loop
-  is the canonical witnessed peeling sequence `canonicalPeel` of the exit-chain
-  receiver (each step peels the canonical exit-`(4)` witness of the current
-  lane), and `typeAExitFourRetestDichotomy` reads `K .typeAExitFourPeeled` and
-  asks the saturation test at its terminal set `P₄(w)`: yes
-  `K .typeASaturatedHandoffExitFourFree` (saturated, hence exit-`(4)`-free,
-  and exits `(5)`--`(8)` are asked there), no
-  `K .typeAExitFourReceiverDischarged` (unsaturated, nonnegative remaining
-  charge).  These are d2ded0e's two arms.
-- **Why the Lean prevails.**  The two outcomes are exactly the ends of the
-  paper's loop; the intermediate re-tests of exits `(1)`--`(3)` are not
-  repeated, and exits `(5)`--`(8)` do not use their negations.
+  `lem:typeA-exit4-discharge` tex:11628; `lem:typeA-exit4-residual-routing`
+  tex:11606; `lem:typeA-saturated-handoff` tex:11753).  After a peel node
+  `[89]` is asked again with `L₄`, and the saturated branch re-enters `[93]`
+  and exits `(1)`--`(7)`; the loop is finite because every peel lowers `L₄`.
+- **Lean.**  An append-only ledger cannot commit the same keys twice, so the
+  repeated peels are the canonical witnessed peeling sequence `canonicalPeel`
+  of each receiver, stopped at its terminal set `P₄(w)`.  After node `[102]`,
+  `typeAExitFourRetestDichotomy` reads `K .typeAExitFourPeeled` and asks node
+  `[89]` over the receivers of `X₀` at their terminal sets: yes
+  `K .typeAPeeledSaturatedReceiver` at the terminal receiver; no
+  `K .typeAExitFourReceiverDischarged` (node `[90]` with `L₄`), followed by
+  node `[91]`'s bound on the unpeeled loads
+  (`K .typeAPeeledUnsaturatedDischarge`).  On the yes arm node `[93]` is asked
+  again at `P₄(w)` (`typeAPeeledVisibleEntryDichotomy`): exits `(1)`--`(3)` at
+  the overloaded port of `P₄(w)` with closures `[96]`, `[98]`, `[100]`
+  (`typeAPeeledExit*Dichotomy`), or node `[94]`'s residual excess `E₄(w)`
+  (`K .typeAPeeledSilentExcess`); node `[101]` then holds at the terminal set,
+  and exits `(5)`--`(8)` are asked there.
+- **Remaining difference.**  Only the intermediate states of one receiver's
+  peeling sequence are not asked separately: the retest is asked at the
+  terminal set of the sequence, which is where the loop of each receiver ends.
+  The no arm's node `[92]` is recorded under Paper errors.
 
 ## [106]: the scope of exit `(6)` is an exact decision
 
@@ -328,29 +342,15 @@ negation on the remainder of the fixed maximum packing
   (an `Or` of the two conclusions) at the same delocalization; the paper's case
   split is on the support, and the Lean splits on it.
 
-## [109]: the route-`8` residual is split by its node-`[94]` provenance
+## [109]: no provenance split (removed)
 
-*Family F1 (Type A).*
+*Family F1 (Type A); final fix pass TA.*
 
-- **Paper** (diagram tex:1077, 1143; `lem:typeA-unified-visible-ownership`,
-  node `[184]`).  The route-`8` residual `[109]` continues through Part IX; node
-  `[184]` proves that every entry of the unified family is visible.
-- **Lean.**  `typeASilentExitSevenDichotomy` reads `K .typeAExitSevenFree` (the
-  route-`8` residual state `(X₀, w, P₄(w))`): yes key
-  `K .typeASilentExitSevenFree` (`w` carries the node-`[94]` silent-excess
-  origin of `X₀`; on the silent lane `w` is the node-`[89]` receiver), no key
-  `K .typeAExitEightNotSilent` (its exact negation at the same state).  The yes arm is closed at `[184]` by the instance
-  `typeASilentExitSevenFreeVisibleClosed`
-  (`Contracts.TypeA.selectedSilentExitSevenFree_unifiedVisibleResidual_contradiction`):
-  the origin's excess load is a silent member of the unified family, which
-  `[184]` makes visible.  The no arm continues through Part IX exactly as the
-  paper's residual.
-- **Why the Lean prevails.**  The split is an exact complement, it weakens no
-  fact, and it closes the silent-origin residual that the paper's `[184]` makes
-  vacuous but does not close separately.  Before this change the same closure
-  was reached by running a second, silent copy of the exit segment; the two
-  lanes now share one exit segment, as the diagram draws the edge `[94]` →
-  `[101]`.
+The former split of node `[109]` by the node-`[94]` silent provenance
+(`typeASilentExitSevenFree` / `typeAExitEightNotSilent`) is removed: node
+`[109]` continues to node `[110]` on every lane, as in the diagram
+(tex:1077, 1122).  The closure it fed at node `[184]` is quarantined
+(`Quarantine/PaperRepairs/SilentLaneClosure.lean`).
 
 ## [113]: the large-budget deficit is tested, not asserted
 
@@ -478,7 +478,7 @@ and splits `class(t) = 𝔗_W` against `class(t) ≠ 𝔗_W`;
 canonical homogeneous pattern at that token
 (`homogeneousBottleneckPattern_of_class`).
 
-## [181]/[183]: quantification over maximal ledgers
+## [181]/[183]: the committed maximal ledger `P₀`
 
 *Family F3 (Route 8).*
 
@@ -486,18 +486,16 @@ canonical homogeneous pattern at that token
   lexicographically first maximal ledger `P` of `def:typeA-pressure-ledger`;
   (168.1) holds for `Ξ_un(P)`; outcome (i) "some `ξ ∈ Ξ_un(P)` has no exit-(4)
   witness" versus outcome (ii) (168.2).
-- **Lean.** `Route8MaximalDemandPartition` names the maximal pinned ledgers.
-  (168.1) is `Route8UnpaidTwoCarrierStatement` for every maximal ledger
-  (`route8UnpaidTwoCarrier`); the node-`[181]` keys are
-  `Route8UnpaidWitnessFreeStatement` (some maximal ledger has an unpaid
-  witness-free entry) and its exact negation
-  `Route8UnpaidExitFourResidualStatement` (every unpaid entry of every maximal
-  ledger has its witness) (`Graph/Contracts/RouteEight/DemandLedger.lean`,
-  `SpineRows/Route8UnpaidExitFourDichotomy.lean`).
-- **Why at least as strong.** The paper's fixed ledger is a maximal ledger, so
-  (168.1) and (168.2) for all maximal ledgers imply them for it; the yes arm is
-  closed at `[124]` exactly as outcome (i).  The two keys are literal
-  negations of each other, so the split is exact without choosing a ledger.
+- **Lean.** The ledger is `P₀ = canonicalRoute8Partition`
+(`Statements/CanonicalRouteEight.lean`), the `Classical.choice` of the
+  node-`[349]` record `K .route8DemandLedger`: a maximal pinned ledger.
+  (168.1) (`Route8UnpaidTwoCarrierStatement`), node `[181]`'s yes arm
+  (`Route8UnpaidWitnessFreeStatement`) and its exact negation (168.2)
+  (`Route8UnpaidExitFourResidualStatement`) are all stated at `P₀`
+  (`Statements/RouteEightPinned.lean`); the decision reads `[349]`.
+- **Remaining difference.** `P₀` is a maximal ledger chosen by
+  `Classical.choice`, not the paper's lexicographically first one.  The paper
+  uses only properties every maximal ledger has.
 
 ## [182]: each pair-code test has its own exact negation
 
@@ -521,31 +519,14 @@ canonical homogeneous pattern at that token
   the root boundary `SelectedLedgerBoundaryResult` keeps that outcome, and
   this migration does not attempt the open implications.
 
-## [184]: the silent Type A lane closes at the visibility reduction
+## [184]: no separate silent lane (removed)
 
-*Family F3 (Route 8).*
+*Family F3 (Route 8); final fix pass TA.*
 
-- **Paper** (tex:1143--1145; `lem:typeA-unified-visible-ownership`,
-  `lem:typeA-unified-silent-terminal-exclusion` tex:17480). Both Type A lanes
-  run `[183]`--`[186]`; the silent terminal is excluded as a conjunct of the
-  open node `[186]` ((168.22)).
-- **Lean.** The silent lane (the silent arm of F1's
-  `typeASilentExitSevenDichotomy`, carrying `K .typeASilentExitSevenFree`)
-  enters `selectedRouteEightResidualSilent`
-  (`Assembly/RouteEight/Residual.lean`), which shares every stage with the
-  visible entry (`selectedRouteEightProfile`,
-  `selectedRouteEightCollectionCloses`, `selectedRouteEightBridgePrefix`,
-  `selectedRouteEightDescent`, `selectedRouteEightUnpaidReduction`) and
-  differs only after `[183]`: `route8UnifiedVisibleResidualRow` is run with
-  `runAndCloseIncompatible` against `K .typeASilentExitSevenFree`
-  (instance `typeASilentExitSevenFreeVisibleClosed`, `TypeAExitRun.lean`).
-  The former `Option` argument of `selectedRouteEightResidual` is removed.
-- **Why the Lean prevails.** The lane's selected silent excess load is itself a
-  unified entry; `[184]` (the paper's own lemma) makes every unified entry
-  visible, so the lane is closed by the fact the paper proves at `[184]`,
-  before the joint balance.  The paper's `[186]` exclusion (168.22) is the same
-  contradiction stated one node later.  Kernel-checked; the visible lane still
-  reaches the open node `[186]`.
+With the `[109]` provenance split removed, both Type A lanes run
+`[110]`--`[186]` through the one composition `selectedRouteEightResidual`; the
+silent-lane copy `selectedRouteEightResidualSilent` and its `[184]` closure are
+gone.
 
 ## Remaining divergences (not admitted under the exception), family F5
 
@@ -688,6 +669,66 @@ where the user decided so, a residual carried by the node's open leaf.
   Tex 7234 declares whole supports.  Lean implements the (F4) definition as
   stated at its node (tex 7234).  The heavy-centre reading is quarantined in
   `Quarantine/PaperRepairs/ColdF4Charge.lean`.
+
+### [92] after peeling: the unsaturated charge does not close once a load is peeled (tex 1095, 11753, 11785)
+
+*Final fix pass TA.*
+
+- **Paper's claim.**  The diagram returns node `[102]` to `[89]` "with the
+  residual load `L₄`" (tex 1095 and caption), and the no arm of `[89]` closes at
+  `[92]` ("unsaturated Type A charge closes").
+- **Faithful formal statement.**  On the retest's no arm every receiver of
+  `X₀` has `1 + L₄(w) ≤ s·q(w)` at its terminal set
+  (`K .typeAExitFourReceiverDischarged`).  `lem:typeA-exit4-peeling-charge`
+  then gives exactly `|V(X₀)| ≤ s·def⁺(X₀) + Σ_w |P₄(w)|`
+  (`K .typeAPeeledUnsaturatedDischarge`,
+  `Contracts.TypeA.card_le_scaled_deficiency_add_peeled`).
+- **Why it fails.**  `[92]` closes against `[86]`, `s·def⁺(X₀) < |V(X₀)|`.  On
+  this arm node `[102]` has peeled at least one load of the exit-chain
+  receiver (`K .typeAExitFourPeeled`), so `Σ_w |P₄(w)| ≥ 1` and the bound above
+  does not contradict `[86]`.  The statement `|V(X₀)| ≤ s·def⁺(X₀)` cannot be a
+  `PAPER-ERROR` sorry: its negation is `[86]`, which is on this very ledger.
+  The paper itself routes this case elsewhere: `rem:typeA-exit4-peeling-use`
+  (tex 11785-11792) says the charge calculation applies only to the unpeeled
+  loads and a support with an exit-`(4)` witness "is routed by alternative (iii)
+  of `lem:density-mersenne`" (tex 11860-11863).
+- **Lean.**  The arm follows that routing: after `[91]` it enters the unified
+  target-defect/route-`8` ledger of node `[123]`
+  (`selectedTypeAExitFourDischargedRetest`,
+  `Assembly/TypeA/ExitFourDischargedRetest.lean`).  No `sorry`.
+
+### [123] / key 348: alternative (b) of `def:typeA-trace-basin` at the unified entries (tex 15360-15364, 10773-10775, 11690-11694)
+
+*Final fix pass TA.  Left open; not a `sorry`.*
+
+- **Paper's claim.**  `lem:typeA-unified-carriers` (tex 15360-15364): at an
+  entry of `\tilde\Xi`, "alternatives (b)--(d) are exits (5),(6),(7): the first
+  two are standing-invariant contradictions (`cor:uncompressible`, ...)".
+- **Why the paper's argument does not establish it.**  The paper refutes
+  alternative (b) only "when this quotient is realized by a smaller connected
+  representative" (`def:typeA-trace-basin` (b), tex 10773-10775), and
+  `lem:typeA-exits-discharged` (tex 11690-11694) states that a compression
+  occurring "only at the trace-basin response level ... is not an admissible
+  route-8 residual" — it does not derive a contradiction there.  No argument
+  in the paper produces the smaller realization from a response quotient.
+- **Lean evidence.**  `Route8.TraceBasin.exists_traceResponseQuotient_of_selected`
+  (`Graph/TraceIncidenceQuotient.lean`) realizes the Lean alternative (b) at
+  every selected trace basin of a load distinct from its receiver (erase the
+  trace-incidence coordinate).  Hence, checked in scratch,
+  `¬ Route8.TraceBasin.Route8Entry object support threshold LengthOK receiver load`
+  whenever `load ≠ receiver`: `TargetCompleteMinimal` and `Route8Entry` are
+  unsatisfiable for every actual entry, and a claim "(b) contradicts
+  uncompressibility" would make every uncompressible graph free of unified
+  entries.  The Lean realization class (`QuotientRealization`) is narrower than
+  the paper's ("a boundaried response state with the same boundary degree
+  profile whose image under the quotient map is the given quotient"), so part
+  of this is a Lean statement of (b) that is weaker than the paper's; restating
+  it is outside this pass.
+- **Lean.**  The quotient decision `route8QuotientDichotomy` stays, and its no
+  arm `K .route8QuotientResidual` stays an open exit of Part IX
+  (`SelectedRouteEightBoundary`, `[187]`).  The coordinator ruled that a
+  `PAPER-ERROR` sorry here is not admissible without a Lean-checked refutation
+  of the paper's step.
 
 ## User-approved repairs
 

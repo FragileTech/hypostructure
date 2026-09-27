@@ -1985,7 +1985,7 @@ abbrev handoffHighDegree (data : Parameters) (object : Graph.FiniteObject.{u}) :
 other four fan-safe conditions are exactly the label, target-defect,
 target-compression, and support-dependence exits already removed before exit (7)"*.
 The exit `(3)` label clause is the only local fan predicate.  The denials of
-exits `(4)`, `(5)`, and `(6)` are ledger facts in `SelectedNoExitSixWith`, not
+exits `(4)`, `(5)`, and `(6)` are ledger facts in `SelectedNoExitSixReceiverWith`, not
 secondary route-8 objects smuggled through this predicate. -/
 abbrev handoffAbsorbing (data : Parameters) (object : Graph.FiniteObject.{u})
     (packing : Finset (Finset object.Vertex)) :

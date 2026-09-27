@@ -102,7 +102,6 @@ noncomputable def selectedTypeBRoute8Continuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .surplusAtOrBelow) known]
-    [FactKeys.Has (K .typeAReceiverRouting) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .uncompressible) known]
@@ -141,10 +140,6 @@ noncomputable def selectedTypeBRoute8Continuation
       key_fresh)
     (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by key_fresh)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known := by key_fresh)
-    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known := by
-      key_fresh)
-    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by
-      key_fresh)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by
       key_fresh)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by
@@ -160,68 +155,5 @@ noncomputable def selectedTypeBRoute8Continuation
     (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh) :
     SelectedRouteEightBoundary selected :=
   selectedRouteEightUnifiedResidual (selectedRouteEightBridgePrefix history)
-
-/-- The same continuation on the silent Type A lane: it closes at node
-`[184]` (`selectedRouteEightUnifiedResidualSilent`). -/
-noncomputable def selectedTypeBRoute8ContinuationSilent
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .surplusAtOrBelow) known]
-    [FactKeys.Has (K .typeAReceiverRouting) known]
-    [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .replacementExclusion) known]
-    [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .cubicBaseline) known]
-    [FactKeys.Has (K .typeASilentExitSevenFree) known]
-    (bridgeMassFresh : K .typeBBridgeMass ∉ known := by key_fresh)
-    (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by key_fresh)
-    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by key_fresh)
-    (typeAExclusionFresh : K .typeAExclusion ∉ known := by key_fresh)
-    (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known := by
-      key_fresh)
-    (piecesClassifiedFresh : K .route8PiecesClassified ∉ known := by
-      key_fresh)
-    (extractedCensusFresh : K .route8ExtractedEntryCensus ∉ known := by
-      key_fresh)
-    (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known := by key_fresh)
-    (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by
-      key_fresh)
-    (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known := by key_fresh)
-    (quotientFreeFresh : K .route8QuotientFree ∉ known := by key_fresh)
-    (quotientResidualFresh : K .route8QuotientResidual ∉ known := by
-      key_fresh)
-    (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known := by key_fresh)
-    (peelingFresh : K .route8PeelingDescent ∉ known := by key_fresh)
-    (stageRateFresh : K .route8StageRate ∉ known := by key_fresh)
-    (stageFailedFresh : K .route8StageRateFailed ∉ known := by key_fresh)
-    (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by
-      key_fresh)
-    (unifiedExitFresh : K .route8UnifiedTwoCarrierExit ∉ known := by
-      key_fresh)
-    (closureFresh : closed ∉ known := by key_fresh)
-    (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
-    (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
-      key_fresh)
-    (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known := by
-      key_fresh)
-    (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by key_fresh)
-    (windowBlockersFresh : K .route8WindowBlockers ∉ known := by key_fresh)
-    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known := by
-      key_fresh)
-    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by
-      key_fresh)
-    (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by
-      key_fresh)
-    (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by
-      key_fresh)
-    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
-    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
-    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
-      key_fresh)
-    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
-      key_fresh) :
-    SelectedRouteEightBoundary selected :=
-  selectedRouteEightUnifiedResidualSilent (selectedRouteEightBridgePrefix history)
 
 end HypostructureErdos64EG

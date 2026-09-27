@@ -44,8 +44,6 @@ noncomputable abbrev typeAVisibleExitKeys : FactKeys EGInput.{u} :=
     K .typeAExitSixGlobal,
     K .typeAExitSevenHandoff,
     K .typeAExitSevenFree,
-    K .typeASilentExitSevenFree,
-    K .typeAExitEightNotSilent,
     K .highCentreNormalForm,
     closed,
     K .typeBDecoratedAssignedSupport,
@@ -87,8 +85,6 @@ noncomputable abbrev typeAVisibleExitKeys : FactKeys EGInput.{u} :=
     K .route8OpenBoundarySaturated,
     K .route8DemandUnitCount,
     K .route8WindowBlockers,
-    K .windowShadowSignature,
-    K .windowShadowSingletonTail,
     K .windowShadowHitCycle,
     K .windowShadowHitExcluded,
     K .route8UnpaidExitFourResidual,
@@ -129,15 +125,31 @@ noncomputable abbrev typeAVisibleExitKeys : FactKeys EGInput.{u} :=
     K .route8UnifiedTwoCarrierExit,
     K .route8StageRate,
     K .route8UnpaidTwoCarrier,
-    K .route8UnpaidWitnessFree]
+    K .route8UnpaidWitnessFree,
+    K .typeAPeeledSaturatedReceiver,
+    K .typeAPeeledUnsaturatedDischarge,
+    K .typeAPeeledVisibleEntry,
+    K .typeAPeeledNoVisibleEntry,
+    K .typeAPeeledSilentExcess,
+    K .typeAPeeledExitOneReturn,
+    K .typeAPeeledExitOneFree,
+    K .typeAPeeledExitTwoTheta,
+    K .typeAPeeledExitTwoFree,
+    K .typeAPeeledExitThreeCollision,
+    K .typeAPeeledExitThreeFree,
+    K .typeAExitThreeCycle,
+    K .typeAExitSevenEnvelope,
+    K .route8GlobalSqueeze]
 
 /-- **Nodes `[95]`--`[100]`: exits `(1)`--`(3)`** on node `[93]`'s visible arm
 (index-polymorphic).  `def:typeA-saturated-exits`, `lem:typeA-exits-discharged`:
 exit `(1)` — a Mersenne anchored return — closes at `[96]` against the
 return-avoidance invariant `[5]`--`[7]`; exit `(2)` — a power-of-two
-common-port theta — closes at `[98]` against the selection; exit `(3)` — a
-`P₁₃` label collision — closes at `[100]` against the selection.  The
-exit-`(3)`-free arm enters the shared exit segment at `[101]`. -/
+common-port theta, read from `[95]`'s no arm — closes at `[98]` against the
+selection; exit `(3)` — two returns through the port failing `C_s` at a common
+packed window, read from `[97]`'s no arm — closes an accepted cycle at `[100]`,
+against the selection.  The exit-`(3)`-free arm enters the shared exit segment
+at `[101]`. -/
 -- EG-NODE [95] exit 1? Mersenne return
 -- EG-NODE [96] target cycle
 -- EG-NODE [97] exit 2? power-of-two theta
@@ -190,9 +202,14 @@ noncomputable def selectedTypeAVisibleExitChain
           match typeAExitThreeDichotomy (data := spineData) twoFree
               (by key_fresh) (by key_fresh) with
           | .left collisionHistory =>
-              -- `[100]`
-              exact ((closeIncompatible collisionHistory (K .selection)
-                (K .typeAExitThreeCollision) (by key_fresh)).elimClosed
+              -- `[100]`: the collision closes an accepted cycle of `G`.
+              exact ((AtomicCT.runAndCloseIncompatible
+                (typeAExitThreeCycleRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData))
+                collisionHistory (K .selection) (K .typeAExitThreeCycle)
+                (by key_fresh) (by key_fresh)).elimClosed
                   (by infer_instance)).elim
           | .right threeFree =>
               -- `[99]` → `[101]`: the shared exit segment.

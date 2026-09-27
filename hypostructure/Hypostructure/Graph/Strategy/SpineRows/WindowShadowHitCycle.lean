@@ -13,14 +13,15 @@ universe u v
     {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.windowShadowHitCycle
-    { Requires := []
+    { Requires := [K .route8WindowBlockers]
       Produces := [K .windowShadowHitCycle]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .windowShadowHitCycle)
-        ⟨Graph.Contracts.RouteEight.windowShadowHitCycle data.toParameters inputs.current.object⟩
+        ⟨Graph.Contracts.RouteEight.windowShadowHitCycle data.toParameters inputs.current.object
+          (inputs.get (K .route8WindowBlockers)).down⟩
         .nil)
     0 0
 

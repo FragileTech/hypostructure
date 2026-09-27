@@ -18569,7 +18569,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL-TRIVIAL — `K .typeAReceiverRouting` gives routing totality to a receiver (`lem:typeA-receiver-loads`) and s*q(w) = s*(delta-1-d_X(w)+1) <= s*delta. That is H_j = s(j+1), i.e. H0 = 4, H1 = 8, H2 = 12 at s=4, delta=3. The threshold half is a re-indexing of the saturation definition, as in the manuscript."
+    "note": "FAITHFUL — `ZeroSurplusRoutingAt` pinned at X₀, from [13] and [63]."
    },
    "89": {
     "lean": "verified",
@@ -18577,7 +18577,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Decision by `by_cases` on the existence of a receiver of the selected piece with `Saturated` (s*missingPorts <= routedLoad, i.e. L(w) >= 4q(w)). The yes arm is `K .typeASaturatedReceiver`."
+    "note": "FAITHFUL — Reads [88]; ∃ saturated receiver of X₀ vs its negation."
    },
    "90": {
     "lean": "verified",
@@ -18593,15 +18593,15 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .typeAUnsaturatedDischarge` gives |V(X)| <= s*def+(X) on the same piece. It is proved by `FiniteObject.unsaturatedDischarge` from routing totality ([88]) and the unsaturated bounds ([90]); both Requires are read."
+    "note": "FAITHFUL — First pass |V(X₀)| ≤ s·def⁺(X₀); after peeling |V(X₀)| ≤ s·def⁺(X₀) + Σ|P₄(w)|."
    },
    "92": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "partial",
     "local": "verified",
-    "fidelity": "verified",
-    "note": "FAITHFUL — One destructured `typeAUnsaturatedDischarge` value gives |X| <= s*def+(X) and `NegativeNetCharge` with sigma(X) = 0 on the same piece. `omega` closes the contradiction."
+    "fidelity": "partial",
+    "note": "DIVERGENT — First pass closes; after a peel the closure does not follow (Paper errors, [92]); routed to [123] per rem:typeA-exit4-peeling-use."
    },
    "93": {
     "lean": "verified",
@@ -18641,7 +18641,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .typeAExitTwoTheta` publishes `Graph.VisibleEntry.ExitTwoThrough` at the [93] receiver's selected port: two receiver-entry returns, internally disjoint, accepted total length -- `def:typeA-saturated-exits` (2). `K .typeAExitTwoFree` carries its negation with the same configuration (packing pinned to `canonicalWindowPacking`)."
+    "note": "FAITHFUL — Reads [95]-no; exit (2) at the pinned port."
    },
    "98": {
     "lean": "verified",
@@ -18657,7 +18657,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .typeAExitThreeCollision` publishes `Graph.WindowLabelCollision.LabelCollision` on the configuration's own packing: two attachments to one packed window, a connector avoiding it, accepted closing length (= failure of C_s by `labelCollision_iff_not_safe`); the no arm carries `LabelCollisionFree`."
+    "note": "FAITHFUL — Reads [97]-no; `ExitThreeThrough`: two returns through the pinned port fail C_s at a packed window of P₀."
    },
    "100": {
     "lean": "verified",
@@ -18665,7 +18665,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `Incompatible (K .selection) (K .typeAExitThreeCollision)`: `hasCycleWithLength_of_labelCollision` builds the cycle of length s+2+|i-j| (using only `data.degenerateClosureRejected`), contradicting the selection."
+    "note": "FAITHFUL — The collision closes an accepted cycle (¬LengthOK 2 read from K .cubicBaseline), against the selection."
    },
    "101": {
     "lean": "verified",
@@ -18681,7 +18681,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .typeAExitFourPeeled` publishes the [101] witness, `nextPeeled ⊆ routedLoads` and `residualLoad(nextPeeled) + 1 = residualLoad(peeled)`: `lem:typeA-exit4-discharge` / `lem:typeA-exit4-peeling-charge` in integral form."
+    "note": "STRONGER — Retest [89] over all receivers at their terminal sets; yes arm re-asks [93]–[101] at P₄(w)."
    },
    "103": {
     "lean": "verified",
@@ -18713,7 +18713,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `Delocalization.localize` splits into `K .typeAExitSixProper` (a `ReplacementSupport`, closed against `K .replacementExclusion`) or `K .typeAExitSixGlobal` (a lexicographically smaller baseline representative with target transfer, closed against `K .selection`)."
+    "note": "FAITHFUL — Global scope pinned at the canonical delocalization of the terminal state."
    },
    "107": {
     "lean": "verified",
@@ -18721,7 +18721,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Reads the literal `typeAExitSixFree` residual and tests `HandoffProduced` (a `DecoratedHandoff.Envelope` with core = the selected piece and nonempty high-degree decorations) -- `def:typeA-saturated-exits` (7). Both arms keep the no-exit-(4)/(5)/(6) ancestry (`SelectedNoExitSixWith`)."
+    "note": "FAITHFUL — `ExitSevenAt` at the terminal receiver and eligible loads."
    },
    "108": {
     "lean": "verified",
@@ -18729,7 +18729,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL-TRIVIAL — Requires `K .typeAExitSevenProduced` and republishes the same proposition under `K .typeAExitSevenHandoff`; the reclassification to Type B is the whole manuscript step, and the admissibility clauses are proved at [65]."
+    "note": "FAITHFUL — Canonical separation of X₀ at the terminal state and its decorated envelope; read by Type B."
    },
    "109": {
     "lean": "verified",
@@ -18737,7 +18737,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .typeAExitSevenFree` is `SelectedNoExitSixWith ... ¬ HandoffProduced`: the selected saturated residual with no exit (4)--(7). Exit (8) is the complement by definition; the trace-basin and response-algebra vocabulary of `def:typeA-silent-core-residual` lives in `Graph.Route8`."
+    "note": "FAITHFUL — No provenance split; continues to [110] on every lane."
    },
    "110": {
     "lean": "verified",
@@ -18753,7 +18753,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL-TRIVIAL — X_A is the canonical collection `route8SurvivorComponents G` (canonical pieces passing `Route8Survives`) and s·D_A is `route8Deficit` on it. Both are functions of G, so no fact is published for them; [112]/[113] state their bounds on this object."
+    "note": "FAITHFUL — Each member of 𝒳_A has σ=0 and s·def⁺ < |V|; |𝒳_A| ≤ s·D_A(𝒳_A)."
    },
    "112": {
     "lean": "verified",
@@ -18833,7 +18833,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .route8Census` holds `Route8Census.CollectionDeficit` (|R| <= N_basin + s|dR| + slack on the exact route-8 collection) and `Route8Census.Rate` ((delta s+1)|dR| + delta slack < delta|R|), derived in the executor from the ledger's `route8BasinBurden`, `route8LargeBudgetDeficit`, `route8Rate`; this is the cleared burden-plus-deficit inequality of [121] with the o(|R|) allowance explicit."
+    "note": "FAITHFUL — Runs after [119]–[120] on the [117]-no arm; [122] closes census vs budget."
    },
    "122": {
     "lean": "verified",
@@ -19361,7 +19361,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `Route8JointBalanceStatement`: [185]'s fact, universal saturated-load visibility, silent-terminal exclusion (168.22), and (168.15)-(168.20) at the node-[181] objects: the peel chain `route8DescentChain G`, `P₀ = canonicalRoute8Partition G` and `A₀ = canonicalRoute8Absorption G P₀` (pinned, no re-chosen chain, partition or absorption). `unused` is determined by `N = D + unused`. The leaf stays OPEN."
+    "note": "FAITHFUL — (168.22) at recorded peeling sets of the descent; [185] not republished; demand weights δ, δ−1."
    },
    "187": {
     "lean": "verified",

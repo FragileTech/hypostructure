@@ -58,8 +58,6 @@ noncomputable abbrev typeADecoratedHandoffKeys : FactKeys EGInput.{u} :=
     K .route8OpenBoundarySaturated,
     K .route8DemandUnitCount,
     K .route8WindowBlockers,
-    K .windowShadowSignature,
-    K .windowShadowSingletonTail,
     K .windowShadowHitCycle,
     K .windowShadowHitExcluded,
     K .route8UnpaidExitFourResidual,
@@ -88,7 +86,7 @@ noncomputable abbrev typeADecoratedHandoffKeys : FactKeys EGInput.{u} :=
     K .route8UnpaidWitnessFree]
 
 /-- **Node `[108]` → Type B `[65]` on the decorated envelope**: the exact
-envelope committed at `[108]` (`K .typeAExitSevenHandoff`) enters the Type B
+envelope committed at `[108]` (`K .typeAExitSevenEnvelope`) enters the Type B
 branch at `[65]`.  There `typeBDecoratedAssignedSupportRow` reads the inherited
 selection, normalization, and uncompressibility facts, proves
 `lem:decorated-fan-admissibility`, and commits the envelope's assigned support.
@@ -102,7 +100,7 @@ noncomputable def selectedTypeADecoratedHandoff
     [FactKeys.Has (K .netChargeCap) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .typeAExitSevenHandoff) known]
+    [FactKeys.Has (K .typeAExitSevenEnvelope) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .cubicBaseline) known]
@@ -160,8 +158,6 @@ noncomputable def selectedTypeADecoratedHandoff
     (openBoundarySaturatedFresh := by key_fresh)
     (demandUnitCountFresh := by key_fresh)
     (windowBlockersFresh := by key_fresh)
-    (windowShadowSignatureFresh := by key_fresh)
-    (windowShadowTailFresh := by key_fresh)
     (windowShadowCycleFresh := by key_fresh)
     (windowShadowExcludedFresh := by key_fresh)
     (demandResidualFresh := by key_fresh)

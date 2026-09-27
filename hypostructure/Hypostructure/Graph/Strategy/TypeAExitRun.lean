@@ -9,7 +9,6 @@ exits.  Each closure is registered here as a semantic incompatibility between
 the committed exit fact and a committed upstream invariant, so Core's
 `closeIncompatible` appends the closure key from the two facts; the
 contradiction itself is the contract lemma of `Graph.Contracts.TypeA`.
-The last instance closes the silent-origin route-`8` residual at node `[184]`.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -44,16 +43,36 @@ noncomputable instance typeAExitTwoThetaClosed :
     Graph.Contracts.TypeA.typeAExitTwoTheta_contradiction data.toParameters
       input.object selected.down.1 exit.down
 
-/-- **Node `[100]`**: a `P₁₃` label collision against the selection's target
-avoidance; the registered target rejects the degenerate closure. -/
-noncomputable instance typeAExitThreeCollisionClosed :
+/-- **Node `[100]`**: the accepted cycle closed by the exit-`(3)` label
+collision (on the first pass or after peeling) against the selection's target
+avoidance. -/
+noncomputable instance typeAExitThreeCycleClosed :
     Incompatible (Input BranchState Presentation presentation data)
       (K (data := data) .selection)
-      (K (data := data) .typeAExitThreeCollision) where
+      (K (data := data) .typeAExitThreeCycle) where
+  contradiction := fun input selected cycle =>
+    Graph.Contracts.TypeA.typeAExitThreeCycle_contradiction
+      data.toParameters input.object selected.down.1 cycle.down
+
+/-- **Node `[96]` after peeling**: a Mersenne anchored return through the
+overloaded port of the terminal state against the return-avoidance invariant. -/
+noncomputable instance typeAPeeledExitOneReturnClosed :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K (data := data) .returnAvoidance)
+      (K (data := data) .typeAPeeledExitOneReturn) where
+  contradiction := fun input avoidance exit =>
+    Graph.Contracts.TypeA.typeAPeeledExitOneReturn_contradiction
+      data.toParameters input.object avoidance.down exit.down
+
+/-- **Node `[98]` after peeling**: a power-of-two common-port theta at the
+terminal state against the selection's target avoidance. -/
+noncomputable instance typeAPeeledExitTwoThetaClosed :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K (data := data) .selection)
+      (K (data := data) .typeAPeeledExitTwoTheta) where
   contradiction := fun input selected exit =>
-    Graph.Contracts.TypeA.typeAExitThreeCollision_contradiction
-      data.toParameters input.object data.degenerateClosureRejected
-      selected.down.1 exit.down
+    Graph.Contracts.TypeA.typeAPeeledExitTwoTheta_contradiction
+      data.toParameters input.object selected.down.1 exit.down
 
 /-- **Node `[104]`**: the exit-`(5)` compression against `cor:uncompressible`. -/
 noncomputable instance typeAExitFiveClosed :
@@ -85,15 +104,5 @@ noncomputable instance typeAExitSixGlobalClosed :
       input.object selected.down.1
       (fun representative smaller base => selected.down.2 representative smaller base)
       exit.down
-
-/-- **Node `[184]`**: the silent-origin route-`8` residual against
-`lem:typeA-unified-visible-ownership`. -/
-noncomputable instance typeASilentExitSevenFreeVisibleClosed :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K (data := data) .typeASilentExitSevenFree)
-      (K (data := data) .route8UnifiedVisibleResidual) where
-  contradiction := fun input silent visible =>
-    Graph.Contracts.TypeA.selectedSilentExitSevenFree_unifiedVisibleResidual_contradiction
-      data.toParameters input.object silent.down visible.down
 
 end Hypostructure.Graph.Strategy.Spine

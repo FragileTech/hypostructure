@@ -32,7 +32,6 @@ noncomputable def selectedTypeBHighSurplusContinuation
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .bridgeless) known]
-    (routingFresh : K .typeAReceiverRouting ∉ known := by key_fresh)
     (cubicFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
     (assignedFresh : K .typeBAssignedSupport ∉ known := by key_fresh)
     (fanEntryFresh : K .typeBFanEntry ∉ known := by key_fresh)
@@ -81,8 +80,6 @@ noncomputable def selectedTypeBHighSurplusContinuation
     (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known := by key_fresh)
     (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by key_fresh)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known := by key_fresh)
-    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known := by key_fresh)
-    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by key_fresh)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by key_fresh)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by key_fresh)
     (demandResidualFresh : K .route8StageRate ∉ known := by key_fresh)
@@ -118,13 +115,8 @@ noncomputable def selectedTypeBHighSurplusContinuation
    :
     SelectedRouteEightBoundary selected := by
   letI := cubicFresh
-  let routed :=
-    (typeAReceiverRoutingRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) spineData).run
-      history (by key_fresh)
   -- `[65]`: the ordinary Type B assigned support.
-  let assigned := (typeBAssignedSupportRow (data := spineData)).run routed
+  let assigned := (typeBAssignedSupportRow (data := spineData)).run history
     (by key_fresh)
   exact Assembly.Internal.selectedTypeBFanContinuation assigned
 

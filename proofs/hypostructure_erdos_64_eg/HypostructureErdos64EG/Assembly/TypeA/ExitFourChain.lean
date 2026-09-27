@@ -2,6 +2,8 @@ import Hypostructure.Graph.Strategy.SpineRows.TypeAExitFourDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitFourFiniteDescent
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitFourPeelingStep
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitFourRetestDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.TypeAPeeledExits
+import Hypostructure.Graph.Strategy.TypeAExitRun
 import HypostructureErdos64EG.Assembly.TypeA.ExitFiveToSeven
 import HypostructureErdos64EG.Assembly.TypeA.ExitFourDischargedRetest
 
@@ -39,8 +41,6 @@ noncomputable abbrev typeAExitSegmentKeys : FactKeys EGInput.{u} :=
     K .typeAExitSixGlobal,
     K .typeAExitSevenHandoff,
     K .typeAExitSevenFree,
-    K .typeASilentExitSevenFree,
-    K .typeAExitEightNotSilent,
     K .highCentreNormalForm,
     closed,
     K .typeBDecoratedAssignedSupport,
@@ -82,8 +82,6 @@ noncomputable abbrev typeAExitSegmentKeys : FactKeys EGInput.{u} :=
     K .route8OpenBoundarySaturated,
     K .route8DemandUnitCount,
     K .route8WindowBlockers,
-    K .windowShadowSignature,
-    K .windowShadowSingletonTail,
     K .windowShadowHitCycle,
     K .windowShadowHitExcluded,
     K .route8UnpaidExitFourResidual,
@@ -124,25 +122,46 @@ noncomputable abbrev typeAExitSegmentKeys : FactKeys EGInput.{u} :=
     K .route8UnifiedTwoCarrierExit,
     K .route8StageRate,
     K .route8UnpaidTwoCarrier,
-    K .route8UnpaidWitnessFree]
+    K .route8UnpaidWitnessFree,
+    K .typeAExitSevenEnvelope,
+    K .route8GlobalSqueeze,
+    K .typeAPeeledSaturatedReceiver,
+    K .typeAPeeledUnsaturatedDischarge,
+    K .typeAPeeledVisibleEntry,
+    K .typeAPeeledNoVisibleEntry,
+    K .typeAPeeledSilentExcess,
+    K .typeAPeeledExitOneReturn,
+    K .typeAPeeledExitOneFree,
+    K .typeAPeeledExitTwoTheta,
+    K .typeAPeeledExitTwoFree,
+    K .typeAPeeledExitThreeCollision,
+    K .typeAPeeledExitThreeFree,
+    K .typeAExitThreeCycle]
 
 /-- **Nodes `[101]`--`[102]` and the recompute-`L₄` loop**, on the shared entry of
 the exit segment (index-polymorphic).  Both node `[99]`'s no arm and node `[94]`
 enter here (`lem:typeA-exit4-residual-routing`).  `lem:typeA-exit4-finite-descent`
 is committed at the entry state; then `[101]` tests exit `(4)`.  No: the entry
-state is exit-`(4)`-free and exits `(5)`--`(8)` follow.  Yes: `[102]` peels the
-witness's load (`lem:typeA-exit4-discharge`) and the saturated test is asked
-again: if some saturated peeling state is exit-`(4)`-free, exits `(5)`--`(8)`
-are asked there; otherwise every saturated state still realizes exit `(4)`, so
-the finite descent discharges the peeled receiver
-(`lem:typeA-saturated-handoff`, `lem:typeA-exit4-peeling-charge`) and its
-target-defect loads enter Part IX at `[123]`. -/
+state is the terminal state, exit-`(4)`-free, and exits `(5)`--`(8)` follow.
+Yes: `[102]` peels the witness's load (`lem:typeA-exit4-discharge`) and node
+`[89]` is asked again with `L₄` (tex 1095).  If some receiver of `X₀` is still
+saturated after its canonical peeling sequence stops, its terminal state
+re-enters node `[93]`: exits `(1)`--`(3)` at the overloaded port of `P₄(w)` on
+the visible lane (`lem:typeA-unpeeled-visible-routing`), the residual excess
+`E₄(w)` on the silent lane (`lem:typeA-unpeeled-silent-routing`), then node
+`[101]` (exit-`(4)`-free at the terminal set) and exits `(5)`--`(8)`.  If every
+receiver is unsaturated after peeling, node `[90]` holds with `L₄` and node
+`[91]` gives the charge bound on the unpeeled loads; the peeled loads left the
+pure Type A charge through exit `(4)`, and the support enters Part IX at node
+`[123]` (`rem:typeA-exit4-peeling-use`, alternative (iii) of
+`lem:density-mersenne`). -/
 -- EG-NODE [101] exit 4? target-defective quotient
 -- EG-NODE [102] target-defect peels one load
 noncomputable def selectedTypeAExitSegment
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .typeASaturatedExitEntry) known]
+    [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .selection) known]
@@ -188,9 +207,73 @@ noncomputable def selectedTypeAExitSegment
       -- `[102]` → `[89]`: recompute `L₄`.
       match typeAExitFourRetestDichotomy (data := spineData) peeled
           (by key_fresh) (by key_fresh) with
-      | .left exitFree =>
-          exact selectedTypeAExitFiveToEight exitFree
+      | .left saturatedHistory =>
+          -- `[93]` after peeling, at the terminal state.
+          match typeAPeeledVisibleEntryDichotomy (data := spineData)
+              saturatedHistory (by key_fresh) (by key_fresh) with
+          | .left visibleHistory =>
+              -- `[95]` after peeling.
+              match typeAPeeledExitOneDichotomy (data := spineData) visibleHistory
+                  (by key_fresh) (by key_fresh) with
+              | .left returnHistory =>
+                  -- `[96]`
+                  exact ((closeIncompatible returnHistory (K .returnAvoidance)
+                    (K .typeAPeeledExitOneReturn) (by key_fresh)).elimClosed
+                      (by infer_instance)).elim
+              | .right oneFree =>
+                  -- `[97]` after peeling.
+                  match typeAPeeledExitTwoDichotomy (data := spineData) oneFree
+                      (by key_fresh) (by key_fresh) with
+                  | .left thetaHistory =>
+                      -- `[98]`
+                      exact ((closeIncompatible thetaHistory (K .selection)
+                        (K .typeAPeeledExitTwoTheta) (by key_fresh)).elimClosed
+                          (by infer_instance)).elim
+                  | .right twoFree =>
+                      -- `[99]` after peeling.
+                      match typeAPeeledExitThreeDichotomy (data := spineData)
+                          twoFree (by key_fresh) (by key_fresh) with
+                      | .left collisionHistory =>
+                          -- `[100]`
+                          exact ((AtomicCT.runAndCloseIncompatible
+                            (typeAPeeledExitThreeCycleRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData))
+                            collisionHistory (K .selection) (K .typeAExitThreeCycle)
+                            (by key_fresh) (by key_fresh)).elimClosed
+                              (by infer_instance)).elim
+                      | .right threeFree =>
+                          -- `[101]` at the terminal set: exit-`(4)`-free.
+                          let exitFree :=
+                            (typeAPeeledVisibleExitFourFreeRow
+                              (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run threeFree (by key_fresh)
+                          exact selectedTypeAExitFiveToEight exitFree
+          | .right silentHistory =>
+              -- `[94]` after peeling: the residual excess `E₄(w)`.
+              let excess :=
+                (typeAPeeledSilentExcessRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run silentHistory (by key_fresh)
+              -- `[101]` at the terminal set: exit-`(4)`-free.
+              let exitFree :=
+                (typeAPeeledSilentExitFourFreeRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run excess (by key_fresh)
+              exact selectedTypeAExitFiveToEight exitFree
       | .right dischargedHistory =>
-          exact selectedTypeAExitFourDischargedRetest dischargedHistory
+          -- `[90]` after peeling; `[91]`: the charge bound on the unpeeled
+          -- loads (`lem:typeA-exit4-peeling-charge`).
+          let discharged :=
+            (typeAPeeledUnsaturatedDischargeRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run dischargedHistory (by key_fresh)
+          exact selectedTypeAExitFourDischargedRetest discharged
 
 end HypostructureErdos64EG

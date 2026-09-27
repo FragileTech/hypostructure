@@ -156,16 +156,18 @@ theorem typeBDecoratedAssignedSupport
         envelope.assigned_adj centre member⟩,
     admissible⟩
 
-/-- Node `[107]` yes / `[108]` at the terminal state of `X₀`: `σ(X₀) = 0` and
-`X₀` has a surviving exit-`(7)` separator (`SeparatorHandoffAt`). -/
+/-- Node `[108]` at the terminal state of `X₀`: `σ(X₀) = 0` and the canonical
+exit-`(7)` separation of `X₀` exists, so `X₀` has a surviving exit-`(7)`
+separator (`SeparatorHandoffAt`). -/
 theorem exitSevenHandoff_pinned
-    (handoff : TypeAExitSevenHandoffStatement data object) :
+    (handoff : TypeAExitSevenEnvelopeStatement data object) :
     ∃ piece, canonicalNegativePiece data object = some piece ∧
       object.ambientSurplus piece data.threshold = 0 ∧
       SeparatorHandoffAt data object piece := by
-  obtain ⟨piece, pieceEq, _receiver, _receiverEq, zero, _noExitSix, separated⟩ :=
-    handoff
-  exact ⟨piece, pieceEq, zero, separated⟩
+  obtain ⟨piece, pieceEq, _receiver, _receiverEq, zero,
+    ⟨separation, separationEq, _, _⟩, _envelope⟩ := handoff
+  exact ⟨piece, pieceEq, zero, (separatorHandoffAt_iff_exists_spec data object
+    piece).mpr ⟨_, canonicalHandoffSeparationAt_spec_of_eq_some separationEq⟩⟩
 
 /-- Node `[108]` → `[66]` → `[65]`: the canonical exit-`(7)` envelope of `X₀` is
 admissible Type B fan-envelope data. -/
@@ -175,7 +177,7 @@ theorem typeBDecoratedAssignedSupport_of_handoff
     (cubic : data.threshold = 3) (degenerate : ¬ data.LengthOK 2)
     (uncompressible : UncompressibleStatement data object)
     (normalized : RemainderNormalizedStatement data object)
-    (handoff : TypeAExitSevenHandoffStatement data object) :
+    (handoff : TypeAExitSevenEnvelopeStatement data object) :
     TypeBDecoratedAssignedSupportStatement data object := by
   obtain ⟨piece, pieceEq, zero, separated⟩ := exitSevenHandoff_pinned handoff
   obtain ⟨_core, _centres, lane⟩ := typeBDecoratedLane_of_handoff cap avoids cubic
@@ -197,7 +199,7 @@ theorem typeBFanEntry_of_decoratedHandoff
     (cap : NetChargeCapStatement data object)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (cubic : data.threshold = 3) (degenerate : ¬ data.LengthOK 2)
-    (handoff : TypeAExitSevenHandoffStatement data object) :
+    (handoff : TypeAExitSevenEnvelopeStatement data object) :
     TypeBFanEntryStatement data object := by
   obtain ⟨piece, pieceEq, zero, separated⟩ := exitSevenHandoff_pinned handoff
   obtain ⟨_core, _centres, lane⟩ := typeBDecoratedLane_of_handoff cap avoids cubic

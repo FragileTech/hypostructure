@@ -51,8 +51,6 @@ noncomputable abbrev typeADischargedRetestKeys : FactKeys EGInput.{u} :=
     K .route8OpenBoundarySaturated,
     K .route8DemandUnitCount,
     K .route8WindowBlockers,
-    K .windowShadowSignature,
-    K .windowShadowSingletonTail,
     K .windowShadowHitCycle,
     K .windowShadowHitExcluded,
     K .route8UnpaidExitFourResidual,
@@ -64,13 +62,19 @@ noncomputable abbrev typeADischargedRetestKeys : FactKeys EGInput.{u} :=
     K .route8UnpaidTwoCarrier,
     K .route8UnpaidWitnessFree]
 
-/-- **`[102]` → `[89]` → `[123]`, the discharged receiver.**  On the no arm of
-the recompute-`L₄` retest the peeled receiver is unsaturated with nonnegative
-remaining charge (`K .typeAExitFourReceiverDischarged`,
-`lem:typeA-exit4-peeling-charge`), and its peeled target-defect loads enter
-node `[123]`'s unified target-defect/route-`8` pressure ledger, which is the one
-shared composition `selectedRouteEightUnifiedResidual`. -/
--- EG-NODE none (establishes no manuscript DAG node)
+/-- **`[102]` → `[89]` no → `[90]`--`[91]` → `[123]`, the peeled supports.**  On
+the no arm of the recompute-`L₄` retest every receiver of `X₀` is unsaturated
+after peeling (`K .typeAExitFourReceiverDischarged`, node `[90]` with `L₄`),
+and node `[91]` bounds the charge of the unpeeled loads
+(`K .typeAPeeledUnsaturatedDischarge`, `lem:typeA-exit4-peeling-charge`).  The
+diagram closes this arm at node `[92]`; with a nonempty peeling set that
+closure does not follow (see `lean-vs-paper-discrepancies.md`, Paper errors,
+[92]).  The paper's own routing of the peeled loads is taken instead:
+`rem:typeA-exit4-peeling-use` sends a support with an exit-`(4)` witness through
+alternative (iii) of `lem:density-mersenne` to the unified target-defect/route-`8`
+ledger of node `[123]`, the one shared composition
+`selectedRouteEightUnifiedResidual`. -/
+-- EG-NODE none (the second pass of [90]--[91]; [92] recorded as a paper error)
 noncomputable def selectedTypeAExitFourDischargedRetest
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -83,7 +87,6 @@ noncomputable def selectedTypeAExitFourDischargedRetest
     [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
-    [FactKeys.Has (K .typeAReceiverRouting) known]
     (fresh : List.Disjoint typeADischargedRetestKeys known := by key_fresh) :
     SelectedRouteEightBoundary selected := by
   have fresh' := fresh

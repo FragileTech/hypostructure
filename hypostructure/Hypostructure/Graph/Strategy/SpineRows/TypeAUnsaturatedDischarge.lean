@@ -24,7 +24,7 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def typeAUnsaturatedDischargeRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeAUnsaturatedDischarge
-    { Requires := [K .negativeSupport, K .typeAReceiverRouting, K .typeALowSurplus,
+    { Requires := [K .typeAReceiverRouting, K .typeALowSurplus,
         K .typeAUnsaturatedReceivers]
       Produces := [K .typeAUnsaturatedDischarge]
       requiresUnique := by key_fresh
@@ -33,7 +33,7 @@ variable {data : Data.{u}}
     (fun inputs =>
       .cons (key := K .typeAUnsaturatedDischarge)
         ⟨Graph.Contracts.TypeA.typeAUnsaturatedDischarge data.toParameters
-          inputs.current.object (inputs.get (K .negativeSupport)).down
+          inputs.current.object
           (inputs.get (K .typeAReceiverRouting)).down
           (inputs.get (K .typeALowSurplus)).down
           (inputs.get (K .typeAUnsaturatedReceivers)).down⟩

@@ -47,6 +47,11 @@ noncomputable def route8QuotientDichotomy
         (instFactSystem (BranchState := BranchState)
           (Presentation := Presentation) (presentation := presentation)
           (data := data)) current known)
+    [@FactKeys.Has (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data))
+      (K .route8UnifiedDeficit) known]
     (freeFresh : K .route8QuotientFree ∉ known)
     (residualFresh : K .route8QuotientResidual ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
@@ -61,6 +66,9 @@ noncomputable def route8QuotientDichotomy
     `Hypostructure.Graph.Strategy.Spine.route8QuotientDichotomy
     (by
       classical
+      -- `lem:typeA-unified-deficit`: the unified census the test is asked of
+      -- carries the whole deficit.
+      have _deficit := (previous.get (K .route8UnifiedDeficit)).down
       exact if free : Route8QuotientFreeStatement data.toParameters current.object then
         .inl ⟨free⟩
       else

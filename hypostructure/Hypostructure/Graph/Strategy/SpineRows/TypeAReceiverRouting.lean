@@ -3,9 +3,9 @@ import Hypostructure.Graph.Contracts.TypeA.Support
 
 /-! # Node `[88]`: receiver routing and the threshold algebra
 
-`lem:typeA-receiver-loads` and `lem:typeA-threshold-algebra` at every
-zero-surplus subregion of a maximal packing's remainder, from node `[27]`'s
-empty internal baseline core.  Thin adapter of
+`lem:typeA-receiver-loads` and `lem:typeA-threshold-algebra` at the Type A
+support `X₀`: `X₀ ⊆ R(P₀)` has zero surplus (node `[63]`), so node `[13]`'s
+empty internal baseline core of `R(P₀)` routes it.  Thin adapter of
 `Contracts.TypeA.typeAReceiverRouting`. -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -23,7 +23,7 @@ variable {Presentation : Type} {presentation : Presentation}
     (data : Data.{u}) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeAReceiverRouting
-    { Requires := [K .remainderNormalized]
+    { Requires := [K .remainderNormalized, K .typeALowSurplus]
       Produces := [K .typeAReceiverRouting]
       requiresUnique := by simp
       producesUnique := by simp
@@ -31,7 +31,8 @@ variable {Presentation : Type} {presentation : Presentation}
     (fun inputs =>
       .cons (key := K .typeAReceiverRouting)
         ⟨Graph.Contracts.TypeA.typeAReceiverRouting data.toParameters
-          inputs.current.object (inputs.get (K .remainderNormalized)).down⟩
+          inputs.current.object (inputs.get (K .remainderNormalized)).down
+          (inputs.get (K .typeALowSurplus)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

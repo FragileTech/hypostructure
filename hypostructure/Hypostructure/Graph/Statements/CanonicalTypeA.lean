@@ -548,6 +548,147 @@ noncomputable def canonicalTypeATerminalPeeled (data : Parameters)
     (canonicalExitReceiverAt data object piece).map
       (canonicalTerminalPeeled data object piece)
 
+/-! ## The terminal receiver of the recompute-`L₄` retest
+
+Node `[102]` returns to node `[89]` with the residual load `L₄`
+(tex 1095; `lem:typeA-saturated-handoff`, tex 11753).  The retest asks whether
+some receiver of `X₀` is still saturated after its own canonical peeling
+sequence has stopped.  The *terminal receiver* is the receiver that the
+saturated exits `(5)`--`(8)` are asked at: the exit-chain receiver when it is
+still saturated at its terminal set `P₄(w)`, and otherwise the canonical choice
+among the receivers of `X₀` that are.  On node `[101]`'s no arm the exit-chain
+receiver has `P₄(w) = ∅` and is saturated there, so it is the terminal
+receiver. -/
+
+/-- The `∃ receiver`-body of the node-`[89]` retest after peeling: a receiver
+saturated at its own terminal peeling set, `L₄(w) ≥ s·q(w)`. -/
+def TerminalSaturatedSpec (data : Parameters) (object : Graph.FiniteObject.{u})
+    (piece : Finset object.Vertex) (receiver : object.Vertex) : Prop :=
+  object.IsReceiver piece data.threshold receiver ∧
+    Graph.ExitFour.SaturatedAfter piece data.threshold data.dischargeScale
+      receiver (canonicalTerminalPeeled data object piece receiver)
+
+/-- **The terminal receiver** at a piece (see the section note). -/
+noncomputable def canonicalTerminalReceiverAt (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (piece : Finset object.Vertex) :
+    Option object.Vertex := by
+  classical
+  exact if ∃ receiver, canonicalExitReceiverAt data object piece = some receiver ∧
+      Graph.ExitFour.SaturatedAfter piece data.threshold data.dischargeScale
+        receiver (canonicalTerminalPeeled data object piece receiver) then
+    canonicalExitReceiverAt data object piece
+  else canonicalChoice (TerminalSaturatedSpec data object piece)
+
+theorem canonicalTerminalReceiverAt_spec_of_eq_some {data : Parameters}
+    {object : Graph.FiniteObject.{u}} {piece : Finset object.Vertex}
+    {receiver : object.Vertex}
+    (h : canonicalTerminalReceiverAt data object piece = some receiver) :
+    TerminalSaturatedSpec data object piece receiver := by
+  classical
+  unfold canonicalTerminalReceiverAt at h
+  split at h
+  · next exit =>
+      obtain ⟨chosen, eq, saturated⟩ := exit
+      rw [eq] at h
+      cases h
+      exact ⟨(canonicalExitReceiverAt_spec_of_eq_some eq).1, saturated⟩
+  · exact canonicalChoice_spec_of_eq_some h
+
+/-- An exit-chain receiver still saturated at its terminal set is the terminal
+receiver. -/
+theorem canonicalTerminalReceiverAt_eq_of_exit {data : Parameters}
+    {object : Graph.FiniteObject.{u}} {piece : Finset object.Vertex}
+    {receiver : object.Vertex}
+    (chosen : canonicalExitReceiverAt data object piece = some receiver)
+    (saturated : Graph.ExitFour.SaturatedAfter piece data.threshold
+      data.dischargeScale receiver
+      (canonicalTerminalPeeled data object piece receiver)) :
+    canonicalTerminalReceiverAt data object piece = some receiver := by
+  classical
+  unfold canonicalTerminalReceiverAt
+  rw [if_pos ⟨receiver, chosen, saturated⟩, chosen]
+
+theorem canonicalTerminalReceiverAt_spec {data : Parameters}
+    {object : Graph.FiniteObject.{u}} {piece : Finset object.Vertex}
+    (h : ∃ receiver, TerminalSaturatedSpec data object piece receiver) :
+    ∃ receiver, canonicalTerminalReceiverAt data object piece = some receiver ∧
+      TerminalSaturatedSpec data object piece receiver := by
+  classical
+  by_cases exit : ∃ receiver, canonicalExitReceiverAt data object piece =
+      some receiver ∧ Graph.ExitFour.SaturatedAfter piece data.threshold
+        data.dischargeScale receiver
+        (canonicalTerminalPeeled data object piece receiver)
+  · obtain ⟨receiver, chosen, saturated⟩ := exit
+    have eq := canonicalTerminalReceiverAt_eq_of_exit chosen saturated
+    exact ⟨receiver, eq, canonicalTerminalReceiverAt_spec_of_eq_some eq⟩
+  · obtain ⟨receiver, eq, spec⟩ := canonicalChoice_spec h
+    refine ⟨receiver, ?_, spec⟩
+    unfold canonicalTerminalReceiverAt
+    rw [if_neg exit, eq]
+
+theorem canonicalTerminalReceiverAt_eq_none_iff {data : Parameters}
+    {object : Graph.FiniteObject.{u}} {piece : Finset object.Vertex} :
+    canonicalTerminalReceiverAt data object piece = none ↔
+      ¬ ∃ receiver, TerminalSaturatedSpec data object piece receiver := by
+  constructor
+  · intro none exists_
+    obtain ⟨receiver, eq, _⟩ := canonicalTerminalReceiverAt_spec exists_
+    rw [none] at eq
+    cases eq
+  · intro absent
+    cases h : canonicalTerminalReceiverAt data object piece with
+    | none => rfl
+    | some receiver =>
+        exact (absent ⟨receiver, canonicalTerminalReceiverAt_spec_of_eq_some h⟩).elim
+
+/-! ## The eligible loads of a saturated state -/
+
+/-- The loads of a saturated state that exits `(5)`--`(8)` test: the selected
+visible unpeeled loads of the overloaded port when no exit-`(4)` witness
+supports one of them, or the loads of the silent residual excess when no
+exit-`(4)` witness supports one of those (`lem:typeA-unpeeled-visible-routing`,
+`lem:typeA-unpeeled-silent-routing`). -/
+abbrev EligibleLoadAt (data : Parameters) (object : Graph.FiniteObject.{u})
+    (piece : Finset object.Vertex) (receiver : object.Vertex)
+    (peeled : Finset object.Vertex) (load : object.Vertex) : Prop :=
+  (∃ package :
+        Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
+          data.dischargeScale receiver peeled,
+      (¬ ∃ witness : Graph.ExitFour.Witness
+          (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+          data.dischargeScale receiver peeled,
+        ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
+            data.threshold data.dischargeScale receiver package.outside
+            peeled,
+          witness.load = selected) ∧
+        load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
+          data.threshold data.dischargeScale receiver package.outside
+          peeled) ∨
+    (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
+        data.dischargeScale receiver peeled ∧
+      (¬ ∃ witness : Graph.ExitFour.Witness
+          (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+          data.dischargeScale receiver peeled,
+        witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
+          data.dischargeScale receiver peeled) ∧
+      load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
+        data.dischargeScale receiver peeled)
+
+/-- **Exit `(7)` at a state** (`def:typeA-saturated-exits` (7), tex 10811;
+`lem:typeA-unpeeled-visible-routing`, `lem:typeA-unpeeled-silent-routing`,
+`lem:typeA-high-degree-handoff`, tex 11110): some eligible load of the receiver
+at the peeling set has a continuation family with a surviving first separator,
+which `lem:typeA-high-degree-handoff` turns into the decorated handoff fan
+envelope.  The receiver and the loads are those of the state; nothing is chosen
+again. -/
+def ExitSevenAt (data : Parameters) (object : Graph.FiniteObject.{u})
+    (piece : Finset object.Vertex) (receiver : object.Vertex)
+    (peeled : Finset object.Vertex) : Prop :=
+  ∃ load : object.Vertex,
+    EligibleLoadAt data object piece receiver peeled load ∧
+      Graph.Route8.TraceBasin.TraceSurvivingSeparator object piece data.threshold
+        data.LengthOK receiver load piece
+
 /-! ## Exit `(7)`: the canonical surviving first separator -/
 
 /-- The data of `Route8.TraceBasin.TraceSurvivingSeparator` at one saturated
@@ -612,22 +753,61 @@ theorem separatorHandoffAt_iff_exists_spec (data : Parameters)
   · rintro ⟨⟨receiver, load⟩, member, separated⟩
     exact ⟨receiver, member, load, separated⟩
 
-/-- **The canonical exit-`(7)` separation of a piece**: the `Classical.choose` of
-the `SeparatorHandoffAt` existential (its receiver and load) together with the
-chosen surviving separation data at them.  Node `[107]` yes / `[108]`
-(`K .typeAExitSevenHandoff`) asserts exactly this existential; d2ded0e
-`TypeAExitSevenDichotomy` split on exit (7) at the `K .typeAExitSixFree`
-piece. -/
+/-- The `∃`-body of exit `(7)` at the terminal state of a piece: the terminal
+receiver `w` of the piece and an eligible load of `(X, w, P₄(w))` whose
+continuation family has a surviving first separator (`ExitSevenAt`). -/
+def ExitSevenStateSpec (data : Parameters) (object : Graph.FiniteObject.{u})
+    (piece : Finset object.Vertex) (pair : object.Vertex × object.Vertex) : Prop :=
+  canonicalTerminalReceiverAt data object piece = some pair.1 ∧
+    EligibleLoadAt data object piece pair.1
+      (canonicalTerminalPeeled data object piece pair.1) pair.2 ∧
+    Graph.Route8.TraceBasin.TraceSurvivingSeparator object piece data.threshold
+      data.LengthOK pair.1 pair.2 piece
+
+theorem separatorHandoffSpec_of_exitSevenStateSpec {data : Parameters}
+    {object : Graph.FiniteObject.{u}} {piece : Finset object.Vertex}
+    {pair : object.Vertex × object.Vertex}
+    (h : ExitSevenStateSpec data object piece pair) :
+    SeparatorHandoffSpec data object piece pair :=
+  ⟨object.mem_receivers.mpr (canonicalTerminalReceiverAt_spec_of_eq_some h.1).1,
+    h.2.2⟩
+
+/-- **The canonical exit-`(7)` separation of a piece**.  At the terminal state
+of the piece it is the `Classical.choose` of the node-`[107]` existential
+(`ExitSevenAt` at `(X, w, P₄(w))`, `ExitSevenStateSpec`): its receiver is the
+terminal receiver and its load an eligible load of that state, so the envelope
+node `[108]` produces is the one exit `(7)` asserted.  For a piece whose
+terminal state has no such separation (the decorated pieces of the Type B
+bridge ledger, `TypeBGroupedHandoffPiece`), it is the `Classical.choose` of the
+piece-level existential `SeparatorHandoffAt`. -/
 noncomputable def canonicalHandoffSeparationAt (data : Parameters)
     (object : Graph.FiniteObject.{u}) (piece : Finset object.Vertex) :
     Option (Σ pair : object.Vertex × object.Vertex,
       ExitSevenSeparation data object piece pair.1 pair.2) := by
   classical
-  exact if h : ∃ pair, SeparatorHandoffSpec data object piece pair then
+  exact if h : ∃ pair, ExitSevenStateSpec data object piece pair then
+    some ⟨Classical.choose h, Classical.choice
+      ((traceSurvivingSeparator_iff_nonempty data object piece _ _).mp
+        (Classical.choose_spec h).2.2)⟩
+  else if h : ∃ pair, SeparatorHandoffSpec data object piece pair then
     some ⟨Classical.choose h, Classical.choice
       ((traceSurvivingSeparator_iff_nonempty data object piece _ _).mp
         (Classical.choose_spec h).2)⟩
   else none
+
+/-- At a terminal state with exit `(7)`, the canonical separation is at that
+state. -/
+theorem canonicalHandoffSeparationAt_state {data : Parameters}
+    {object : Graph.FiniteObject.{u}} {piece : Finset object.Vertex}
+    (h : ∃ pair, ExitSevenStateSpec data object piece pair) :
+    ∃ separated, canonicalHandoffSeparationAt data object piece = some separated ∧
+      ExitSevenStateSpec data object piece separated.1 := by
+  classical
+  refine ⟨⟨Classical.choose h, Classical.choice
+      ((traceSurvivingSeparator_iff_nonempty data object piece _ _).mp
+        (Classical.choose_spec h).2.2)⟩, ?_, Classical.choose_spec h⟩
+  unfold canonicalHandoffSeparationAt
+  rw [dif_pos h]
 
 theorem canonicalHandoffSeparationAt_spec {data : Parameters}
     {object : Graph.FiniteObject.{u}} {piece : Finset object.Vertex}
@@ -635,10 +815,14 @@ theorem canonicalHandoffSeparationAt_spec {data : Parameters}
     ∃ separated, canonicalHandoffSeparationAt data object piece = some separated ∧
       SeparatorHandoffSpec data object piece separated.1 := by
   classical
-  refine ⟨⟨Classical.choose h, Classical.choice
-      ((traceSurvivingSeparator_iff_nonempty data object piece _ _).mp
-        (Classical.choose_spec h).2)⟩, ?_, Classical.choose_spec h⟩
-  simp [canonicalHandoffSeparationAt, h]
+  by_cases state : ∃ pair, ExitSevenStateSpec data object piece pair
+  · obtain ⟨separated, eq, spec⟩ := canonicalHandoffSeparationAt_state state
+    exact ⟨separated, eq, separatorHandoffSpec_of_exitSevenStateSpec spec⟩
+  · refine ⟨⟨Classical.choose h, Classical.choice
+        ((traceSurvivingSeparator_iff_nonempty data object piece _ _).mp
+          (Classical.choose_spec h).2)⟩, ?_, Classical.choose_spec h⟩
+    unfold canonicalHandoffSeparationAt
+    rw [dif_neg state, dif_pos h]
 
 theorem canonicalHandoffSeparationAt_spec_of_eq_some {data : Parameters}
     {object : Graph.FiniteObject.{u}} {piece : Finset object.Vertex} {separated}
@@ -647,20 +831,29 @@ theorem canonicalHandoffSeparationAt_spec_of_eq_some {data : Parameters}
   classical
   unfold canonicalHandoffSeparationAt at h
   split at h
-  · next exists_ =>
+  · next state =>
       cases h
-      exact Classical.choose_spec exists_
-  · cases h
+      exact separatorHandoffSpec_of_exitSevenStateSpec (Classical.choose_spec state)
+  · split at h
+    · next exists_ =>
+        cases h
+        exact Classical.choose_spec exists_
+    · cases h
 
 theorem canonicalHandoffSeparationAt_eq_none_iff {data : Parameters}
     {object : Graph.FiniteObject.{u}} {piece : Finset object.Vertex} :
     canonicalHandoffSeparationAt data object piece = none ↔
       ¬ ∃ pair, SeparatorHandoffSpec data object piece pair := by
-  classical
-  unfold canonicalHandoffSeparationAt
-  split
-  · next h => simp [h]
-  · next h => simp [h]
+  constructor
+  · intro none exists_
+    obtain ⟨separated, eq, _⟩ := canonicalHandoffSeparationAt_spec exists_
+    rw [none] at eq
+    cases eq
+  · intro absent
+    cases h : canonicalHandoffSeparationAt data object piece with
+    | none => rfl
+    | some separated =>
+        exact (absent ⟨_, canonicalHandoffSeparationAt_spec_of_eq_some h⟩).elim
 
 /-- The surviving first separator `z` of the canonical exit-`(7)` separation. -/
 noncomputable def canonicalHandoffSeparatorAt (data : Parameters)

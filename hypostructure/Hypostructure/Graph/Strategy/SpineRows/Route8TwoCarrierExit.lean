@@ -29,7 +29,7 @@ its selected basin, the node-`[115]` no-arm supplies `α ≥ 2`. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.route8TwoCarrierExit
     { Requires := [K .route8TrueResidual, K .route8NoSmallCoreEntry,
-        K .route8CarrierDeletionWitnesses]
+        K .route8CarrierDeletionWitnesses, K .cubicBaseline]
       Produces := [K .route8TwoCarrierExit]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -38,7 +38,7 @@ its selected basin, the node-`[115]` no-arm supplies `α ≥ 2`. -/
       .cons (key := K .route8TwoCarrierExit)
         ⟨Graph.Contracts.RouteEight.route8SurvivorTwoCarrierExit
           data.toParameters inputs.current.object inputs.current.baseline
-          data.dischargeScale_pos
+          (by have := (inputs.get (K .cubicBaseline)).down.2.1; omega)
           (inputs.get (K .route8TrueResidual)).down
           (inputs.get (K .route8NoSmallCoreEntry)).down
           (inputs.get (K .route8CarrierDeletionWitnesses)).down⟩ .nil)

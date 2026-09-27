@@ -24,6 +24,9 @@ noncomputable def route8LargeBudgetDeficitRow
     (previous :
       @ExactLedger (Input BranchState Presentation presentation data)
         _ (factSystem BranchState Presentation presentation data) current known)
+    [@FactKeys.Has (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .route8BasinBurden) known]
     (deficitFresh : K .route8LargeBudgetDeficit ∉ known)
     (failsFresh : K .route8LargeBudgetDeficitFails ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
@@ -36,6 +39,10 @@ noncomputable def route8LargeBudgetDeficitRow
     (by
       classical
       letI : DecidableEq current.object.Vertex := current.object.vertices.decEq
+      -- `[112]`: the burden of the collection `𝒳_A` the test is asked of.
+      letI : FactSystem (Input BranchState Presentation presentation data) :=
+        factSystem BranchState Presentation presentation data
+      have _burden := (previous.get (K .route8BasinBurden)).down
       let packing := canonicalWindowPacking data.toParameters current.object
       let support := current.object.remainderSupport packing
       let routeEight := (current.object.canonicalPieces support).filter
