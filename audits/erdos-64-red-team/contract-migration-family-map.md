@@ -3,8 +3,8 @@
 Serial preparation for the parallel contract-lemma migration.  Every key of
 `Graph.Strategy.Spine.Key` belongs to exactly one family; every file below has
 exactly one owning family.  A family edits only the files it owns, plus its own
-lines in the shared files listed at the end.  Current maximum key index: `2303`
-(327 keys).
+lines in the shared files listed at the end.  Current maximum key index: `3102`
+(337 keys).
 
 ## Library statement modules
 
@@ -45,6 +45,11 @@ with that module's owner.  `SurplusPair` sees `TypeB`, `TypeA` and `Spine`;
 | Final pass SP (Surplus / Pair) | 2200-2299 |
 | Final pass SD (Spine / Branch D / NearCubic) | 2300-2399 |
 | Final pass CO (Cold) | 2400-2499 |
+| Round 2 TR (Type A, Route 8) | 2600-2699 |
+| Round 2 SC (Spine / Cold) | 2700-2799 |
+| Round 2 TB (Type B) | 2800-2899 |
+| Round 2 SP (Surplus / Pair) | 2900-2999 |
+| Round 2 [177] split | 3100-3199 |
 
 A new key takes the next unused index of its family's range; existing indices
 (0-608) are never renumbered.
@@ -56,8 +61,12 @@ deleted by the presentation-law unification: `surplusPresentation` (2200) and
 `spinePresentationLaws` (2302).  Their laws are components of the one entry fact
 `K .cubicBaseline` (`PresentationLawsStatement`), and their indices are not
 reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
-1007 (TA); 188 (TB); 2200, 2302 (unification).  Round 2 (fix2): TR deleted
-`route8GlobalSqueeze` (160) again.
+1007 (TA); 188 (TB); 2200, 2302 (unification).
+
+Round-2 (fix2) allocations: SC 2700, 2701; TB 2800, 2801; SP 2900-2905;
+[177] split 3100-3102; TR added no key.  Keys deleted in round 2: 81
+(`typeBDirectCycle`) and 442 (`fanClosedPort`) (TB); 160
+(`route8GlobalSqueeze`) (TR).
 
 ## F1: Type A
 
@@ -118,7 +127,7 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 | 2011 | `typeAExitThreeCycle` | `TypeAExitThreeCycleStatement` | TypeA |
 | 2012 | `typeAExitSevenEnvelope` | `TypeAExitSevenEnvelopeStatement` | TypeA |
 
-### Row and decision modules (28)
+### Row and decision modules (25)
 
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeABoundedSupport.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAExclusion.lean`
@@ -129,45 +138,38 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAExitFourRetestDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAExitOneDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAExitSevenDichotomy.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAExitSevenHandoff.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAExitSixDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAExitSixScopeDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAExitThreeDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAExitTwoDichotomy.lean`
+- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAPeeledExits.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAPortReturn.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAReceiverRouting.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeASaturationDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeASilentExitEntry.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeASilentExitFiveDichotomy.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeASilentExitFourTerminalDichotomy.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeASilentExitSevenDichotomy.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeASilentExitSevenRoute8.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeASilentExitSixDichotomy.lean`
+- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeASupport.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAUnsaturatedDischarge.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAVisibleEntryDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAVisibleExitEntry.lean`
+- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAVisibleFirstExcess.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeSplitDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/TypeAExitRun.lean`
 
-### EG assembly files (10)
+### EG assembly files (6)
 
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeA/DecoratedHandoff.lean` (EG-NODE [65])
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeA/ExitFiveToSeven.lean` (EG-NODE [103], [104], [105], [106], [107], [108], [66])
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeA/ExitFiveToSevenSilent.lean` (EG-NODE [103], [104], [105], [106], [107], [108], [109])
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeA/ExitFourChain.lean` (EG-NODE [101], [102])
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeA/ExitFourChainSilent.lean` (EG-NODE [101], [102])
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeA/ExitFourDischargedRetest.lean`
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeA/LowSurplusContinuation.lean` (EG-NODE [88], [89], [90], [91], [92], [93], [94], [86], [87])
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeA/SilentExitChain.lean`
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeA/VisibleExitChain.lean` (EG-NODE [95], [96], [97], [98], [99], [100])
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeA/VisibleExitFour.lean`
 
 ## F2: Type B
 
 - Library statement module: `hypostructure/Hypostructure/Graph/Statements/TypeB.lean`
 - Reserved new-key range: 1200-1399
 
-### Keys (47)
+### Keys (50)
 
 | idx | Key | Statement | Statement module |
 |---|---|---|---|
@@ -176,7 +178,6 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 | 77 | `fanCertificateMarked` | `TypeBFanCertificateMarkedStatement` | TypeB |
 | 78 | `fanCertificateResidual` | `TypeBFanCertificateResidualStatement` | TypeB |
 | 80 | `typeBHybridEntry` | `TypeBFanHybridEntryStatement` | TypeB |
-| 81 | `typeBDirectCycle` | `TypeBFanDirectCycleStatement` | TypeB |
 | 82 | `typeBDirectCycleFree` | `TypeBFanDirectCycleFreeStatement` | TypeB |
 | 84 | `typeBOverlapObstruction` | `TypeBB2ObstructionStatement` | TypeB |
 | 85 | `typeBBridgeMass` | `TypeBBridgeMassStatement` | TypeB |
@@ -207,7 +208,6 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 | 436 | `openPortSuppressionSafe` | `OpenPortSuppressionSafeStatement` | TypeB |
 | 437 | `singleOpenPortSuppressionWitness` | `SingleOpenPortSuppressionWitnessStatement` | TypeB |
 | 438 | `suppressedFamilyCriticalCycle` | `SuppressedFamilyCriticalCycleStatement` | TypeB |
-| 442 | `fanClosedPort` | `FanClosedPortStatement` | TypeB |
 | 443 | `compatiblePairFanClosure` | `CompatiblePairFanClosureStatement` | TypeB |
 | 444 | `fanClosedPortTypeBRouting` | `FanClosedPortTypeBRoutingStatement` | TypeB |
 | 445 | `compatiblePairTypeBRouting` | `CompatiblePairTypeBRoutingStatement` | TypeB |
@@ -218,8 +218,13 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 | 2102 | `typeBDegreeFourLedger` | `TypeBDegreeFourLedgerStatement` | TypeBLanes |
 | 2103 | `typeBDegreeFourOverlap` | `TypeBDegreeFourOverlapStatement` | TypeBLanes |
 | 2104 | `typeBDegreeFourClosed` | `TypeBDegreeFourClosedStatement` | TypeBLanes |
+| 2800 | `typeBAbsorbedCharge` | `TypeBAbsorbedChargeStatement` | TypeBLanes |
+| 2801 | `typeBRoute8Entry` | `TypeBRoute8EntryStatement` | TypeBLanes |
+| 3100 | `absorbedHandoffCore` | `AbsorbedHandoffCoreStatement` | TypeBLanes |
+| 3101 | `absorbedHandoffCoreAbsent` | `AbsorbedHandoffCoreAbsentStatement` | TypeBLanes |
+| 3102 | `absorbedF4Charge` | `AbsorbedF4ChargeStatement` | TypeBLanes |
 
-### Row and decision modules (40)
+### Row and decision modules (36)
 
 - `hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/AbsorbedGermFanEnvelope.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows/SameTokenTypeBFanEntry.lean`
@@ -227,12 +232,10 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/BridgeFanMass.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/CompatiblePairFanClosure.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/CompatiblePairTypeBRouting.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/DirectCycleDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/DisjointPostLedgerComponents.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/FanCertificateCap.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/FanCertificateDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/FanCertificateResidualMass.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/FanClosedPort.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/FanClosedPortTypeBRouting.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/HighCentreNormalForm.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/HybridEntry.lean`
@@ -251,34 +254,29 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBBridgeReduction.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBBridgeSublinear.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBDecoratedAssignedSupport.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBExclusionDichotomy.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBExclusionResidualMass.lean`
+- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBDirectCycleFree.lean`
+- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBExclusion.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBFanDegreeDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBFanDegreeFourProfile.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBFanLocalDichotomy.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBFanSafe.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBGlobalLocalBridge.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBOverlapObstructionMass.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBSublinearDichotomy.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/TypeBClosure.lean`
 
-### EG assembly files (8)
+### EG assembly files (5)
 
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Absorbed/FanCharge.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Certificate.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/ChargedRoute.lean`
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean`
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/DecoratedContinuation.lean` (EG-NODE [67], [68], [69], [70], [78], [79])
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/HighSurplusContinuation.lean` (EG-NODE [65], [67], [68], [69], [70], [71], [75], [78], [79], [80], [84])
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean` (EG-NODE [71], [75], [80], [84])
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/NearCubicCertificate.lean`
 
 ## F3: Route 8
 
 - Library statement module: `hypostructure/Hypostructure/Graph/Statements/RouteEight.lean`
 - Reserved new-key range: 1400-1599
 
-### Keys (45)
+### Keys (44)
 
 | idx | Key | Statement | Statement module |
 |---|---|---|---|
@@ -327,7 +325,7 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 | 1403 | `route8UnpaidTwoCarrier` | `Route8UnpaidTwoCarrierStatement` | RouteEightPinned |
 | 1404 | `route8UnpaidWitnessFree` | `Route8UnpaidWitnessFreeStatement` | RouteEightPinned |
 
-### Row and decision modules (40)
+### Row and decision modules (34)
 
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8BasinBurden.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8CarrierCore.lean`
@@ -336,13 +334,11 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8CarrierDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8Census.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8DemandAbsorption.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8DemandLedgerDichotomy.lean`
+- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8DemandPartition.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8ExtractedEntryCensus.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8JointBalance.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8LargeBudgetDeficit.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8NoTwoCarrierContradiction.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8OpenBoundarySaturated.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8PeeledDemandResidual.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8PeelingDescent.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8PiecesClassified.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8PrivateCarrierBudget.lean`
@@ -353,27 +349,22 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8SmallCoreCollapse.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8SmallCoreExit.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8StageOutcomeDichotomy.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8TerminalNoGo.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8TrueResidual.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8TrueTwoCarrierEntry.lean`
+- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8TwoCarrierExit.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnifiedDeficit.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnifiedEntryCensus.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnifiedNegative.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnifiedTerminalNoGo.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnifiedVisibleOverload.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnifiedVisibleResidual.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnpaidExitFourDichotomy.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8VisibleRouting.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8WindowBlockers.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/WindowShadowHitCycle.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/WindowShadowHitExcluded.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/WindowShadowSignature.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/WindowShadowSingletonTail.lean`
 
-### EG assembly files (4)
+### EG assembly files (3)
 
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean` (EG-NODE [123], [181], [183], [184], [185], [186])
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/RateFailure.lean`
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Residual.lean`
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/TypeBContinuation.lean`
 
@@ -382,7 +373,7 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 - Library statement module: `hypostructure/Hypostructure/Graph/Statements/SurplusPair.lean`
 - Reserved new-key range: 1600-1799
 
-### Keys (61)
+### Keys (67)
 
 | idx | Key | Statement | Statement module |
 |---|---|---|---|
@@ -447,8 +438,14 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 | 1606 | `pairSystemNoEarlyOutcome` | `PairSystemNoEarlyOutcomeStatement` | SurplusPairCode |
 | 1607 | `pairIncrementFails` | `PairIncrementFailsStatement` | SurplusPairCode |
 | 1608 | `pairIncrementNoEarlyOutcome` | `PairIncrementNoEarlyOutcomeStatement` | SurplusPairCode |
+| 2900 | `pairResponseObstruction` | `PairResponseObstructionStatement` | SurplusPair |
+| 2901 | `pairNoResponseObstruction` | `PairNoResponseObstructionStatement` | SurplusPair |
+| 2902 | `pairDegreeProfileFibres` | `PairDegreeProfileFibresStatement` | SurplusPair |
+| 2903 | `pairProfileObstruction` | `PairProfileObstructionStatement` | SurplusPair |
+| 2904 | `pairNoProfileObstruction` | `PairNoProfileObstructionStatement` | SurplusPair |
+| 2905 | `sameTokenReadingsNotReplacement` | `SameTokenReadingsNotReplacementStatement` | SurplusPairRouting |
 
-### Row and decision modules (20)
+### Row and decision modules (19)
 
 - `hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows/Basic.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows/BlockedPairEntropy.lean`
@@ -469,7 +466,6 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 - `hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows/SparseTargetDefectStructure.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows/WindowOverloadClass.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SurplusRows.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SurplusRun.lean`
 
 ### EG assembly files (4)
 
@@ -483,7 +479,7 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 - Library statement module: `hypostructure/Hypostructure/Graph/Statements/Spine.lean` (and `hypostructure/Hypostructure/Graph/Statements/Parameters.lean`)
 - Reserved new-key range: 1800-1999
 
-### Keys (125)
+### Keys (127)
 
 | idx | Key | Statement | Statement module |
 |---|---|---|---|
@@ -579,8 +575,6 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 | 245 | `coldCanonicalSwapSameSize` | `ColdCanonicalSwapSameSizeStatement` | Spine |
 | 320 | `blockedScaleAdditive` | `BlockedScaleAdditivityStatement` | Spine |
 | 321 | `blockedBarrierOverlap` | `BlockedBarrierFailureStatement` | Spine |
-| 322 | `degreeProfileFibres` | `DegreeProfileFibresStatement` | Spine |
-| 323 | `targetCompleteContextUniversality` | `TargetCompleteContextUniversalityStatement` | Spine |
 | 325 | `entropyCapBound` | `EntropyCapBoundStatement` | Spine |
 | 326 | `absorbedConfigurationResidual` | `AbsorbedConfigurationResidualStatement` | Spine |
 | 327 | `absorbedGermSplit` | `AbsorbedGermSplitStatement` | Spine |
@@ -611,9 +605,13 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 | 1800 | `coldNoPositiveGerm` | `ColdNoPositiveGermStatement` | Spine |
 | 1801 | `typeBHandoffFails` | `TypeBHandoffFailsStatement` | SurplusPairRouting |
 | 1802 | `sameTokenPatternUnresolved` | `SameTokenPatternPairUnresolvedStatement` | SurplusPairRouting |
+| 2300 | `degreeProfileFibres` | `DegreeProfileFibresStatement` | Spine |
+| 2301 | `targetCompleteContextUniversality` | `TargetCompleteContextUniversalityStatement` | Spine |
 | 2303 | `hssTargetCycle` | `HssTargetCycleStatement` | Spine |
+| 2700 | `coldAbsorbedNeutralConfiguration` | `NeutralConfigurationStatement` | Spine |
+| 2701 | `coldSelectedFamilyEmpty` | `ColdSelectedFamilyEmptyStatement` | Spine |
 
-### Row and decision modules (74)
+### Row and decision modules (68)
 
 - `hypostructure/Hypostructure/Graph/Strategy/BlockedCompressionRows.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/BranchDClosure.lean`
@@ -636,7 +634,6 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 - `hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/NeutralTerminal.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/ReturnCorridor.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/TwoStrand.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/DominantRootedType.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/EntropyClosure.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/AbsorbedConfigurationResidual.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/AtomCompressionDichotomy.lean`
@@ -645,7 +642,6 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/BranchDependence.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Bridgeless.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/ContextValidityDichotomy.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/ContractionCritical.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/CubicBaseline.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/CurvatureRankDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/CurvatureTargetRank.lean`
@@ -660,7 +656,6 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/EntropyPackage.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/ExactCollisionDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/ForcedCurvatureCost.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/GadgetClosure.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/GlobalBarrier.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/HotColdPartition.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/IndependentObstructionTranslates.lean`
@@ -675,78 +670,31 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/NetDeficiencyCap.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/NoProperBaseline.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/ObstructionPacking.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/RelabelingDensityCap.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/RemainderEntropyDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/RemainderNormalization.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/RemainderRelabelingEntropy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/RepairIdentity.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/ReplacementExclusion.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/ReturnAvoidance.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/RouteEightNetDeficiencyCap.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/SeparatedTesters.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/StubSupply.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TargetCompleteContextUniversality.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TargetRankCircuit.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/WedgeSupply.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/WindowPackage.lean`
 
-### EG assembly files (56)
+### EG assembly files (12)
 
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Absorbed/Prerequisites.lean` (EG-NODE [153], [154], [155], [156], [157], [163], [165], [166], [167], [169], [175], [176], [177])
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Absorbed/Residual.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Cold/Barrier.lean` (EG-NODE [22], [23], [24])
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Cold/Entropy.lean` (EG-NODE [145], [146], [148], [149])
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Cold/Germs.lean` (EG-NODE [150], [151], [152], [153], [154], [155], [156], [157])
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Entry.lean` (EG-NODE [5], [6], [8], [9], [10], [13], [14], [15], [17], [18], [7], [11], [12], [16], [19], [20], [4])
+- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/ColdPass.lean`
+- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/DensePass.lean`
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Local.lean` (EG-NODE [21], [158], [160], [154], [154], [137], [20], [131], [137], [138], [178], [35], [36], [37], [38], [39], [40], [41], [42], [43], [44], [45], [46], [12])
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Replacement.lean` (EG-NODE [170], [171], [159])
+- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Spine.lean`
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRate.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRate/FullRank.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRate/HighEntropy.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRate/Nonrepetitive.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRate/Wedge.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRate/WedgeFree.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure/Bounded.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure/FullRank.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure/HighEntropy.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure/Linear.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure/Nonrepetitive.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure/Wedge.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure/WedgeFree.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove/Bounded.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove/FullRank.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove/HighEntropy.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove/Linear.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove/Nonrepetitive.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove/Wedge.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove/WedgeFree.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseBelow.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseBelow/FullRank.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseBelow/HighEntropy.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseBelow/Nonrepetitive.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseBelow/Wedge.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseBelow/WedgeFree.lean`
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/Realized.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove/Bounded.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove/FullRank.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove/HighEntropy.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove/Linear.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove/Nonrepetitive.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove/Wedge.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove/WedgeFree.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedBelow.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedBelow/FullRank.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedBelow/HighEntropy.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedBelow/Nonrepetitive.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedBelow/Wedge.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedBelow/WedgeFree.lean`
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/Unrealized.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/UnrealizedBelow.lean`
-- `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/UnrealizedDense.lean`
 - `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NetCharge/Continuation.lean` (EG-NODE [57], [58], [59], [60], [61], [62], [63], [64], [173], [174], [86])
 
 ## Shared files
@@ -763,7 +711,6 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 | `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NetCharge/Boundary.lean` | F5 | Boundary chain `Basic <- RouteEight <- Absorbed <- NetCharge <- NearCubic` (and `Basic <- Surplus`); a family edits only its own disjunct. |
 | `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Boundary.lean` | F5 | Boundary chain `Basic <- RouteEight <- Absorbed <- NetCharge <- NearCubic` (and `Basic <- Surplus`); a family edits only its own disjunct. |
 | `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean` | F4 | Boundary chain `Basic <- RouteEight <- Absorbed <- NetCharge <- NearCubic` (and `Basic <- Surplus`); a family edits only its own disjunct. |
-| `hypostructure/Hypostructure/Graph/Strategy/SpineAssembly.lean` | F5 | Aggregator or shared composition surface; append-only imports. |
 | `hypostructure/Hypostructure/Graph/Strategy/SpineContinuationRun.lean` | F5 | Aggregator or shared composition surface; append-only imports. |
 | `hypostructure/Hypostructure/Graph/Strategy/SpineRows.lean` | F5 | Aggregator or shared composition surface; append-only imports. |
 | `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Basic.lean` | F5 | Aggregator or shared composition surface; append-only imports. |
@@ -800,4 +747,3 @@ Assignments that follow the producing row rather than the key name:
 Keys with no producing row module under `Graph/Strategy` (produced by the
 framework scope initialization or by a decision in an owned assembly file) stay
 with the family listed above: `selection` (F5), `surplusAbove` (F5), `surplusAtOrBelow` (F5), `barrierOverflow` (F5), `quantitativeOverload` (F4), `windowPackageRealized` (F5), `windowPackageUnrealized` (F5), `denseDeficiencyBelow` (F5), `denseDeficiencyAtOrAbove` (F5), `route8Deficit` (F3), `route8UnifiedVisibleHistory` (F3), `coldGermSomeRealizing` (F5), `coldGermNoneRealizing` (F5), `coldGermSomeDistinguishing` (F5), `coldGermNoneDistinguishing` (F5).
-
