@@ -713,6 +713,7 @@ Round-2 (fix2) allocations: SC 2700, 2701; TB 2800, 2801; SP 2900-2905;
 | `hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean` | F5 (structure, `Data`, key-freshness tactic) | A new key is six lines: constructor, `Holds` branch, `label`, `idx`, `ofIdx`, `name`, plus its `LabelPins` line; each family appends only its own key lines, with anchored edits in disjoint regions. |
 | `hypostructure/Hypostructure/Graph/Statements/Parameters.lean` | F5 | A new registered constant is added only by F5. |
 | `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean` | F5 | Other families change only the arm of their own returned outcome. |
+| `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean` | F5 | The 14 returned residuals of the root boundary, each stated as the conjunction of the facts on its maximal ledger, with its return theorems; a family edits only its own residual. |
 | `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Basic.lean` | F5 | Problem, input and selection key; no family-specific content. |
 | `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly.lean` | F5 | Import aggregator. |
 | `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Boundary.lean` | F3 | Boundary chain `Basic <- RouteEight <- Absorbed <- NetCharge <- NearCubic` (and `Basic <- Surplus`); a family edits only its own disjunct. |
@@ -726,7 +727,7 @@ Round-2 (fix2) allocations: SC 2700, 2701; TB 2800, 2801; SP 2900-2905;
 | `hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean` | F5 | Aggregator or shared composition surface; append-only imports. |
 | `hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean` | F4 | Aggregator or shared composition surface; append-only imports. |
 | `hypostructure/Hypostructure.lean` | F5 | Root import list; append-only. |
-| `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/StrategyDag.lean`, `Problem.lean` | F5 | Application boundary; unchanged by the migration. |
+| `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Problem.lean` | F5 | Application boundary; unchanged by the migration. |
 
 ## Cross-family keys
 
@@ -755,4 +756,4 @@ Assignments that follow the producing row rather than the key name:
 
 Keys with no producing row module under `Graph/Strategy` (produced by the
 framework scope initialization or by a decision in an owned assembly file) stay
-with the family listed above: `selection` (F5), `surplusAbove` (F5), `surplusAtOrBelow` (F5), `barrierOverflow` (F5), `quantitativeOverload` (F4), `windowPackageRealized` (F5), `windowPackageUnrealized` (F5), `denseDeficiencyBelow` (F5), `denseDeficiencyAtOrAbove` (F5), `route8Deficit` (F3), `route8UnifiedVisibleHistory` (F3), `coldGermSomeRealizing` (F5), `coldGermNoneRealizing` (F5), `coldGermSomeDistinguishing` (F5), `coldGermNoneDistinguishing` (F5).
+with the family listed above: `selection` (F5), `surplusAbove` (F5), `surplusAtOrBelow` (F5), `barrierOverflow` (F5), `windowPackageRealized` (F5), `windowPackageUnrealized` (F5), `denseDeficiencyBelow` (F5), `denseDeficiencyAtOrAbove` (F5), `coldGermSomeRealizing` (F5), `coldGermNoneRealizing` (F5), `coldGermSomeDistinguishing` (F5), `coldGermNoneDistinguishing` (F5).

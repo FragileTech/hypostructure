@@ -768,8 +768,8 @@ gone.
 - **Difference.** Earlier, (d) compared the two demands' declared supports of
   every pair with no attempted identification, and later it compared any two
   coordinates of `{r_π} ∪ B` under a quotient with a free labelling and
-  valuation.  Both were generically true: the round-2 audit
-  (`audit2-F4/ProfileDReduces.lean`) manufactured the free determination for
+  valuation.  Both were generically true: a round-2 audit check
+  manufactured the free determination for
   every `b` profile-separated from `r_π`.  With the valuation tied to G's
   response, the manufactured quotient no longer qualifies: it would identify
   `b` with `r_π` only if G's two readings at `Z` respond identically to every

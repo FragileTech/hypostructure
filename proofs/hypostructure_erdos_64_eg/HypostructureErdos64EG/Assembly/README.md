@@ -9,8 +9,8 @@ From `proofs/hypostructure_erdos_64_eg`, build the module being edited:
 
 ```sh
 lake build HypostructureErdos64EG.Assembly.TypeA.ExitFourChain
-lake build HypostructureErdos64EG.Assembly.Cold.Germs
-lake build HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow.Wedge
+lake build HypostructureErdos64EG.Assembly.NearCubic.ColdPass
+lake build HypostructureErdos64EG.Assembly.NearCubic.Survivor.Realized
 ```
 
 Before finishing a change, build the whole package:
@@ -31,13 +31,13 @@ command needs a clean build for ordinary proof changes.
   theorem per residual (per arm of its own decision) that reads each fact with
   one `ExactLedger.get`; every return site calls it.
 - `Boundary` modules contain shared result types and import no branch proofs.
-- `Entry`, `Surplus/Local`, `Cold/*`, `NearCubic/Local`, and `RouteEight/Local`
-  contain independently reusable steps.
+- `Entry`, `Surplus/Local`, `NearCubic/Local`, and `RouteEight/Local` contain
+  independently reusable steps; `NearCubic/{Spine,ColdPass,DensePass}` hold the
+  near-cubic spine and cold/dense corridor passes.
 - `TypeA/*`, `TypeB/*`, and `Absorbed/*` contain individual continuations.
 - `NetCharge/Continuation` combines the Type A/B and absorbed continuations.
-- `NearCubic/Survivor` combines the survivor branches. Its subdirectories split
-  rank, entropy, root-wedge, linear-mass, and bounded-mass decisions into
-  independently compiled proofs with explicit complete ledger inputs.
+- `NearCubic/Survivor` combines the survivor branches, split into
+  `Survivor/Realized` and `Survivor/Unrealized`.
 - `Final` connects the entry decisions to strict-surplus and near-cubic results.
 
 Import the module that defines a dependency. Never import `Assembly` or the
