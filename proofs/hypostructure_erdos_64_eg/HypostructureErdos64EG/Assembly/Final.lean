@@ -48,7 +48,10 @@ with every fact of its maximal ledger (`Assembly/Residuals.lean`).  The
 pair-system entry retains its own source key and is not `[144a]`. -/
 abbrev OtherReturnedOutcome (selected : EGInput.{u}) :=
   NearCubicTargetDefectOutcome selected ∨
-  PairTypeBOutcome selected ∨
+  (PairTypeBOutcome_independentSystem selected ∨
+    PairTypeBOutcome_independentIncrement selected ∨
+    PairTypeBOutcome_dependentSystem selected ∨
+    PairTypeBOutcome_dependentIncrement selected) ∨
   TypeBSublinearOutcome selected ∨
   Route8QuotientOutcome selected ∨
   Route8RateFailsOutcome selected ∨
@@ -65,7 +68,12 @@ abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
     Node144aOutcome_primitiveHandoff selected ∨
     Node144aOutcome_primitiveFails selected) ∨
   BlockedBarrierOverlapOutcome selected ∨
-  PairConditionalFactorizationOutcome selected ∨
+  (PairConditionalFactorizationOutcome_freeFactorizationFails selected ∨
+    PairConditionalFactorizationOutcome_freeRealizabilityFails selected ∨
+    PairConditionalFactorizationOutcome_freeIncrementFails selected ∨
+    PairConditionalFactorizationOutcome_blockedFactorizationFails selected ∨
+    PairConditionalFactorizationOutcome_blockedRealizabilityFails selected ∨
+    PairConditionalFactorizationOutcome_blockedIncrementFails selected) ∨
   Route8JointBalanceOutcome selected ∨
   OtherReturnedOutcome selected ∨
   Node153ResidualOutcome selected ∨

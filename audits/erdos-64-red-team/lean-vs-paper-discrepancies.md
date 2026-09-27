@@ -1688,8 +1688,8 @@ free side.
 ### Node [182] (thm:main (iv), tex 359-363)
 
 - **Configuration at G.** The first failed coverage implication of [178], [179] or [180] on the strict-surplus pair-code chain.
-- **Lean.** `PairConditionalFactorizationOutcome` (`Assembly/Residuals.lean`); return theorem `pairConditionalFactorizationReturn`; reached by 6 paths (distinct ledger histories from the root).
-- **Facts carried (33).**
+- **Lean.** `PairConditionalFactorizationOutcome` (`Assembly/Residuals.lean`); return theorem `pairConditionalFactorizationReturn`; reached by 6 paths (distinct ledger histories from the root) with 6 distinct fact sets, one subtype each in `Assembly/Residuals/PairConditionalFactorizationOutcome.lean`.
+- **Generic residual: facts common to all six paths (33).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -1723,21 +1723,79 @@ free side.
   31. `K .skeletonDominates`: `lem:skeleton-dominates` at the current residual's exact order and edge count: the fixed-edge labelled skeleton class has exactly the registered skeleton budget, and every canonical state map realizes at most that many states.
   32. `K .pairOverlapSystem`: Node `[178]`: the exact pair-response conditional fibre, realized joint states, realizing orders, obstructions, overlaps, and support unions.
   33. `K .pairConditionalFactorizationResidual`: Node `[182]`: the exact retained residual where one of the paper's `[178]`--`[180]` implications is not exhaustive.
-- **On some paths only, not carried (23).** Gated by an arm of:
-  - [132] blocked-pair routing; [130] canonical pair split: `blockedPairEntropySetup`, `canonicalBlockerRoute`, `canonicalPairLedger`, `capacityTokenLedger`.
-  - [178] conditional factorization: `pairConditionalFactorization`, `pairDemandReturns`, `pairFactorizationFails`, `pairFailureOverlap`.
-  - [130] canonical pair split: `dependentPairFamily`, `independentPairFamily`, `pairDegreeProfileFibres`.
-  - [179] realizability: `pairRealizabilityFails`, `pairSystemRealizability`.
-  - [137] blocked-side count; [132] blocked-pair routing; [130] canonical pair split: `blockedPairCodeUnrealized`.
-  - [137] blocked-side count: `blockedPairCountFails`.
-  - [132] blocked-pair routing: `blockedPairNoExit`.
-  - [131] free-pair count; [130] canonical pair split: `freePairCodeUnrealized`.
-  - [131] free-pair count: `freePairCountFails`.
-  - [180] increment covered: `pairIncrementFails`.
-  - [130] blocker (d): `pairNoProfileObstruction`.
-  - [130] blocker (e): `pairNoResponseObstruction`.
-  - [179] early outcome; [179] realizability: `pairSerialDemandSystem`.
-  - [179] early outcome: `pairSystemNoEarlyOutcome`.
+- **Subtypes, one per distinct fact set (6).**  Each is `PairConditionalFactorizationOutcome ∧` its extra facts, with `.toGeneric` and a return theorem `pairConditionalFactorizationReturn_<label>` (one `get` per fact).  The side is the entry into the pair-code chain: free = `[130]` blocker-free arm and `[131]` free-pair count fails; blocked = `[130]` blocked arm with no (d)/(e) blocker, `[132]` no sparse exit, `[134]`--`[136]` token ledger and `[137]` blocked-side count fails.  The arm is the first failed implication: `[178]` factorization, `[179]` realizability, `[180]` increment coverage.
+  - `PairConditionalFactorizationOutcome_freeFactorizationFails` (37 facts): the 33 above, plus
+    - `K .independentPairFamily`
+    - `K .freePairCountFails`
+    - `K .freePairCodeUnrealized`
+    - `K .pairFactorizationFails`
+  - `PairConditionalFactorizationOutcome_freeRealizabilityFails` (40 facts): the 33 above, plus
+    - `K .independentPairFamily`
+    - `K .freePairCountFails`
+    - `K .freePairCodeUnrealized`
+    - `K .pairConditionalFactorization`
+    - `K .pairFailureOverlap`
+    - `K .pairDemandReturns`
+    - `K .pairRealizabilityFails`
+  - `PairConditionalFactorizationOutcome_freeIncrementFails` (43 facts): the 33 above, plus
+    - `K .independentPairFamily`
+    - `K .freePairCountFails`
+    - `K .freePairCodeUnrealized`
+    - `K .pairConditionalFactorization`
+    - `K .pairFailureOverlap`
+    - `K .pairDemandReturns`
+    - `K .pairSystemRealizability`
+    - `K .pairSystemNoEarlyOutcome`
+    - `K .pairSerialDemandSystem`
+    - `K .pairIncrementFails`
+  - `PairConditionalFactorizationOutcome_blockedFactorizationFails` (45 facts): the 33 above, plus
+    - `K .dependentPairFamily`
+    - `K .pairDegreeProfileFibres`
+    - `K .pairNoProfileObstruction`
+    - `K .pairNoResponseObstruction`
+    - `K .blockedPairNoExit`
+    - `K .canonicalBlockerRoute`
+    - `K .canonicalPairLedger`
+    - `K .capacityTokenLedger`
+    - `K .blockedPairEntropySetup`
+    - `K .blockedPairCountFails`
+    - `K .blockedPairCodeUnrealized`
+    - `K .pairFactorizationFails`
+  - `PairConditionalFactorizationOutcome_blockedRealizabilityFails` (48 facts): the 33 above, plus
+    - `K .dependentPairFamily`
+    - `K .pairDegreeProfileFibres`
+    - `K .pairNoProfileObstruction`
+    - `K .pairNoResponseObstruction`
+    - `K .blockedPairNoExit`
+    - `K .canonicalBlockerRoute`
+    - `K .canonicalPairLedger`
+    - `K .capacityTokenLedger`
+    - `K .blockedPairEntropySetup`
+    - `K .blockedPairCountFails`
+    - `K .blockedPairCodeUnrealized`
+    - `K .pairConditionalFactorization`
+    - `K .pairFailureOverlap`
+    - `K .pairDemandReturns`
+    - `K .pairRealizabilityFails`
+  - `PairConditionalFactorizationOutcome_blockedIncrementFails` (51 facts): the 33 above, plus
+    - `K .dependentPairFamily`
+    - `K .pairDegreeProfileFibres`
+    - `K .pairNoProfileObstruction`
+    - `K .pairNoResponseObstruction`
+    - `K .blockedPairNoExit`
+    - `K .canonicalBlockerRoute`
+    - `K .canonicalPairLedger`
+    - `K .capacityTokenLedger`
+    - `K .blockedPairEntropySetup`
+    - `K .blockedPairCountFails`
+    - `K .blockedPairCodeUnrealized`
+    - `K .pairConditionalFactorization`
+    - `K .pairFailureOverlap`
+    - `K .pairDemandReturns`
+    - `K .pairSystemRealizability`
+    - `K .pairSystemNoEarlyOutcome`
+    - `K .pairSerialDemandSystem`
+    - `K .pairIncrementFails`
 
 <a id="residual-186"></a>
 
@@ -2026,8 +2084,8 @@ free side.
 ### Node [187] ([179]/[180] Type B entry) (thm:main (vi), tex 369-378)
 
 - **Configuration at G.** A Type B entry produced by the [179] or [180] pair-system outcome, with its strict-surplus and sparse-survivor ancestry.
-- **Lean.** `PairTypeBOutcome` (`Assembly/Residuals.lean`); return theorems `pairTypeBSystemReturn`, `pairTypeBIncrementReturn`; reached by 4 paths (distinct ledger histories from the root).
-- **Facts carried (42).** 37 on every path, then the arms of the residual's own decision.
+- **Lean.** Generic residual `PairTypeBOutcome` (`Assembly/Residuals.lean`), return theorems `pairTypeBSystemReturn`, `pairTypeBIncrementReturn`; subtypes and their return theorems in `Assembly/Residuals/PairTypeBOutcome.lean`.  Reached by 4 paths (the pair-code chain entered from the free side of [131], `selectedPairCodeChainIndependent`, or of [137], `selectedPairCodeChainDependent`, times the chain's two Type B arms), with 4 distinct fact sets, hence 4 subtypes; each return site calls its subtype's return theorem, and the boundary carries the disjunction of the 4 subtypes.
+- **Generic residual: common facts (37), then its own arm as a disjunction.**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -2065,23 +2123,51 @@ free side.
   35. `K .pairDemandReturns`: Node `[179]`: the two literal demands of the failed pair, their canonical port returns, the connected `X_π ∪ R_p ∪ R_q` connector, and the graph-derived return-length bound used in `D_sp`.
   36. `K .pairSystemRealizability`: Node `[179]`: the exact obstruction satisfies one of the five outcomes of `lem:pair-system-realizability`.
   37. `K .typeBFanEntry`: Nodes `[65]`/`[66]`: the common Type B fan support entry (`def:typeB-assigned-ledger`): a canonical core with its assigned centres — the ordinary support's own high centres at `[65]`, or the decorations of the handoff envelope at the dashed input `[66]` — nonempty and all high.
-  - *Arm `system`* (one disjunct):
-    38. `K .pairSystemEarlyOutcome`: Node `[179]`, alternatives (i)--(iv), retained for their literal route; (iv) is the first-separator handoff of the obstruction's own overlap support at `P₀`.
-  - *Arm `increment`* (one disjunct):
-    39. `K .pairSystemNoEarlyOutcome`: Node `[179]`, serial arm: the exact negation of `pairSystemEarlyOutcome`.
-    40. `K .pairSerialDemandSystem`: Node `[179]`, alternative (v): the graph-realized serial demand system.
-    41. `K .pairIncrementCovered`: Node `[180]`: corrected arithmetic or a periodic-response route.
-    42. `K .pairIncrementEarlyOutcome`: Node `[180]`, periodic-response sparse-exit or Type B route.
-- **On some paths only, not carried (14).** Gated by an arm of:
-  - [132] blocked-pair routing; [130] canonical pair split: `blockedPairEntropySetup`, `canonicalBlockerRoute`, `canonicalPairLedger`, `capacityTokenLedger`.
-  - [130] canonical pair split: `dependentPairFamily`, `independentPairFamily`, `pairDegreeProfileFibres`.
-  - [137] blocked-side count; [132] blocked-pair routing; [130] canonical pair split: `blockedPairCodeUnrealized`.
-  - [137] blocked-side count: `blockedPairCountFails`.
-  - [132] blocked-pair routing: `blockedPairNoExit`.
-  - [131] free-pair count; [130] canonical pair split: `freePairCodeUnrealized`.
-  - [131] free-pair count: `freePairCountFails`.
-  - [130] blocker (d): `pairNoProfileObstruction`.
-  - [130] blocker (e): `pairNoResponseObstruction`.
+  - *Arm `system`* (one disjunct): `K .pairSystemEarlyOutcome`.
+  - *Arm `increment`* (one disjunct): `K .pairSystemNoEarlyOutcome`, `K .pairSerialDemandSystem`, `K .pairIncrementCovered`, `K .pairIncrementEarlyOutcome`.
+- **Subtypes** (`PairTypeBOutcome_<label> := PairTypeBOutcome ∧ <extra facts>`; each has `.toGeneric`):
+  - **`PairTypeBOutcome_independentSystem`** ([130] independent (blocker-free) arm; [131] free-pair count fails; [179] early outcome); return theorem `pairTypeBIndependentSystemReturn`; 41 facts (37 common + 4 extra):
+    38. `K .independentPairFamily`: Node `[130]`, blocker-free arm: the exact negation of `dependentPairFamily` at G's canonical activation (`Π_blk = ∅`).
+    39. `K .freePairCountFails`: Node `[131]`, count fails: the exact negation of `freePairEntropySandwich`.
+    40. `K .freePairCodeUnrealized`: Node `[131]`, complementary arm: the free-pair code is not realized by the skeleton class.
+    41. `K .pairSystemEarlyOutcome`: Node `[179]`, alternatives (i)--(iv), retained for their literal route; (iv) is the first-separator handoff of the obstruction's own overlap support at `P₀`.
+  - **`PairTypeBOutcome_independentIncrement`** ([130] independent (blocker-free) arm; [131] free-pair count fails; [179] serial arm; [180] covered increment; [180] early outcome); return theorem `pairTypeBIndependentIncrementReturn`; 44 facts (37 common + 7 extra):
+    38. `K .independentPairFamily`: Node `[130]`, blocker-free arm: the exact negation of `dependentPairFamily` at G's canonical activation (`Π_blk = ∅`).
+    39. `K .freePairCountFails`: Node `[131]`, count fails: the exact negation of `freePairEntropySandwich`.
+    40. `K .freePairCodeUnrealized`: Node `[131]`, complementary arm: the free-pair code is not realized by the skeleton class.
+    41. `K .pairSystemNoEarlyOutcome`: Node `[179]`, serial arm: the exact negation of `pairSystemEarlyOutcome`.
+    42. `K .pairSerialDemandSystem`: Node `[179]`, alternative (v): the graph-realized serial demand system.
+    43. `K .pairIncrementCovered`: Node `[180]`: corrected arithmetic or a periodic-response route.
+    44. `K .pairIncrementEarlyOutcome`: Node `[180]`, periodic-response sparse-exit or Type B route.
+  - **`PairTypeBOutcome_dependentSystem`** ([130] dependent arm (no blocker (d), no blocker (e)); [132] blocker arm; [137] blocked-side count fails; [179] early outcome); return theorem `pairTypeBDependentSystemReturn`; 49 facts (37 common + 12 extra):
+    38. `K .dependentPairFamily`: Node `[130]`, blocked arm of "blocker-free?": at G's canonical activation some scheduled pair has a nonempty blocker set over all six clauses of `def:surplus-blockers` (`Π_blk ≠ ∅`).
+    39. `K .pairDegreeProfileFibres`: Node `[130]`, `lem:degree-profile-fibres` at G's pair family.
+    40. `K .pairNoProfileObstruction`: Node `[130]`, blocker clause (d) absent at G's canonical activation.
+    41. `K .pairNoResponseObstruction`: Node `[130]`, blocker clause (e) absent at G's canonical activation.
+    42. `K .blockedPairNoExit`: Node `[132]`, blocker arm: the exact negation of `sparsePairExit`.
+    43. `K .canonicalBlockerRoute`: Node `[132]`, blocker arm: no sparse surplus exit occurs, and the blocked pair of `[130]` at G's canonical activation has its canonical blocker `Φ_can(π) = min_≺ 𝖡𝗅𝗄(π)` of `def:canonical-blocker-ledger`.
+    44. `K .canonicalPairLedger`: Nodes `[130]`--`[134]`, `def:sparse-pair-response`'s pair schedule with `def:canonical-blocker-ledger` and `lem:canonical-blocker-ledger-no-overcount`: `Π(𝒜₀)` has `C(σ(G),2)` members, and at every reading of the closed clause list of `def:surplus-blockers` the canonical charge is single-valued, so `Π_blk` and ...
+    45. `K .capacityTokenLedger`: Nodes `[134]`--`[136]`, `def:primitive-sparse-blocker-carrier` with `lem:primitive-carrier-supply`, `def:capacity-token-ledger` with `lem:capacity-token-supply` and `lem:token-ledger-no-overcount`, and `def:same-token-patterns`: `|𝔘_sp(G)| = n + 2m + σ(G) ≤ 3(δ−1)n`, the manuscript's `≤ 6n`, spent against the ...
+    46. `K .blockedPairEntropySetup`: Node `[137]`: the exact capacity presentation and node-`[129]` baseline realization, assembled through `FactInputs.get` before the entropy split.
+    47. `K .blockedPairCountFails`: Node `[137]`, free-side count fails: the exact negation of `blockedPairEntropySandwich`.
+    48. `K .blockedPairCodeUnrealized`: Node `[137]`, complementary arm: at some declared capacity presentation the free side's code is not realized by the skeleton class.
+    49. `K .pairSystemEarlyOutcome`: Node `[179]`, alternatives (i)--(iv), retained for their literal route; (iv) is the first-separator handoff of the obstruction's own overlap support at `P₀`.
+  - **`PairTypeBOutcome_dependentIncrement`** ([130] dependent arm (no blocker (d), no blocker (e)); [132] blocker arm; [137] blocked-side count fails; [179] serial arm; [180] covered increment; [180] early outcome); return theorem `pairTypeBDependentIncrementReturn`; 52 facts (37 common + 15 extra):
+    38. `K .dependentPairFamily`: Node `[130]`, blocked arm of "blocker-free?": at G's canonical activation some scheduled pair has a nonempty blocker set over all six clauses of `def:surplus-blockers` (`Π_blk ≠ ∅`).
+    39. `K .pairDegreeProfileFibres`: Node `[130]`, `lem:degree-profile-fibres` at G's pair family.
+    40. `K .pairNoProfileObstruction`: Node `[130]`, blocker clause (d) absent at G's canonical activation.
+    41. `K .pairNoResponseObstruction`: Node `[130]`, blocker clause (e) absent at G's canonical activation.
+    42. `K .blockedPairNoExit`: Node `[132]`, blocker arm: the exact negation of `sparsePairExit`.
+    43. `K .canonicalBlockerRoute`: Node `[132]`, blocker arm: no sparse surplus exit occurs, and the blocked pair of `[130]` at G's canonical activation has its canonical blocker `Φ_can(π) = min_≺ 𝖡𝗅𝗄(π)` of `def:canonical-blocker-ledger`.
+    44. `K .canonicalPairLedger`: Nodes `[130]`--`[134]`, `def:sparse-pair-response`'s pair schedule with `def:canonical-blocker-ledger` and `lem:canonical-blocker-ledger-no-overcount`: `Π(𝒜₀)` has `C(σ(G),2)` members, and at every reading of the closed clause list of `def:surplus-blockers` the canonical charge is single-valued, so `Π_blk` and ...
+    45. `K .capacityTokenLedger`: Nodes `[134]`--`[136]`, `def:primitive-sparse-blocker-carrier` with `lem:primitive-carrier-supply`, `def:capacity-token-ledger` with `lem:capacity-token-supply` and `lem:token-ledger-no-overcount`, and `def:same-token-patterns`: `|𝔘_sp(G)| = n + 2m + σ(G) ≤ 3(δ−1)n`, the manuscript's `≤ 6n`, spent against the ...
+    46. `K .blockedPairEntropySetup`: Node `[137]`: the exact capacity presentation and node-`[129]` baseline realization, assembled through `FactInputs.get` before the entropy split.
+    47. `K .blockedPairCountFails`: Node `[137]`, free-side count fails: the exact negation of `blockedPairEntropySandwich`.
+    48. `K .blockedPairCodeUnrealized`: Node `[137]`, complementary arm: at some declared capacity presentation the free side's code is not realized by the skeleton class.
+    49. `K .pairSystemNoEarlyOutcome`: Node `[179]`, serial arm: the exact negation of `pairSystemEarlyOutcome`.
+    50. `K .pairSerialDemandSystem`: Node `[179]`, alternative (v): the graph-realized serial demand system.
+    51. `K .pairIncrementCovered`: Node `[180]`: corrected arithmetic or a periodic-response route.
+    52. `K .pairIncrementEarlyOutcome`: Node `[180]`, periodic-response sparse-exit or Type B route.
 
 <a id="residual-187-type-b-sublinear"></a>
 

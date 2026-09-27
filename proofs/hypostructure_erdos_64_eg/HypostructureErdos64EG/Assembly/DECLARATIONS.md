@@ -105,7 +105,8 @@ is in [Final.lean](Final.lean); the returned residuals are stated in
 | `selectedTypeBRoute8Entry` | def | [RouteEight/TypeBContinuation.lean:219](RouteEight/TypeBContinuation.lean#L219) |
 | `StrictSurplusBoundaryResult` | abbrev | [Surplus/Boundary.lean:21](Surplus/Boundary.lean#L21) |
 | `selectedSparseSurplusActivation` | def | [Surplus/Local.lean:36](Surplus/Local.lean#L36) |
-| `selectedPairCodeChain` | def | [Surplus/Local.lean:110](Surplus/Local.lean#L110) |
+| `selectedPairCodeChainIndependent` | def | [Surplus/Local.lean:110](Surplus/Local.lean#L110) |
+| `selectedPairCodeChainDependent` | def | [Surplus/Local.lean:271](Surplus/Local.lean#L271) |
 | `selectedBottleneckDischarge` | def | [Surplus/Local.lean:262](Surplus/Local.lean#L262) |
 | `selectedStrictSurplusBranch` | def | [Surplus/Strict.lean:18](Surplus/Strict.lean#L18) |
 | `Assembly.Internal.strictSurplusDependent` | def | [Surplus/Strict/Dependent.lean:32](Surplus/Strict/Dependent.lean#L32) |
