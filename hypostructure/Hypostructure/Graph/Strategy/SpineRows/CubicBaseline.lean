@@ -48,7 +48,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       .cons (key := K .cubicBaseline)
         ⟨⟨data.threshold_eq_three, data.dischargeScale_eq_four,
-            data.degenerateClosureRejected, data.windowRate_eq_barrier⟩,
+            data.degenerateClosureRejected, data.windowRate_eq_barrier,
+            data.labelCount, data.labelSizeDistribution⟩,
           ⟨data.quadrilateralAccepted, data.lengthOK_iff_powerOfTwo,
             data.fanCapSlack, data.highCentreDeficitSlack,
             data.bridgeMassSlack⟩,

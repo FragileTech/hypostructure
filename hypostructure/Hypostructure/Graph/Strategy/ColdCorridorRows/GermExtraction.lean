@@ -18,9 +18,10 @@ variable {data : Data.{u}}
 
 /-! ## Node `[153]`, the `M_cold` exchange bound
 
-On the routed first-failure residual (`K .coldFailureRouting`), a terminal cold
-corridor reads at most `M_cold` cut states beyond the interface budget
-(`exchange_card_le`, `Contracts.Spine.coldExchangeBound_holds`).  The greedy
+On the routed first-failure residual (`K .coldFailureRouting`, read here), the
+retained return corridor of every selected half-edge of G that is terminal reads
+at most `Q_cold` states, so with the interface budget it has at most `M_cold`
+vertices (`exchange_card_le`, `Contracts.Spine.coldExchangeBound_holds`).  The greedy
 extraction of `lem:cold-germ-extraction` is applied directly by node `[153]`'s
 candidate owner (`Contracts.Spine.coldGermCandidates_of_routing`). -/
 @[reducible] noncomputable def coldGermExtractionRow :
@@ -34,7 +35,7 @@ candidate owner (`Contracts.Spine.coldGermCandidates_of_routing`). -/
     (fun inputs =>
       .cons (key := K .coldExchangeBound)
         ⟨Contracts.Spine.coldExchangeBound_holds data.toParameters
-          inputs.current.object⟩
+          inputs.current.object (inputs.get (K .coldFailureRouting)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

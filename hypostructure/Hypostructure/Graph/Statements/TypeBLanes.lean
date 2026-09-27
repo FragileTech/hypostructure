@@ -147,20 +147,23 @@ noncomputable def TypeBAbsorbedHalfEdgeAbsentStatement (data : Parameters)
 (`lem:absorbed-germ-fan-data`, tex 7933: "every half-edge it discards is charged
 to the Type B ledger"): every selected half-edge `ε` outside node `[153]`'s
 subcubic candidates has its own pinned absorbed Type B support
-`canonicalTypeBAbsorbedSupportAt ε = (J_ε, {z_ε})` --- `z_ε` high, the only high
-vertex of the prefix `J_ε ∋ z_ε` through it, `J_ε` inside the canonical
-remainder --- and that support's negative part is charged to the surplus of
-`z_ε` (`lem:typeB-bridge-deficit-bound`). -/
+`canonicalTypeBAbsorbedSupportAt ε = (Y_ε, H_ε)` --- the counted remainder core
+`Y_ε` of its envelope `(Y_ε, {z_ε})`, and `H_ε = {z_ε} ∪ centres(Y_ε)`, the
+high-degree fan centres whose surplus is assigned to it
+(`def:typeB-assigned-ledger`, `def:canonical-decomp`) --- with `z_ε` high and
+`Y_ε` inside the canonical remainder, and that support's negative part is
+charged to the surplus of `H_ε` (`lem:typeB-bridge-deficit-bound`). -/
 noncomputable def TypeBAbsorbedChargeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ epsilon : ColdEligibleHalfEdge data object,
     AbsorbedHalfEdgeOutside data object epsilon →
       ∃ core centre,
-        canonicalTypeBAbsorbedSupportAt data object epsilon = some (core, {centre}) ∧
-        Graph.IsHighCentre object data.threshold centre ∧ centre ∈ core ∧
-        Graph.TypeBRefinedSupport.centres object data.threshold core ⊆ {centre} ∧
+        canonicalTypeBAbsorbedSupportAt data object epsilon =
+          some (core, absorbedAssignedCentres data object centre core) ∧
+        Graph.IsHighCentre object data.threshold centre ∧
         core ⊆ object.remainderSupport (canonicalWindowPacking data object) ∧
-        TypeBBridgeDeficitBoundAt data object core {centre}
+        TypeBBridgeDeficitBoundAt data object core
+          (absorbedAssignedCentres data object centre core)
 
 /-- Node `[65]` at the `[64]` entry: the ordinary Type B support `(X₀, H(X₀))`
 is negative and carries a high centre (`def:canonical-decomp`). -/

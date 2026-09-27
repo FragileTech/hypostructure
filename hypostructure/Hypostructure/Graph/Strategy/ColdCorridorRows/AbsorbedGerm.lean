@@ -68,6 +68,8 @@ noncomputable def absorbedGermDichotomy
     (emptyFresh : K .coldNoPositiveGerm ∉ known) :
     Decision (K .coldPositiveGerm) (K .coldNoPositiveGerm) previous := by
   classical
+  -- The decision reads its predecessor fact at the one object it splits.
+  have _predecessor := (previous.get (K .absorbedGermSplit)).down
   exact Decision.run previous (K .coldPositiveGerm) (K .coldNoPositiveGerm)
     `Hypostructure.Graph.Strategy.Spine.absorbedGermDichotomy
     (if positive : ColdPositiveGermStatement data.toParameters current.object then

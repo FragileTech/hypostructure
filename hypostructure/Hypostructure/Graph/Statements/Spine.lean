@@ -476,21 +476,18 @@ noncomputable def canonicalColdWindows (data : Parameters)
   exact canonicalWindowPacking data object \ canonicalHotWindows data object
 
 /-- **The joint package demand of nodes `[52]`--`[53]`.**  The window
-coordinates of `lem:p13-window-package` retained in the comparison — the hot
-windows, at the registered rate — and the remainder states of
-`def:remainder-entropy`, multiplied, at the fixed maximal packing: the number of
-target-complete states the branch has to distinguish (`prop:two-budget` (a),
-`eq:feasibility`, the window-plus-remainder accounting of `prop:p13-density`).
-The forced curvature cost of `cor:forced-curvature-cost` is the sharpening of
-`def:Theta` that `rem:closure-robust` says the closure does not need: the
-curvature patterns are realized by remainder graphs, i.e. by members of the
-remainder class already counted, so it is not a further independent factor of
-the demand; it stays on the ledger as `K .forcedCurvatureCost`.  `[53]` compares
-exactly this demand against the labelled skeleton budget. -/
+coordinates of `lem:p13-window-package` of **every** window of the fixed
+maximal packing `P₀` — `eq:entropy-cap` (tex 5259-5282, 9880-9901) counts
+`L_win = c₁₃ θ n log₂ n` with `θ = p₁₃/n`, i.e. the package of all `p₁₃`
+packed windows, at the registered rate — and the remainder states of
+`def:remainder-entropy`, multiplied, at the fixed maximal packing.  The forced
+curvature cost of `cor:forced-curvature-cost` stays on the ledger as
+`K .forcedCurvatureCost`.  `[53]` compares exactly this demand against the
+labelled skeleton budget. -/
 noncomputable def jointPackageDemand (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Nat :=
   2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-        (canonicalHotWindows data object).card) *
+        (canonicalWindowPacking data object).card) *
     remainderStates data object (canonicalWindowPacking data object)
 
 /-- **`K|R| − o(|R|)`, the forced obstruction bits of node `[48]`**
@@ -1100,15 +1097,15 @@ theorem coldPackedWindowAt_card_le (data : Parameters)
   · simp
 
 /-- **The cold-window offset of a vertex**: its position on the induced
-`P_order` of the packed window of `P₀` containing it (the manuscript's
-"cold-window offsets met at the two interfaces").  A vertex in no induced packed
-window has no offset; it reads the residue of its enumeration index. -/
+`P_order` of the cold window of `P₀` containing it (the manuscript's
+"cold-window offsets met at the two interfaces").  A vertex in no cold window
+meets no offset and reads the empty offset `0`. -/
 noncomputable def coldWindowOffset (data : Parameters)
     (object : Graph.FiniteObject.{u}) (vertex : object.Vertex) :
     Fin data.coldSignature.windowOrder := by
   classical
   letI : FinEnum object.Vertex := object.vertices
-  by_cases contained : ∃ window ∈ canonicalWindowPacking data object,
+  by_cases contained : ∃ window ∈ canonicalColdWindows data object,
       vertex ∈ window ∧ object.InducesWindow data.windowOrder window
   · let window := Classical.choose contained
     have windowFacts := Classical.choose_spec contained
@@ -1128,14 +1125,15 @@ noncomputable def coldWindowOffset (data : Parameters)
         ⟨embedding.injective, by
           rw [Fintype.card_fin, cardInduced, induced.2]⟩).2
     exact Classical.choose (embeddingSurjective ⟨vertex, vertexMember⟩)
-  · exact
-      ⟨(FinEnum.equiv vertex).1 % data.coldSignature.windowOrder,
-        Nat.mod_lt _ data.coldSignature.windowOrder_pos⟩
+  · exact ⟨0, data.coldSignature.windowOrder_pos⟩
 
-/-- **`T(J)`, the bounded active interface of a segment**: the two
-`P₁₃`-window interfaces (the packed windows at the entry stub and at the
-successor stub) and the two boundary vertices of the prefix (the outside foot
-of `ε` and the prefix head).  "The additive `30` only covers the two
+/-- **`T(J)`, the bounded active interface of a segment**: its two active
+boundary interfaces.  The entry interface is the entry stub `ε` -- its outside
+foot and the packed window its window endpoint lies in; the head interface is
+the vertex the prefix has reached together with the packed window it meets
+there (`Corridor.headInterfaceVertex`: the successor stub's window once the
+prefix is the whole corridor, the head's own window, if any, before).  Only
+windows `J` has reached are in `T(J)`.  "The additive `30` only covers the two
 `P₁₃`-window interfaces and the two boundary stubs." -/
 noncomputable def coldActiveInterface (data : Parameters)
     (object : Graph.FiniteObject.{u}) {component : Finset object.Vertex}
@@ -1144,7 +1142,7 @@ noncomputable def coldActiveInterface (data : Parameters)
     (segment : corridor.Segment) : Finset object.Vertex := by
   classical
   exact coldPackedWindowAt data object corridor.entryStub.2 ∪
-    coldPackedWindowAt data object corridor.successorStub.2 ∪
+    coldPackedWindowAt data object (corridor.headInterfaceVertex segment) ∪
       ({corridor.entryStub.1, corridor.head segment} : Finset object.Vertex)
 
 /-- `T(J)` has at most `2·order + 2·2` vertices: two packed windows and two
@@ -1163,7 +1161,7 @@ theorem coldActiveInterface_card_le (data : Parameters)
   have entryCard := coldPackedWindowAt_card_le data object valid
     corridor.entryStub.2
   have successorCard := coldPackedWindowAt_card_le data object valid
-    corridor.successorStub.2
+    (corridor.headInterfaceVertex segment)
   have pairCard :
       ({corridor.entryStub.1, corridor.head segment} :
           Finset object.Vertex).card ≤ 2 :=
@@ -1171,37 +1169,60 @@ theorem coldActiveInterface_card_le (data : Parameters)
       (Nat.succ_le_succ (Finset.card_singleton _).le)
   have outer := Finset.card_union_le
     (coldPackedWindowAt data object corridor.entryStub.2 ∪
-      coldPackedWindowAt data object corridor.successorStub.2)
+      coldPackedWindowAt data object (corridor.headInterfaceVertex segment))
     ({corridor.entryStub.1, corridor.head segment} : Finset object.Vertex)
   have inner := Finset.card_union_le
     (coldPackedWindowAt data object corridor.entryStub.2)
-    (coldPackedWindowAt data object corridor.successorStub.2)
+    (coldPackedWindowAt data object (corridor.headInterfaceVertex segment))
   unfold Graph.ColdCorridor.interfaceWidth
   omega
 
+/-- Clause (D1) of `def:declared-coordinate-signature`: "boundary-degree entries
+at labelled boundary vertices". -/
+def ColdBoundaryDegreeClause (data : Parameters)
+    (clause : data.coldSignature.Clause) : Prop :=
+  (show Graph.ColdCorridor.SignatureClause from clause) =
+    Graph.ColdCorridor.SignatureClause.boundaryDegree
+
+instance (data : Parameters) (clause : data.coldSignature.Clause) :
+    Decidable (ColdBoundaryDegreeClause data clause) :=
+  inferInstanceAs (Decidable ((show Graph.ColdCorridor.SignatureClause from clause) =
+    Graph.ColdCorridor.SignatureClause.boundaryDegree))
+
+/-- The declared positions of a coordinate of a given clause: a (D1) entry is
+supported at its labelled boundary vertex (its anchor); every other generating
+coordinate at its declared support positions. -/
+def coldClausePositions (data : Parameters) (clause : data.coldSignature.Clause)
+    (generator : Graph.ColdCorridor.Coordinate
+      (Graph.ColdCorridor.interfaceWidth data.windowOrder)) :
+    Finset (Fin (Graph.ColdCorridor.interfaceWidth data.windowOrder)) :=
+  if ColdBoundaryDegreeClause data clause then {generator.anchor}
+  else generator.support
+
 /-- `supp_X(r)` of a declared coordinate at a segment: the vertices of the
-active interface at the coordinate's declared positions (the interface read in
-its canonical list order). -/
+active interface at the coordinate's declared positions for its clause
+(`coldClausePositions`; the interface read in its canonical list order). -/
 noncomputable def coldDeclaredSupport (data : Parameters)
     (object : Graph.FiniteObject.{u}) (activeSet : Finset object.Vertex)
-    (_clause : data.coldSignature.Clause)
+    (clause : data.coldSignature.Clause)
     (generator : Graph.ColdCorridor.Coordinate
       (Graph.ColdCorridor.interfaceWidth data.windowOrder)) :
     Finset object.Vertex := by
   classical
   let active := activeSet.toList
-  let valid := generator.support.filter fun position =>
+  let valid := (coldClausePositions data clause generator).filter fun position =>
     position.1 < active.length
   exact valid.attach.image fun position => by
     have member := position.property
-    change position.1 ∈ generator.support.filter
+    change position.1 ∈ (coldClausePositions data clause generator).filter
       (fun slot => slot.1 < active.length) at member
     exact active.get ⟨position.1.1, (Finset.mem_filter.1 member).2⟩
 
 /-- `val_X(r)` of a declared coordinate at a segment: the exact embedded datum
-of `EmbeddedCoordinateValue` read in G -- the declared positions present in the
-interface, every G-edge from the declared support into the interface, and the
-G-degree of the anchor inside the interface. -/
+of `EmbeddedCoordinateValue` read in G -- the declared positions of the clause
+present in the interface, every G-edge from the declared support into the
+interface, and the degree of the anchor: for a (D1) boundary-degree entry its
+degree in G, for every other clause its degree inside the interface. -/
 noncomputable def coldDeclaredValue (data : Parameters)
     (object : Graph.FiniteObject.{u}) (activeSet : Finset object.Vertex)
     (clause : data.coldSignature.Clause)
@@ -1212,10 +1233,11 @@ noncomputable def coldDeclaredValue (data : Parameters)
   let active := activeSet.toList
   let activePositions : Finset (Fin width) :=
     Finset.univ.filter fun position => position.1 < active.length
+  let positions := coldClausePositions data clause generator
   let supportPositions : Finset (Fin width) :=
-    generator.support.filter fun position => position.1 < active.length
+    positions.filter fun position => position.1 < active.length
   let incidences : Finset (Fin width × Fin width) :=
-    (generator.support.product activePositions).filter fun incidence =>
+    (positions.product activePositions).filter fun incidence =>
       if leftBound : incidence.1.1 < active.length then
         if rightBound : incidence.2.1 < active.length then
           object.graph.Adj
@@ -1239,16 +1261,24 @@ noncomputable def coldDeclaredValue (data : Parameters)
       _ ≤ (Finset.univ : Finset (Fin width)).card :=
         Finset.card_le_card (Finset.subset_univ _)
       _ = width := Fintype.card_fin width
+  let anchorDegree : Fin (width + 1) :=
+    if ColdBoundaryDegreeClause data clause then
+      if anchorBound : generator.anchor.1 < active.length then
+        ⟨min (object.degree (active.get ⟨generator.anchor.1, anchorBound⟩)) width,
+          Nat.lt_succ_of_le (Nat.min_le_right _ _)⟩
+      else ⟨0, Nat.zero_lt_succ _⟩
+    else ⟨labelNeighbors.card, Nat.lt_succ_of_le labelDegreeBound⟩
   change Graph.ColdCorridor.EmbeddedCoordinateValue width clause generator
-  exact (supportPositions, incidences,
-    ⟨labelNeighbors.card, Nat.lt_succ_of_le labelDegreeBound⟩)
+  exact (supportPositions, incidences, anchorDegree)
 
-/-- **G's cut-state presentation of a cold corridor.**  Segments are the
-corridor's initial segments; `T(J)` is `coldActiveInterface`; the
-boundary-degree profile is G's degree at the two boundary vertices; the
-half-edges are the two boundary stubs; the offsets are `coldWindowOffset` at
-the two window interfaces; and the declared coordinates are read in G by
-`coldDeclaredSupport` / `coldDeclaredValue` on the active interface. -/
+/-- **G's cut-state presentation of a cold corridor** (`ρ^ex_{T(J)}(J)`'s
+retained part, tex 7187-7197).  Segments are the corridor's initial segments;
+`T(J)` is `coldActiveInterface`; the boundary-degree profile is G's degree at
+the entry foot and at the prefix head; the two active half-edges are `ε` and
+the half-edge by which the corridor leaves the head; the offsets are
+`coldWindowOffset` at the entry window and at the head interface; and the
+declared coordinates are read in G by `coldDeclaredSupport` /
+`coldDeclaredValue` on the active interface, each through its clause. -/
 noncomputable def coldCutStatePresentation (data : Parameters)
     (object : Graph.FiniteObject.{u}) {component : Finset object.Vertex}
     (corridor : Graph.ColdCorridor.Corridor object
@@ -1276,6 +1306,12 @@ the fact.  The mathematical payload is the framework theorem
 `right ≤ Q_cold`, the first repeated state, the exact interval support, the
 canonical cut-state representative, equality of every supported generated
 reading, and the complete record read at both equal-state endpoints.
+
+The second representative `E` of every exchange germ -- outside corridors and
+immediate cross-window exchanges alike -- is pinned to G's canonical
+representative of the germ's own support (`BoundedGerm.HasCanonicalSecond`,
+`Graph.ColdCorridor.rowRepresentative`): it is a function of G, not an object
+the existential chooses.
 
 Graph realization of the second representative is deliberately not required
 here.  The manuscript first separates canonical replacement pieces from
@@ -1325,12 +1361,16 @@ noncomputable def ColdCorridorStateStatement (data : Parameters)
       ∃ sourceWindow ∈ cubic, ∃ targetWindow ∈ cubic,
         epsilon.1.1 ∈ sourceWindow ∧ epsilon.1.2 ∈ targetWindow ∧
           object.graph.Adj epsilon.1.1 epsilon.1.2) ∧
-    ∃ crossIncidence : ColdCrossWindowHalfEdge data object →
+    (∃ crossIncidence : ColdCrossWindowHalfEdge data object →
         Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object,
       ∀ epsilon : ColdCrossWindowHalfEdge data object,
-        (crossIncidence epsilon).support = {epsilon.1.1, epsilon.1.2}
+        (crossIncidence epsilon).support = {epsilon.1.1, epsilon.1.2} ∧
+          (crossIncidence epsilon).HasCanonicalSecond
+            (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)) ∧
+    ∀ epsilon : Eligible, (incidence epsilon).HasCanonicalSecond
+      (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
 
 /-- **A piece of G produces a decorated Type B handoff** (exit `(7)` of
 `def:typeA-saturated-exits`, tex 10811; `lem:typeA-visible-entry`, tex
@@ -1378,6 +1418,15 @@ def ColdDeclaredHandoffSupport (data : Parameters)
     (object : Graph.FiniteObject.{u}) (support : Finset object.Vertex) : Prop :=
   ∃ centre : object.Vertex, support = {centre} ∧
     data.threshold < object.degree centre
+
+/-- **(F4) at a support: it enters a registry support** (tex 7234, "the corridor
+first enters a declared Type B handoff envelope"): the support meets one of G's
+declared handoff supports `ColdDeclaredHandoffSupport`.  This is the handoff arm
+of `lem:cold-same-interface-table`'s rows. -/
+def ColdEntersHandoffRegistry (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (support : Finset object.Vertex) : Prop :=
+  ∃ registry : Finset object.Vertex,
+    ColdDeclaredHandoffSupport data object registry ∧ ¬ Disjoint registry support
 
 set_option maxHeartbeats 800000 in
 /-- Clause (F1) at one segment of the retained cold corridor. -/
@@ -1723,7 +1772,7 @@ inside the cold-window union. -/
   let stateOne := Classical.choose_spec state
   let stateTwo := Classical.choose_spec (Classical.choose_spec stateOne)
   let stateBundle := Classical.choose_spec (Classical.choose_spec stateTwo)
-  exact Classical.choose stateBundle.2.2.2
+  exact Classical.choose stateBundle.2.2.2.1
 
 /-- The canonical occurrence-to-germ map read from the retained routing fact. -/
 @[reducible] noncomputable def coldRoutedOccurrenceIncidence (data : Parameters)
@@ -1762,7 +1811,10 @@ fact. -/
 /-- Node `[175]`, `lem:absorbed-germ-fan-data`, on the literal occurrence
 family retained by node `[153]`.  An outside occurrence is either already in
 that exact candidate set, or its bounded first-failure prefix has the least
-high vertex used by node `[177]`. -/
+high vertex used by node `[177]`.  A cross-window occurrence (a selected stub
+whose foot lies in another ambient-cubic cold window) joins two vertices of
+ambient-cubic cold windows, both at the baseline, so it meets no high vertex:
+it is always a candidate and carries no configuration-extraction loss. -/
 noncomputable def AbsorbedGermSplitStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
@@ -1773,7 +1825,7 @@ noncomputable def AbsorbedGermSplitStatement (data : Parameters)
   let corridorAt := coldOccurrenceCorridorAt data object classified
   let traceEnd := coldRoutedTraceEnd data object routing
   let candidates := coldRoutedCandidates data object routing
-  ∀ epsilon : Eligible,
+  (∀ epsilon : Eligible,
     (Sum.inl epsilon ∈ candidates) ∨
       ∃ first : (corridorAt epsilon).Segment,
         first.1 ≤ traceEnd epsilon ∧
@@ -1782,7 +1834,8 @@ noncomputable def AbsorbedGermSplitStatement (data : Parameters)
             object.degree ((corridorAt epsilon).head earlier) ≤ data.threshold) ∧
           ∀ neighbour : object.Vertex,
             object.graph.Adj ((corridorAt epsilon).head first) neighbour →
-              object.degree neighbour = data.threshold
+              object.degree neighbour = data.threshold) ∧
+  ∀ epsilon : ColdCrossWindowHalfEdge data object, Sum.inr epsilon ∈ candidates
 
 /-- Node `[175]`, the nonempty case-(i) class.  This is the exact candidate
 set already owned by node `[153]`; `[175]` only decides its positivity. -/
@@ -1792,6 +1845,22 @@ noncomputable def ColdPositiveGermStatement (data : Parameters)
   letI : FinEnum object.Vertex := object.vertices
   exact ∃ routing : ColdFailureRoutingStatement data object,
     0 < (coldRoutedCandidates data object routing).card
+
+/-- **Node `[176]` on the arm with neither a positive germ nor an absorbed
+half-edge** (`lem:absorbed-germ-fan-data`, tex 7915-7958, read at G): the
+selected branch-excess family of G's ambient-cubic cold windows is empty, and
+so (`def:cold-skeleton-excess`, nine selected half-edges per window) G has no
+ambient-cubic cold window.  Every selected half-edge is either an outside
+corridor half-edge -- a candidate, by `[177]`'s absent arm, of the empty
+candidate set of `[175]`'s no arm -- or a cross-window half-edge, always a
+candidate; so there is none, and there is no (F5) configuration for
+`[154]`--`[157]`, `[165]`--`[168]` to close. -/
+noncomputable def ColdSelectedFamilyEmptyStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cubic := (canonicalColdWindows data object).filter
+    (AmbientCubicWindow data object)
+  exact Graph.ColdCorridor.allSelectedStubs object cubic = ∅ ∧ cubic = ∅
 
 /-- Node `[175]`, no arm: the exact complement of `ColdPositiveGermStatement`,
 every selected corridor meets a high-degree vertex. -/
@@ -1858,7 +1927,9 @@ noncomputable def ColdGermFamilyWitness (data : Parameters)
 
 /-- `lem:cold-germ-extraction` on the current residual.  The fact retains the
 actual F5/immediate-terminal occurrence family, its greedy disjoint extraction,
-and the exact first-high loss bound. -/
+the exact first-high loss bound, and the user-approved exact count of the (F4)
+heavy-centre handoffs (tex 7318-7329): the selected half-edges of G whose
+first failure is an (F4) handoff are at most the corridor loss. -/
 noncomputable def ColdGermCandidatesStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
@@ -1872,7 +1943,9 @@ noncomputable def ColdGermCandidatesStatement (data : Parameters)
       (candidates disjointFamily : Finset Occurrence)
       (corridorLoss : Nat),
     ColdGermFamilyWitness data object routing incidence candidates disjointFamily
-      corridorLoss
+      corridorLoss ∧
+    (Finset.univ.filter (ColdFirstFailureHandoffOccurrence data object
+        (coldRoutedClassified data object routing))).card ≤ corridorLoss
 
 /-! ## The extracted disjoint germ family of node `[153]` -/
 
@@ -1887,27 +1960,22 @@ noncomputable def ColdGermExtractionSpec (data : Parameters)
       (coldRoutedOccurrenceIncidence data object routing)
       (coldRoutedCandidates data object routing) extraction.1 extraction.2
 
-/-- Node `[219]` is literally the existence of its extraction at the routed
-incidence and candidates. -/
-theorem coldGermCandidates_iff_exists_extractionSpec (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    ColdGermCandidatesStatement data object ↔
-      ∃ extraction, ColdGermExtractionSpec data object extraction := by
+/-- Node `[219]` carries its extraction at the routed incidence and
+candidates. -/
+theorem exists_extractionSpec_of_coldGermCandidates (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (candidates : ColdGermCandidatesStatement data object) :
+    ∃ extraction, ColdGermExtractionSpec data object extraction := by
   classical
-  constructor
-  · intro candidates
-    unfold ColdGermCandidatesStatement at candidates
-    obtain ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-      witness⟩ := candidates
-    have witness' := witness
-    simp only [ColdGermFamilyWitness] at witness'
-    obtain ⟨incidenceEq, candidatesEq, -⟩ := witness'
-    subst incidenceEq
-    subst candidatesEq
-    exact ⟨(disjointFamily, corridorLoss), routing, witness⟩
-  · rintro ⟨extraction, routing, witness⟩
-    unfold ColdGermCandidatesStatement
-    exact ⟨routing, _, _, extraction.1, extraction.2, witness⟩
+  unfold ColdGermCandidatesStatement at candidates
+  obtain ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
+    witness, _f4⟩ := candidates
+  have witness' := witness
+  simp only [ColdGermFamilyWitness] at witness'
+  obtain ⟨incidenceEq, candidatesEq, -⟩ := witness'
+  subst incidenceEq
+  subst candidatesEq
+  exact ⟨(disjointFamily, corridorLoss), routing, witness⟩
 
 /-- **The canonical extraction of node `[153]`**: `Classical.choose` of node
 `[219]`'s disjoint family and corridor loss. -/
@@ -1955,7 +2023,7 @@ theorem coldGermExtraction?_spec_of_candidates (data : Parameters)
     ∃ extraction, coldGermExtraction? data object = some extraction ∧
       ColdGermExtractionSpec data object extraction :=
   coldGermExtraction?_spec data object
-    ((coldGermCandidates_iff_exists_extractionSpec data object).1 candidates)
+    (exists_extractionSpec_of_coldGermCandidates data object candidates)
 
 /-- The canonical greedy disjoint germ family (the first projection). -/
 noncomputable def coldGermDisjointFamily? (data : Parameters)
@@ -2076,8 +2144,8 @@ index that G's retained occurrence carries for `ε` (`coldOccurrenceCorridorAt` 
 `coldOccurrencePresentationAt` / `coldOccurrenceIndexAt`), with no earlier
 (F1)--(F5) event -- is (F2), then G has a named sparse surplus exit of its
 declared sparse family (`DeclaredSparseSurplusExit`, `def:named-surplus-exits`).
-The paper's routing is recorded as a paper error
-(`lean-vs-paper-discrepancies.md#paper-errors`, [153] tex:7268). -/
+The paper's routing is recorded as an open construction
+(`lean-vs-paper-discrepancies.md#open-constructions`, [153] tex:7268). -/
 noncomputable def ColdFailureDefectRoutesStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ (occurrence : ColdFirstFailureOccurrenceData data object)
@@ -2168,16 +2236,25 @@ noncomputable def ColdFirstHighHandoffStatement (data : Parameters)
                   root
 
 /-- The `M_cold` exchange bound of `def:cold-corridor-first-failure`
-(tex 7200-7209): a terminal cold corridor of G reads at most `M_cold` cut states
-beyond the interface budget.  The first-failure routing it is used with is its
-own ledger fact (`K .coldFailureRouting`), not copied here. -/
-def ColdExchangeBoundStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ∀ (windows component : Finset object.Vertex)
-    (corridor : Graph.ColdCorridor.Corridor object windows component),
-    Graph.ColdCorridor.Corridor.TerminalCorridor corridor data.coldSignature →
-      corridor.statesRead + Graph.ColdCorridor.interfaceBudget data.coldSignature ≤
-        Graph.ColdCorridor.exchangeBound data.coldSignature
+(tex 7200-7209, 7249-7252), at G's routed first-failure occurrence (node
+`[153]`'s `K .coldFailureRouting`): the retained return corridor of every
+selected half-edge of G that reaches its successor stub before `Q_cold + 1`
+states are read has, with the two boundary stubs and the two window
+interfaces, at most `M_cold = Q_cold + 30` vertices. -/
+noncomputable def ColdExchangeBoundStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  exact ∃ routing : ColdFailureRoutingStatement data object,
+    ∀ epsilon : ColdEligibleHalfEdge data object,
+      Graph.ColdCorridor.Corridor.TerminalCorridor
+          (coldOccurrenceCorridorAt data object
+            (coldRoutedClassified data object routing) epsilon)
+          data.coldSignature →
+        (coldOccurrenceCorridorAt data object
+            (coldRoutedClassified data object routing) epsilon).statesRead +
+            Graph.ColdCorridor.interfaceBudget data.coldSignature ≤
+          Graph.ColdCorridor.exchangeBound data.coldSignature
 
 attribute [instance] Parameters.boundaryProfileFintype
 
@@ -2301,18 +2378,34 @@ noncomputable def NeutralEqualLengthTerminalConfigurationAt (data : Parameters)
     ¬ Graph.HasCycleWithLength data.LengthOK
         (Graph.glue germ.piece germ.atom.outside)
 
-/-- `def:neutral-equal-length-germ` in ledger form.  Terminality is the exact
-incoming F5 fact from `[162]`; the existential retains the marked corridor
-occurrence and its marked canonical exchange representative for the decision
-at `[163]`. -/
-noncomputable def NeutralEqualLengthTerminalConfigurationStatement
+/-- **The neutral configuration of G's silent extracted family** (nodes
+`[157]`/`[163]`): on the G2-silent arm of node `[154]` (no configuration of
+node `[153]`'s extracted family is hit-distinguished, the `[605]` fact), a
+germ of that family with its marked canonical exchange representative, neutral
+and equal-length (`NeutralEqualLengthTerminalConfigurationAt`).  The germ is an
+(F5) configuration of the family -- terminal or repeated-state. -/
+noncomputable def NeutralConfigurationStatement
     (data : Parameters) (object : Graph.FiniteObject.{u}) : Prop :=
-  DenseColdCorridorsTerminalStatement data object ∧
+  (¬ ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object,
+    CanonicalActiveColdGerm data object germ ∧ germ.Distinguishing) ∧
     ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object)
       (representative : Graph.CanonicalPiece germ.atom.interface),
       NeutralEqualLengthTerminalConfigurationAt data object germ representative
+
+/-- `def:neutral-equal-length-germ` in ledger form, node `[163]` on the dense
+residual: "On the dense residual, a terminal (F5) configuration ...".
+Terminality is the exact incoming F5 fact from `[162]`; the second conjunct is
+the silent family's neutral configuration, retaining the marked corridor
+occurrence and its marked canonical exchange representative for the decision
+at `[163]`. -/
+noncomputable def NeutralEqualLengthTerminalConfigurationStatement
+    (data : Parameters) (object : Graph.FiniteObject.{u}) : Prop :=
+  DenseColdCorridorsTerminalStatement data object ∧
+    NeutralConfigurationStatement data object
 
 /-- The finite range used by the manuscript's two-strand kernel census.  At
 the registered `P₁₃` window this is `3·13 + 1 = 40`, so the semantic node
@@ -2458,7 +2551,12 @@ published at the entry; nodes read it from the ledger, never from the
 presentation's spelling. -/
 noncomputable abbrev CubicBaselineStatement (data : Parameters) : Prop :=
   data.threshold = 3 ∧ data.dischargeScale = 4 ∧ ¬ data.LengthOK 2 ∧
-    data.windowRate = data.windowBarrier.binaryRateFloor
+    data.windowRate = data.windowBarrier.binaryRateFloor ∧
+    -- `lem:labels` (tex 6661): the registered legal-label census, read by node
+    -- `[18]` from this fact.
+    ((Graph.WindowCurvature.Labels data.windowOrder).card = 399 ∧
+      (Graph.WindowCurvature.sizeDistribution data.windowOrder).take 7 =
+        [13, 60, 122, 122, 63, 17, 2])
 
 /-- **The presentation laws the spine reads**, the fourth component of
 `PresentationLawsStatement` (key `cubicBaseline`), published once at the entry.
@@ -2702,6 +2800,33 @@ noncomputable abbrev MaximalPackingStatement
           object.InducesWindow data.windowOrder support →
           ∃ member ∈ packing, ¬ Disjoint support member)
 
+/-- The legal-label census `|𝓛| = 399` of node `[18]` (`lem:labels`) bounds
+the window order below: the legal labels of a path on `order` vertices are
+among its `2^order` subsets, and `399 > 2^4`. -/
+theorem five_le_windowOrder_of_labelCount (data : Parameters)
+    (labels : (Graph.WindowCurvature.Labels data.windowOrder).card = 399) :
+    5 ≤ data.windowOrder := by
+  by_contra small
+  have le : (Graph.WindowCurvature.Labels data.windowOrder).card ≤
+      2 ^ data.windowOrder := by
+    calc (Graph.WindowCurvature.Labels data.windowOrder).card
+        ≤ (Finset.univ :
+            Finset (Graph.WindowCurvature.Label data.windowOrder)).card :=
+          Finset.card_le_univ _
+      _ = 2 ^ data.windowOrder := by simp [Graph.WindowCurvature.Label]
+  rw [labels] at le
+  have orderLe : data.windowOrder ≤ 4 := by omega
+  have powerLe : 2 ^ data.windowOrder ≤ 2 ^ 4 :=
+    Nat.pow_le_pow_right (by norm_num) orderLe
+  norm_num at powerLe
+  omega
+
+/-- The census bounds the window order below by three. -/
+theorem three_le_windowOrder_of_census (data : Parameters)
+    (labels : (Graph.WindowCurvature.Labels data.windowOrder).card = 399) :
+    3 ≤ data.windowOrder :=
+  le_trans (by norm_num) (five_le_windowOrder_of_labelCount data labels)
+
 /-- Node `[18]`: `lem:labels`'s exact legal-label census at the registered
 window order (tex 6661).  The census is a statement about the window label
 alphabet, not about any support of `G`, so it carries no guard over `G`'s
@@ -2753,7 +2878,27 @@ noncomputable abbrev DensityCapStatement
       (data.threshold * object.vertexCount +
         data.surplusThreshold object.vertexCount) +
     data.densitySlack * (data.windowRate * data.separatedScaleCount object.vertexCount) *
-      data.surplusThreshold object.vertexCount)
+      data.surplusThreshold object.vertexCount) ∧
+  -- The high-entropy clause of `[24]` (`prop:p13-density`, tex 8491-8495,
+  -- 8530-8551): "when the joint comparison in the high-entropy branch of
+  -- `prop:two-budget` also holds", i.e. the window package of `P₀` together
+  -- with the `(1/d)·log₂ n` remainder bits per vertex of `R₀` is realized by
+  -- a canonical state map on `G`'s labelled skeleton class, the joint package
+  -- fits the skeleton budget -- `eq:feasibility`, whose solution is
+  -- `θ ≤ 0.01198542083… + o(1)`.  Cleared of the root `1/d`.
+  (∀ (State : Type u)
+      (stateOf : Graph.PackedWindowRealization.Skeleton
+        object.vertexCount object.edgeCount → State),
+    (2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+          object.windowPackingNumber data.windowOrder)) ^ data.entropyDenominator *
+        object.vertexCount ^
+          (object.remainderSupport (canonicalWindowPacking data object)).card ≤
+      Nat.card (Set.range stateOf) ^ data.entropyDenominator →
+    (2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+          object.windowPackingNumber data.windowOrder)) ^ data.entropyDenominator *
+        object.vertexCount ^
+          (object.remainderSupport (canonicalWindowPacking data object)).card ≤
+      Graph.skeletonBudget object ^ data.entropyDenominator)
 
 /-- Nodes `[25]`--`[27]`: the remainder of a maximal packing carries no
 window and no subgraph meeting the baseline (`sec:remainder`). -/
@@ -2937,7 +3082,8 @@ noncomputable abbrev TargetRankCircuitStatement
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   -- `lem:target-rank-circuit` at the remainder of `P₀`.
-  -- For a maximal surviving subfamily `𝓘` and a raw test `a ∉ 𝓘`, some
+  -- For node `[31]`'s maximal surviving subfamily `𝓘₀`
+  -- (`canonicalSurvivingFamily?`) and a raw test `a ∉ 𝓘₀`, some
   -- functional admissible rank quotient that loses rank on the family
   -- determines `a` from a finite subfamily `ℬ ⊆ 𝓘`: a proper
   -- target-dependence `(a, ℬ)` (`def:curvature-target-dependence`).  In
@@ -2954,12 +3100,7 @@ noncomputable abbrev TargetRankCircuitStatement
             quotient.toRankQuotient.FunctionalOn ↑tests ∧
               quotient.toRankQuotient.RankReducingOn ↑tests ∧
                 quotient.toRankQuotient.Determines test determiners
-      (∀ independent ⊆ tests,
-        Graph.FiniteObject.SurvivesCurvatureSystem
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object
-          (object.remainderSupport packing) independent →
-        independent.card = remainderCurvatureTargetRank data object packing →
+      (∃ independent, canonicalSurvivingFamily? data object = some independent ∧
         ∀ test ∈ tests, test ∉ independent →
           ∃ determiners, determiners ⊆ ↑independent ∧
             ProperDependence test determiners) ∧
@@ -3019,8 +3160,9 @@ noncomputable abbrev ColdSameInterfaceTableStatement
   -- `lem:cold-same-interface-table` and `lem:cold-short-self-return-filter`.
   --
   -- The first clause closes every row of `def:cold-same-interface-table`:
-  -- no row is realizing, and every row is either handed off to G's declared
-  -- (F4) registry `ColdDeclaredHandoffSupport` (tex 7234) or distinguishing;
+  -- no row is realizing, and every row either enters a support of G's
+  -- declared (F4) registry (`ColdEntersHandoffRegistry`, tex 7234 "enters a
+  -- declared Type B handoff envelope") or is distinguishing;
   -- a row that is not handed off and not distinguishing is a
   -- target-complete compression of its own proper support, which node
   -- `[14]` has already excluded.
@@ -3039,18 +3181,18 @@ noncomputable abbrev ColdSameInterfaceTableStatement
   ((∀ row : Graph.ColdCorridor.TableRow data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object
-          (ColdDeclaredHandoffSupport data object),
+          (ColdEntersHandoffRegistry data object),
         ¬ row.Realizing ∧
-          (ColdDeclaredHandoffSupport data object row.support ∨
+          (ColdEntersHandoffRegistry data object row.support ∨
             row.Distinguishing)) ∧
       (∀ self : Graph.ColdCorridor.SelfReturn data.coldSignature data.LengthOK
             (Graph.MinimumDegreeAtLeast data.threshold)
             (Graph.HasCycleWithLength data.LengthOK) object
-            (ColdDeclaredHandoffSupport data object),
+            (ColdEntersHandoffRegistry data object),
           Graph.ColdCorridor.SurvivesSmear data.LengthOK
               (data.coldSignature.windowOrder - 1) self.outsideLength ∧
             ¬ self.row.Realizing ∧
-              (ColdDeclaredHandoffSupport data object self.row.support ∨
+              (ColdEntersHandoffRegistry data object self.row.support ∨
                 self.row.Distinguishing)) ∧
       -- The equal-length condition `δ = 0` that makes a row of G's table a
       -- row.  The table's finiteness (`tableBound = |Record|`) and the smear
@@ -3062,7 +3204,7 @@ noncomputable abbrev ColdSameInterfaceTableStatement
       ∀ row : Graph.ColdCorridor.TableRow data.coldSignature
             (Graph.MinimumDegreeAtLeast data.threshold)
             (Graph.HasCycleWithLength data.LengthOK) object
-            (ColdDeclaredHandoffSupport data object),
+            (ColdEntersHandoffRegistry data object),
           row.increment = 0)
 
 /-- The statement published under the `coldGermRealized` key. -/
@@ -3183,18 +3325,14 @@ noncomputable abbrev ColdGermSilentStatement
   -- `pow_mod_of_le`) and are not published as facts of G.  What is G's is the
   -- G3 exclusion and the length-changing reading at node `[153]`'s extracted
   -- family.
-  (∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+  -- (The equal-length reading `¬ LengthChanging ↔ |E| = |Q|` of (d) holds by
+  -- the definition of the increment -- `BoundedGerm.not_lengthChanging_iff` --
+  -- and is not a fact of G, so it is not published.)
+  ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
       (Graph.MinimumDegreeAtLeast data.threshold)
       (Graph.HasCycleWithLength data.LengthOK) object,
       CanonicalActiveColdGerm data object germ →
-        germ.increment < 0 → ¬ germ.Neutral) ∧
-    ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object,
-      CanonicalActiveColdGerm data object germ →
-        (¬ germ.LengthChanging ↔
-          germ.canonical.internalVertexCount =
-            germ.piece.internalVertexCount)
+        germ.increment < 0 → ¬ germ.Neutral
 
 /-- `lem:bridgeless`: the selected minimal counterexample has no bridge —
 every oriented edge has a simple return after its deletion, `R_e(G) ≠ ∅`. -/
@@ -3385,10 +3523,12 @@ noncomputable abbrev ColdGermRoutedStatement
   -- The length-changing germ conclusion obtained by eliminating G1 and G3
   -- and then reading the G2 route from the ledger.  The fact therefore
   -- carries the actual target-defect route, not just the intermediate
-  -- `Distinguishing` predicate.
+  -- `Distinguishing` predicate.  Stated at node `[153]`'s extracted family
+  -- (`CanonicalActiveColdGerm`).
   ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object,
+      CanonicalActiveColdGerm data object germ →
       germ.increment < 0 →
         germ.Distinguishing ∧
           (∀ (Profile : Type)
@@ -3455,10 +3595,22 @@ noncomputable abbrev ColdBranchClosedStatement
   -- cold oval: after the current residual's length-changing germs and
   -- same-interface table rows have been routed, no local terminal cold
   -- pattern remains on this residual.
-  Graph.ColdCorridor.NoTerminalColdResidual data.coldSignature data.threshold
-    data.LengthOK (Graph.MinimumDegreeAtLeast data.threshold)
-    (Graph.HasCycleWithLength data.LengthOK) object
-    (ColdDeclaredHandoffSupport data object)
+  -- The length-changing patterns are those of node `[153]`'s extracted family
+  -- (`CanonicalActiveColdGerm`); the table rows and short self-returns are
+  -- G's, against the (F4) registry entry `ColdEntersHandoffRegistry`.
+  (¬ ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object,
+    CanonicalActiveColdGerm data object germ ∧ germ.increment < 0 ∧
+      ¬ germ.Distinguishing) ∧
+    ¬ Graph.ColdCorridor.TerminalTableRow data.coldSignature
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object
+      (ColdEntersHandoffRegistry data object) ∧
+    ¬ Graph.ColdCorridor.TerminalSelfReturn data.coldSignature data.LengthOK
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object
+      (ColdEntersHandoffRegistry data object)
 
 /-- Nodes `[47]`--`[48]`: `cor:forced-curvature-cost`.  The full-rank residual
 pays `c_Ω·r_Ω(R) ≥ K_win|R| − o(|R|)`, which is the wedge demand floor of node
@@ -3559,7 +3711,7 @@ noncomputable abbrev EntropyPackageDemandStatement
   -- remainder coordinates together realize at least `2^{rate·p}·n^{|R|/d}`
   -- states (`prop:two-budget` (a)).
   ((2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-          (canonicalHotWindows data object).card)) ^ data.entropyDenominator *
+          (canonicalWindowPacking data object).card)) ^ data.entropyDenominator *
       object.vertexCount ^
         (object.remainderSupport (canonicalWindowPacking data object)).card ≤
     jointPackageDemand data object ^ data.entropyDenominator)

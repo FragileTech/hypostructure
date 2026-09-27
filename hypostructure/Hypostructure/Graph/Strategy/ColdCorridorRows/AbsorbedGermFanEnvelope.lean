@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Contracts.TypeB.Entry
+import Hypostructure.Graph.Contracts.Spine.ColdAbsorbedEmpty
 
 /-! Independently compiled spine row declarations. -/
 
@@ -64,7 +65,6 @@ surplus of `z_ε` (`lem:typeB-bridge-deficit-bound`). -/
             (inputs.get (K .uncompressible)).down
             (inputs.get (K .remainderNormalized)).down
             (inputs.get (K .absorbedGermFanData)).down
-            (le_of_eq (inputs.get (K .cubicBaseline)).down.1.1.symm)
             (inputs.get (K .cubicBaseline)).down.1.2.2.1)
           (fun vertex => le_trans inputs.current.baseline
             (inputs.current.object.minDegree_le_degree vertex))
@@ -74,7 +74,9 @@ surplus of `z_ε` (`lem:typeB-bridge-deficit-bound`). -/
 /-- Node `[177]` → `[65]`, `lem:absorbed-germ-fan-data` (ii): at `G`'s canonical
 absorbed half-edge (the `[175]` yes arm), its pinned charge
 (`K .typeBAbsorbedCharge`) enters the common Type B entry with the support
-(prefix through the first high centre `z`, `{z}`). -/
+`(Y, {z} ∪ centres(Y))`: the counted remainder core `Y` of the envelope whose
+arms are the two corridor segments at the first high centre `z`, and its
+assigned fan centres. -/
 @[reducible] noncomputable def absorbedGermFanEnvelopeRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.absorbedGermFanEnvelope
@@ -91,6 +93,31 @@ absorbed half-edge (the `[175]` yes arm), its pinned charge
           (inputs.get (K .absorbedGermFanData)).down
           (inputs.get (K .typeBAbsorbedCharge)).down
           (inputs.get (K .typeBAbsorbedHalfEdge)).down⟩
+        .nil)
+
+/-- **Node `[176]` on the arm with neither a positive germ (`[175]` no) nor an
+absorbed half-edge (`[177]` absent)**: G's selected cold branch-excess family is
+empty and G has no ambient-cubic cold window
+(`Contracts.Spine.coldSelectedFamilyEmpty_of_absent`). -/
+@[reducible] noncomputable def coldSelectedFamilyEmptyRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldSelectedFamilyEmpty
+    { Requires := [K .cubicBaseline, K .hotColdPartition, K .coldFailureRouting,
+        K .coldNoPositiveGerm, K .typeBAbsorbedHalfEdgeAbsent]
+      Produces := [K .coldSelectedFamilyEmpty]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .coldSelectedFamilyEmpty)
+        ⟨Contracts.Spine.coldSelectedFamilyEmpty_of_absent data.toParameters
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.1.1
+          (five_le_windowOrder_of_labelCount data.toParameters
+            (inputs.get (K .cubicBaseline)).down.1.2.2.2.2.1)
+          (inputs.get (K .hotColdPartition)).down
+          (inputs.get (K .coldFailureRouting)).down
+          (inputs.get (K .coldNoPositiveGerm)).down
+          (inputs.get (K .typeBAbsorbedHalfEdgeAbsent)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

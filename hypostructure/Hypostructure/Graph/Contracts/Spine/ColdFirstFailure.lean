@@ -154,7 +154,7 @@ and segment index that G's classified data retains for `ε`
 target-defective quotient, i.e. a sparse surplus exit, excluded by
 `K .sparseSurplusSurvivor`.
 
-Recorded as a paper error (`lean-vs-paper-discrepancies.md#paper-errors`): the
+Recorded as an open construction (`lean-vs-paper-discrepancies.md#open-constructions`): the
 (F2) pair compares two corridor prefixes through their cut-state interface,
 not two declared coordinates of G's sparse family, so it is not a sparse exit
 of `def:named-surplus-exits` and the survivor fact does not refute it
@@ -188,14 +188,14 @@ theorem coldFailureDefect_excluded (data : Parameters)
       (coldOccurrenceCorridorAt data object occurrence epsilon)
       (coldOccurrencePresentationAt data object occurrence epsilon)
       (coldOccurrenceIndexAt data object occurrence epsilon) first := by
-  -- PAPER-ERROR [153] tex:7268 — see lean-vs-paper-discrepancies.md#paper-errors
+  -- OPEN-CONSTRUCTION [153] tex:7268 — see lean-vs-paper-discrepancies.md#open-constructions
   sorry
 
 /-- **Node `[153]`, `lem:cold-corridor-first-failure` (ii)** (tex 7240,
 7265-7270), at G's retained occurrence: an (F2) first failure of G's retained
 corridor is a named sparse surplus exit of G.  On the surviving branch it is
 discharged by the paper's exclusion claim `coldFailureDefect_excluded`
-(PAPER-ERROR [153] tex:7268), which makes the (F2) arm empty. -/
+(OPEN-CONSTRUCTION [153] tex:7268), which makes the (F2) arm empty. -/
 theorem coldFailureDefectRoutes_of_survivor (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (survivor : DeclaredSparseSurvivor data object) :
@@ -237,9 +237,11 @@ theorem coldFailureRouting_of_failures
 
 /-- **The first-failure exchange is bounded by `M_cold`.** -/
 theorem coldExchangeBound_holds
-    (data : Parameters) (object : Graph.FiniteObject.{u}) :
+    (data : Parameters) (object : Graph.FiniteObject.{u})
+    (routing : ColdFailureRoutingStatement data object) :
     ColdExchangeBoundStatement data object :=
-  fun _windows _component corridor terminal =>
-    corridor.exchange_card_le terminal
+  ⟨routing, fun epsilon terminal =>
+    (coldOccurrenceCorridorAt data object
+      (coldRoutedClassified data object routing) epsilon).exchange_card_le terminal⟩
 
 end Hypostructure.Graph.Contracts.Spine

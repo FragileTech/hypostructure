@@ -1,6 +1,6 @@
 {
  "status": "exact selected-root reduction to [20a], [144a], [172a], [182], [186], and [187]",
- "updated_at": "2026-09-27T09:15:15.412370+00:00",
+ "updated_at": "2026-09-27T12:48:56.496695+00:00",
  "aggregate_validation": "Full HypostructureErdos64EG package build passed on the working tree at ae44b9b plus the removal of Assembly/Surplus/TypeBContinuation.lean and TypeBCertificateOutcome, the [132] exit/blocker decision, the single [140]/[142]/[143] audit row `homogeneousBottleneckAuditRow`, and the [144] caps-fail/caps-hold decision (9029 jobs); every node entry re-derived on 2026-09-25 from the live Lean producers and the manuscript. Kernel axiom audit (web/tools/lean_axiom_audit.py): 153 assembly declarations, all clean, no frontier stubs.",
  "nodes": {
   "1": {
@@ -50,13 +50,13 @@
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "Transports [4]'s avoidance through the lem:return-equivalence iff. The entry prefix also runs four rows before it that are not manuscript nodes (`cubicBaselineRow`, `relabelingDensityCapRow`, `gadgetClosureRow`, `contractionCriticalRow`; the vocabulary itself says gadgetClosure/contractionCritical have no manuscript lemma).",
+   "difference": "Transports [4]'s avoidance through the lem:return-equivalence iff. The entry prefix first publishes the one presentation-law fact `K .cubicBaseline` (`cubicBaselineRow`), which [6] now reads.",
    "on_probed_closed_arm": true
   },
   "6": {
-   "producer": "`returnAvoidanceRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/ReturnAvoidance.lean:30)",
+   "producer": "`returnAvoidanceDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/ReturnAvoidance.lean:34)",
    "fidelity": "FAITHFUL-TRIVIAL",
-   "fidelity_note": "The diamond is not decided: `K .returnAvoidance` refutes a Mersenne return uniformly over all darts from the selection's avoidance, which is exactly how the paper closes it ('closed by lem:return-equivalence').",
+   "fidelity_note": "Exact split on `MersenneReturnStatement` at G; the decision reads its predecessor `K .cubicBaseline` through `ExactLedger.get`.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -144,9 +144,9 @@
    "on_probed_closed_arm": true
   },
   "15": {
-   "producer": "`obstructionPackingRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/ObstructionPacking.lean:33), run in `selectedEntryPrefix` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Entry.lean:146-156)",
+   "producer": "`windowFreeDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/ObstructionPacking.lean:28)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "First conjunct of `Holds .maximalPacking`, `0 < windowPackingNumber 13`, is cor:p13-exists: P13-freeness would let `data.freeForcesTarget` (HSS) give a target cycle, contradicting `K .selection`.",
+   "fidelity_note": "Exact split `InducedPathFree G 13` / `HasInducedPath G 13`; the decision reads [14] `K .uncompressible`.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -174,11 +174,11 @@
    "on_probed_closed_arm": true
   },
   "18": {
-   "producer": "`localAlgebraRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/LocalAlgebra.lean:33); counts from `WindowAlgebra.labels_enumeration` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/WindowAlgebra.lean:170) via `spineData.labelCount`/`labelSizeDistribution`",
+   "producer": "`localAlgebraRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/LocalAlgebra.lean:30)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`Holds .localAlgebra` = for every induced window of the current object, `|Labels 13| = 399` and the size distribution's first seven entries are 13,60,122,122,63,17,2: exactly lem:labels, proved by a kernel `decide`. C_s and Ω₂ are definitions (`WindowCurvature.Safe`, `curvatureTwo`), for which the paper proves nothing.",
+   "fidelity_note": "`Holds .localAlgebra` = |Labels 13| = 399 and the size distribution 13,60,122,122,63,17,2 (lem:labels), read from the entry presentation fact `K .cubicBaseline` (its fifth conjunct), not from ambient data.",
    "complete": "YES",
-   "local": "PARTIAL: quantified over the current object's induced windows, but the content is independent of the object",
+   "local": "YES",
    "api": "OK",
    "difference": "Requires := []; the fact does not depend on any predecessor.",
    "on_probed_closed_arm": true
@@ -234,13 +234,13 @@
    "on_probed_closed_arm": true
   },
   "24": {
-   "producer": "`densityBudgetRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:3656), run at proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove/Bounded.lean:48, Survivor/BelowRateFailure/Bounded.lean:40, Survivor/DenseAtOrAbove/Bounded.lean:52",
+   "producer": "`densityBudgetRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/ColdFamilyClosure.lean:80)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`Holds .densityCap` = 2·rate·scales·p13 ≤ (scales+1)(3n + T(n)) + slack·rate·scales·T(n), the exact finite form of θ ≤ θ_win + o(1), derived from `.coldMass`, `.coldMassBounded`, `.coldAmbientCubic`, `.hotColdPartition` on [153]'s bounded arm. The high-entropy cap θ ≤ 0.01198… is not published here; in the paper it needs the prop:two-budget comparison ([49]–[52]).",
+   "fidelity_note": "`Holds .densityCap` = the window-only cap (θ ≤ θ_win + o(1)) and the high-entropy clause in the paper's conditional form: a joint window/remainder comparison realized by a state map on G's skeleton class gives (2^{rate·s·ν})^d·n^{|R₀|} ≤ B^d (eq:feasibility, θ ≤ 0.01198542083… + o(1)).",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "Only the window-only bound of prop:p13-density is on the ledger. The wrapper `selectedDensityBudget` (Assembly/Cold/Barrier.lean:78) is dead code; the Assembly calls `densityBudgetRow` inline.",
+   "difference": "None.",
    "on_probed_closed_arm": false
   },
   "25": {
@@ -344,9 +344,9 @@
    "on_probed_closed_arm": true
   },
   "35": {
-   "producer": "Branch D state carried unchanged from `branchDependenceRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/BranchDependence.lean); `lem:separated-testers` has no key (deleted, off the argument path)",
+   "producer": "Branch D state carried unchanged from `branchDependenceRow`; `lem:separated-testers` has no key (off the argument path)",
    "fidelity": "FAITHFUL-TRIVIAL",
-   "fidelity_note": "The Branch D state repeats [33]; the row appends `K .separatedTesters`, a literal statement of `lem:separated-testers` (outside contexts of a decomposition whose piece side is the two disjoint isomorphic balls live in their complement; an identifying quotient is context-universal or has a target-defect pair). Both halves are immediate, as in the paper (decomposition disjointness; excluded middle).",
+   "fidelity_note": "The Branch D state repeats [33]; `lem:separated-testers` is not on the argument path and publishes no key.",
    "complete": "YES",
    "local": "YES",
    "difference": "The Branch D state repeats [33]; `lem:separated-testers` is not on the argument path and has no ledger key.",
@@ -516,7 +516,7 @@
   "52": {
    "producer": "`entropyPackageRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/EntropyPackage.lean:35); `entropyCapBoundRow` (hypostructure/Hypostructure/Graph/Strategy/EntropyClosure.lean:73); low arms routed by `lowEntropyLargeBudgetRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/LowEntropyLargeBudget.lean:26)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .entropyPackageDemand` is the demand side of prop:two-budget (a) / eq:feasibility, (2^{rate·s·|P_hot|})^d · n^{|R|} ≤ jointPackageDemand^d, at the canonical packing. The accounting bound itself (demand ≤ skeleton budget) is `K .entropyCapBound`, proved by `entropyCapBoundRow` from `K .hotColdPartition`, `K .windowPackageSeparated` and `K .skeletonDominates`. Both nonrepetitive and wedge-free low arms go to Residual C unchanged, as prop:two-budget (c) says.",
+   "fidelity_note": "`K .entropyPackageDemand`: (2^{rate·s·|P₀|})^d·n^{|R₀|} ≤ jointPackageDemand^d, the package of all p₁₃ windows (eq:feasibility).",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -526,7 +526,7 @@
   "53": {
    "producer": "`entropyCapDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/EntropyCapDichotomy.lean:30)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Reads [48] and [52]; exact complements `K .entropyCapActive` (budget < demand·2^{K|R|−o(|R|)}) / `K .entropyCapBound` at P₀, with the forced obstruction bits of [48] (`forcedObstructionBits`).",
+   "fidelity_note": "`K .entropyCapActive` = skeletonBudget < jointPackageDemand·2^{K|R|−o(|R|)}, jointPackageDemand = 2^{rate·s·|P₀|}·remainderStates(R₀) (all p₁₃ windows, eq:entropy-cap), against its exact complement.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -534,10 +534,10 @@
    "on_probed_closed_arm": true
   },
   "54": {
-   "producer": "`entropyCapBoundRow` (hypostructure/Hypostructure/Graph/Strategy/EntropyClosure.lean:73) via `AtomicStrategy.runAndCloseIncompatible` with `instIncompatibleEntropyCapActiveBound` (hypostructure/Hypostructure/Graph/Strategy/EntropyClosure.lean:57)",
+   "producer": "`entropyCapBoundRow` (hypostructure/Hypostructure/Graph/Strategy/EntropyClosure.lean:104) via `runAndCloseIncompatible`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .entropyCapBound`: jointPackageDemand·2^{K|R|−o(|R|)} ≤ skeletonBudget. Retained-hot arm: via retainedCode (curvature code c·r ≥ forced bits by [48]) and `K .skeletonDominates`. All-cold arm: `entropyCapBound_allCold`, PAPER-ERROR [54] tex:9921.",
-   "complete": "YES",
+   "fidelity_note": "`K .entropyCapBound`: jointPackageDemand·2^F ≤ B. Proved when the window package of P₀ is retained; otherwise `entropyCapBound_unretained`, OPEN-CONSTRUCTION [54] tex:9921 (the joint realization of the all-window package, remainder states and forced bits is never constructed).",
+   "complete": "YES (OPEN-CONSTRUCTION hook)",
    "local": "YES",
    "api": "OK",
    "difference": "All-cold arm is a PAPER-ERROR sorry (independence claim not established).",
@@ -1522,17 +1522,17 @@
   "153": {
    "producer": "`coldMassDichotomy` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:350) at proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove.lean:46, proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove.lean:45, proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure.lean:143; linear-arm rows bridgeless/`coldReturnCorridorRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:390)/first-failure/`coldGermExtractionRow`/`coldGermCandidatesRow`/`coldGermFamilyPositiveRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:2408), run in proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove/Linear.lean:36-80",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Exact finite form of 'N_conf ≥ 9C/D_cold − o(n) > 0': decides `(9 + (δ+1)B_cold)·σ(G) < 9C` (`K .coldMassLinear`) vs its complement (`K .coldMassBounded` → [24] `densityBudgetRow`). The linear arm publishes the extracted disjoint candidate family and its positivity (`K .coldGermFamilyPositive`).",
-   "complete": "YES",
+   "fidelity_note": "Corridor state [30] at G's cut-state presentation (T(J) = entry and head interfaces, moving head half-edge and offset, clause-read declared coordinates), second representative pinned to `rowRepresentative`; (F2) exclusion is OPEN-CONSTRUCTION [153] tex:7268 (equivalent at G to: every corridor terminal or heavy before its first state repeat); [219] publishes the (F4) exact count; `K .coldExchangeBound` at G's routed corridors.",
+   "complete": "YES (OPEN-CONSTRUCTION hook)",
    "local": "YES",
    "api": "OK",
    "difference": "The asymptotic 'sufficiently large n' is replaced by an exact finite threshold comparison, which is sound. The first-failure rows are unannotated (`EG-NODE none`) sub-steps of this node. The wrapper `selectedColdMassDichotomy` is uninvoked.",
    "on_probed_closed_arm": false
   },
   "154": {
-   "producer": "`coldGermTrichotomyRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:2920), key `K .coldGermRealized` (2nd conjunct: `germ.trichotomy`), invoked at proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove/Linear.lean:82, proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove/Linear.lean:110, proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure/Linear.lean:102",
+   "producer": "`coldGermRealizationDichotomy` / `coldGermDistinctionDichotomy` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/GermTrichotomy.lean:135,158)",
    "fidelity": "FAITHFUL-TRIVIAL",
-   "fidelity_note": "Exhaustiveness 'Realizing ∨ Distinguishing ∨ Neutral' is `BoundedGerm.trichotomy`, which is excluded middle. That matches the manuscript's one-sentence 'G3 is the complement' argument.",
+   "fidelity_note": "G1 then G2 at node [153]'s extracted family, second representative pinned; each decision reads its predecessor.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -1552,7 +1552,7 @@
   "156": {
    "producer": "`closeIncompatible (K .coldGermSomeDistinguishing) (K .sparseSurplusSurvivor)` with `instIncompatibleColdGermSomeDistinguishingSurvivor` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/Basic.lean:51), lemma `sparseSurplusExit_of_distinguishing` (hypostructure/Hypostructure/Graph/Contracts/Spine/ColdGerm.lean)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "A hit-distinguished active configuration is the sparse exit (b); the surviving branch excludes it.",
+   "fidelity_note": "`K .coldGermRouted` at the extracted family (`CanonicalActiveColdGerm`): every shortening germ is distinguishing and not target-complete.",
    "complete": "YES (row fully defined); the G2 route is not discharged against `K .sparseSurplusSurvivor`/exit-(4) ledgers",
    "local": "YES",
    "api": "OK",
@@ -1560,9 +1560,9 @@
    "on_probed_closed_arm": false
   },
   "157": {
-   "producer": "`coldSameInterfaceTableRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:2987), invoked at proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove/Linear.lean:85, proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove/Linear.lean:113, proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure/Linear.lean:105; G3 via `coldGermTrichotomyRow` `K .coldGermSilent`",
+   "producer": "`coldSameInterfaceTableRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/GermTrichotomy.lean:62)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .coldSameInterfaceTable` covers three things. Every table row (over every Handoff predicate) is non-realizing and handed off or distinguishing, with neutral rows excluded via `K .uncompressible` (`row_closed`). The short self-return filter is included. G3 silent length-changing germs are refuted by `cor:uncompressible`. This is lem:cold-same-interface-table plus G3 compression.",
+   "fidelity_note": "Every table row / short self-return is non-realizing and enters a registry support (`ColdEntersHandoffRegistry`, tex 7234 'enters') or is distinguishing.",
    "complete": "YES (row fully defined); distinguishing/handoff rows are routed but not closed (same gap as [156])",
    "local": "YES",
    "api": "OK",
@@ -1610,10 +1610,10 @@
    "on_probed_closed_arm": false
   },
   "162": {
-   "producer": "`Assembly.Internal.nearCubicUnrealizedDense` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/UnrealizedDense.lean:18) and `Assembly.Internal.nearCubicBelowRateFailure` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure.lean:35): [22] `selectedBarrierDichotomy`, [146], [148]/[149], [150]–[153], and the linear arms proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove/Linear.lean:23, proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure/Linear.lean",
+   "producer": "`denseColdCorridorsTerminalRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/DenseTerminal.lean:27)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Either failed rate (τ≥1/4, or τ<1/4 with route-8 rate failure) runs the hot/cold pass on its literal ledger, which keeps `K .densePackingOverflow` and the failed-rate fact. [23]/[149] close. The [146] yes arm and the bounded arm of [153] return to [25]. The linear arm runs [153]–[157] and continues to [163].",
-   "complete": "YES",
+   "fidelity_note": "`K .denseColdCorridorsTerminal` on the dense residual only: OPEN-CONSTRUCTION [162] tex:7694 (needs every corridor inside R; not consumed on the absorbed branch).",
+   "complete": "YES (OPEN-CONSTRUCTION hook)",
    "local": "YES",
    "api": "OK",
    "difference": "The dense linear arm additionally runs `remainderNormalizationRow`/`remainderRelabelingEntropyRow` and `denseColdCorridorsTerminalRow` (the (F5) terminality of lem:dense-cold-pass) before the first-failure rows. G2 germs are not discharged here either (see [156]).",
@@ -1622,7 +1622,7 @@
   "163": {
    "producer": "`neutralEqualLengthTerminalRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:3095); `neutralGermSymmetryDichotomy` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:3264); invoked at proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove/Linear.lean:107,120 and proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure/Linear.lean:99,110",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .coldNeutralEqualLengthTerminal` marks a germ of the positive extracted family with a canonical representative of equal size, a cut-state reading, and the edge count, all proved from `K .selection` minimality. [163] decides whether that representative is graph-realized as a genuine second strand (`K .coldGenuineSecondStrand`) or not (`K .coldCanonicalNeutralConfiguration`).",
+   "fidelity_note": "[406] on the G2-silent arm ([605] read): the silent family's neutral equal-length configuration; dense form also carries [162]; split at `markedNeutralGerm?`.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -1730,9 +1730,9 @@
    "on_probed_closed_arm": false
   },
   "175": {
-   "producer": "`absorbedGermDichotomy` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/AbsorbedGerm.lean:61), in `selectedAbsorbedGermResidual` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Absorbed/Residual.lean:194)",
+   "producer": "`absorbedGermSplitRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/AbsorbedGerm.lean:32)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Exact complements `K .coldPositiveGerm` / `K .coldNoPositiveGerm` (new key, idx 1800); the per-half-edge split and the [177] fan data are deterministic facts on both arms.",
+   "fidelity_note": "Every eligible half-edge is a candidate or has its least heavy centre; every cross-window half-edge is a candidate (it joins two ambient-cubic window vertices).",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -1740,20 +1740,20 @@
    "on_probed_closed_arm": false
   },
   "176": {
-   "producer": "`selectedAbsorbedGermResidual` positive arm (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Absorbed/Residual.lean:194)",
+   "producer": "`absorbedNeutralConfigurationRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/NeutralTerminal.lean:56); `coldSelectedFamilyEmptyRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/AbsorbedGermFanEnvelope.lean:78)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "[154]: G1 closes, G2 closes against the sparse survivor; silent arm → [163]: genuine strand closes at [167]/[168]; canonical arm publishes Q = E and continues with the [177] complement.",
+   "fidelity_note": "Absorbed-branch (F5) configurations closed by [154]–[157], [163]–[168] without [162]'s dense terminality (`K .coldAbsorbedNeutralConfiguration`); on the no-positive/no-absorbed arm, G's selected family is empty and G has no ambient-cubic cold window (`K .coldSelectedFamilyEmpty`).",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The canonical Q = E arm continues through the fan data of the complement rather than closing (paper: closed by [165]-[166]).",
+   "difference": "lem:neutral-germ-symmetry's definition assumes the dense terminal configuration; the absorbed branch runs the split at the (F5) configuration (registered).",
    "on_probed_closed_arm": false
   },
   "177": {
-   "producer": "`absorbedGermFanDataRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:2598); `absorbedGermFanEnvelopeRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:2693); `Assembly.Internal.selectedAbsorbedFanChargeContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Absorbed/FanCharge.lean:24)",
+   "producer": "`absorbedGermFanEnvelopeRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/AbsorbedGermFanEnvelope.lean:50)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .absorbedGermFanData` retains the [153] package and, for every non-candidate half-edge, the least-high heavy centre with threshold-degree neighbours. `absorbedGermFanEnvelopeRow` builds the counted connected prefix core, H={z}, K_z=N(z), the arms and admissibility, and publishes `K .typeBFanEntry` (the [177]→[65] edge). The Type B continuation then runs on the same ledger.",
-   "complete": "YES",
+   "fidelity_note": "The paper's envelope at ε's first heavy centre z: decorations {z}, assigned neighbours the two corridor incidences, arms the corridor segments cut at first entry into the core Y ⊆ R (z ∉ Y, simple paths, admissible). The existence of Y is OPEN-CONSTRUCTION [177] tex:7932.",
+   "complete": "YES (OPEN-CONSTRUCTION hook)",
    "local": "YES",
    "api": "OK",
    "difference": "The fan charge tail ends at `SelectedRouteEightBoundary` (typeBSublinearResidual / route8QuotientResidual / route8JointBalance) through `selectedTypeBChargedRoute8Continuation`.",
@@ -1880,7 +1880,7 @@
   "187": {
    "producer": "`OtherReturnedOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:95); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:129); `PairTypeBOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean:54)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "An explicit disjunction of: `NearCubicTargetDefectOutcome` (`sparseTargetDefectResidual` ∧ `sparseTargetDefectStructure` ∧ `surplusAtOrBelow`); `PairTypeBOutcome` (`pairSystemEarlyOutcome` ∨ `pairIncrementEarlyOutcome`, with `typeBFanEntry`, `surplusAbove` and `sparseSurplusSurvivor`); and `typeBSublinearResidual`, `route8QuotientResidual`, `route8RateFails` and `coldBranchClosed`, each paired with `surplusAtOrBelow`. This is exactly the six-way list in thm:main (vi).",
+   "fidelity_note": "`K .coldBranchClosed`: no shortening silent germ of the extracted family; no table row / self-return that neither enters a registry support nor is distinguishing.",
    "complete": "YES: exact routing; endpoint remains open",
    "local": "YES",
    "api": "OK",

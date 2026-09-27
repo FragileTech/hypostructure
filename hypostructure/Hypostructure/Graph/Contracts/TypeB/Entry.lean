@@ -230,23 +230,25 @@ theorem typeBFanEntry_of_decoratedHandoff
 
 
 set_option maxHeartbeats 8000000 in
-/-- `lem:absorbed-germ-fan-data` (ii): at every selected half-edge, the first
-high centre of the retained corridor, with the connected first-failure prefix
-as core, is an admissible decorated handoff (node `[177]`). -/
+/-- `lem:absorbed-germ-fan-data` (ii) (node `[177]`): at every selected
+half-edge `ε` outside the subcubic candidates, the two corridor segments at the
+first heavy centre `z` of `ε`'s retained corridor are the arms of an admissible
+decorated handoff envelope `(Y, {z})` over the counted remainder core `Y` of
+`coldAbsorbedRemainderCore` (the paper's `lem:typeA-high-degree-handoff`
+configuration).  Everything except the existence of `Y` is proved here from G's
+facts: the incidences are distinct neighbours of `z`, the segments are simple
+walks avoiding `z`, the arms are cut at their first entry into `Y`, and the
+fan-safe and admissibility clauses come from the counterexample and node
+`[14]`/`[25]`--`[27]`. -/
 theorem absorbedGermDecoratedAssignedSupport
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (uncompressible : UncompressibleStatement data object)
     (normalized : RemainderNormalizedStatement data object)
     (fanData : AbsorbedGermFanDataStatement data object)
-    (three : 3 ≤ data.threshold)
     (degenerate : ¬ data.LengthOK 2) :
     AbsorbedGermDecoratedAssignedSupportStatement data object := by
   classical
-  letI : FinEnum object.Vertex :=
-    object.vertices
-  letI : Fintype object.Vertex := inferInstance
-  letI : DecidableRel object.graph.Adj :=
-    object.decideAdj
+  letI : FinEnum object.Vertex := object.vertices
   simp only [AbsorbedGermDecoratedAssignedSupportStatement]
   change AbsorbedGermFanDataStatement data object at fanData
   simp only [AbsorbedGermFanDataStatement] at fanData
@@ -256,166 +258,80 @@ theorem absorbedGermDecoratedAssignedSupport
   obtain ⟨firstIndex, firstBound, high, earlierBound,
       neighboursCubic⟩ := fanData epsilon notCandidate
   let classified := coldRoutedClassified data object routing
-  let state := classified.state
-  let stateOne := Classical.choose_spec state
-  let componentAt := Classical.choose stateOne
-  let stateTwo := Classical.choose_spec stateOne
-  let corridorAt := Classical.choose stateTwo
-  let stateThree := Classical.choose_spec stateTwo
-  let presentationAt := Classical.choose stateThree
-  let stateFour := Classical.choose_spec stateThree
-  let indexAt := Classical.choose stateFour
-  let routed : ColdEligibleHalfEdge data object := epsilon
-  let component := componentAt routed
-  let corridor := corridorAt routed
-  let _presentation := presentationAt routed
-  let _index := indexAt routed
+  let corridor := coldOccurrenceCorridorAt data object classified epsilon
   let centre := corridor.head firstIndex
   change data.threshold < object.degree centre at high
   change (∀ neighbour : object.Vertex,
     object.graph.Adj centre neighbour →
       object.degree neighbour = data.threshold) at neighboursCubic
-  let traceEnd := coldRoutedTraceEnd data object routing epsilon
-  change firstIndex.1 ≤ traceEnd at firstBound
-  -- The first failure occurs on entering `z` (F4): the counted core is the
-  -- prefix of the corridor through `z`.
-  let core := corridor.prefixSupport firstIndex.1
-  refine ⟨centre, core, firstIndex, rfl, firstBound, high, earlierBound,
-    neighboursCubic, rfl, ?_⟩
-  have centreCore : centre ∈ core := by
-    apply (corridor.mem_prefixSupport firstIndex.1 centre).2
-    refine ⟨corridor.inside.1.getVert firstIndex.1, ?_, rfl⟩
-    have member := SimpleGraph.Walk.getVert_mem_support
-      (corridor.inside.1.take firstIndex.1) firstIndex.1
-    simpa only [SimpleGraph.Walk.take_getVert, Nat.min_self] using member
-  -- `z` is the only high vertex of the prefix through `z`.
-  have onlyCentre : Graph.TypeBRefinedSupport.centres object data.threshold core ⊆
-      {centre} := by
-    intro vertex member
-    obtain ⟨inCore, vertexHigh⟩ := Graph.TypeBRefinedSupport.mem_centres.mp member
-    obtain ⟨inner, innerMem, rfl⟩ :=
-      (corridor.mem_prefixSupport firstIndex.1 vertex).1 inCore
-    obtain ⟨index, indexEq, indexLe⟩ :=
-      (SimpleGraph.Walk.mem_support_iff_exists_getVert).1 innerMem
-    rw [SimpleGraph.Walk.take_getVert] at indexEq
-    have takeLength := SimpleGraph.Walk.take_length corridor.inside.1 firstIndex.1
-    have indexLeFirst : index ≤ firstIndex.1 := by omega
-    have indexLt : index < corridor.inside.1.length + 1 := by
-      have := firstIndex.2
-      omega
-    rw [Nat.min_eq_right indexLeFirst] at indexEq
-    rcases Nat.lt_or_eq_of_le indexLeFirst with before | same
-    · exfalso
-      have low : object.degree (corridor.inside.1.getVert index).1 ≤
-          data.threshold := earlierBound ⟨index, indexLt⟩ before
-      rw [indexEq] at low
-      simp only [Graph.IsHighCentre] at vertexHigh
-      omega
-    · rw [Finset.mem_singleton, ← indexEq, same]
-      rfl
-  refine ⟨centreCore, onlyCentre, ?_⟩
-  have coreInside : core ⊆ object.remainderSupport
-      (canonicalWindowPacking data object) := by
-    exact (corridor.prefixSupport_mono firstBound).trans
-      (Contracts.Spine.coldAbsorbedPrefix_subset_remainder data object
-        routing epsilon notCandidate)
-  have avoids : ¬ Graph.HasCycleWithLength data.LengthOK
-      object := avoids
+  obtain ⟨core, connected, coreInside, centreOut, meetsEntry, meetsExit⟩ :=
+    Contracts.Spine.coldAbsorbedRemainderCore data object routing epsilon
+      notCandidate firstIndex firstBound high earlierBound
+  have outside : Graph.ColdCorridor.IsOutsideComponent object
+      (coldCorridorWindows data object)
+      (coldOccurrenceComponentAt data object classified epsilon) :=
+    (coldOccurrenceStateFacts data object classified epsilon).1
+  let i := firstIndex.1
+  have iLe : i ≤ corridor.inside.1.length := Nat.lt_succ_iff.mp firstIndex.2
+  have centreAt : centre = corridor.vertexAt i := rfl
+  let entry := corridor.entryNeighbour i
+  let exit := corridor.exitNeighbour i
+  have different : entry ≠ exit :=
+    corridor.entryNeighbour_ne_exitNeighbour outside iLe
+  let assigned : Finset object.Vertex := {entry, exit}
+  let tail : object.Vertex → List object.Vertex := fun first =>
+    if first = entry then corridor.entryTail i else corridor.exitTail i
+  have tailEntry : tail entry = corridor.entryTail i := if_pos rfl
+  have tailExit : tail exit = corridor.exitTail i := if_neg different.symm
+  have cases' : ∀ first ∈ assigned, first = entry ∨ first = exit := by
+    intro first member
+    simpa [assigned] using member
   have denied : ∀ c a b,
       ¬ handoffAbsorbing data object
         (canonicalWindowPacking data object) c a b :=
     fun _ _ _ collision => avoids
       (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
         degenerate collision)
-  let assigned := object.graph.neighborFinset centre
-  let arm := fun next : object.Vertex =>
-    if next ∈ core then [next] else [next, centre]
-  let envelope : Graph.DecoratedHandoff.Envelope object
-      data.LengthOK (handoffHighDegree data object)
-      (handoffAbsorbing data object
-        (canonicalWindowPacking data object)) :=
-    { core := core
-      decorations := {centre}
-      decorations_high := by
-        intro current member
-        simp only [Finset.mem_singleton] at member
-        simpa [member] using high
-      assigned := fun _ => assigned
-      assigned_nonempty := by
-        intro current member
-        simp only [Finset.mem_singleton] at member
-        subst current
-        apply Finset.card_pos.mp
-        rw [show assigned.card = object.degree centre by
-          simp [assigned, Graph.FiniteObject.degree,
-            SimpleGraph.card_neighborFinset_eq_degree]]
-        exact Nat.zero_lt_of_lt high
-      assigned_adj := by
-        intro current member next nextMember
-        simp only [Finset.mem_singleton] at member
-        subst current
-        exact (SimpleGraph.mem_neighborFinset _ _ _).1 nextMember
-      arm := fun _ next => arm next
-      arm_issued := by
-        intro current member next nextMember
-        simp only [Finset.mem_singleton] at member
-        subst current
-        by_cases nextCore : next ∈ core <;> simp [arm, nextCore]
-      arm_chain := by
-        intro current member next nextMember
-        simp only [Finset.mem_singleton] at member
-        subst current
-        have adjacent :=
-          (SimpleGraph.mem_neighborFinset _ _ _).1 nextMember
-        by_cases nextCore : next ∈ core
-        · simp [arm, nextCore]
-        · simpa [arm, nextCore] using adjacent.symm
-      arm_nodup := by
-        intro current member next nextMember
-        simp only [Finset.mem_singleton] at member
-        subst current
-        have adjacent :=
-          (SimpleGraph.mem_neighborFinset _ _ _).1 nextMember
-        by_cases nextCore : next ∈ core
-        · simp [arm, nextCore]
-        · simp [arm, nextCore, adjacent.ne.symm]
-      arm_lands := by
-        intro current member next nextMember
-        simp only [Finset.mem_singleton] at member
-        subst current
-        by_cases nextCore : next ∈ core
-        · exact ⟨next, by simp [arm, nextCore], nextCore⟩
-        · exact ⟨centre, by simp [arm, nextCore], centreCore⟩
-      arm_interior := by
-        intro current member next nextMember vertex vertexMember alternative
-        simp only [Finset.mem_singleton] at member
-        subst current
-        have adjacent :=
-          (SimpleGraph.mem_neighborFinset _ _ _).1 nextMember
-        by_cases nextCore : next ∈ core
-        · simp only [arm, if_pos nextCore, List.mem_singleton] at vertexMember
-          simp [vertexMember, arm, nextCore]
-        · simp only [arm, if_neg nextCore, List.mem_cons,
-            List.not_mem_nil, or_false] at vertexMember
-          rcases vertexMember with rfl | rfl
-          · exfalso
-            simp only [Finset.mem_singleton] at alternative
-            rcases alternative with inCore | equal | equal
-            · exact nextCore inCore
-            · exact adjacent.ne equal.symm
-            · exact adjacent.ne equal.symm
-          · simp [arm, nextCore]
-      fanSafe := by
-        intro current member first firstMember second secondMember different
-        simp only [Finset.mem_singleton] at member
-        subst current
-        have firstAdj :=
-          (SimpleGraph.mem_neighborFinset _ _ _).1 firstMember
-        have secondAdj :=
-          (SimpleGraph.mem_neighborFinset _ _ _).1 secondMember
-        exact ⟨Graph.DecoratedHandoff.fanSafe_geometric firstAdj secondAdj
-            different avoids,
-          denied centre first second⟩ }
+  have adjacent : ∀ first ∈ assigned, object.graph.Adj centre first := by
+    intro first member
+    rcases cases' first member with rfl | rfl
+    · exact corridor.adj_entryNeighbour iLe
+    · exact corridor.adj_exitNeighbour iLe
+  let envelope := Graph.DecoratedHandoff.envelopeOfTails data.LengthOK
+    (handoffHighDegree data object)
+    (handoffAbsorbing data object (canonicalWindowPacking data object))
+    core centre high assigned ⟨entry, by simp [assigned]⟩ adjacent tail
+    (by
+      intro first member
+      rcases cases' first member with rfl | rfl
+      · rw [tailEntry]; exact corridor.entryTail_head? i
+      · rw [tailExit]; exact corridor.exitTail_head? i)
+    (by
+      intro first member
+      rcases cases' first member with rfl | rfl
+      · rw [tailEntry]; exact corridor.entryTail_isChain i iLe
+      · rw [tailExit]; exact corridor.exitTail_isChain i iLe)
+    (by
+      intro first member
+      rcases cases' first member with rfl | rfl
+      · rw [tailEntry]; exact corridor.entryTail_nodup outside i iLe
+      · rw [tailExit]; exact corridor.exitTail_nodup outside i iLe)
+    (by
+      intro first member
+      rcases cases' first member with rfl | rfl
+      · rw [tailEntry, centreAt]; exact corridor.vertexAt_not_mem_entryTail outside iLe
+      · rw [tailExit, centreAt]; exact corridor.vertexAt_not_mem_exitTail outside iLe)
+    (by
+      intro first member
+      rcases cases' first member with rfl | rfl
+      · rw [tailEntry]; exact meetsEntry
+      · rw [tailExit]; exact meetsExit)
+    (by
+      intro first firstMember second secondMember different'
+      exact ⟨Graph.DecoratedHandoff.fanSafe_geometric
+          (adjacent first firstMember) (adjacent second secondMember)
+          different' avoids,
+        denied centre first second⟩)
   have coreSafe : handoffWindowFree data object core := by
     constructor
     · intro window subset induced
@@ -430,27 +346,15 @@ theorem absorbedGermDecoratedAssignedSupport
       (handoffWindowFree data object) envelope :=
     Graph.DecoratedHandoff.admissible_of_envelope avoids coreSafe
       (handoffUncompressible_of_uncompressible uncompressible)
-  have assignedTwo : 1 < assigned.card := by
-    rw [show assigned.card = object.degree centre by
-      simp [assigned, Graph.FiniteObject.degree,
-        SimpleGraph.card_neighborFinset_eq_degree]]
-    have thresholdLower := three
-    omega
-  obtain ⟨first, firstMember, second, secondMember, different⟩ :=
-    Finset.one_lt_card.mp assignedTwo
-  have firstAssigned : first ∈ envelope.assigned centre := by
-    simpa [envelope] using firstMember
-  have secondAssigned : second ∈ envelope.assigned centre := by
-    simpa [envelope] using secondMember
-  refine And.intro (corridor.prefixSupport_connectedOn firstIndex.1) ?_
-  refine And.intro coreInside ?_
-  refine Exists.intro envelope ?_
-  refine And.intro rfl ?_
-  refine And.intro rfl ?_
-  refine And.intro admissible ?_
-  refine Exists.intro first ?_
-  refine Exists.intro second ?_
-  exact And.intro different (And.intro firstAssigned secondAssigned)
+  refine ⟨(centre, core), firstIndex, rfl, firstBound, high, earlierBound,
+    neighboursCubic, connected, coreInside, centreOut, different, envelope, rfl, rfl,
+    rfl, ?_, ?_, ?_, admissible⟩
+  · change Graph.DecoratedHandoff.firstEntryArm core (tail entry) = _
+    rw [tailEntry]
+  · change Graph.DecoratedHandoff.firstEntryArm core (tail exit) = _
+    rw [tailExit]
+  · exact Graph.DecoratedHandoff.centre_not_mem_arm_envelopeOfTails (object := object)
+      _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
 
 
@@ -469,8 +373,9 @@ theorem typeBAbsorbedHalfEdge_split
 /-- **Node `[177]`, the charge of every discarded half-edge**
 (`lem:absorbed-germ-fan-data`: "every half-edge it discards is charged to the
 Type B ledger"): every selected half-edge outside the subcubic candidates has its
-own pinned absorbed Type B support `(J_ε, {z_ε})`, and that support's negative
-part is charged to the surplus of `z_ε` (`lem:typeB-bridge-deficit-bound`). -/
+own pinned absorbed Type B support `(Y_ε, H_ε)`, `H_ε = {z_ε} ∪ centres(Y_ε)`
+(`def:typeB-assigned-ledger`), and that support's negative part is charged to
+the surplus of `H_ε` (`lem:typeB-bridge-deficit-bound`). -/
 theorem typeBAbsorbedCharge
     (supports : AbsorbedGermDecoratedAssignedSupportStatement data object)
     (baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex)
@@ -482,18 +387,19 @@ theorem typeBAbsorbedCharge
   intro epsilon outside
   obtain ⟨routing, notCandidate⟩ := outside
   obtain ⟨_routing, witnesses⟩ := supports
-  obtain ⟨centre, core, handoffEq, _handoff⟩ :=
+  obtain ⟨⟨centre, core⟩, handoffEq, _handoff⟩ :=
     canonicalAbsorbedHandoff_spec routing (witnesses epsilon notCandidate)
-  obtain ⟨high, centreCore, onlyCentre, inside⟩ := absorbedHandoff_facts handoffEq
-  refine ⟨core, centre, ?_, high, centreCore, onlyCentre, inside, ?_⟩
+  obtain ⟨high, inside⟩ := absorbedHandoff_facts handoffEq
+  refine ⟨core, centre, ?_, high, inside, ?_⟩
   · simp [canonicalTypeBAbsorbedSupportAt, handoffEq]
   · intro residual
     exact Graph.TypeBEnvelopeCharge.bridgeDeficitBound_assigned object core
-      {centre} massSlack baseline onlyCentre residual
+      _ massSlack baseline centres_subset_absorbedAssignedCentres residual
 
 /-- Node `[177]`: at `G`'s canonical absorbed half-edge `ε`, which lies outside
 the subcubic candidates, its pinned charge (`typeBAbsorbedCharge`) gives the
-absorbed Type B support `(prefix of ε through z, {z})`. -/
+absorbed Type B support `(Y, {z} ∪ centres(Y))`: the counted remainder core of
+its canonical envelope `(Y, {z})` and its assigned fan centres. -/
 theorem typeBAbsorbedLane_of_halfEdge
     (fails : ExactCollisionFailsStatement data object)
     (fanData : AbsorbedGermFanDataStatement data object)
@@ -504,18 +410,18 @@ theorem typeBAbsorbedLane_of_halfEdge
   obtain ⟨epsilon, edgeEq⟩ := outside
   obtain ⟨core, centre, supportEq, _facts⟩ :=
     charge epsilon (canonicalChoice_spec_of_eq_some edgeEq)
-  refine ⟨core, {centre}, fails, fanData, ?_⟩
+  refine ⟨core, absorbedAssignedCentres data object centre core, fails, fanData, ?_⟩
   simp [canonicalTypeBAbsorbedSupport, edgeEq, supportEq]
 
 /-- Node `[177]` → `[65]`: the absorbed Type B support enters the common Type B
-entry with its single high centre. -/
+entry with its assigned high centres, `z` among them. -/
 theorem typeBFanEntry_of_absorbedLane {core centres : Finset object.Vertex}
     (lane : TypeBAbsorbedLane data object core centres) :
     TypeBFanEntryStatement data object := by
   obtain ⟨_epsilon, _edgeEq, supportAt⟩ := absorbedSupport_eq_some lane.2.2
   obtain ⟨centre, _handoffEq, rfl⟩ := absorbedSupportAt_eq_some supportAt
-  exact Or.inl ⟨core, {centre}, Or.inr (Or.inr lane),
-    ⟨centre, Finset.mem_singleton_self centre⟩, TypeBAbsorbedLane.high lane⟩
+  exact Or.inl ⟨core, _, Or.inr (Or.inr lane),
+    ⟨centre, centre_mem_absorbedAssignedCentres⟩, TypeBAbsorbedLane.high lane⟩
 
 /-- Node `[175]` yes → `[177]` → `[65]`. -/
 theorem typeBFanEntry_of_absorbedHalfEdge

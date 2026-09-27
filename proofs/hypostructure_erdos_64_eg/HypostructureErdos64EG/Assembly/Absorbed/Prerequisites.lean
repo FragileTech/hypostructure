@@ -1,4 +1,3 @@
-import Hypostructure.Graph.Strategy.ColdCorridorRows.DenseTerminal
 import HypostructureErdos64EG.Assembly.NearCubic.ColdPass
 
 /-!
@@ -19,9 +18,11 @@ universe u w
 
 /-- **Node `[174]`**: the absorbed configurations are the cold corridors whose
 charge node `[153]`'s bounded arm discarded.  Their return corridors
-(`lem:bridgeless`), states, terminality on the dense residual, first failures
-and candidate family are published by the registered node-`[153]` owners on
-this literal residual; `[175]` only queries them. -/
+(`lem:bridgeless`), states, first failures and candidate family are published
+by the registered node-`[153]` owners on this literal residual; `[175]` only
+queries them.  Node `[162]`'s terminality is not run here: the paper states it
+only on the dense-packing residual (`lem:dense-cold-pass`), and node `[176]`
+does not use it (`lem:absorbed-germ-fan-data` (i)). -/
 noncomputable def selectedAbsorbedGermPrerequisites
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -34,7 +35,7 @@ noncomputable def selectedAbsorbedGermPrerequisites
     [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint
       [K .coldReturnCorridors, K .coldCorridorState,
-        K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
+        K .coldFirstFailureOccurrence,
         K .coldFailureCycle, K .coldFailureDefectRoute,
         K .coldFailureCompression, K .coldHandoffTransfer,
         K .coldFailureRouting, K .coldExchangeBound,
@@ -44,11 +45,9 @@ noncomputable def selectedAbsorbedGermPrerequisites
         K .coldFailureRouting :: K .coldHandoffTransfer ::
         K .coldFailureCompression ::
         K .coldFailureDefectRoute :: K .coldFailureCycle ::
-        K .coldFirstFailureOccurrence :: K .denseColdCorridorsTerminal ::
+        K .coldFirstFailureOccurrence ::
         K .coldCorridorState :: K .coldReturnCorridors :: known) :=
   let state := nearCubicColdCorridorState history
-  let terminal :=
-    (denseColdCorridorsTerminalRow (data := spineData)).run state (by key_fresh)
-  nearCubicColdCandidates terminal
+  nearCubicColdCandidates state
 
 end HypostructureErdos64EG

@@ -40,7 +40,9 @@ upstream existence fails.
   remaining `∃` is over the occurrence index inside the fixed family.
 * `markedNeutralGerm?` — node `[406]`'s marked neutral equal-length germ and its
   marked canonical exchange representative: `Classical.choose` of the
-  `∃ germ representative` of `NeutralEqualLengthTerminalConfigurationStatement`.
+  `∃ germ representative` of `NeutralConfigurationStatement` (the silent
+  family's configuration, carried by node `[406]` on the dense residual and by
+  its absorbed-branch form `K .coldAbsorbedNeutralConfiguration`).
   The pre-refactor decision `neutralGermSymmetryDichotomy` (d2ded0e
   `ColdCorridorRows/NeutralTerminal.lean`) set `germ := Classical.choose
   neutral.2` and `representative := Classical.choose (Classical.choose_spec
@@ -73,16 +75,26 @@ noncomputable def MarkedNeutralGermSpec (data : Parameters)
     (marked : MarkedNeutralGermData data object) : Prop :=
   NeutralEqualLengthTerminalConfigurationAt data object marked.1 marked.2
 
+theorem neutralConfiguration_iff (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    NeutralConfigurationStatement data object ↔
+      (¬ ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object,
+        CanonicalActiveColdGerm data object germ ∧ germ.Distinguishing) ∧
+        ∃ marked, MarkedNeutralGermSpec data object marked := by
+  constructor
+  · rintro ⟨silent, germ, representative, at_⟩
+    exact ⟨silent, ⟨germ, representative⟩, at_⟩
+  · rintro ⟨silent, ⟨germ, representative⟩, at_⟩
+    exact ⟨silent, germ, representative, at_⟩
+
 theorem neutralEqualLengthTerminal_iff (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     NeutralEqualLengthTerminalConfigurationStatement data object ↔
       DenseColdCorridorsTerminalStatement data object ∧
-        ∃ marked, MarkedNeutralGermSpec data object marked := by
-  constructor
-  · rintro ⟨terminal, germ, representative, at_⟩
-    exact ⟨terminal, ⟨germ, representative⟩, at_⟩
-  · rintro ⟨terminal, ⟨germ, representative⟩, at_⟩
-    exact ⟨terminal, germ, representative, at_⟩
+        NeutralConfigurationStatement data object :=
+  Iff.rfl
 
 /-- **The marked neutral germ**: `Classical.choose` of node `[406]`'s
 `∃ germ representative`. -/
@@ -123,13 +135,21 @@ theorem markedNeutralGerm?_eq_none_iff (data : Parameters)
   unfold markedNeutralGerm?
   split <;> simp_all
 
-/-- On node `[406]`'s ledger the marked germ exists. -/
+/-- On node `[406]`'s ledger (dense or absorbed form) the marked germ exists. -/
+theorem markedNeutralGerm?_spec_of_neutral (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (neutral : NeutralConfigurationStatement data object) :
+    ∃ marked, markedNeutralGerm? data object = some marked ∧
+      MarkedNeutralGermSpec data object marked :=
+  markedNeutralGerm?_spec data object
+    ((neutralConfiguration_iff data object).1 neutral).2
+
+/-- On node `[406]`'s dense ledger the marked germ exists. -/
 theorem markedNeutralGerm?_spec_of_terminal (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (neutral : NeutralEqualLengthTerminalConfigurationStatement data object) :
     ∃ marked, markedNeutralGerm? data object = some marked ∧
       MarkedNeutralGermSpec data object marked :=
-  markedNeutralGerm?_spec data object
-    ((neutralEqualLengthTerminal_iff data object).1 neutral).2
+  markedNeutralGerm?_spec_of_neutral data object neutral.2
 
 end Hypostructure.Graph.Strategy.Spine

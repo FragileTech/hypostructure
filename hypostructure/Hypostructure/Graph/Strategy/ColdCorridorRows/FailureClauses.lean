@@ -20,7 +20,7 @@ variable {data : Data.{u}}
 occurrence: an (F2) first failure of G's retained corridor is a named sparse
 surplus exit of G (`Contracts.Spine.coldFailureDefectRoutes_of_survivor`,
 discharged on the surviving branch from `K .sparseSurplusSurvivor` through the
-paper's exclusion claim, PAPER-ERROR [153] tex:7268). -/
+paper's exclusion claim, OPEN-CONSTRUCTION [153] tex:7268). -/
 @[reducible] noncomputable def coldFailureDefectRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureDefect

@@ -73,13 +73,13 @@ theorem absorbedSupportAt_eq_some {epsilon : ColdEligibleHalfEdge data object}
     (support : canonicalTypeBAbsorbedSupportAt data object epsilon =
       some (core, centres)) :
     ∃ centre, canonicalAbsorbedHandoff data object epsilon = some (centre, core) ∧
-      centres = {centre} := by
+      centres = absorbedAssignedCentres data object centre core := by
   classical
   unfold canonicalTypeBAbsorbedSupportAt at support
-  obtain ⟨pair, pairEq, same⟩ := Option.map_eq_some_iff.mp support
-  simp only [Prod.mk.injEq] at same
-  obtain ⟨rfl, rfl⟩ := same
-  exact ⟨pair.1, pairEq, rfl⟩
+  obtain ⟨⟨centre, core'⟩, handoffEq, pair⟩ := Option.map_eq_some_iff.mp support
+  simp only [Prod.mk.injEq] at pair
+  obtain ⟨rfl, rfl⟩ := pair
+  exact ⟨centre, handoffEq, rfl⟩
 
 theorem absorbedSupport_eq_some {core centres : Finset object.Vertex}
     (support : canonicalTypeBAbsorbedSupport data object = some (core, centres)) :
@@ -87,19 +87,17 @@ theorem absorbedSupport_eq_some {core centres : Finset object.Vertex}
       canonicalTypeBAbsorbedSupportAt data object epsilon = some (core, centres) :=
   Option.bind_eq_some_iff.mp support
 
-/-- The pinned case-(ii) handoff of a selected half-edge: its centre is high, it
-lies in its core, it is the only high vertex of its core, and the core lies in
-the canonical remainder. -/
+/-- The pinned case-(ii) handoff `(z, Y)` of a selected half-edge: its centre
+`z` is high and its counted core `Y` lies in the canonical remainder. -/
 theorem absorbedHandoff_facts {epsilon : ColdEligibleHalfEdge data object}
     {centre : object.Vertex} {core : Finset object.Vertex}
     (selected : canonicalAbsorbedHandoff data object epsilon = some (centre, core)) :
-    Graph.IsHighCentre object data.threshold centre ∧ centre ∈ core ∧
-      Graph.TypeBRefinedSupport.centres object data.threshold core ⊆ {centre} ∧
+    Graph.IsHighCentre object data.threshold centre ∧
       core ⊆ object.remainderSupport (canonicalWindowPacking data object) := by
   obtain ⟨_routing, witness⟩ := canonicalAbsorbedHandoff_spec_of_eq_some selected
-  obtain ⟨_firstIndex, _centreEq, _indexLe, high, _earlier, _cubic, _coreEq,
-    centreCore, onlyCentre, _connected, inside, _envelope⟩ := witness
-  exact ⟨high, centreCore, onlyCentre, inside⟩
+  obtain ⟨_firstIndex, _centreEq, _indexLe, high, _earlier, _cubic,
+    _connected, inside, _rest⟩ := witness
+  exact ⟨high, inside⟩
 
 /-! ## Lane membership -/
 
@@ -191,18 +189,19 @@ theorem TypeBAbsorbedLane.high {core centres : Finset object.Vertex}
   obtain ⟨_epsilon, _edgeEq, supportAt⟩ := absorbedSupport_eq_some support
   obtain ⟨centre, handoffEq, rfl⟩ := absorbedSupportAt_eq_some supportAt
   intro vertex member
-  rw [Finset.mem_singleton] at member
-  subst member
-  exact (absorbedHandoff_facts handoffEq).1
+  rcases mem_absorbedAssignedCentres.mp member with rfl | inCore
+  · exact (absorbedHandoff_facts handoffEq).1
+  · exact (Graph.TypeBRefinedSupport.mem_centres.mp inCore).2
 
-/-- On the absorbed lane the core's only high vertex is the assigned centre. -/
+/-- On the absorbed lane the core's high vertices are assigned centres
+(`H_X = {z} ∪ centres(Y)`, `def:typeB-assigned-ledger`). -/
 theorem TypeBAbsorbedLane.centres_subset {core centres : Finset object.Vertex}
     (lane : TypeBAbsorbedLane data object core centres) :
     Graph.TypeBRefinedSupport.centres object data.threshold core ⊆ centres := by
   obtain ⟨_fails, _fanData, support⟩ := lane
   obtain ⟨_epsilon, _edgeEq, supportAt⟩ := absorbedSupport_eq_some support
-  obtain ⟨centre, handoffEq, rfl⟩ := absorbedSupportAt_eq_some supportAt
-  exact (absorbedHandoff_facts handoffEq).2.2.1
+  obtain ⟨_centre, _handoffEq, rfl⟩ := absorbedSupportAt_eq_some supportAt
+  exact centres_subset_absorbedAssignedCentres
 
 theorem TypeBLaneMember.high {core centres : Finset object.Vertex}
     (member : TypeBLaneMember data object core centres) :
@@ -214,8 +213,8 @@ theorem TypeBLaneMember.high {core centres : Finset object.Vertex}
 
 /-- The core of the Type B support lies in the remainder `R(P₀)` of the fixed
 packing: on the ordinary and decorated lanes it is the canonical piece `X₀`, and
-on the absorbed lane it is the retained first-failure prefix, which node
-`[177]` places inside the canonical remainder. -/
+on the absorbed lane it is the counted remainder core of node `[177]`'s
+envelope. -/
 theorem TypeBLaneMember.core_subset_remainder {core centres : Finset object.Vertex}
     (member : TypeBLaneMember data object core centres) :
     core ⊆ object.remainderSupport (canonicalWindowPacking data object) := by
@@ -231,12 +230,12 @@ theorem TypeBLaneMember.core_subset_remainder {core centres : Finset object.Vert
   · obtain ⟨_fails, _fanData, support⟩ := lane
     obtain ⟨_epsilon, _edgeEq, supportAt⟩ := absorbedSupport_eq_some support
     obtain ⟨_centre, handoffEq, _centresEq⟩ := absorbedSupportAt_eq_some supportAt
-    exact (absorbedHandoff_facts handoffEq).2.2.2
+    exact (absorbedHandoff_facts handoffEq).2
 
 /-- **On every lane the core's high centres are assigned**: `H_X` contains the
 high vertices of `Y_X` (`def:canonical-decomp`).  Ordinary: `H_X` is exactly
-the core's centres; decorated: the core `X₀` carries no surplus; absorbed: the
-core is the prefix through `z`, whose only high vertex is `z`. -/
+the core's centres; decorated: the core `X₀` carries no surplus; absorbed:
+`H_X = {z} ∪ centres(Y)` by `def:typeB-assigned-ledger`. -/
 theorem TypeBLaneMember.centres_subset {core centres : Finset object.Vertex}
     (member : TypeBLaneMember data object core centres) :
     Graph.TypeBRefinedSupport.centres object data.threshold core ⊆ centres := by

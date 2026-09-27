@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Statements.Spine
 import Hypostructure.Graph.Contracts.Spine.ColdSubcubicCharge
+import Hypostructure.Graph.Contracts.Spine.ColdHandoff
 import Hypostructure.Graph.ColdIncrementArithmetic
 import Hypostructure.Graph.ColdGermFamily
 import Hypostructure.Graph.ColdGermOverlap
@@ -106,32 +107,12 @@ theorem coldCorridorState_of_corridors (data : Parameters)
         (Graph.HasCycleWithLength data.LengthOK) object :=
     fun support bounded connected proper record => by
       let atom := Graph.ColdCorridor.rowAtom object support connected proper
-      let reading : Graph.CanonicalPiece atom.interface → Prop :=
-        fun candidate =>
-          candidate.toPiece.boundaryDegreeProfile =
-              atom.piece.boundaryDegreeProfile ∧
-            ∀ outside : Graph.OutsideContext atom.interface,
-              Graph.MinimumDegreeAtLeast data.threshold
-                  (Graph.glue atom.piece outside) →
-                Graph.MinimumDegreeAtLeast data.threshold
-                  (Graph.glue candidate.toPiece outside)
-      have sourceReading : reading atom.piece.toCanonical := by
-        refine ⟨?_, ?_⟩
-        · rw [Graph.BoundaryPiece.toCanonical_toPiece]
-          exact atom.piece.transport_boundaryDegreeProfile _
-        · intro outside sourceBaseline
-          exact
-            ((Graph.minimumDegreeAtLeast_isomorphismInvariant
-              data.threshold).iff_of_iso
-                (atom.piece.toCanonical_glue_isomorphic outside)).2
-              sourceBaseline
-      have realizable : ∃ candidate, reading candidate :=
-        ⟨atom.piece.toCanonical, sourceReading⟩
-      let selected :=
-        Graph.CanonicalPiece.canonicalRepresentative reading realizable
-      have selectedReading : reading selected :=
-        Graph.CanonicalPiece.canonicalRepresentative_reading reading
-          realizable
+      let baselineInvariant :=
+        Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold
+      let selected := Graph.ColdCorridor.rowRepresentative baselineInvariant
+        object support connected proper
+      have selectedReading := Graph.ColdCorridor.rowRepresentative_reading
+        baselineInvariant object support connected proper
       have pieceSizeLe : atom.piece.internalVertexCount ≤ support.card := by
         let embedding : atom.piece.Internal →
             {vertex // vertex ∈ support} :=
@@ -154,10 +135,9 @@ theorem coldCorridorState_of_corridors (data : Parameters)
           Graph.ColdCorridor.exchangeBound data.coldSignature := by
         calc
           selected.toPiece.internalVertexCount = selected.size := by simp
-          _ ≤ atom.piece.toCanonical.size :=
-            Graph.CanonicalPiece.canonicalRepresentative_size_le
-              reading realizable sourceReading
-          _ = atom.piece.internalVertexCount := rfl
+          _ ≤ atom.piece.internalVertexCount :=
+            Graph.ColdCorridor.rowRepresentative_size_le baselineInvariant
+              object support connected proper
           _ ≤ support.card := pieceSizeLe
           _ ≤ Graph.ColdCorridor.exchangeBound data.coldSignature := bounded
       have sourceBaseline :
@@ -176,6 +156,10 @@ theorem coldCorridorState_of_corridors (data : Parameters)
           sameProfile := selectedReading.1
           baseline := selectedReading.2 atom.outside sourceBaseline
           record := record }
+  have makeGerm_second : ∀ support bounded connected proper record,
+      (makeGerm support bounded connected proper record).HasCanonicalSecond
+        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold) :=
+    fun _ _ _ _ _ => rfl
   have germExists : ∀ epsilon : ColdEligibleHalfEdge data object,
       ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
@@ -183,7 +167,9 @@ theorem coldCorridorState_of_corridors (data : Parameters)
         (corridorAt epsilon).FirstFailureGermWitness
           (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
           (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
-          (presentationAt epsilon) (indexAt epsilon) germ := by
+          (presentationAt epsilon) (indexAt epsilon) germ ∧
+        germ.HasCanonicalSecond
+          (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold) := by
     intro epsilon
     let corridor := corridorAt epsilon
     let presentation := presentationAt epsilon
@@ -213,7 +199,8 @@ theorem coldCorridorState_of_corridors (data : Parameters)
         (corridor.prefixSupport_connectedOn corridor.statesRead)
         (corridor.prefixSupport_proper (corridorFacts epsilon).1
           corridor.statesRead) record
-      refine ⟨germ, supportBound, ?_, Or.inl ⟨terminal, rfl, ?_⟩⟩
+      refine ⟨germ, ⟨supportBound, ?_, Or.inl ⟨terminal, rfl, ?_⟩⟩,
+        makeGerm_second _ _ _ _ _⟩
       · intro vertex member
         exact corridor.prefixSupport_subset_inside
           corridor.statesRead vertex member
@@ -254,10 +241,10 @@ theorem coldCorridorState_of_corridors (data : Parameters)
           simpa only [Graph.ColdCorridor.Presentation.state] using
             congrArg Graph.ColdCorridor.CutState.offsets same
         rw [boundaryDegrees, halfEdges, offsets, same]
-      refine ⟨germ, supportBound, ?_, Or.inr
+      refine ⟨germ, ⟨supportBound, ?_, Or.inr
         ⟨left, right, rightBound, before, same,
           presentation.reading_eq_of_state_eq same, first, rfl, rfl,
-            recordSame⟩⟩
+            recordSame⟩⟩, makeGerm_second _ _ _ _ _⟩
       · intro vertex member
         exact corridor.intervalSupport_subset_inside left right vertex member
   let outsideIncidence := fun epsilon =>
@@ -266,7 +253,9 @@ theorem coldCorridorState_of_corridors (data : Parameters)
       ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object,
-        germ.support = {epsilon.1.1, epsilon.1.2} := by
+        germ.support = {epsilon.1.1, epsilon.1.2} ∧
+          germ.HasCanonicalSecond
+            (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold) := by
     intro epsilon
     let selectedEpsilon : Selected := ⟨epsilon.1, epsilon.property.1⟩
     have selectedFacts :=
@@ -352,14 +341,14 @@ theorem coldCorridorState_of_corridors (data : Parameters)
         state := directState
         truth := false }
     let germ := makeGerm support bounded connected proper record
-    exact ⟨germ, rfl⟩
+    exact ⟨germ, rfl, makeGerm_second _ _ _ _ _⟩
   let crossIncidence := fun epsilon =>
     Classical.choose (crossGermExists epsilon)
   refine ⟨outsideIncidence, componentAt, corridorAt, presentationAt, indexAt,
-    ?_, ?_, ?_, crossIncidence, ?_⟩
+    ?_, ?_, ?_, ⟨crossIncidence, ?_⟩, ?_⟩
   · intro epsilon
     refine ⟨(corridorFacts epsilon).1, (corridorFacts epsilon).2,
-      ⟨ULift.up_injective, rfl⟩, Classical.choose_spec (germExists epsilon)⟩
+      ⟨ULift.up_injective, rfl⟩, (Classical.choose_spec (germExists epsilon)).1⟩
   · intro epsilon segment
     exact coldActiveInterface_card_le data object packingWindow
       (corridorAt epsilon) segment
@@ -375,6 +364,8 @@ theorem coldCorridorState_of_corridors (data : Parameters)
       (Graph.ColdCorridor.selected_facts object cubic epsilon).2⟩
   · intro epsilon
     exact Classical.choose_spec (crossGermExists epsilon)
+  · intro epsilon
+    exact (Classical.choose_spec (germExists epsilon)).2
 
 
 set_option maxHeartbeats 4000000 in
@@ -432,7 +423,8 @@ theorem coldGermCandidates_of_routing (data : Parameters)
   let stateTwo := Classical.choose_spec (Classical.choose_spec stateOne)
   let stateBundle := Classical.choose_spec (Classical.choose_spec stateTwo)
   let crossIncidence := coldRoutedCrossIncidence data object routing
-  let crossFacts := Classical.choose_spec stateBundle.2.2.2
+  let crossFacts := fun epsilon =>
+    (Classical.choose_spec stateBundle.2.2.2.1 epsilon).1
   let incidence := coldRoutedOccurrenceIncidence data object routing
   let candidates := coldRoutedCandidates data object routing
   have occurrenceStubInjective : Function.Injective
@@ -929,12 +921,17 @@ theorem coldGermCandidates_of_routing (data : Parameters)
     omega
   change ColdGermCandidatesStatement data object
   simp only [ColdGermCandidatesStatement]
-  refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-    ?_⟩
-  simp only [ColdGermFamilyWitness]
-  exact ⟨rfl, rfl, candidateFamily, extracted,
-    noncandidateClassified, corridorCount, totalCount,
-    routedLossBound, quantitative⟩
+  have witness : ColdGermFamilyWitness data object routing incidence candidates
+      disjointFamily corridorLoss := by
+    simp only [ColdGermFamilyWitness]
+    exact ⟨rfl, rfl, candidateFamily, extracted,
+      noncandidateClassified, corridorCount, totalCount,
+      routedLossBound, quantitative⟩
+  -- The (F4) exact count (tex 7318-7329), instantiated at this witness.
+  obtain ⟨handoffLe, outsideLe, _⟩ := coldF4_card_le_corridorLoss data object routing
+    incidence candidates disjointFamily corridorLoss witness
+  exact ⟨routing, incidence, candidates, disjointFamily, corridorLoss, witness,
+    handoffLe.trans outsideLe⟩
 
 
 end Hypostructure.Graph.Contracts.Spine

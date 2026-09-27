@@ -126,6 +126,7 @@ noncomputable def nearCubicColdCorridorState
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint
       [K .coldReturnCorridors, K .coldCorridorState] known := by key_fresh) :
     ExactLedger EGInput.{u} selected

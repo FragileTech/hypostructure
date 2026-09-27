@@ -47,10 +47,9 @@ theorem coldGermSilent_of_uncompressible (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (uncompressible : UncompressibleStatement data object) :
     ColdGermSilentStatement data object :=
-  ⟨fun germ _active shorter neutral =>
-      uncompressible germ.support
-          (germ.compressibleSupport_of_not_distinguishing shorter neutral.2),
-    fun germ _active => germ.not_lengthChanging_iff⟩
+  fun germ _active shorter neutral =>
+    uncompressible germ.support
+      (germ.compressibleSupport_of_not_distinguishing shorter neutral.2)
 
 /-- **Nodes `[154]`--`[156]`: every surviving length-changing germ is (G2).**
 (G1) is refuted by target avoidance and (G3) by uncompressibility, so every
@@ -74,7 +73,7 @@ theorem coldGermRouted_of_uncompressible (data : Parameters)
     fun germ shorter neutral =>
       uncompressible germ.support
           (germ.compressibleSupport_of_not_distinguishing shorter neutral.2)
-  exact fun germ shorter =>
+  exact fun germ _active shorter =>
     have distinguishing :=
       Graph.ColdCorridor.boundedGerm_not_survives notRealizing notSilent
         germ shorter
@@ -149,15 +148,15 @@ cut-state representative is not shorter than the corridor piece (a shorter one
 would give a smaller baseline target-avoiding object, contradicting size
 minimality), so it has equal length; the retained representative is the
 canonical one when it refines the object, and the piece itself otherwise. -/
-theorem neutralEqualLengthTerminal_of_positive
+theorem neutralConfiguration_of_positive
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation}
     (data : Parameters) (object : Graph.FiniteObject.{u})
     (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
     (selected : SelectionStatement BranchState Presentation presentation data object)
     (positive : ColdGermFamilyPositiveStatement data object)
-    (terminal : DenseColdCorridorsTerminalStatement data object) :
-    NeutralEqualLengthTerminalConfigurationStatement data object := by
+    (silent : ColdGermNoneDistinguishingStatement data object) :
+    NeutralConfigurationStatement data object := by
   classical
   letI : FinEnum object.Vertex := object.vertices
   obtain ⟨extraction, extractionEq, positiveCard⟩ := positive
@@ -285,7 +284,7 @@ theorem neutralEqualLengthTerminal_of_positive
             Reading realizable sourceReading (Ne.symm same),
           decrease⟩
     · exact Or.inl rfl
-  refine ⟨terminal, germ, representative, ?_⟩
+  refine ⟨silent, germ, representative, ?_⟩
   change CanonicalActiveColdGerm data object germ ∧
     (Graph.CanonicalPiece.CutStateReading
         (Graph.MinimumDegreeAtLeast data.threshold)
@@ -304,6 +303,56 @@ theorem neutralEqualLengthTerminal_of_positive
         (Graph.glue germ.piece germ.atom.outside)
   exact ⟨active, representativeReading, equalLength,
     canonicalPosition, sourceAvoids⟩
+
+/-- **Node `[163]` on the dense residual** (`def:neutral-equal-length-germ`):
+node `[162]`'s terminality together with the silent family's neutral
+configuration. -/
+theorem neutralEqualLengthTerminal_of_positive
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation}
+    (data : Parameters) (object : Graph.FiniteObject.{u})
+    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+    (selected : SelectionStatement BranchState Presentation presentation data object)
+    (positive : ColdGermFamilyPositiveStatement data object)
+    (silent : ColdGermNoneDistinguishingStatement data object)
+    (terminal : DenseColdCorridorsTerminalStatement data object) :
+    NeutralEqualLengthTerminalConfigurationStatement data object :=
+  ⟨terminal, neutralConfiguration_of_positive data object baseline selected positive
+    silent⟩
+
+/-- **Node `[175]`: every cross-window occurrence is a candidate.**  A
+selected stub whose foot lies in the ambient-cubic cold-window union joins a
+vertex of one ambient-cubic cold window to a vertex of another (node `[30]`'s
+cross-window clause); its immediate exchange germ is supported on those two
+vertices, both at the baseline degree, so it meets no high vertex. -/
+theorem coldCrossWindow_mem_candidates (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (routing : ColdFailureRoutingStatement data object) :
+    ∀ epsilon : ColdCrossWindowHalfEdge data object,
+      Sum.inr epsilon ∈ coldRoutedCandidates data object routing := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  intro epsilon
+  let classified := coldRoutedClassified data object routing
+  let state := classified.state
+  change ColdCorridorStateStatement data object at state
+  let stateOne := Classical.choose_spec state
+  let stateTwo := Classical.choose_spec (Classical.choose_spec stateOne)
+  let stateBundle := Classical.choose_spec (Classical.choose_spec stateTwo)
+  have supportEq := (Classical.choose_spec stateBundle.2.2.2.1 epsilon).1
+  obtain ⟨sourceWindow, sourceMem, targetWindow, targetMem, sourceIn, targetIn,
+    _adjacent⟩ := stateBundle.2.2.1 ⟨epsilon.1, epsilon.property.1⟩
+      epsilon.property.2
+  refine Finset.mem_filter.2 ⟨Finset.mem_univ _, ?_⟩
+  change ∀ vertex ∈ (coldRoutedCrossIncidence data object routing epsilon).support,
+    object.degree vertex ≤ data.threshold
+  intro vertex member
+  have member' : vertex ∈ ({epsilon.1.1, epsilon.1.2} : Finset object.Vertex) := by
+    rw [← supportEq]; exact member
+  simp only [Finset.mem_insert, Finset.mem_singleton] at member'
+  rcases member' with rfl | rfl
+  · exact le_of_eq ((Finset.mem_filter.1 sourceMem).2 _ sourceIn)
+  · exact le_of_eq ((Finset.mem_filter.1 targetMem).2 _ targetIn)
 
 set_option maxHeartbeats 4000000 in
 /-- **Node `[175]`, `lem:absorbed-germ-fan-data`: the per-half-edge dichotomy.**
@@ -329,7 +378,7 @@ theorem absorbedGermSplit_of_handoff (data : Parameters)
       _familyWitness⟩
   change AbsorbedGermSplitStatement data object
   simp only [AbsorbedGermSplitStatement]
-  refine ⟨routing, ?_⟩
+  refine ⟨routing, ?_, coldCrossWindow_mem_candidates data object routing⟩
   intro epsilon
   let classified := coldRoutedClassified data object routing
   let state := classified.state
@@ -366,7 +415,7 @@ theorem absorbedGermFanData_of_split (data : Parameters)
   simp only [AbsorbedGermFanDataStatement]
   refine ⟨routing, ?_⟩
   intro epsilon notCandidate
-  rcases alternatives epsilon with candidate | high
+  rcases alternatives.1 epsilon with candidate | high
   · exact (notCandidate candidate).elim
   · exact high
 

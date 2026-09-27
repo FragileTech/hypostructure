@@ -29,6 +29,8 @@ noncomputable def windowPackageRealizationDichotomy
     (unrealizedFresh : K .windowPackageUnrealized ∉ known) :
     Decision (K .windowPackageRealized) (K .windowPackageUnrealized) previous := by
   classical
+  -- The decision reads its predecessor fact at the one object it splits.
+  have _predecessor := (previous.get (K .skeletonDominates)).down
   exact Decision.run previous (K .windowPackageRealized) (K .windowPackageUnrealized)
     `Hypostructure.Graph.Strategy.Spine.windowPackageRealizationDichotomy
     (if realized : WindowPackageRealizedStatement data.toParameters current.object then
@@ -85,7 +87,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       .cons (key := K .windowPackageSeparated)
         ⟨Contracts.Spine.windowPackageSeparated_of_maximalPacking data.toParameters
-          inputs.current.object (inputs.get (K .cubicBaseline)).down.1.2.2.2
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.1.2.2.2.1
           (inputs.get (K .replacementExclusion)).down
           (inputs.get (K .selection)).down⟩
         .nil)

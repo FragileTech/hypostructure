@@ -17905,7 +17905,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL-TRIVIAL — The diamond is not decided: `K .returnAvoidance` refutes a Mersenne return uniformly over all darts from the selection's avoidance, which is exactly how the paper closes it ('closed by lem:return-equivalence')."
+    "note": "FAITHFUL-TRIVIAL — Exact split on `MersenneReturnStatement` at G; the decision reads its predecessor `K .cubicBaseline` through `ExactLedger.get`."
    },
    "7": {
     "lean": "verified",
@@ -17943,17 +17943,17 @@
     "lean": "verified",
     "kernel": "verified",
     "wired": "verified",
-    "local": "partial",
+    "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL-TRIVIAL — `Holds .degreeProfileFibres` = for every support of the current object and every pair of boundary pieces, `Response.TargetComplete` ⇒ equal `boundaryDegreeProfile`; the proof is the projection `complete.profile_eq`, just as the paper's proof of lem:degree-profile-fibres unfolds clause (a) of def:target-complete-quotient."
+    "note": "FAITHFUL-TRIVIAL — `Holds .degreeProfileFibres` (idx 2300): for every region X of G and every admissible rank quotient of X's declared coordinates on G (`CurvatureQuotient`), two realizations of its support in different boundary-degree fibres are not identified. Proof: the quotient's `fibrewise` clause, as the paper's proof unfolds condition (a) of def:target-complete-quotient. Read by [12]."
    },
    "12": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "verified",
-    "local": "partial",
+    "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL-TRIVIAL — `Holds .targetCompleteContextUniversality` = `TargetComplete` ⇒ `ContextEquivalent` for every pair of boundary pieces over every support of the current object, proved by `complete.contextEquivalent`; the paper's proof ('this is precisely the meaning of target-completeness') is the same projection."
+    "note": "FAITHFUL-TRIVIAL — `Holds .targetCompleteContextUniversality` (idx 2301): identifications of G's admissible quotients are target-complete (fibre from [11], context-universal response), and an identification valid at G's own outside context G−X but separated by some context is target-defective. [37] closes against it."
    },
    "13": {
     "lean": "verified",
@@ -17977,7 +17977,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — First conjunct of `Holds .maximalPacking`, `0 < windowPackingNumber 13`, is cor:p13-exists: P13-freeness would let `data.freeForcesTarget` (HSS) give a target cycle, contradicting `K .selection`."
+    "note": "FAITHFUL — Exact split `InducedPathFree G 13` / `HasInducedPath G 13`; the decision reads [14] `K .uncompressible`."
    },
    "16": {
     "lean": "verified",
@@ -17999,9 +17999,9 @@
     "lean": "verified",
     "kernel": "verified",
     "wired": "verified",
-    "local": "partial",
+    "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `Holds .localAlgebra` = for every induced window of the current object, `|Labels 13| = 399` and the size distribution's first seven entries are 13,60,122,122,63,17,2: exactly lem:labels, proved by a kernel `decide`. C_s and Ω₂ are definitions (`WindowCurvature.Safe`, `curvatureTwo`), for which the paper proves nothing."
+    "note": "FAITHFUL — `Holds .localAlgebra` = |Labels 13| = 399 and the size distribution 13,60,122,122,63,17,2 (lem:labels), read from the entry presentation fact `K .cubicBaseline` (its fifth conjunct), not from ambient data."
    },
    "19": {
     "lean": "verified",
@@ -18057,7 +18057,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `Holds .densityCap` = 2·rate·scales·p13 ≤ (scales+1)(3n + T(n)) + slack·rate·scales·T(n), the exact finite form of θ ≤ θ_win + o(1), derived from `.coldMass`, `.coldMassBounded`, `.coldAmbientCubic`, `.hotColdPartition` on [153]'s bounded arm. The high-entropy cap θ ≤ 0.01198… is not published here; in the paper it needs the prop:two-budget comparison ([49]–[52])."
+    "note": "FAITHFUL — `Holds .densityCap` = the window-only cap (θ ≤ θ_win + o(1)) and the high-entropy clause in the paper's conditional form: a joint window/remainder comparison realized by a state map on G's skeleton class gives (2^{rate·s·ν})^d·n^{|R₀|} ≤ B^d (eq:feasibility, θ ≤ 0.01198542083… + o(1))."
    },
    "25": {
     "lean": "verified",
@@ -18145,7 +18145,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL-TRIVIAL — The Branch D state repeats [33]; the row appends `K .separatedTesters`, a literal statement of `lem:separated-testers` (outside contexts of a decomposition whose piece side is the two disjoint isomorphic balls live in their complement; an identifying quotient is context-universal or has a target-defect pair). Both halves are immediate, as in the paper (decomposition disjointness; excluded middle)."
+    "note": "FAITHFUL-TRIVIAL — The Branch D state repeats [33]; `lem:separated-testers` is not on the argument path and publishes no key."
    },
    "36": {
     "lean": "verified",
@@ -18161,7 +18161,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL-TRIVIAL — `K .contextDefect` is uninhabited: its identified pair is separated by an outside context, contradicting the quotient's `contextUniversal` field. The paper closes [37] by the same definitional target-completeness, with no proof of its own."
+    "note": "FAITHFUL-TRIVIAL — `K .contextDefect` contradicts [12]: the certificate's admissible quotient identifies only target-complete pairs. The paper closes [37] by the same definition (lem:full-rank, tex 9388)."
    },
    "38": {
     "lean": "verified",
@@ -18169,7 +18169,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Splits on quotient.support ⊆ C (C = remainder support). Yes arm `K .atomCompression`: target-complete (from `K .degreeProfileFibres`/`K .targetCompleteContextUniversality`), support inside C, and a `ReplacementSupport` from `properRepresentative`, with properness earned from a nonempty packed window outside R. No arm `K .delocalizedSupport`: the support leaves C."
+    "note": "FAITHFUL — Splits on quotient.support ⊆ C (C = remainder support). Yes arm `K .atomCompression`: support inside C, and a `ReplacementSupport` from `properRepresentative`, with properness earned from a nonempty packed window outside R. No arm `K .delocalizedSupport`: the support leaves C."
    },
    "39": {
     "lean": "verified",
@@ -18177,7 +18177,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .atomCompression`'s `ReplacementSupport` at quotient.support is refuted against `K .selection` (avoidance plus size minimality) by `not_replacementSupport`: `cor:uncompressible`."
+    "note": "FAITHFUL — `K .atomCompression`'s `ReplacementSupport` at quotient.support is refuted against `K .replacementExclusion` ([13], lem:replacement)."
    },
    "40": {
     "lean": "verified",
@@ -18201,7 +18201,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .properDelocalization` carries Z ⊊ G and the `ReplacementSupport` at Z from `properRepresentative` (target-complete compression of the proper support Z), refuted against `K .selection` by `not_replacementSupport`: `lem:proper-smearing`."
+    "note": "FAITHFUL — `K .properDelocalization` carries Z ⊊ G and the `ReplacementSupport` at Z from `properRepresentative`, refuted against `K .replacementExclusion` ([13]): `lem:proper-smearing`."
    },
    "43": {
     "lean": "verified",
@@ -18225,7 +18225,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .globalBarrier`: a strictly smaller admissible closed representative (baseline, target transfer), obtained from `quotient.closedRepresentative covers reducing`, i.e. from [43]'s Z = G coverage and the certificate's rank reduction. The target-defect and exact-label alternatives of `lem:no-silent-global-smearing` are excluded by the quotient's target-completeness and the rank reduction."
+    "note": "FAITHFUL — `K .globalBarrier`: at the one certificate, Z = G, the rank reduction on 𝒲₂(R₀), and a strictly smaller admissible closed representative (baseline, target transfer) from `quotient.closedRepresentative covers reducing`."
    },
    "46": {
     "lean": "verified",
@@ -18281,15 +18281,15 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .entropyPackageDemand` is the demand side of prop:two-budget (a) / eq:feasibility, (2^{rate·s·|P_hot|})^d · n^{|R|} ≤ jointPackageDemand^d, at the canonical packing. The accounting bound itself (demand ≤ skeleton budget) is `K .entropyCapBound`, proved by `entropyCapBoundRow` from `K .hotColdPartition`, `K .windowPackageSeparated` and `K .skeletonDominates`. Both nonrepetitive and wedge-free low arms go to Residual C unchanged, as prop:two-budget (c) says."
+    "note": "FAITHFUL — `K .entropyPackageDemand`: (2^{rate·s·|P₀|})^d·n^{|R₀|} ≤ jointPackageDemand^d, the package of all p₁₃ windows (eq:feasibility)."
    },
    "53": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "verified",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "DIVERGENT — Exact complements `K .entropyCapActive` (budget < demand) / `K .entropyCapBound` (demand ≤ budget) with K = 0, on the high arm after [52]."
+    "fidelity": "verified",
+    "note": "FAITHFUL — `K .entropyCapActive` = skeletonBudget < jointPackageDemand·2^{K|R|−o(|R|)}, jointPackageDemand = 2^{rate·s·|P₀|}·remainderStates(R₀) (all p₁₃ windows, eq:entropy-cap), against its exact complement."
    },
    "54": {
     "lean": "verified",
@@ -18297,7 +18297,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .entropyCapBound`: jointPackageDemand ≤ skeletonBudget. On the retained-hot alternative of `K .hotColdPartition` it goes through retainedCode (whose curvature factor 2^{c·r} ≥ 1 is kept) and `K .skeletonDominates`. On the all-cold alternative it goes through `RemainderGlue`. Core then closes it against `K .entropyCapActive`. This is prop:entropy-high-theta at K=0, which is exactly what rem:closure-robust (the table's label for [54]) asserts."
+    "note": "FAITHFUL — `K .entropyCapBound`: jointPackageDemand·2^F ≤ B. Proved when the window package of P₀ is retained; otherwise `entropyCapBound_unretained`, OPEN-CONSTRUCTION [54] tex:9921 (the joint realization of the all-window package, remainder states and forced bits is never constructed)."
    },
    "55": {
     "lean": "verified",
@@ -18313,7 +18313,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .netDeficiencyCap`: for every maximum packing, under `SufficientlyLargeForNetCap` (the finite reading of 'for all large n'), s·(δ·order·p + C√n) < s·2(order-1)·p + |R|. That is s·(stub-supply bound of def+(R)) < |R|, the [29] supply bound of def+(R)-σ_R made smaller than |R|/4. It is derived from `K .densityCap` ([24] lanes), `K .coldRoute8Below` (route-8 lanes, which ignore the size guard), or `K .denseDeficiencyBelow` (BelowRate lanes)."
+    "note": "FAITHFUL — `K .netDeficiencyCap`: at P₀, under `SufficientlyLargeForNetCap` (the finite reading of 'for all large n'), s·(δ·order·p + C√n) < s·2(order-1)·p + |R|. That is s·(stub-supply bound of def+(R)) < |R|, the [29] supply bound of def+(R)-σ_R made smaller than |R|/4. It is derived from `K .densityCap` ([24] lanes), `K .coldRoute8Below` (route-8 lanes, which ignore the size guard), or `K .denseDeficiencyBelow` (BelowRate lanes)."
    },
    "57": {
     "lean": "verified",
@@ -19097,7 +19097,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Exact finite form of 'N_conf ≥ 9C/D_cold − o(n) > 0': decides `(9 + (δ+1)B_cold)·σ(G) < 9C` (`K .coldMassLinear`) vs its complement (`K .coldMassBounded` → [24] `densityBudgetRow`). The linear arm publishes the extracted disjoint candidate family and its positivity (`K .coldGermFamilyPositive`)."
+    "note": "FAITHFUL — Corridor state [30] at G's cut-state presentation (T(J) = entry and head interfaces, moving head half-edge and offset, clause-read declared coordinates), second representative pinned to `rowRepresentative`; (F2) exclusion is OPEN-CONSTRUCTION [153] tex:7268 (equivalent at G to: every corridor terminal or heavy before its first state repeat); [219] publishes the (F4) exact count; `K .coldExchangeBound` at G's routed corridors."
    },
    "154": {
     "lean": "verified",
@@ -19105,7 +19105,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL-TRIVIAL — Exhaustiveness 'Realizing ∨ Distinguishing ∨ Neutral' is `BoundedGerm.trichotomy`, which is excluded middle. That matches the manuscript's one-sentence 'G3 is the complement' argument."
+    "note": "FAITHFUL-TRIVIAL — G1 then G2 at node [153]'s extracted family, second representative pinned; each decision reads its predecessor."
    },
    "155": {
     "lean": "verified",
@@ -19121,7 +19121,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — A hit-distinguished active configuration is the sparse exit (b); the surviving branch excludes it."
+    "note": "FAITHFUL — `K .coldGermRouted` at the extracted family (`CanonicalActiveColdGerm`): every shortening germ is distinguishing and not target-complete."
    },
    "157": {
     "lean": "verified",
@@ -19129,7 +19129,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .coldSameInterfaceTable` covers three things. Every table row (over every Handoff predicate) is non-realizing and handed off or distinguishing, with neutral rows excluded via `K .uncompressible` (`row_closed`). The short self-return filter is included. G3 silent length-changing germs are refuted by `cor:uncompressible`. This is lem:cold-same-interface-table plus G3 compression."
+    "note": "FAITHFUL — Every table row / short self-return is non-realizing and enters a registry support (`ColdEntersHandoffRegistry`, tex 7234 'enters') or is distinguishing."
    },
    "158": {
     "lean": "verified",
@@ -19169,7 +19169,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Either failed rate (τ≥1/4, or τ<1/4 with route-8 rate failure) runs the hot/cold pass on its literal ledger, which keeps `K .densePackingOverflow` and the failed-rate fact. [23]/[149] close. The [146] yes arm and the bounded arm of [153] return to [25]. The linear arm runs [153]–[157] and continues to [163]."
+    "note": "FAITHFUL — `K .denseColdCorridorsTerminal` on the dense residual only: OPEN-CONSTRUCTION [162] tex:7694 (needs every corridor inside R; not consumed on the absorbed branch)."
    },
    "163": {
     "lean": "verified",
@@ -19177,7 +19177,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .coldNeutralEqualLengthTerminal` marks a germ of the positive extracted family with a canonical representative of equal size, a cut-state reading, and the edge count, all proved from `K .selection` minimality. [163] decides whether that representative is graph-realized as a genuine second strand (`K .coldGenuineSecondStrand`) or not (`K .coldCanonicalNeutralConfiguration`)."
+    "note": "FAITHFUL — [406] on the G2-silent arm ([605] read): the silent family's neutral equal-length configuration; dense form also carries [162]; split at `markedNeutralGerm?`."
    },
    "164": {
     "lean": "verified",
@@ -19273,7 +19273,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Exact complements `K .coldPositiveGerm` / `K .coldNoPositiveGerm` (new key, idx 1800); the per-half-edge split and the [177] fan data are deterministic facts on both arms."
+    "note": "FAITHFUL — Every eligible half-edge is a candidate or has its least heavy centre; every cross-window half-edge is a candidate (it joins two ambient-cubic window vertices)."
    },
    "176": {
     "lean": "verified",
@@ -19281,7 +19281,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — [154]: G1 closes, G2 closes against the sparse survivor; silent arm → [163]: genuine strand closes at [167]/[168]; canonical arm publishes Q = E and continues with the [177] complement."
+    "note": "FAITHFUL — Absorbed-branch (F5) configurations closed by [154]–[157], [163]–[168] without [162]'s dense terminality (`K .coldAbsorbedNeutralConfiguration`); on the no-positive/no-absorbed arm, G's selected family is empty and G has no ambient-cubic cold window (`K .coldSelectedFamilyEmpty`)."
    },
    "177": {
     "lean": "verified",
@@ -19289,7 +19289,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .absorbedGermFanData` retains the [153] package and, for every non-candidate half-edge, the least-high heavy centre with threshold-degree neighbours. `absorbedGermFanEnvelopeRow` builds the counted connected prefix core, H={z}, K_z=N(z), the arms and admissibility, and publishes `K .typeBFanEntry` (the [177]→[65] edge). The Type B continuation then runs on the same ledger."
+    "note": "FAITHFUL — The paper's envelope at ε's first heavy centre z: decorations {z}, assigned neighbours the two corridor incidences, arms the corridor segments cut at first entry into the core Y ⊆ R (z ∉ Y, simple paths, admissible). The existence of Y is OPEN-CONSTRUCTION [177] tex:7932."
    },
    "178": {
     "lean": "verified",
@@ -19369,7 +19369,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — An explicit disjunction of: `NearCubicTargetDefectOutcome` (`sparseTargetDefectResidual` ∧ `sparseTargetDefectStructure` ∧ `surplusAtOrBelow`); `PairTypeBOutcome` (`pairSystemEarlyOutcome` ∨ `pairIncrementEarlyOutcome`, with `typeBFanEntry`, `surplusAbove` and `sparseSurplusSurvivor`); and `typeBSublinearResidual`, `route8QuotientResidual`, `route8RateFails` and `coldBranchClosed`, each paired with `surplusAtOrBelow`. This is exactly the six-way list in thm:main (vi)."
+    "note": "FAITHFUL — `K .coldBranchClosed`: no shortening silent germ of the extracted family; no table row / self-return that neither enters a registry support nor is distinguishing."
    }
   }
  }

@@ -159,8 +159,10 @@ noncomputable def selectedSurplusDichotomy
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)
         .surplusAtOrBelow)
-      (selectedEntryPrefix history) :=
-  Decision.run (selectedEntryPrefix history) (K .surplusAbove) (K .surplusAtOrBelow)
+      (selectedEntryPrefix history) := by
+  -- The decision reads its predecessor, node `[18]`'s local algebra.
+  have _predecessor := ((selectedEntryPrefix history).get (K .localAlgebra)).down
+  exact Decision.run (selectedEntryPrefix history) (K .surplusAbove) (K .surplusAtOrBelow)
     `HypostructureErdos64EG.selectedSurplusDichotomy
     (if above : spineData.{u}.surplusThreshold selected.object.vertexCount <
         selected.object.degreeSurplus spineData.{u}.threshold then

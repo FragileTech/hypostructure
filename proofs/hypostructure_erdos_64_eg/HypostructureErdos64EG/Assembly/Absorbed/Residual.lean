@@ -126,7 +126,6 @@ noncomputable def selectedAbsorbedFanData
     [FactKeys.Has (K .coldGermCandidates) known]
     [FactKeys.Has (K .coldHandoffTransfer) known]
     [FactKeys.Has (K .coldCorridorState) known]
-    [FactKeys.Has (K .denseColdCorridorsTerminal) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .absorbedGermSplit) known]
@@ -238,7 +237,7 @@ noncomputable def selectedAbsorbedGermResidual
     [FactKeys.Has (K .coldGermCandidates) known]
     [FactKeys.Has (K .coldHandoffTransfer) known]
     [FactKeys.Has (K .coldCorridorState) known]
-    [FactKeys.Has (K .denseColdCorridorsTerminal) known]
+    [FactKeys.Has (K .coldFailureRouting) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
@@ -246,7 +245,8 @@ noncomputable def selectedAbsorbedGermResidual
       (K .absorbedGermSplit :: K .coldPositiveGerm :: K .coldNoPositiveGerm ::
         K .coldGermFamilyPositive :: K .coldGermSomeRealizing ::
         K .coldGermNoneRealizing :: K .coldGermSomeDistinguishing ::
-        K .coldGermNoneDistinguishing :: K .coldNeutralEqualLengthTerminal ::
+        K .coldGermNoneDistinguishing :: K .coldAbsorbedNeutralConfiguration ::
+        K .coldSelectedFamilyEmpty ::
         K .coldGermRealized :: K .coldGermDistinguished :: K .coldGermSilent ::
         K .coldGermRouted :: K .coldSameInterfaceTable :: K .coldBranchClosed ::
         K .coldCanonicalNeutralConfiguration :: K .coldGenuineSecondStrand ::
@@ -269,12 +269,14 @@ noncomputable def selectedAbsorbedGermResidual
           (by key_fresh) (by key_fresh) with
       | .left outsideHistory => exact selectedAbsorbedFanData outsideHistory
       | .right subcubicHistory =>
-          -- `[176]`: every selected corridor is subcubic, so every selected
-          -- configuration is a genuine (F5) configuration (here the family
-          -- is empty: no candidate and no outside half-edge); it is closed by
-          -- `[154]`--`[157]` (G1 is vacuous) with the local cold-terminal
-          -- exclusion retained at `[187]`.
-          let closedHistory := nearCubicColdTable subcubicHistory
+          -- `[176]` on this arm: no candidate and no absorbed half-edge, so
+          -- G's selected family is empty and G has no ambient-cubic cold
+          -- window (`K .coldSelectedFamilyEmpty`); the local cold-terminal
+          -- exclusion is retained at `[187]`.
+          let emptyHistory :=
+            (coldSelectedFamilyEmptyRow (data := spineData)).run subcubicHistory
+              (by key_fresh)
+          let closedHistory := nearCubicColdTable emptyHistory
           exact Or.inr (closedHistory.get (K .coldBranchClosed)).down
   | .left positiveHistory =>
       let positiveFamily :=
@@ -293,11 +295,14 @@ noncomputable def selectedAbsorbedGermResidual
             ((nearCubicColdTable distinguishedHistory).get
               (K .coldBranchClosed)).down
       | .right silentHistory =>
+          -- `[176]` on the absorbed residual: the silent family's neutral
+          -- (F5) configuration, without the dense-residual terminality of
+          -- `[162]` (`lem:absorbed-germ-fan-data` (i)).
           let neutralConfiguration :=
-            (neutralEqualLengthTerminalRow (data := spineData)).run silentHistory
+            (absorbedNeutralConfigurationRow (data := spineData)).run silentHistory
               (by key_fresh)
           let closed := nearCubicColdTable neutralConfiguration
-          match neutralGermSymmetryDichotomy (data := spineData) closed
+          match absorbedNeutralSymmetryDichotomy (data := spineData) closed
               (by key_fresh) (by key_fresh) with
           | .right genuineHistory =>
               let survivor :=

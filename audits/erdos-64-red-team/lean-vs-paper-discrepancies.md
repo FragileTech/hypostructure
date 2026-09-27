@@ -61,16 +61,22 @@ assertion of `cor:uncompressible` ("exactly `lem:replacement`") under
 two-way `CompressibleSupport` weaken it with
 `replacementSupportOfCompressibleSupport`.
 
-## [24]: the high-entropy clause is not published
+## [24]: now paper-exact, both clauses published
 
-*Family F5; recorded in the final pass (group SD).*
+*Family F5; recorded in the final pass (group SD); fixed 2026-09-27 (fix2-SC).*
 
 - **Paper.** `[24]` "bounded cold-mass return from [153]: `θ ≤ θ_win + o(1)`;
-  high entropy: `θ ≤ 0.01198542083…`".
-- **Lean.** `K .densityCap` publishes only the window-only cap
-  `2·rate·scales·ν ≤ (scales+1)(δn+T) + slack·rate·scales·T`
-  (`θ ≤ θ_win + o(1)`).  The high-entropy sharpening is `def:Theta`'s, which the
-  `[53]` test now carries at `K > 0`; no consumer reads a sharpened `[24]`.
+  high entropy: `θ ≤ 0.01198542083…`" (`prop:p13-density`, tex 8480-8551).
+- **Lean.** `K .densityCap` (`DensityCapStatement`) publishes both clauses at
+  G: the window-only cap `2·rate·scales·ν ≤ (scales+1)(δn+T) +
+  slack·rate·scales·T` (`θ ≤ θ_win + o(1)`), and the high-entropy clause in the
+  paper's own conditional form: if the joint window/remainder comparison
+  `(2^{rate·scales·ν})^d · n^{|R₀|} ≤ |range stateOf|^d` holds for a state map on
+  G's labelled skeleton class, then `(2^{rate·scales·ν})^d · n^{|R₀|} ≤
+  skeletonBudget^d` (`eq:feasibility`, whose solution is
+  `θ ≤ 0.01198542083… + o(1)`).  Proof: `lem:skeleton-dominates` at G
+  (`densityCap_of_coldMassBounded`).
+- **Difference.** None.
 
 ## [36]–[46]: Branch D closures and scope
 
@@ -129,8 +135,38 @@ negation on the remainder of the fixed maximum packing
   2^{forcedObstructionBits}` against its exact complement `K .entropyCapBound`,
   where `forcedObstructionBits` is `K|R| − o(|R|)` in the exact form node `[48]`
   publishes.  `[54]` (`entropyCapBoundRow.runAndCloseIncompatible`) reads
-  `[22]`, `[48]`, `[51]`, `[52]`; on the all-cold arm of `[22]` its bound is the
-  `PAPER-ERROR [54] tex:9921` hook (see Paper errors).
+  `[21]`, `[48]`, `[51]`, `[52]`; on the arm where the window package of `P₀` is
+  not retained its bound is the `OPEN-CONSTRUCTION [54] tex:9921` hook (see Paper
+  errors).
+- **Demand (fixed 2026-09-27, fix2-SC).**  `jointPackageDemand` counts the
+  package of **all** `p₁₃` windows of `P₀`, `2^{rate·scales·|P₀|}·remainderStates(R₀)`,
+  as `eq:entropy-cap` does (tex 5259-5282: `L_win = c₁₃θn log₂ n`, `θ = p₁₃/n`;
+  `116.808581006 = c₁₃ − 1.3`); `[52]` likewise.  Until then the Lean counted
+  only `𝒫_hot`, so on arms with `𝒫_hot ⊊ P₀` the Lean active arm was smaller
+  than the paper's.  `[54]` reads `[21]`, `K .skeletonDominates`, `[48]`,
+  `[51]`, `[52]`; its case split is on `WindowFamilyRealized P₀`.
+- **Dichotomies on the path to `[54]` that concern realization.**
+
+  | node | predicate | Lean key / decl | arm to `[54]` | family |
+  |---|---|---|---|---|
+  | `[22]` | `𝒫_hot` retained, or `𝒫_hot = ∅ ∧ ¬ WindowFamilyRealized ∅` (a partition fact, not a decision) | `K .hotColdPartition`, `IsHotColdWindowPartition` (`Statements/Spine.lean`) | both | window package of `𝒫_hot` × remainder states × **full** curvature code `2^{c_Ω r_Ω}` (`retainedCode`) |
+  | `[22]`/`[23]` | `2^{rate·s·|𝒫_hot|} ≤ B` | `K .barrierCap`/`K .barrierOverflow`, `barrierDichotomy` (`Strategy/EntropyClosure.lean`) | cap | window package of `𝒫_hot` |
+  | `[158]` | `2^{b_P} ≤ |𝒢_{n,m}|` | `K .windowPackageRealized`/`Unrealized`, `windowPackageRealizationDichotomy` (`Strategy/SpineRows/WindowPackage.lean`) | both | window package of `P₀` alone |
+  | `[50]` | `n^{|R|} ≤ |𝒢(R)|^d` | `K .remainderEntropyHigh`/`Low` | high | remainder states alone |
+  | `[53]` | `B < demand·2^F` | `K .entropyCapActive`/`K .entropyCapBound`, `entropyCapDichotomy` | active | all-window package × remainder states × forced bits (a count, not a realization) |
+
+  No dichotomy decides the realization of the sub-family (remainder states) ×
+  (forced bits), with or without the window package.  On `[54]`'s own branch
+  (`[53]` active) `B < demand·2^F ≤ retainedCode P₀`, so
+  `¬ WindowFamilyRealized P₀` holds and the hook arm is the only one reached.
+- **Note on the `[158]`-no arms.**  There `B < 2^{b_P}`; with `bits ≤
+  (rate+1)·L − 1`, the high arm's `RS ≥ n^p` (`n ≥ 23p`, from `[161]` or
+  `coldRoute8Below`) gives `B < 2^{rate·L·p}·RS ≤ demand·2^F`: `[53]` is
+  always active there, and `[54]` asserts that a superset of the package the
+  paper found unrealized at `[159]` is realized.  This is the terminal's own
+  contradiction at a nonexistent G (every terminal hook contradicts its branch's
+  ledger); it is not a refutation from the hook's hypotheses, but it shows that
+  on those arms the paper's `[54]` step is circular.
 - **Difference.** Only the position on the high arm (diagram vs text).
 
 ## [56]: the density input differs by arm (`lem:dense-deficiency-routing`)
@@ -978,12 +1014,95 @@ gone.
   pass leaves the arm unchanged and does not claim it closed, dead or a paper
   error.
 
-## Paper errors
+## [153]/[154]--[157]/[163]/[176]/[187]: the cold chain at G's objects (fix2-SC, 2026-09-27)
 
+*Family F5.  No deviation from the paper; recorded so that the ledger shape can
+be checked against the tex.*
+
+- **[30] the second representative `E` is G's.**  `def:cold-bounded-germ` /
+  `lem:cold-corridor-first-failure` (tex 7147-7152, 7296): "the canonical
+  representative determined by the repeated cold corridor state", "with the same
+  retained cut-state".  `ColdCorridorStateStatement` now pins the second
+  representative of every exchange germ (outside corridors and cross-window
+  exchanges) to `Graph.ColdCorridor.rowRepresentative` of the germ's own support
+  (`BoundedGerm.HasCanonicalSecond`): the `Precedes`-least canonical piece with
+  the support piece's boundary-degree profile whose completions keep the
+  baseline.  G1/G2, the trichotomy `[32]`--`[34]`, `[71]`, `[406]` and the table
+  are evaluated at that `E`.
+- **[30] the cut state is `ρ^ex_{T(J)}(J)`'s retained part** (tex 7187-7197).
+  `coldCutStatePresentation`: `T(J)` is the entry interface (foot and the window
+  of `ε`) and the head interface (the head and the window it meets:
+  `Corridor.headInterfaceVertex`, the successor window only at the terminal
+  segment); the two active half-edges are `ε` and the dart by which the corridor
+  leaves the head (`Corridor.headHalfEdge`); the offsets are read at the entry
+  window and at the head interface (`coldWindowOffset`, cold windows only, `0`
+  when no cold window is met); every declared coordinate is read through its
+  clause (`coldClausePositions`: a (D1) boundary-degree entry is supported at
+  its labelled boundary vertex and reads its G-degree; the other generating
+  kinds read their declared positions' embedded incidence datum -- the paper's
+  "value in the embedded support", tex 5902).  The head-side data move along
+  the corridor.
+- **[154] G1/G2, [175], [153] mass, [145]/[147] split decisions read their
+  predecessor** through `ExactLedger.get` (`coldGermFamilyPositive`,
+  `coldGermNoneRealizing`, `absorbedGermSplit`, `coldStubExcess`,
+  `hotColdPartition`).
+- **[156] `K .coldGermRouted` (idx 71)** is stated at node `[153]`'s extracted
+  family (`CanonicalActiveColdGerm`), like `[32]`--`[34]`.  Consequently
+  **[187] `K .coldBranchClosed`** reads the length-changing patterns of that
+  family (no germ of the family is shortening and silent), and G's table rows
+  and short self-returns.
+- **[157] the (F4) arm of the table is "enters a registry support"** (tex 7234):
+  `ColdEntersHandoffRegistry` = the row support meets one of G's declared
+  handoff supports.  It was "equals one", which left the handed-off arm nearly
+  empty.  `[187]` uses the same predicate.
+- **[34]** no longer publishes `¬ LengthChanging ↔ |E| = |Q|`, which holds by
+  the definition of the increment (`BoundedGerm.not_lengthChanging_iff`).
+- **`K .coldExchangeBound` (idx 177)** is `def:cold-corridor-first-failure`'s
+  `M_cold` bound (tex 7200-7209, 7249-7252) at G's routed occurrence: it reads
+  `[68]` and bounds every terminal retained corridor of G.  It was a statement
+  over every corridor of every window set, true by definition and unread.  Node
+  `[219]` does not consume it (its germs carry `M_cold` in `BoundedGerm.bounded`),
+  so `[219]` no longer declares it.
+- **[219] publishes the user-approved exact (F4) count** (tex 7318-7329):
+  `#{ε : first failure (F4)} ≤ corridorLoss`, instantiated at G from the
+  published witness (`coldF4_card_le_corridorLoss`).
+- **[406] is read on the G2-silent arm** (`K .coldGermNoneDistinguishing`,
+  `[605]`, now in its statement and read by the row): the configuration is a
+  germ of G's silent extracted family.
+- **[176] on the absorbed residual does not reuse [162].**  The paper states
+  `[162]` only "on the dense-packing residual" (`lem:dense-cold-pass`,
+  tex 7674-7694), and `def:neutral-equal-length-germ` is "on the dense residual,
+  a terminal (F5) configuration" (tex 7700).  `lem:absorbed-germ-fan-data` (i)
+  (tex 7917-7923) closes the absorbed branch's (F5) configurations -- terminal
+  or repeated-state -- by the same lemmas.  The absorbed prerequisites no longer
+  run `[162]`; node `[176]` publishes the silent family's neutral configuration
+  without terminality (`K .coldAbsorbedNeutralConfiguration`, idx 2700,
+  `NeutralConfigurationStatement`), and the symmetry split `[163]` reads it
+  (`absorbedNeutralSymmetryDichotomy`).  Paper gap (registered, no sorry):
+  the paper cites `lem:neutral-germ-symmetry` at `[176]`, whose definition
+  assumes the dense residual's terminal configuration; the Lean runs the same
+  split at the silent family's (F5) configuration, as `[176]` asserts, and
+  does not supply the terminality the absorbed branch never had.
+- **[210] `lem:target-rank-circuit`** is stated at node `[31]`'s surviving family
+  `𝓘₀` (`canonicalSurvivingFamily?`), its only use.
+- **[18]** reads the label census from the entry presentation fact
+  (`K .cubicBaseline`, fifth conjunct of `CubicBaselineStatement`), and the six
+  cold rows that need `5 ≤ order` / `3 ≤ order` derive it from that census
+  (`five_le_windowOrder_of_labelCount`).
+
+<a id="paper-errors"></a>
+
+## Open constructions
+
+(Formerly "Paper errors"; the anchor `#paper-errors` still resolves here.)
 Each entry is a claim of the paper that is not established, stated faithfully
-at its node.  In the live Lean tree it is either a `sorry` tagged
-`-- PAPER-ERROR [node] tex:<line>` on the proof of exactly that claim, or,
-where the user decided so, a residual carried by the node's open leaf.
+at its node.  User direction (2026-09-27): such a step is a missing
+construction until proven otherwise.  In the live Lean tree it is a `sorry`
+tagged `-- OPEN-CONSTRUCTION [node] tex:<line>` (or, for entries not yet
+re-checked, `-- PAPER-ERROR [node] tex:<line>`) on the proof of exactly that
+claim, with the concrete obstruction at G recorded here, or, where the user
+decided so, a residual carried by the node's open leaf.  `PAPER-ERROR` is kept
+only for a claim proved false at G.
 
 ### [11], [12], [36]/[37]: definitional lemmas and an empty terminal (tex 6088, 6106, 9220, 9388)
 
@@ -1061,7 +1180,7 @@ where the user decided so, a residual carried by the node's open leaf.
   (e.g. `RS=2, B=5, cr=3` with `F=1`, resp. `F=3`).  The statement also carries
   the selection hypothesis (a minimal counterexample), so no concrete model of
   the full hypothesis set is available to refute it.
-- **Faithful Lean statement.** `Contracts.Spine.entropyCapBound_allCold`: at the
+- **Faithful Lean statement (until 2026-09-27; now `entropyCapBound_unretained`, see the addendum).** `Contracts.Spine.entropyCapBound_allCold`: at the
   selected G, on that arm, with `[48]`, `[51]`, `[52]`:
   `remainderStates(R₀) · 2^{K|R|−o(|R|)} ≤ skeletonBudget`.
 - **K = 0 at d2ded0e.** The gap is exposed exactly by restoring the paper's
@@ -1072,8 +1191,41 @@ where the user decided so, a residual carried by the node's open leaf.
   (registered at the time with `rem:closure-robust` as rationale), and it
   avoided step (2): on the all-cold arm the `K = 0` bound needs only
   `RemainderGlue`.  The faithful `K > 0` version is kept.
-- **Tag.** `sorry`, `PAPER-ERROR [54] tex:9921`, in
+- **Tag.** `sorry`, `OPEN-CONSTRUCTION [54] tex:9921`, in
   `Graph/Contracts/Spine/RemainderEntropy.lean`.
+- **Addendum (2026-09-27, fix2-SC): completeness check and the glue relation.**
+  - The paper builds exactly one realization map on this path:
+    `lem:remainder-glue-injection` (tex 7816-7850, `RemainderGlue.glue_injective`,
+    `remainderStateCount_le_skeletonBudget`: `RS ≤ B` with G's outer edges
+    fixed).  Varying the outer edge set gives the true (unpublished) relation
+    `B ≥ RS·C(C(n,2) − C(|R₀|,2), m − e(R₀))`.  It proves the hook whenever
+    `2^F ≤ C(C(n,2) − C(|R₀|,2), m − e(R₀))`; on the only arm where the hook is
+    consumed (`[53]` active, `B < RS·2^F`) the same relation forces
+    `C(…) < 2^F`, so at every use the hook sits where the glue argument cannot
+    reach.  No lemma of the paper (and none in Lean: the `SeparatedFamily`
+    realizations top out at `2^{13p}`) realizes the window package; the paper
+    itself makes that realization the branch test `[158]` and states the joint
+    comparison of `prop:p13-density` only as a hypothesis (tex 8490).
+  - The other objects on the path (`[21]`, `[22]`, `[48]`, `[51]`, `[52]`,
+    `lem:skeleton-dominates`, `lem:near-cubic-budget`, `lem:full-rank`) are on
+    the ledger at `[54]`; none realizes the product family.  The missing fact
+    about G is the premise of `lem:independent-target-entropy` for the family
+    (remainder states of `R₀`) × (forced obstruction bits): a canonical state map
+    on G's labelled skeleton class with `RS·2^F` states.
+  - **Three routes on `¬X`** (X = the joint realization of the all-window
+    package, the remainder states and the forced bits by one labelled class):
+    (1) incompatible structure -- `¬X` is the `[53]`-active inequality itself
+    and contradicts no earlier arm; (2) overload -- the only proved bounds are
+    `RS ≤ B` (glue) and `F ≤ c_Ω r_Ω`, and on this arm `B < RS·2^F·2^{rate·L·p}`,
+    so no count exceeds a proved bound; (3) compressibility -- the forced bits
+    are rank coordinates of `R₀` (`lem:full-rank`), and an unrealized product
+    family gives no smaller representative of any support.  All three fail; the
+    concrete configuration at G is the arm's own inequality `B < demand·2^F`
+    with `¬ WindowFamilyRealized P₀`.
+  - The hook is `entropyCapBound_unretained` (renamed from
+    `entropyCapBound_allCold`: the arm is now `¬ WindowFamilyRealized P₀`).
+  - The numeric model above is supporting evidence only; the primary
+    justification is the named failing step (2).
 
 ### [144] `lem:same-token-bottleneck-routing`, parallel and cubic-first-separator cases (tex 5585-5620)
 
@@ -1164,7 +1316,7 @@ keeps the paper claim and the [144a] representation.
   `piece(prefix_right)`, and they have different boundary-degree profiles on
   `∂prefix_right`.  So the pair is not a clause-(b) exit, and the survivor fact
   does not refute it.
-- **Tag.** `sorry`, `PAPER-ERROR [153] tex:7268`, in
+- **Tag.** `sorry`, `OPEN-CONSTRUCTION [153] tex:7268`, in
   `Graph/Contracts/Spine/ColdFirstFailure.lean`.
 - **Addendum (2026-09-26): the evidence, and the hook restated.**
   `Quarantine/PaperRepairs/ColdF2Refutation.lean` (Lean-checked, no `sorry`,
@@ -1237,6 +1389,125 @@ keeps the paper claim and the [144a] representation.
     it (`K .coldFailureDefectRoute`) together with `K .sparseSurplusSurvivor`
     to exclude (F2).  The former `[422]` (`defect → ¬ TargetComplete` over
     every corridor and presentation) was true by definition and read by no row.
+- **Addendum (2026-09-27, fix2-SC): the corrected cut state, and the hook's
+  exact content at G.**  `coldCutStatePresentation` is now the paper's
+  `ρ^ex_{T(J)}(J)` retention (see "the cold chain at G's objects"): `T(J)` is
+  the entry interface and the head interface (the successor window only once
+  `J` reaches it), the head half-edge and the head-side offset move along the
+  corridor, and each declared coordinate is read through its clause.  The hook
+  is stated at this presentation (the `Sigma` pin is unchanged).
+  - **Equivalence at G.**  Since G has no target cycle, the Lean (F2) holds at
+    every pair `left < right` of G's corridor with equal states: a fresh path
+    context of length `2^k − right` from the entry foot to `head right` closes a
+    target cycle with `piece(J_right)`, and is pendant in
+    `retainedPiece(J_right, J_left)` (whose head has no retained edge), where
+    the only cycles are G's.  With (F1)/(F3) excluded by `[64]`/`[66]`, the hook
+    at G is therefore equivalent to: **every retained corridor of G is terminal
+    (reaches its successor stub within `Q_cold` states) or reaches a heavy
+    centre ((F4), `ColdDeclaredHandoffSupport`) strictly before its first state
+    repeat.**  The (F5) repeat subcase can never be a first failure.
+  - **Completeness check** (the whole path to `[153]`'s (F2) routing, tex
+    2754-2772, 4629-4652, 4783-4798, 5858-5950, 6106-6140, 6982-6997,
+    7164-7275, 12095-12127): every object the paper constructs is on the ledger
+    -- the sparse family and survivor `[125]` (`sparseDeclaredFamily`,
+    `DeclaredSparseSurvivor`, `CanonicalSurplus.lean:174,232`), clause (b)
+    `ResidualTargetDefect` (`NamedSurplusExits.lean:111`), the pair coordinates
+    `r_π` and spine family, context universality `[12]`, the exit-(4) family
+    `Q₄(w)` (`ExitFourFamily.lean`, closed list Q1-Q5), the corridor, cut state
+    and first failures (`[30]`, `[404]`, `[422]`).  What is missing is exactly
+    the paper's sentence "in the global branch ledger such defects are exactly
+    the sparse exits; in the Type A location they are the exit-(4) peels"
+    (tex 7268-7270): a map from an (F2) pair -- two prefixes of one corridor --
+    to two coordinates of G's sparse family (tex 2769-2772 names only surplus
+    demands, pairs and spine coordinates) or to a member of the closed list
+    `Q₄(w)` (tex 12126-12127, "exit (4) occurs precisely when one of these
+    listed canonical quotients is target-defective").  The paper constructs
+    neither; the same unproved sentence recurs at G2 (tex 7391-7395) and at the
+    table's distinguishing row (tex 7446-7450), where the Lean keeps the
+    outcome instead of excluding it.  So the missing fact about G is the one
+    displayed above (no state repeat before a terminal or heavy event), which no
+    construction of the paper supplies.
+  - **Not refutable.**  Refuting it needs a retained corridor of G whose first
+    state repeat precedes every heavy centre; nothing on the ledger places G's
+    heavy vertices or bounds corridor lengths from below.
+  - **The pumping construction, carried out at G (user's construction,
+    2026-09-27).**  Suppose G's states repeat at segments `i < j` before any
+    terminal or heavy event.  Excise the corridor stretch strictly between
+    `J_i` and `J_j` and glue `head i` to the continuation after `head j`: the
+    replacement piece of `supp = J_j` is `retainedPiece(J_j, J_i)` (the corridor
+    prefix `J_i` with the head moved), a proper boundaried piece of G.  Clause
+    by clause against `CompressibleSupport` (`K .uncompressible`): it is
+    strictly smaller (`j − i` fewer internal vertices), connected, on G's own
+    support; but
+    - **the boundary profile clause fails**: on `∂J_j` the entry foot keeps
+      its corridor edge in `piece(J_j)` and has it only through `head i` in the
+      replacement; at `i = 0` the foot loses it
+      (`Quarantine/PaperRepairs/ColdF2Refutation.lean`,
+      `prefix_zero_profile_ne`);
+    - **the response clause fails, at G, always**: the context of a fresh path
+      of length `2^k − j` from the foot to `head j` closes a target cycle with
+      `piece(J_j)` and none with the replacement, whose cycles through the
+      glued vertex are `j − i` shorter; G has no target cycle, so this context
+      is compatible and separates the two pieces.  The retained cut state is a
+      finite projection of `ρ^ex_{T(J)}(J)` (tex 7187-7197: "It is not the full
+      labelled prefix"), so equal states do not give equal responses -- the
+      paper itself records exactly this discrepancy as (F2) (tex 7192-7195).
+    So the excision is not a compression and yields no contradiction with
+    `[14]` or `[4]`; the concrete obstruction at G is the separating context
+    above, at any equal-state pair.  The step stays open.
+  - **Where the separating context attaches, and why equal states do not
+    exclude it.**  The context is a path `P` of length `L = 2^k − j` (fresh
+    internal vertices) glued at the entry foot `x = head 0` and at `head j`,
+    i.e. at the two vertices of `T(J_j) ∩ ∂J_j` -- it attaches *through* the
+    interface.  `CompressibleSupport`'s response clause ranges over every
+    `OutsideContext` of the support's boundary `∂J_j` (`∀ outside, Target (glue
+    E outside) ↔ Target (glue Q outside)`), so `P` is one of its contexts.
+    With `Q = piece(J_j)`, `glue Q P` has the cycle `P + (x … head j)` of length
+    `L + j = 2^k`; with the excised `E`, the foot-to-head path has length `j −
+    (j−i) = i`, so the cycle has length `2^k − (j − i)`, not a power of two for
+    `k` large, and `E` adds no other cycle through `P`.  Equal states do not
+    exclude this because the paper's cut state is a *finite* projection of
+    `ρ^ex_{T(J)}(J)` (tex 7187-7197): it keeps the boundary-degree profile,
+    the two half-edges, the two offsets, and the declared coordinates whose
+    support lies inside `T(J)`.  The foot-to-head distance is carried only by
+    coordinates supported on the connector itself (D2 "connector lengths",
+    "edge-rooted return data"), whose support is the prefix, not contained in
+    `T(J)`, so it is not retained -- and it cannot be: the distances `0, …, Q`
+    along one corridor are pairwise distinct, so a state that kept them could
+    never repeat and `Q_cold` would not be a constant of the signature.  The
+    paper says as much: the state "is not the full labelled prefix", and a
+    same-state pair that differs in response "is recorded as (F2)"
+    (tex 7192-7195).  Enriching the state to the full exterior response would
+    change the paper's definition and remove the finiteness `[153]`/`[162]`
+    rest on; and for a power-of-two target any excision that shortens the
+    foot-to-head distance changes the response against such a path context, so
+    no excision is ever response-preserving.  Route 3 therefore fails at every
+    equal-state pair; routes 1 and 2 give nothing (no arm or bound is
+    contradicted by a state repeat).
+  - **Route 1 through the survivor: the cold prefixes as declared coordinates
+    (2026-09-27).**  The survival clause of `def:named-surplus-exits`
+    (tex 2769-2772) quantifies (b) over "any selected surplus demand, any
+    selected pair of surplus demands, or any baseline spine coordinate used in
+    the entropy sandwich of `def:baseline-spine-demand`"; `I_spine`
+    (tex 4783-4798) is "the independent target coordinates already forced by
+    the near-cubic spine before sparse surplus-pair coordinates are added" --
+    window, remainder, obstruction and local-residual demands.  No clause
+    declares cold corridor prefixes, and `sparseDeclaredFamily`
+    (`Statements/CanonicalSurplus.lean`) follows it.  Adding them would not
+    help: clause (b) (`ResidualTargetDefect`) reads the two coordinates on G's
+    piece at `Z = select?(J_i ∪ J_j) = J_j` and needs equal boundary-degree
+    profiles of `retainedPiece(J_j, J_i)` and `piece(J_j)`.  They differ: on
+    `∂J_j` the head `head j` keeps its corridor edge in `piece(J_j)` and has
+    none in the `J_i` reading (checked in Lean for `i = 0`:
+    `Quarantine/PaperRepairs/ColdF2Refutation.lean`,
+    `prefix_zero_profile_ne`, `not_residualTargetDefect_prefixPair_zero`).
+    The cut state's "same boundary-degree profile" is G's degree at the foot
+    and at the head, not the `d_∂` of the two readings, so an (F2) pair lands
+    in blocker (d) (`ResidualProfileSeparation`), not in exit (b).  Reading (b)
+    over all of G's boundaried pieces instead would fire on every corridor of
+    length `≥ 2` (`edge_twoPath_sameFibre_targetDefect`) and empty the
+    surviving branch.  So route 1 fails as well; the hook stays open, and so
+    does `[162]`, whose length bound needs (F2) excluded.
 
 ### [153]/[175] full charge of a subcubic cold half-edge, `lem:absorbed-germ-fan-data` (i) (tex 7920-7922) with `lem:cold-germ-extraction` (tex 7318-7322)
 
@@ -1298,32 +1569,141 @@ keeps the paper claim and the [144a] representation.
   `terminal_of_small_component`, group CO `F3_terminalCheck.lean`, standard
   axioms).  `Q_cold` is the cardinality of the full cut-state alphabet, so no
   concrete refutation is available, and the hypotheses do not bound `n`.
-- **Tag.** `sorry`, `PAPER-ERROR [162] tex:7694`, in
-  `Graph/Contracts/Spine/ColdMass.lean`.
+- **Pumping (2026-09-27).**  A corridor longer than `Q_cold` must repeat a
+  state (route 2 gives the repeat), but the excision at the repeat is not a
+  compression at G: the path context glued at the foot and at the later head
+  -- through `T(J)` -- separates the pieces, and the finite state forgets the
+  foot-to-head distance (see `[153]`'s pumping entry).  So route 3 does not
+  bound the length either.  The obstruction at G is a retained corridor that crosses
+  hot or non-ambient-cubic cold windows for more than `Q_cold` segments; the
+  ledger neither produces nor excludes one.
+- **The exact gap (fix2-SC, 2026-09-27).**  The missing fact is "the corridor
+  path of every eligible `ε` lies in `R(P₀)`", and it is exactly sufficient: the
+  Lean inside path is shortest in `G[K]` (`inside_length_le`), hence shortest in
+  `G[S]` for its own vertex set `S`; if `S ⊆ R`, `[27]` makes `G[S]` induced-`P₁₃`
+  free, so `shortestPath_length_le_order_sub_two` bounds its length by `11` and
+  `statesRead ≤ 12 < 13 ≤ Q_cold` (`windowOrder_le_stateBound`): terminal.  The
+  paper's second premise, subcubicity of the pieces, is unsupported (R may
+  contain degree-`≥ 4` vertices, which `lem:absorbed-germ-fan-data` (ii) itself
+  uses) and unnecessary.
+- **Completeness check** (tex 6862-6865, 6937-6997, 7046-7114, 7164-7298,
+  7619-7698, 8636-8674, 10063-10090, 10374-10381): every object the paper
+  builds on the path is on the ledger before `[162]` -- `P₀` and `R` (`[19]`,
+  `.maximalPacking`), `[27]` `.remainderNormalized`, the hot/cold split `[22]`,
+  `.surplusAtOrBelow`, `.coldAmbientCubic`, the selected half-edges and stub
+  excess `[150]`--`[152]`, `lem:bridgeless`, the corridors and states `[30]`,
+  the dense-residual tests `[158]`/`[160]`.  None of them places a corridor in
+  `R`: `X_cold` keeps the hot and non-ambient-cubic cold windows in the outside
+  graph, a selected stub's foot may lie in a hot window, and the paper only
+  counts the non-ambient-cubic windows (`≤ σ(G)`).  The only diameter argument
+  in the paper (tex 10374, `diam(X) ≤ 11`) is about Type A pieces `X ⊆ R`;
+  tex 7692-7694 transfers it to corridors of `G − X_cold` without the
+  containment.  Maximality of `P₀` only gives that every 13 consecutive corridor
+  vertices meet a window of `P₀`.
+- **Tag.** `sorry`, `OPEN-CONSTRUCTION [162] tex:7694`, in
+  `Graph/Contracts/Spine/ColdMass.lean`.  Node `[162]` is no longer consumed on
+  the absorbed branch (see "the cold chain at G's objects").
 
-### [177] the counted core of the absorbed fan data, `lem:absorbed-germ-fan-data` (ii) (tex 7926-7934)
+### [177] the counted core of the absorbed fan data, `lem:absorbed-germ-fan-data` (ii) (tex 7926-7952)
 
-- **Paper claim.** A selected half-edge whose first-failure support `J`
-  contains a vertex `z` of degree `≥ 4` "is therefore decorated handoff fan
-  data at `z`" (tex 7932).  A decorated envelope needs a counted core
-  `Y ⊆ R` that is `P₁₃`-free (`def:decorated-fan-envelope`, tex 10898-10903),
-  and the paper's core is the first-failure support `J`.
-- **Faithful Lean statement.**
-  `Contracts.Spine.coldAbsorbedPrefix_subset_remainder`: for `ε` outside node
-  `[153]`'s candidate set, the prefix of G's retained corridor through its trace
-  end lies in `R(P₀)`.  `Contracts.TypeB.absorbedGermDecoratedAssignedSupport`
-  reads it.  Before the corridor-windows ruling it followed from `[30]`'s
-  R-clause.  (Fix pass TB: the [177] counted core is now the prefix through
-  the first high centre `z`, a sub-prefix of the one above, so it lies in
-  `R(P₀)` by `prefixSupport_mono` and this same sorry; the Spine/cold agent
-  owns the envelope rebuild of this node, see the merge note under
-  [65]--[85].)
-- **Why it fails.** With the paper's `X_cold` corridors, `J` may meet a hot or
-  non-ambient-cubic cold window before `z`, and the paper never shows `J ⊆ R`.
-- **Not refutable.** A refutation needs a concrete object carrying the whole
-  routed first-failure classification `[68]`.  None is known.
-- **Tag.** `sorry`, `PAPER-ERROR [177] tex:7932`, in
-  `Graph/Contracts/Spine/ColdSubcubicCharge.lean`.
+- **Paper claim** (tex 7926-7932, proof 7945-7952): if the first-failure
+  support `J` of `ε` contains a vertex `z` of degree `≥ 4`, "the corridor enters
+  `z` through one of its incidences and leaves through another ... the two
+  corridor incidences at `z` are distinct, so the segments of the corridor on
+  either side of `z` are two connector tails separated at `z`, which is the
+  decorated handoff configuration of `lem:typeA-high-degree-handoff`".  That
+  configuration (tex 11110-11131, `def:decorated-fan-envelope` 10898-10925,
+  `lem:decorated-fan-admissibility` 11150-11158) is an envelope `(Y, {z})` over a
+  connected `P₁₃`-free remainder core `Y ⊆ R` with `z ∉ Y` ("the only new
+  vertices counted outside `Y` are the decorations"), whose arms are the
+  connector tails from the first neighbours of `z` "to their first-entry data
+  in" `Y`.  The paper never names `Y` for a cold corridor; in the Type A lemma
+  `Y` is the Type A support `X` the tails return to.
+- **Faithful Lean statement (restated 2026-09-27, fix2-SC).**  `[177]`
+  (`AbsorbedHandoffAt`, `Statements/TypeB.lean`) now publishes exactly that
+  configuration at `ε`'s first heavy centre `z` of G's retained corridor: an
+  admissible `DecoratedHandoff.Envelope` with decorations `{z}`, assigned first
+  neighbours the two corridor incidences at `z`
+  (`Corridor.entryNeighbour` / `exitNeighbour`, proved distinct), arms the two
+  corridor segments at `z` cut at their first entry into the core
+  (`Corridor.entryTail` / `exitTail`, `DecoratedHandoff.firstEntryArm`), a
+  connected core `Y ⊆ R(P₀)` with `z ∉ Y`, and simple full handoff paths
+  (`z ∉ A_{z,a}`).  Everything is proved from G's facts
+  (`Contracts.TypeB.absorbedGermDecoratedAssignedSupport`, via the generic
+  `DecoratedHandoff.envelopeOfTails`) except the existence of `Y`, which is the
+  hook `Contracts.Spine.coldAbsorbedRemainderCore`: a connected `Y ⊆ R(P₀)`,
+  `z ∉ Y`, met by both corridor segments at `z`.  The Type B support of the
+  absorbed lane is `(Y, {z})`, chosen canonically (`canonicalAbsorbedHandoff`).
+- **The former Lean statement was not the paper's.**  Until 2026-09-27 the
+  hook was `coldAbsorbedPrefix_subset_remainder` ("the prefix `J` through its
+  trace end lies in `R`"), and the envelope took `Y := J` with `z ∈ Y` and
+  `z ∈ H` (counted twice, in `def⁺(Y)`/`|V(Y)|` and in `ω(H)`), assigned every
+  neighbour of `z`, and let arms `[a, z]` return to `z`, so the handoff path
+  `z a z` was not simple.  The library `Envelope` admits this (no `h ∉ core`
+  clause, and landing at `h` is allowed); `[177]`'s statement now adds
+  `z ∉ Y` and simplicity explicitly.  "The paper's core is `J`" was not in the
+  tex.
+- **Why it fails.**  A cold corridor has no Type A support.  Its two segments
+  at `z` run to the corridor's two boundary stubs, whose window endpoints lie in
+  ambient-cubic cold windows of `P₀`, outside `R`.
+- **Completeness check** (tex 6862-6874, 8636-8674, 10063-10110, 10898-10937,
+  11110-11158, 7164-7183, 7329-7345, 7883-7958): the paper's remainder objects
+  are on the ledger -- `R`, `[27]`, `[22]`, the canonical pieces of `R`
+  (`canonicalPieces`, `NetCharge.lean:53`), the Type A supports and exit-(7)
+  envelopes `[108]`, `[10]` `.slackIndependent`, the absorbed split and fan
+  data `[175]`, the subcubic reach `.coldHandoffTransfer`.  None of them is tied
+  to a cold corridor, and no construction of the paper yields a connected core
+  in `R` avoiding `z` that both segments enter.  Even corridor containment in
+  `R` would not suffice (`z` may separate the segments' parts of `R`).
+- **The configuration `z` = the entry foot (`i = 0`).**  There the entry-side
+  segment is the stub `ε` itself, `[ε's window endpoint] ⊆ X_cold`, which meets
+  no vertex of `R`, so the claim would fail.  Whether a G reaching `[177]` can
+  have it is not decided: the three routes applied to "`z` is the foot of an
+  eligible `ε`" give nothing -- (1) the foot's window neighbour has degree `3`
+  and `[10]` only forbids heavy-heavy edges, so no incompatible structure;
+  (2) the heavy vertices adjacent to ambient-cubic windows are counted by the
+  surplus `σ(G)` but not excluded; (3) no smaller representative arises.  No
+  G-configuration consistent with all ledger facts at `[177]` is exhibited, so
+  this is an open construction, not a paper error.
+- **Three routes on `¬X`** (X = a connected `Y ⊆ R`, `z ∉ Y`, entered by both
+  segments): (1) incompatible structure -- a segment that reaches its boundary
+  stub without meeting `R \ {z}` crosses only hot / non-ambient-cubic cold
+  windows and `X_cold`, which contradicts no arm (no accepted cycle, no
+  baseline or bridgelessness violation is produced); (2) overload -- no count on
+  the ledger bounds how many segment vertices lie outside `R`; (3)
+  compressibility -- the failure of `X` produces no smaller representative of a
+  support.  The concrete configuration at G is `z` = the entry foot
+  (`i = 0`), whose entry-side segment is `[ε's window endpoint] ⊆ X_cold`.
+- **Tag.** `sorry`, `OPEN-CONSTRUCTION [177] tex:7932`, in
+  `Graph/Contracts/Spine/ColdSubcubicCharge.lean` (`coldAbsorbedRemainderCore`).
+- **The Type B support of the absorbed lane, `(Y_X, H_X)` (integration of
+  fix2-TB and fix2-SC, 2026-09-27).**  The envelope's decorations stay `{z}`;
+  the Type B support the lane publishes (`canonicalTypeBAbsorbedSupportAt`,
+  `Statements/CanonicalTypeB.lean`) is `(Y, {z} ∪ centres(Y))`, where
+  `centres(Y)` are the high vertices of `Y`
+  (`Graph.TypeBRefinedSupport.centres`).  The tex:
+  - `def:typeB-assigned-ledger` (tex 12909): "write `H_X` for the high-degree
+    fan centers whose surplus units are assigned to `X` by
+    `def:canonical-decomp` … A high-degree vertex that appears only as boundary
+    context for another support is not an element of that support's set
+    `H_X`";
+  - `def:canonical-decomp` (tex 10063): "All surplus units of
+    `h ∈ V_{≥4}(G) ∩ V(R)` are assigned to the unique piece containing `h`. …
+    When an assigned surplus unit is represented by an actual high-degree fan
+    vertex in the local Type B analysis, the corresponding fan envelope records
+    that vertex as decoration data";
+  - `def:typeB-residual-mass` (tex 14682) puts `H_X = H_𝔠` (the decorations
+    only) for "grouped decorated Type B envelope supports produced from Type A
+    exit-(7) handoffs".
+  The [177] support is a cold-corridor absorbed support, not an exit-(7)
+  grouped envelope, so the general definition applies: `H_X` holds the
+  decoration `z` and every high vertex of the counted core `Y ⊆ R`.  With it,
+  `centres(Y_X) ⊆ H_X` holds by definition on this lane
+  (`TypeBAbsorbedLane.centres_subset`), so the B2 ledger (`typeBB2LedgerAt`),
+  the bridge-deficit bound and the per-`ε` charge `K .typeBAbsorbedCharge`
+  (idx 2800, `typeBAbsorbedCharge`) are proved as before, with no new predicate
+  and no new `sorry`.  fix2-TB's former "`centres(J) ⊆ {z}`" proof applied to
+  its prefix core `J ∋ z` and is superseded by the `(z, Y)` envelope.
 
 ### [92] after peeling: the unsaturated charge does not close once a load is peeled (tex 1095, 11753, 11785)
 

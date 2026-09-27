@@ -36,10 +36,13 @@ noncomputable def returnAvoidanceDichotomy
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .cubicBaseline) known]
     (returnFresh : K .mersenneReturn ∉ known)
     (avoidanceFresh : K .returnAvoidance ∉ known) :
-    Decision (K .mersenneReturn) (K .returnAvoidance) previous :=
-  Decision.run previous (K .mersenneReturn) (K .returnAvoidance)
+    Decision (K .mersenneReturn) (K .returnAvoidance) previous := by
+  -- The decision reads its predecessor, node `[5]`'s entry presentation fact.
+  have _predecessor := (previous.get (K .cubicBaseline)).down
+  exact Decision.run previous (K .mersenneReturn) (K .returnAvoidance)
     `Hypostructure.Graph.Strategy.Spine.returnAvoidanceDichotomy
     (Classical.choice (show Nonempty
         ((K .mersenneReturn).At current ⊕ (K .returnAvoidance).At current) from by
