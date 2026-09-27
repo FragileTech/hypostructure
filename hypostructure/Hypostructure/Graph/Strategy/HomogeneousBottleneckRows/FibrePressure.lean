@@ -108,7 +108,7 @@ G's overloading token, on the same ledger, refutes the caps at that ledger.
 The assembly closes the arm at the node with `closeIncompatible` against
 `K .homogeneousBottleneckPattern`
 (`instIncompatibleHomogeneousBottleneckPatternCapsHold`); it is registered in
-`lean-vs-paper-discrepancies.md#paper-errors`. -/
+`lean-vs-paper-discrepancies.md#closed-from-gs-facts`. -/
 noncomputable def homogeneousBottleneckDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}

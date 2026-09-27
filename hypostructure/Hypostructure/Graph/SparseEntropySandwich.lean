@@ -727,7 +727,7 @@ boundary-degree fibres (`lem:degree-profile-fibres`).  The separated
 coordinates are exactly the ones the quotient identifies, at the quotient's
 own support.  Because the paper's determination quotient is admissible
 (target-complete), the clause is never inhabited
-(`not_sparsePairDEProfileObstructionAt`; registered as a paper error). -/
+(`not_sparsePairDEProfileObstructionAt`; closed from G's facts at `[130]`). -/
 def SparsePairDEProfileObstructionAt
     {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}} {Coordinate Chord : Type u}
