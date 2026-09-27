@@ -275,7 +275,7 @@ theorem coldCorridorState_of_corridors (data : Parameters)
       (Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
         selectedFacts.1
     obtain ⟨targetWindow, targetWindowMem, targetMem⟩ :=
-      (Graph.ColdCorridor.mem_windowsOf object packing epsilon.1.2).1
+      (Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.2).1
         epsilon.property.2
     let support : Finset object.Vertex := {epsilon.1.1, epsilon.1.2}
     have adjacent : object.graph.Adj epsilon.1.1 epsilon.1.2 := by
@@ -355,19 +355,8 @@ theorem coldCorridorState_of_corridors (data : Parameters)
     exact ⟨germ, rfl⟩
   let crossIncidence := fun epsilon =>
     Classical.choose (crossGermExists epsilon)
-  have componentInR : ∀ epsilon : ColdEligibleHalfEdge data object,
-      componentAt epsilon ⊆ object.remainderSupport packing := by
-    intro epsilon vertex vertexMember
-    apply Finset.mem_sdiff.2
-    refine ⟨Finset.mem_univ vertex, ?_⟩
-    have outsideWindows : vertex ∉ windows :=
-      Finset.disjoint_left.1 (corridorFacts epsilon).1.1
-        vertexMember
-    intro inPackedSupport
-    apply outsideWindows
-    exact inPackedSupport
   refine ⟨outsideIncidence, componentAt, corridorAt, presentationAt, indexAt,
-    ?_, ?_, ?_, componentInR, ?_, crossIncidence, ?_⟩
+    ?_, ?_, ?_, crossIncidence, ?_⟩
   · intro epsilon
     refine ⟨(corridorFacts epsilon).1, (corridorFacts epsilon).2,
       ⟨ULift.up_injective, rfl⟩, Classical.choose_spec (germExists epsilon)⟩
@@ -379,15 +368,11 @@ theorem coldCorridorState_of_corridors (data : Parameters)
       (Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
         (Graph.ColdCorridor.selected_facts object cubic epsilon).1
     obtain ⟨targetWindow, targetMember, targetInside⟩ :=
-      (Graph.ColdCorridor.mem_windowsOf object packing epsilon.1.2).1
+      (Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.2).1
         crossWindow
     exact ⟨sourceWindow, sourceMember, targetWindow, targetMember,
       sourceInside, targetInside,
       (Graph.ColdCorridor.selected_facts object cubic epsilon).2⟩
-  · intro epsilon vertex vertexMember
-    apply componentInR epsilon
-    obtain ⟨inner, _innerMember, rfl⟩ := List.mem_map.1 vertexMember
-    exact inner.2
   · intro epsilon
     exact Classical.choose_spec (crossGermExists epsilon)
 
@@ -447,7 +432,7 @@ theorem coldGermCandidates_of_routing (data : Parameters)
   let stateTwo := Classical.choose_spec (Classical.choose_spec stateOne)
   let stateBundle := Classical.choose_spec (Classical.choose_spec stateTwo)
   let crossIncidence := coldRoutedCrossIncidence data object routing
-  let crossFacts := Classical.choose_spec stateBundle.2.2.2.2.2
+  let crossFacts := Classical.choose_spec stateBundle.2.2.2
   let incidence := coldRoutedOccurrenceIncidence data object routing
   let candidates := coldRoutedCandidates data object routing
   have occurrenceStubInjective : Function.Injective

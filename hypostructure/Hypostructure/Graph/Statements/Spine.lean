@@ -905,13 +905,18 @@ noncomputable def coldAmbientCubicSupport (data : Parameters)
   exact ((canonicalColdWindows data object).filter
     (AmbientCubicWindow data object)).biUnion id
 
-/-- The deleted support used by the paper's return corridors in the dense
-pass.  It is the union of the fixed maximal packing, so its outside graph is
-literally the normalized remainder `R = G - W`.  The selected entries are
-still the branch-excess half-edges of the ambient-cubic cold subfamily. -/
+/-- `X_cold`, the deleted support of the cold return corridors
+(`def:cold-corridor-first-failure`, tex 7165-7167): "Let `X_cold` be the union
+of the ambient-cubic cold windows ... Delete the interiors of these windows and
+look at a connected component `K` of the remaining outside graph."  Only the
+ambient-cubic cold windows are deleted; hot and non-ambient-cubic cold windows
+of `P₀` stay in the outside graph, so a corridor may leave the remainder
+`R = G − ⋃P₀` (user ruling 2026-09-27). -/
 noncomputable def coldCorridorWindows (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Finset object.Vertex :=
-  Graph.ColdCorridor.windowsOf object (canonicalWindowPacking data object)
+    (object : Graph.FiniteObject.{u}) : Finset object.Vertex := by
+  classical
+  exact Graph.ColdCorridor.windowsOf object
+    ((canonicalColdWindows data object).filter (AmbientCubicWindow data object))
 
 /-- `def:surviving-cold-branch`'s `o(n)` assertion in exact finite form: the
 non-ambient-cubic loss is charged injectively to degree surplus. -/
@@ -1302,15 +1307,9 @@ noncomputable def ColdCorridorStateStatement (data : Parameters)
       ((presentationAt epsilon).activeInterface (indexAt epsilon segment)).card ≤
         Graph.ColdCorridor.interfaceWidth data.windowOrder) ∧
     (∀ epsilon : ColdSelectedHalfEdge data object, epsilon.1.2 ∈ windows →
-      ∃ sourceWindow ∈ cubic, ∃ targetWindow ∈ packing,
+      ∃ sourceWindow ∈ cubic, ∃ targetWindow ∈ cubic,
         epsilon.1.1 ∈ sourceWindow ∧ epsilon.1.2 ∈ targetWindow ∧
           object.graph.Adj epsilon.1.1 epsilon.1.2) ∧
-    (∀ epsilon : Eligible,
-      componentAt epsilon ⊆
-        object.remainderSupport (canonicalWindowPacking data object)) ∧
-    (∀ epsilon : Eligible, ∀ vertex,
-      vertex ∈ (corridorAt epsilon).inside.1.support.map (fun inner => inner.1) →
-        vertex ∈ object.remainderSupport (canonicalWindowPacking data object)) ∧
     ∃ crossIncidence : ColdCrossWindowHalfEdge data object →
         Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
@@ -1709,7 +1708,7 @@ inside the cold-window union. -/
   let stateOne := Classical.choose_spec state
   let stateTwo := Classical.choose_spec (Classical.choose_spec stateOne)
   let stateBundle := Classical.choose_spec (Classical.choose_spec stateTwo)
-  exact Classical.choose stateBundle.2.2.2.2.2
+  exact Classical.choose stateBundle.2.2.2
 
 /-- The canonical occurrence-to-germ map read from the retained routing fact. -/
 @[reducible] noncomputable def coldRoutedOccurrenceIncidence (data : Parameters)

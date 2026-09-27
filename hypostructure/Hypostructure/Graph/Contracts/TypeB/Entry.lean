@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Contracts.TypeB.Support
 import Hypostructure.Graph.Statements.SurplusPairRouting
+import Hypostructure.Graph.Contracts.Spine.ColdSubcubicCharge
 
 /-!
 # Contracts: the Type B entries
@@ -241,7 +242,6 @@ theorem absorbedGermDecoratedAssignedSupport
   let presentationAt := Classical.choose stateThree
   let stateFour := Classical.choose_spec stateThree
   let indexAt := Classical.choose stateFour
-  let stateBundle := Classical.choose_spec stateFour
   let routed : ColdEligibleHalfEdge data object := epsilon
   let component := componentAt routed
   let corridor := corridorAt routed
@@ -266,8 +266,8 @@ theorem absorbedGermDecoratedAssignedSupport
       Nat.min_eq_right firstBound] using member
   have coreInside : core ⊆ object.remainderSupport
       (canonicalWindowPacking data object) := by
-    exact (corridor.prefixSupport_subset_component traceEnd).trans
-      (stateBundle.2.2.2.1 routed)
+    exact Contracts.Spine.coldAbsorbedPrefix_subset_remainder data object
+      routing epsilon notCandidate
   have avoids : ¬ Graph.HasCycleWithLength data.LengthOK
       object := avoids
   have denied : ∀ c a b,

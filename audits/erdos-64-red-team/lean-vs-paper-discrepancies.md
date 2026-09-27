@@ -570,21 +570,6 @@ canonical homogeneous pattern at that token
   `[187]` cold outcome (`SelectedAbsorbedGermBoundary` gained that disjunct),
   and `[406]` runs only on the silent arm, as in the dense pass.
 
-- **[153] corridor windows (registered 2026-09-27; needs a user decision).**
-  `def:cold-corridor-first-failure` (tex 7165-7167) deletes the interiors of
-  the ambient-cubic cold windows only (`X_cold`) and takes the components of
-  `G − X_cold`.  The Lean (`coldCorridorWindows`, unchanged since d2ded0e)
-  deletes the whole fixed packing `⋃P₀`, so every corridor lives in the
-  normalized remainder `R = G − ⋃P₀`; a selected stub whose foot is in any
-  packed window is the explicit cross-window incidence.  The paper itself
-  needs this reading at `[162]`: `lem:dense-cold-pass` (tex 7689-7696) bounds
-  every return corridor by the diameter of "the boundaried pieces of `R`",
-  which holds only for corridors inside `R`
-  (`Contracts.Spine.denseColdCorridorsTerminal_of_state` reads
-  `componentAt ε ⊆ R(P₀)` from `[30]`).  With `G − X_cold` a corridor may cross
-  hot or non-cubic cold windows and `[162]` is not established.  The two paper
-  readings are inconsistent; the Lean keeps the `R` reading.  Not changed in
-  this pass.
 - **[165]/[166] size split `[244]`/[245]** (`canonicalSwapSizeDichotomy`,
   `coldCanonicalSwapSmaller` / `coldCanonicalSwapSameSize`).  The paper gives it
   no placement: `lem:refined-minimality-swap` (tex 7732-7757) splits only
@@ -747,6 +732,65 @@ where the user decided so, a residual carried by the node's open leaf.
   Tex 7234 declares whole supports.  Lean implements the (F4) definition as
   stated at its node (tex 7234).  The heavy-centre reading is quarantined in
   `Quarantine/PaperRepairs/ColdF4Charge.lean`.
+
+### [162] terminality of the cold return corridors, `lem:dense-cold-pass` (tex 7692-7694)
+
+- **Context: the corridor windows (user ruling 2026-09-27).**
+  `def:cold-corridor-first-failure` (tex 7165-7167) deletes only `X_cold`, the
+  ambient-cubic cold windows, and takes the components of `G − X_cold`.  Until
+  2026-09-27 the Lean (`coldCorridorWindows`, unchanged since d2ded0e) deleted
+  the whole packing `⋃P₀`, so every corridor lay in `R = G − ⋃P₀`.  The user
+  allowed keeping that only if it is not weaker than the paper.  It is weaker:
+  nothing in the paper keeps a corridor out of the hot windows or the
+  non-ambient-cubic cold windows (`def:surviving-cold-branch` and the hot/cold
+  split, tex ~6960-6990, only bound the non-ambient-cubic ones by `o(n)`).  A
+  selected stub whose foot lies in a hot window has a genuine corridor through
+  that window in the paper, while the R-version turned it into a two-vertex
+  cross-window incidence.  So the R-version dropped paper configurations.
+  `coldCorridorWindows` is now `windowsOf (cold.filter AmbientCubicWindow)` =
+  `X_cold`.  `[30]` lost its two R-clauses (`componentAt ε ⊆ R`, corridor path
+  `⊆ R`), which the paper does not state, and its cross-window clause now lands
+  in an ambient-cubic cold window.
+- **Paper claim.** "Since the boundaried pieces of `R` are induced-`P₁₃`-free
+  and subcubic, they have bounded diameter, so every return corridor is
+  terminal in the sense of the (F5) terminal subcase" (tex 7692-7694).
+- **Faithful Lean statement.** `Contracts.Spine.denseColdCorridorsTerminal_of_state`
+  (conclusion `DenseColdCorridorsTerminalStatement`, unchanged): from the
+  retained corridor state `[30]`, `[27]`'s normalization and the hot/cold
+  split, every retained corridor of G has `statesRead ≤ Q_cold`.
+- **Why it fails.** The diameter bound is about the pieces of `R`.  A corridor
+  of `G − X_cold` may run through hot windows (induced `P₁₃`s, not in `R`) and
+  non-ambient-cubic cold windows, so neither `R`'s `P₁₃`-freeness nor any other
+  ledger fact bounds its length.  Its lex-first path is shortest inside its
+  component, but that component contains the windows it crosses.
+- **Not refutable.** A counterexample needs an outside component with more
+  than `Q_cold = |CutState|` vertices: every corridor of a component with at
+  most `Q_cold` vertices is terminal (scratch check
+  `terminal_of_small_component`, group CO `F3_terminalCheck.lean`, standard
+  axioms).  `Q_cold` is the cardinality of the full cut-state alphabet, so no
+  concrete refutation is available, and the hypotheses do not bound `n`.
+- **Tag.** `sorry`, `PAPER-ERROR [162] tex:7694`, in
+  `Graph/Contracts/Spine/ColdMass.lean`.
+
+### [177] the counted core of the absorbed fan data, `lem:absorbed-germ-fan-data` (ii) (tex 7926-7934)
+
+- **Paper claim.** A selected half-edge whose first-failure support `J`
+  contains a vertex `z` of degree `≥ 4` "is therefore decorated handoff fan
+  data at `z`" (tex 7932).  A decorated envelope needs a counted core
+  `Y ⊆ R` that is `P₁₃`-free (`def:decorated-fan-envelope`, tex 10898-10903),
+  and the paper's core is the first-failure support `J`.
+- **Faithful Lean statement.**
+  `Contracts.Spine.coldAbsorbedPrefix_subset_remainder`: for `ε` outside node
+  `[153]`'s candidate set, the prefix of G's retained corridor through its trace
+  end lies in `R(P₀)`.  `Contracts.TypeB.absorbedGermDecoratedAssignedSupport`
+  reads it.  Before the corridor-windows ruling it followed from `[30]`'s
+  R-clause.
+- **Why it fails.** With the paper's `X_cold` corridors, `J` may meet a hot or
+  non-ambient-cubic cold window before `z`, and the paper never shows `J ⊆ R`.
+- **Not refutable.** A refutation needs a concrete object carrying the whole
+  routed first-failure classification `[68]`.  None is known.
+- **Tag.** `sorry`, `PAPER-ERROR [177] tex:7932`, in
+  `Graph/Contracts/Spine/ColdSubcubicCharge.lean`.
 
 ## User-approved repairs
 

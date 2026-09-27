@@ -128,4 +128,27 @@ theorem coldSubcubicFirstFailureGerm (data : Parameters)
   · exact (coldHandoffOccurrence_not_subcubic data object routing epsilon
       handoff subcubic).elim
 
+/-- **`lem:absorbed-germ-fan-data` (ii), the counted core** (tex 7926-7934,
+with `def:decorated-fan-envelope`, tex 10898-10903): for a selected half-edge `ε`
+of G outside node `[153]`'s candidate set, its first-failure support `J` -- the
+prefix of G's retained corridor for `ε` through its trace end -- is the core of
+the decorated handoff envelope at the heavy centre, hence a remainder core
+`Y ⊆ R = G − ⋃P₀`.
+
+Recorded as a paper error (`lean-vs-paper-discrepancies.md#paper-errors`,
+[177] tex:7932): the corridor lives in `G − X_cold`, which keeps the hot and
+non-ambient-cubic cold windows of `P₀`, so `J` may meet `⋃P₀` before its heavy
+centre; the paper never shows `J ⊆ R`, which the envelope's core requires. -/
+theorem coldAbsorbedPrefix_subset_remainder (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (routing : ColdFailureRoutingStatement data object)
+    (epsilon : ColdEligibleHalfEdge data object)
+    (_notCandidate : Sum.inl epsilon ∉ coldRoutedCandidates data object routing) :
+    (coldOccurrenceCorridorAt data object
+        (coldRoutedClassified data object routing) epsilon).prefixSupport
+        (coldRoutedTraceEnd data object routing epsilon) ⊆
+      object.remainderSupport (canonicalWindowPacking data object) := by
+  -- PAPER-ERROR [177] tex:7932 — see lean-vs-paper-discrepancies.md#paper-errors
+  sorry
+
 end Hypostructure.Graph.Contracts.Spine
