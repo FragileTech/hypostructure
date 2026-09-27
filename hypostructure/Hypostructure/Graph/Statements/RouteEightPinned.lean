@@ -77,14 +77,50 @@ def Route8WindowBlockersStatement : Prop :=
       ∃ y, canonicalRoute8WindowBlocker data object P x.1 x.2 = some y ∧
         Route8WindowBlockerSpec data object P x.1 x.2 y.1 y.2
 
+/-- **The recorded `P`-avoiding corridor** of `def:typeA-recorded-window-shadow-hit`
+(tex 16229-16236) between the boundary endpoints `first`, `second` of two
+open units on the packed window `window`, with canonical boundary incidences
+`first p_a`, `second p_b`: a simple `first`-`second` path of `G - V(P)`, whose
+end edges attach at `p_a`, `p_b` and are distinct.  It is ONE fixed corridor of
+G (the canonical choice among these paths), not every such path. -/
+def RecordedCorridorSpec {n : Nat}
+    (window : SimpleGraph.pathGraph n ↪g object.graph)
+    (first second : object.Vertex) (a b : Fin n)
+    (corridor : object.graph.Walk first second) : Prop :=
+  corridor.IsPath ∧
+    (∀ i : Fin n, window i ∉ corridor.support) ∧
+    object.graph.Adj (window a) first ∧
+    object.graph.Adj second (window b) ∧
+    s(first, window a) ≠ s(second, window b)
+
+/-- The canonical recorded corridor (`none` when no such corridor exists). -/
+def canonicalRecordedCorridor {n : Nat}
+    (window : SimpleGraph.pathGraph n ↪g object.graph)
+    (first second : object.Vertex) (a b : Fin n) :
+    Option (object.graph.Walk first second) :=
+  if h : ∃ corridor, RecordedCorridorSpec object window first second a b corridor
+  then some (Classical.choose h) else none
+
+theorem recordedCorridorSpec_of_eq_some {n : Nat}
+    {window : SimpleGraph.pathGraph n ↪g object.graph}
+    {first second : object.Vertex} {a b : Fin n}
+    {corridor : object.graph.Walk first second}
+    (pinned : canonicalRecordedCorridor object window first second a b =
+      some corridor) :
+    RecordedCorridorSpec object window first second a b corridor := by
+  unfold canonicalRecordedCorridor at pinned
+  split_ifs at pinned with h
+  · cases pinned
+    exact Classical.choose_spec h
+
 /-- **`def:typeA-recorded-window-shadow-hit` with
 `lem:typeA-window-shadow-hit-routes`, certificate (O1)** at the open demand
 units of `(P₀, A₀)` and their canonical window blockers `b₀`: for two distinct
 open units on the same packed window `P`, at any presentation of `P` as an
-induced path, whose canonical boundary incidences are the distinct edges
-`x p_a` and `y p_b`, a `P`-avoiding simple corridor `Q` from `x` to `y` with
-`b ∈ Sh_{s(Q)}(a)` closes the simple cycle `x Q y p_b P p_a x` of accepted
-length `s(Q) + 2 + |a − b|`. -/
+induced path, whose canonical boundary incidences are `x p_a` and `y p_b`, the
+recorded corridor `Q` (`canonicalRecordedCorridor`) with `b ∈ Sh_{s(Q)}(a)`
+closes the simple cycle `x Q y p_b P p_a x` of accepted length
+`s(Q) + 2 + |a − b|`. -/
 def WindowShadowHitCycleStatement : Prop :=
   ∃ P, canonicalRoute8Partition data object = some P ∧
     ∃ x, canonicalRoute8Absorption data object P = some x ∧
@@ -96,12 +132,9 @@ def WindowShadowHitCycleStatement : Prop :=
               (∀ vertex, vertex ∈ y.2 υ ↔ ∃ i, window i = vertex) →
               ∀ (first second : object.Vertex) (a b : Fin data.windowOrder),
                 y.1 υ = s(first, window a) → y.1 υ' = s(second, window b) →
-                ∀ corridor : object.graph.Walk first second,
-                  corridor.IsPath →
-                  (∀ i : Fin data.windowOrder, window i ∉ corridor.support) →
-                  object.graph.Adj (window a) first →
-                  object.graph.Adj second (window b) →
-                  s(first, window a) ≠ s(second, window b) →
+                ∀ corridor,
+                  canonicalRecordedCorridor object window first second a b =
+                    some corridor →
                   b.1 ∈ Graph.WindowAttachmentShadow.shadow data.LengthOK
                     data.windowOrder corridor.length a.1 →
                   ∃ cycle : object.graph.Walk (window a) (window a),
@@ -111,7 +144,7 @@ def WindowShadowHitCycleStatement : Prop :=
 
 /-- **`lem:typeA-window-shadow-hit-routes`** on the selected object: no two
 open demand units of `(P₀, A₀)` on the same packed window have a recorded
-window-signature hit. -/
+window-signature hit along their recorded corridor. -/
 def WindowShadowHitExcludedStatement : Prop :=
   ∃ P, canonicalRoute8Partition data object = some P ∧
     ∃ x, canonicalRoute8Absorption data object P = some x ∧
@@ -123,12 +156,9 @@ def WindowShadowHitExcludedStatement : Prop :=
               (∀ vertex, vertex ∈ y.2 υ ↔ ∃ i, window i = vertex) →
               ∀ (first second : object.Vertex) (a b : Fin data.windowOrder),
                 y.1 υ = s(first, window a) → y.1 υ' = s(second, window b) →
-                ∀ corridor : object.graph.Walk first second,
-                  corridor.IsPath →
-                  (∀ i : Fin data.windowOrder, window i ∉ corridor.support) →
-                  object.graph.Adj (window a) first →
-                  object.graph.Adj second (window b) →
-                  s(first, window a) ≠ s(second, window b) →
+                ∀ corridor,
+                  canonicalRecordedCorridor object window first second a b =
+                    some corridor →
                   b.1 ∉ Graph.WindowAttachmentShadow.shadow data.LengthOK
                     data.windowOrder corridor.length a.1
 
@@ -342,6 +372,9 @@ noncomputable abbrev Route8PiecesClassifiedStatement
   Graph.Route8Deficit.PieceClassification object
     (Graph.HasCycleWithLength data.LengthOK)
     (fun piece =>
+      (∃ receiver : object.Vertex,
+        receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
+          data.threshold data.dischargeScale) ∧
       ∀ receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
           data.threshold data.dischargeScale,
         (∀ load ∈ Graph.VisibleEntry.silentExcess object piece

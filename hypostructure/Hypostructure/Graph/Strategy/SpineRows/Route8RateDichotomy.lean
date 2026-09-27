@@ -17,7 +17,8 @@ variable {data : Data.{u}}
 variable [FactSystem (Input BranchState Presentation presentation data)]
 
 /-! The rate reading as a decision (`rem:route8-carrier-margin` on an arm whose
-density fact does not decide it): `K .route8Rate` or its exact complement. -/
+density fact does not decide it): `K .route8Rate` or its exact complement,
+read after the arm's density fact (`[24]` or `[56]`). -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def route8RateDichotomy
     {current : Input BranchState Presentation presentation data}
@@ -26,9 +27,11 @@ noncomputable def route8RateDichotomy
     (previous :
       @ExactLedger (Input BranchState Presentation presentation data)
         _ (factSystem BranchState Presentation presentation data) current known)
+    (density : Key)
+    (densityArm : density = .netDeficiencyCap ∨ density = .denseDeficiencyBelow)
     [@FactKeys.Has (Input BranchState Presentation presentation data) _
       (factSystem BranchState Presentation presentation data)
-      (K .selection) known]
+      (K density) known]
     (rateFresh : K .route8Rate ∉ known)
     (failsFresh : K .route8RateFails ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
@@ -42,8 +45,11 @@ noncomputable def route8RateDichotomy
       classical
       letI : FactSystem (Input BranchState Presentation presentation data) :=
         factSystem BranchState Presentation presentation data
-      -- The rate is read of the selected counterexample's fixed packing.
-      have _selected := (previous.get (K .selection)).down
+      -- The predecessor is the arm's density fact (`[24]`'s cap
+      -- `K .netDeficiencyCap`, or `[56]`'s `K .denseDeficiencyBelow`); it does
+      -- not decide the rate, which is tested at G's fixed packing `P₀`.
+      have _density := (previous.get (K density)).down
+      have _arm := densityArm
       exact if rate : Graph.Route8Census.Rate current.object
           (canonicalWindowPacking data.toParameters current.object) data.threshold data.dischargeScale
           (data.bridgeMassFactor * data.dischargeScale *

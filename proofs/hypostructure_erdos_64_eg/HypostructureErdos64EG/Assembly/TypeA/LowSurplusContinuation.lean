@@ -155,8 +155,7 @@ noncomputable abbrev typeALowSurplusKeys : FactKeys EGInput.{u} :=
     K .typeAPeeledExitThreeCollision,
     K .typeAPeeledExitThreeFree,
     K .typeAExitThreeCycle,
-    K .typeAExitSevenEnvelope,
-    K .route8GlobalSqueeze]
+    K .typeAExitSevenEnvelope]
 
 /-- **Nodes `[63]`, `[86]`--`[94]`: the Type A entry**, on the `[62]` Type A arm
 (index-polymorphic).

@@ -49,7 +49,7 @@ A new key takes the next unused index of its family's range; existing indices
 - Library statement module: `hypostructure/Hypostructure/Graph/Statements/TypeA.lean`
 - Reserved new-key range: 1000-1199
 
-### Keys (37)
+### Keys (47)
 
 | idx | Key | Statement | Statement module |
 |---|---|---|---|
@@ -82,15 +82,26 @@ A new key takes the next unused index of its family's range; existing indices
 | 153 | `typeAExitFourFiniteDescent` | `TypeAExitFourFiniteDescentFact` | TypeA |
 | 156 | `typeASaturatedHandoffExitFour` | `TypeASaturatedHandoffExitFourStatement` | TypeA |
 | 157 | `typeASaturatedHandoffExitFourFree` | `TypeASaturatedHandoffExitFourFreeStatement` | TypeA |
-| 158 | `typeAExitSevenProduced` | `TypeAExitSevenProducedStatement` | TypeA |
 | 328 | `typeABoundedSupport` | `TypeABoundedSupportStatement` | TypeA |
 | 343 | `typeAExclusion` | `TypeAExclusionStatement` | TypeA |
 | 508 | `typeASilentExitFourFree` | `SelectedSilentExitFourFree` | TypeA |
 | 509 | `typeASilentExitFiveFree` | `SelectedSilentExitFiveFree` | TypeA |
 | 510 | `typeASilentExitSixFree` | `SelectedSilentExitSixFree` | TypeA |
-| 511 | `typeASilentExitSevenFree` | `SelectedSilentExitSevenFree` | TypeA |
+| 2000 | `typeAPeeledSaturatedReceiver` | `TypeAPeeledSaturatedReceiverStatement` | TypeA |
+| 2001 | `typeAPeeledUnsaturatedDischarge` | `TypeAPeeledUnsaturatedDischargeStatement` | TypeA |
+| 2002 | `typeAPeeledVisibleEntry` | `TypeAPeeledVisibleEntryStatement` | TypeA |
+| 2003 | `typeAPeeledNoVisibleEntry` | `TypeAPeeledNoVisibleEntryStatement` | TypeA |
+| 2004 | `typeAPeeledSilentExcess` | `TypeAPeeledSilentExcessStatement` | TypeA |
+| 2005 | `typeAPeeledExitOneReturn` | `TypeAPeeledExitOneReturnStatement` | TypeA |
+| 2006 | `typeAPeeledExitOneFree` | `TypeAPeeledExitOneFreeStatement` | TypeA |
+| 2007 | `typeAPeeledExitTwoTheta` | `TypeAPeeledExitTwoThetaStatement` | TypeA |
+| 2008 | `typeAPeeledExitTwoFree` | `TypeAPeeledExitTwoFreeStatement` | TypeA |
+| 2009 | `typeAPeeledExitThreeCollision` | `TypeAPeeledExitThreeCollisionStatement` | TypeA |
+| 2010 | `typeAPeeledExitThreeFree` | `TypeAPeeledExitThreeFreeStatement` | TypeA |
+| 2011 | `typeAExitThreeCycle` | `TypeAExitThreeCycleStatement` | TypeA |
+| 2012 | `typeAExitSevenEnvelope` | `TypeAExitSevenEnvelopeStatement` | TypeA |
 
-### Row and decision modules (29)
+### Row and decision modules (28)
 
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeABoundedSupport.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAExclusion.lean`
@@ -247,12 +258,11 @@ A new key takes the next unused index of its family's range; existing indices
 - Library statement module: `hypostructure/Hypostructure/Graph/Statements/RouteEight.lean`
 - Reserved new-key range: 1400-1599
 
-### Keys (48)
+### Keys (47)
 
 | idx | Key | Statement | Statement module |
 |---|---|---|---|
 | 159 | `route8ResidualProfile` | `SilentCoreResidualProfile` | RouteEight |
-| 160 | `route8GlobalSqueeze` | `Route8GlobalSqueeze` | RouteEight |
 | 161 | `route8BasinBurden` | `Route8BasinBurden` | RouteEight |
 | 162 | `route8LargeBudgetDeficit` | `Route8LargeBudgetDeficit` | RouteEight |
 | 163 | `route8CarrierCore` | `Route8CarrierCore` | RouteEight |
@@ -300,7 +310,7 @@ A new key takes the next unused index of its family's range; existing indices
 | 517 | `route8OpenBoundarySaturated` | `Route8OpenBoundarySaturatedStatement` | RouteEight |
 | 518 | `route8DemandUnitCount` | `Route8DemandUnitCountStatement` | RouteEight |
 
-### Row and decision modules (41)
+### Row and decision modules (40)
 
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8BasinBurden.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8CarrierCore.lean`
@@ -311,7 +321,6 @@ A new key takes the next unused index of its family's range; existing indices
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8DemandAbsorption.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8DemandLedgerDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8ExtractedEntryCensus.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8GlobalSqueeze.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8JointBalance.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8LargeBudgetDeficit.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8NoTwoCarrierContradiction.lean`

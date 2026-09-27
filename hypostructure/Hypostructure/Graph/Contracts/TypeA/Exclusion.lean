@@ -32,7 +32,10 @@ theorem typeAExclusionTrichotomy_of_connected
       Graph.HasCycleWithLength data.LengthOK representative)
     (exclusion : ReplacementExclusionStatement data object)
     {piece : Finset object.Vertex}
-    (connected : Graph.SupportComponents.Connected.ConnectedOn object piece) :
+    (connected : Graph.SupportComponents.Connected.ConnectedOn object piece)
+    (negative : object.NegativeNetCharge piece data.threshold data.dischargeScale)
+    (zeroSurplus : object.ambientSurplus piece data.threshold = 0)
+    (routing : ZeroSurplusRoutingAt data object piece) :
     TypeAExclusionTrichotomy data object piece := by
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
@@ -108,7 +111,19 @@ theorem typeAExclusionTrichotomy_of_connected
   · exact Or.inl witnessed
   by_cases handoff : SeparatorHandoffAt data object piece
   · exact Or.inr (Or.inr handoff)
-  refine Or.inr (Or.inl ?_)
+  refine Or.inr (Or.inl ⟨?_, ?_⟩)
+  · -- `lem:typeA-unsaturated-discharge` (the 3/7/11 charge): with `σ(X) = 0`
+    -- and total routing, all receivers unsaturated would give
+    -- `|V(X)| ≤ s·def⁺(X)`, against `N₀(X) < 0`.
+    by_contra noSaturated
+    have bound := Graph.FiniteObject.card_le_scaled_deficiency_of_no_saturated
+      object piece data.threshold data.dischargeScale zeroSurplus routing.1
+      (fun receiver isReceiver saturated => noSaturated
+        ⟨receiver, Finset.mem_filter.2
+          ⟨Graph.FiniteObject.mem_receivers.mpr isReceiver, saturated⟩⟩)
+    unfold Graph.FiniteObject.NegativeNetCharge at negative
+    rw [zeroSurplus] at negative
+    omega
   intro receiver receiverMem
   have isReceiver : object.IsReceiver piece data.threshold receiver :=
     Graph.FiniteObject.mem_receivers.mp (Finset.mem_filter.1 receiverMem).1
@@ -135,20 +150,26 @@ theorem typeAExclusionTrichotomy_of_connected
     exact collapse load (selectedRouted receiver outside load loadMem)
 
 /-- `lem:typeA-exclusion` at the canonical pieces of `P₀`: every canonical piece
-of `R(P₀)` is connected, so a negative zero-surplus one realizes the
-trichotomy. -/
+of `R(P₀)` is connected and lies in `R(P₀)`, so node `[13]`'s normalization
+routes it (`zeroSurplusRoutingAt_of_normalized`), and a negative zero-surplus
+one realizes the trichotomy, its residual-profile alternative at an existing
+saturated receiver. -/
 theorem typeAExclusion
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (minimality : ∀ representative : Graph.FiniteObject.{u},
       representative.LexicographicallySmaller object →
       Graph.MinimumDegreeAtLeast data.threshold representative →
       Graph.HasCycleWithLength data.LengthOK representative)
-    (exclusion : ReplacementExclusionStatement data object) :
+    (exclusion : ReplacementExclusionStatement data object)
+    (normalized : RemainderNormalizedStatement data object) :
     TypeAExclusionStatement data object := by
-  intro component componentMem _negative _zeroSurplus
+  intro component componentMem negative zeroSurplus
   exact typeAExclusionTrichotomy_of_connected data object avoids minimality
     exclusion
     (Graph.SupportComponents.Connected.connectedOn_of_mem_order object _
       ((Graph.FiniteObject.mem_canonicalPieces _ _).1 componentMem))
+    negative zeroSurplus
+    (zeroSurplusRoutingAt_of_normalized data object normalized
+      (object.pieceSupport_subset _ component) zeroSurplus)
 
 end Hypostructure.Graph.Contracts.TypeA

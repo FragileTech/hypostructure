@@ -466,7 +466,8 @@ noncomputable abbrev TypeAUnsaturatedDischargeStatement (data : Parameters)
 /-- The three alternatives of `lem:typeA-exclusion`'s "Consequently" clause at
 one negative zero-surplus support (via `lem:density-mersenne`): an exit-`(4)`
 witness for a routed load (iii), an admissible silent-core residual profile
-(iv) — at every saturated receiver, every unpaid silent-excess load and every
+(iv) — obtained from a saturated receiver (def 10790), which exists, and at
+every saturated receiver, every unpaid silent-excess load and every
 selected visible unpeeled load of an overloaded port is a route-`8` entry or
 realizes the trace-response quotient — or a produced decorated handoff (ii). -/
 def TypeAExclusionTrichotomy (data : Parameters) (object : Graph.FiniteObject.{u})
@@ -476,7 +477,10 @@ def TypeAExclusionTrichotomy (data : Parameters) (object : Graph.FiniteObject.{u
         Nonempty (Graph.ExitFour.Witness
           (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
           data.dischargeScale receiver ∅)) ∨
-    (∀ receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
+    ((∃ receiver : object.Vertex,
+        receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
+          data.threshold data.dischargeScale) ∧
+      ∀ receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
           data.threshold data.dischargeScale,
         (∀ load ∈ Graph.VisibleEntry.silentExcess object piece
             data.threshold data.dischargeScale receiver,
@@ -670,12 +674,10 @@ noncomputable abbrev TypeASaturatedExitEntryStatement (data : Parameters)
 /-- `lem:typeA-exit4-finite-descent` at `G`: the canonical witnessed peeling
 sequence of the exit-chain receiver stops at its terminal set `P₄(w)`, a fixed
 point of the peeling step, inside the routed loads, all of whose loads carry
-exit-`(4)` witnesses.  With it, the recompute-`L₄` retest after every peel
-(tex 1095; `rem:typeA-exit4-peeling-use`), at G's own peel states: for every
-receiver `w'` of G's `X₀`, at each stage `P₄⁽ᵏ⁾(w')` of G's canonical sequence short of its terminal set, node `[89]` answers
-saturated, node `[101]` answers exit `(4)` with the stage's canonical witness,
-and node `[102]` peels that witness's load
-(`canonicalPeel_retest_of_ne_terminal`). -/
+exit-`(4)` witnesses.  The recompute-`L₄` retest (tex 1095) is asked on the
+ledger at the terminal sets (`typeAExitFourRetestDichotomy`); the per-stage
+answers before the terminal set are the definition of the canonical step
+(`canonicalPeelStep`), not a published fact. -/
 noncomputable abbrev TypeAExitFourFiniteDescentFact (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   AtExitReceiver data object fun piece receiver =>
@@ -686,21 +688,7 @@ noncomputable abbrev TypeAExitFourFiniteDescentFact (data : Parameters)
       object.routedLoads piece data.threshold receiver ∧
     Graph.ExitFour.PeeledByWitnesses (Graph.HasCycleWithLength data.LengthOK)
       piece data.threshold data.dischargeScale receiver
-      (canonicalTerminalPeeled data object piece receiver) ∧
-    ∀ receiver' : object.Vertex,
-      object.IsReceiver piece data.threshold receiver' → ∀ step : Nat,
-      canonicalPeel data object piece receiver' step ≠
-          canonicalTerminalPeeled data object piece receiver' →
-        Graph.ExitFour.SaturatedAfter piece data.threshold data.dischargeScale
-            receiver' (canonicalPeel data object piece receiver' step) ∧
-          ∃ witness : Graph.ExitFour.Witness
-              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
-              data.dischargeScale receiver'
-              (canonicalPeel data object piece receiver' step),
-            canonicalExitFourWitnessAt data object piece receiver'
-                (canonicalPeel data object piece receiver' step) = some witness ∧
-              canonicalPeel data object piece receiver' (step + 1) =
-                witness.nextPeeled
+      (canonicalTerminalPeeled data object piece receiver)
 
 /-- Node `[101]`, yes arm — exit `(4)` at the entry state: a canonical
 target-defective quotient supports an unpeeled load of the state's lane. -/
@@ -907,15 +895,18 @@ noncomputable abbrev TypeAExitSixProperStatement (data : Parameters)
         delocalization.2.quotient.support
 
 /-- Node `[106]`, global scope: `lem:no-silent-global-smearing` gives the
-canonical exit-`(6)` delocalization of the terminal state a strictly smaller
-closed representative. -/
+canonical exit-`(6)` delocalization of the terminal state covers `V(G)`, and
+that delocalization's own closed representative is strictly smaller. -/
 noncomputable abbrev TypeAExitSixGlobalStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   AtTerminalState data object fun piece receiver peeled =>
     ∃ delocalization,
       canonicalExitSixDelocalizationAt data object piece receiver peeled =
         some delocalization ∧
-      ∃ representative : Graph.FiniteObject.{u},
+      ∃ covers : ∀ vertex, vertex ∈ delocalization.2.quotient.support,
+        -- the delocalization's own closed representative, not a free graph
+        let representative :=
+          Classical.choose (delocalization.2.closedRepresentative covers)
         representative.LexicographicallySmaller object ∧
           Graph.MinimumDegreeAtLeast data.threshold representative ∧
             (Graph.HasCycleWithLength data.LengthOK representative →

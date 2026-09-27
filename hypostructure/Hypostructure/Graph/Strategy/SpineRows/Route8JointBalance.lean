@@ -25,7 +25,7 @@ universe u v
   factOnly `Hypostructure.Graph.Strategy.Spine.route8JointBalance
     { Requires := [K .route8UnifiedVisibleOverload,
         K .route8UnifiedVisibleResidual, K .route8PeelingDescent,
-        K .route8StageRateFailed, K .route8DemandLedger,
+        K .route8StageRateFailed,
         K .route8DemandAbsorption, K .route8UnifiedDeficit,
         K .route8DemandUnitCount, K .cubicBaseline]
       Produces := [K .route8JointBalance]

@@ -834,8 +834,10 @@ noncomputable abbrev Route8PeelingDescentStatement
     data.threshold data.dischargeScale (route8StageSlack data object)
     data.LengthOK (route8DescentChain data object)
 
-/-- The component collection `𝒳_A` of node `[111]`: the canonical pieces all
-of whose saturated receivers survive in the route-`8` residual. -/
+/-- The component collection `𝒳_A` of node `[111]` (a definition node,
+`def:typeA-large-budget-deficit`): the canonical pieces all of whose saturated
+receivers survive in the route-`8` residual.  "`𝒳_A` carries `D_A(𝒳_A)`" is
+the node-`[113]` inequality `Route8LargeBudgetDeficit`, decided there. -/
 noncomputable def route8SurvivorComponents (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Finset (Graph.SupportComponents.Connected.Component object
@@ -844,30 +846,5 @@ noncomputable def route8SurvivorComponents (data : Parameters)
   exact (object.canonicalPieces
       (object.remainderSupport (canonicalWindowPacking data object))).filter
     (Route8Survives data object (canonicalWindowPacking data object))
-
-/-- Node `[111]`: the global squeeze extracts the route-`8` Type A collection
-`𝒳_A = route8SurvivorComponents` carrying `D_A(𝒳_A)` (tex 1127; `def:typeA-large-budget-deficit`,
-tex 11919): every member of `𝒳_A` is a Type A support, `σ(X) = 0`, carrying a
-strictly positive share of the deficit, `s·δ(X) = |V(X)| − s·def⁺(X) > 0`
-(its net charge is negative), so the cleared deficit
-`s·D_A(𝒳_A) = Σ_{X ∈ 𝒳_A} s·δ(X)` is at least the number of members. -/
-noncomputable abbrev Route8GlobalSqueezeStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  (∀ component ∈ route8SurvivorComponents data object,
-      object.ambientSurplus
-          (object.pieceSupport
-            (object.remainderSupport (canonicalWindowPacking data object))
-            component) data.threshold = 0 ∧
-        data.dischargeScale * object.positiveDeficiency
-            (object.pieceSupport
-              (object.remainderSupport (canonicalWindowPacking data object))
-              component) data.threshold <
-          (object.pieceSupport
-            (object.remainderSupport (canonicalWindowPacking data object))
-            component).card) ∧
-    (route8SurvivorComponents data object).card ≤
-      Graph.TypeBEnvelopeCharge.route8Deficit object
-        (object.remainderSupport (canonicalWindowPacking data object))
-        data.threshold data.dischargeScale (route8SurvivorComponents data object)
 
 end Hypostructure.Graph.Strategy.Spine

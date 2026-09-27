@@ -1642,8 +1642,6 @@ inductive Key where
   | typeAExitThreeCycle
   /-- Node `[108]`: the canonical exit-`(7)` separation and envelope of `X₀` at the terminal state. -/
   | typeAExitSevenEnvelope
-  /-- Node `[111]`: the global squeeze extracts `𝒳_A`, each member carrying positive deficit. -/
-  | route8GlobalSqueeze
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2438,8 +2436,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeAExitThreeCycleStatement data.toParameters object
   | .typeAExitSevenEnvelope, object =>
       TypeAExitSevenEnvelopeStatement data.toParameters object
-  | .route8GlobalSqueeze, object =>
-      Route8GlobalSqueezeStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -2779,7 +2775,6 @@ def label : Key → String
   | .typeAPeeledExitThreeFree => "typeAPeeledExitThreeFree"
   | .typeAExitThreeCycle => "typeAExitThreeCycle"
   | .typeAExitSevenEnvelope => "typeAExitSevenEnvelope"
-  | .route8GlobalSqueeze => "route8GlobalSqueeze"
 
 /-! ### Label pins
 
@@ -3139,7 +3134,6 @@ example : label .typeAPeeledExitThreeCollision = "typeAPeeledExitThreeCollision"
 example : label .typeAPeeledExitThreeFree = "typeAPeeledExitThreeFree" := rfl
 example : label .typeAExitThreeCycle = "typeAExitThreeCycle" := rfl
 example : label .typeAExitSevenEnvelope = "typeAExitSevenEnvelope" := rfl
-example : label .route8GlobalSqueeze = "route8GlobalSqueeze" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -3488,7 +3482,6 @@ def idx : Key → Nat
   | .typeAPeeledExitThreeFree => 2010
   | .typeAExitThreeCycle => 2011
   | .typeAExitSevenEnvelope => 2012
-  | .route8GlobalSqueeze => 160
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -3826,7 +3819,6 @@ def ofIdx : Nat → Key
   | 2010 => .typeAPeeledExitThreeFree
   | 2011 => .typeAExitThreeCycle
   | 2012 => .typeAExitSevenEnvelope
-  | 160 => .route8GlobalSqueeze
   | _ => .selection
 
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
@@ -4616,8 +4608,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitThreeCycle") 2011
   | .typeAExitSevenEnvelope =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSevenEnvelope") 2012
-  | .route8GlobalSqueeze =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "route8GlobalSqueeze") 160
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather

@@ -140,8 +140,7 @@ noncomputable abbrev typeAVisibleExitKeys : FactKeys EGInput.{u} :=
     K .typeAPeeledExitThreeCollision,
     K .typeAPeeledExitThreeFree,
     K .typeAExitThreeCycle,
-    K .typeAExitSevenEnvelope,
-    K .route8GlobalSqueeze]
+    K .typeAExitSevenEnvelope]
 
 /-- **Nodes `[95]`--`[100]`: exits `(1)`--`(3)`** on node `[93]`'s visible arm
 (index-polymorphic).  `def:typeA-saturated-exits`, `lem:typeA-exits-discharged`:

@@ -83,7 +83,7 @@ theorem route8Entry_smallCoreQuotient (data : Parameters)
     Graph.Route8.PresentedEntry.TraceCoordinate.traceIncidence
   let retained :=
     (entry.retained entry.essentialCore \ crossing).erase traceCoordinate
-  refine ⟨retained, ?_, ?_, ?_⟩
+  refine ⟨Graph.Route8.TraceBasin.ResponseQuotient.forgetting retained, ?_, ?_, ?_⟩
   · intro coordinate member
     have retainedMember := (Finset.mem_erase.mp member).2
     have crossingMember := (Finset.mem_sdiff.mp retainedMember).1
@@ -134,9 +134,9 @@ theorem route8Entry_smallCoreQuotient (data : Parameters)
     -- (`def:typeA-trace-basin`) because `alpha <= 1` refutes the failure side
     -- -- a surviving mixed return would carry two distinct boundary
     -- incidences of the core (`lem:typeA-carrier-cut-parity`).
-    exact fun realization _realizes =>
+    exact fun realization _realizes outside _compatible =>
       Graph.Route8.TraceBasin.allQuotientRealizations_declaredEquivalent_of_alpha_le_one
-        small realization _
+        small realization _ outside
 
 /-- **`def:typeA-unified-entries` with `lem:typeA-unified-carriers`, one
 entry** (node `[123]`): at a connected support whose receiver has a routed

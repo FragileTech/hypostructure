@@ -35,40 +35,6 @@ theorem route8ResidualProfile (data : Parameters) (object : FiniteObject.{u})
     SilentCoreResidualProfile data object :=
   exitSevenFree
 
-/-- **Node `[111]`**: the global squeeze extracts `𝒳_A` carrying `D_A(𝒳_A)`:
-each member of `𝒳_A` survives with `σ = 0` and negative net charge
-(`Route8Survives`), which at zero surplus is `s·def⁺(X) < |V(X)|`, so each
-member contributes a positive summand to `s·D_A(𝒳_A)`. -/
-theorem route8GlobalSqueeze (data : Parameters) (object : FiniteObject.{u})
-    (_profile : SilentCoreResidualProfile data object) :
-    Route8GlobalSqueezeStatement data object := by
-  classical
-  have positive : ∀ component ∈ route8SurvivorComponents data object,
-      object.ambientSurplus
-          (object.pieceSupport
-            (object.remainderSupport (canonicalWindowPacking data object))
-            component) data.threshold = 0 ∧
-        data.dischargeScale * object.positiveDeficiency
-            (object.pieceSupport
-              (object.remainderSupport (canonicalWindowPacking data object))
-              component) data.threshold <
-          (object.pieceSupport
-            (object.remainderSupport (canonicalWindowPacking data object))
-            component).card := by
-    intro component member
-    obtain ⟨negative, zero, _⟩ := (Finset.mem_filter.mp member).2
-    refine ⟨zero, ?_⟩
-    unfold Graph.FiniteObject.NegativeNetCharge at negative
-    rw [zero] at negative
-    simpa using negative
-  refine ⟨positive, ?_⟩
-  unfold Graph.TypeBEnvelopeCharge.route8Deficit
-  calc (route8SurvivorComponents data object).card
-      = ∑ _component ∈ route8SurvivorComponents data object, 1 := by simp
-    _ ≤ _ := Finset.sum_le_sum fun component member => by
-        have := (positive component member).2
-        omega
-
 /-- A zero-surplus piece at the degree baseline has every vertex of degree
 exactly the baseline. -/
 theorem degree_eq_threshold_of_ambientSurplus_eq_zero (data : Parameters)
@@ -90,7 +56,6 @@ scale: `s·D_A(𝒳_A) ≤ N_basin(𝒳_A)`. -/
 theorem route8BasinBurden (data : Parameters) (object : FiniteObject.{u})
     (baseline : data.threshold ≤ object.minDegree)
     (scalePos : 0 < data.dischargeScale)
-    (_squeeze : Route8GlobalSqueezeStatement data object)
     (normalized : RemainderNormalizedStatement data object) :
     Route8BasinBurden data object := by
   classical

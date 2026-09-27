@@ -117,8 +117,7 @@ noncomputable abbrev typeAExitFiveToEightKeys : FactKeys EGInput.{u} :=
     K .route8StageRate,
     K .route8UnpaidTwoCarrier,
     K .route8UnpaidWitnessFree,
-    K .typeAExitSevenEnvelope,
-    K .route8GlobalSqueeze]
+    K .typeAExitSevenEnvelope]
 
 /-- **Nodes `[103]`--`[109]`: exits `(5)`--`(7)` and the route-`8` residual**, on
 a saturated exit-`(4)`-free state of the exit segment (index-polymorphic).
