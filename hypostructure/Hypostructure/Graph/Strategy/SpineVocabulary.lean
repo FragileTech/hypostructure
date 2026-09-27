@@ -708,10 +708,12 @@ inductive Key where
   /-- The `[113]`-tested quotient-freeness of the unified census: no entry's
   selected basin carries the plain trace-response quotient (the cased
   exit-`(5)` state).  The yes arm makes every unified entry route-8 or
-  alternative-(a); the no arm is the manuscript's profile-record residual. -/
+  alternative-(a); the no arm is exit `(5)` at a unified entry. -/
   | route8QuotientFree
-  /-- The exact negation, retained as the tested residual state
-  (`def:typeA-two-terminal-pressure-records`' profile lane). -/
+  /-- The exact negation: some unified entry realizes alternative (b).  The
+  paper declares it a standing-invariant contradiction
+  (`lem:typeA-unified-carriers`, `cor:uncompressible`); it is closed against
+  `K .selection` (PAPER-ERROR [348]). -/
   | route8QuotientResidual
   /-- `def:typeA-pressure-ledger` at the failed-rate stage: the maximal pinned
   2/3-demand ledger over the unified collection, with its no-overcount counts

@@ -147,7 +147,9 @@ theorem typeAExitFourFiniteDescent
   exact ⟨piece, pinned, receiver, chosen,
     canonicalTerminalPeeled_step data object piece receiver,
     canonicalPeel_subset_routedLoads data object piece receiver _,
-    canonicalPeel_peeledByWitnesses data object piece receiver _⟩
+    canonicalPeel_peeledByWitnesses data object piece receiver _,
+    fun receiver' _ step => canonicalPeel_retest_of_ne_terminal data object piece
+      receiver' step⟩
 
 /-! ## Exit `(4)`, node `[101]` -/
 

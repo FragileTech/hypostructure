@@ -542,6 +542,53 @@ theorem canonicalTerminalPeeled_step (data : Parameters)
       rw [← equal] at unpeeled
       exact unpeeled.2 unpeeled.1
 
+/-- **The recompute-`L₄` retest after every peel** (tex 1095, "recompute
+`L₄`"; `lem:typeA-saturated-handoff`; `rem:typeA-exit4-peeling-use`).  At every
+stage of the canonical sequence other than its terminal set, node `[89]` asked
+again answers *saturated* (`L₄(w) ≥ s·q(w)` at that stage), node `[101]` answers
+*exit `(4)`* (the stage's canonical witness), and node `[102]` peels exactly that
+witness's load.  So the per-peel retest has a nontrivial answer only at the
+terminal set, where the sequence stops: there either the receiver is
+unsaturated (the first unsaturated stage, `[90]`) or it is saturated with no
+exit-`(4)` witness (`[93]`--`[109]` again). -/
+theorem canonicalPeel_retest_of_ne_terminal (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (piece : Finset object.Vertex)
+    (receiver : object.Vertex) (step : Nat)
+    (moving : canonicalPeel data object piece receiver step ≠
+      canonicalTerminalPeeled data object piece receiver) :
+    Graph.ExitFour.SaturatedAfter piece data.threshold data.dischargeScale
+        receiver (canonicalPeel data object piece receiver step) ∧
+      ∃ witness : Graph.ExitFour.Witness (Graph.HasCycleWithLength data.LengthOK)
+          piece data.threshold data.dischargeScale receiver
+          (canonicalPeel data object piece receiver step),
+        canonicalExitFourWitnessAt data object piece receiver
+            (canonicalPeel data object piece receiver step) = some witness ∧
+          canonicalPeel data object piece receiver (step + 1) =
+            witness.nextPeeled := by
+  classical
+  set bound := (object.routedLoads piece data.threshold receiver).card
+  have advanced : canonicalPeelStep data object piece receiver
+      (canonicalPeel data object piece receiver step) ≠
+        canonicalPeel data object piece receiver step := by
+    intro fixed
+    apply moving
+    rcases Nat.le_total step bound with le | le
+    · exact (canonicalPeel_stable data object piece receiver fixed bound le).symm
+    · exact canonicalPeel_stable data object piece receiver
+        (canonicalTerminalPeeled_step data object piece receiver) step le
+  have saturated : Graph.ExitFour.SaturatedAfter piece data.threshold
+      data.dischargeScale receiver
+      (canonicalPeel data object piece receiver step) := by
+    by_contra unsaturated
+    apply advanced
+    unfold canonicalPeelStep
+    rw [if_neg unsaturated]
+  refine ⟨saturated, ?_⟩
+  rcases canonicalPeelStep_cases data object piece receiver
+      (canonicalPeel data object piece receiver step) with same | ⟨witness, chosen, next⟩
+  · exact absurd same advanced
+  · exact ⟨witness, chosen, (canonicalPeel_succ data object piece receiver step).trans next⟩
+
 /-- The terminal peeled set of `X₀` at its exit-chain receiver. -/
 noncomputable def canonicalTypeATerminalPeeled (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Option (Finset object.Vertex) :=

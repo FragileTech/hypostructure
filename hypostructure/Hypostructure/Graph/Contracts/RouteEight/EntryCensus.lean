@@ -334,4 +334,44 @@ theorem route8PiecesClassified (data : Parameters) (object : FiniteObject.{u})
     · exact Or.inl ⟨ledger, ledgerEq, exactRefinement, notClean⟩
     · exact Or.inr obstruction
 
+/-- **`lem:typeA-unified-carriers` / the census of `lem:typeA-unified-deficit`,
+alternative (b) at the unified entries** (tex 15336-15339, 15360-15364): *"exits
+(5),(6) are contradictions"*; *"Alternatives (b)--(d) are exits (5),(6),(7): the
+first two are standing-invariant contradictions (`cor:uncompressible`, ...)"*.
+
+Stated exactly: on a counterexample `G` (cubic baseline, dyadic target, minimum
+degree at the baseline, no accepted cycle, lexicographically minimal) that is
+hereditarily target-uncompressible, no unified entry's selected basin -- and no
+entry of an extracted route-8 core -- carries a nontrivial target-complete
+response quotient (`Route8QuotientFreeStatement`, the node-`[347]` predicate).
+
+**Paper error (the failing step about G).**  The paper's closure of (b) at an
+entry `ξ` of G's unified collection needs the fact "G's quotient at `ξ` is
+realized by a smaller connected boundaried piece of G" -- a support `S` of G
+with `CompressibleSupport G S`, which G's `K .uncompressible` refutes.  The
+paper supplies it only "when this quotient is realized by a smaller connected
+representative" (tex 10773-10775); `lem:typeA-exits-discharged` (tex
+11690-11694) derives no contradiction from a response-level (b), and no fact on
+G's ledger at `[348]` provides the representative.  At every entry of G with
+`α(ξ) ≤ 1` the quotient forgetting the trace incidence is such a quotient
+(`route8Entry_smallCoreQuotient`), so the claim contains `α(ξ) ≥ 2` at every
+unified entry of G, which the paper obtains only through this claim.  This is
+a library contract; it is applied only at G
+(`instIncompatibleRoute8QuotientResidualSelection`, from G's ledger facts). -/
+theorem route8QuotientFree_of_uncompressible (data : Parameters)
+    (object : FiniteObject.{u})
+    (_cubic : data.threshold = 3)
+    (_dyadic : ∀ length,
+      data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
+    (_baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+    (_avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (_minimality : ∀ representative : FiniteObject.{u},
+      representative.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold representative →
+      Graph.HasCycleWithLength data.LengthOK representative)
+    (_uncompressible : UncompressibleStatement data object) :
+    Route8QuotientFreeStatement data object := by
+  -- PAPER-ERROR [348] tex:15362 — see lean-vs-paper-discrepancies.md#paper-errors
+  sorry
+
 end Hypostructure.Graph.Contracts.RouteEight

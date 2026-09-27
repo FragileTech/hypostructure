@@ -2454,30 +2454,27 @@ theorem identifyInternal_labelAdj_iff {boundary : Boundary.{u}}
       Or.inl adjacent⟩
 
 /-- **A realization of a response quotient of `\rho_u(B_u)`**
-(`def:typeA-trace-basin`): *"a
-boundaried response state with the same boundary degree profile whose image
-under the quotient map is the given quotient"*.
+(`def:typeA-trace-basin`, tex 10758-10760): *"a boundaried response state with
+the same boundary degree profile whose image under the quotient map is the given
+quotient"*.
 
-Both halves of the sentence are literal here.  The boundary degree profile is
-the basin's own, and being *the image under the quotient map* is
-`PresentedEntry.ResponseQuotientMap`: the state is carried onto by
-`\rho_u(B_u)` through a label-fixing surjection whose incidences are exactly
-the images of the basin's own, so every declared entry the state carries is
-`PresentedEntry.declaredEntry` of an entry of `\mathcal R_u(B_u)` and the state
-carries no entry the basin does not.  In particular a state that adjoins fresh
-internal structure to the basin piece is *not* a realization: nothing of
-`\rho_u(B_u)` maps onto the adjoined entries.
+The quotient map acts on response states: it forgets (or, for an identified
+class, keeps only the representative of) the entries of `\mathcal R_u(B_u)`
+outside `retained`.  So a boundaried state `R` realizes the quotient exactly when
+its image under that map is the image of `\rho_u(B_u)`: `R` lies in the basin's
+boundary-degree fibre, and `R` carries every *retained* entry exactly as
+`\rho_u(B_u)` carries it.  The entry of a declared coordinate is the labelled
+state on its declared support (the port and channel of a return, the window of a
+`P_{13}` label, the wedge of an obstruction, the boundary vertex of a degree
+entry, the path `T_u` of the trace incidence); `R` carries it when one
+label-fixing placement `place` of the basin's entries into `R` is injective on
+that support and preserves and reflects every incidence inside it.
 
-The class is indexed by the quotient's retained family: a realization must not
-only be an image of `\rho_u(B_u)`, it must leave the *retained* entries of
-`\mathcal R_u(B_u)` standing, i.e. the quotient map may identify two entries
-inside one declared support only when that coordinate has been forgotten.  This
-is the second half of *"whose image under the quotient map is the given
-quotient"*, and it is what `not_declaredFamilyDeterminacy_of_undeclaredFoldPair`
-showed to be necessary: without the index every interior fold realizes every
-quotient, so the all-realizations clause is refuted outright by
-`K .uncompressible` and alternative `(b)` becomes unsatisfiable rather than
-merely hard. -/
+Nothing else is asked of `R`: forgotten entries may take any value, and `R` need
+not be an image of the basin.  (The earlier class — images of `\rho_u(B_u)` under
+a label-fixing surjection — read the sentence in the opposite direction, from
+the basin onto the realization; it both admitted states that change a retained
+entry and excluded states of the fibre that are not images of the basin.) -/
 def QuotientRealization (object : FiniteObject.{u})
     (support basin : Finset object.Vertex) (threshold : Nat)
     (receiver load : object.Vertex)
@@ -2488,28 +2485,37 @@ def QuotientRealization (object : FiniteObject.{u})
   realization.boundaryDegreeProfile =
       (Strategy.InterfaceReplacement.SupportAtom.piece object
         basin).boundaryDegreeProfile ∧
-    ∃ quotient : PresentedEntry.ResponseQuotientMap object basin realization,
-      ∀ coordinate ∈ retained, ∀ first second,
-        Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
-            first ∈
-          PresentedEntry.traceDeclaredSupport object support threshold receiver
-            load coordinate →
-        Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
-            second ∈
-          PresentedEntry.traceDeclaredSupport object support threshold receiver
-            load coordinate →
-        quotient.toFun first = quotient.toFun second → first = second
+    ∃ place :
+        (Strategy.InterfaceReplacement.SupportAtom.boundary object basin).Vertex ⊕
+            (Strategy.InterfaceReplacement.SupportAtom.piece object
+              basin).Internal →
+          (Strategy.InterfaceReplacement.SupportAtom.boundary object
+              basin).Vertex ⊕ realization.Internal,
+      (∀ label, place (.inl label) = .inl label) ∧
+        ∀ coordinate ∈ retained, ∀ first second,
+          Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
+              first ∈
+            PresentedEntry.traceDeclaredSupport object support threshold receiver
+              load coordinate →
+          Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
+              second ∈
+            PresentedEntry.traceDeclaredSupport object support threshold receiver
+              load coordinate →
+          (place first = place second → first = second) ∧
+            (realization.graph.Adj (place first) (place second) ↔
+              (Strategy.InterfaceReplacement.SupportAtom.piece object
+                basin).graph.Adj first second)
 
-/-- **`\rho_u(B_u)` realizes every one of its own response quotients.**  The
-identity quotient map identifies nothing, so no retained entry is collapsed. -/
+/-- **`\rho_u(B_u)` realizes every one of its own response quotients**: its
+image under any quotient map is that quotient (identity placement). -/
 theorem quotientRealization_self (object : FiniteObject.{u})
     (support basin : Finset object.Vertex) (threshold : Nat)
     (receiver load : object.Vertex)
     (retained : Finset (PresentedEntry.TraceCoordinate object support)) :
     QuotientRealization object support basin threshold receiver load retained
       (Strategy.InterfaceReplacement.SupportAtom.piece object basin) :=
-  ⟨rfl, PresentedEntry.identityQuotient object basin,
-    fun _ _ _ _ _ _ collapsed => collapsed⟩
+  ⟨rfl, id, fun _ => rfl,
+    fun _ _ _ _ _ _ => ⟨id, Iff.rfl⟩⟩
 
 /-- **A realization moves no label-to-label incidence.**  The quotient map fixes
 every label, so a label-to-label incidence of the realization is the image of
@@ -2555,13 +2561,12 @@ theorem quotientRealization_labelAdj_iff {object : FiniteObject.{u}}
     have image := quotient.forward _ _ adjacent distinct
     rwa [quotient.labels, quotient.labels] at image
 
-/-- **An interior identification realizes exactly the quotients that forget the
-identified pair.**  It is in the basin's boundary-degree fibre and it is the
-image of `\rho_u(B_u)` under the identification map; and it leaves every
-retained entry standing precisely when no retained declared support carries both
-identified entries.  That side condition is not a cost: it is
-`def:typeA-trace-basin`'s *"identifying or forgetting entries"* read at the pair
-being identified. -/
+/-- **An interior identification realizes every quotient that forgets both
+identified entries.**  It is in the basin's boundary-degree fibre, and the fold
+map is a label-fixing placement that is the identity on every retained declared
+support that contains neither identified entry: there the fold neither merges
+two entries nor adds or removes an incidence (`BoundaryPiece.identifyInternal_adj`
+moves only incidences at the surviving entry `keep`). -/
 theorem quotientRealization_identifyInternal (object : FiniteObject.{u})
     (support basin : Finset object.Vertex) (threshold : Nat)
     (receiver load : object.Vertex)
@@ -2576,26 +2581,54 @@ theorem quotientRealization_identifyInternal (object : FiniteObject.{u})
         (Strategy.InterfaceReplacement.SupportAtom.piece object basin).graph.Adj
           (.inr remove) (.inl label)))
     (undeclared : ∀ coordinate ∈ retained,
-      ¬ (keep.1 ∈ PresentedEntry.traceDeclaredSupport object support threshold
-            receiver load coordinate ∧
-        remove.1 ∈ PresentedEntry.traceDeclaredSupport object support threshold
-          receiver load coordinate)) :
+      keep.1 ∉ PresentedEntry.traceDeclaredSupport object support threshold
+          receiver load coordinate ∧
+        remove.1 ∉ PresentedEntry.traceDeclaredSupport object support threshold
+          receiver load coordinate) :
     QuotientRealization object support basin threshold receiver load retained
       ((Strategy.InterfaceReplacement.SupportAtom.piece object
         basin).identifyInternal keep remove different) := by
+  classical
+  let piece := Strategy.InterfaceReplacement.SupportAtom.piece object basin
   refine ⟨BoundaryPiece.boundaryDegreeProfile_identifyInternal_of_noCommonLabel _
       keep remove different noCommonLabel,
-    PresentedEntry.foldQuotient object basin keep remove different, ?_⟩
-  intro coordinate member first second firstDeclared secondDeclared collapsed
-  rcases PresentedEntry.foldMap_eq_cases _ keep remove different collapsed with
-    same | ⟨firstEq, secondEq⟩ | ⟨firstEq, secondEq⟩
-  · exact same
-  · subst firstEq
-    subst secondEq
-    exact absurd ⟨secondDeclared, firstDeclared⟩ (undeclared coordinate member)
-  · subst firstEq
-    subst secondEq
-    exact absurd ⟨firstDeclared, secondDeclared⟩ (undeclared coordinate member)
+    PresentedEntry.foldMap piece keep remove different, fun label => ?_, ?_⟩
+  · rw [PresentedEntry.foldMap_of_ne _ _ _ _ (Sum.inl_ne_inr)]
+    rfl
+  intro coordinate member first second firstDeclared secondDeclared
+  obtain ⟨keepOut, removeOut⟩ := undeclared coordinate member
+  have avoid : ∀ vertex : (Strategy.InterfaceReplacement.SupportAtom.boundary
+        object basin).Vertex ⊕ piece.Internal,
+      Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin vertex ∈
+          PresentedEntry.traceDeclaredSupport object support threshold receiver
+            load coordinate →
+        vertex ≠ .inr remove ∧ vertex ≠ .inr keep := by
+    intro vertex declared
+    refine ⟨fun same => removeOut ?_, fun same => keepOut ?_⟩
+    · subst same
+      exact declared
+    · subst same
+      exact declared
+  obtain ⟨firstRemove, firstKeep⟩ := avoid first firstDeclared
+  obtain ⟨secondRemove, secondKeep⟩ := avoid second secondDeclared
+  rw [PresentedEntry.foldMap_of_ne _ _ _ _ firstRemove,
+    PresentedEntry.foldMap_of_ne _ _ _ _ secondRemove]
+  refine ⟨fun equal => ?_, ?_⟩
+  · have decoded := congrArg (piece.foldDecode remove) equal
+    rwa [BoundaryPiece.foldDecode_foldRetain,
+      BoundaryPiece.foldDecode_foldRetain] at decoded
+  · rw [BoundaryPiece.identifyInternal_adj, BoundaryPiece.foldDecode_foldRetain,
+      BoundaryPiece.foldDecode_foldRetain]
+    constructor
+    · rintro ⟨_, old | ⟨decoded, _⟩ | ⟨decoded, _⟩⟩
+      · exact old
+      · exact absurd decoded firstKeep
+      · exact absurd decoded secondKeep
+    · intro adjacent
+      refine ⟨fun equal => adjacent.ne ?_, Or.inl adjacent⟩
+      have decoded := congrArg (piece.foldDecode remove) equal
+      rwa [BoundaryPiece.foldDecode_foldRetain,
+        BoundaryPiece.foldDecode_foldRetain] at decoded
 
 /-- **The ambient no-common-neighbour condition is the piece's.**  Every
 incidence of the basin's piece decodes to an ambient incidence, so a pair of
@@ -2683,10 +2716,16 @@ def TraceTargetCompleteCompression (object : FiniteObject.{u})
                   (PresentedEntry.retainedBaseCoordinates object support retained))
                 atom.decomposition.outside).LexicographicallySmaller object
 
-/-- **The response quotient of alternative (b)**, as a predicate on the retained
-declared coordinates: retained inside the declared family, nontrivial, and
-target-complete for the full declared reading `\rho_u(B_u)`.  This is the
-quotient constructed by `lem:typeA-one-terminal-collapse`. -/
+/-- **The response quotient of alternative (b)** (`def:typeA-trace-basin`,
+tex 10753-10768), as a predicate on the retained declared coordinates: retained
+inside the declared family; *nontrivial* -- it forgets or identifies a
+coordinate whose declared support meets `B_u - ∂B_u`, or contains an internal
+edge of `B_u` ("an edge of `B_u` with both endpoints in `V(B_u)`"), the trace
+incidence of a nondegenerate `T_u` being such a coordinate; and
+*target-complete* -- for every outside `∂B_u`-context, every realization of the
+quotient (`QuotientRealization`) gives the same declared `u`-supported target
+predicate as `\rho_u(B_u)` after gluing.  This is the quotient constructed by
+`lem:typeA-one-terminal-collapse`. -/
 def TraceResponseQuotient (object : FiniteObject.{u})
     (support : Finset object.Vertex) (threshold : Nat)
     (LengthOK : Nat → Prop) (receiver load : object.Vertex)
@@ -2713,15 +2752,7 @@ def TraceResponseQuotient (object : FiniteObject.{u})
             ∃ right ∈
                 PresentedEntry.traceDeclaredSupport object support threshold receiver
                   load changed,
-              (left ∈ basin ∧
-                  left ∉
-                    Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
-                      basin) ∧
-                (right ∈ basin ∧
-                    right ∉
-                      Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
-                        basin) ∧
-                  object.graph.Adj left right)) ∧
+              left ∈ basin ∧ right ∈ basin ∧ object.graph.Adj left right)) ∧
     (∀ realization,
       QuotientRealization object support basin threshold receiver load retained
           realization →
@@ -2805,10 +2836,10 @@ theorem false_of_allQuotientRealizations_contextEquivalent
         (Strategy.InterfaceReplacement.SupportAtom.piece object basin).graph.Adj
           (.inr remove) x))
     (undeclared : ∀ coordinate ∈ retained,
-      ¬ (keep.1 ∈ PresentedEntry.traceDeclaredSupport object support threshold
-            receiver load coordinate ∧
-        remove.1 ∈ PresentedEntry.traceDeclaredSupport object support threshold
-          receiver load coordinate))
+      keep.1 ∉ PresentedEntry.traceDeclaredSupport object support threshold
+          receiver load coordinate ∧
+        remove.1 ∉ PresentedEntry.traceDeclaredSupport object support threshold
+          receiver load coordinate)
     (uncompressible : ∀ candidate : Finset object.Vertex,
       ¬ Strategy.InterfaceReplacement.CompressibleSupport
           (MinimumDegreeAtLeast threshold) (HasCycleWithLength LengthOK) object
@@ -2857,10 +2888,10 @@ theorem false_of_interiorFoldPair {object : FiniteObject.{u}}
     (different : keep.1 ≠ remove.1)
     (noCommon : ∀ common, ¬ object.IsCommonNeighbor keep.1 remove.1 common)
     (undeclared : ∀ coordinate ∈ retained,
-      ¬ (keep.1 ∈ PresentedEntry.traceDeclaredSupport object support threshold
-            receiver load coordinate ∧
-        remove.1 ∈ PresentedEntry.traceDeclaredSupport object support threshold
-          receiver load coordinate))
+      keep.1 ∉ PresentedEntry.traceDeclaredSupport object support threshold
+          receiver load coordinate ∧
+        remove.1 ∉ PresentedEntry.traceDeclaredSupport object support threshold
+          receiver load coordinate)
     (uncompressible : ∀ candidate : Finset object.Vertex,
       ¬ Strategy.InterfaceReplacement.CompressibleSupport
           (MinimumDegreeAtLeast threshold) (HasCycleWithLength LengthOK) object
@@ -2924,10 +2955,10 @@ theorem false_of_declaredFamilyDeterminacy {object : FiniteObject.{u}}
         (Strategy.InterfaceReplacement.SupportAtom.piece object basin).graph.Adj
           (.inr remove) x))
     (undeclared : ∀ coordinate ∈ retained,
-      ¬ (keep.1 ∈ PresentedEntry.traceDeclaredSupport object support threshold
-            receiver load coordinate ∧
-        remove.1 ∈ PresentedEntry.traceDeclaredSupport object support threshold
-          receiver load coordinate))
+      keep.1 ∉ PresentedEntry.traceDeclaredSupport object support threshold
+          receiver load coordinate ∧
+        remove.1 ∉ PresentedEntry.traceDeclaredSupport object support threshold
+          receiver load coordinate)
     (uncompressible : ∀ candidate : Finset object.Vertex,
       ¬ Strategy.InterfaceReplacement.CompressibleSupport
           (MinimumDegreeAtLeast threshold) (HasCycleWithLength LengthOK) object
@@ -2969,10 +3000,10 @@ theorem not_declaredFamilyDeterminacy_of_undeclaredFoldPair
         (Strategy.InterfaceReplacement.SupportAtom.piece object basin).graph.Adj
           (.inr remove) x))
     (undeclared : ∀ coordinate ∈ retained,
-      ¬ (keep.1 ∈ PresentedEntry.traceDeclaredSupport object support threshold
-            receiver load coordinate ∧
-        remove.1 ∈ PresentedEntry.traceDeclaredSupport object support threshold
-          receiver load coordinate))
+      keep.1 ∉ PresentedEntry.traceDeclaredSupport object support threshold
+          receiver load coordinate ∧
+        remove.1 ∉ PresentedEntry.traceDeclaredSupport object support threshold
+          receiver load coordinate)
     (uncompressible : ∀ candidate : Finset object.Vertex,
       ¬ Strategy.InterfaceReplacement.CompressibleSupport
           (MinimumDegreeAtLeast threshold) (HasCycleWithLength LengthOK) object
