@@ -1,4 +1,5 @@
 import HypostructureErdos64EG.Assembly.NetCharge.Boundary
+import HypostructureErdos64EG.Assembly.Residuals.Node54ResidualOutcome
 
 /-!
 # Assembly: NearCubic / Boundary

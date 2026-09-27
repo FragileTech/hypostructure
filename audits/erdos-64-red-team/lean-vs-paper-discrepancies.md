@@ -3421,8 +3421,8 @@ free side.
 ### Node [54] (prop:entropy-high-theta, tex 9921)
 
 - **Configuration at G.** The configuration at G where the joint realization inequality RS(R0)*2^(rate*s*p13)*2^F <= B fails; at G's `P₀ = canonicalWindowPacking` and `R₀ = R(P₀)` (`AllColdEntropyResidualStatement`): `¬ WindowFamilyRealized P₀`; the remainder glue `RS(R₀)·room ≤ B` with `room = C(C(n,2) − C(|R₀|,2), m − e(G[R₀]))`; `F ≤ c_Ω·r_Ω(R₀)`; `room < 2^{rate·s·p₁₃}·2^F`; `[53]` active, `B < 2^{rate·s·p₁₃}·RS(R₀)·2^F`; and `¬ RS(R₀)·2^{rate·s·p₁₃}·2^F ≤ B`.
-- **Lean.** `Node54ResidualOutcome` (`Assembly/Residuals.lean`); return theorem `node54Return`; reached by 6 paths (distinct ledger histories from the root).
-- **Facts carried (40).**
+- **Lean.** Generic residual `Node54ResidualOutcome` (`Assembly/Residuals.lean`), return theorem `node54Return`: the facts common to all paths. Reached by 6 paths (distinct ledger histories from the root), whose ledgers hold 6 distinct fact sets; each is its own open node, a subtype of the generic residual, in `Assembly/Residuals/Node54ResidualOutcome.lean` (`Node54ResidualOutcome_<label>`, `.toGeneric`, return theorem `node54Return_<label>`). The subtypes are not yet wired: the four return sites sit in the shared spine functions `nearCubicLargeBudget{ColdRate,DensityCap,RateFailed,DenseRate}` (`Assembly/NearCubic/Spine.lean`), whose signatures do not carry the distinguishing keys, so the boundary still carries the generic disjunct.
+- **Generic residual: facts common to every path (40).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -3463,12 +3463,38 @@ free side.
   38. `K .entropyPackageDemand`: Node `[52]`: the window package and the remainder accounting, joined.
   39. `K .entropyCapActive`: Node `[53]`, yes arm — the terminal `[54]`: the remaining non-curvature budget is strictly smaller than the forced curvature cost, so the joint package overflows the labelled skeleton budget (`eq:entropy-cap`, `prop:entropy-high-theta`).
   40. `K .allColdEntropyResidual`: Node `[54]`, returned residual: the configuration at G where the joint realization inequality fails.
-- **On some paths only, not carried (10).** Gated by an arm of:
-  - [153] linear / bounded cold mass: `coldMassBounded`, `densityCap`.
-  - [146] theta < 1/78: `coldRoute8AtOrAbove`, `coldRoute8Below`.
-  - [160] first test (tau < 1/4): `denseDeficiencyAtOrAbove`, `denseDeficiencyBelow`.
-  - [160] second test / route-8 entry rate: `route8Rate`, `route8RateFails`.
-  - [158] window package realized: `windowPackageRealized`, `windowPackageUnrealized`.
+- **Subtypes (6 distinct fact sets).** Each is the generic residual plus the extra facts listed.
+  - `Node54ResidualOutcome_realizedColdBelow` ([158] realized; [146] `θ < 1/78` (`[147]`)); return `node54Return_realizedColdBelow`; 43 facts in total. Extra facts:
+    - `K .windowPackageRealized`: Node `[158]`, yes arm: the fixed maximal packing's full package code is realized canonically by the labelled skeletons of G's class (`2^{b_P} ≤ |𝒢_{n,m}|`).
+    - `K .coldRoute8Below`: Node `[146]`, yes arm (`θ < 1/78`): the canonical packing is below the cold route-8 threshold.
+    - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13`), read from the arm's density fact.
+  - `Node54ResidualOutcome_realizedBounded` ([158] realized; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_realizedBounded`; 44 facts in total. Extra facts:
+    - `K .windowPackageRealized`: Node `[158]`, yes arm: the fixed maximal packing's full package code is realized canonically by the labelled skeletons of G's class (`2^{b_P} ≤ |𝒢_{n,m}|`).
+    - `K .coldRoute8AtOrAbove`: Node `[146]`, no arm: the canonical packing is not below the cold route-8 threshold.
+    - `K .coldMassBounded`: Node `[153]`, bounded arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
+    - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in G's own dyadic scale.
+  - `Node54ResidualOutcome_unrealizedTauHighColdBelow` ([158] unrealized; [160] `τ(θ) ≥ 1/4`; [146] `θ < 1/78` (`[147]`)); return `node54Return_unrealizedTauHighColdBelow`; 44 facts in total. Extra facts:
+    - `K .windowPackageUnrealized`: Node `[158]`, no arm (`[159]`): the fixed maximal packing's full package code is not realized canonically by the labelled skeletons of G's class.
+    - `K .denseDeficiencyAtOrAbove`: Node `[160]`, first test no: `τ(θ) ≥ 1/4`.
+    - `K .coldRoute8Below`: Node `[146]`, yes arm (`θ < 1/78`): the canonical packing is below the cold route-8 threshold.
+    - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13`), read from the arm's density fact.
+  - `Node54ResidualOutcome_unrealizedTauHighBounded` ([158] unrealized; [160] `τ(θ) ≥ 1/4`; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_unrealizedTauHighBounded`; 45 facts in total. Extra facts:
+    - `K .windowPackageUnrealized`: Node `[158]`, no arm (`[159]`): the fixed maximal packing's full package code is not realized canonically by the labelled skeletons of G's class.
+    - `K .denseDeficiencyAtOrAbove`: Node `[160]`, first test no: `τ(θ) ≥ 1/4`.
+    - `K .coldRoute8AtOrAbove`: Node `[146]`, no arm: the canonical packing is not below the cold route-8 threshold.
+    - `K .coldMassBounded`: Node `[153]`, bounded arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
+    - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in G's own dyadic scale.
+  - `Node54ResidualOutcome_unrealizedRateFailsBounded` ([158] unrealized; [160] `τ(θ) < 1/4`, rate fails; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_unrealizedRateFailsBounded`; 46 facts in total. Extra facts:
+    - `K .windowPackageUnrealized`: Node `[158]`, no arm (`[159]`): the fixed maximal packing's full package code is not realized canonically by the labelled skeletons of G's class.
+    - `K .denseDeficiencyBelow`: Node `[160]`, first test yes: `τ(θ) < 1/4`, the dense net-deficiency cap.
+    - `K .route8RateFails`: Node `[160]`, second test no: the private-carrier rate fails (`3/13 ≤ τ`), retained as its own branch.
+    - `K .coldRoute8AtOrAbove`: Node `[146]`, no arm: the canonical packing is not below the cold route-8 threshold.
+    - `K .coldMassBounded`: Node `[153]`, bounded arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
+    - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in G's own dyadic scale.
+  - `Node54ResidualOutcome_unrealizedBothRates` ([158] unrealized; [160] both rates hold (`[161]`)); return `node54Return_unrealizedBothRates`; 43 facts in total. Extra facts:
+    - `K .windowPackageUnrealized`: Node `[158]`, no arm (`[159]`): the fixed maximal packing's full package code is not realized canonically by the labelled skeletons of G's class.
+    - `K .denseDeficiencyBelow`: Node `[160]`, first test yes: `τ(θ) < 1/4`, the dense net-deficiency cap.
+    - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13`), read from the arm's density fact.
 
 ## User-approved repairs
 
