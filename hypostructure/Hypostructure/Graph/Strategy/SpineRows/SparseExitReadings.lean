@@ -10,7 +10,7 @@ No row decides or splits anything.  A row runs right after the last producer
 of the keys it reads, on the shared prefix, so every branch below inherits its
 facts:
 - the entry prefix (`Assembly/Entry.lean`): the spectrum split at every
-  clause-(b) witness (after `[4]`), and the two switch facts (after `[9]`/`[10]`);
+  clause-(b) witness (after `[4]`);
 - the top of the strict arm of `[19]` (`Assembly/Final.lean`, before `[20]`):
   where the surplus sits and the switch at every high/baseline edge;
 - the `[20a]` exit arm: the facts at the canonical witness.
@@ -44,35 +44,6 @@ clause-(b) witness of G. -/
           (object := inputs.current.object) (inputs.get (K .selection)).down.1⟩
       .nil)
 
-/-- Entry prefix, after `[9]`/`[10]`: the two-edge and the same-vertex switch of
-G force paths. -/
-@[reducible] noncomputable def switchForcedPathsRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.switchForcedPaths
-    { Requires := [K .selection, K .minDegreeBaseline, K .returnAvoidance,
-        K .slackIndependent, K .tightEndpoint]
-      Produces := [K .twoHighForcedPath, K .sameHighForcedPath]
-      requiresUnique := by key_fresh
-      producesUnique := by key_fresh
-      producesNonempty := by simp }
-    (fun inputs =>
-      .cons (key := K .twoHighForcedPath)
-        ⟨Contracts.Spine.SparseExitReadings.twoHighForcedPath_holds
-          (object := inputs.current.object)
-          (inputs.get (K .minDegreeBaseline)).down
-          (inputs.get (K .selection)).down.1
-          (inputs.get (K .selection)).down.2.sizeMinimal
-          (inputs.get (K .slackIndependent)).down
-          (inputs.get (K .tightEndpoint)).down⟩
-      (.cons (key := K .sameHighForcedPath)
-        ⟨Contracts.Spine.SparseExitReadings.sameHighForcedPath_holds
-          (object := inputs.current.object)
-          (inputs.get (K .minDegreeBaseline)).down
-          (inputs.get (K .selection)).down.1
-          (inputs.get (K .selection)).down.2.sizeMinimal
-          (inputs.get (K .returnAvoidance)).down⟩
-      .nil))
-
 /-- Top of the strict arm of `[19]` (after `C + 1 ≤ ⌈√n⌉` is published): where the
 surplus of G sits. -/
 @[reducible] noncomputable def highSurplusConfigurationRow :
@@ -99,7 +70,8 @@ surplus of G sits. -/
 @[reducible] noncomputable def highEndpointSwitchRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.highEndpointSwitch
-    { Requires := [K .twoHighForcedPath, K .sameHighForcedPath, K .highSurplusConfiguration]
+    { Requires := [K .slackIndependent, K .twoSwitchForcedPath, K .sameVertexSwitchForcedPath,
+        K .highSurplusConfiguration]
       Produces := [K .highEndpointSwitch]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -108,8 +80,9 @@ surplus of G sits. -/
       .cons (key := K .highEndpointSwitch)
         ⟨Contracts.Spine.SparseExitReadings.highEndpointSwitch_holds
           (object := inputs.current.object)
-          (inputs.get (K .twoHighForcedPath)).down
-          (inputs.get (K .sameHighForcedPath)).down
+          (inputs.get (K .slackIndependent)).down
+          (inputs.get (K .twoSwitchForcedPath)).down
+          (inputs.get (K .sameVertexSwitchForcedPath)).down
           (inputs.get (K .highSurplusConfiguration)).down⟩
       .nil)
 

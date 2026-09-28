@@ -30,7 +30,7 @@ universe u
 (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] independent arm (canonical pair split), [131] free-pair count
 fails; then [179] early outcome.  Every fact of its ledger: the 84 common facts
-and 4 explicit extra facts (88 facts). -/
+and 3 explicit extra facts (87 facts). -/
 abbrev PairTypeBOutcome_independentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -65,10 +65,12 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
-    [FactKeys.Has (K .twoHighForcedPath) known]
-    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
@@ -150,10 +152,12 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
       (history.get (K .everyWitnessSpectrumSplit)).down,
-      (history.get (K .twoHighForcedPath)).down,
-      (history.get (K .sameHighForcedPath)).down,
       (history.get (K .packingOrderBound)).down,
       (history.get (K .noSuppressionChordViolation)).down,
+      (history.get (K .twoSwitchForcedPath)).down,
+      (history.get (K .crossSwitchFamily)).down,
+      (history.get (K .highCentreSplitForced)).down,
+      (history.get (K .sameVertexSwitchForcedPath)).down,
       (history.get (K .specWitnessStructure)).down,
       (history.get (K .bridgeless)).down,
       (history.get (K .remainderDeficiencyBelowCut)).down,
@@ -223,8 +227,8 @@ theorem pairTypeBIndependentSystemReturn
 (thm:main (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the
 ledger reached by [130] independent arm (canonical pair split), [131] free-pair
 count fails; then [179] serial arm, [180] covered increment, [180] early
-outcome.  Every fact of its ledger: the 84 common facts and 7 explicit extra
-facts (91 facts). -/
+outcome.  Every fact of its ledger: the 84 common facts and 6 explicit extra
+facts (90 facts). -/
 abbrev PairTypeBOutcome_independentIncrement (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -265,10 +269,12 @@ theorem pairTypeBIndependentIncrementReturn
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
-    [FactKeys.Has (K .twoHighForcedPath) known]
-    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
@@ -356,10 +362,12 @@ theorem pairTypeBIndependentIncrementReturn
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
       (history.get (K .everyWitnessSpectrumSplit)).down,
-      (history.get (K .twoHighForcedPath)).down,
-      (history.get (K .sameHighForcedPath)).down,
       (history.get (K .packingOrderBound)).down,
       (history.get (K .noSuppressionChordViolation)).down,
+      (history.get (K .twoSwitchForcedPath)).down,
+      (history.get (K .crossSwitchFamily)).down,
+      (history.get (K .highCentreSplitForced)).down,
+      (history.get (K .sameVertexSwitchForcedPath)).down,
       (history.get (K .specWitnessStructure)).down,
       (history.get (K .bridgeless)).down,
       (history.get (K .remainderDeficiencyBelowCut)).down,
@@ -487,10 +495,12 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
-    [FactKeys.Has (K .twoHighForcedPath) known]
-    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
@@ -581,10 +591,12 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
       (history.get (K .everyWitnessSpectrumSplit)).down,
-      (history.get (K .twoHighForcedPath)).down,
-      (history.get (K .sameHighForcedPath)).down,
       (history.get (K .packingOrderBound)).down,
       (history.get (K .noSuppressionChordViolation)).down,
+      (history.get (K .twoSwitchForcedPath)).down,
+      (history.get (K .crossSwitchFamily)).down,
+      (history.get (K .highCentreSplitForced)).down,
+      (history.get (K .sameVertexSwitchForcedPath)).down,
       (history.get (K .specWitnessStructure)).down,
       (history.get (K .bridgeless)).down,
       (history.get (K .remainderDeficiencyBelowCut)).down,
@@ -723,10 +735,12 @@ theorem pairTypeBDependentIncrementReturn
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
-    [FactKeys.Has (K .twoHighForcedPath) known]
-    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
@@ -823,10 +837,12 @@ theorem pairTypeBDependentIncrementReturn
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
       (history.get (K .everyWitnessSpectrumSplit)).down,
-      (history.get (K .twoHighForcedPath)).down,
-      (history.get (K .sameHighForcedPath)).down,
       (history.get (K .packingOrderBound)).down,
       (history.get (K .noSuppressionChordViolation)).down,
+      (history.get (K .twoSwitchForcedPath)).down,
+      (history.get (K .crossSwitchFamily)).down,
+      (history.get (K .highCentreSplitForced)).down,
+      (history.get (K .sameVertexSwitchForcedPath)).down,
       (history.get (K .specWitnessStructure)).down,
       (history.get (K .bridgeless)).down,
       (history.get (K .remainderDeficiencyBelowCut)).down,

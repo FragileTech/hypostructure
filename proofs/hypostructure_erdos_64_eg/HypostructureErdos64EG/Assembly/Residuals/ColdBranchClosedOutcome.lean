@@ -23,7 +23,7 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u
 /-- **`[187]` (local cold-terminal exclusion), singleton `linearDenseAtOrAbove`**
-(88 facts): [153] linear cold mass through `nearCubicDenseLinear` after `nearCubicDensePassAtOrAbove`: [158] unrealized, [160] tau at or above 1/4, [146] theta at or above, [162] heavy entry, [154] none realizing / some distinguishing. -/
+(89 facts): [153] linear cold mass through `nearCubicDenseLinear` after `nearCubicDensePassAtOrAbove`: [158] unrealized, [160] tau at or above 1/4, [146] theta at or above, [162] heavy entry, [154] none realizing / some distinguishing. -/
 abbrev ColdBranchClosedOutcome_linearDenseAtOrAbove (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -97,10 +97,12 @@ theorem coldBranchClosed_linearDenseAtOrAboveReturn
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
-    [FactKeys.Has (K .twoHighForcedPath) known]
-    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -158,7 +160,7 @@ theorem coldBranchClosed_linearDenseAtOrAboveReturn
     (history.get (K .windowPackageUnrealized)).down⟩
 
 /-- **`[187]` (local cold-terminal exclusion), singleton `linearDenseRateFailed`**
-(89 facts): [153] linear cold mass through `nearCubicDenseLinear` after `nearCubicDensePassRateFailed`: [158] unrealized, [160] tau below 1/4 and route-8 rate failing, [146] theta at or above, [162] heavy entry, [154] none realizing / some distinguishing. -/
+(90 facts): [153] linear cold mass through `nearCubicDenseLinear` after `nearCubicDensePassRateFailed`: [158] unrealized, [160] tau below 1/4 and route-8 rate failing, [146] theta at or above, [162] heavy entry, [154] none realizing / some distinguishing. -/
 abbrev ColdBranchClosedOutcome_linearDenseRateFailed (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -234,10 +236,12 @@ theorem coldBranchClosed_linearDenseRateFailedReturn
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
-    [FactKeys.Has (K .twoHighForcedPath) known]
-    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -296,7 +300,7 @@ theorem coldBranchClosed_linearDenseRateFailedReturn
     (history.get (K .windowPackageUnrealized)).down⟩
 
 /-- **`[187]` (local cold-terminal exclusion), singleton `linearRealizedDistinguished`**
-(87 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / some distinguishing. -/
+(88 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / some distinguishing. -/
 abbrev ColdBranchClosedOutcome_linearRealizedDistinguished (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -365,10 +369,12 @@ theorem coldBranchClosed_linearRealizedDistinguishedReturn
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
-    [FactKeys.Has (K .twoHighForcedPath) known]
-    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -424,7 +430,7 @@ theorem coldBranchClosed_linearRealizedDistinguishedReturn
     (history.get (K .realizedOrderSmall)).down⟩
 
 /-- **`[187]` (local cold-terminal exclusion), singleton `linearRealizedSilent`**
-(87 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing. -/
+(88 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing. -/
 abbrev ColdBranchClosedOutcome_linearRealizedSilent (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -493,10 +499,12 @@ theorem coldBranchClosed_linearRealizedSilentReturn
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
-    [FactKeys.Has (K .twoHighForcedPath) known]
-    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -604,10 +612,12 @@ theorem coldBranchClosedLinearDenseReturn
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
-    [FactKeys.Has (K .twoHighForcedPath) known]
-    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]

@@ -27,6 +27,8 @@ open Hypostructure
 open Hypostructure.Graph
 open Hypostructure.Graph.Strategy.InterfaceReplacement
 open Hypostructure.Graph.ReadingCounts
+open Hypostructure.Graph.ReadingProfiles
+open Hypostructure.Graph.ReadingSpectrum.EdgeContext
 open Hypostructure.Graph.SingleEdgeContext
 
 universe u
@@ -289,7 +291,7 @@ def ArmOneRefined {G : FiniteObject.{u}} (Z P N : Finset G.Vertex)
       (∃ k, 2 ≤ k ∧ π.length + σ.length = 2 ^ k) ∧
       (∀ π' : (SupportAtom.retainedPiece G Z N).graph.Walk (.inl a) (.inl b),
         π'.IsPath → π'.length ≠ π.length ∧ ∀ j, 2 ≤ j → π'.length + σ.length ≠ 2 ^ j) ∧
-      (0 < ReadingCounts.readingCount Z P a ∧ 0 < ReadingCounts.readingCount Z P b ∧
+      (0 < ReadingProfiles.readingCount Z P a ∧ 0 < ReadingProfiles.readingCount Z P b ∧
         a.1 ∈ P ∧ b.1 ∈ P ∧ a.1 ∈ N ∧ b.1 ∈ N) ∧
       (∃ e ∈ π.edges, e ∉ (SupportAtom.retainedPiece G Z N).graph.edgeSet) ∧
       2 ≤ π.length ∧
@@ -306,9 +308,9 @@ def ArmOneRefined {G : FiniteObject.{u}} (Z P N : Finset G.Vertex)
         ¬ Core.DyadicLength.PowerOfTwoLength (π.length + τ.length) ∧ τ.length ≠ σ.length) ∧
       (σ.length = 1 → ¬ G.graph.Adj a.1 b.1 ∧
         HasCycleWithLength Core.DyadicLength.PowerOfTwoLength
-          (glue (SupportAtom.retainedPiece G Z P) (SingleEdgeContext.edgeContext Z a b)) ∧
+          (glue (SupportAtom.retainedPiece G Z P) (ReadingSpectrum.EdgeContext.edgeContext Z a b)) ∧
         ¬ HasCycleWithLength Core.DyadicLength.PowerOfTwoLength
-          (glue (SupportAtom.retainedPiece G Z N) (SingleEdgeContext.edgeContext Z a b)))
+          (glue (SupportAtom.retainedPiece G Z N) (ReadingSpectrum.EdgeContext.edgeContext Z a b)))
 
 /-- **Arm (i) refines** (vocabulary-free): on a target-avoiding object with
 return avoidance, every arm-(i) configuration of two readings with equal

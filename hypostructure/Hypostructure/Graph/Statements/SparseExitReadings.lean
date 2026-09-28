@@ -1,6 +1,7 @@
 import Hypostructure.Graph.Statements.SparseExitResidual
 import Hypostructure.Graph.ReadingSpectrumArms
 import Hypostructure.Graph.EdgeSwitchPaths
+import Hypostructure.Graph.Statements.SwitchForcedPaths
 
 /-!
 # Statements: the readings of the canonical target-defect witness, and the edge
@@ -35,35 +36,6 @@ open Hypostructure.Graph.Strategy.InterfaceReplacement
 universe u
 
 /-! ## Edge switches of G -/
-
-/-- **Two high vertices force a path**: for `h₁ ≠ h₂` above the baseline and
-neighbours `u₁ ~ h₁`, `u₂ ~ h₂` with `u₁ ≠ u₂`, `u₁ ≁ u₂`: both `u₁, u₂` sit at
-the baseline and `G − {u₁h₁, u₂h₂}` has a simple `u₁`–`u₂` path of length `ℓ`
-with `ℓ + 1` accepted. -/
-def TwoHighForcedPathStatement (data : Parameters) (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ∀ h₁ h₂ u₁ u₂ : object.Vertex,
-    data.threshold < object.degree h₁ → data.threshold < object.degree h₂ → h₁ ≠ h₂ →
-    object.graph.Adj u₁ h₁ → object.graph.Adj u₂ h₂ → u₁ ≠ u₂ →
-    ¬ object.graph.Adj u₁ u₂ →
-    object.degree u₁ = data.threshold ∧ object.degree u₂ = data.threshold ∧
-      ∃ p : (object.graph.deleteEdges {s(u₁, h₁), s(u₂, h₂)}).Walk u₁ u₂,
-        p.IsPath ∧ data.LengthOK (p.length + 1)
-
-/-- **A vertex of degree `≥ δ + 2` forces paths between its non-adjacent
-neighbours**: `G − {hu₁, hu₂}` has a simple `u₁`–`u₂` path `p` with
-`|p| + 1` accepted; either `p` avoids `h` (and `|p| + 2` is not accepted), or it
-splits at `h` into two returns `ℓ₁ + ℓ₂ = |p|` with neither `ℓᵢ + 1`
-accepted. -/
-def SameHighForcedPathStatement (data : Parameters) (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ∀ h u₁ u₂ : object.Vertex, data.threshold + 2 ≤ object.degree h →
-    object.graph.Adj h u₁ → object.graph.Adj h u₂ → u₁ ≠ u₂ → ¬ object.graph.Adj u₁ u₂ →
-    ∃ p : (object.graph.deleteEdges {s(h, u₁), s(h, u₂)}).Walk u₁ u₂,
-      p.IsPath ∧ data.LengthOK (p.length + 1) ∧
-      ((h ∉ p.support ∧ ¬ data.LengthOK (p.length + 2)) ∨
-        ∃ ℓ₁ ℓ₂, ℓ₁ + ℓ₂ = p.length ∧ ¬ data.LengthOK (ℓ₁ + 1) ∧
-          ¬ data.LengthOK (ℓ₂ + 1))
 
 /-- **Where the surplus of G sits**: G has a vertex of degree `≥ δ + 2`, or two
 distinct vertices of degree exactly `δ + 1`. -/
@@ -139,7 +111,7 @@ vertex `b` of the witness support. -/
 noncomputable abbrev SparseTargetDefectWitness.count
     (w : SparseTargetDefectWitness data object) (x : SparseDeclaredCoordinate data object)
     (b : (SupportAtom.boundary object w.support).Vertex) : Nat :=
-  Graph.ReadingCounts.readingCount w.support (sparseDeclaredSupport data object x) b
+  Graph.ReadingProfiles.readingCount w.support (sparseDeclaredSupport data object x) b
 
 /-- `(P, N)` is `(A, B)` or `(B, A)`. -/
 abbrev SparseTargetDefectWitness.Orientation (w : SparseTargetDefectWitness data object)
@@ -361,16 +333,16 @@ noncomputable abbrev SparseTargetDefectWitness.atEdge {data : Parameters}
     {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object)
     (a b : (SupportAtom.boundary object w.support).Vertex) :
     SparseTargetDefectWitness data object :=
-  ⟨w.first, w.second, w.support, Graph.SingleEdgeContext.edgeContext w.support a b⟩
+  ⟨w.first, w.second, w.support, Graph.ReadingSpectrum.EdgeContext.edgeContext w.support a b⟩
 
 /-- The single-edge context `a — b` separates the two readings of `w`. -/
 abbrev SparseTargetDefectWitness.EdgeSeparates {data : Parameters}
     {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object)
     (a b : (SupportAtom.boundary object w.support).Vertex) : Prop :=
   ¬ (Graph.HasCycleWithLength data.LengthOK
-      (Graph.glue (w.reading w.first) (Graph.SingleEdgeContext.edgeContext w.support a b)) ↔
+      (Graph.glue (w.reading w.first) (Graph.ReadingSpectrum.EdgeContext.edgeContext w.support a b)) ↔
     Graph.HasCycleWithLength data.LengthOK
-      (Graph.glue (w.reading w.second) (Graph.SingleEdgeContext.edgeContext w.support a b)))
+      (Graph.glue (w.reading w.second) (Graph.ReadingSpectrum.EdgeContext.edgeContext w.support a b)))
 
 /-- `SeparatingEdgeContextWitnessStatement` at one target-defect witness `w`. -/
 noncomputable abbrev SeparatingEdgeContextWitnessAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
@@ -394,10 +366,10 @@ noncomputable abbrev SeparatingEdgeContextSpectrumAtWitness {data : Parameters} 
     ∃ P N : Finset object.Vertex,
       Graph.HasCycleWithLength data.LengthOK
         (Graph.glue (SupportAtom.retainedPiece object w.support P)
-          (Graph.SingleEdgeContext.edgeContext w.support a b)) ∧
+          (Graph.ReadingSpectrum.EdgeContext.edgeContext w.support a b)) ∧
       ¬ Graph.HasCycleWithLength data.LengthOK
         (Graph.glue (SupportAtom.retainedPiece object w.support N)
-          (Graph.SingleEdgeContext.edgeContext w.support a b)) ∧
+          (Graph.ReadingSpectrum.EdgeContext.edgeContext w.support a b)) ∧
       ((∃ a' b' : (SupportAtom.boundary object w.support).Vertex, a' ≠ b' ∧
           ∃ π : (SupportAtom.retainedPiece object w.support P).graph.Walk
               (.inl a') (.inl b'), π.IsPath ∧ data.LengthOK (π.length + 1) ∧
@@ -406,15 +378,15 @@ noncomputable abbrev SeparatingEdgeContextSpectrumAtWitness {data : Parameters} 
             π'.length ≠ π.length ∧ (1 < π'.length → ¬ data.LengthOK (π'.length + 1))) ∨
         (∀ c : Graph.CycleCertificate
             (Graph.glue (SupportAtom.retainedPiece object w.support P)
-              (Graph.SingleEdgeContext.edgeContext w.support a b)) data.LengthOK,
+              (Graph.ReadingSpectrum.EdgeContext.edgeContext w.support a b)) data.LengthOK,
           ∃ x y d : (SupportAtom.boundary object w.support).Vertex,
             x ≠ y ∧ x ≠ d ∧ y ≠ d ∧
             (Sum.inl x : Graph.GluedVertex _
-              (Graph.SingleEdgeContext.edgeContext w.support a b)) ∈ c.walk.support ∧
+              (Graph.ReadingSpectrum.EdgeContext.edgeContext w.support a b)) ∈ c.walk.support ∧
             (Sum.inl y : Graph.GluedVertex _
-              (Graph.SingleEdgeContext.edgeContext w.support a b)) ∈ c.walk.support ∧
+              (Graph.ReadingSpectrum.EdgeContext.edgeContext w.support a b)) ∈ c.walk.support ∧
             (Sum.inl d : Graph.GluedVertex _
-              (Graph.SingleEdgeContext.edgeContext w.support a b)) ∈ c.walk.support))
+              (Graph.ReadingSpectrum.EdgeContext.edgeContext w.support a b)) ∈ c.walk.support))
 
 /-- **The spectrum split at a separating single-edge context**: at the
 canonical witness, if `a — b` separates the readings, then `a ≁ b`, one reading
@@ -434,10 +406,10 @@ noncomputable abbrev PrivateEdgeSwapAtWitness {data : Parameters} {object : Grap
       x ∈ w.support ∧ y ∈ w.support ∧ y ∉ SupportAtom.cutBoundary object w.support) ∧
     ∃ x y, object.graph.Adj x y ∧ x ∈ P ∧ y ∈ P ∧ ¬ (x ∈ N ∧ y ∈ N) ∧
       ∃ v, (v = x ∨ v = y) ∧
-        (Graph.EdgeSwitchPaths.spanning object
-          (Graph.EdgeSwitchPaths.swapGraph N P)).degree v + 1 ≤ data.threshold ∧
+        (Graph.ReadingProfiles.spanning object
+          (Graph.ReadingProfiles.swapGraph N P)).degree v + 1 ≤ data.threshold ∧
         ¬ Graph.MinimumDegreeAtLeast data.threshold
-          (Graph.EdgeSwitchPaths.spanning object (Graph.EdgeSwitchPaths.swapGraph N P))
+          (Graph.ReadingProfiles.spanning object (Graph.ReadingProfiles.swapGraph N P))
 
 /-- **The swap object of the canonical witness**: the positive reading `P` has
 a private edge `xy` (`x, y ∈ P ⊆ Z`, `y ∉ N`, `y` internal to `Z`), and
@@ -455,10 +427,10 @@ noncomputable abbrev PrivateEdgeSwitchAtWitness {data : Parameters} {object : Gr
       x ∈ w.support ∧ y ∈ w.support ∧
       y ∉ SupportAtom.cutBoundary object w.support ∧
       ((object.degree x = data.threshold ∧ object.degree y = data.threshold ∧
-          (Graph.EdgeSwitchPaths.spanning object
-            (Graph.EdgeSwitchPaths.swapGraph N P)).degree x + 1 ≤ data.threshold ∧
-          (Graph.EdgeSwitchPaths.spanning object
-            (Graph.EdgeSwitchPaths.swapGraph N P)).degree y + 1 ≤ data.threshold) ∨
+          (Graph.ReadingProfiles.spanning object
+            (Graph.ReadingProfiles.swapGraph N P)).degree x + 1 ≤ data.threshold ∧
+          (Graph.ReadingProfiles.spanning object
+            (Graph.ReadingProfiles.swapGraph N P)).degree y + 1 ≤ data.threshold) ∨
         ∃ h c, ((h = x ∧ c = y) ∨ (h = y ∧ c = x)) ∧
           data.threshold + 1 ≤ object.degree h ∧ object.degree c = data.threshold ∧
           ((data.threshold + 2 ≤ object.degree h ∧ ∃ u, object.graph.Adj h u ∧ u ≠ c ∧

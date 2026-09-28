@@ -84,9 +84,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **968**.
+Compiled declarations: **956**.
 
-Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 181, **Minimum-degree cycle spine vocabulary** 549, **Sealed topology** 6, **Sealed total closure** 12, **Typed partial topology and sealed completion** 16.
+Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 181, **Minimum-degree cycle spine vocabulary** 537, **Sealed topology** 6, **Sealed total closure** 12, **Typed partial topology and sealed completion** 16.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -4450,17 +4450,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.boundaryPartition`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.boundedDensityOrder`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -5220,7 +5209,7 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.cubicBaseline`
+#### `Hypostructure.Graph.Strategy.Spine.Key.crossSwitchFamily`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -5231,7 +5220,7 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.cubicLabelOutsidePath`
+#### `Hypostructure.Graph.Strategy.Spine.Key.cubicBaseline`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -5561,17 +5550,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.everyWitnessSpectrumSplit`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.exactCollisionFails`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -5803,6 +5781,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.highCentreSplitForced`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.highDegreeCountBound`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -5837,28 +5826,6 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.highDegreeSurplusCapacity`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.highEndpointSwitch`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.highSurplusConfiguration`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -6595,17 +6562,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.positiveCyclePrivateEdge`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.positiveSupportBoundaryTwo`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -6629,28 +6585,6 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.primitiveClassOverload`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.privateEdgeSwap`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.privateEdgeSwitch`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -7288,7 +7222,29 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.sameHighForcedPath`
+#### `Hypostructure.Graph.Strategy.Spine.Key.sameTokenPairPartition`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.sameTokenPatternSupports`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.sameTokenPatternSwap`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -7311,6 +7267,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.sameTokenReadingsNotReplacement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.sameVertexSwitchForcedPath`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -7377,28 +7344,6 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.selection`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.separatingEdgeContextSpectrum`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.separatingEdgeContextWitness`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -7564,17 +7509,6 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.specWitnessStructure`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.spectrumArmOneRefined`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -7805,17 +7739,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.twoBoundaryAllActive`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.twoBoundaryForcedPathCross`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -7860,17 +7783,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.twoBoundaryOutsideBoth`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.twoBoundaryOutsideClosure`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -7893,7 +7805,7 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.twoHighForcedPath`
+#### `Hypostructure.Graph.Strategy.Spine.Key.twoSwitchForcedPath`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -8784,29 +8696,7 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.wholeCycleMeetsDeficit`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.wholeDeficitBoundaryCount`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.wholePrivateEdges`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -8938,17 +8828,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.witnessActiveLabels`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.witnessActualOutsideNegative`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -8961,17 +8840,6 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.witnessOutsideNotRealized`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.witnessReadingCounts`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`

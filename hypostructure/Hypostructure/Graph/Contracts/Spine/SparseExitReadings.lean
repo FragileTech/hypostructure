@@ -37,37 +37,6 @@ variable {data : Parameters} {object : Graph.FiniteObject.{u}}
 
 /-! ## Edge switches of G -/
 
-theorem twoHighForcedPath_holds (baseline : MinDegreeBaselineStatement data object)
-    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
-      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
-    (slack : SlackIndependentStatement data object)
-    (tight : TightEndpointStatement data object) :
-    TwoHighForcedPathStatement data object := by
-  intro h₁ h₂ u₁ u₂ d₁ d₂ hh a₁ a₂ uu na
-  have cubic : ∀ {u h : object.Vertex}, object.graph.Adj u h →
-      data.threshold < object.degree h → object.degree u = data.threshold := by
-    intro u h a d
-    rcases tight ⟨(u, h), a⟩ with t | t
-    · exact t
-    · exact absurd t (by change object.degree h ≠ data.threshold; omega)
-  have ne1 : u₁ ≠ h₂ := fun e => slack h₂ h₁ d₂ d₁ (by rw [← e]; exact a₁)
-  have ne2 : h₁ ≠ u₂ := fun e => slack h₁ h₂ d₁ d₂ (by rw [e]; exact a₂)
-  exact ⟨cubic a₁ d₁, cubic a₂ d₂,
-    EdgeSwitchPaths.twoSwitch_forced_path (k := data.threshold) avoid minimal baseline
-      a₁ a₂ uu ne1 ne2 hh na (by omega) (by omega)⟩
-
-theorem sameHighForcedPath_holds (baseline : MinDegreeBaselineStatement data object)
-    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
-      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
-    (ret : ReturnAvoidanceStatement data object) :
-    SameHighForcedPathStatement data object := by
-  intro h u₁ u₂ d a₁ a₂ uu na
-  obtain ⟨p, pp, ok⟩ := EdgeSwitchPaths.sameVertexSwitch_forced_path (k := data.threshold)
-    avoid minimal baseline a₁ a₂ uu na d
-  exact ⟨p, pp, ok, EdgeSwitchPaths.sameVertex_path_dichotomy avoid ret a₁ a₂ uu p pp⟩
-
 theorem highSurplusConfiguration_holds (three : data.threshold = 3)
     (baseline : MinDegreeBaselineStatement data object)
     (scale : Graph.TokenLoad.quadraticSafetyScale ≤ data.spineScale)
@@ -114,15 +83,16 @@ theorem highSurplusConfiguration_holds (three : data.threshold = 3)
       omega
   omega
 
-theorem highEndpointSwitch_holds (twoHigh : TwoHighForcedPathStatement data object)
-    (sameHigh : SameHighForcedPathStatement data object)
+theorem highEndpointSwitch_holds (slack : SlackIndependentStatement data object)
+    (twoSwitch : TwoSwitchForcedPathStatement data object)
+    (sameVertex : SameVertexSwitchForcedPathStatement data object)
     (config : HighSurplusConfigurationStatement data object) :
     HighEndpointSwitchStatement data object := by
   intro h c dh dc a
   by_cases d5 : data.threshold + 2 ≤ object.degree h
   · left
     obtain ⟨u, hu, uc, cu⟩ := EdgeSwitchPaths.exists_nonadj_nbr dc dh
-    obtain ⟨p, pp, ok, -⟩ := sameHigh h c u d5 a hu uc.symm cu
+    obtain ⟨p, pp, ok, -⟩ := sameVertex a hu uc.symm cu d5
     exact ⟨d5, u, hu, uc, cu, p, pp, ok⟩
   · right
     have second : ∃ h₂, h₂ ≠ h ∧ data.threshold + 1 ≤ object.degree h₂ := by
@@ -133,8 +103,10 @@ theorem highEndpointSwitch_holds (twoHigh : TwoHighForcedPathStatement data obje
         · exact ⟨h₁, e, by omega⟩
     obtain ⟨h₂, h2ne, d2⟩ := second
     obtain ⟨u₂, hu₂, u2c, cu₂⟩ := EdgeSwitchPaths.exists_nonadj_nbr dc d2
-    obtain ⟨-, -, p, pp, ok⟩ := twoHigh h h₂ c u₂ (by omega) (by omega) (Ne.symm h2ne)
-      a.symm hu₂.symm u2c.symm cu₂
+    have ch₂ : c ≠ h₂ := fun e => by subst e; omega
+    have hu : h ≠ u₂ := fun e => slack h h₂ (by omega) (by omega) (by rw [e]; exact hu₂.symm)
+    obtain ⟨p, pp, ok⟩ := twoSwitch a.symm hu₂.symm u2c.symm ch₂ hu (Ne.symm h2ne) cu₂
+      dh d2
     exact ⟨h₂, u₂, h2ne, d2, hu₂.symm, u2c, cu₂, p, pp, ok⟩
 
 /-! ## The spectrum split at every clause-(b) witness -/
@@ -180,7 +152,7 @@ theorem supports_subset_of_spec (spec : w.Spec) :
 theorem counts_of_spec (spec : w.Spec) :
     ∀ b, w.count w.first b = w.count w.second b := by
   obtain ⟨-, -, -, -, prof, -, -⟩ := spec
-  exact (ReadingCounts.profile_eq_iff_counts _ _ _).1 prof
+  exact (ReadingProfiles.profile_eq_iff_counts _ _ _).1 prof
 
 /-- Orientation of the positive/negative readings at a clause-(b) witness. -/
 theorem pair_orient (spec : w.Spec)
@@ -237,8 +209,8 @@ theorem private_of_spec (avoid : ¬ Graph.HasCycleWithLength data.LengthOK objec
         SupportAtom.pieceDecode object w.support y ∉
           SupportAtom.cutBoundary object w.support := by
       intro x y adj hx hy hyN hyB
-      exact hyN (ReadingCounts.mem_of_profile_eq prof ⟨_, hyB⟩ hy
-        (ReadingCounts.pieceDecode_mem w.support x) hx adj.symm)
+      exact hyN (ReadingProfiles.mem_of_profile_eq prof ⟨_, hyB⟩ hy
+        (ReadingProfiles.pieceDecode_mem w.support x) hx adj.symm)
     by_cases hrN : SupportAtom.pieceDecode object w.support pr ∈ N
     · have hlN : SupportAtom.pieceDecode object w.support pl ∉ N :=
         fun h => notBoth ⟨h, hrN⟩
@@ -348,9 +320,9 @@ theorem witnessReadingCounts_of_spec (spec : w.Spec) : WitnessReadingCountsAtWit
   have prof := spec.2.2.2.2.1
   refine ⟨counts_of_spec spec, ?_, ?_⟩
   · intro b hb x hx adj
-    exact ReadingCounts.mem_of_profile_eq prof b hb (AZ x hx) hx adj
+    exact ReadingProfiles.mem_of_profile_eq prof b hb (AZ x hx) hx adj
   · intro b hb x hx adj
-    exact ReadingCounts.mem_of_profile_eq prof.symm b hb (BZ x hx) hx adj
+    exact ReadingProfiles.mem_of_profile_eq prof.symm b hb (BZ x hx) hx adj
 
 theorem witnessActiveLabels_of_spec
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) (spec : w.Spec) :
@@ -365,8 +337,8 @@ theorem witnessActiveLabels_of_spec
     intro l hl
     have pos : 0 < w.count w.first l := by rcases hl with rfl | rfl <;> assumption
     have posB : 0 < w.count w.second l := by rw [← counts]; exact pos
-    exact ⟨pos, counts l, (ReadingCounts.readingCount_pos pos).1,
-      (ReadingCounts.readingCount_pos posB).1, ReadingCounts.readingCount_add_one_le _ _ l⟩
+    exact ⟨pos, counts l, (ReadingProfiles.readingCount_pos pos).1,
+      (ReadingProfiles.readingCount_pos posB).1, ReadingProfiles.readingCount_add_one_le _ _ l⟩
   haveI : Finite (SupportAtom.boundary object w.support).Vertex := by
     letI := (SupportAtom.boundary object w.support).vertices; infer_instance
   have card : 2 ≤ {l : (SupportAtom.boundary object w.support).Vertex |
@@ -418,11 +390,11 @@ theorem boundaryPartition_of_spec (spec : w.Spec) : BoundaryPartitionAtWitness w
   rcases Nat.eq_zero_or_pos (w.count w.first b) with zA | pA
   · have zB : w.count w.second b = 0 := by rw [← counts]; exact zA
     have iso : ∀ {X : Finset object.Vertex}, (∀ v ∈ X, v ∈ w.support) →
-        ReadingCounts.readingCount w.support X b = 0 → b.1 ∈ X → ∀ x ∈ X,
+        ReadingProfiles.readingCount w.support X b = 0 → b.1 ∈ X → ∀ x ∈ X,
           ¬ object.graph.Adj b.1 x := by
       intro X XZ z hb x hx adj
-      have : 0 < ReadingCounts.readingCount w.support X b := by
-        unfold ReadingCounts.readingCount
+      have : 0 < ReadingProfiles.readingCount w.support X b := by
+        unfold ReadingProfiles.readingCount
         exact (Set.ncard_pos (Set.toFinite _)).2 ⟨x, XZ x hx, adj, hb, hx⟩
       omega
     by_cases inU : b.1 ∈ sparseDeclaredSupport data object w.first ∨
@@ -431,8 +403,8 @@ theorem boundaryPartition_of_spec (spec : w.Spec) : BoundaryPartitionAtWitness w
     · push Not at inU
       exact Or.inr (Or.inr ⟨inU.1, inU.2, cut b.1 bZ inU.1 inU.2⟩)
   · have pB : 0 < w.count w.second b := by rw [← counts]; exact pA
-    exact Or.inl ⟨pA, (ReadingCounts.readingCount_pos pA).1,
-      (ReadingCounts.readingCount_pos pB).1⟩
+    exact Or.inl ⟨pA, (ReadingProfiles.readingCount_pos pA).1,
+      (ReadingProfiles.readingCount_pos pB).1⟩
 
 theorem positiveCyclePrivateEdge_of_spec
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) (spec : w.Spec) :
@@ -484,10 +456,10 @@ theorem separatingEdgeContextWitness_of_spec
   refine fun a b ne differ => ⟨fun adj => differ ?_, ?_⟩
   · have neg : ∀ X, ¬ Graph.HasCycleWithLength data.LengthOK
         (glue (SupportAtom.retainedPiece object w.support X)
-          (SingleEdgeContext.edgeContext w.support a b)) := by
+          (ReadingSpectrum.EdgeContext.edgeContext w.support a b)) := by
       intro X cyc
-      obtain ⟨p, hp, hf, hl⟩ := SingleEdgeContext.path_of_edgeContext_cycle avoid cyc
-      exact SingleEdgeContext.no_spectrum_of_adj (L := data.LengthOK) ret adj.symm p hp hf hl
+      obtain ⟨p, hp, hf, hl⟩ := ReadingSpectrum.EdgeContext.path_of_edgeContext_cycle avoid cyc
+      exact ReadingSpectrum.EdgeContext.no_spectrum_of_adj (L := data.LengthOK) ret adj.symm p hp hf hl
     exact iff_of_false (neg _) (neg _)
   · obtain ⟨fm, sm, ne', sel, prof, act, -⟩ := spec
     exact ⟨fm, sm, ne', sel, prof, act, differ⟩
@@ -517,9 +489,9 @@ theorem privateEdgeSwap_of_spec (tight : TightEndpointStatement data object)
   obtain ⟨P, N, orient, ⟨pos, -⟩, cyc, -⟩ := private_of_spec avoid spec
   obtain ⟨c⟩ := pos
   obtain ⟨pl, pr, -, adj, hl, hr, hrN, hrB⟩ := cyc c
-  refine ⟨P, N, orient, ⟨_, _, adj, hl, hr, hrN, ReadingCounts.pieceDecode_mem _ pl,
-    ReadingCounts.pieceDecode_mem _ pr, hrB⟩, ?_⟩
-  rcases EdgeSwitchPaths.swap_exact tight N P with none | some
+  refine ⟨P, N, orient, ⟨_, _, adj, hl, hr, hrN, ReadingProfiles.pieceDecode_mem _ pl,
+    ReadingProfiles.pieceDecode_mem _ pr, hrB⟩, ?_⟩
+  rcases ReadingProfiles.swap_exact tight N P with none | some
   · exact absurd (none _ _ adj hl hr).2 hrN
   · exact some
 
@@ -533,17 +505,17 @@ theorem privateEdgeSwitch_of_spec (baseline : MinDegreeBaselineStatement data ob
   refine ⟨P, N, orient, x, y, adj, hx, hy, hyN, xZ, yZ, yB, ?_⟩
   have base : ∀ v, data.threshold ≤ object.degree v := fun v =>
     le_trans baseline (object.minDegree_le_degree v)
-  have le : EdgeSwitchPaths.swapGraph N P ≤ object.graph :=
+  have le : ReadingProfiles.swapGraph N P ≤ object.graph :=
     object.graph.deleteEdges_le _
-  have drop : ¬ (EdgeSwitchPaths.swapGraph N P).Adj x y := by
+  have drop : ¬ (ReadingProfiles.swapGraph N P).Adj x y := by
     intro h
-    rw [EdgeSwitchPaths.swapGraph, SimpleGraph.deleteEdges_adj] at h
+    rw [ReadingProfiles.swapGraph, SimpleGraph.deleteEdges_adj] at h
     exact h.2 ⟨x, y, rfl, hx, hy, fun h => hyN h.2⟩
   by_cases dx : object.degree x = data.threshold
   · by_cases dy : object.degree y = data.threshold
     · left
-      exact ⟨dx, dy, EdgeSwitchPaths.spanning_degree_le_of_tight le adj drop dx,
-        EdgeSwitchPaths.spanning_degree_le_of_tight le adj.symm (fun h => drop h.symm) dy⟩
+      exact ⟨dx, dy, ReadingProfiles.spanning_degree_le_of_tight le adj drop dx,
+        ReadingProfiles.spanning_degree_le_of_tight le adj.symm (fun h => drop h.symm) dy⟩
     · right
       have hy4 : data.threshold + 1 ≤ object.degree y := by have := base y; omega
       exact ⟨y, x, Or.inr ⟨rfl, rfl⟩, hy4, dx, switch y x hy4 dx adj.symm⟩
