@@ -43,6 +43,7 @@ noncomputable def selectedRouteEightProfile
     [FactKeys.Has (K .typeAExitSevenFree) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (profileFresh : K .route8ResidualProfile ∉ known := by key_fresh)
     (burdenFresh : K .route8BasinBurden ∉ known := by key_fresh) :
     ExactLedger EGInput.{u} selected
@@ -99,6 +100,7 @@ noncomputable def selectedRouteEightCollection
     [FactKeys.Has (K .route8LargeBudgetDeficit) known]
     [FactKeys.Has (K .route8Rate) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .replacementExclusion) known]
@@ -295,6 +297,7 @@ noncomputable def selectedRouteEightResidual
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (profileFresh : K .route8ResidualProfile ∉ known := by key_fresh)
     (burdenFresh : K .route8BasinBurden ∉ known := by key_fresh)
     (deficitFresh : K .route8LargeBudgetDeficit ∉ known := by key_fresh)

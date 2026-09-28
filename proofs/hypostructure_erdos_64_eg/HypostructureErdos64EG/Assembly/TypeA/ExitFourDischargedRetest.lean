@@ -108,6 +108,7 @@ noncomputable def selectedTypeAExitFourDischargedRetest
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .tightEndpoint) known]

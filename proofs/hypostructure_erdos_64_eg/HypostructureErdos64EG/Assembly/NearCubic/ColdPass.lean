@@ -93,6 +93,7 @@ noncomputable def nearCubicColdStubs
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (fresh : List.Disjoint
       [K .coldHotEntropyOverflow, K .coldHotEntropyCap, closed, K .coldMass,
         K .coldAmbientCubic, K .coldSelectedBranchExcess,
@@ -131,6 +132,7 @@ noncomputable def nearCubicColdStubFacts
     [FactKeys.Has (K .barrierCap) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (fresh : List.Disjoint
       [K .coldHotEntropyCap, K .coldMass,
         K .coldAmbientCubic, K .coldSelectedBranchExcess,
@@ -159,6 +161,7 @@ noncomputable def nearCubicColdCorridorState
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (fresh : List.Disjoint
       [K .coldReturnCorridors, K .coldCorridorState] known := by key_fresh) :
     ExactLedger EGInput.{u} selected
@@ -187,6 +190,7 @@ noncomputable def nearCubicColdOccurrence
     (arm : Node153Arm selected)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .coldCorridorState) known]
     (fresh : List.Disjoint
       [K .coldFirstFailureOccurrence, K .coldCutStatesDistinct,
@@ -249,6 +253,7 @@ noncomputable def nearCubicColdCandidates
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .coldCorridorState) known]
@@ -289,6 +294,7 @@ noncomputable def nearCubicColdGermFamily
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .coldCorridorState) known]

@@ -9,7 +9,7 @@ along 104 root paths, each with its own ledger fact set.  They split as:
 * 100 paths through `selectedAbsorbedGermResidual`, which form an exact
   product 4 × 5 × 5 of arm blocks: the entropy-side arm (4 blocks), the
   window/test arm (5 blocks) and the absorbed-germ exit (5 blocks), over the
-  generic 57 facts and 5 further facts common to all 100
+  generic 58 facts and 5 further facts common to all 100
   (`ColdBranchClosedAbsorbedCommon`).  Their residual is
   `ColdBranchClosedOutcome_product`.
 * 4 paths on the [153] linear cold-mass arm, each its own subtype.
@@ -384,6 +384,7 @@ theorem coldBranchClosedProductReturn
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .curvatureFullRank) known]
     [FactKeys.Has (K .curvatureTargetRank) known]
     [FactKeys.Has (K .cycleRankConstraint) known]
@@ -488,6 +489,7 @@ theorem coldBranchClosed_linearDenseAtOrAboveReturn
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .curvatureFullRank) known]
     [FactKeys.Has (K .curvatureTargetRank) known]
     [FactKeys.Has (K .cycleRankConstraint) known]
@@ -603,6 +605,7 @@ theorem coldBranchClosed_linearDenseRateFailedReturn
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .curvatureFullRank) known]
     [FactKeys.Has (K .curvatureTargetRank) known]
     [FactKeys.Has (K .cycleRankConstraint) known]
@@ -708,6 +711,7 @@ theorem coldBranchClosed_linearRealizedDistinguishedReturn
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .curvatureFullRank) known]
     [FactKeys.Has (K .curvatureTargetRank) known]
     [FactKeys.Has (K .cycleRankConstraint) known]
@@ -806,6 +810,7 @@ theorem coldBranchClosed_linearRealizedSilentReturn
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .curvatureFullRank) known]
     [FactKeys.Has (K .curvatureTargetRank) known]
     [FactKeys.Has (K .cycleRankConstraint) known]
@@ -909,6 +914,7 @@ theorem coldBranchClosedLinearDenseReturn
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .curvatureFullRank) known]
     [FactKeys.Has (K .curvatureTargetRank) known]
     [FactKeys.Has (K .cycleRankConstraint) known]

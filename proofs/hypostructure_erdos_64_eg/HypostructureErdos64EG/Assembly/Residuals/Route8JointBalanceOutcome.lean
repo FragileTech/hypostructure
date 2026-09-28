@@ -45,7 +45,7 @@ theorem Route8JointBalanceOutcome_product.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- The return of `Route8JointBalanceOutcome_product`, parameterised by the
-arm choices: the 79 common facts are read from the ledger by
+arm choices: the 80 common facts are read from the ledger by
 `route8JointBalanceReturn`, and each factor is the arm block the path took,
 built by that block's `.ret` from the same ledger (one `get` per key). -/
 theorem route8JointBalanceProductReturn
@@ -53,6 +53,7 @@ theorem route8JointBalanceProductReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]

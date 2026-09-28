@@ -26,7 +26,7 @@ universe u
 
 /-- **Node `[162]` on `[160]`'s first complement** (`τ(θ) ≥ 1/4`).
 The generic `[162]` residual together with every fact its arm of `[160]`
-adds to the ledger (47 facts in all). -/
+adds to the ledger (48 facts in all). -/
 abbrev Node162ResidualOutcome_tauAtOrAbove (selected : EGInput.{u}) : Prop :=
   Node162ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -45,6 +45,7 @@ theorem node162Return_tauAtOrAbove
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -97,7 +98,7 @@ theorem node162Return_tauAtOrAbove
 /-- **Node `[162]` on `[160]`'s second complement** (`τ(θ) < 1/4`, the
 private-carrier rate `τ(θ) < 3/13` failed).
 The generic `[162]` residual together with every fact its arm of `[160]`
-adds to the ledger (48 facts in all). -/
+adds to the ledger (49 facts in all). -/
 abbrev Node162ResidualOutcome_tauBelowRateFails (selected : EGInput.{u}) : Prop :=
   Node162ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -118,6 +119,7 @@ theorem node162Return_tauBelowRateFails
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -179,6 +181,7 @@ theorem node162SubtypesReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]

@@ -38,7 +38,7 @@ noncomputable def Assembly.Internal.strictSurplusDependent
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression, K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .cubicBaseline,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .minDegreeBaseline, K .cubicBaseline,
         K .selection]) :
     StrictSurplusBoundaryResult selected := by
   -- `[130]`, blocked arm: `lem:degree-profile-fibres` at G's pair family, then

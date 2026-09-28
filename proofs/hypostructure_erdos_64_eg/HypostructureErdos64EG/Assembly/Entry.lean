@@ -52,18 +52,24 @@ noncomputable def selectedEntryPrefix
         K .degreeProfileFibres,
         K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline,
-        K .returnAvoidance, K .cubicBaseline, K .selection] := by
+        K .returnAvoidance, K .minDegreeBaseline, K .cubicBaseline, K .selection] := by
   -- The presentation laws of G, published once on the ledger.
   let hCubic :=
     (cubicBaselineRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
+  -- `[1]`--`[3]`: G's baseline `δ(G) ≥ 3`, published once on the ledger.
+  let hBaseline :=
+    (minDegreeBaselineRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hCubic (by key_fresh)
   -- `[6]`: Mersenne return exists?
   match returnAvoidanceDichotomy (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)
-      hCubic (by
+      hBaseline (by
         key_fresh)
       (by
         key_fresh) with

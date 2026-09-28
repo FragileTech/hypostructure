@@ -357,6 +357,10 @@ inductive Key where
   presentation identities, and the spine laws at G.  Every row reads a
   presentation law from this one fact with `inputs.get`. -/
   | cubicBaseline
+  /-- Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the
+  registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`).  Published
+  once at the entry from the selected object's own baseline proof. -/
+  | minDegreeBaseline
   /-- Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted
   accepted set at every oriented edge.  This is the return-set form of target
   avoidance, the standing invariant the rest of the spine consumes. -/
@@ -1354,12 +1358,14 @@ inductive Key where
   surplus exit of `def:named-surplus-exits` rather than by a canonical blocker.
   It closes the branch against node `[125]`'s survivor entry at `[133]`. -/
   | sparsePairExit
-  /-- Node `[125]`, the sole nonterminal named-exit payload: the concrete
-  rank-reducing attempted quotient and identified realizations whose response
-  is separated by an outside context. -/
+  /-- Node `[125]`, the sole nonterminal named-exit payload: clause (b) at
+  G's canonical witness `sparseTargetDefectWitness` -- the identified pair of
+  declared coordinates, their canonical support `Z` and the separating context
+  `O`. -/
   | sparseTargetDefectResidual
-  /-- Node `[20]`: the same identified target-defect pair with its bound
-  outside context and proved target-free negative constituents. -/
+  /-- Node `[20]`: the bound target-defect geometry at the same canonical
+  witness as `[125]` -- the same pair, support `Z` and separating context
+  `O` -- with its proved target-free negative constituents. -/
   | sparseTargetDefectStructure
   /-- Node `[132]`, blocker arm: no sparse surplus exit occurs, and the blocked
   pair of `[130]` at G's canonical activation has its canonical blocker
@@ -1730,6 +1736,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SelectionStatement BranchState Presentation presentation data.toParameters object
   | .cubicBaseline, object =>
       PresentationLawsStatement data.toParameters data.windowBarrierLabel object
+  | .minDegreeBaseline, object =>
+      MinDegreeBaselineStatement data.toParameters object
   | .returnAvoidance, object =>
       ReturnAvoidanceStatement data.toParameters object
   | .mersenneReturn, object =>
@@ -2523,6 +2531,7 @@ def label : Key → String
   | .windowShadowHitCycle => "windowShadowHitCycle"
   | .selection => "selection"
   | .cubicBaseline => "cubicBaseline"
+  | .minDegreeBaseline => "minDegreeBaseline"
   | .returnAvoidance => "returnAvoidance"
   | .mersenneReturn => "mersenneReturn"
   | .noProperBaseline => "noProperBaseline"
@@ -2885,6 +2894,7 @@ example : label .route8OpenBoundarySaturated = "route8OpenBoundarySaturated" := 
 example : label .windowShadowHitExcluded = "windowShadowHitExcluded" := rfl
 example : label .windowShadowHitCycle = "windowShadowHitCycle" := rfl
 example : label .selection = "selection" := rfl
+example : label .minDegreeBaseline = "minDegreeBaseline" := rfl
 example : label .returnAvoidance = "returnAvoidance" := rfl
 example : label .noProperBaseline = "noProperBaseline" := rfl
 example : label .tightEndpoint = "tightEndpoint" := rfl
@@ -3269,6 +3279,7 @@ def idx : Key → Nat
   | .windowShadowHitCycle => 514
   | .selection => 0
   | .cubicBaseline => 221
+  | .minDegreeBaseline => 2850
   | .returnAvoidance => 1
   | .mersenneReturn => 606
   | .windowFree => 607
@@ -3624,6 +3635,7 @@ def ofIdx : Nat → Key
   | 514 => .windowShadowHitCycle
   | 0 => .selection
   | 221 => .cubicBaseline
+  | 2850 => .minDegreeBaseline
   | 1 => .returnAvoidance
   | 606 => .mersenneReturn
   | 607 => .windowFree
@@ -3993,6 +4005,8 @@ def name : Key → Lean.Name
   | .selection => .num (.str `Hypostructure.Graph.Strategy.Spine "selection") 0
   | .cubicBaseline =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "cubicBaseline") 221
+  | .minDegreeBaseline =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "minDegreeBaseline") 2850
   | .returnAvoidance =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "returnAvoidance") 1
   | .mersenneReturn =>

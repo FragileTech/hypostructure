@@ -25,12 +25,14 @@ universe u w
 /-- **Node `[20a]`** (thm:main (i), tex 339-346): the strict-surplus named
 sparse exit of [20]: the attempted-quotient target defect and its registered
 structure, on the strict arm of [19].  The explicit conjunction of every
-fact on its maximal ledger (18 common facts). -/
+fact on its maximal ledger (19 common facts). -/
 abbrev Node20aOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -71,6 +73,7 @@ theorem node20aReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -90,6 +93,7 @@ theorem node20aReturn
     Node20aOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,
@@ -109,13 +113,15 @@ theorem node20aReturn
 
 /-- **Node `[187] (near-cubic target defect)`** (thm:main (vi), tex 369-378):
 the sparse target-defect exit of [20] on the at-or-below-surplus arm of
-[19].  The explicit conjunction of every fact on its maximal ledger (18
+[19].  The explicit conjunction of every fact on its maximal ledger (19
 common facts). -/
 abbrev NearCubicTargetDefectOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -156,6 +162,7 @@ theorem nearCubicTargetDefectReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -175,6 +182,7 @@ theorem nearCubicTargetDefectReturn
     NearCubicTargetDefectOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,
@@ -195,7 +203,7 @@ theorem nearCubicTargetDefectReturn
 /-- **Node `[144a]`** (thm:main (ii), tex 347-353): the same-token Type B
 handoff of [144] on the strict-surplus survivor, or (the paper error at
 [144]) the unresolved same-label pattern pair.  The generic residual: the
-explicit conjunction of the 44 facts common to every path.  Its six distinct
+explicit conjunction of the 45 facts common to every path.  Its six distinct
 fact sets (the class arm of [139]/[141] times the arm of [144]'s handoff
 decision) are its subtypes in `Assembly/Residuals/Node144aOutcome.lean`. -/
 abbrev Node144aOutcome (selected : EGInput.{u}) : Prop :=
@@ -203,6 +211,8 @@ abbrev Node144aOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .selection selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -295,6 +305,7 @@ theorem node144aReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -340,6 +351,7 @@ theorem node144aReturn
     Node144aOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,
@@ -386,12 +398,14 @@ theorem node144aReturn
 /-- **Node `[172a]`** (thm:main (iii), tex 354-358): the first failed
 conditional graph-count inequality of lem:scale-additivity on the dense-
 packing branch, with its minimal same-scale barrier overlap.  The explicit
-conjunction of every fact on its maximal ledger (71 common facts). -/
+conjunction of every fact on its maximal ledger (72 common facts). -/
 abbrev BlockedBarrierOverlapOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -538,6 +552,7 @@ theorem blockedBarrierOverlapReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -610,6 +625,7 @@ theorem blockedBarrierOverlapReturn
     BlockedBarrierOverlapOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,
@@ -690,6 +706,8 @@ abbrev PairConditionalFactorizationOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noProperBaseline selected.object ∧
@@ -759,6 +777,7 @@ theorem pairConditionalFactorizationReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -793,6 +812,7 @@ theorem pairConditionalFactorizationReturn
     PairConditionalFactorizationOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,
@@ -828,12 +848,14 @@ theorem pairConditionalFactorizationReturn
 /-- **Node `[186]`** (thm:main (v), tex 364-368): the visible-entry route-8
 residual after [181], [183]-[185], with the joint balances of lem:typeA-
 unified-joint-balance.  The explicit conjunction of every fact on its
-maximal ledger (79 common facts). -/
+maximal ledger (80 common facts). -/
 abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -996,6 +1018,7 @@ theorem route8JointBalanceReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -1076,6 +1099,7 @@ theorem route8JointBalanceReturn
     Route8JointBalanceOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,
@@ -1157,13 +1181,15 @@ theorem route8JointBalanceReturn
 /-- **Node `[187] ([179]/[180] Type B entry)`** (thm:main (vi), tex 369-378): a
 Type B entry produced by the [179] or [180] pair-system outcome, with its
 strict-surplus and sparse-survivor ancestry.  The explicit conjunction of
-every fact on its maximal ledger (37 common facts, then the arms of the
+every fact on its maximal ledger (38 common facts, then the arms of the
 residual's own decision: system 1; increment 4). -/
 abbrev PairTypeBOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1252,6 +1278,7 @@ theorem pairTypeBSystemReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -1291,6 +1318,7 @@ theorem pairTypeBSystemReturn
     PairTypeBOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,
@@ -1335,6 +1363,7 @@ theorem pairTypeBIncrementReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -1377,6 +1406,7 @@ theorem pairTypeBIncrementReturn
     PairTypeBOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,
@@ -1426,6 +1456,8 @@ abbrev TypeBSublinearOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .selection selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1554,6 +1586,7 @@ theorem typeBSublinearReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -1617,6 +1650,7 @@ theorem typeBSublinearReturn
     TypeBSublinearOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,
@@ -1687,6 +1721,8 @@ abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .selection selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1819,6 +1855,7 @@ theorem route8QuotientReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -1884,6 +1921,7 @@ theorem route8QuotientReturn
     Route8QuotientOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,
@@ -1950,12 +1988,14 @@ theorem route8QuotientReturn
 /-- **Node `[187] (private-carrier rate failure)`** (thm:main (vi), tex
 369-378): failure of the exact private-carrier rate at the entry of the
 route-8 continuation.  The explicit conjunction of every fact on its maximal
-ledger (42 common facts). -/
+ledger (43 common facts). -/
 abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2044,6 +2084,7 @@ theorem route8RateFailsReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -2087,6 +2128,7 @@ theorem route8RateFailsReturn
     Route8RateFailsOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,
@@ -2131,12 +2173,14 @@ theorem route8RateFailsReturn
 /-- **Node `[187] (local cold-terminal exclusion)`** (thm:main (vi), tex
 369-378): the local cold-terminal exclusion of thm:cold-branch-quantitative-
 closure without a global terminal contradiction.  The explicit conjunction
-of every fact on its maximal ledger (57 common facts). -/
+of every fact on its maximal ledger (58 common facts). -/
 abbrev ColdBranchClosedOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2255,6 +2299,7 @@ theorem coldBranchClosedReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -2313,6 +2358,7 @@ theorem coldBranchClosedReturn
     ColdBranchClosedOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,
@@ -2372,12 +2418,14 @@ theorem coldBranchClosedReturn
 /-- **Node `[153]`** (lem:cold-corridor-first-failure (ii), tex 7265-7270): G's
 first equal-state pair on a retained cold corridor, with its separating path
 context and profile separation.  The explicit conjunction of every fact on
-its maximal ledger (42 common facts). -/
+its maximal ledger (43 common facts). -/
 abbrev Node153ResidualOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2466,6 +2514,7 @@ theorem node153Return
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -2509,6 +2558,7 @@ theorem node153Return
     Node153ResidualOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,
@@ -2553,12 +2603,14 @@ theorem node153Return
 /-- **Node `[162]`** (lem:dense-cold-pass, tex 7692-7694): a retained cold
 corridor of G whose first failure is a heavy centre strictly before its
 terminal segment and which reads more than Q_cold states.  The explicit
-conjunction of every fact on its maximal ledger (46 common facts). -/
+conjunction of every fact on its maximal ledger (47 common facts). -/
 abbrev Node162ResidualOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2655,6 +2707,7 @@ theorem node162Return
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -2702,6 +2755,7 @@ theorem node162Return
     Node162ResidualOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,
@@ -2756,6 +2810,8 @@ abbrev Node54ResidualOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .selection selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2840,6 +2896,7 @@ theorem node54Return
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -2881,6 +2938,7 @@ theorem node54Return
     Node54ResidualOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
     (history.get (K .returnAvoidance)).down,
     (history.get (K .noProperBaseline)).down,
     (history.get (K .slackIndependent)).down,

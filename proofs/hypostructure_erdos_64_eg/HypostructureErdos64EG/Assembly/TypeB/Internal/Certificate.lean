@@ -80,6 +80,7 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (closureFresh : closed ∉ known := by key_fresh)
     (markedFresh : K .fanCertificateMarked ∉ known := by key_fresh)
     (residualFresh : K .fanCertificateResidual ∉ known := by key_fresh)

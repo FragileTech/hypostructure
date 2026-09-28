@@ -28,7 +28,7 @@ noncomputable def selectedNearCubicSurvivorBranch
         K .windowPresent, K .uncompressible, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres,
         K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .cubicBaseline, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .minDegreeBaseline, K .cubicBaseline, K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   let dominated := selectedNearCubicNode21 history
   match windowPackageRealizationDichotomy (data := spineData) dominated

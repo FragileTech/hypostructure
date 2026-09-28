@@ -5,7 +5,7 @@ import HypostructureErdos64EG.Assembly.Residuals.ArmBlocks
 
 The returned residual `[54]` (prop:entropy-high-theta, tex 9921), split by the
 distinct fact set of the single ledger at its return.  The generic
-`Node54ResidualOutcome` carries the 40 facts common to every path; it is
+`Node54ResidualOutcome` carries the 41 facts common to every path; it is
 reached along six paths from the root whose ledgers hold six distinct fact
 sets, one per combination of the arms of `[158]`, `[160]`, `[146]` and
 `[153]` taken before the spine `[25]`--`[54]`.  Each distinct fact set is its
@@ -26,8 +26,8 @@ universe u
 /-- **Node `[54]`, fact set `realizedColdBelow`**: [158] yes (window package
 realized); [146] yes (`θ < 1/78`), the `[147]` arm, whose route-8
 private-carrier rate is read from the cold route-8 inequality. The generic
-`Node54ResidualOutcome` (40 facts) and the 3 facts of this path's ledger
-outside it (43 facts in total). -/
+`Node54ResidualOutcome` (41 facts) and the 3 facts of this path's ledger
+outside it (44 facts in total). -/
 abbrev Node54ResidualOutcome_realizedColdBelow (selected : EGInput.{u}) : Prop :=
   Node54ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -53,6 +53,7 @@ theorem node54Return_realizedColdBelow
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -101,8 +102,8 @@ theorem node54Return_realizedColdBelow
 
 /-- **Node `[54]`, fact set `realizedBounded`**: [158] yes (window package
 realized); [146] no (`θ ≥ 1/78`); [153] bounded cold mass, returned through
-`[24]`'s density cap. The generic `Node54ResidualOutcome` (40 facts) and the
-4 facts of this path's ledger outside it (44 facts in total). -/
+`[24]`'s density cap. The generic `Node54ResidualOutcome` (41 facts) and the
+4 facts of this path's ledger outside it (45 facts in total). -/
 abbrev Node54ResidualOutcome_realizedBounded (selected : EGInput.{u}) : Prop :=
   Node54ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -130,6 +131,7 @@ theorem node54Return_realizedBounded
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -178,8 +180,8 @@ theorem node54Return_realizedBounded
 
 /-- **Node `[54]`, fact set `unrealizedTauHighColdBelow`**: [158] no (window
 package unrealized); [160] first test no (`τ(θ) ≥ 1/4`); [146] yes (`θ <
-1/78`), the `[147]` arm. The generic `Node54ResidualOutcome` (40 facts) and
-the 4 facts of this path's ledger outside it (44 facts in total). -/
+1/78`), the `[147]` arm. The generic `Node54ResidualOutcome` (41 facts) and
+the 4 facts of this path's ledger outside it (45 facts in total). -/
 abbrev Node54ResidualOutcome_unrealizedTauHighColdBelow (selected : EGInput.{u}) : Prop :=
   Node54ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -207,6 +209,7 @@ theorem node54Return_unrealizedTauHighColdBelow
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -257,8 +260,8 @@ theorem node54Return_unrealizedTauHighColdBelow
 /-- **Node `[54]`, fact set `unrealizedTauHighBounded`**: [158] no (window
 package unrealized); [160] first test no (`τ(θ) ≥ 1/4`); [146] no (`θ ≥
 1/78`); [153] bounded cold mass, returned through `[24]`. The generic
-`Node54ResidualOutcome` (40 facts) and the 5 facts of this path's ledger
-outside it (45 facts in total). -/
+`Node54ResidualOutcome` (41 facts) and the 5 facts of this path's ledger
+outside it (46 facts in total). -/
 abbrev Node54ResidualOutcome_unrealizedTauHighBounded (selected : EGInput.{u}) : Prop :=
   Node54ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -288,6 +291,7 @@ theorem node54Return_unrealizedTauHighBounded
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -338,8 +342,8 @@ theorem node54Return_unrealizedTauHighBounded
 /-- **Node `[54]`, fact set `unrealizedRateFailsBounded`**: [158] no (window
 package unrealized); [160] first test yes (`τ(θ) < 1/4`), second test no
 (private-carrier rate fails); [146] no (`θ ≥ 1/78`); [153] bounded cold
-mass, returned through `[24]`. The generic `Node54ResidualOutcome` (40
-facts) and the 6 facts of this path's ledger outside it (46 facts in total). -/
+mass, returned through `[24]`. The generic `Node54ResidualOutcome` (41
+facts) and the 6 facts of this path's ledger outside it (47 facts in total). -/
 abbrev Node54ResidualOutcome_unrealizedRateFailsBounded (selected : EGInput.{u}) : Prop :=
   Node54ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -369,6 +373,7 @@ theorem node54Return_unrealizedRateFailsBounded
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -424,8 +429,8 @@ theorem node54Return_unrealizedRateFailsBounded
 
 /-- **Node `[54]`, fact set `unrealizedBothRates`**: [158] no (window package
 unrealized); [160] both tests yes (`τ(θ) < 1/4` and the private-carrier
-rate), the `[161]` arm. The generic `Node54ResidualOutcome` (40 facts) and
-the 3 facts of this path's ledger outside it (43 facts in total). -/
+rate), the `[161]` arm. The generic `Node54ResidualOutcome` (41 facts) and
+the 3 facts of this path's ledger outside it (44 facts in total). -/
 abbrev Node54ResidualOutcome_unrealizedBothRates (selected : EGInput.{u}) : Prop :=
   Node54ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -449,6 +454,7 @@ theorem node54Return_unrealizedBothRates
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -511,6 +517,7 @@ theorem node54SubtypesReturn_coldRate
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -562,6 +569,7 @@ theorem node54SubtypesReturn_densityCap
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]

@@ -65,6 +65,7 @@ theorem blockedBarrierOverlapReturn_DeficiencyAtOrAbove
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -148,6 +149,7 @@ theorem blockedBarrierOverlapReturn_DeficiencyBelowRateFails
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -234,6 +236,7 @@ theorem blockedBarrierOverlapSubtypesReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]

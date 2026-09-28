@@ -39,6 +39,7 @@ noncomputable def selectedRouteEightBridgePrefix
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (bridgeMassFresh : K .typeBBridgeMass ∉ known := by key_fresh)
     (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by key_fresh)
     (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by key_fresh)
@@ -114,6 +115,7 @@ noncomputable def selectedTypeBRoute8Continuation
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (bridgeMassFresh : K .typeBBridgeMass ∉ known := by key_fresh)
     (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by key_fresh)
     (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by key_fresh)
@@ -238,6 +240,7 @@ noncomputable def selectedTypeBRoute8Entry
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (route8EntryFresh : K .typeBRoute8Entry ∉ known := by key_fresh)
     (bridgeMassFresh : K .typeBBridgeMass ∉ known := by key_fresh)
     (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by key_fresh)

@@ -83,6 +83,7 @@ noncomputable def nearCubicDenseLinear
     (tau : DenseTauArm selected)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .hotColdPartition) known]

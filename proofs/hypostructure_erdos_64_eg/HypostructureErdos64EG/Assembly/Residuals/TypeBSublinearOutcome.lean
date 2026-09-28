@@ -24,7 +24,7 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **Node `[187]` (Type B sublinear failure), as a product of arm blocks**:
-the 62 common facts of the generic residual, one of the 5 prefix blocks, one of
+the 63 common facts of the generic residual, one of the 5 prefix blocks, one of
 the 4 entropy blocks and one of the 68 continuation combinations. -/
 abbrev TypeBSublinearOutcome_product (selected : EGInput.{u}) : Prop :=
   TypeBSublinearOutcome selected ∧
@@ -47,6 +47,7 @@ theorem typeBSublinearProductReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]

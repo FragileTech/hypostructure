@@ -28,7 +28,7 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **Node `[187] ([348])` as a product of arm blocks**: the generic
-residual (64 common facts), one near-cubic prefix block, one entropy block,
+residual (65 common facts), one near-cubic prefix block, one entropy block,
 and one net-charge continuation (Type A lane, absorbed lane, or Type B
 high-surplus lane, each a nested product of its own blocks).  Totals run from
 84 to 121 facts. -/
@@ -42,7 +42,7 @@ theorem Route8QuotientOutcome_product.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- The return of `Route8QuotientOutcome_product`, parameterised by the arm
-choices: the 64 common facts are read from the ledger by
+choices: the 65 common facts are read from the ledger by
 `route8QuotientReturn`, and each factor is the arm block the path took, built
 by that block's `.ret` from the same ledger (one `get` per key). -/
 theorem route8QuotientProductReturn
@@ -50,6 +50,7 @@ theorem route8QuotientProductReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]

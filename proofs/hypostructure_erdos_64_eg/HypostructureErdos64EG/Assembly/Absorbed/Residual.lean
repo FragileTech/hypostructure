@@ -133,6 +133,7 @@ noncomputable def selectedAbsorbedFanData
     [FactKeys.Has (K .coldCorridorState) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .absorbedGermSplit) known]
     [FactKeys.Has (K .absorbedGermFanData) known]
     [FactKeys.Has (K .typeBAbsorbedHalfEdge) known]
@@ -288,6 +289,7 @@ noncomputable def selectedAbsorbedGermResidual
     [FactKeys.Has (K .coldFailureRouting) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     (fresh : List.Disjoint
       (K .absorbedGermSplit :: K .coldPositiveGerm :: K .coldNoPositiveGerm ::

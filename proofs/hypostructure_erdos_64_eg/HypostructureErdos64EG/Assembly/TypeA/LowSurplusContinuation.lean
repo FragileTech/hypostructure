@@ -189,6 +189,7 @@ noncomputable def selectedTypeALowSurplusContinuation
     [FactKeys.Has (K .negativeSupport) known]
     [FactKeys.Has (K .typeALowSurplus) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .selection) known]

@@ -103,6 +103,7 @@ theorem nearCubicRankDropCloses
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .selection) known]
     (fresh : List.Disjoint
       [K .contextDefect, K .contextUniversal, K .atomCompression,
@@ -178,6 +179,7 @@ noncomputable def nearCubicFullRank
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .targetCompleteContextUniversality) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (fresh : List.Disjoint nearCubicResidualAKeys.{u} known := by key_fresh) :
     ExactLedger EGInput.{u} selected
       (K .curvatureFullRank :: K .targetRankCircuit :: K .exactResponseProfile ::
@@ -255,6 +257,7 @@ noncomputable def nearCubicRouteEightEntry
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (fresh : List.Disjoint
       (K .route8Rate :: K .route8RateFails :: netChargeContinuationKeys.{u}) known := by
         key_fresh)
@@ -316,6 +319,7 @@ noncomputable def nearCubicRateFailedExit
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .curvatureFullRank) known]
     [FactKeys.Has (K .curvatureTargetRank) known]
     [FactKeys.Has (K .cycleRankConstraint) known]
@@ -397,6 +401,7 @@ noncomputable def nearCubicLargeBudgetColdRate
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (fresh : List.Disjoint nearCubicResidualBKeys.{u} known := by key_fresh)
     [FactKeys.Has (K .barrierCap) known]
     [FactKeys.Has (K .barrierEnumeration) known]
@@ -546,6 +551,7 @@ noncomputable def nearCubicLargeBudgetDenseRate
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (fresh : List.Disjoint nearCubicResidualBKeys.{u} known := by key_fresh)
     [FactKeys.Has (K .barrierCap) known]
     [FactKeys.Has (K .barrierEnumeration) known]
@@ -709,6 +715,7 @@ noncomputable def nearCubicLargeBudgetDensityCap
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (fresh : List.Disjoint
       (K .route8Rate :: K .route8RateFails :: nearCubicResidualBKeys.{u}) known := by
         key_fresh)
@@ -860,6 +867,7 @@ noncomputable def nearCubicLargeBudgetRateFailed
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (fresh : List.Disjoint nearCubicResidualBKeys.{u} known := by key_fresh)
     [FactKeys.Has (K .barrierCap) known]
     [FactKeys.Has (K .barrierEnumeration) known]

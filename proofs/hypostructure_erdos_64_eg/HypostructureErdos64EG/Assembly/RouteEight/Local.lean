@@ -55,6 +55,7 @@ noncomputable def selectedRouteEightDescent
     [FactKeys.Has (K .route8UnifiedDeficit) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .route8UnifiedEntryCensus) known]
     [FactKeys.Has (K .selection) known]
     (peelingFresh : K .route8PeelingDescent ∉ known := by key_fresh)
@@ -154,6 +155,7 @@ noncomputable def selectedRouteEightUnpaidReduction
     [FactKeys.Has (K .route8DemandLedger) known]
     [FactKeys.Has (K .route8StageRateFailed) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
     (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
     (residualFresh : K .route8UnpaidExitFourResidual ∉ known := by key_fresh)
@@ -213,6 +215,7 @@ noncomputable def selectedRouteEightUnifiedResidual
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .typeBBridgeSublinear) known]
     (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known := by key_fresh)
     (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by
