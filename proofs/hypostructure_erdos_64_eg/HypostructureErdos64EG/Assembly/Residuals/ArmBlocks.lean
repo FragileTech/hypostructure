@@ -112,11 +112,11 @@ abbrev TypeAExitFourArms (selected : EGInput.{u}) : Prop :=
   TypeALaneArms selected ∧ TypeAExitFour selected
 
 /-- The lane arms fixed before the common Type B chain `[67]`--`[85]`: the
-Type A decorated handoff, the absorbed lane, or the Type B high-surplus lane. -/
+Type A decorated handoff or the Type B high-surplus lane (the absorbed lane
+`[177]` is not entered: `[173]`'s no-arm is closed against `K .route8Rate`). -/
 abbrev BChainLane (selected : EGInput.{u}) : Prop :=
   (NetChargeLaneBlock_typeALowSurplus selected ∧ TypeAEntry selected ∧
       TypeAArmBlock_decorated selected ∧ TypeAExitFour selected) ∨
-    (NetChargeLaneBlock_absorbedGerm selected ∧ AbsorbedGerm selected) ∨
     NetChargeLaneBlock_typeBHighSurplus selected
 
 /-- The arms on entry to the common Type B chain. -/
@@ -146,10 +146,9 @@ continuation arm. -/
 theorem BChainLane.continuation {selected : EGInput.{u}}
     (lane : BChainLane selected) (chain : BChain selected) :
     NetChargeContinuation selected := by
-  rcases lane with ⟨low, entry, decorated, exitFour⟩ | ⟨absorbed, germ⟩ | high
+  rcases lane with ⟨low, entry, decorated, exitFour⟩ | high
   · exact Or.inl ⟨low, entry, Or.inl ⟨decorated, exitFour, chain⟩⟩
-  · exact Or.inr (Or.inl ⟨absorbed, germ, chain⟩)
-  · exact Or.inr (Or.inr ⟨high, chain⟩)
+  · exact Or.inr ⟨high, chain⟩
 
 /-- The route-`8` arms once the B-chain is complete. -/
 theorem BChainArms.route8 {selected : EGInput.{u}}
@@ -181,19 +180,11 @@ theorem TypeALaneArms.dischargedRetest {selected : EGInput.{u}}
     (retest : TypeAArmBlock_dischargedRetest selected) : Route8Arms selected :=
   ⟨arms.1.1.1, arms.1.1.2, Or.inl ⟨arms.2, arms.1.2, Or.inr (Or.inr retest)⟩⟩
 
-/-- The absorbed lane (`[174]`--`[177]`): the net-charge arms, the lane block
-and the cold-germ block are the B-chain arms. -/
-theorem NetChargeArms.absorbed {selected : EGInput.{u}}
-    (arms : NetChargeArms selected)
-    (lane : NetChargeLaneBlock_absorbedGerm selected)
-    (germ : AbsorbedGerm selected) : BChainArms selected :=
-  ⟨arms, Or.inr (Or.inl ⟨lane, germ⟩)⟩
-
 /-- The Type B high-surplus lane (`[64]`): the net-charge arms and the lane
 block are the B-chain arms. -/
 theorem NetChargeArms.typeBHighSurplus {selected : EGInput.{u}}
     (arms : NetChargeArms selected)
     (lane : NetChargeLaneBlock_typeBHighSurplus selected) : BChainArms selected :=
-  ⟨arms, Or.inr (Or.inr lane)⟩
+  ⟨arms, Or.inr lane⟩
 
 end HypostructureErdos64EG

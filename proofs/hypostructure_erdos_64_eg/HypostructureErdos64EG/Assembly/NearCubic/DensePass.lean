@@ -1,3 +1,4 @@
+import Hypostructure.Graph.Strategy.ColdCorridorRows.AbsorbedGerm
 import Hypostructure.Graph.Strategy.ColdCorridorRows.CanonicalReplacement
 import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdFamilyClosure
 import Hypostructure.Graph.Strategy.ColdCorridorRows.DenseTerminal

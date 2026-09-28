@@ -1,12 +1,10 @@
-import Hypostructure.Graph.Strategy.SpineRows.AbsorbedConfigurationResidual
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.ExactCollisionDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.NegativeSupport
 import Hypostructure.Graph.Strategy.SpineRows.NetChargeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.NetChargeLocalization
 import Hypostructure.Graph.Strategy.SpineRows.TypeSplitDichotomy
-import HypostructureErdos64EG.Assembly.Absorbed.Prerequisites
-import HypostructureErdos64EG.Assembly.Absorbed.Residual
+import HypostructureErdos64EG.Assembly.NearCubic.ColdPass
 import HypostructureErdos64EG.Assembly.NetCharge.Boundary
 import HypostructureErdos64EG.Assembly.TypeA.LowSurplusContinuation
 import HypostructureErdos64EG.Assembly.TypeB.HighSurplusContinuation
@@ -29,8 +27,11 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
-/-- Every key committed by the net-charge continuation `[57]`--`[177]` and the
-Type A / Type B / route-8 continuations it enters. -/
+/-- Every key committed by the net-charge continuation `[57]`--`[64]` and the
+Type A / Type B / route-8 continuations it enters, as the freshness
+requirement of its callers.  The absorbed-lane keys of `[174]`--`[177]` stay
+reserved here although that arm is closed at `[173]` (`[175]`'s split and
+`[177]`'s fan data are still committed on the `[153]` linear arms). -/
 noncomputable abbrev netChargeContinuationKeys : FactKeys EGInput.{u} :=
   [K .netChargeCap, K .exactCollisionFails, K .absorbedConfigurationResidual,
     K .absorbedGermSplit, K .bridgeless, K .coldReturnCorridors,
@@ -130,8 +131,11 @@ reads the large-budget net cap; `[58]` localizes the charge; `[59]` splits on th
 sign; the nonnegative arm is the `[60]` net-cap contradiction (cap gives
 `N₀(R) < 0`, the sibling gives `N₀(R) ≥ 0`); the negative arm selects a connected
 negative support `[61]` and `[62]` routes it to Type A `[63]` or Type B `[64]`.
-The small-order complement `[57]`, and the Type A / Type B continuations, are the
-next loud producers.  It is index-polymorphic over the arm's ledger, so both the
+The `[173]` no-arm (the absorbed-configuration residual `[174]`) is closed at
+the node: its `N₀(R₀) ≥ 0` (`τ ≥ 1/4`) contradicts the private-carrier rate
+`K .route8Rate` (`τ < 3/13`) that every caller has already decided
+(`instIncompatibleExactCollisionFailsRoute8Rate`), so `[175]`--`[177]` are not
+entered at G.  The Type A / Type B continuations are the next loud producers.  It is index-polymorphic over the arm's ledger, so both the
 density-cap and route-8 arms use the same definition.
 
 `arm` names the near-cubic prefix and the entropy arm of the path; every lane
@@ -146,6 +150,9 @@ passes it on, extended by its own arm blocks. -/
 -- EG-NODE [64] Type B continued in Part VI
 -- EG-NODE [173] exact collision test holds?
 -- EG-NODE [174] absorbed-configuration residual: the exact collision fails and the selected cold corridors were charged to high-degree vertices
+-- EG-NODE [175] selected corridor meets a high-degree vertex? (not entered: `[174]` is refuted at G by `K .route8Rate`)
+-- EG-NODE [176] graph-realized (F5) configuration: closed by [154]--[157], [165]--[168] (not entered: `[174]` is refuted at G)
+-- EG-NODE [177] decorated handoff fan data at the heavy centre \(z\): continue at Type B [65] (not entered: `[174]` is refuted at G)
 -- EG-NODE [86] Type A: $\sigma(X)=0$, hence $\defp(X)<|X|/4$
 noncomputable def selectedNetChargeContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
@@ -202,32 +209,18 @@ noncomputable def selectedNetChargeContinuation
   match exactCollisionDichotomy (data := spineData) bridgeless
       (by key_fresh) (by key_fresh) with
   | .right failsHistory =>
-      -- `[174]`, `lem:exact-collision-test`: the failed collision rearranges to
-      -- the cold-window lower bound `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`.
-      let absorbed :=
-        (absorbedConfigurationResidualRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          failsHistory (by key_fresh)
-      -- `[58]`'s localization of the net charge is a fact of G on this arm too.
-      let localizedAbsorbed :=
-        (netChargeLocalizationRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) spineData).run
-          absorbed (by key_fresh)
-      match selectedAbsorbedGermPrerequisites localizedAbsorbed arm with
-      | .inl prepared =>
-          -- `[175]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ
-          -- residual (`selectedAbsorbedGermResidual`).
-          exact Or.inr (Or.inl (selectedAbsorbedGermResidual prepared arm))
-      | .inr repeated =>
-          -- `[153]`, ¬(★): G's first equal-state pair, returned.
-          exact Or.inr (Or.inr repeated)
+      -- `[174]`, `lem:exact-collision-test`, no arm: `N₀(R₀) ≥ 0` at the fixed
+      -- packing (`τ ≥ 1/4`).  The private-carrier rate `K .route8Rate`
+      -- (`τ < 3/13`), decided before `[57]` on every path into this
+      -- continuation, refutes it at the same `R₀`, so `[174]`--`[177]` is
+      -- never entered at G.
+      exact ((closeIncompatible failsHistory (K .exactCollisionFails)
+        (K .route8Rate) (by key_fresh)).elimClosed (by infer_instance)).elim
   | .left capped =>
       -- The cold return corridors of G, their states, first failures, failure
       -- cycles, compression reading and handoff transfer are facts of G on
-      -- this arm too (the absorbed arm publishes them at `[174]`): each row
-      -- reads only `lem:bridgeless`, the partition and the selection.
+      -- this arm: each row reads only `lem:bridgeless`, the partition and the
+      -- selection.
       let corridors := nearCubicColdCorridorState capped
       let occurred :=
         (coldFirstFailureOccurrenceRow (data := spineData)).run corridors
@@ -265,8 +258,8 @@ noncomputable def selectedNetChargeContinuation
           match typeSplitDichotomy (data := spineData) support
               (by key_fresh) (by key_fresh) with
           | .left typeAHistory =>
-              exact Or.inl (selectedTypeALowSurplusContinuation typeAHistory arm)
+              exact selectedTypeALowSurplusContinuation typeAHistory arm
           | .right typeBHistory =>
-              exact Or.inl (selectedTypeBHighSurplusContinuation typeBHistory arm)
+              exact selectedTypeBHighSurplusContinuation typeBHistory arm
 
 end HypostructureErdos64EG

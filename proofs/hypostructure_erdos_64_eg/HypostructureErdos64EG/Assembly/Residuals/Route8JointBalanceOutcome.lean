@@ -6,19 +6,22 @@ import HypostructureErdos64EG.Assembly.Residuals.Route8Blocks
 
 Node `[186]` as a PRODUCT OF ARM BLOCKS.
 
-The 1240 paths from `selectedLedgerBoundary` to the one return site
+The 1000 paths from `selectedLedgerBoundary` to the one return site
 (`route8JointBalanceReturn` in `selectedRouteEightUnifiedResidual`,
-`Assembly/RouteEight/Local.lean`) carry 1240 distinct fact sets.  Each is
+`Assembly/RouteEight/Local.lean`) carry 1000 distinct fact sets.  Each is
 exactly the 79 common keys of `Route8JointBalanceOutcome` together with one
 block per factor of
 
-  `5 prefix × 4 entropy × 62 continuation`,  `62 = 2·22 + 12 + 6`,
+  `5 prefix × 4 entropy × 50 continuation`,  `50 = 2·22 + 6`,
 
 and every combination occurs (checked against the elaborated ledger of every
 path).  These are the same factors as `Route8QuotientOutcome`: both residuals
 are returned from the same composition on the same incoming ledger, [186] on
 the quotient-free arm after `[123]`, `[181]` and `[183]`--`[185]`.  The blocks
 live in `Residuals/Route8Blocks.lean`.
+The absorbed lane `[174]`--`[177]` contributes no path: `[173]`'s no-arm is
+closed at the node against the private-carrier rate `K .route8Rate`
+(`instIncompatibleExactCollisionFailsRoute8Rate`).
 -/
 
 namespace HypostructureErdos64EG
@@ -32,7 +35,7 @@ universe u
 
 /-- **Node `[186]` as a product of arm blocks**: the generic residual (79
 common facts), one near-cubic prefix block, one entropy block, and one
-net-charge continuation (Type A lane, absorbed lane, or Type B high-surplus
+net-charge continuation (Type A lane or Type B high-surplus
 lane, each a nested product of its own blocks).  Totals run from 99 to 136
 facts. -/
 abbrev Route8JointBalanceOutcome_product (selected : EGInput.{u}) : Prop :=

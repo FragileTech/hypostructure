@@ -1,3 +1,4 @@
+import Hypostructure.Graph.Strategy.ColdCorridorRows.AbsorbedGerm
 import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdFamilyClosure
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.Route8RateFromColdBelow
@@ -94,7 +95,7 @@ noncomputable def Assembly.Internal.nearCubicRealized
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
               localized (by key_fresh)
           match nearCubicColdOccurrence (nearCubicColdCorridorState bridgeless)
-              (Or.inr (Or.inr (Or.inr (Node153LinearBlock_realized.ret bridgeless)))) with
+              (Or.inr (Or.inr (Node153LinearBlock_realized.ret bridgeless))) with
           | .inr repeated =>
               -- `[153]`, ¬(★): G's first equal-state pair, returned.
               exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl repeated))))
