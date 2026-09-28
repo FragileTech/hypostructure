@@ -308,6 +308,8 @@ noncomputable def nearCubicRateFailedExit
     (entropy : EntropyArmLow selected)
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
+    [FactKeys.Has (K .boundedDensityOrder) known]
+    [FactKeys.Has (K .boundedOrderSmall) known]
     [FactKeys.Has (K .route8RateFails) known]
     [FactKeys.Has (K .barrierCap) known]
     [FactKeys.Has (K .barrierEnumeration) known]
@@ -842,6 +844,8 @@ noncomputable def nearCubicLargeBudgetRateFailed
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
+    [FactKeys.Has (K .boundedDensityOrder) known]
+    [FactKeys.Has (K .boundedOrderSmall) known]
     [FactKeys.Has (K .curvatureFullRank) known]
     [FactKeys.Has (K .wedgeSupply) known]
     [FactKeys.Has (K .densityCap) known]

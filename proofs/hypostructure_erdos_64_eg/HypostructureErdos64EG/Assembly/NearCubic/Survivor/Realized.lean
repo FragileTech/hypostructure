@@ -1,6 +1,7 @@
 import Hypostructure.Graph.Strategy.ColdCorridorRows.AbsorbedGerm
 import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdFamilyClosure
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
+import Hypostructure.Graph.Strategy.SpineRows.DensityOrder
 import Hypostructure.Graph.Strategy.SpineRows.Route8RateFromColdBelow
 import HypostructureErdos64EG.Assembly.NearCubic.ColdPass
 import HypostructureErdos64EG.Assembly.NearCubic.Spine
@@ -63,64 +64,79 @@ noncomputable def Assembly.Internal.nearCubicRealized
       exact nearCubicLargeBudgetColdRate (nearCubicFullRank stubbed)
         (Route8LanePrefixBlock_realizedColdBelow.ret stubbed)
   | .right atOrAboveHistory =>
-      let stubs := nearCubicColdStubs atOrAboveHistory
-      match coldMassDichotomy (data := spineData) stubs
+      -- `[146]` no with `[158]` yes: the realized package's entropy count
+      -- (`θ ≤ θ_win + o(1)`) against `θ ≥ 1/78`, combined at G; the exact size
+      -- test closes `N₀ ≤ n` and retains `n < N₀`.
+      let ordered :=
+        (realizedDensityOrderRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          atOrAboveHistory (by key_fresh)
+      match realizedOrderDichotomy (data := spineData) ordered
           (by key_fresh) (by key_fresh) with
-      | .right boundedHistory =>
-          let density :=
-            (densityBudgetRow (data := spineData)).run boundedHistory
-              (by key_fresh)
-          exact nearCubicLargeBudgetDensityCap (nearCubicFullRank density)
-            (Or.inl (Route8LanePrefixBlock_realizedColdAtOrAbove.ret density))
-      | .left linearHistory =>
-          -- `[25]`--`[34]` and `[48]` are facts of G on the linear arm too:
-          -- the remainder normalization, the external-incidence and wedge
-          -- supply, the obstruction rank (its rank-drop arm is Branch D, closed)
-          -- and the forced curvature cost.
-          let spine := nearCubicFullRank linearHistory
-          let cost :=
-            (forcedCurvatureCostRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              spine (by key_fresh)
-          -- `[58]`'s net-charge localization is a fact of G here too.
-          let localized :=
-            (netChargeLocalizationRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) spineData).run
-              cost (by key_fresh)
-          let bridgeless :=
-            (bridgelessRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              localized (by key_fresh)
-          match nearCubicColdOccurrence (nearCubicColdCorridorState bridgeless)
-              (Or.inr (Or.inr (Node153LinearBlock_realized.ret bridgeless))) with
-          | .inr repeated =>
-              -- `[153]`, ¬(★): G's first equal-state pair, returned.
-              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl repeated))))
-          | .inl distinct =>
-              let familyOnly := nearCubicColdGermFamily distinct
-              -- `[175]`'s per-half-edge split and `[177]`'s fan data are facts
-              -- of G on the extracted family here too.
-              let split :=
-                (absorbedGermSplitRow (data := spineData)).run familyOnly
+      | .left largeHistory =>
+          exact ((closeIncompatible largeHistory (K .realizedDensityOrder)
+            (K .realizedOrderLarge) (by key_fresh)).elimClosed
+              (by infer_instance)).elim
+      | .right smallHistory =>
+          let stubs := nearCubicColdStubs smallHistory
+          match coldMassDichotomy (data := spineData) stubs
+              (by key_fresh) (by key_fresh) with
+          | .right boundedHistory =>
+              let density :=
+                (densityBudgetRow (data := spineData)).run boundedHistory
                   (by key_fresh)
-              let family :=
-                (absorbedGermFanDataRow (data := spineData)).run split
-                  (by key_fresh)
-              let unhit := nearCubicColdNoHit family
-              match coldGermDistinctionDichotomy (data := spineData) unhit
-                  (by key_fresh) (by key_fresh) with
-              | .left distinguishedHistory =>
-                  exact Or.inr (Or.inr (Or.inr (Or.inl
-                    (Or.inr (Or.inr (Or.inl
-                      (coldBranchClosed_linearRealizedDistinguishedReturn
-                        (nearCubicColdTable distinguishedHistory))))))))
-              | .right silentHistory =>
-                  exact Or.inr (Or.inr (Or.inr (Or.inl
-                    (Or.inr (Or.inr (Or.inr
-                      (coldBranchClosed_linearRealizedSilentReturn
-                        (nearCubicColdTable silentHistory))))))))
+              exact nearCubicLargeBudgetDensityCap (nearCubicFullRank density)
+                (Or.inl (Route8LanePrefixBlock_realizedColdAtOrAbove.ret density))
+          | .left linearHistory =>
+              -- `[25]`--`[34]` and `[48]` are facts of G on the linear arm too:
+              -- the remainder normalization, the external-incidence and wedge
+              -- supply, the obstruction rank (its rank-drop arm is Branch D, closed)
+              -- and the forced curvature cost.
+              let spine := nearCubicFullRank linearHistory
+              let cost :=
+                (forcedCurvatureCostRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  spine (by key_fresh)
+              -- `[58]`'s net-charge localization is a fact of G here too.
+              let localized :=
+                (netChargeLocalizationRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) spineData).run
+                  cost (by key_fresh)
+              let bridgeless :=
+                (bridgelessRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  localized (by key_fresh)
+              match nearCubicColdOccurrence (nearCubicColdCorridorState bridgeless)
+                  (Or.inr (Or.inr (Node153LinearBlock_realized.ret bridgeless))) with
+              | .inr repeated =>
+                  -- `[153]`, ¬(★): G's first equal-state pair, returned.
+                  exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl repeated))))
+              | .inl distinct =>
+                  let familyOnly := nearCubicColdGermFamily distinct
+                  -- `[175]`'s per-half-edge split and `[177]`'s fan data are facts
+                  -- of G on the extracted family here too.
+                  let split :=
+                    (absorbedGermSplitRow (data := spineData)).run familyOnly
+                      (by key_fresh)
+                  let family :=
+                    (absorbedGermFanDataRow (data := spineData)).run split
+                      (by key_fresh)
+                  let unhit := nearCubicColdNoHit family
+                  match coldGermDistinctionDichotomy (data := spineData) unhit
+                      (by key_fresh) (by key_fresh) with
+                  | .left distinguishedHistory =>
+                      exact Or.inr (Or.inr (Or.inr (Or.inl
+                        (Or.inr (Or.inr (Or.inl
+                          (coldBranchClosed_linearRealizedDistinguishedReturn
+                            (nearCubicColdTable distinguishedHistory))))))))
+                  | .right silentHistory =>
+                      exact Or.inr (Or.inr (Or.inr (Or.inl
+                        (Or.inr (Or.inr (Or.inr
+                          (coldBranchClosed_linearRealizedSilentReturn
+                            (nearCubicColdTable silentHistory))))))))
 
 end HypostructureErdos64EG

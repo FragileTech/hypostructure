@@ -41,7 +41,7 @@ universe u
 /-- **Node `[186]` as a product of arm blocks**: the generic residual (80
 common facts), one lane entry (a near-cubic prefix block with an entropy
 block), and one net-charge continuation (Type A lane or Type B high-surplus
-lane, each a nested product of its own blocks).  Totals run from 100 to 137
+lane, each a nested product of its own blocks).  Totals run from 100 to 139
 facts. -/
 abbrev Route8JointBalanceOutcome_product (selected : EGInput.{u}) : Prop :=
   Route8JointBalanceOutcome selected ∧ Route8LaneEntry selected ∧

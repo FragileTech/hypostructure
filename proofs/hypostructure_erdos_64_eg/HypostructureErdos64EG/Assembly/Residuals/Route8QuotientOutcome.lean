@@ -39,7 +39,7 @@ universe u
 residual (65 common facts), one lane entry (a near-cubic prefix block with an
 entropy block), and one net-charge continuation (Type A lane or Type B
 high-surplus lane, each a nested product of its own blocks).  Totals run from
-85 to 122 facts. -/
+85 to 124 facts. -/
 abbrev Route8QuotientOutcome_product (selected : EGInput.{u}) : Prop :=
   Route8QuotientOutcome selected ∧ Route8LaneEntry selected ∧
     NetChargeContinuation selected

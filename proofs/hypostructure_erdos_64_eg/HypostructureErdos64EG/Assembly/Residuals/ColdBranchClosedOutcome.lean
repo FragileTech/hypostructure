@@ -254,7 +254,7 @@ theorem coldBranchClosed_linearDenseRateFailedReturn
     (history.get (K .windowPackageUnrealized)).down⟩
 
 /-- **`[187]` (local cold-terminal exclusion), singleton `linearRealizedDistinguished`**
-(64 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / some distinguishing. -/
+(66 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / some distinguishing. -/
 abbrev ColdBranchClosedOutcome_linearRealizedDistinguished (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -268,7 +268,11 @@ abbrev ColdBranchClosedOutcome_linearRealizedDistinguished (selected : EGInput.{
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldRoute8AtOrAbove selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageRealized selected.object
+      erdosReceiverLoadProfile spineData .windowPackageRealized selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 theorem ColdBranchClosedOutcome_linearRealizedDistinguished.toGeneric {selected : EGInput.{u}}
     (h : ColdBranchClosedOutcome_linearRealizedDistinguished selected) :
@@ -343,6 +347,8 @@ theorem coldBranchClosed_linearRealizedDistinguishedReturn
     [FactKeys.Has (K .coldMassLinear) known]
     [FactKeys.Has (K .coldRoute8AtOrAbove) known]
     [FactKeys.Has (K .windowPackageRealized) known]
+    [FactKeys.Has (K .realizedDensityOrder) known]
+    [FactKeys.Has (K .realizedOrderSmall) known]
     : ColdBranchClosedOutcome_linearRealizedDistinguished selected :=
   ⟨coldBranchClosedReturn history,
     (history.get (K .coldGermFamilyPositive)).down,
@@ -350,10 +356,12 @@ theorem coldBranchClosed_linearRealizedDistinguishedReturn
     (history.get (K .coldGermSomeDistinguishing)).down,
     (history.get (K .coldMassLinear)).down,
     (history.get (K .coldRoute8AtOrAbove)).down,
-    (history.get (K .windowPackageRealized)).down⟩
+    (history.get (K .windowPackageRealized)).down,
+    (history.get (K .realizedDensityOrder)).down,
+    (history.get (K .realizedOrderSmall)).down⟩
 
 /-- **`[187]` (local cold-terminal exclusion), singleton `linearRealizedSilent`**
-(64 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing. -/
+(66 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing. -/
 abbrev ColdBranchClosedOutcome_linearRealizedSilent (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -367,7 +375,11 @@ abbrev ColdBranchClosedOutcome_linearRealizedSilent (selected : EGInput.{u}) : P
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldRoute8AtOrAbove selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageRealized selected.object
+      erdosReceiverLoadProfile spineData .windowPackageRealized selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 theorem ColdBranchClosedOutcome_linearRealizedSilent.toGeneric {selected : EGInput.{u}}
     (h : ColdBranchClosedOutcome_linearRealizedSilent selected) :
@@ -442,6 +454,8 @@ theorem coldBranchClosed_linearRealizedSilentReturn
     [FactKeys.Has (K .coldMassLinear) known]
     [FactKeys.Has (K .coldRoute8AtOrAbove) known]
     [FactKeys.Has (K .windowPackageRealized) known]
+    [FactKeys.Has (K .realizedDensityOrder) known]
+    [FactKeys.Has (K .realizedOrderSmall) known]
     : ColdBranchClosedOutcome_linearRealizedSilent selected :=
   ⟨coldBranchClosedReturn history,
     (history.get (K .coldGermFamilyPositive)).down,
@@ -449,7 +463,9 @@ theorem coldBranchClosed_linearRealizedSilentReturn
     (history.get (K .coldGermNoneRealizing)).down,
     (history.get (K .coldMassLinear)).down,
     (history.get (K .coldRoute8AtOrAbove)).down,
-    (history.get (K .windowPackageRealized)).down⟩
+    (history.get (K .windowPackageRealized)).down,
+    (history.get (K .realizedDensityOrder)).down,
+    (history.get (K .realizedOrderSmall)).down⟩
 
 /-- The four linear-arm singletons of the residual `[187]` (local
 cold-terminal exclusion), returned on the `[153]` linear arm of the near-cubic

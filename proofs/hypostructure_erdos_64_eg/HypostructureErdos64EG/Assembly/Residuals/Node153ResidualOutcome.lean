@@ -86,14 +86,18 @@ theorem Node153LinearBlock_denseRateFails.ret
     (history.get (K .coldRoute8AtOrAbove)).down,
     (history.get (K .coldMassLinear)).down⟩
 
-/-- Node `[153]` linear-arm block: `[158]` yes, `[146]` no, `[153]` linear cold mass (the extra facts of `Node153ResidualOutcome_realized_linear`) (3 facts). -/
+/-- Node `[153]` linear-arm block: `[158]` yes, `[146]` no, `[153]` linear cold mass, the realized density order and its size test `n < N₀` (the extra facts of `Node153ResidualOutcome_realized_linear`) (5 facts). -/
 abbrev Node153LinearBlock_realized (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .windowPackageRealized selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldRoute8AtOrAbove selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldMassLinear selected.object
+      erdosReceiverLoadProfile spineData .coldMassLinear selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 /-- `Node153LinearBlock_realized` from the one ledger: one `get` per key. -/
 theorem Node153LinearBlock_realized.ret
@@ -101,11 +105,15 @@ theorem Node153LinearBlock_realized.ret
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .windowPackageRealized) known]
     [FactKeys.Has (K .coldRoute8AtOrAbove) known]
-    [FactKeys.Has (K .coldMassLinear) known] :
+    [FactKeys.Has (K .coldMassLinear) known]
+    [FactKeys.Has (K .realizedDensityOrder) known]
+    [FactKeys.Has (K .realizedOrderSmall) known] :
     Node153LinearBlock_realized selected :=
   ⟨(history.get (K .windowPackageRealized)).down,
     (history.get (K .coldRoute8AtOrAbove)).down,
-    (history.get (K .coldMassLinear)).down⟩
+    (history.get (K .coldMassLinear)).down,
+    (history.get (K .realizedDensityOrder)).down,
+    (history.get (K .realizedOrderSmall)).down⟩
 
 /-- **Node `[153]` residual, arms: `[158]` no, `[160]` first test no (`τ(θ) ≥ 1/4`); `[146]` no, `[153]` linear cold mass.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicDenseLinear`.
 The generic residual and the 4 extra facts of this path's ledger
@@ -265,8 +273,8 @@ theorem node153Return_denseRateFails_linear
     block.2.2.2.2⟩
 
 /-- **Node `[153]` residual, arms: `[158]` yes (window package realized); `[146]` no, `[153]` linear cold mass.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicRealized`.
-The generic residual and the 3 extra facts of this path's ledger
-(46 facts). -/
+The generic residual and the 5 extra facts of this path's ledger
+(48 facts). -/
 abbrev Node153ResidualOutcome_realized_linear (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -274,7 +282,11 @@ abbrev Node153ResidualOutcome_realized_linear (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldRoute8AtOrAbove selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldMassLinear selected.object
+      erdosReceiverLoadProfile spineData .coldMassLinear selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 /-- `Node153ResidualOutcome_realized_linear` is a subtype of the generic `[153]` residual. -/
 theorem Node153ResidualOutcome_realized_linear.toGeneric {selected : EGInput.{u}}
@@ -336,7 +348,9 @@ theorem node153Return_realized_linear
   ⟨node153Return history,
     block.1,
     block.2.1,
-    block.2.2⟩
+    block.2.2.1,
+    block.2.2.2.1,
+    block.2.2.2.2⟩
 
 /-- The 3 subtypes of node `[153]`'s residual, one per distinct fact set:
 the three linear arms of `[153]`.  The 20 absorbed-lane subtypes (the `[173]`

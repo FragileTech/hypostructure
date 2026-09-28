@@ -82,7 +82,18 @@ or, where the paths form a full product, as the product of their arm blocks:
 `[20a]`; the six `[144a]` subtypes; the two `[172a]` subtypes; the six `[182]`
 subtypes; the `[186]` joint balance product; the remaining `[187]` outcomes;
 and the structural exhaustion residuals `[153]` (3 subtypes), `[162]`
-(2 subtypes) and `[54]` (5 subtypes). -/
+(2 subtypes) and `[54]` (5 subtypes).
+
+Bounded-size residuals: on `[146]` no, the density order (`[158]`'s realized
+package, or `[24]` on the bounded arm of `[153]`, against `θ ≥ 1/78`) is
+decided exactly on G's order (`realizedOrderDichotomy`,
+`boundedOrderDichotomy`); the arm `N₀ ≤ n` is closed and every residual below
+the other arm carries the combined bound and `n < N₀` (`K .realizedOrderSmall`
+or `K .boundedOrderSmall`): all eleven private-carrier rate failure subtypes,
+the three bounded `[54]` subtypes, the `[153]` subtype `realized_linear`, the
+two realized cold-terminal singletons, and the product paths through the prefix
+blocks `Route8LanePrefixBlock_realizedColdAtOrAbove` /
+`Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove`. -/
 abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
   Node20aOutcome selected ∨
   (Node144aOutcome_windowHandoff selected ∨ Node144aOutcome_windowFails selected ∨
