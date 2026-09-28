@@ -3,6 +3,7 @@ import Hypostructure.Graph.Strategy.SpineRows.OpenPortSuppressionSafe
 import Hypostructure.Graph.Strategy.SpineRows.SingleOpenPortSuppressionWitness
 import Hypostructure.Graph.Strategy.SpineRows.SuppressedFamilyCriticalCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SameTokenBottleneckRouting
+import Hypostructure.Graph.Strategy.SpineRows.SameTokenPair
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SameTokenTypeBFanEntry
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.HomogeneousCapsClose
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.FibrePressure
@@ -49,10 +50,10 @@ noncomputable def selectedSparseSurplusActivation
         K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-        K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
-        K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+        K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint, K .slackIndependent,
+        K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
         K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-        K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+        K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .activeSurplusDemands, K .sparsePortActivation,
@@ -72,10 +73,10 @@ noncomputable def selectedSparseSurplusActivation
         K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
           K .admissibleQuotientsLabelInjective, K .replacementExclusion,
           K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-          K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
-        K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+          K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint,
+        K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
           K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-          K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+          K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
   -- The presentation identities the surplus rows spend are read from the one
   -- presentation-law fact `K .cubicBaseline`, published at the entry.
@@ -191,6 +192,10 @@ noncomputable def selectedPairCodeChainIndependent
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
@@ -381,6 +386,10 @@ noncomputable def selectedPairCodeChainDependent
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
@@ -567,6 +576,9 @@ noncomputable def selectedBottleneckDischarge
     (unresolvedFresh : K .sameTokenPatternUnresolved ∉ known := by key_fresh)
     (readingsFresh : K .sameTokenReadingsNotReplacement ∉ known := by key_fresh)
     (fanEntryFresh : K .typeBFanEntry ∉ known := by key_fresh)
+    (supportsFresh : K .sameTokenPatternSupports ∉ known := by key_fresh)
+    (swapFresh : K .sameTokenPatternSwap ∉ known := by key_fresh)
+    (partitionFresh : K .sameTokenPairPartition ∉ known := by key_fresh)
     (closedFresh : closed ∉ known := by key_fresh)
     [FactKeys.Has (K .activeSurplusFamily) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
@@ -581,6 +593,10 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -609,11 +625,13 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .windowPresent) known] :
     ExactLedger EGInput.{u} selected
-        (K .typeBFanEntry :: K .typeBHandoff :: K .bottleneckRouting ::
+        (K .typeBFanEntry :: K .typeBHandoff :: K .sameTokenPatternSupports ::
+          K .sameTokenPatternSwap :: K .bottleneckRouting ::
           K .homogeneousCapsFail :: known) ⊕
       ExactLedger EGInput.{u} selected
-        (K .sameTokenReadingsNotReplacement :: K .sameTokenPatternUnresolved ::
-          K .typeBHandoffFails :: K .bottleneckRouting ::
+        (K .sameTokenPairPartition :: K .sameTokenReadingsNotReplacement ::
+          K .sameTokenPatternUnresolved :: K .typeBHandoffFails ::
+          K .sameTokenPatternSupports :: K .sameTokenPatternSwap :: K .bottleneckRouting ::
           K .homogeneousCapsFail :: known) := by
   match homogeneousBottleneckDichotomy (data := spineData) history
       (by key_fresh) (by key_fresh) with
@@ -623,7 +641,14 @@ noncomputable def selectedBottleneckDischarge
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run patternHistory (by key_fresh)
-      match sameTokenHandoffDichotomy (data := spineData) routed
+      -- The pattern supports of G's canonical routing and the exact swaps of
+      -- its two readings, above the handoff decision; no decision.
+      let supported :=
+        (sameTokenPatternSupportsRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run routed (by key_fresh)
+      match sameTokenHandoffDichotomy (data := spineData) supported
           (by key_fresh) (by key_fresh) with
       | .left handoffHistory =>
           let entered :=
@@ -645,7 +670,14 @@ noncomputable def selectedBottleneckDischarge
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run unresolvedOnly (by key_fresh)
-          exact .inr unresolved
+          -- `[144a]`: the exact partition of the unresolved pair at G's
+          -- canonical objects; the one-sided region is empty.  No decision.
+          let partitioned :=
+            (sameTokenPairPartitionRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run unresolved (by key_fresh)
+          exact .inr partitioned
   | .right capsHistory =>
       -- The caps arm, closed at G: the audited pattern at G's overloading
       -- token refutes the caps at the same ledger.

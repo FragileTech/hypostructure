@@ -25,7 +25,9 @@ universe u w
 /-- **Node `[20a]`** (thm:main (i), tex 339-346): the strict-surplus named
 sparse exit of [20]: the attempted-quotient target defect and its registered
 structure, on the strict arm of [19].  The explicit conjunction of every
-fact on its maximal ledger, 95 facts: the 19 facts of the path, the 76 facts
+fact on its maximal ledger, 99 facts: the 19 facts of the path, the 4 forced
+switch and split facts of the entry prefix (`SpineRows/SwitchForcedPaths.lean`),
+the 76 facts
 first published for `[20a]` (`SpineRows/SparseExitResidual.lean`, with
 `K .bridgeless`, `K .sparseUpperEnvelope`, `K .baselineSpineDemand` and
 `K .freePairCountFails`).  Each is now published at the earliest point where
@@ -224,6 +226,14 @@ abbrev Node20aOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairCodeConfiguration selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .specWitnessStructure selected.object
 
 /-- The return of `Node20aOutcome`: one `get` per fact of
@@ -325,6 +335,10 @@ theorem node20aReturn
     [FactKeys.Has (K .paperBudgetBound) known]
     [FactKeys.Has (K .paperBudgetCertifies) known]
     [FactKeys.Has (K .pairCodeConfiguration) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known] :
     Node20aOutcome selected :=
   ⟨(history.get (K .selection)).down,
@@ -421,6 +435,10 @@ theorem node20aReturn
     (history.get (K .paperBudgetBound)).down,
     (history.get (K .paperBudgetCertifies)).down,
     (history.get (K .pairCodeConfiguration)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down⟩
 
 /-- **Node `[187] (near-cubic target defect)`** (thm:main (vi), tex 369-378):
@@ -462,6 +480,14 @@ abbrev NearCubicTargetDefectOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -511,6 +537,10 @@ theorem nearCubicTargetDefectReturn
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
@@ -542,6 +572,10 @@ theorem nearCubicTargetDefectReturn
     (history.get (K .localAlgebra)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down,
     (history.get (K .bridgeless)).down,
     (history.get (K .remainderDeficiencyBelowCut)).down,
@@ -559,7 +593,7 @@ theorem nearCubicTargetDefectReturn
 /-- **Node `[144a]`** (thm:main (ii), tex 347-353): the same-token Type B
 handoff of [144] on the strict-surplus survivor, or (the paper error at
 [144]) the unresolved same-label pattern pair.  The generic residual: the
-explicit conjunction of the 72 facts common to every path.  Its six distinct
+explicit conjunction of the 78 facts common to every path.  Its six distinct
 fact sets (the class arm of [139]/[141] times the arm of [144]'s handoff
 decision) are its subtypes in `Assembly/Residuals/Node144aOutcome.lean`. -/
 abbrev Node144aOutcome (selected : EGInput.{u}) : Prop :=
@@ -597,6 +631,14 @@ abbrev Node144aOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -706,7 +748,11 @@ abbrev Node144aOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .homogeneousCapsFail selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .bottleneckRouting selected.object
+      erdosReceiverLoadProfile spineData .bottleneckRouting selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenPatternSupports selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenPatternSwap selected.object
 
 /-- The return of the generic `Node144aOutcome`: one `get` per common fact.
 The subtypes' return theorems extend it with one `get` per extra fact. -/
@@ -730,6 +776,10 @@ theorem node144aReturn
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -784,7 +834,9 @@ theorem node144aReturn
     [FactKeys.Has (K .highCentreNormalForm) known]
     [FactKeys.Has (K .homogeneousBottleneckPattern) known]
     [FactKeys.Has (K .homogeneousCapsFail) known]
-    [FactKeys.Has (K .bottleneckRouting) known] :
+    [FactKeys.Has (K .bottleneckRouting) known]
+    [FactKeys.Has (K .sameTokenPatternSupports) known]
+    [FactKeys.Has (K .sameTokenPatternSwap) known] :
     Node144aOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -803,6 +855,10 @@ theorem node144aReturn
     (history.get (K .localAlgebra)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down,
     (history.get (K .remainderDeficiencyBelowCut)).down,
     (history.get (K .windowCutCapacity)).down,
@@ -857,12 +913,14 @@ theorem node144aReturn
     (history.get (K .highCentreNormalForm)).down,
     (history.get (K .homogeneousBottleneckPattern)).down,
     (history.get (K .homogeneousCapsFail)).down,
-    (history.get (K .bottleneckRouting)).down⟩
+    (history.get (K .bottleneckRouting)).down,
+    (history.get (K .sameTokenPatternSupports)).down,
+    (history.get (K .sameTokenPatternSwap)).down⟩
 
 /-- **Node `[172a]`** (thm:main (iii), tex 354-358): the first failed
 conditional graph-count inequality of lem:scale-additivity on the dense-
 packing branch, with its minimal same-scale barrier overlap.  The explicit
-conjunction of every fact on its maximal ledger (82 common facts). -/
+conjunction of every fact on its maximal ledger (86 common facts). -/
 abbrev BlockedBarrierOverlapOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -898,6 +956,14 @@ abbrev BlockedBarrierOverlapOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1051,6 +1117,10 @@ theorem blockedBarrierOverlapReturn
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -1134,6 +1204,10 @@ theorem blockedBarrierOverlapReturn
     (history.get (K .localAlgebra)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down,
     (history.get (K .remainderDeficiencyBelowCut)).down,
     (history.get (K .windowCutCapacity)).down,
@@ -1239,6 +1313,14 @@ abbrev PairConditionalFactorizationOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1352,6 +1434,10 @@ theorem pairConditionalFactorizationReturn
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
@@ -1415,6 +1501,10 @@ theorem pairConditionalFactorizationReturn
     (history.get (K .localAlgebra)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down,
     (history.get (K .bridgeless)).down,
     (history.get (K .remainderDeficiencyBelowCut)).down,
@@ -1464,7 +1554,7 @@ theorem pairConditionalFactorizationReturn
 /-- **Node `[186]`** (thm:main (v), tex 364-368): the visible-entry route-8
 residual after [181], [183]-[185], with the joint balances of lem:typeA-
 unified-joint-balance.  The explicit conjunction of every fact on its
-maximal ledger (90 common facts). -/
+maximal ledger (94 common facts). -/
 abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -1500,6 +1590,14 @@ abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1669,6 +1767,10 @@ theorem route8JointBalanceReturn
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -1760,6 +1862,10 @@ theorem route8JointBalanceReturn
     (history.get (K .localAlgebra)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down,
     (history.get (K .remainderDeficiencyBelowCut)).down,
     (history.get (K .windowCutCapacity)).down,
@@ -1837,7 +1943,7 @@ theorem route8JointBalanceReturn
 /-- **Node `[187] ([179]/[180] Type B entry)`** (thm:main (vi), tex 369-378): a
 Type B entry produced by the [179] or [180] pair-system outcome, with its
 strict-surplus and sparse-survivor ancestry.  The explicit conjunction of
-every fact on its maximal ledger (71 common facts, then the arms of the
+every fact on its maximal ledger (75 common facts, then the arms of the
 residual's own decision: system 1; increment 4). -/
 abbrev PairTypeBOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1874,6 +1980,14 @@ abbrev PairTypeBOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2005,6 +2119,10 @@ theorem pairTypeBSystemReturn
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
@@ -2073,6 +2191,10 @@ theorem pairTypeBSystemReturn
     (history.get (K .localAlgebra)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down,
     (history.get (K .bridgeless)).down,
     (history.get (K .remainderDeficiencyBelowCut)).down,
@@ -2146,6 +2268,10 @@ theorem pairTypeBIncrementReturn
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
@@ -2217,6 +2343,10 @@ theorem pairTypeBIncrementReturn
     (history.get (K .localAlgebra)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down,
     (history.get (K .bridgeless)).down,
     (history.get (K .remainderDeficiencyBelowCut)).down,
@@ -2310,6 +2440,14 @@ abbrev TypeBSublinearOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2445,6 +2583,10 @@ theorem typeBSublinearReturn
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -2519,6 +2661,10 @@ theorem typeBSublinearReturn
     (history.get (K .localAlgebra)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down,
     (history.get (K .remainderDeficiencyBelowCut)).down,
     (history.get (K .windowCutCapacity)).down,
@@ -2615,6 +2761,14 @@ abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2754,6 +2908,10 @@ theorem route8QuotientReturn
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -2830,6 +2988,10 @@ theorem route8QuotientReturn
     (history.get (K .localAlgebra)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down,
     (history.get (K .remainderDeficiencyBelowCut)).down,
     (history.get (K .windowCutCapacity)).down,
@@ -2892,7 +3054,7 @@ theorem route8QuotientReturn
 /-- **Node `[187] (private-carrier rate failure)`** (thm:main (vi), tex
 369-378): failure of the exact private-carrier rate at the entry of the
 route-8 continuation.  The explicit conjunction of every fact on its maximal
-ledger (54 common facts). -/
+ledger (58 common facts). -/
 abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -2928,6 +3090,14 @@ abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -3025,6 +3195,10 @@ theorem route8RateFailsReturn
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
@@ -3080,6 +3254,10 @@ theorem route8RateFailsReturn
     (history.get (K .localAlgebra)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down,
     (history.get (K .bridgeless)).down,
     (history.get (K .remainderDeficiencyBelowCut)).down,
@@ -3121,7 +3299,7 @@ theorem route8RateFailsReturn
 /-- **Node `[187] (local cold-terminal exclusion)`** (thm:main (vi), tex
 369-378): the local cold-terminal exclusion of thm:cold-branch-quantitative-
 closure without a global terminal contradiction.  The explicit conjunction
-of every fact on its maximal ledger (68 common facts). -/
+of every fact on its maximal ledger (72 common facts). -/
 abbrev ColdBranchClosedOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -3157,6 +3335,14 @@ abbrev ColdBranchClosedOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -3282,6 +3468,10 @@ theorem coldBranchClosedReturn
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -3351,6 +3541,10 @@ theorem coldBranchClosedReturn
     (history.get (K .localAlgebra)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down,
     (history.get (K .remainderDeficiencyBelowCut)).down,
     (history.get (K .windowCutCapacity)).down,
@@ -3406,7 +3600,7 @@ theorem coldBranchClosedReturn
 /-- **Node `[153]`** (lem:cold-corridor-first-failure (ii), tex 7265-7270): G's
 first equal-state pair on a retained cold corridor, with its separating path
 context and profile separation.  The explicit conjunction of every fact on
-its maximal ledger (53 common facts). -/
+its maximal ledger (57 common facts). -/
 abbrev Node153ResidualOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -3442,6 +3636,14 @@ abbrev Node153ResidualOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -3537,6 +3739,10 @@ theorem node153Return
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -3591,6 +3797,10 @@ theorem node153Return
     (history.get (K .localAlgebra)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down,
     (history.get (K .remainderDeficiencyBelowCut)).down,
     (history.get (K .windowCutCapacity)).down,
@@ -3631,7 +3841,7 @@ theorem node153Return
 /-- **Node `[162]`** (lem:dense-cold-pass, tex 7692-7694): a retained cold
 corridor of G whose first failure is a heavy centre strictly before its
 terminal segment and which reads more than Q_cold states.  The explicit
-conjunction of every fact on its maximal ledger (57 common facts). -/
+conjunction of every fact on its maximal ledger (61 common facts). -/
 abbrev Node162ResidualOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -3667,6 +3877,14 @@ abbrev Node162ResidualOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -3770,6 +3988,10 @@ theorem node162Return
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -3828,6 +4050,10 @@ theorem node162Return
     (history.get (K .localAlgebra)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down,
     (history.get (K .remainderDeficiencyBelowCut)).down,
     (history.get (K .windowCutCapacity)).down,
@@ -3908,6 +4134,14 @@ abbrev Node54ResidualOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -4001,6 +4235,10 @@ theorem node54Return
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
@@ -4054,6 +4292,10 @@ theorem node54Return
     (history.get (K .localAlgebra)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
     (history.get (K .specWitnessStructure)).down,
     (history.get (K .bridgeless)).down,
     (history.get (K .remainderDeficiencyBelowCut)).down,

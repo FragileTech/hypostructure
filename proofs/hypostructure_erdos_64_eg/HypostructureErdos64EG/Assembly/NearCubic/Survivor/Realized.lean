@@ -43,10 +43,10 @@ noncomputable def Assembly.Internal.nearCubicRealized
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
          K .admissibleQuotientsLabelInjective, K .replacementExclusion,
          K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-         K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
-       K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+         K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint,
+       K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
          K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-         K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+         K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
          K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   let cap := nearCubicHotColdCap enumerated
