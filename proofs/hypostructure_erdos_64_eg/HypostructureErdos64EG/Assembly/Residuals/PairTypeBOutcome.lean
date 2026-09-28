@@ -89,11 +89,48 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .threeRouteChain) known]
     [FactKeys.Has (K .windowPositionStubs) known]
     [FactKeys.Has (K .windowAttachmentGap) known]
+    [FactKeys.Has (K .portEndDegree) known]
+    [FactKeys.Has (K .hubLinkStructure) known]
+    [FactKeys.Has (K .hubClassCounts) known]
+    [FactKeys.Has (K .slotRelation) known]
+    [FactKeys.Has (K .closedClasses) known]
+    [FactKeys.Has (K .hubTwoHopLinks) known]
+    [FactKeys.Has (K .slotLinear) known]
+    [FactKeys.Has (K .remainderPathBounds) known]
+    [FactKeys.Has (K .windowFreeGeometry) known]
+    [FactKeys.Has (K .inducedPathAttachment) known]
+    [FactKeys.Has (K .densityExcess) known]
+    [FactKeys.Has (K .remainderSlack) known]
+    [FactKeys.Has (K .hubWindowBudget) known]
+    [FactKeys.Has (K .windowHubBounds) known]
+    [FactKeys.Has (K .cubicNeighbourSupply) known]
+    [FactKeys.Has (K .hubCountBound) known]
+    [FactKeys.Has (K .lowEdgeParity) known]
+    [FactKeys.Has (K .bigHubBound) known]
+    [FactKeys.Has (K .bigHubVShapes) known]
+    [FactKeys.Has (K .highSurplusBound) known]
+    [FactKeys.Has (K .hubLengthThreePairs) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .pairArmAPattern) known]
+    [FactKeys.Has (K .pairArmARoleAlphabet) known]
+    [FactKeys.Has (K .pairArmB) known]
+    [FactKeys.Has (K .extFreeEmpty) known]
+    [FactKeys.Has (K .extLoadSum) known]
+    [FactKeys.Has (K .extOverload) known]
+    [FactKeys.Has (K .extOverloadedToken) known]
+    [FactKeys.Has (K .newLoadBound) known]
+    [FactKeys.Has (K .freeSideHubs) known]
+    [FactKeys.Has (K .separatedPairs) known]
+    [FactKeys.Has (K .scalePressure) known]
+    [FactKeys.Has (K .freeSideStructure) known]
+    [FactKeys.Has (K .freeSideCount) known]
+    [FactKeys.Has (K .highSurplusOrder) known]
+    [FactKeys.Has (K .windowChargeKinds) known]
+    [FactKeys.Has (K .responseObstructionTargetDefect) known]
     [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
@@ -180,11 +217,48 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .threeRouteChain)).down,
       (history.get (K .windowPositionStubs)).down,
       (history.get (K .windowAttachmentGap)).down,
+      (history.get (K .portEndDegree)).down,
+      (history.get (K .hubLinkStructure)).down,
+      (history.get (K .hubClassCounts)).down,
+      (history.get (K .slotRelation)).down,
+      (history.get (K .closedClasses)).down,
+      (history.get (K .hubTwoHopLinks)).down,
+      (history.get (K .slotLinear)).down,
+      (history.get (K .remainderPathBounds)).down,
+      (history.get (K .windowFreeGeometry)).down,
+      (history.get (K .inducedPathAttachment)).down,
+      (history.get (K .densityExcess)).down,
+      (history.get (K .remainderSlack)).down,
+      (history.get (K .hubWindowBudget)).down,
+      (history.get (K .windowHubBounds)).down,
+      (history.get (K .cubicNeighbourSupply)).down,
+      (history.get (K .hubCountBound)).down,
+      (history.get (K .lowEdgeParity)).down,
+      (history.get (K .bigHubBound)).down,
+      (history.get (K .bigHubVShapes)).down,
+      (history.get (K .highSurplusBound)).down,
+      (history.get (K .hubLengthThreePairs)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
       (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .pairArmAPattern)).down,
+      (history.get (K .pairArmARoleAlphabet)).down,
+      (history.get (K .pairArmB)).down,
+      (history.get (K .extFreeEmpty)).down,
+      (history.get (K .extLoadSum)).down,
+      (history.get (K .extOverload)).down,
+      (history.get (K .extOverloadedToken)).down,
+      (history.get (K .newLoadBound)).down,
+      (history.get (K .freeSideHubs)).down,
+      (history.get (K .separatedPairs)).down,
+      (history.get (K .scalePressure)).down,
+      (history.get (K .freeSideStructure)).down,
+      (history.get (K .freeSideCount)).down,
+      (history.get (K .highSurplusOrder)).down,
+      (history.get (K .windowChargeKinds)).down,
+      (history.get (K .responseObstructionTargetDefect)).down,
       (history.get (K .highEndpointSwitch)).down,
       (history.get (K .edgeSurplusIdentity)).down,
       (history.get (K .ceilSqrtAboveScale)).down,
@@ -301,11 +375,48 @@ theorem pairTypeBIndependentIncrementReturn
     [FactKeys.Has (K .threeRouteChain) known]
     [FactKeys.Has (K .windowPositionStubs) known]
     [FactKeys.Has (K .windowAttachmentGap) known]
+    [FactKeys.Has (K .portEndDegree) known]
+    [FactKeys.Has (K .hubLinkStructure) known]
+    [FactKeys.Has (K .hubClassCounts) known]
+    [FactKeys.Has (K .slotRelation) known]
+    [FactKeys.Has (K .closedClasses) known]
+    [FactKeys.Has (K .hubTwoHopLinks) known]
+    [FactKeys.Has (K .slotLinear) known]
+    [FactKeys.Has (K .remainderPathBounds) known]
+    [FactKeys.Has (K .windowFreeGeometry) known]
+    [FactKeys.Has (K .inducedPathAttachment) known]
+    [FactKeys.Has (K .densityExcess) known]
+    [FactKeys.Has (K .remainderSlack) known]
+    [FactKeys.Has (K .hubWindowBudget) known]
+    [FactKeys.Has (K .windowHubBounds) known]
+    [FactKeys.Has (K .cubicNeighbourSupply) known]
+    [FactKeys.Has (K .hubCountBound) known]
+    [FactKeys.Has (K .lowEdgeParity) known]
+    [FactKeys.Has (K .bigHubBound) known]
+    [FactKeys.Has (K .bigHubVShapes) known]
+    [FactKeys.Has (K .highSurplusBound) known]
+    [FactKeys.Has (K .hubLengthThreePairs) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .pairArmAPattern) known]
+    [FactKeys.Has (K .pairArmARoleAlphabet) known]
+    [FactKeys.Has (K .pairArmB) known]
+    [FactKeys.Has (K .extFreeEmpty) known]
+    [FactKeys.Has (K .extLoadSum) known]
+    [FactKeys.Has (K .extOverload) known]
+    [FactKeys.Has (K .extOverloadedToken) known]
+    [FactKeys.Has (K .newLoadBound) known]
+    [FactKeys.Has (K .freeSideHubs) known]
+    [FactKeys.Has (K .separatedPairs) known]
+    [FactKeys.Has (K .scalePressure) known]
+    [FactKeys.Has (K .freeSideStructure) known]
+    [FactKeys.Has (K .freeSideCount) known]
+    [FactKeys.Has (K .highSurplusOrder) known]
+    [FactKeys.Has (K .windowChargeKinds) known]
+    [FactKeys.Has (K .responseObstructionTargetDefect) known]
     [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
@@ -398,11 +509,48 @@ theorem pairTypeBIndependentIncrementReturn
       (history.get (K .threeRouteChain)).down,
       (history.get (K .windowPositionStubs)).down,
       (history.get (K .windowAttachmentGap)).down,
+      (history.get (K .portEndDegree)).down,
+      (history.get (K .hubLinkStructure)).down,
+      (history.get (K .hubClassCounts)).down,
+      (history.get (K .slotRelation)).down,
+      (history.get (K .closedClasses)).down,
+      (history.get (K .hubTwoHopLinks)).down,
+      (history.get (K .slotLinear)).down,
+      (history.get (K .remainderPathBounds)).down,
+      (history.get (K .windowFreeGeometry)).down,
+      (history.get (K .inducedPathAttachment)).down,
+      (history.get (K .densityExcess)).down,
+      (history.get (K .remainderSlack)).down,
+      (history.get (K .hubWindowBudget)).down,
+      (history.get (K .windowHubBounds)).down,
+      (history.get (K .cubicNeighbourSupply)).down,
+      (history.get (K .hubCountBound)).down,
+      (history.get (K .lowEdgeParity)).down,
+      (history.get (K .bigHubBound)).down,
+      (history.get (K .bigHubVShapes)).down,
+      (history.get (K .highSurplusBound)).down,
+      (history.get (K .hubLengthThreePairs)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
       (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .pairArmAPattern)).down,
+      (history.get (K .pairArmARoleAlphabet)).down,
+      (history.get (K .pairArmB)).down,
+      (history.get (K .extFreeEmpty)).down,
+      (history.get (K .extLoadSum)).down,
+      (history.get (K .extOverload)).down,
+      (history.get (K .extOverloadedToken)).down,
+      (history.get (K .newLoadBound)).down,
+      (history.get (K .freeSideHubs)).down,
+      (history.get (K .separatedPairs)).down,
+      (history.get (K .scalePressure)).down,
+      (history.get (K .freeSideStructure)).down,
+      (history.get (K .freeSideCount)).down,
+      (history.get (K .highSurplusOrder)).down,
+      (history.get (K .windowChargeKinds)).down,
+      (history.get (K .responseObstructionTargetDefect)).down,
       (history.get (K .highEndpointSwitch)).down,
       (history.get (K .edgeSurplusIdentity)).down,
       (history.get (K .ceilSqrtAboveScale)).down,
@@ -535,11 +683,48 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .threeRouteChain) known]
     [FactKeys.Has (K .windowPositionStubs) known]
     [FactKeys.Has (K .windowAttachmentGap) known]
+    [FactKeys.Has (K .portEndDegree) known]
+    [FactKeys.Has (K .hubLinkStructure) known]
+    [FactKeys.Has (K .hubClassCounts) known]
+    [FactKeys.Has (K .slotRelation) known]
+    [FactKeys.Has (K .closedClasses) known]
+    [FactKeys.Has (K .hubTwoHopLinks) known]
+    [FactKeys.Has (K .slotLinear) known]
+    [FactKeys.Has (K .remainderPathBounds) known]
+    [FactKeys.Has (K .windowFreeGeometry) known]
+    [FactKeys.Has (K .inducedPathAttachment) known]
+    [FactKeys.Has (K .densityExcess) known]
+    [FactKeys.Has (K .remainderSlack) known]
+    [FactKeys.Has (K .hubWindowBudget) known]
+    [FactKeys.Has (K .windowHubBounds) known]
+    [FactKeys.Has (K .cubicNeighbourSupply) known]
+    [FactKeys.Has (K .hubCountBound) known]
+    [FactKeys.Has (K .lowEdgeParity) known]
+    [FactKeys.Has (K .bigHubBound) known]
+    [FactKeys.Has (K .bigHubVShapes) known]
+    [FactKeys.Has (K .highSurplusBound) known]
+    [FactKeys.Has (K .hubLengthThreePairs) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .pairArmAPattern) known]
+    [FactKeys.Has (K .pairArmARoleAlphabet) known]
+    [FactKeys.Has (K .pairArmB) known]
+    [FactKeys.Has (K .extFreeEmpty) known]
+    [FactKeys.Has (K .extLoadSum) known]
+    [FactKeys.Has (K .extOverload) known]
+    [FactKeys.Has (K .extOverloadedToken) known]
+    [FactKeys.Has (K .newLoadBound) known]
+    [FactKeys.Has (K .freeSideHubs) known]
+    [FactKeys.Has (K .separatedPairs) known]
+    [FactKeys.Has (K .scalePressure) known]
+    [FactKeys.Has (K .freeSideStructure) known]
+    [FactKeys.Has (K .freeSideCount) known]
+    [FactKeys.Has (K .highSurplusOrder) known]
+    [FactKeys.Has (K .windowChargeKinds) known]
+    [FactKeys.Has (K .responseObstructionTargetDefect) known]
     [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
@@ -635,11 +820,48 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .threeRouteChain)).down,
       (history.get (K .windowPositionStubs)).down,
       (history.get (K .windowAttachmentGap)).down,
+      (history.get (K .portEndDegree)).down,
+      (history.get (K .hubLinkStructure)).down,
+      (history.get (K .hubClassCounts)).down,
+      (history.get (K .slotRelation)).down,
+      (history.get (K .closedClasses)).down,
+      (history.get (K .hubTwoHopLinks)).down,
+      (history.get (K .slotLinear)).down,
+      (history.get (K .remainderPathBounds)).down,
+      (history.get (K .windowFreeGeometry)).down,
+      (history.get (K .inducedPathAttachment)).down,
+      (history.get (K .densityExcess)).down,
+      (history.get (K .remainderSlack)).down,
+      (history.get (K .hubWindowBudget)).down,
+      (history.get (K .windowHubBounds)).down,
+      (history.get (K .cubicNeighbourSupply)).down,
+      (history.get (K .hubCountBound)).down,
+      (history.get (K .lowEdgeParity)).down,
+      (history.get (K .bigHubBound)).down,
+      (history.get (K .bigHubVShapes)).down,
+      (history.get (K .highSurplusBound)).down,
+      (history.get (K .hubLengthThreePairs)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
       (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .pairArmAPattern)).down,
+      (history.get (K .pairArmARoleAlphabet)).down,
+      (history.get (K .pairArmB)).down,
+      (history.get (K .extFreeEmpty)).down,
+      (history.get (K .extLoadSum)).down,
+      (history.get (K .extOverload)).down,
+      (history.get (K .extOverloadedToken)).down,
+      (history.get (K .newLoadBound)).down,
+      (history.get (K .freeSideHubs)).down,
+      (history.get (K .separatedPairs)).down,
+      (history.get (K .scalePressure)).down,
+      (history.get (K .freeSideStructure)).down,
+      (history.get (K .freeSideCount)).down,
+      (history.get (K .highSurplusOrder)).down,
+      (history.get (K .windowChargeKinds)).down,
+      (history.get (K .responseObstructionTargetDefect)).down,
       (history.get (K .highEndpointSwitch)).down,
       (history.get (K .edgeSurplusIdentity)).down,
       (history.get (K .ceilSqrtAboveScale)).down,
@@ -783,11 +1005,48 @@ theorem pairTypeBDependentIncrementReturn
     [FactKeys.Has (K .threeRouteChain) known]
     [FactKeys.Has (K .windowPositionStubs) known]
     [FactKeys.Has (K .windowAttachmentGap) known]
+    [FactKeys.Has (K .portEndDegree) known]
+    [FactKeys.Has (K .hubLinkStructure) known]
+    [FactKeys.Has (K .hubClassCounts) known]
+    [FactKeys.Has (K .slotRelation) known]
+    [FactKeys.Has (K .closedClasses) known]
+    [FactKeys.Has (K .hubTwoHopLinks) known]
+    [FactKeys.Has (K .slotLinear) known]
+    [FactKeys.Has (K .remainderPathBounds) known]
+    [FactKeys.Has (K .windowFreeGeometry) known]
+    [FactKeys.Has (K .inducedPathAttachment) known]
+    [FactKeys.Has (K .densityExcess) known]
+    [FactKeys.Has (K .remainderSlack) known]
+    [FactKeys.Has (K .hubWindowBudget) known]
+    [FactKeys.Has (K .windowHubBounds) known]
+    [FactKeys.Has (K .cubicNeighbourSupply) known]
+    [FactKeys.Has (K .hubCountBound) known]
+    [FactKeys.Has (K .lowEdgeParity) known]
+    [FactKeys.Has (K .bigHubBound) known]
+    [FactKeys.Has (K .bigHubVShapes) known]
+    [FactKeys.Has (K .highSurplusBound) known]
+    [FactKeys.Has (K .hubLengthThreePairs) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .pairArmAPattern) known]
+    [FactKeys.Has (K .pairArmARoleAlphabet) known]
+    [FactKeys.Has (K .pairArmB) known]
+    [FactKeys.Has (K .extFreeEmpty) known]
+    [FactKeys.Has (K .extLoadSum) known]
+    [FactKeys.Has (K .extOverload) known]
+    [FactKeys.Has (K .extOverloadedToken) known]
+    [FactKeys.Has (K .newLoadBound) known]
+    [FactKeys.Has (K .freeSideHubs) known]
+    [FactKeys.Has (K .separatedPairs) known]
+    [FactKeys.Has (K .scalePressure) known]
+    [FactKeys.Has (K .freeSideStructure) known]
+    [FactKeys.Has (K .freeSideCount) known]
+    [FactKeys.Has (K .highSurplusOrder) known]
+    [FactKeys.Has (K .windowChargeKinds) known]
+    [FactKeys.Has (K .responseObstructionTargetDefect) known]
     [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
@@ -889,11 +1148,48 @@ theorem pairTypeBDependentIncrementReturn
       (history.get (K .threeRouteChain)).down,
       (history.get (K .windowPositionStubs)).down,
       (history.get (K .windowAttachmentGap)).down,
+      (history.get (K .portEndDegree)).down,
+      (history.get (K .hubLinkStructure)).down,
+      (history.get (K .hubClassCounts)).down,
+      (history.get (K .slotRelation)).down,
+      (history.get (K .closedClasses)).down,
+      (history.get (K .hubTwoHopLinks)).down,
+      (history.get (K .slotLinear)).down,
+      (history.get (K .remainderPathBounds)).down,
+      (history.get (K .windowFreeGeometry)).down,
+      (history.get (K .inducedPathAttachment)).down,
+      (history.get (K .densityExcess)).down,
+      (history.get (K .remainderSlack)).down,
+      (history.get (K .hubWindowBudget)).down,
+      (history.get (K .windowHubBounds)).down,
+      (history.get (K .cubicNeighbourSupply)).down,
+      (history.get (K .hubCountBound)).down,
+      (history.get (K .lowEdgeParity)).down,
+      (history.get (K .bigHubBound)).down,
+      (history.get (K .bigHubVShapes)).down,
+      (history.get (K .highSurplusBound)).down,
+      (history.get (K .hubLengthThreePairs)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
       (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .pairArmAPattern)).down,
+      (history.get (K .pairArmARoleAlphabet)).down,
+      (history.get (K .pairArmB)).down,
+      (history.get (K .extFreeEmpty)).down,
+      (history.get (K .extLoadSum)).down,
+      (history.get (K .extOverload)).down,
+      (history.get (K .extOverloadedToken)).down,
+      (history.get (K .newLoadBound)).down,
+      (history.get (K .freeSideHubs)).down,
+      (history.get (K .separatedPairs)).down,
+      (history.get (K .scalePressure)).down,
+      (history.get (K .freeSideStructure)).down,
+      (history.get (K .freeSideCount)).down,
+      (history.get (K .highSurplusOrder)).down,
+      (history.get (K .windowChargeKinds)).down,
+      (history.get (K .responseObstructionTargetDefect)).down,
       (history.get (K .highEndpointSwitch)).down,
       (history.get (K .edgeSurplusIdentity)).down,
       (history.get (K .ceilSqrtAboveScale)).down,

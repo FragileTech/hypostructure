@@ -41,21 +41,21 @@ noncomputable def selectedSparseSurplusActivation
     (history : ExactLedger EGInput.{u} selected
       [K .sparseSurplusSurvivor,
         K .paperBudgetBound, K .paperBudgetCertifies, K .pairCodeConfiguration,
-        K .canonicalTokenCount,
+        K .extFreeEmpty, K .extLoadSum, K .extOverload, K .extOverloadedToken, K .newLoadBound, K .freeSideHubs, K .freeSideCount, K .canonicalTokenCount,
         K .canonicalBlockedFreePartition, K .canonicalLedgerDeficit,
         K .pairCountDeficit, K .canonicalCertificationCriterion,
         K .canonicalOverloadOfFits, K .canonicalFreeExcessOfCapped,
-        K .canonicalCapacityExplicit, K .highDegreePositive,
+        K .pairArmAPattern, K .pairArmARoleAlphabet, K .freeSideStructure, K .separatedPairs, K .windowChargeKinds, K .responseObstructionTargetDefect, K .canonicalCapacityExplicit, K .highDegreePositive,
         K .highDegreeSurplusCapacity, K .orderAboveScaleSquare,
-        K .sixVertexExtremalEnvelope, K .highEndpointSwitch, K .highSurplusConfiguration, K .edgeSurplusIdentity,
+        K .sixVertexExtremalEnvelope, K .pairArmB, K .highEndpointSwitch, K .highSurplusConfiguration, K .scalePressure, K .highSurplusOrder, K .edgeSurplusIdentity,
         K .ceilSqrtAboveScale, K .baselineSpineDemand, K .sparseUpperEnvelope,
         K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-        K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint, K .slackIndependent,
+        K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .portEndDegree, K .hubLinkStructure, K .hubClassCounts, K .slotRelation, K .closedClasses, K .hubTwoHopLinks, K .slotLinear, K .hubWindowBudget, K .windowHubBounds, K .cubicNeighbourSupply, K .hubCountBound, K .lowEdgeParity, K .bigHubBound, K .bigHubVShapes, K .highSurplusBound, K .hubLengthThreePairs, K .tightEndpoint, K .slackIndependent,
         K .vertexDeletionComponents, K .cyclesThroughVertex,
-        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
-        K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+        K .cutVertexBlockPaths, K .singleBoundaryShape, K .densityExcess, K .remainderSlack, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
+        K .primitiveCarrierCount, K .remainderPathBounds, K .windowFreeGeometry, K .inducedPathAttachment, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
         K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
@@ -66,21 +66,21 @@ noncomputable def selectedSparseSurplusActivation
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression, K .sparseSurplusSurvivor,
         K .paperBudgetBound, K .paperBudgetCertifies, K .pairCodeConfiguration,
-        K .canonicalTokenCount,
+        K .extFreeEmpty, K .extLoadSum, K .extOverload, K .extOverloadedToken, K .newLoadBound, K .freeSideHubs, K .freeSideCount, K .canonicalTokenCount,
         K .canonicalBlockedFreePartition, K .canonicalLedgerDeficit,
         K .pairCountDeficit, K .canonicalCertificationCriterion,
         K .canonicalOverloadOfFits, K .canonicalFreeExcessOfCapped,
-        K .canonicalCapacityExplicit, K .highDegreePositive,
+        K .pairArmAPattern, K .pairArmARoleAlphabet, K .freeSideStructure, K .separatedPairs, K .windowChargeKinds, K .responseObstructionTargetDefect, K .canonicalCapacityExplicit, K .highDegreePositive,
         K .highDegreeSurplusCapacity, K .orderAboveScaleSquare,
-        K .sixVertexExtremalEnvelope, K .highEndpointSwitch, K .highSurplusConfiguration, K .edgeSurplusIdentity,
+        K .sixVertexExtremalEnvelope, K .pairArmB, K .highEndpointSwitch, K .highSurplusConfiguration, K .scalePressure, K .highSurplusOrder, K .edgeSurplusIdentity,
         K .ceilSqrtAboveScale, K .baselineSpineDemand, K .sparseUpperEnvelope,
         K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
           K .admissibleQuotientsLabelInjective, K .replacementExclusion,
           K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-          K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint,
+          K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .portEndDegree, K .hubLinkStructure, K .hubClassCounts, K .slotRelation, K .closedClasses, K .hubTwoHopLinks, K .slotLinear, K .hubWindowBudget, K .windowHubBounds, K .cubicNeighbourSupply, K .hubCountBound, K .lowEdgeParity, K .bigHubBound, K .bigHubVShapes, K .highSurplusBound, K .hubLengthThreePairs, K .tightEndpoint,
         K .slackIndependent, K .vertexDeletionComponents, K .cyclesThroughVertex,
-        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
-          K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+        K .cutVertexBlockPaths, K .singleBoundaryShape, K .densityExcess, K .remainderSlack, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
+          K .primitiveCarrierCount, K .remainderPathBounds, K .windowFreeGeometry, K .inducedPathAttachment, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
           K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
@@ -151,6 +151,22 @@ noncomputable def selectedPairCodeChainIndependent
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .pairArmAPattern) known]
+    [FactKeys.Has (K .pairArmARoleAlphabet) known]
+    [FactKeys.Has (K .pairArmB) known]
+    [FactKeys.Has (K .extFreeEmpty) known]
+    [FactKeys.Has (K .extLoadSum) known]
+    [FactKeys.Has (K .extOverload) known]
+    [FactKeys.Has (K .extOverloadedToken) known]
+    [FactKeys.Has (K .newLoadBound) known]
+    [FactKeys.Has (K .freeSideHubs) known]
+    [FactKeys.Has (K .separatedPairs) known]
+    [FactKeys.Has (K .scalePressure) known]
+    [FactKeys.Has (K .freeSideStructure) known]
+    [FactKeys.Has (K .freeSideCount) known]
+    [FactKeys.Has (K .highSurplusOrder) known]
+    [FactKeys.Has (K .windowChargeKinds) known]
+    [FactKeys.Has (K .responseObstructionTargetDefect) known]
     [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
@@ -223,6 +239,27 @@ noncomputable def selectedPairCodeChainIndependent
     [FactKeys.Has (K .threeRouteChain) known]
     [FactKeys.Has (K .windowPositionStubs) known]
     [FactKeys.Has (K .windowAttachmentGap) known]
+    [FactKeys.Has (K .portEndDegree) known]
+    [FactKeys.Has (K .hubLinkStructure) known]
+    [FactKeys.Has (K .hubClassCounts) known]
+    [FactKeys.Has (K .slotRelation) known]
+    [FactKeys.Has (K .closedClasses) known]
+    [FactKeys.Has (K .hubTwoHopLinks) known]
+    [FactKeys.Has (K .slotLinear) known]
+    [FactKeys.Has (K .remainderPathBounds) known]
+    [FactKeys.Has (K .windowFreeGeometry) known]
+    [FactKeys.Has (K .inducedPathAttachment) known]
+    [FactKeys.Has (K .densityExcess) known]
+    [FactKeys.Has (K .remainderSlack) known]
+    [FactKeys.Has (K .hubWindowBudget) known]
+    [FactKeys.Has (K .windowHubBounds) known]
+    [FactKeys.Has (K .cubicNeighbourSupply) known]
+    [FactKeys.Has (K .hubCountBound) known]
+    [FactKeys.Has (K .lowEdgeParity) known]
+    [FactKeys.Has (K .bigHubBound) known]
+    [FactKeys.Has (K .bigHubVShapes) known]
+    [FactKeys.Has (K .highSurplusBound) known]
+    [FactKeys.Has (K .hubLengthThreePairs) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -360,6 +397,22 @@ noncomputable def selectedPairCodeChainDependent
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .pairArmAPattern) known]
+    [FactKeys.Has (K .pairArmARoleAlphabet) known]
+    [FactKeys.Has (K .pairArmB) known]
+    [FactKeys.Has (K .extFreeEmpty) known]
+    [FactKeys.Has (K .extLoadSum) known]
+    [FactKeys.Has (K .extOverload) known]
+    [FactKeys.Has (K .extOverloadedToken) known]
+    [FactKeys.Has (K .newLoadBound) known]
+    [FactKeys.Has (K .freeSideHubs) known]
+    [FactKeys.Has (K .separatedPairs) known]
+    [FactKeys.Has (K .scalePressure) known]
+    [FactKeys.Has (K .freeSideStructure) known]
+    [FactKeys.Has (K .freeSideCount) known]
+    [FactKeys.Has (K .highSurplusOrder) known]
+    [FactKeys.Has (K .windowChargeKinds) known]
+    [FactKeys.Has (K .responseObstructionTargetDefect) known]
     [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
@@ -433,6 +486,27 @@ noncomputable def selectedPairCodeChainDependent
     [FactKeys.Has (K .threeRouteChain) known]
     [FactKeys.Has (K .windowPositionStubs) known]
     [FactKeys.Has (K .windowAttachmentGap) known]
+    [FactKeys.Has (K .portEndDegree) known]
+    [FactKeys.Has (K .hubLinkStructure) known]
+    [FactKeys.Has (K .hubClassCounts) known]
+    [FactKeys.Has (K .slotRelation) known]
+    [FactKeys.Has (K .closedClasses) known]
+    [FactKeys.Has (K .hubTwoHopLinks) known]
+    [FactKeys.Has (K .slotLinear) known]
+    [FactKeys.Has (K .remainderPathBounds) known]
+    [FactKeys.Has (K .windowFreeGeometry) known]
+    [FactKeys.Has (K .inducedPathAttachment) known]
+    [FactKeys.Has (K .densityExcess) known]
+    [FactKeys.Has (K .remainderSlack) known]
+    [FactKeys.Has (K .hubWindowBudget) known]
+    [FactKeys.Has (K .windowHubBounds) known]
+    [FactKeys.Has (K .cubicNeighbourSupply) known]
+    [FactKeys.Has (K .hubCountBound) known]
+    [FactKeys.Has (K .lowEdgeParity) known]
+    [FactKeys.Has (K .bigHubBound) known]
+    [FactKeys.Has (K .bigHubVShapes) known]
+    [FactKeys.Has (K .highSurplusBound) known]
+    [FactKeys.Has (K .hubLengthThreePairs) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -587,6 +661,22 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .fibrePressure) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .pairArmAPattern) known]
+    [FactKeys.Has (K .pairArmARoleAlphabet) known]
+    [FactKeys.Has (K .pairArmB) known]
+    [FactKeys.Has (K .extFreeEmpty) known]
+    [FactKeys.Has (K .extLoadSum) known]
+    [FactKeys.Has (K .extOverload) known]
+    [FactKeys.Has (K .extOverloadedToken) known]
+    [FactKeys.Has (K .newLoadBound) known]
+    [FactKeys.Has (K .freeSideHubs) known]
+    [FactKeys.Has (K .separatedPairs) known]
+    [FactKeys.Has (K .scalePressure) known]
+    [FactKeys.Has (K .freeSideStructure) known]
+    [FactKeys.Has (K .freeSideCount) known]
+    [FactKeys.Has (K .highSurplusOrder) known]
+    [FactKeys.Has (K .windowChargeKinds) known]
+    [FactKeys.Has (K .responseObstructionTargetDefect) known]
     [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
@@ -655,6 +745,27 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .threeRouteChain) known]
     [FactKeys.Has (K .windowPositionStubs) known]
     [FactKeys.Has (K .windowAttachmentGap) known]
+    [FactKeys.Has (K .portEndDegree) known]
+    [FactKeys.Has (K .hubLinkStructure) known]
+    [FactKeys.Has (K .hubClassCounts) known]
+    [FactKeys.Has (K .slotRelation) known]
+    [FactKeys.Has (K .closedClasses) known]
+    [FactKeys.Has (K .hubTwoHopLinks) known]
+    [FactKeys.Has (K .slotLinear) known]
+    [FactKeys.Has (K .remainderPathBounds) known]
+    [FactKeys.Has (K .windowFreeGeometry) known]
+    [FactKeys.Has (K .inducedPathAttachment) known]
+    [FactKeys.Has (K .densityExcess) known]
+    [FactKeys.Has (K .remainderSlack) known]
+    [FactKeys.Has (K .hubWindowBudget) known]
+    [FactKeys.Has (K .windowHubBounds) known]
+    [FactKeys.Has (K .cubicNeighbourSupply) known]
+    [FactKeys.Has (K .hubCountBound) known]
+    [FactKeys.Has (K .lowEdgeParity) known]
+    [FactKeys.Has (K .bigHubBound) known]
+    [FactKeys.Has (K .bigHubVShapes) known]
+    [FactKeys.Has (K .highSurplusBound) known]
+    [FactKeys.Has (K .hubLengthThreePairs) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]

@@ -31,6 +31,10 @@ universe u w
 is the strict-surplus sibling; only the at-or-below sibling reaches node `[21]`.
 Neither branch reads or publishes a fact owned by the other. -/
 
+-- The port-joint entry facts lengthen this ledger; `FactKeys.Available` needs more than the
+-- default instance budget.
+set_option synthInstance.maxHeartbeats 400000 in
+set_option synthInstance.maxSize 2048 in
 -- EG-NODE [21] finite enumeration: $c_\Omega$, $c_{13}$
 noncomputable def selectedNearCubicNode21
     {selected : EGInput.{u}}
@@ -39,10 +43,10 @@ noncomputable def selectedNearCubicNode21
         K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
           K .admissibleQuotientsLabelInjective, K .replacementExclusion,
           K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-          K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint,
+          K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .portEndDegree, K .hubLinkStructure, K .hubClassCounts, K .slotRelation, K .closedClasses, K .hubTwoHopLinks, K .slotLinear, K .hubWindowBudget, K .windowHubBounds, K .cubicNeighbourSupply, K .hubCountBound, K .lowEdgeParity, K .bigHubBound, K .bigHubVShapes, K .highSurplusBound, K .hubLengthThreePairs, K .tightEndpoint,
         K .slackIndependent, K .vertexDeletionComponents, K .cyclesThroughVertex,
-        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
-          K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+        K .cutVertexBlockPaths, K .singleBoundaryShape, K .densityExcess, K .remainderSlack, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
+          K .primitiveCarrierCount, K .remainderPathBounds, K .windowFreeGeometry, K .inducedPathAttachment, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
           K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
@@ -52,10 +56,10 @@ noncomputable def selectedNearCubicNode21
         K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
           K .admissibleQuotientsLabelInjective, K .replacementExclusion,
           K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-          K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint,
+          K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .portEndDegree, K .hubLinkStructure, K .hubClassCounts, K .slotRelation, K .closedClasses, K .hubTwoHopLinks, K .slotLinear, K .hubWindowBudget, K .windowHubBounds, K .cubicNeighbourSupply, K .hubCountBound, K .lowEdgeParity, K .bigHubBound, K .bigHubVShapes, K .highSurplusBound, K .hubLengthThreePairs, K .tightEndpoint,
         K .slackIndependent, K .vertexDeletionComponents, K .cyclesThroughVertex,
-        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
-          K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+        K .cutVertexBlockPaths, K .singleBoundaryShape, K .densityExcess, K .remainderSlack, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
+          K .primitiveCarrierCount, K .remainderPathBounds, K .windowFreeGeometry, K .inducedPathAttachment, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
           K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] :=

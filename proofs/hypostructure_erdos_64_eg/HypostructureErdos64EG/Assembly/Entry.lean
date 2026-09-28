@@ -15,6 +15,7 @@ import Hypostructure.Graph.Strategy.SpineRows.SparseExitReadings
 import Hypostructure.Graph.Strategy.SpineRows.SwitchForcedPaths
 import Hypostructure.Graph.Strategy.SpineRows.CycleCounting
 import Hypostructure.Graph.Strategy.SpineRows.LocalRigidity
+import Hypostructure.Graph.Strategy.SpineRows.JointHubs
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseSurplusExit
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseTargetDefectStructure
 import HypostructureErdos64EG.Assembly.Basic
@@ -56,10 +57,10 @@ noncomputable def selectedEntryPrefix
       [K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-        K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint, K .slackIndependent,
+        K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .portEndDegree, K .hubLinkStructure, K .hubClassCounts, K .slotRelation, K .closedClasses, K .hubTwoHopLinks, K .slotLinear, K .hubWindowBudget, K .windowHubBounds, K .cubicNeighbourSupply, K .hubCountBound, K .lowEdgeParity, K .bigHubBound, K .bigHubVShapes, K .highSurplusBound, K .hubLengthThreePairs, K .tightEndpoint, K .slackIndependent,
         K .vertexDeletionComponents, K .cyclesThroughVertex,
-        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
-        K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+        K .cutVertexBlockPaths, K .singleBoundaryShape, K .densityExcess, K .remainderSlack, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
+        K .primitiveCarrierCount, K .remainderPathBounds, K .windowFreeGeometry, K .inducedPathAttachment, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
         K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
@@ -134,11 +135,18 @@ noncomputable def selectedEntryPrefix
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       hPacking (by key_fresh)
   -- Hoisted from `[20a]`: the primitive carrier count of G; no decision.
+  -- Joint hubs (Lean improvement): paths and cycles inside the remainder of `P₀`, the
+  -- window-free geometry of `P₀` and the attachments to induced `P13`s; no decision.
+  let hRemainderGeometry :=
+    (remainderGeometryRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hWindowRigidity (by key_fresh)
   let hCarriers :=
     (primitiveCarrierCountRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      hWindowRigidity (by key_fresh)
+      hRemainderGeometry (by key_fresh)
   -- `[6]`: Mersenne return exists?
   match returnAvoidanceDichotomy (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -167,11 +175,18 @@ noncomputable def selectedEntryPrefix
           hSameVertex (by
             key_fresh)
       -- Hoisted from `[20a]`: the single-boundary shape, from `[8]` and `lem:bridgeless`; no decision.
+      -- Joint hubs (Lean improvement): density of G in excess form and the remainder slack
+      -- of `P₀` with its hanging windows, from `[8]` and `lem:bridgeless`; no decision.
+      let hDensitySlack :=
+        (densitySlackRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          h2 (by key_fresh)
       let hBoundary :=
         (singleBoundaryShapeRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          h2 (by key_fresh)
+          hDensitySlack (by key_fresh)
       -- Cycle counting (Lean improvement): vertex deletions, cycles through every vertex and
       -- the block paths at the cut vertices of G, from `[8]` and `lem:bridgeless`; no decision.
       let hCutVertex :=
@@ -187,11 +202,39 @@ noncomputable def selectedEntryPrefix
             key_fresh)
       -- The vertex split of G at every high centre, from `[9]`/`[10]`'s
       -- tight-endpoint law (a matching neighbourhood); no decision.
+      -- Joint hubs (Lean improvement): the cubic vertices and hubs of G (cubic neighbours,
+      -- `5|H| + σ ≤ 2n`, the `L–L` parity, `2|B| + σ ≤ n`, V-shapes, the high-surplus bound,
+      -- length-3 pairs), from `[8]`--`[10]`; no decision.
+      let hJointHub :=
+        (jointHubRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          h3 (by key_fresh)
+      -- Joint hubs (Lean improvement): the hub–window budget at `P₀` and its windows against
+      -- the big hubs; no decision.
+      let hHubWindow :=
+        (hubWindowRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          hJointHub (by key_fresh)
+      -- Hub links (Lean improvement): links between the hubs of `R`, the hub classes of the
+      -- cubic vertices and the slot relations; no decision.
+      let hHubLink :=
+        (hubLinkRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          hHubWindow (by key_fresh)
+      -- Pair arms (Lean improvement): every selected port endpoint has degree `δ`; no decision.
+      let hPortEnd :=
+        (portEndDegreeRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          hHubLink (by key_fresh)
       let hSplit :=
         (highCentreSplitForcedRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          h3 (by key_fresh)
+          hPortEnd (by key_fresh)
       -- Hoisted from `[20a]`: the dart identity and the high-degree count, from `[9]`/`[10]`; no decision.
       let hDegreeCount :=
         (degreeCountRow (BranchState := BranchState)

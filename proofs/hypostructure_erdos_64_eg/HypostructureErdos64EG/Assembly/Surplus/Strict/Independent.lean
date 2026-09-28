@@ -15,7 +15,7 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
-set_option maxHeartbeats 1000000 in
+set_option maxHeartbeats 4000000 in
 set_option synthInstance.maxHeartbeats 400000 in
 set_option synthInstance.maxSize 2048 in
 noncomputable def Assembly.Internal.strictSurplusIndependent
@@ -27,21 +27,21 @@ noncomputable def Assembly.Internal.strictSurplusIndependent
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression, K .sparseSurplusSurvivor,
         K .paperBudgetBound, K .paperBudgetCertifies, K .pairCodeConfiguration,
-        K .canonicalTokenCount,
+        K .extFreeEmpty, K .extLoadSum, K .extOverload, K .extOverloadedToken, K .newLoadBound, K .freeSideHubs, K .freeSideCount, K .canonicalTokenCount,
         K .canonicalBlockedFreePartition, K .canonicalLedgerDeficit,
         K .pairCountDeficit, K .canonicalCertificationCriterion,
         K .canonicalOverloadOfFits, K .canonicalFreeExcessOfCapped,
-        K .canonicalCapacityExplicit, K .highDegreePositive,
+        K .pairArmAPattern, K .pairArmARoleAlphabet, K .freeSideStructure, K .separatedPairs, K .windowChargeKinds, K .responseObstructionTargetDefect, K .canonicalCapacityExplicit, K .highDegreePositive,
         K .highDegreeSurplusCapacity, K .orderAboveScaleSquare,
-        K .sixVertexExtremalEnvelope, K .highEndpointSwitch, K .highSurplusConfiguration, K .edgeSurplusIdentity,
+        K .sixVertexExtremalEnvelope, K .pairArmB, K .highEndpointSwitch, K .highSurplusConfiguration, K .scalePressure, K .highSurplusOrder, K .edgeSurplusIdentity,
         K .ceilSqrtAboveScale, K .baselineSpineDemand, K .sparseUpperEnvelope,
         K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
           K .admissibleQuotientsLabelInjective, K .replacementExclusion,
           K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-          K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint,
+          K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .portEndDegree, K .hubLinkStructure, K .hubClassCounts, K .slotRelation, K .closedClasses, K .hubTwoHopLinks, K .slotLinear, K .hubWindowBudget, K .windowHubBounds, K .cubicNeighbourSupply, K .hubCountBound, K .lowEdgeParity, K .bigHubBound, K .bigHubVShapes, K .highSurplusBound, K .hubLengthThreePairs, K .tightEndpoint,
         K .slackIndependent, K .vertexDeletionComponents, K .cyclesThroughVertex,
-        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
-          K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+        K .cutVertexBlockPaths, K .singleBoundaryShape, K .densityExcess, K .remainderSlack, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
+          K .primitiveCarrierCount, K .remainderPathBounds, K .windowFreeGeometry, K .inducedPathAttachment, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
           K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :

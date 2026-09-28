@@ -20,6 +20,9 @@ import Hypostructure.Graph.Statements.SwitchForcedPaths
 import Hypostructure.Graph.Statements.SameTokenPair
 import Hypostructure.Graph.Statements.CycleCounting
 import Hypostructure.Graph.Statements.LocalRigidity
+import Hypostructure.Graph.Statements.JointHubs
+import Hypostructure.Graph.Statements.HubLinks
+import Hypostructure.Graph.Statements.PairArms
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1936,6 +1939,83 @@ inductive Key where
   | windowPositionStubs
   /-- Entry prefix (local rigidity): **Cross-edge gap**: two vertex-disjoint placed paths of G joined at `(i, j)`, `(i', j')` have `|i − i'| + 2 + |j − j'|` not accepted; at the windows of `P₀`: legal attachment labels, `C₁` safety, the cross-window gap rule, no ladder. -/
   | windowAttachmentGap
+  -- port-joint keys (7200–7399; 7200–7216 joint/windows/charge, 7217–7223 hub links, 7224–7232 free side, extended charge, separated pairs; 7233–7237 pair-code arms)
+  /-- Entry prefix (joint hubs): **Cubic neighbours**: every cubic vertex of G has a cubic neighbour and at most two hub neighbours; `|L| ≤ Σ_{v∈L} |N(v) ∩ L| = 2e(L)`. -/
+  | cubicNeighbourSupply
+  /-- Entry prefix (joint hubs): **`5|H| + σ ≤ 2n`** (`H = {d ≠ 3}`). -/
+  | hubCountBound
+  /-- Entry prefix (joint hubs): **Parity of `L–L` edges on walks**: `#LL + [u∈H] + [v∈H] + |p|` is even on every walk `p : u → v` of G; an odd walk between cubic vertices uses an odd number of `L–L` edges. -/
+  | lowEdgeParity
+  /-- Entry prefix (joint hubs): **Hub domination and `2|B| + σ ≤ n`** (`B = {d ≥ 5}`): a hub dominates at most two hub-free components of `G[L]` (one if `d ≥ 5`), and each such component is dominated. -/
+  | bigHubBound
+  /-- Entry prefix (joint hubs): **V-shape caps**: two big hubs share at most `12` V-shape middles (no `C₈`), `|X₂| ≤ 12(|B|² − |B|)`, and `4σ + 93|B| ≤ 2n + 75|B|² + 4|H|`. -/
+  | bigHubVShapes
+  /-- Entry prefix (joint hubs): **The high-surplus bound**: `24σ + 465|B| ≤ 18n + 375|B|²`, and `8n ≤ 32s + 125s²` at `s = n − σ`. -/
+  | highSurplusBound
+  /-- Entry prefix (joint hubs): **Length-3 pairs at a hub** whose second neighbourhood is cubic: at most `4d` ordered non-adjacent pairs of `N(h)` are joined by a length-3 path avoiding `h`, and `d(d − 2) ≤ #(pairs with no such path) + 4d`. -/
+  | hubLengthThreePairs
+  /-- Entry prefix (joint hubs): **Density in excess form**: proper `S` (`|S| ≥ 2`) has `int S + 6 ≤ 4|S|`, i.e. `σ_S ≤ |S| + bd S − 6`; `bd S ≥ 2` for nonempty proper `S`; `S ⊇ N[h]` with its other vertices cubic has slack `≥ |S| − d_h − 1`. -/
+  | densityExcess
+  /-- Entry prefix (joint hubs): **The remainder slack of `P₀`**: `slack(R) = s + 2ν + 2σ_W − 2e× − 6` (`s = n − σ`), and windows of `P₀` hanging on a set `K` consume `Σ (2 + 2σ_P) ≤ slack(K)`. -/
+  | remainderSlack
+  /-- Entry prefix (joint hubs): **The hub–window budget at `P₀`**: `24ν + 2ε + I + 6|H| + σ ≤ 3n + 4h_W`, `2|H| + 3h_R + 2ε + I_W ≤ 2ν + r + s`, `Σ_P #LL(P) + 4h_W = 24ν + 2ε`, and `lowDarts − Σ_P #LL(P) = 2ν + 2r + s − 2|H| − 4h_R − 2ε`. -/
+  | hubWindowBudget
+  /-- Entry prefix (joint hubs): **The windows of `P₀` against the big hubs** (`s = n − σ`, `k = |B|`): `12ν + 31k ≤ 2s + 2|H| + 25k²`, `23ν + 31k ≤ n + 3s + 25k²`, `22ν + 93k + 6h_R + 4ε + 2I_W ≤ 6s + 75k²`. -/
+  | windowHubBounds
+  /-- Entry prefix (joint hubs): **Paths inside the remainder `R` of `P₀`**: no induced `P13`; hub-free connected bags have `≤ 6142` vertices; a path through `k` hubs has `≤ 6143k + 6142` vertices (`≤ 6143h_R + 6142`), and so does a cycle; long paths close long cycles (`m + 11 ≤ 11L`); span `≤ s` gives `m ≤ 11s`; `R` is `12`-degenerate. -/
+  | remainderPathBounds
+  /-- Entry prefix (joint hubs): **Window-free geometry of `P₀`**: short induced walks in window-free sets; the hub-pair dichotomy; chords of long window-free paths and their residues (open at a hub, closed by an outside path); one chord per `13` vertices; the outside-return dichotomy; window-free connected sets have `≤ 1 + 2047(3 + σ_K)` vertices; the carrier position. -/
+  | windowFreeGeometry
+  /-- Entry prefix (joint hubs): **Attachments to induced `P13`s**: a vertex off an induced `P13` of G has at most `7` neighbours on it, and every vertex of an induced `P13` has a neighbour off it. -/
+  | inducedPathAttachment
+  /-- Strict arm of `[19]`: **The orders the high-surplus closure excludes**: `8n ≤ 32(n − C⌈√n⌉ − 1) + 125(n − C⌈√n⌉ − 1)²`, and `n > C² + C + 1 + t` for every `t` with `125t² + 24t < 8(C² + C + 1)` (`C = C_sp`). -/
+  | highSurplusOrder
+  /-- Strict arm of `[19]`: **The window structure of G's canonical charge**: window-charged pairs have a coordinate or chord-set canonical blocker and are fully separated; spread coordinate blockers are window-charged; pairs supported in `R` never are; early blockers are charged to vertex tokens; same-hub pairs are early-blocked; no profile obstruction. -/
+  | windowChargeKinds
+  /-- Strict arm of `[19]`: **Every target-response obstruction of G is a residual target defect** (the replacement and smaller-representative arms are excluded by the replacement exclusion and minimality). -/
+  | responseObstructionTargetDefect
+  /-- Entry prefix (hub links): **The link structure of the hubs of `R`** at `P₀`: no hub chain of `≥ 13` vertices in `R`; no rainbow five-path of bag links and no strong `P5` among the hubs of `R`; the link graph on `S_R` is `18429`-degenerate (`Σ ≤ 36858 h_R`), the strong link graph `3`-degenerate (`Σ ≤ 6 h_R`); a non-strong pair carries `≤ 3·6142` linked vertices. -/
+  | hubLinkStructure
+  /-- Entry prefix (hub links): **The hub classes of the cubic vertices** (`A_j = {x ∈ L : |N(x) ∩ H| = j}`): `|A₀| + |A₁| + |A₂| = |L|`, `|A₁| + 2|A₂| = 3|H| + σ`, `|A₂| ≤ C(|H|, 2)`, `|A₂| + n = |A₀| + 4|H| + σ`, `|U| ≤ 3|A₀|`; per hub `d_h ≤ (|H| − 1) + |N(h) ∩ U| + |N(h) ∩ (A₁ ∖ U)|`; `Σ_H |N(h) ∩ U| = |U|`; the centre overload `≤ 2d_c`. -/
+  | hubClassCounts
+  /-- Entry prefix (hub links): **The slot relation** (no `C₈`): `|A₁| ≤ 3|A₀| + |A₂| + 2(|H|² − |H|) + 2C(|H|, 2)`, `4σ + 21|H| ≤ 3n + 6|H|²`, `4σ + 18|H| ≤ 3n + 6|A₂| + 3|H|²`; at most two matched-link and two link-link vertices per pair of hubs. -/
+  | slotRelation
+  /-- Entry prefix (hub links): **Closed bag-link classes of the hubs of `R`**: edges leaving the closure of a closed class end in `W`; disjoint classes have disjoint closures; with a window, a nonempty closed class reaches `W`; pairwise disjoint nonempty closed classes number `≤ e(R, W)`. -/
+  | closedClasses
+  /-- Entry prefix (hub links): **Two-hop links between the hubs of `R`**: the common-neighbour graph on `S_R` is `25`-degenerate (`Σ ≤ 50 h_R`); at every centre the two-hop graph has `≤ 6142` partners per bag, is `12286`-degenerate, `Σ_S ≤ 24572|S|`. -/
+  | hubTwoHopLinks
+  /-- Entry prefix (hub links): **The slot relation linear in `h_R`**: `|B_W| ≤ 13ν + 4e(R, W)`, the per-class counts off `B_W`, `4σ + 15|H| ≤ 3n + K·h_R + 8|B_W|` and `4σ + 15|H| ≤ 3n + K·h_R + 584ν + 32σ_W` (`K = 1811497284`). -/
+  | slotLinear
+  /-- Strict arm of `[19]`: **The scale pressure**: `C_sp⌈√n⌉ + 15|H| < 3s + K·h_R + 584ν + 32σ_W`, and `11C_sp⌈√n⌉ + 165|H| + 27156|B| < 1785s + 11K·h_R + 21900|B|² + 352σ_W` (`s = n − σ`, `K = 1811497284`). -/
+  | scalePressure
+  /-- Strict arm of `[19]`: **The free side of G's canonical capacity charge**: every free pair is two selected ports with disjoint declared supports, disjoint `T`, disjoint returns, distinct centres, no target-response and no chord-set obstruction, and one port triangular or one centre in the other's `T` (`Π_free ⊆ Π_tri ∪ Π_cs`). -/
+  | freeSideStructure
+  /-- Strict arm of `[19]`: **The free-side count**: `|𝒜₀| = σ`, `s(v) = d(v) − δ`, `|Π_free| ≤ τσ + Λ`, G2 and its capped arm with the count, and for `Δ ≥ max d`: `|Π_free| ≤ σ(τ + 3(Δ − 3))` and (capped, `K ≥ 0`) `n·K ≤ 2σ(τ + 3(Δ − 3))`. -/
+  | freeSideCount
+  /-- Strict arm of `[19]`: **The free side against the hubs**: `|Π_free| ≤ σ(τ + |H| − 1)` (a hub lies in `T(q)` for at most `|H| − 1` ports), and (capped, `K ≥ 0`) `n·K ≤ 2σ(τ + |H| − 1)`. -/
+  | freeSideHubs
+  /-- Strict arm of `[19]`: **The extended charge leaves no pair free**: `Π_free^ext = ∅` at G's canonical capacity presentation (clauses (a)–(f) unchanged; centre–shoulder and triangular pairs charged to a port token). -/
+  | extFreeEmpty
+  /-- Strict arm of `[19]`: **The extended loads**: `C(σ, 2) = Σ_{t∈𝔗} load_ext(t)` and `|𝔗| ≤ 8n + σ`. -/
+  | extLoadSum
+  /-- Strict arm of `[19]`: **The extended overload**: `c²K + 2M₀(8n + σ − |𝔗|) + 2B ≤ 2 Σ_t (load_ext(t) − M₀)`. -/
+  | extOverload
+  /-- Strict arm of `[19]`: **An overloaded extended token**: `K > 0` gives a token with `load_ext > M₀` (unconditional at the registered presentation). -/
+  | extOverloadedToken
+  /-- Strict arm of `[19]`: **The new port loads**: `newLoad(p) ≤ (|H| − 1) + [p triangular]·σ` for every selected port. -/
+  | newLoadBound
+  /-- Strict arm of `[19]`: **Separated pairs and the congestion trade-off**: a pair with disjoint declared supports and returns has only target-response or chord-set blockers; `C(σ, 2) ≤ Σ_v C(d_D(v), 2) + Σ_v C(d_R(v), 2) + |Sep|`. -/
+  | separatedPairs
+  /-- Entry prefix (pair arms): **Every selected port endpoint has degree `δ`** (the centre is high and the high vertices are independent). -/
+  | portEndDegree
+  /-- Strict arm of `[19]`: **Arm A of the pair code → the kind structure of the canonical pattern**: covers `≥ |𝓜| + 1` ports; every pair charged to the overload token with canonical blocker of the role's kind; exactly one of (a) one shared declared vertex, (b) one shared return vertex, (e) target responses with `t ∉ I ∪ P`, (f) fully separated singleton chord blockers (a star at `p₀` or a common shoulder `v`). -/
+  | pairArmAPattern
+  /-- Strict arm of `[19]`: **Arm A → the canonical overload role is one of ten** (`liveRoles`; no incidence token, no clause (c)/(d) role; `M₀`, `C_sp` unchanged). -/
+  | pairArmARoleAlphabet
+  /-- Strict arm of `[19]`: **Arm B of the pair code, exactly**: the overlap system exists and G is in (B1), (B2) or (B3); (B1) the `[182]` residual in three exact configurations; (B3) the obstruction handoff's separator (`deg > 3`), envelope and escape; on the realizability failure forward routes in `U` meet backward routes and the demand ends split; at the serial system the ends lie in `U`, centres high, port ends cubic, no route length accepted, and the switch at the left port. -/
+  | pairArmB
+  /-- Node `[20a]`: **Arm B, (B2)**: the pinned defect of the canonical return system's obstruction coordinates gives a second `Spec` witness on two distinct obstruction coordinates (`|Z''| ≤ |U|`) with the full witness structure. -/
+  | pairArmBDefect
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2961,6 +3041,83 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       WindowPositionStubsStatement data.toParameters object
   | .windowAttachmentGap, object =>
       WindowAttachmentGapStatement data.toParameters object
+  -- port-joint keys
+  | .cubicNeighbourSupply, object =>
+      CubicNeighbourSupplyStatement object
+  | .hubCountBound, object =>
+      HubCountBoundStatement object
+  | .lowEdgeParity, object =>
+      LowEdgeParityStatement object
+  | .bigHubBound, object =>
+      BigHubBoundStatement object
+  | .bigHubVShapes, object =>
+      BigHubVShapesStatement object
+  | .highSurplusBound, object =>
+      HighSurplusBoundStatement object
+  | .hubLengthThreePairs, object =>
+      HubLengthThreePairsStatement object
+  | .densityExcess, object =>
+      DensityExcessStatement object
+  | .remainderSlack, object =>
+      RemainderSlackStatement data.toParameters object
+  | .hubWindowBudget, object =>
+      HubWindowBudgetStatement data.toParameters object
+  | .windowHubBounds, object =>
+      WindowHubBoundsStatement data.toParameters object
+  | .remainderPathBounds, object =>
+      RemainderPathBoundsStatement data.toParameters object
+  | .windowFreeGeometry, object =>
+      WindowFreeGeometryStatement data.toParameters object
+  | .inducedPathAttachment, object =>
+      InducedPathAttachmentStatement object
+  | .highSurplusOrder, object =>
+      HighSurplusOrderStatement data.toParameters object
+  | .windowChargeKinds, object =>
+      WindowChargeKindsStatement data.toParameters object
+  | .responseObstructionTargetDefect, object =>
+      ResponseObstructionTargetDefectStatement data.toParameters object
+  | .hubLinkStructure, object =>
+      HubLinkStructureStatement data.toParameters object
+  | .hubClassCounts, object =>
+      HubClassCountsStatement object
+  | .slotRelation, object =>
+      SlotRelationStatement object
+  | .closedClasses, object =>
+      ClosedClassesStatement data.toParameters object
+  | .hubTwoHopLinks, object =>
+      HubTwoHopLinksStatement data.toParameters object
+  | .slotLinear, object =>
+      SlotLinearStatement data.toParameters object
+  | .scalePressure, object =>
+      ScalePressureStatement data.toParameters object
+  | .freeSideStructure, object =>
+      FreeSideStructureStatement data.toParameters object
+  | .freeSideCount, object =>
+      FreeSideCountStatement data.toParameters object
+  | .freeSideHubs, object =>
+      FreeSideHubsStatement data.toParameters object
+  | .extFreeEmpty, object =>
+      ExtFreeEmptyStatement data.toParameters object
+  | .extLoadSum, object =>
+      ExtLoadSumStatement data.toParameters object
+  | .extOverload, object =>
+      ExtOverloadStatement data.toParameters object
+  | .extOverloadedToken, object =>
+      ExtOverloadedTokenStatement data.toParameters object
+  | .newLoadBound, object =>
+      NewLoadBoundStatement data.toParameters object
+  | .separatedPairs, object =>
+      SeparatedPairsStatement data.toParameters object
+  | .portEndDegree, object =>
+      PortEndDegreeStatement data.toParameters object
+  | .pairArmAPattern, object =>
+      PairArmAPatternStatement data.toParameters object
+  | .pairArmARoleAlphabet, object =>
+      PairArmARoleAlphabetStatement data.toParameters object
+  | .pairArmB, object =>
+      PairArmBStatement data.toParameters object
+  | .pairArmBDefect, object =>
+      PairArmBDefectStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3452,6 +3609,45 @@ def label : Key → String
   | .threeRouteChain => "threeRouteChain"
   | .windowPositionStubs => "windowPositionStubs"
   | .windowAttachmentGap => "windowAttachmentGap"
+  -- port-joint keys
+  | .cubicNeighbourSupply => "cubicNeighbourSupply"
+  | .hubCountBound => "hubCountBound"
+  | .lowEdgeParity => "lowEdgeParity"
+  | .bigHubBound => "bigHubBound"
+  | .bigHubVShapes => "bigHubVShapes"
+  | .highSurplusBound => "highSurplusBound"
+  | .hubLengthThreePairs => "hubLengthThreePairs"
+  | .densityExcess => "densityExcess"
+  | .remainderSlack => "remainderSlack"
+  | .hubWindowBudget => "hubWindowBudget"
+  | .windowHubBounds => "windowHubBounds"
+  | .remainderPathBounds => "remainderPathBounds"
+  | .windowFreeGeometry => "windowFreeGeometry"
+  | .inducedPathAttachment => "inducedPathAttachment"
+  | .highSurplusOrder => "highSurplusOrder"
+  | .windowChargeKinds => "windowChargeKinds"
+  | .responseObstructionTargetDefect => "responseObstructionTargetDefect"
+  | .hubLinkStructure => "hubLinkStructure"
+  | .hubClassCounts => "hubClassCounts"
+  | .slotRelation => "slotRelation"
+  | .closedClasses => "closedClasses"
+  | .hubTwoHopLinks => "hubTwoHopLinks"
+  | .slotLinear => "slotLinear"
+  | .scalePressure => "scalePressure"
+  | .freeSideStructure => "freeSideStructure"
+  | .freeSideCount => "freeSideCount"
+  | .freeSideHubs => "freeSideHubs"
+  | .extFreeEmpty => "extFreeEmpty"
+  | .extLoadSum => "extLoadSum"
+  | .extOverload => "extOverload"
+  | .extOverloadedToken => "extOverloadedToken"
+  | .newLoadBound => "newLoadBound"
+  | .separatedPairs => "separatedPairs"
+  | .portEndDegree => "portEndDegree"
+  | .pairArmAPattern => "pairArmAPattern"
+  | .pairArmARoleAlphabet => "pairArmARoleAlphabet"
+  | .pairArmB => "pairArmB"
+  | .pairArmBDefect => "pairArmBDefect"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3945,6 +4141,44 @@ example : label .threeRouteFan = "threeRouteFan" := rfl
 example : label .threeRouteChain = "threeRouteChain" := rfl
 example : label .windowPositionStubs = "windowPositionStubs" := rfl
 example : label .windowAttachmentGap = "windowAttachmentGap" := rfl
+example : label .cubicNeighbourSupply = "cubicNeighbourSupply" := rfl
+example : label .hubCountBound = "hubCountBound" := rfl
+example : label .lowEdgeParity = "lowEdgeParity" := rfl
+example : label .bigHubBound = "bigHubBound" := rfl
+example : label .bigHubVShapes = "bigHubVShapes" := rfl
+example : label .highSurplusBound = "highSurplusBound" := rfl
+example : label .hubLengthThreePairs = "hubLengthThreePairs" := rfl
+example : label .densityExcess = "densityExcess" := rfl
+example : label .remainderSlack = "remainderSlack" := rfl
+example : label .hubWindowBudget = "hubWindowBudget" := rfl
+example : label .windowHubBounds = "windowHubBounds" := rfl
+example : label .remainderPathBounds = "remainderPathBounds" := rfl
+example : label .windowFreeGeometry = "windowFreeGeometry" := rfl
+example : label .inducedPathAttachment = "inducedPathAttachment" := rfl
+example : label .highSurplusOrder = "highSurplusOrder" := rfl
+example : label .windowChargeKinds = "windowChargeKinds" := rfl
+example : label .responseObstructionTargetDefect = "responseObstructionTargetDefect" := rfl
+example : label .hubLinkStructure = "hubLinkStructure" := rfl
+example : label .hubClassCounts = "hubClassCounts" := rfl
+example : label .slotRelation = "slotRelation" := rfl
+example : label .closedClasses = "closedClasses" := rfl
+example : label .hubTwoHopLinks = "hubTwoHopLinks" := rfl
+example : label .slotLinear = "slotLinear" := rfl
+example : label .scalePressure = "scalePressure" := rfl
+example : label .freeSideStructure = "freeSideStructure" := rfl
+example : label .freeSideCount = "freeSideCount" := rfl
+example : label .freeSideHubs = "freeSideHubs" := rfl
+example : label .extFreeEmpty = "extFreeEmpty" := rfl
+example : label .extLoadSum = "extLoadSum" := rfl
+example : label .extOverload = "extOverload" := rfl
+example : label .extOverloadedToken = "extOverloadedToken" := rfl
+example : label .newLoadBound = "newLoadBound" := rfl
+example : label .separatedPairs = "separatedPairs" := rfl
+example : label .portEndDegree = "portEndDegree" := rfl
+example : label .pairArmAPattern = "pairArmAPattern" := rfl
+example : label .pairArmARoleAlphabet = "pairArmARoleAlphabet" := rfl
+example : label .pairArmB = "pairArmB" := rfl
+example : label .pairArmBDefect = "pairArmBDefect" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4430,6 +4664,45 @@ def idx : Key → Nat
   | .threeRouteChain => 7101
   | .windowPositionStubs => 7102
   | .windowAttachmentGap => 7103
+  -- port-joint keys
+  | .cubicNeighbourSupply => 7200
+  | .hubCountBound => 7201
+  | .lowEdgeParity => 7202
+  | .bigHubBound => 7203
+  | .bigHubVShapes => 7204
+  | .highSurplusBound => 7205
+  | .hubLengthThreePairs => 7206
+  | .densityExcess => 7207
+  | .remainderSlack => 7208
+  | .hubWindowBudget => 7209
+  | .windowHubBounds => 7210
+  | .remainderPathBounds => 7211
+  | .windowFreeGeometry => 7212
+  | .inducedPathAttachment => 7213
+  | .highSurplusOrder => 7214
+  | .windowChargeKinds => 7215
+  | .responseObstructionTargetDefect => 7216
+  | .hubLinkStructure => 7217
+  | .hubClassCounts => 7218
+  | .slotRelation => 7219
+  | .closedClasses => 7220
+  | .hubTwoHopLinks => 7221
+  | .slotLinear => 7222
+  | .scalePressure => 7223
+  | .freeSideStructure => 7224
+  | .freeSideCount => 7225
+  | .freeSideHubs => 7226
+  | .extFreeEmpty => 7227
+  | .extLoadSum => 7228
+  | .extOverload => 7229
+  | .extOverloadedToken => 7230
+  | .newLoadBound => 7231
+  | .separatedPairs => 7232
+  | .portEndDegree => 7233
+  | .pairArmAPattern => 7234
+  | .pairArmARoleAlphabet => 7235
+  | .pairArmB => 7236
+  | .pairArmBDefect => 7237
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4904,6 +5177,45 @@ def ofIdx : Nat → Key
   | 7101 => .threeRouteChain
   | 7102 => .windowPositionStubs
   | 7103 => .windowAttachmentGap
+  -- port-joint keys
+  | 7200 => .cubicNeighbourSupply
+  | 7201 => .hubCountBound
+  | 7202 => .lowEdgeParity
+  | 7203 => .bigHubBound
+  | 7204 => .bigHubVShapes
+  | 7205 => .highSurplusBound
+  | 7206 => .hubLengthThreePairs
+  | 7207 => .densityExcess
+  | 7208 => .remainderSlack
+  | 7209 => .hubWindowBudget
+  | 7210 => .windowHubBounds
+  | 7211 => .remainderPathBounds
+  | 7212 => .windowFreeGeometry
+  | 7213 => .inducedPathAttachment
+  | 7214 => .highSurplusOrder
+  | 7215 => .windowChargeKinds
+  | 7216 => .responseObstructionTargetDefect
+  | 7217 => .hubLinkStructure
+  | 7218 => .hubClassCounts
+  | 7219 => .slotRelation
+  | 7220 => .closedClasses
+  | 7221 => .hubTwoHopLinks
+  | 7222 => .slotLinear
+  | 7223 => .scalePressure
+  | 7224 => .freeSideStructure
+  | 7225 => .freeSideCount
+  | 7226 => .freeSideHubs
+  | 7227 => .extFreeEmpty
+  | 7228 => .extLoadSum
+  | 7229 => .extOverload
+  | 7230 => .extOverloadedToken
+  | 7231 => .newLoadBound
+  | 7232 => .separatedPairs
+  | 7233 => .portEndDegree
+  | 7234 => .pairArmAPattern
+  | 7235 => .pairArmARoleAlphabet
+  | 7236 => .pairArmB
+  | 7237 => .pairArmBDefect
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -4922,6 +5234,7 @@ def ofIdx : Nat → Key
   | 2701 => .coldSelectedFamilyEmpty
   | _ => .selection
 
+set_option maxRecDepth 8192 in
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
   cases k <;> rfl
 
@@ -5952,6 +6265,83 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "windowPositionStubs") 7102
   | .windowAttachmentGap =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "windowAttachmentGap") 7103
+  -- port-joint keys
+  | .cubicNeighbourSupply =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "cubicNeighbourSupply") 7200
+  | .hubCountBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "hubCountBound") 7201
+  | .lowEdgeParity =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "lowEdgeParity") 7202
+  | .bigHubBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "bigHubBound") 7203
+  | .bigHubVShapes =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "bigHubVShapes") 7204
+  | .highSurplusBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "highSurplusBound") 7205
+  | .hubLengthThreePairs =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "hubLengthThreePairs") 7206
+  | .densityExcess =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "densityExcess") 7207
+  | .remainderSlack =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "remainderSlack") 7208
+  | .hubWindowBudget =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "hubWindowBudget") 7209
+  | .windowHubBounds =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowHubBounds") 7210
+  | .remainderPathBounds =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "remainderPathBounds") 7211
+  | .windowFreeGeometry =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowFreeGeometry") 7212
+  | .inducedPathAttachment =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "inducedPathAttachment") 7213
+  | .highSurplusOrder =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "highSurplusOrder") 7214
+  | .windowChargeKinds =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowChargeKinds") 7215
+  | .responseObstructionTargetDefect =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "responseObstructionTargetDefect") 7216
+  | .hubLinkStructure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "hubLinkStructure") 7217
+  | .hubClassCounts =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "hubClassCounts") 7218
+  | .slotRelation =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "slotRelation") 7219
+  | .closedClasses =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "closedClasses") 7220
+  | .hubTwoHopLinks =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "hubTwoHopLinks") 7221
+  | .slotLinear =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "slotLinear") 7222
+  | .scalePressure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "scalePressure") 7223
+  | .freeSideStructure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "freeSideStructure") 7224
+  | .freeSideCount =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "freeSideCount") 7225
+  | .freeSideHubs =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "freeSideHubs") 7226
+  | .extFreeEmpty =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "extFreeEmpty") 7227
+  | .extLoadSum =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "extLoadSum") 7228
+  | .extOverload =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "extOverload") 7229
+  | .extOverloadedToken =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "extOverloadedToken") 7230
+  | .newLoadBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "newLoadBound") 7231
+  | .separatedPairs =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "separatedPairs") 7232
+  | .portEndDegree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "portEndDegree") 7233
+  | .pairArmAPattern =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmAPattern") 7234
+  | .pairArmARoleAlphabet =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmARoleAlphabet") 7235
+  | .pairArmB =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmB") 7236
+  | .pairArmBDefect =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmBDefect") 7237
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000
