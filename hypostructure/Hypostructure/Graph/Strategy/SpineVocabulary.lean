@@ -15,6 +15,8 @@ import Hypostructure.Graph.Statements.SpineDominantType
 import Hypostructure.Graph.Statements.ColdResiduals
 import Hypostructure.Graph.Statements.DensityOrder
 import Hypostructure.Graph.Statements.SparseExitResidual
+import Hypostructure.Graph.Statements.SwitchForcedPaths
+import Hypostructure.Graph.Statements.SameTokenPair
 import Hypostructure.Graph.Statements.CycleCounting
 import Hypostructure.Graph.Statements.LocalRigidity
 
@@ -1650,6 +1652,20 @@ inductive Key where
   | pairNoProfileObstruction
   /-- Node `[144a]`: no reading of G's piece at the pattern support is a replacement representative. -/
   | sameTokenReadingsNotReplacement
+  /-- Entry (after `[1]`--`[3]`): **The two-edge switch of G forces a path**: for edges `u₁v₁`, `u₂v₂` of G with distinct ends, `u₁ ≁ u₂` and `deg v₁, deg v₂ ≥ δ + 1`, `G − {u₁v₁, u₂v₂}` has a simple `u₁`–`u₂` path `p` with `|p| + 1` accepted. -/
+  | twoSwitchForcedPath
+  /-- Entry (after `[9]`/`[10]`): **The vertex split of G at every high centre forces a cycle**: at every `h` with `deg h > δ`, `G ⊔ M_h` (`M_h` the non-adjacent pairs of `N(h)`) has an accepted cycle avoiding `h` and using an edge of `M_h` absent from G. -/
+  | highCentreSplitForced
+  /-- Entry (after `[1]`--`[3]`): **The cross-vertex switch family of G**: at an edge `u₁v` and a vertex `h' ≠ v` with `deg v, deg h' ≥ δ + 1`, every neighbour `u ≁ u₁` of `h'` has a forced `u₁ → u` path in `G − {u₁v, uh'}` with accepted closing length, and two `2^j − 1` paths from `u₁` into two neighbours of `h'` are never `h'`-free and internally disjoint (the dyadic star). -/
+  | crossSwitchFamily
+  /-- Entry (after `[5]`/`[6]`): **The same-vertex switch of G forces a path, split exactly**: for non-adjacent neighbours `u₁ ≠ u₂` of `h` with `deg h ≥ δ + 2`, `G − {hu₁, hu₂}` has a simple `u₁`–`u₂` path `p` with `|p| + 1` accepted, and either `p` avoids `h` with `|p| + 2` not accepted, or `p` splits at `h` into two returns `ℓ₁ + ℓ₂ = |p|` with neither `ℓᵢ + 1` accepted. -/
+  | sameVertexSwitchForcedPath
+  /-- Node `[144]` (after the routing of `lem:same-token-bottleneck-routing`): **The pattern supports of G's canonical routing**: G's canonical routing exists and each pattern support `X_π` (`π ∈ {p, q}`) is `select?(seed(π))`, connected, with two distinct vertices. -/
+  | sameTokenPatternSupports
+  /-- Node `[144]` (after the routing): **The swaps of G's two pattern readings**: at G's canonical routing, swapping `ret_q` by `ret_p` (and conversely) gives G itself, or loses the baseline at a tight endpoint `w` of a private edge, `deg(w) ≤ δ − 1`. -/
+  | sameTokenPatternSwap
+  /-- Node `[144a]`: **The exact partition of G's unresolved pattern pair**: at G's canonical routing, supports `X_p = select?(seed(p))`, `X_q = select?(seed(q))` and `Z = select?(X_p ∪ X_q)` (`X_p, X_q ⊆ Z`, `Z` connected): (U1) a boundary vertex with different counts, both `≤ deg b − 1`, retained with a neighbour by one support and adjacent to its seed or cutting it; or equal counts with transfer, context equivalence and equal `a`–`b` path-length spectra, and (U2-free) neither support on `∂Z` (every `∂Z` vertex a connector cut vertex, `N(X_p ∪ X_q) ⊆ Z`) or (U2-shared) a boundary vertex in both supports.  The one-sided region is empty. -/
+  | sameTokenPairPartition
   -- Returned residuals (fix3, 3200-3249)
   /-- Node `[153]`, distinct-states arm: G's pinned cut states along each retained cold corridor are pairwise distinct up to the first failure. -/
   | coldCutStatesDistinct
@@ -2666,6 +2682,20 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairNoProfileObstructionStatement data.toParameters object
   | .sameTokenReadingsNotReplacement, object =>
       SameTokenReadingsNotReplacementStatement data.toParameters object
+  | .twoSwitchForcedPath, object =>
+      TwoSwitchForcedPathStatement data.toParameters object
+  | .highCentreSplitForced, object =>
+      HighCentreSplitForcedStatement data.toParameters object
+  | .crossSwitchFamily, object =>
+      CrossSwitchFamilyStatement data.toParameters object
+  | .sameVertexSwitchForcedPath, object =>
+      SameVertexSwitchForcedPathStatement data.toParameters object
+  | .sameTokenPatternSupports, object =>
+      SameTokenPatternSupportsStatement data.toParameters object
+  | .sameTokenPatternSwap, object =>
+      SameTokenPatternSwapStatement data.toParameters object
+  | .sameTokenPairPartition, object =>
+      SameTokenPairPartitionStatement data.toParameters object
   | .coldCutStatesDistinct, object =>
       ColdCutStatesDistinctStatement data.toParameters object
   | .coldRepeatedStateResidual, object =>
@@ -3229,6 +3259,13 @@ def label : Key → String
   | .pairProfileObstruction => "pairProfileObstruction"
   | .pairNoProfileObstruction => "pairNoProfileObstruction"
   | .sameTokenReadingsNotReplacement => "sameTokenReadingsNotReplacement"
+  | .twoSwitchForcedPath => "twoSwitchForcedPath"
+  | .highCentreSplitForced => "highCentreSplitForced"
+  | .crossSwitchFamily => "crossSwitchFamily"
+  | .sameVertexSwitchForcedPath => "sameVertexSwitchForcedPath"
+  | .sameTokenPatternSupports => "sameTokenPatternSupports"
+  | .sameTokenPatternSwap => "sameTokenPatternSwap"
+  | .sameTokenPairPartition => "sameTokenPairPartition"
   | .coldCutStatesDistinct => "coldCutStatesDistinct"
   | .coldRepeatedStateResidual => "coldRepeatedStateResidual"
   | .coldHeavyEntryTerminal => "coldHeavyEntryTerminal"
@@ -3702,6 +3739,13 @@ example : label .pairDegreeProfileFibres = "pairDegreeProfileFibres" := rfl
 example : label .pairProfileObstruction = "pairProfileObstruction" := rfl
 example : label .pairNoProfileObstruction = "pairNoProfileObstruction" := rfl
 example : label .sameTokenReadingsNotReplacement = "sameTokenReadingsNotReplacement" := rfl
+example : label .twoSwitchForcedPath = "twoSwitchForcedPath" := rfl
+example : label .highCentreSplitForced = "highCentreSplitForced" := rfl
+example : label .crossSwitchFamily = "crossSwitchFamily" := rfl
+example : label .sameVertexSwitchForcedPath = "sameVertexSwitchForcedPath" := rfl
+example : label .sameTokenPatternSupports = "sameTokenPatternSupports" := rfl
+example : label .sameTokenPatternSwap = "sameTokenPatternSwap" := rfl
+example : label .sameTokenPairPartition = "sameTokenPairPartition" := rfl
 example : label .coldCutStatesDistinct = "coldCutStatesDistinct" := rfl
 example : label .coldRepeatedStateResidual = "coldRepeatedStateResidual" := rfl
 example : label .coldHeavyEntryTerminal = "coldHeavyEntryTerminal" := rfl
@@ -4159,6 +4203,13 @@ def idx : Key → Nat
   | .pairProfileObstruction => 2903
   | .pairNoProfileObstruction => 2904
   | .sameTokenReadingsNotReplacement => 2905
+  | .twoSwitchForcedPath => 6800
+  | .highCentreSplitForced => 6801
+  | .crossSwitchFamily => 6802
+  | .sameVertexSwitchForcedPath => 6803
+  | .sameTokenPatternSupports => 6804
+  | .sameTokenPatternSwap => 6805
+  | .sameTokenPairPartition => 6806
   | .coldCutStatesDistinct => 3200
   | .coldRepeatedStateResidual => 3201
   | .coldHeavyEntryTerminal => 3202
@@ -4609,6 +4660,13 @@ def ofIdx : Nat → Key
   | 2903 => .pairProfileObstruction
   | 2904 => .pairNoProfileObstruction
   | 2905 => .sameTokenReadingsNotReplacement
+  | 6800 => .twoSwitchForcedPath
+  | 6801 => .highCentreSplitForced
+  | 6802 => .crossSwitchFamily
+  | 6803 => .sameVertexSwitchForcedPath
+  | 6804 => .sameTokenPatternSupports
+  | 6805 => .sameTokenPatternSwap
+  | 6806 => .sameTokenPairPartition
   | 3200 => .coldCutStatesDistinct
   | 3201 => .coldRepeatedStateResidual
   | 3202 => .coldHeavyEntryTerminal
@@ -5513,6 +5571,20 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairNoProfileObstruction") 2904
   | .sameTokenReadingsNotReplacement =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenReadingsNotReplacement") 2905
+  | .twoSwitchForcedPath =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "twoSwitchForcedPath") 6800
+  | .highCentreSplitForced =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "highCentreSplitForced") 6801
+  | .crossSwitchFamily =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "crossSwitchFamily") 6802
+  | .sameVertexSwitchForcedPath =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameVertexSwitchForcedPath") 6803
+  | .sameTokenPatternSupports =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenPatternSupports") 6804
+  | .sameTokenPatternSwap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenPatternSwap") 6805
+  | .sameTokenPairPartition =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenPairPartition") 6806
   | .coldCutStatesDistinct =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldCutStatesDistinct") 3200
   | .coldRepeatedStateResidual =>

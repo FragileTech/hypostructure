@@ -39,11 +39,11 @@ noncomputable def selectedNearCubicNode21
         K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
           K .admissibleQuotientsLabelInjective, K .replacementExclusion,
           K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-          K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
+          K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint,
         K .slackIndependent, K .vertexDeletionComponents, K .cyclesThroughVertex,
-        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
           K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-          K .highDegreePairSum, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
+          K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -52,11 +52,11 @@ noncomputable def selectedNearCubicNode21
         K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
           K .admissibleQuotientsLabelInjective, K .replacementExclusion,
           K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-          K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
+          K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint,
         K .slackIndependent, K .vertexDeletionComponents, K .cyclesThroughVertex,
-        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
           K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-          K .highDegreePairSum, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
+          K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] :=
   let enumerated :=

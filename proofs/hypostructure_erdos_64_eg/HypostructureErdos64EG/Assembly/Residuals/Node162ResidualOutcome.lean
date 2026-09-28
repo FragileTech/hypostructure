@@ -10,9 +10,9 @@ the pass on the no-arm of `[158]`.  Their ledgers differ only by the arm of
 two residuals, each a subtype of the generic `Node162ResidualOutcome`:
 
 - `Node162ResidualOutcome_tauAtOrAbove`: `[160]` first test fails,
-  `τ(θ) ≥ 1/4` (58 facts);
+  `τ(θ) ≥ 1/4` (70 facts);
 - `Node162ResidualOutcome_tauBelowRateFails`: `[160]` first test holds,
-  `τ(θ) < 1/4`, and the private-carrier rate `τ(θ) < 3/13` fails (59 facts).
+  `τ(θ) < 1/4`, and the private-carrier rate `τ(θ) < 3/13` fails (71 facts).
 -/
 
 namespace HypostructureErdos64EG
@@ -60,6 +60,10 @@ theorem node162Return_tauAtOrAbove
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -156,6 +160,10 @@ theorem node162Return_tauBelowRateFails
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -240,6 +248,10 @@ theorem node162SubtypesReturn
     [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
     [FactKeys.Has (K .specWitnessStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]

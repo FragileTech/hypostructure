@@ -11,6 +11,7 @@ import Hypostructure.Graph.Strategy.SpineRows.ReturnAvoidance
 import Hypostructure.Graph.Strategy.SpineRows.TargetCompleteContextUniversality
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.SparseExitResidual
+import Hypostructure.Graph.Strategy.SpineRows.SwitchForcedPaths
 import Hypostructure.Graph.Strategy.SpineRows.CycleCounting
 import Hypostructure.Graph.Strategy.SpineRows.LocalRigidity
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseSurplusExit
@@ -54,11 +55,11 @@ noncomputable def selectedEntryPrefix
       [K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-        K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
+        K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint, K .slackIndependent,
         K .vertexDeletionComponents, K .cyclesThroughVertex,
-        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
         K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-        K .highDegreePairSum, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
+        K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
   -- Hoisted from `[20a]`: facts of G read from `[4]`'s selection alone; no decision.
@@ -98,12 +99,19 @@ noncomputable def selectedEntryPrefix
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       hBridgeless (by key_fresh)
+  -- The two-edge switch and the cross-vertex switch family of G, forced by
+  -- minimality from the selection and the baseline; no decision.
+  let hSwitch :=
+    (entrySwitchPathsRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hBaseline (by key_fresh)
   -- Cycle counting (Lean improvement): the pair sums at the high vertices of G against σ, from the baseline; no decision.
   let hPairSum :=
     (highDegreePairSumRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      hBaseline (by key_fresh)
+      hSwitch (by key_fresh)
   -- Hoisted from `[20a]`: the canonical packing `P₀` of G, from the baseline; no decision.
   let hPacking :=
     (sparseExitPackingRow (BranchState := BranchState)
@@ -137,11 +145,18 @@ noncomputable def selectedEntryPrefix
         (by key_fresh)).elimClosed
             (by infer_instance)).elim
   | .right h1 =>
+      -- The same-vertex switch of G, split exactly by the return avoidance of
+      -- `[6]`'s no arm; no decision.
+      let hSameVertex :=
+        (sameVertexSwitchForcedPathRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          h1 (by key_fresh)
       let h2 :=
         (noProperBaselineRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          h1 (by
+          hSameVertex (by
             key_fresh)
       -- Hoisted from `[20a]`: the single-boundary shape, from `[8]` and `lem:bridgeless`; no decision.
       let hBoundary :=
@@ -162,12 +177,19 @@ noncomputable def selectedEntryPrefix
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           hCutVertex (by
             key_fresh)
+      -- The vertex split of G at every high centre, from `[9]`/`[10]`'s
+      -- tight-endpoint law (a matching neighbourhood); no decision.
+      let hSplit :=
+        (highCentreSplitForcedRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          h3 (by key_fresh)
       -- Hoisted from `[20a]`: the dart identity and the high-degree count, from `[9]`/`[10]`; no decision.
       let hDegreeCount :=
         (degreeCountRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          h3 (by key_fresh)
+          hSplit (by key_fresh)
       -- Cycle counting (Lean improvement): the double count of the cycles of G at its
       -- independent high vertices, from `[9]`/`[10]`; no decision.
       let hDoubleCount :=
