@@ -21,6 +21,12 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
+-- The `[20a]` witness rows re-invoked on `[187]`'s near-cubic target defect
+-- lengthen this ledger; `FactKeys.Available` then needs more than the default
+-- instance budget.
+set_option maxHeartbeats 1000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+set_option synthInstance.maxSize 2048 in
 /-- Establish `def:surviving-cold-branch` before entering any hot/cold or
 net-charge descendant.  The exhaustive sparse-exit split belongs to the
 enclosing routing; its survivor ledger enters `[21]` directly and is then
@@ -44,8 +50,43 @@ noncomputable def selectedNearCubicBranch
       (data := spineData) history
       (by key_fresh) (by key_fresh) with
   | .left exitHistory =>
-      exact Or.inl
-        (nearCubicTargetDefectReturn (selectedSparseTargetDefectExit exitHistory))
+      -- `[187]`'s near-cubic target defect carries `[125]`'s pinned witness
+      -- (`K .sparseTargetDefectResidual`), so the `[20a]` witness rows run here
+      -- too, once each, on this ledger: the same keys at the same canonical
+      -- witness `sparseTargetDefectWitness`.  None reads `K .surplusAbove`.
+      -- No decision.
+      let targetDefectHistory := selectedSparseTargetDefectExit exitHistory
+      let witnessFactsHistory :=
+        (sparseExitWitnessFactsRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run targetDefectHistory (by key_fresh)
+      let realizedContextsHistory :=
+        (sparseExitRealizedContextsRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run witnessFactsHistory (by key_fresh)
+      let boundaryHistory :=
+        (sparseExitBoundaryRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run realizedContextsHistory (by key_fresh)
+      let compressionHistory :=
+        (sparseExitCompressionRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run boundaryHistory (by key_fresh)
+      let deletionHistory :=
+        (sparseExitDeletionRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run compressionHistory (by key_fresh)
+      let combinationHistory :=
+        (sparseExitCombinationRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run deletionHistory (by key_fresh)
+      exact Or.inl (nearCubicTargetDefectReturn combinationHistory)
   | .right survivorHistory =>
       -- The at-or-below survivor goes to `[21]`; `[125]` is entered only
       -- from the strict arm `[20]`.

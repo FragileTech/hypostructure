@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
+import Hypostructure.Graph.Strategy.SpineRows.SparseExitResidual
 import Hypostructure.Graph.Strategy.SpineRows.HighCentreNormalForm
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.BlockedPairEntropy
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.FibrePressure
@@ -60,13 +61,24 @@ noncomputable def Assembly.Internal.strictSurplusDependent
           K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     StrictSurplusBoundaryResult selected := by
+  -- Top of the dependent arm of `[130]` (reuse): `[131]`'s full-schedule
+  -- entropy count fails at G's canonical objects, unconditionally.  The same
+  -- row and contract as on `[20a]` (`sparseExitFreePairCountRow`, reading only
+  -- strict-arm facts), run once on this arm; on the independent arm the key
+  -- is published by `[131]`'s own decision (`freePairEntropyDichotomy`), so
+  -- no ledger publishes it twice.  No decision.
+  let freePairCountHistory :=
+    (sparseExitFreePairCountRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile)
+      (data := spineData)).run dependentHistory (by key_fresh)
   -- `[130]`, blocked arm: `lem:degree-profile-fibres` at G's pair family, then
   -- blocker clause (d) at G's canonical activation, closed against it.
   let fibresHistory :=
     (pairDegreeProfileFibresRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      dependentHistory (by key_fresh)
+      freePairCountHistory (by key_fresh)
   match pairProfileObstructionDichotomy (data := spineData) fibresHistory
       (by key_fresh) (by key_fresh) with
   | .left profileHistory =>
