@@ -25,17 +25,14 @@ universe u w
 /-- **Node `[20a]`** (thm:main (i), tex 339-346): the strict-surplus named
 sparse exit of [20]: the attempted-quotient target defect and its registered
 structure, on the strict arm of [19].  The explicit conjunction of every
-fact on its maximal ledger, 99 facts: the 19 facts of the path, the 4 forced
-switch and split facts of the entry prefix (`SpineRows/SwitchForcedPaths.lean`),
-the 76 facts
-first published for `[20a]` (`SpineRows/SparseExitResidual.lean`, with
-`K .bridgeless`, `K .sparseUpperEnvelope`, `K .baselineSpineDemand` and
-`K .freePairCountFails`).  Each is now published at the earliest point where
-its inputs are on the ledger: 11 in the entry prefix (carried by every
-residual), 19 at the top of the strict arm of `[19]` (carried by every
-strict-surplus residual), and the 46 that read `[20a]`'s own facts (or, for
-`K .freePairCountFails`, would collide with `[131]`'s decision key) on the
-`[20a]` arm. -/
+fact on its maximal ledger, 128 facts: the facts of the path and of the
+entry prefix and strict arm of `[19]` (every lane's hoisted facts), the facts
+first published for `[20a]` (`SpineRows/SparseExitResidual.lean`), and the 14
+witness-level readings facts of `SpineRows/SparseExitReadings.lean` (whose
+entry key `K .everyWitnessSpectrumSplit` and strict-arm keys
+`K .highSurplusConfiguration`, `K .highEndpointSwitch` are carried by every
+residual, resp. every strict-surplus residual).  Each is published at the
+earliest point where its inputs are on the ledger. -/
 abbrev Node20aOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -68,7 +65,13 @@ abbrev Node20aOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusAbove selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highSurplusConfiguration selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highEndpointSwitch selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .sparsePairExit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -258,7 +261,35 @@ abbrev Node20aOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .specWitnessStructure selected.object
+      erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .witnessReadingCounts selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .witnessActiveLabels selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundaryPartition selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .positiveCyclePrivateEdge selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .wholeCycleMeetsDeficit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .wholePrivateEdges selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .spectrumArmOneRefined selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .separatingEdgeContextWitness selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoBoundaryAllActive selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .privateEdgeSwap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cubicLabelOutsidePath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .separatingEdgeContextSpectrum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .privateEdgeSwitch selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoBoundaryOutsideBoth selected.object
 
 /-- The return of `Node20aOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -280,7 +311,10 @@ theorem node20aReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .sparsePairExit) known]
     [FactKeys.Has (K .sparseTargetDefectResidual) known]
     [FactKeys.Has (K .sparseTargetDefectStructure) known]
@@ -375,7 +409,21 @@ theorem node20aReturn
     [FactKeys.Has (K .crossSwitchFamily) known]
     [FactKeys.Has (K .highCentreSplitForced) known]
     [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
-    [FactKeys.Has (K .specWitnessStructure) known] :
+    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .witnessReadingCounts) known]
+    [FactKeys.Has (K .witnessActiveLabels) known]
+    [FactKeys.Has (K .boundaryPartition) known]
+    [FactKeys.Has (K .positiveCyclePrivateEdge) known]
+    [FactKeys.Has (K .wholeCycleMeetsDeficit) known]
+    [FactKeys.Has (K .wholePrivateEdges) known]
+    [FactKeys.Has (K .spectrumArmOneRefined) known]
+    [FactKeys.Has (K .separatingEdgeContextWitness) known]
+    [FactKeys.Has (K .twoBoundaryAllActive) known]
+    [FactKeys.Has (K .privateEdgeSwap) known]
+    [FactKeys.Has (K .cubicLabelOutsidePath) known]
+    [FactKeys.Has (K .separatingEdgeContextSpectrum) known]
+    [FactKeys.Has (K .privateEdgeSwitch) known]
+    [FactKeys.Has (K .twoBoundaryOutsideBoth) known] :
     Node20aOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -392,7 +440,10 @@ theorem node20aReturn
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .surplusAbove)).down,
+    (history.get (K .highSurplusConfiguration)).down,
+    (history.get (K .highEndpointSwitch)).down,
     (history.get (K .sparsePairExit)).down,
     (history.get (K .sparseTargetDefectResidual)).down,
     (history.get (K .sparseTargetDefectStructure)).down,
@@ -487,18 +538,33 @@ theorem node20aReturn
     (history.get (K .crossSwitchFamily)).down,
     (history.get (K .highCentreSplitForced)).down,
     (history.get (K .sameVertexSwitchForcedPath)).down,
-    (history.get (K .specWitnessStructure)).down⟩
+    (history.get (K .specWitnessStructure)).down,
+    (history.get (K .witnessReadingCounts)).down,
+    (history.get (K .witnessActiveLabels)).down,
+    (history.get (K .boundaryPartition)).down,
+    (history.get (K .positiveCyclePrivateEdge)).down,
+    (history.get (K .wholeCycleMeetsDeficit)).down,
+    (history.get (K .wholePrivateEdges)).down,
+    (history.get (K .spectrumArmOneRefined)).down,
+    (history.get (K .separatingEdgeContextWitness)).down,
+    (history.get (K .twoBoundaryAllActive)).down,
+    (history.get (K .privateEdgeSwap)).down,
+    (history.get (K .cubicLabelOutsidePath)).down,
+    (history.get (K .separatingEdgeContextSpectrum)).down,
+    (history.get (K .privateEdgeSwitch)).down,
+    (history.get (K .twoBoundaryOutsideBoth)).down⟩
 
 /-- **Node `[187] (near-cubic target defect)`** (thm:main (vi), tex 369-378):
 the sparse target-defect exit of [20] on the at-or-below-surplus arm of
-[19].  The explicit conjunction of every fact on its maximal ledger (87
-facts): the 42 facts of the path (with the 12 entry-prefix facts of
-`SpineRows/SwitchForcedPaths.lean` and `SpineRows/CycleCounting.lean`), then the 45 witness-level facts first
+[19].  The explicit conjunction of every fact on its maximal ledger (105
+facts): the facts of the path (with the entry-prefix facts of every lane), then the 45 witness-level facts first
 published on `[20a]` (`SpineRows/SparseExitResidual.lean`), re-invoked here by
-the same six rows: this ledger carries the same `K .sparseTargetDefectResidual`,
-so they are the same keys at the same canonical witness
-`sparseTargetDefectWitness` (each contract is `atWitness_of_spec` of its
-`<key>_of_spec`, stated for every `Spec` witness). -/
+the same six rows, and the 13 witness-level readings facts of
+`SpineRows/SparseExitReadings.lean` (two rows; the private-edge switch reads the
+strict-arm switch and stays on `[20a]`): this ledger carries the same
+`K .sparseTargetDefectResidual`, so they are the same keys at the same
+canonical witness `sparseTargetDefectWitness` (each contract is
+`atWitness_of_spec` of its `<key>_of_spec`, stated for every `Spec` witness). -/
 abbrev NearCubicTargetDefectOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -530,6 +596,8 @@ abbrev NearCubicTargetDefectOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -681,7 +749,33 @@ abbrev NearCubicTargetDefectOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .wholeDeficitBoundaryCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .wholeCutEdgeSurplusBound selected.object
+      erdosReceiverLoadProfile spineData .wholeCutEdgeSurplusBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .witnessReadingCounts selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .witnessActiveLabels selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundaryPartition selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .positiveCyclePrivateEdge selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .wholeCycleMeetsDeficit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .wholePrivateEdges selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .spectrumArmOneRefined selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .separatingEdgeContextWitness selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoBoundaryAllActive selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .privateEdgeSwap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cubicLabelOutsidePath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .separatingEdgeContextSpectrum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoBoundaryOutsideBoth selected.object
 
 /-- The return of `NearCubicTargetDefectOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -703,6 +797,7 @@ theorem nearCubicTargetDefectReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -778,7 +873,20 @@ theorem nearCubicTargetDefectReturn
     [FactKeys.Has (K .steinerVerticesCut) known]
     [FactKeys.Has (K .wholeSupportEqual) known]
     [FactKeys.Has (K .wholeDeficitBoundaryCount) known]
-    [FactKeys.Has (K .wholeCutEdgeSurplusBound) known] :
+    [FactKeys.Has (K .wholeCutEdgeSurplusBound) known]
+    [FactKeys.Has (K .witnessReadingCounts) known]
+    [FactKeys.Has (K .witnessActiveLabels) known]
+    [FactKeys.Has (K .boundaryPartition) known]
+    [FactKeys.Has (K .positiveCyclePrivateEdge) known]
+    [FactKeys.Has (K .wholeCycleMeetsDeficit) known]
+    [FactKeys.Has (K .wholePrivateEdges) known]
+    [FactKeys.Has (K .spectrumArmOneRefined) known]
+    [FactKeys.Has (K .separatingEdgeContextWitness) known]
+    [FactKeys.Has (K .twoBoundaryAllActive) known]
+    [FactKeys.Has (K .privateEdgeSwap) known]
+    [FactKeys.Has (K .cubicLabelOutsidePath) known]
+    [FactKeys.Has (K .separatingEdgeContextSpectrum) known]
+    [FactKeys.Has (K .twoBoundaryOutsideBoth) known] :
     NearCubicTargetDefectOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -795,6 +903,7 @@ theorem nearCubicTargetDefectReturn
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
     (history.get (K .twoSwitchForcedPath)).down,
@@ -870,12 +979,25 @@ theorem nearCubicTargetDefectReturn
     (history.get (K .steinerVerticesCut)).down,
     (history.get (K .wholeSupportEqual)).down,
     (history.get (K .wholeDeficitBoundaryCount)).down,
-    (history.get (K .wholeCutEdgeSurplusBound)).down⟩
+    (history.get (K .wholeCutEdgeSurplusBound)).down,
+    (history.get (K .witnessReadingCounts)).down,
+    (history.get (K .witnessActiveLabels)).down,
+    (history.get (K .boundaryPartition)).down,
+    (history.get (K .positiveCyclePrivateEdge)).down,
+    (history.get (K .wholeCycleMeetsDeficit)).down,
+    (history.get (K .wholePrivateEdges)).down,
+    (history.get (K .spectrumArmOneRefined)).down,
+    (history.get (K .separatingEdgeContextWitness)).down,
+    (history.get (K .twoBoundaryAllActive)).down,
+    (history.get (K .privateEdgeSwap)).down,
+    (history.get (K .cubicLabelOutsidePath)).down,
+    (history.get (K .separatingEdgeContextSpectrum)).down,
+    (history.get (K .twoBoundaryOutsideBoth)).down⟩
 
 /-- **Node `[144a]`** (thm:main (ii), tex 347-353): the same-token Type B
 handoff of [144] on the strict-surplus survivor, or (the paper error at
 [144]) the unresolved same-label pattern pair.  The generic residual: the
-explicit conjunction of the 87 facts common to every path.  Its six distinct
+explicit conjunction of the 94 facts common to every path.  Its six distinct
 fact sets (the class arm of [139]/[141] times the arm of [144]'s handoff
 decision) are its subtypes in `Assembly/Residuals/Node144aOutcome.lean`. -/
 abbrev Node144aOutcome (selected : EGInput.{u}) : Prop :=
@@ -909,6 +1031,8 @@ abbrev Node144aOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -963,6 +1087,10 @@ abbrev Node144aOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .admissibleQuotientsLabelInjective selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusAbove selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highSurplusConfiguration selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highEndpointSwitch selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .edgeSurplusIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1082,6 +1210,7 @@ theorem node144aReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -1109,6 +1238,8 @@ theorem node144aReturn
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -1174,6 +1305,7 @@ theorem node144aReturn
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
     (history.get (K .twoSwitchForcedPath)).down,
@@ -1201,6 +1333,8 @@ theorem node144aReturn
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
     (history.get (K .surplusAbove)).down,
+    (history.get (K .highSurplusConfiguration)).down,
+    (history.get (K .highEndpointSwitch)).down,
     (history.get (K .edgeSurplusIdentity)).down,
     (history.get (K .ceilSqrtAboveScale)).down,
     (history.get (K .orderAboveScaleSquare)).down,
@@ -1254,7 +1388,7 @@ theorem node144aReturn
 /-- **Node `[172a]`** (thm:main (iii), tex 354-358): the first failed
 conditional graph-count inequality of lem:scale-additivity on the dense-
 packing branch, with its minimal same-scale barrier overlap.  The explicit
-conjunction of every fact on its maximal ledger (94 common facts). -/
+conjunction of every fact on its maximal ledger (99 common facts). -/
 abbrev BlockedBarrierOverlapOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -1286,6 +1420,8 @@ abbrev BlockedBarrierOverlapOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1473,6 +1609,7 @@ theorem blockedBarrierOverlapReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -1572,6 +1709,7 @@ theorem blockedBarrierOverlapReturn
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
     (history.get (K .twoSwitchForcedPath)).down,
@@ -1692,6 +1830,8 @@ abbrev PairConditionalFactorizationOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
@@ -1747,6 +1887,10 @@ abbrev PairConditionalFactorizationOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .admissibleQuotientsLabelInjective selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusAbove selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highSurplusConfiguration selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highEndpointSwitch selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .edgeSurplusIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1840,6 +1984,7 @@ theorem pairConditionalFactorizationReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -1868,6 +2013,8 @@ theorem pairConditionalFactorizationReturn
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -1920,6 +2067,7 @@ theorem pairConditionalFactorizationReturn
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
     (history.get (K .twoSwitchForcedPath)).down,
@@ -1948,6 +2096,8 @@ theorem pairConditionalFactorizationReturn
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
     (history.get (K .surplusAbove)).down,
+    (history.get (K .highSurplusConfiguration)).down,
+    (history.get (K .highEndpointSwitch)).down,
     (history.get (K .edgeSurplusIdentity)).down,
     (history.get (K .ceilSqrtAboveScale)).down,
     (history.get (K .orderAboveScaleSquare)).down,
@@ -1988,7 +2138,7 @@ theorem pairConditionalFactorizationReturn
 /-- **Node `[186]`** (thm:main (v), tex 364-368): the visible-entry route-8
 residual after [181], [183]-[185], with the joint balances of lem:typeA-
 unified-joint-balance.  The explicit conjunction of every fact on its
-maximal ledger (102 common facts). -/
+maximal ledger (107 common facts). -/
 abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -2020,6 +2170,8 @@ abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2223,6 +2375,7 @@ theorem route8JointBalanceReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -2330,6 +2483,7 @@ theorem route8JointBalanceReturn
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
     (history.get (K .twoSwitchForcedPath)).down,
@@ -2425,7 +2579,7 @@ theorem route8JointBalanceReturn
 /-- **Node `[187] ([179]/[180] Type B entry)`** (thm:main (vi), tex 369-378): a
 Type B entry produced by the [179] or [180] pair-system outcome, with its
 strict-surplus and sparse-survivor ancestry.  The explicit conjunction of
-every fact on its maximal ledger (84 common facts, then the arms of the
+every fact on its maximal ledger (91 common facts, then the arms of the
 residual's own decision: system 1; increment 4). -/
 abbrev PairTypeBOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2458,6 +2612,8 @@ abbrev PairTypeBOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2514,6 +2670,10 @@ abbrev PairTypeBOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .admissibleQuotientsLabelInjective selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusAbove selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highSurplusConfiguration selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highEndpointSwitch selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .edgeSurplusIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2625,6 +2785,7 @@ theorem pairTypeBSystemReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -2653,6 +2814,8 @@ theorem pairTypeBSystemReturn
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -2710,6 +2873,7 @@ theorem pairTypeBSystemReturn
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
     (history.get (K .twoSwitchForcedPath)).down,
@@ -2738,6 +2902,8 @@ theorem pairTypeBSystemReturn
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
     (history.get (K .surplusAbove)).down,
+    (history.get (K .highSurplusConfiguration)).down,
+    (history.get (K .highEndpointSwitch)).down,
     (history.get (K .edgeSurplusIdentity)).down,
     (history.get (K .ceilSqrtAboveScale)).down,
     (history.get (K .orderAboveScaleSquare)).down,
@@ -2800,6 +2966,7 @@ theorem pairTypeBIncrementReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -2828,6 +2995,8 @@ theorem pairTypeBIncrementReturn
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -2888,6 +3057,7 @@ theorem pairTypeBIncrementReturn
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
     (history.get (K .twoSwitchForcedPath)).down,
@@ -2916,6 +3086,8 @@ theorem pairTypeBIncrementReturn
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
     (history.get (K .surplusAbove)).down,
+    (history.get (K .highSurplusConfiguration)).down,
+    (history.get (K .highEndpointSwitch)).down,
     (history.get (K .edgeSurplusIdentity)).down,
     (history.get (K .ceilSqrtAboveScale)).down,
     (history.get (K .orderAboveScaleSquare)).down,
@@ -2963,7 +3135,7 @@ theorem pairTypeBIncrementReturn
 
 /-- **Node `[187] (Type B sublinear failure)`** (thm:main (vi), tex 369-378):
 failure of the Type B sublinear hypothesis package on the unified route-8
-ledger.  The explicit conjunction of every fact on its maximal ledger (84
+ledger.  The explicit conjunction of every fact on its maximal ledger (90
 common facts). -/
 abbrev TypeBSublinearOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2996,6 +3168,8 @@ abbrev TypeBSublinearOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -3165,6 +3339,7 @@ theorem typeBSublinearReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -3255,6 +3430,7 @@ theorem typeBSublinearReturn
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
     (history.get (K .twoSwitchForcedPath)).down,
@@ -3332,7 +3508,7 @@ theorem typeBSublinearReturn
 
 /-- **Node `[187] ([348], route-8 quotient failure)`** (thm:main (vi), tex
 369-378, 388-390): failure of route-8 quotient freeness of the unified
-census.  The explicit conjunction of every fact on its maximal ledger (86
+census.  The explicit conjunction of every fact on its maximal ledger (92
 common facts). -/
 abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -3365,6 +3541,8 @@ abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -3538,6 +3716,7 @@ theorem route8QuotientReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -3630,6 +3809,7 @@ theorem route8QuotientReturn
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
     (history.get (K .twoSwitchForcedPath)).down,
@@ -3710,7 +3890,7 @@ theorem route8QuotientReturn
 /-- **Node `[187] (private-carrier rate failure)`** (thm:main (vi), tex
 369-378): failure of the exact private-carrier rate at the entry of the
 route-8 continuation.  The explicit conjunction of every fact on its maximal
-ledger (66 common facts). -/
+ledger (71 common facts). -/
 abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -3742,6 +3922,8 @@ abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -3873,6 +4055,7 @@ theorem route8RateFailsReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -3944,6 +4127,7 @@ theorem route8RateFailsReturn
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
     (history.get (K .twoSwitchForcedPath)).down,
@@ -4003,7 +4187,7 @@ theorem route8RateFailsReturn
 /-- **Node `[187] (local cold-terminal exclusion)`** (thm:main (vi), tex
 369-378): the local cold-terminal exclusion of thm:cold-branch-quantitative-
 closure without a global terminal contradiction.  The explicit conjunction
-of every fact on its maximal ledger (80 common facts). -/
+of every fact on its maximal ledger (85 common facts). -/
 abbrev ColdBranchClosedOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -4035,6 +4219,8 @@ abbrev ColdBranchClosedOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -4194,6 +4380,7 @@ theorem coldBranchClosedReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -4279,6 +4466,7 @@ theorem coldBranchClosedReturn
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
     (history.get (K .twoSwitchForcedPath)).down,
@@ -4352,7 +4540,7 @@ theorem coldBranchClosedReturn
 /-- **Node `[153]`** (lem:cold-corridor-first-failure (ii), tex 7265-7270): G's
 first equal-state pair on a retained cold corridor, with its separating path
 context and profile separation.  The explicit conjunction of every fact on
-its maximal ledger (65 common facts). -/
+its maximal ledger (70 common facts). -/
 abbrev Node153ResidualOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -4384,6 +4572,8 @@ abbrev Node153ResidualOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -4513,6 +4703,7 @@ theorem node153Return
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -4583,6 +4774,7 @@ theorem node153Return
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
     (history.get (K .twoSwitchForcedPath)).down,
@@ -4641,7 +4833,7 @@ theorem node153Return
 /-- **Node `[162]`** (lem:dense-cold-pass, tex 7692-7694): a retained cold
 corridor of G whose first failure is a heavy centre strictly before its
 terminal segment and which reads more than Q_cold states.  The explicit
-conjunction of every fact on its maximal ledger (69 common facts). -/
+conjunction of every fact on its maximal ledger (74 common facts). -/
 abbrev Node162ResidualOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -4673,6 +4865,8 @@ abbrev Node162ResidualOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -4810,6 +5004,7 @@ theorem node162Return
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -4884,6 +5079,7 @@ theorem node162Return
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
     (history.get (K .twoSwitchForcedPath)).down,
@@ -4978,6 +5174,8 @@ abbrev Node54ResidualOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -5105,6 +5303,7 @@ theorem node54Return
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -5174,6 +5373,7 @@ theorem node54Return
     (history.get (K .windowPresent)).down,
     (history.get (K .maximalPacking)).down,
     (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
     (history.get (K .packingOrderBound)).down,
     (history.get (K .noSuppressionChordViolation)).down,
     (history.get (K .twoSwitchForcedPath)).down,

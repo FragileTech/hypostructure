@@ -125,6 +125,7 @@ noncomputable def selectedCanonicalReplacementContinuation
     [FactKeys.Has (K .exactResponseProfile) known]
     [FactKeys.Has (K .forcedCurvatureCost) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]

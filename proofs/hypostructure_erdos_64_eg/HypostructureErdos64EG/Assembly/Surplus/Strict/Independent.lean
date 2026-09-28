@@ -16,6 +16,8 @@ open Hypostructure.Graph.Strategy.Spine
 universe u w
 
 set_option maxHeartbeats 1000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+set_option synthInstance.maxSize 2048 in
 noncomputable def Assembly.Internal.strictSurplusIndependent
     {selected : EGInput.{u}}
     (independentHistory : ExactLedger EGInput.{u} selected
@@ -31,7 +33,7 @@ noncomputable def Assembly.Internal.strictSurplusIndependent
         K .canonicalOverloadOfFits, K .canonicalFreeExcessOfCapped,
         K .canonicalCapacityExplicit, K .highDegreePositive,
         K .highDegreeSurplusCapacity, K .orderAboveScaleSquare,
-        K .sixVertexExtremalEnvelope, K .edgeSurplusIdentity,
+        K .sixVertexExtremalEnvelope, K .highEndpointSwitch, K .highSurplusConfiguration, K .edgeSurplusIdentity,
         K .ceilSqrtAboveScale, K .baselineSpineDemand, K .sparseUpperEnvelope,
         K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
           K .admissibleQuotientsLabelInjective, K .replacementExclusion,
@@ -41,7 +43,7 @@ noncomputable def Assembly.Internal.strictSurplusIndependent
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
           K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
           K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
-        K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
+        K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     StrictSurplusBoundaryResult selected := by
   -- `[131]` first commits the manuscript's named arithmetic and

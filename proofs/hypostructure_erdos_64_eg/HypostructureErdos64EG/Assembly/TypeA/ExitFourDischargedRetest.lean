@@ -136,6 +136,7 @@ noncomputable def selectedTypeAExitFourDischargedRetest
     [FactKeys.Has (K .forcedCurvatureCost) known]
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]

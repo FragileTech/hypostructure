@@ -26,7 +26,7 @@ noncomputable def selectedStrictSurplusBranch
         K .canonicalOverloadOfFits, K .canonicalFreeExcessOfCapped,
         K .canonicalCapacityExplicit, K .highDegreePositive,
         K .highDegreeSurplusCapacity, K .orderAboveScaleSquare,
-        K .sixVertexExtremalEnvelope, K .edgeSurplusIdentity,
+        K .sixVertexExtremalEnvelope, K .highEndpointSwitch, K .highSurplusConfiguration, K .edgeSurplusIdentity,
         K .ceilSqrtAboveScale, K .baselineSpineDemand, K .sparseUpperEnvelope,
         K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
@@ -36,7 +36,7 @@ noncomputable def selectedStrictSurplusBranch
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
         K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
         K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
-        K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
+        K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     StrictSurplusBoundaryResult selected := by
   -- The enclosing `[20]` decision has already selected the survivor arm;

@@ -64,6 +64,7 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -92,6 +93,8 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -152,6 +155,7 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .windowPresent)).down,
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
+      (history.get (K .everyWitnessSpectrumSplit)).down,
       (history.get (K .packingOrderBound)).down,
       (history.get (K .noSuppressionChordViolation)).down,
       (history.get (K .twoSwitchForcedPath)).down,
@@ -180,6 +184,8 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
+      (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .highEndpointSwitch)).down,
       (history.get (K .edgeSurplusIdentity)).down,
       (history.get (K .ceilSqrtAboveScale)).down,
       (history.get (K .orderAboveScaleSquare)).down,
@@ -270,6 +276,7 @@ theorem pairTypeBIndependentIncrementReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -298,6 +305,8 @@ theorem pairTypeBIndependentIncrementReturn
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -364,6 +373,7 @@ theorem pairTypeBIndependentIncrementReturn
       (history.get (K .windowPresent)).down,
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
+      (history.get (K .everyWitnessSpectrumSplit)).down,
       (history.get (K .packingOrderBound)).down,
       (history.get (K .noSuppressionChordViolation)).down,
       (history.get (K .twoSwitchForcedPath)).down,
@@ -392,6 +402,8 @@ theorem pairTypeBIndependentIncrementReturn
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
+      (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .highEndpointSwitch)).down,
       (history.get (K .edgeSurplusIdentity)).down,
       (history.get (K .ceilSqrtAboveScale)).down,
       (history.get (K .orderAboveScaleSquare)).down,
@@ -498,6 +510,7 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -526,6 +539,8 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -595,6 +610,7 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .windowPresent)).down,
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
+      (history.get (K .everyWitnessSpectrumSplit)).down,
       (history.get (K .packingOrderBound)).down,
       (history.get (K .noSuppressionChordViolation)).down,
       (history.get (K .twoSwitchForcedPath)).down,
@@ -623,6 +639,8 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
+      (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .highEndpointSwitch)).down,
       (history.get (K .edgeSurplusIdentity)).down,
       (history.get (K .ceilSqrtAboveScale)).down,
       (history.get (K .orderAboveScaleSquare)).down,
@@ -740,6 +758,7 @@ theorem pairTypeBDependentIncrementReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -768,6 +787,8 @@ theorem pairTypeBDependentIncrementReturn
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -843,6 +864,7 @@ theorem pairTypeBDependentIncrementReturn
       (history.get (K .windowPresent)).down,
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
+      (history.get (K .everyWitnessSpectrumSplit)).down,
       (history.get (K .packingOrderBound)).down,
       (history.get (K .noSuppressionChordViolation)).down,
       (history.get (K .twoSwitchForcedPath)).down,
@@ -871,6 +893,8 @@ theorem pairTypeBDependentIncrementReturn
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
+      (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .highEndpointSwitch)).down,
       (history.get (K .edgeSurplusIdentity)).down,
       (history.get (K .ceilSqrtAboveScale)).down,
       (history.get (K .orderAboveScaleSquare)).down,

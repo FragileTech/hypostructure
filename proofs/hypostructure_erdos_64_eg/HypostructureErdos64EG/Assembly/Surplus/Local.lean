@@ -47,7 +47,7 @@ noncomputable def selectedSparseSurplusActivation
         K .canonicalOverloadOfFits, K .canonicalFreeExcessOfCapped,
         K .canonicalCapacityExplicit, K .highDegreePositive,
         K .highDegreeSurplusCapacity, K .orderAboveScaleSquare,
-        K .sixVertexExtremalEnvelope, K .edgeSurplusIdentity,
+        K .sixVertexExtremalEnvelope, K .highEndpointSwitch, K .highSurplusConfiguration, K .edgeSurplusIdentity,
         K .ceilSqrtAboveScale, K .baselineSpineDemand, K .sparseUpperEnvelope,
         K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
@@ -57,7 +57,7 @@ noncomputable def selectedSparseSurplusActivation
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
         K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
         K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
-        K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
+        K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .activeSurplusDemands, K .sparsePortActivation,
@@ -72,7 +72,7 @@ noncomputable def selectedSparseSurplusActivation
         K .canonicalOverloadOfFits, K .canonicalFreeExcessOfCapped,
         K .canonicalCapacityExplicit, K .highDegreePositive,
         K .highDegreeSurplusCapacity, K .orderAboveScaleSquare,
-        K .sixVertexExtremalEnvelope, K .edgeSurplusIdentity,
+        K .sixVertexExtremalEnvelope, K .highEndpointSwitch, K .highSurplusConfiguration, K .edgeSurplusIdentity,
         K .ceilSqrtAboveScale, K .baselineSpineDemand, K .sparseUpperEnvelope,
         K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
           K .admissibleQuotientsLabelInjective, K .replacementExclusion,
@@ -82,7 +82,7 @@ noncomputable def selectedSparseSurplusActivation
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
           K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
           K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
-        K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
+        K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
   -- The presentation identities the surplus rows spend are read from the one
   -- presentation-law fact `K .cubicBaseline`, published at the entry.
@@ -150,6 +150,8 @@ noncomputable def selectedPairCodeChainIndependent
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -196,6 +198,7 @@ noncomputable def selectedPairCodeChainIndependent
     [FactKeys.Has (K .exactCubicBaselineBudget) known]
     [FactKeys.Has (K .incrementalSkeletonRoom) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -356,6 +359,8 @@ noncomputable def selectedPairCodeChainDependent
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -403,6 +408,7 @@ noncomputable def selectedPairCodeChainDependent
     [FactKeys.Has (K .exactCubicBaselineBudget) known]
     [FactKeys.Has (K .incrementalSkeletonRoom) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -580,6 +586,8 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .sparseSlackSurplus) known]
     [FactKeys.Has (K .fibrePressure) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -623,6 +631,7 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .degreeProfileFibres) known]
     [FactKeys.Has (K .dependentPairFamily) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]

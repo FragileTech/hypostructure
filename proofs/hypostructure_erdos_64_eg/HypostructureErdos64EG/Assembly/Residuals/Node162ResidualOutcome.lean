@@ -26,7 +26,7 @@ universe u
 
 /-- **Node `[162]` on `[160]`'s first complement** (`τ(θ) ≥ 1/4`).
 The generic `[162]` residual together with every fact its arm of `[160]`
-adds to the ledger (58 facts in all). -/
+adds to the ledger (69 facts in all). -/
 abbrev Node162ResidualOutcome_tauAtOrAbove (selected : EGInput.{u}) : Prop :=
   Node162ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -58,6 +58,7 @@ theorem node162Return_tauAtOrAbove
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -124,7 +125,7 @@ theorem node162Return_tauAtOrAbove
 /-- **Node `[162]` on `[160]`'s second complement** (`τ(θ) < 1/4`, the
 private-carrier rate `τ(θ) < 3/13` failed).
 The generic `[162]` residual together with every fact its arm of `[160]`
-adds to the ledger (59 facts in all). -/
+adds to the ledger (70 facts in all). -/
 abbrev Node162ResidualOutcome_tauBelowRateFails (selected : EGInput.{u}) : Prop :=
   Node162ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -158,6 +159,7 @@ theorem node162Return_tauBelowRateFails
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
@@ -246,6 +248,7 @@ theorem node162SubtypesReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]

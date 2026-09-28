@@ -11,6 +11,7 @@ import Hypostructure.Graph.Strategy.SpineRows.ReturnAvoidance
 import Hypostructure.Graph.Strategy.SpineRows.TargetCompleteContextUniversality
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.SparseExitResidual
+import Hypostructure.Graph.Strategy.SpineRows.SparseExitReadings
 import Hypostructure.Graph.Strategy.SpineRows.SwitchForcedPaths
 import Hypostructure.Graph.Strategy.SpineRows.CycleCounting
 import Hypostructure.Graph.Strategy.SpineRows.LocalRigidity
@@ -60,7 +61,7 @@ noncomputable def selectedEntryPrefix
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
         K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
         K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
-        K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
+        K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
   -- Hoisted from `[20a]`: facts of G read from `[4]`'s selection alone; no decision.
   let hSelectionFacts :=
@@ -68,12 +69,19 @@ noncomputable def selectedEntryPrefix
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
+  -- The path-spectrum split at every clause-(b) witness of G, from `[4]`'s
+  -- selection alone; no decision.
+  let hSpectrum :=
+    (everyWitnessSpectrumRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hSelectionFacts (by key_fresh)
   -- The presentation laws of G, published once on the ledger.
   let hCubic :=
     (cubicBaselineRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      hSelectionFacts (by key_fresh)
+      hSpectrum (by key_fresh)
   -- Cycle counting (Lean improvement): the neighbourhood pairs and the star and meeting constraints at every vertex of G, from the selection and the presentation laws; no decision.
   let hCycleNeighbourhood :=
     (cycleNeighbourhoodRow (BranchState := BranchState)

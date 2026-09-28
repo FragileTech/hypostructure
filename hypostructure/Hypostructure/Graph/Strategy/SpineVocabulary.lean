@@ -15,6 +15,7 @@ import Hypostructure.Graph.Statements.SpineDominantType
 import Hypostructure.Graph.Statements.ColdResiduals
 import Hypostructure.Graph.Statements.DensityOrder
 import Hypostructure.Graph.Statements.SparseExitResidual
+import Hypostructure.Graph.Statements.SparseExitReadings
 import Hypostructure.Graph.Statements.SwitchForcedPaths
 import Hypostructure.Graph.Statements.SameTokenPair
 import Hypostructure.Graph.Statements.CycleCounting
@@ -1875,6 +1876,40 @@ inductive Key where
   | pairCodeConfiguration
   /-- Node `[20a]`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`. -/
   | specWitnessStructure
+  /-- Entry prefix: **The path-spectrum split at every clause-(b) witness of G** (not only the canonical one). -/
+  | everyWitnessSpectrumSplit
+  /-- Strict arm of `[19]`: **Where the surplus of G sits**: a vertex of degree `≥ δ + 2`, or two distinct vertices of degree exactly `δ + 1`. -/
+  | highSurplusConfiguration
+  /-- Strict arm of `[19]`: **The switch at every high/baseline edge `hc`**: the same-vertex switch at `h` (`deg h ≥ δ + 2`) or the two-edge switch with a second high vertex forces a path from `c` whose length plus one is accepted. -/
+  | highEndpointSwitch
+  /-- Node `[20a]`: **Reading counts at the canonical witness**: `c_A = c_B` on `∂Z`, and the membership transfer between `A` and `B` at boundary vertices with a neighbour in their own support. -/
+  | witnessReadingCounts
+  /-- Node `[20a]`: **At least two active labels**: `2 ≤ |{l ∈ ∂Z : c_A(l) > 0}|`; two distinct ones have `1 ≤ c_A = c_B ≤ deg − 1` and lie in `A ∩ B`; so both `A` and `B` meet `∂Z` (the boundary-free and single-active-label configurations do not occur). -/
+  | witnessActiveLabels
+  /-- Node `[20a]`: **`|∂Z| = 2`: the whole boundary is active and lies in `A ∩ B`.** -/
+  | twoBoundaryAllActive
+  /-- Node `[20a]`: **The exact partition of `∂Z`**: active in `A ∩ B`, or a zero-count isolated vertex of `A ∪ B`, or a Steiner cut vertex of `G[Z]`. -/
+  | boundaryPartition
+  /-- Node `[20a]`: **Every positive cycle uses a private edge, so `ret_P ⊄ ret_N`**: every accepted cycle of `glue ret_P O` traverses an edge `xy` with `x, y ∈ P`, `y ∉ N`, `y` internal to `Z`. -/
+  | positiveCyclePrivateEdge
+  /-- Node `[20a]`: **Whole case: every positive cycle passes through `Z ∖ Y`** (both orientations). -/
+  | wholeCycleMeetsDeficit
+  /-- Node `[20a]`: **Whole case: the private edges of `X` are exactly the edges at `Z ∖ Y`** (both orientations). -/
+  | wholePrivateEdges
+  /-- Node `[20a]`: **Arm (i) of the spectrum split, refined**: active labels in `A ∩ B`, a private edge on `π`, `|π| ≥ 2`; at `a ~ b`: `|σ| ≥ 2`, the residues and outside closures; `|σ| = 1` makes `a — b` separating; `|∂Z| = 2` forces it. -/
+  | spectrumArmOneRefined
+  /-- Node `[20a]`: **A separating single-edge context is never at an adjacent pair** and `(A, B, Z, a — b)` is a clause-(b) witness. -/
+  | separatingEdgeContextWitness
+  /-- Node `[20a]`: **The spectrum split at a separating single-edge context** (`σ` a single edge). -/
+  | separatingEdgeContextSpectrum
+  /-- Node `[20a]`: **The swap object of the canonical witness**: a private edge of the positive reading, and `G − Priv(P)` fails the baseline at a tight endpoint. -/
+  | privateEdgeSwap
+  /-- Node `[20a]`: **The private edge and its switch**: both ends at the baseline (both lose the edge in the swap object), or a high end and the forced path of its switch. -/
+  | privateEdgeSwitch
+  /-- Node `[20a]`: **Every baseline label has an outside return** to another label, of length `≥ 2` with interior in `V ∖ Z`. -/
+  | cubicLabelOutsidePath
+  /-- Node `[20a]`: **`|∂Z| = 2` with a baseline label: outside paths in both orientations.** -/
+  | twoBoundaryOutsideBoth
   -- port-cycles keys (6900–6999)
   /-- Entry prefix (cycle counting): **Neighbourhood pairs of G**: at every vertex `h`, `G[N(h)]` is a matching, `N(h)` has at least `C(d_h, 2) − ⌊d_h/2⌋` nonadjacent pairs, and every `x ∈ N(h)` has at least `d_h − 2` nonadjacent partners. -/
   | neighbourhoodPairCount
@@ -2866,6 +2901,40 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairCodeConfigurationStatement data.toParameters object
   | .specWitnessStructure, object =>
       SpecWitnessStructureStatement data.toParameters object
+  | .everyWitnessSpectrumSplit, object =>
+      EveryWitnessSpectrumSplitStatement data.toParameters object
+  | .highSurplusConfiguration, object =>
+      HighSurplusConfigurationStatement data.toParameters object
+  | .highEndpointSwitch, object =>
+      HighEndpointSwitchStatement data.toParameters object
+  | .witnessReadingCounts, object =>
+      WitnessReadingCountsStatement data.toParameters object
+  | .witnessActiveLabels, object =>
+      WitnessActiveLabelsStatement data.toParameters object
+  | .twoBoundaryAllActive, object =>
+      TwoBoundaryAllActiveStatement data.toParameters object
+  | .boundaryPartition, object =>
+      BoundaryPartitionStatement data.toParameters object
+  | .positiveCyclePrivateEdge, object =>
+      PositiveCyclePrivateEdgeStatement data.toParameters object
+  | .wholeCycleMeetsDeficit, object =>
+      WholeCycleMeetsDeficitStatement data.toParameters object
+  | .wholePrivateEdges, object =>
+      WholePrivateEdgesStatement data.toParameters object
+  | .spectrumArmOneRefined, object =>
+      SpectrumArmOneRefinedStatement data.toParameters object
+  | .separatingEdgeContextWitness, object =>
+      SeparatingEdgeContextWitnessStatement data.toParameters object
+  | .separatingEdgeContextSpectrum, object =>
+      SeparatingEdgeContextSpectrumStatement data.toParameters object
+  | .privateEdgeSwap, object =>
+      PrivateEdgeSwapStatement data.toParameters object
+  | .privateEdgeSwitch, object =>
+      PrivateEdgeSwitchStatement data.toParameters object
+  | .cubicLabelOutsidePath, object =>
+      CubicLabelOutsidePathStatement data.toParameters object
+  | .twoBoundaryOutsideBoth, object =>
+      TwoBoundaryOutsideBothStatement data.toParameters object
   -- port-cycles keys
   | .neighbourhoodPairCount, object =>
       NeighbourhoodPairCountStatement object
@@ -3352,6 +3421,23 @@ def label : Key → String
   | .canonicalFreeExcessOfCapped => "canonicalFreeExcessOfCapped"
   | .pairCodeConfiguration => "pairCodeConfiguration"
   | .specWitnessStructure => "specWitnessStructure"
+  | .everyWitnessSpectrumSplit => "everyWitnessSpectrumSplit"
+  | .highSurplusConfiguration => "highSurplusConfiguration"
+  | .highEndpointSwitch => "highEndpointSwitch"
+  | .witnessReadingCounts => "witnessReadingCounts"
+  | .witnessActiveLabels => "witnessActiveLabels"
+  | .twoBoundaryAllActive => "twoBoundaryAllActive"
+  | .boundaryPartition => "boundaryPartition"
+  | .positiveCyclePrivateEdge => "positiveCyclePrivateEdge"
+  | .wholeCycleMeetsDeficit => "wholeCycleMeetsDeficit"
+  | .wholePrivateEdges => "wholePrivateEdges"
+  | .spectrumArmOneRefined => "spectrumArmOneRefined"
+  | .separatingEdgeContextWitness => "separatingEdgeContextWitness"
+  | .separatingEdgeContextSpectrum => "separatingEdgeContextSpectrum"
+  | .privateEdgeSwap => "privateEdgeSwap"
+  | .privateEdgeSwitch => "privateEdgeSwitch"
+  | .cubicLabelOutsidePath => "cubicLabelOutsidePath"
+  | .twoBoundaryOutsideBoth => "twoBoundaryOutsideBoth"
   -- port-cycles keys
   | .neighbourhoodPairCount => "neighbourhoodPairCount"
   | .starCycleConstraint => "starCycleConstraint"
@@ -3830,6 +3916,23 @@ example : label .canonicalOverloadOfFits = "canonicalOverloadOfFits" := rfl
 example : label .canonicalFreeExcessOfCapped = "canonicalFreeExcessOfCapped" := rfl
 example : label .pairCodeConfiguration = "pairCodeConfiguration" := rfl
 example : label .specWitnessStructure = "specWitnessStructure" := rfl
+example : label .everyWitnessSpectrumSplit = "everyWitnessSpectrumSplit" := rfl
+example : label .highSurplusConfiguration = "highSurplusConfiguration" := rfl
+example : label .highEndpointSwitch = "highEndpointSwitch" := rfl
+example : label .witnessReadingCounts = "witnessReadingCounts" := rfl
+example : label .witnessActiveLabels = "witnessActiveLabels" := rfl
+example : label .twoBoundaryAllActive = "twoBoundaryAllActive" := rfl
+example : label .boundaryPartition = "boundaryPartition" := rfl
+example : label .positiveCyclePrivateEdge = "positiveCyclePrivateEdge" := rfl
+example : label .wholeCycleMeetsDeficit = "wholeCycleMeetsDeficit" := rfl
+example : label .wholePrivateEdges = "wholePrivateEdges" := rfl
+example : label .spectrumArmOneRefined = "spectrumArmOneRefined" := rfl
+example : label .separatingEdgeContextWitness = "separatingEdgeContextWitness" := rfl
+example : label .separatingEdgeContextSpectrum = "separatingEdgeContextSpectrum" := rfl
+example : label .privateEdgeSwap = "privateEdgeSwap" := rfl
+example : label .privateEdgeSwitch = "privateEdgeSwitch" := rfl
+example : label .cubicLabelOutsidePath = "cubicLabelOutsidePath" := rfl
+example : label .twoBoundaryOutsideBoth = "twoBoundaryOutsideBoth" := rfl
 example : label .neighbourhoodPairCount = "neighbourhoodPairCount" := rfl
 example : label .starCycleConstraint = "starCycleConstraint" := rfl
 example : label .meetingCycleConstraint = "meetingCycleConstraint" := rfl
@@ -4296,6 +4399,23 @@ def idx : Key → Nat
   | .canonicalFreeExcessOfCapped => 6675
   | .pairCodeConfiguration => 6676
   | .specWitnessStructure => 6677
+  | .everyWitnessSpectrumSplit => 6702
+  | .highSurplusConfiguration => 6703
+  | .highEndpointSwitch => 6704
+  | .witnessReadingCounts => 6705
+  | .witnessActiveLabels => 6706
+  | .twoBoundaryAllActive => 6707
+  | .boundaryPartition => 6708
+  | .positiveCyclePrivateEdge => 6709
+  | .wholeCycleMeetsDeficit => 6710
+  | .wholePrivateEdges => 6711
+  | .spectrumArmOneRefined => 6712
+  | .separatingEdgeContextWitness => 6713
+  | .separatingEdgeContextSpectrum => 6714
+  | .privateEdgeSwap => 6715
+  | .privateEdgeSwitch => 6716
+  | .cubicLabelOutsidePath => 6717
+  | .twoBoundaryOutsideBoth => 6718
   -- port-cycles keys
   | .neighbourhoodPairCount => 6900
   | .starCycleConstraint => 6901
@@ -4753,6 +4873,23 @@ def ofIdx : Nat → Key
   | 6675 => .canonicalFreeExcessOfCapped
   | 6676 => .pairCodeConfiguration
   | 6677 => .specWitnessStructure
+  | 6702 => .everyWitnessSpectrumSplit
+  | 6703 => .highSurplusConfiguration
+  | 6704 => .highEndpointSwitch
+  | 6705 => .witnessReadingCounts
+  | 6706 => .witnessActiveLabels
+  | 6707 => .twoBoundaryAllActive
+  | 6708 => .boundaryPartition
+  | 6709 => .positiveCyclePrivateEdge
+  | 6710 => .wholeCycleMeetsDeficit
+  | 6711 => .wholePrivateEdges
+  | 6712 => .spectrumArmOneRefined
+  | 6713 => .separatingEdgeContextWitness
+  | 6714 => .separatingEdgeContextSpectrum
+  | 6715 => .privateEdgeSwap
+  | 6716 => .privateEdgeSwitch
+  | 6717 => .cubicLabelOutsidePath
+  | 6718 => .twoBoundaryOutsideBoth
   -- port-cycles keys
   | 6900 => .neighbourhoodPairCount
   | 6901 => .starCycleConstraint
@@ -5755,6 +5892,40 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairCodeConfiguration") 6676
   | .specWitnessStructure =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "specWitnessStructure") 6677
+  | .everyWitnessSpectrumSplit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "everyWitnessSpectrumSplit") 6702
+  | .highSurplusConfiguration =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "highSurplusConfiguration") 6703
+  | .highEndpointSwitch =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "highEndpointSwitch") 6704
+  | .witnessReadingCounts =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "witnessReadingCounts") 6705
+  | .witnessActiveLabels =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "witnessActiveLabels") 6706
+  | .twoBoundaryAllActive =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "twoBoundaryAllActive") 6707
+  | .boundaryPartition =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "boundaryPartition") 6708
+  | .positiveCyclePrivateEdge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "positiveCyclePrivateEdge") 6709
+  | .wholeCycleMeetsDeficit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "wholeCycleMeetsDeficit") 6710
+  | .wholePrivateEdges =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "wholePrivateEdges") 6711
+  | .spectrumArmOneRefined =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "spectrumArmOneRefined") 6712
+  | .separatingEdgeContextWitness =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "separatingEdgeContextWitness") 6713
+  | .separatingEdgeContextSpectrum =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "separatingEdgeContextSpectrum") 6714
+  | .privateEdgeSwap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "privateEdgeSwap") 6715
+  | .privateEdgeSwitch =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "privateEdgeSwitch") 6716
+  | .cubicLabelOutsidePath =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "cubicLabelOutsidePath") 6717
+  | .twoBoundaryOutsideBoth =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "twoBoundaryOutsideBoth") 6718
   -- port-cycles keys
   | .neighbourhoodPairCount =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "neighbourhoodPairCount") 6900

@@ -191,6 +191,7 @@ noncomputable def selectedTypeALowSurplusContinuation
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
