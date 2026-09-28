@@ -37,10 +37,10 @@ noncomputable def selectedNearCubicBranch
       [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-        K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint, K .slackIndependent,
+        K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .hubLinkStructure, K .hubClassCounts, K .slotRelation, K .closedClasses, K .hubTwoHopLinks, K .slotLinear, K .hubWindowBudget, K .windowHubBounds, K .cubicNeighbourSupply, K .hubCountBound, K .lowEdgeParity, K .bigHubBound, K .bigHubVShapes, K .highSurplusBound, K .hubLengthThreePairs, K .tightEndpoint, K .slackIndependent,
         K .vertexDeletionComponents, K .cyclesThroughVertex,
-        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
-        K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+        K .cutVertexBlockPaths, K .singleBoundaryShape, K .densityExcess, K .remainderSlack, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
+        K .primitiveCarrierCount, K .remainderPathBounds, K .windowFreeGeometry, K .inducedPathAttachment, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
         K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
@@ -223,11 +223,24 @@ noncomputable def selectedLedgerBoundary
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run baselineDemandHistory (by key_fresh)
       -- where the surplus of G sits, once `C + 1 ≤ ⌈√n⌉` is on the ledger; no decision.
+      -- Joint hubs (Lean improvement): the orders the high-surplus closure
+      -- `8n ≤ 32s + 125s²` excludes against `σ > C_sp⌈√n⌉`; no decision.
+      let highSurplusOrderHistory :=
+        (highSurplusOrderRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run budgetHistory (by key_fresh)
+      -- Hub links (Lean improvement): the scale pressure; no decision.
+      let scalePressureHistory :=
+        (scalePressureRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run highSurplusOrderHistory (by key_fresh)
       let highConfigHistory :=
         (highSurplusConfigurationRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).run budgetHistory (by key_fresh)
+          (data := spineData)).run scalePressureHistory (by key_fresh)
       -- the switch at every high/baseline edge of G; no decision.
       let highSwitchHistory :=
         (highEndpointSwitchRow (BranchState := BranchState)
@@ -253,17 +266,50 @@ noncomputable def selectedLedgerBoundary
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run highDegreeHistory (by key_fresh)
       -- hoisted from `[20a]`: the canonical capacity counts; no decision.
+      -- Joint hubs (Lean improvement): the window structure of G's canonical charge and the
+      -- target-response obstructions at its canonical active family; no decision.
+      let windowChargeHistory :=
+        (windowChargeRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run canonicalCapacityHistory (by key_fresh)
+      -- Free side (Lean improvement): the structure of the free side of G's canonical charge;
+      -- no decision.
+      let freeSideStructureHistory :=
+        (freeSideStructureRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run windowChargeHistory (by key_fresh)
       let canonicalCountsHistory :=
         (sparseExitCanonicalCapacityCountsRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).run canonicalCapacityHistory (by key_fresh)
+          (data := spineData)).run freeSideStructureHistory (by key_fresh)
+      -- Free side (Lean improvement): the free-side count, G2 with it, and the capped arm;
+      -- no decision.
+      let freeSideCountHistory :=
+        (freeSideCountRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run canonicalCountsHistory (by key_fresh)
+      -- Free side (Lean improvement): the free side against the hubs; no decision.
+      let freeSideHubsHistory :=
+        (freeSideHubsRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run freeSideCountHistory (by key_fresh)
+      -- Free side (Lean improvement): the extended charge `Θ_ext`; no decision.
+      let extendedChargeHistory :=
+        (extendedChargeRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run freeSideHubsHistory (by key_fresh)
       -- hoisted from `[20a]`: the paper budget and the pair-code chain; no decision.
       let pairChainHistory :=
         (sparseExitPairChainRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).run canonicalCountsHistory (by key_fresh)
+          (data := spineData)).run extendedChargeHistory (by key_fresh)
       -- EG-NODE [20] surplus-pair accounting branch
       -- The enclosing `[20]` routing tests `def:named-surplus-exits` before
       -- node `[125]`: the exit arm retains only the attempted-quotient target
