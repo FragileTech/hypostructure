@@ -36,19 +36,47 @@ unchanged literal survivor residual. -/
 noncomputable def selectedSparseSurplusActivation
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .minDegreeBaseline, K .cubicBaseline,
-        K .selection]) :
+      [K .sparseSurplusSurvivor,
+        K .paperBudgetBound, K .paperBudgetCertifies, K .pairCodeConfiguration,
+        K .canonicalTokenCount,
+        K .canonicalBlockedFreePartition, K .canonicalLedgerDeficit,
+        K .pairCountDeficit, K .canonicalCertificationCriterion,
+        K .canonicalOverloadOfFits, K .canonicalFreeExcessOfCapped,
+        K .canonicalCapacityExplicit, K .highDegreePositive,
+        K .highDegreeSurplusCapacity, K .orderAboveScaleSquare,
+        K .sixVertexExtremalEnvelope, K .edgeSurplusIdentity,
+        K .ceilSqrtAboveScale, K .baselineSpineDemand, K .sparseUpperEnvelope,
+        K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
+        K .admissibleQuotientsLabelInjective, K .replacementExclusion,
+        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+        K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
+        K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+        K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+        K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+        K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .suppressedFamilyCriticalCycle,
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression, K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .minDegreeBaseline, K .cubicBaseline,
-        K .selection] := by
+        K .openPortSuppression, K .sparseSurplusSurvivor,
+        K .paperBudgetBound, K .paperBudgetCertifies, K .pairCodeConfiguration,
+        K .canonicalTokenCount,
+        K .canonicalBlockedFreePartition, K .canonicalLedgerDeficit,
+        K .pairCountDeficit, K .canonicalCertificationCriterion,
+        K .canonicalOverloadOfFits, K .canonicalFreeExcessOfCapped,
+        K .canonicalCapacityExplicit, K .highDegreePositive,
+        K .highDegreeSurplusCapacity, K .orderAboveScaleSquare,
+        K .sixVertexExtremalEnvelope, K .edgeSurplusIdentity,
+        K .ceilSqrtAboveScale, K .baselineSpineDemand, K .sparseUpperEnvelope,
+        K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
+          K .admissibleQuotientsLabelInjective, K .replacementExclusion,
+          K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+          K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
+        K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+          K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+          K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+          K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
   -- The presentation identities the surplus rows spend are read from the one
   -- presentation-law fact `K .cubicBaseline`, published at the entry.
   let suppressionDefined :=
@@ -115,6 +143,23 @@ noncomputable def selectedPairCodeChainIndependent
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .edgeSurplusIdentity) known]
+    [FactKeys.Has (K .ceilSqrtAboveScale) known]
+    [FactKeys.Has (K .orderAboveScaleSquare) known]
+    [FactKeys.Has (K .sixVertexExtremalEnvelope) known]
+    [FactKeys.Has (K .highDegreePositive) known]
+    [FactKeys.Has (K .highDegreeSurplusCapacity) known]
+    [FactKeys.Has (K .canonicalCapacityExplicit) known]
+    [FactKeys.Has (K .canonicalTokenCount) known]
+    [FactKeys.Has (K .canonicalBlockedFreePartition) known]
+    [FactKeys.Has (K .canonicalLedgerDeficit) known]
+    [FactKeys.Has (K .pairCountDeficit) known]
+    [FactKeys.Has (K .canonicalCertificationCriterion) known]
+    [FactKeys.Has (K .canonicalOverloadOfFits) known]
+    [FactKeys.Has (K .canonicalFreeExcessOfCapped) known]
+    [FactKeys.Has (K .paperBudgetBound) known]
+    [FactKeys.Has (K .paperBudgetCertifies) known]
+    [FactKeys.Has (K .pairCodeConfiguration) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .minDegreeBaseline) known]
     (systemFresh : K .pairOverlapSystem ∉ known := by key_fresh)
@@ -144,6 +189,17 @@ noncomputable def selectedPairCodeChainIndependent
     [FactKeys.Has (K .exactCubicBaselineBudget) known]
     [FactKeys.Has (K .incrementalSkeletonRoom) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .packingOrderBound) known]
+    [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+    [FactKeys.Has (K .windowCutCapacity) known]
+    [FactKeys.Has (K .primitiveCarrierCount) known]
+    [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .surplusDartIdentity) known]
+    [FactKeys.Has (K .highDegreeCountBound) known]
+    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .mixedSparseSpineDependence) known]
     [FactKeys.Has (K .openPortSuppression) known]
@@ -277,6 +333,23 @@ noncomputable def selectedPairCodeChainDependent
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .edgeSurplusIdentity) known]
+    [FactKeys.Has (K .ceilSqrtAboveScale) known]
+    [FactKeys.Has (K .orderAboveScaleSquare) known]
+    [FactKeys.Has (K .sixVertexExtremalEnvelope) known]
+    [FactKeys.Has (K .highDegreePositive) known]
+    [FactKeys.Has (K .highDegreeSurplusCapacity) known]
+    [FactKeys.Has (K .canonicalCapacityExplicit) known]
+    [FactKeys.Has (K .canonicalTokenCount) known]
+    [FactKeys.Has (K .canonicalBlockedFreePartition) known]
+    [FactKeys.Has (K .canonicalLedgerDeficit) known]
+    [FactKeys.Has (K .pairCountDeficit) known]
+    [FactKeys.Has (K .canonicalCertificationCriterion) known]
+    [FactKeys.Has (K .canonicalOverloadOfFits) known]
+    [FactKeys.Has (K .canonicalFreeExcessOfCapped) known]
+    [FactKeys.Has (K .paperBudgetBound) known]
+    [FactKeys.Has (K .paperBudgetCertifies) known]
+    [FactKeys.Has (K .pairCodeConfiguration) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .minDegreeBaseline) known]
     (systemFresh : K .pairOverlapSystem ∉ known := by key_fresh)
@@ -306,6 +379,17 @@ noncomputable def selectedPairCodeChainDependent
     [FactKeys.Has (K .exactCubicBaselineBudget) known]
     [FactKeys.Has (K .incrementalSkeletonRoom) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .packingOrderBound) known]
+    [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+    [FactKeys.Has (K .windowCutCapacity) known]
+    [FactKeys.Has (K .primitiveCarrierCount) known]
+    [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .surplusDartIdentity) known]
+    [FactKeys.Has (K .highDegreeCountBound) known]
+    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .mixedSparseSpineDependence) known]
     [FactKeys.Has (K .openPortSuppression) known]
@@ -456,6 +540,23 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .sparseSlackSurplus) known]
     [FactKeys.Has (K .fibrePressure) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .edgeSurplusIdentity) known]
+    [FactKeys.Has (K .ceilSqrtAboveScale) known]
+    [FactKeys.Has (K .orderAboveScaleSquare) known]
+    [FactKeys.Has (K .sixVertexExtremalEnvelope) known]
+    [FactKeys.Has (K .highDegreePositive) known]
+    [FactKeys.Has (K .highDegreeSurplusCapacity) known]
+    [FactKeys.Has (K .canonicalCapacityExplicit) known]
+    [FactKeys.Has (K .canonicalTokenCount) known]
+    [FactKeys.Has (K .canonicalBlockedFreePartition) known]
+    [FactKeys.Has (K .canonicalLedgerDeficit) known]
+    [FactKeys.Has (K .pairCountDeficit) known]
+    [FactKeys.Has (K .canonicalCertificationCriterion) known]
+    [FactKeys.Has (K .canonicalOverloadOfFits) known]
+    [FactKeys.Has (K .canonicalFreeExcessOfCapped) known]
+    [FactKeys.Has (K .paperBudgetBound) known]
+    [FactKeys.Has (K .paperBudgetCertifies) known]
+    [FactKeys.Has (K .pairCodeConfiguration) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .selection) known]
     (failFresh : K .homogeneousCapsFail ∉ known := by key_fresh)
@@ -478,6 +579,16 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .degreeProfileFibres) known]
     [FactKeys.Has (K .dependentPairFamily) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .packingOrderBound) known]
+    [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+    [FactKeys.Has (K .windowCutCapacity) known]
+    [FactKeys.Has (K .primitiveCarrierCount) known]
+    [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .surplusDartIdentity) known]
+    [FactKeys.Has (K .highDegreeCountBound) known]
+    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .openPortSuppression) known]

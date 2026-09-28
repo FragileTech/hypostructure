@@ -36,10 +36,10 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **Node `[187] ([348])` as a product of arm blocks**: the generic
-residual (65 common facts), one lane entry (a near-cubic prefix block with an
+residual (75 common facts), one lane entry (a near-cubic prefix block with an
 entropy block), and one net-charge continuation (Type A lane or Type B
 high-surplus lane, each a nested product of its own blocks).  Totals run from
-85 to 124 facts. -/
+95 to 134 facts. -/
 abbrev Route8QuotientOutcome_product (selected : EGInput.{u}) : Prop :=
   Route8QuotientOutcome selected ∧ Route8LaneEntry selected ∧
     NetChargeContinuation selected
@@ -50,7 +50,7 @@ theorem Route8QuotientOutcome_product.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- The return of `Route8QuotientOutcome_product`, parameterised by the arm
-choices: the 65 common facts are read from the ledger by
+choices: the 75 common facts are read from the ledger by
 `route8QuotientReturn`, and each factor is the arm block the path took, built
 by that block's `.ret` from the same ledger (one `get` per key). -/
 theorem route8QuotientProductReturn
@@ -71,6 +71,16 @@ theorem route8QuotientProductReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .packingOrderBound) known]
+    [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+    [FactKeys.Has (K .windowCutCapacity) known]
+    [FactKeys.Has (K .primitiveCarrierCount) known]
+    [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .surplusDartIdentity) known]
+    [FactKeys.Has (K .highDegreeCountBound) known]
+    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .barrierEnumeration) known]

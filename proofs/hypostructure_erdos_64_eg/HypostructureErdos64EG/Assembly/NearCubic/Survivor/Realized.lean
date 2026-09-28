@@ -40,13 +40,14 @@ noncomputable def Assembly.Internal.nearCubicRealized
     {selected : EGInput.{u}}
     (enumerated : ExactLedger EGInput.{u} selected
       [K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
-       K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
-       K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
-       K .targetCompleteContextUniversality, K .degreeProfileFibres,
-       K .cycleRankConstraint,
-       K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-       K .minDegreeBaseline, K .cubicBaseline,
-       K .selection]) :
+       K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
+         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
+         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+         K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
+       K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+         K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+         K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   let cap := nearCubicHotColdCap enumerated
   match coldRoute8Dichotomy (data := spineData) cap
@@ -105,13 +106,9 @@ noncomputable def Assembly.Internal.nearCubicRealized
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) spineData).run
                   cost (by key_fresh)
-              let bridgeless :=
-                (bridgelessRow (BranchState := BranchState)
-                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  localized (by key_fresh)
-              match nearCubicColdOccurrence (nearCubicColdCorridorState bridgeless)
-                  (Or.inr (Or.inr (Node153LinearBlock_realized.ret bridgeless))) with
+              -- `lem:bridgeless` is on the ledger since the entry prefix.
+              match nearCubicColdOccurrence (nearCubicColdCorridorState localized)
+                  (Or.inr (Or.inr (Node153LinearBlock_realized.ret localized))) with
               | .inr repeated =>
                   -- `[153]`, ¬(★): G's first equal-state pair, returned.
                   exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl repeated))))

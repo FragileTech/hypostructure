@@ -18,22 +18,35 @@ set_option maxHeartbeats 1000000 in
 noncomputable def selectedStrictSurplusBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking,
-        K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .minDegreeBaseline, K .cubicBaseline, K .selection]) :
+      [K .sparseSurplusSurvivor,
+        K .paperBudgetBound, K .paperBudgetCertifies, K .pairCodeConfiguration,
+        K .canonicalTokenCount,
+        K .canonicalBlockedFreePartition, K .canonicalLedgerDeficit,
+        K .pairCountDeficit, K .canonicalCertificationCriterion,
+        K .canonicalOverloadOfFits, K .canonicalFreeExcessOfCapped,
+        K .canonicalCapacityExplicit, K .highDegreePositive,
+        K .highDegreeSurplusCapacity, K .orderAboveScaleSquare,
+        K .sixVertexExtremalEnvelope, K .edgeSurplusIdentity,
+        K .ceilSqrtAboveScale, K .baselineSpineDemand, K .sparseUpperEnvelope,
+        K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
+        K .admissibleQuotientsLabelInjective, K .replacementExclusion,
+        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+        K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
+        K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+        K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+        K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+        K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     StrictSurplusBoundaryResult selected := by
   -- The enclosing `[20]` decision has already selected the survivor arm;
   -- its literal ledger is node `[125]`, which enters `[126]`--`[128]`.
   let activated := selectedSparseSurplusActivation history
   -- EG-NODE [129] full active family and baseline: \(\mathcal A_0=\mathcal P_{\rm exc}\), \(E_{\rm spine}\le C_E n\)
-  let baseline :=
-    (baselineSpineDemandRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      activated (by key_fresh)
+  -- `[129]`'s baseline spine demand `K .baselineSpineDemand` is on the ledger
+  -- since the top of the strict arm of `[19]` (`sparseExitBaselineSpineDemandRow`,
+  -- which reads only entry facts and `K .surplusAbove`), so it is not
+  -- published again here.
   -- EG-NODE [130] canonical pair split: blocker-free?
-  match pairResponseIndependenceDichotomy (data := spineData) baseline
+  match pairResponseIndependenceDichotomy (data := spineData) activated
       (by key_fresh) (by key_fresh) with
   | .left independentHistory =>
       exact Assembly.Internal.strictSurplusIndependent independentHistory

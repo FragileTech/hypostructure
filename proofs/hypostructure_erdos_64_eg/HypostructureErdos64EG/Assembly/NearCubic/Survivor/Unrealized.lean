@@ -37,13 +37,14 @@ noncomputable def Assembly.Internal.nearCubicDensePassRateFailed
     (rateFails : ExactLedger EGInput.{u} selected
       [K .route8RateFails, K .denseDeficiencyBelow,
        K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
-       K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
-       K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
-       K .targetCompleteContextUniversality, K .degreeProfileFibres,
-       K .cycleRankConstraint,
-       K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-       K .minDegreeBaseline, K .cubicBaseline,
-       K .selection]) :
+       K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
+         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
+         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+         K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
+       K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+         K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+         K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   let cap := nearCubicHotColdCap rateFails
   match coldRoute8Dichotomy (data := spineData) cap
@@ -94,13 +95,14 @@ noncomputable def Assembly.Internal.nearCubicDensePassAtOrAbove
     (denseHistory : ExactLedger EGInput.{u} selected
       [K .denseDeficiencyAtOrAbove,
        K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
-       K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
-       K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
-       K .targetCompleteContextUniversality, K .degreeProfileFibres,
-       K .cycleRankConstraint,
-       K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-       K .minDegreeBaseline, K .cubicBaseline,
-       K .selection]) :
+       K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
+         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
+         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+         K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
+       K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+         K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+         K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   let cap := nearCubicHotColdCap denseHistory
   match coldRoute8Dichotomy (data := spineData) cap
@@ -156,13 +158,14 @@ noncomputable def Assembly.Internal.nearCubicUnrealized
     {selected : EGInput.{u}}
     (unrealizedHistory : ExactLedger EGInput.{u} selected
       [K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
-       K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
-       K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
-       K .targetCompleteContextUniversality, K .degreeProfileFibres,
-       K .cycleRankConstraint,
-       K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-       K .minDegreeBaseline, K .cubicBaseline,
-       K .selection]) :
+       K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
+         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
+         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+         K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
+       K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+         K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+         K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   match denseDeficiencyDichotomy (data := spineData) unrealizedHistory
       (by key_fresh) (by key_fresh) with

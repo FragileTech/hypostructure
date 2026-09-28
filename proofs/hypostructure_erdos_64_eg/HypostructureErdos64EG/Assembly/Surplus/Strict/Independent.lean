@@ -19,14 +19,28 @@ set_option maxHeartbeats 1000000 in
 noncomputable def Assembly.Internal.strictSurplusIndependent
     {selected : EGInput.{u}}
     (independentHistory : ExactLedger EGInput.{u} selected
-      [K .independentPairFamily, K .baselineSpineDemand, K .activeSurplusDemands, K .sparsePortActivation,
+      [K .independentPairFamily, K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .suppressedFamilyCriticalCycle,
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression, K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .minDegreeBaseline, K .cubicBaseline,
-        K .selection]) :
+        K .openPortSuppression, K .sparseSurplusSurvivor,
+        K .paperBudgetBound, K .paperBudgetCertifies, K .pairCodeConfiguration,
+        K .canonicalTokenCount,
+        K .canonicalBlockedFreePartition, K .canonicalLedgerDeficit,
+        K .pairCountDeficit, K .canonicalCertificationCriterion,
+        K .canonicalOverloadOfFits, K .canonicalFreeExcessOfCapped,
+        K .canonicalCapacityExplicit, K .highDegreePositive,
+        K .highDegreeSurplusCapacity, K .orderAboveScaleSquare,
+        K .sixVertexExtremalEnvelope, K .edgeSurplusIdentity,
+        K .ceilSqrtAboveScale, K .baselineSpineDemand, K .sparseUpperEnvelope,
+        K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
+          K .admissibleQuotientsLabelInjective, K .replacementExclusion,
+          K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+          K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
+        K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+          K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+          K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+          K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     StrictSurplusBoundaryResult selected := by
   -- `[131]` first commits the manuscript's named arithmetic and
   -- dependence prefix to this literal residual; the entropy decision below
@@ -90,12 +104,8 @@ noncomputable def Assembly.Internal.strictSurplusIndependent
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           unrealizedHistory (by key_fresh)
-      -- `[135]`'s sparse upper envelope is a fact of G on this side too.
-      let enveloped :=
-        (exactWindowJoinPressureRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          firstFailure (by key_fresh)
-      exact selectedPairCodeChainIndependent enveloped
+      -- `[135]`'s sparse upper envelope is on the ledger since the top of the
+      -- strict arm of `[19]`.
+      exact selectedPairCodeChainIndependent firstFailure
 
 end HypostructureErdos64EG

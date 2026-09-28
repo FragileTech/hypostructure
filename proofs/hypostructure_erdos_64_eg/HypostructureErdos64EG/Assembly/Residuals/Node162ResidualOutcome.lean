@@ -10,9 +10,9 @@ the pass on the no-arm of `[158]`.  Their ledgers differ only by the arm of
 two residuals, each a subtype of the generic `Node162ResidualOutcome`:
 
 - `Node162ResidualOutcome_tauAtOrAbove`: `[160]` first test fails,
-  `τ(θ) ≥ 1/4` (47 facts);
+  `τ(θ) ≥ 1/4` (58 facts);
 - `Node162ResidualOutcome_tauBelowRateFails`: `[160]` first test holds,
-  `τ(θ) < 1/4`, and the private-carrier rate `τ(θ) < 3/13` fails (48 facts).
+  `τ(θ) < 1/4`, and the private-carrier rate `τ(θ) < 3/13` fails (59 facts).
 -/
 
 namespace HypostructureErdos64EG
@@ -26,7 +26,7 @@ universe u
 
 /-- **Node `[162]` on `[160]`'s first complement** (`τ(θ) ≥ 1/4`).
 The generic `[162]` residual together with every fact its arm of `[160]`
-adds to the ledger (48 facts in all). -/
+adds to the ledger (58 facts in all). -/
 abbrev Node162ResidualOutcome_tauAtOrAbove (selected : EGInput.{u}) : Prop :=
   Node162ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -58,6 +58,16 @@ theorem node162Return_tauAtOrAbove
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .packingOrderBound) known]
+    [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+    [FactKeys.Has (K .windowCutCapacity) known]
+    [FactKeys.Has (K .primitiveCarrierCount) known]
+    [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .surplusDartIdentity) known]
+    [FactKeys.Has (K .highDegreeCountBound) known]
+    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .barrierEnumeration) known]
@@ -98,7 +108,7 @@ theorem node162Return_tauAtOrAbove
 /-- **Node `[162]` on `[160]`'s second complement** (`τ(θ) < 1/4`, the
 private-carrier rate `τ(θ) < 3/13` failed).
 The generic `[162]` residual together with every fact its arm of `[160]`
-adds to the ledger (49 facts in all). -/
+adds to the ledger (59 facts in all). -/
 abbrev Node162ResidualOutcome_tauBelowRateFails (selected : EGInput.{u}) : Prop :=
   Node162ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -132,6 +142,16 @@ theorem node162Return_tauBelowRateFails
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .packingOrderBound) known]
+    [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+    [FactKeys.Has (K .windowCutCapacity) known]
+    [FactKeys.Has (K .primitiveCarrierCount) known]
+    [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .surplusDartIdentity) known]
+    [FactKeys.Has (K .highDegreeCountBound) known]
+    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .barrierEnumeration) known]
@@ -194,6 +214,16 @@ theorem node162SubtypesReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .packingOrderBound) known]
+    [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+    [FactKeys.Has (K .windowCutCapacity) known]
+    [FactKeys.Has (K .primitiveCarrierCount) known]
+    [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .surplusDartIdentity) known]
+    [FactKeys.Has (K .highDegreeCountBound) known]
+    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .barrierEnumeration) known]

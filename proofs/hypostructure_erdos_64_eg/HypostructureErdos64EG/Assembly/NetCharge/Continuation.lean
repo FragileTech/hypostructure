@@ -34,7 +34,7 @@ reserved here although that arm is closed at `[173]` (`[175]`'s split and
 `[177]`'s fan data are still committed on the `[153]` linear arms). -/
 noncomputable abbrev netChargeContinuationKeys : FactKeys EGInput.{u} :=
   [K .netChargeCap, K .exactCollisionFails, K .absorbedConfigurationResidual,
-    K .absorbedGermSplit, K .bridgeless, K .coldReturnCorridors,
+    K .absorbedGermSplit, K .coldReturnCorridors,
     K .coldCorridorState,
     K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
     K .coldCutStatesDistinct, K .coldRepeatedStateResidual,
@@ -165,6 +165,17 @@ noncomputable def selectedNetChargeContinuation
     [FactKeys.Has (K .boundaryDemand) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .packingOrderBound) known]
+    [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+    [FactKeys.Has (K .windowCutCapacity) known]
+    [FactKeys.Has (K .primitiveCarrierCount) known]
+    [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .surplusDartIdentity) known]
+    [FactKeys.Has (K .highDegreeCountBound) known]
+    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -202,12 +213,8 @@ noncomputable def selectedNetChargeContinuation
     SelectedNetChargeBoundary selected := by
   -- `[57]` = `[173]`, `lem:exact-collision-test`: node `[56]`'s collision decided
   -- exactly on the current object (`K .netChargeCap`), with no condition on `n`.
-  let bridgeless :=
-    (bridgelessRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by key_fresh)
-  match exactCollisionDichotomy (data := spineData) bridgeless
+  -- `lem:bridgeless` is on the ledger since the entry prefix.
+  match exactCollisionDichotomy (data := spineData) history
       (by key_fresh) (by key_fresh) with
   | .right failsHistory =>
       -- `[174]`, `lem:exact-collision-test`, no arm: `N₀(R₀) ≥ 0` at the fixed

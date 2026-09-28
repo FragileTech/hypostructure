@@ -9,6 +9,8 @@ import Hypostructure.Graph.Strategy.SpineRows.ObstructionPacking
 import Hypostructure.Graph.Strategy.SpineRows.ReplacementExclusion
 import Hypostructure.Graph.Strategy.SpineRows.ReturnAvoidance
 import Hypostructure.Graph.Strategy.SpineRows.TargetCompleteContextUniversality
+import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
+import Hypostructure.Graph.Strategy.SpineRows.SparseExitResidual
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseSurplusExit
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseTargetDefectStructure
 import HypostructureErdos64EG.Assembly.Basic
@@ -48,28 +50,54 @@ noncomputable def selectedEntryPrefix
     (history : ExactLedger EGInput.{u} selected [EGSelectionKey]) :
     ExactLedger EGInput.{u} selected
       [K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
-        K .replacementExclusion, K .targetCompleteContextUniversality,
-        K .degreeProfileFibres,
-        K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline,
-        K .returnAvoidance, K .minDegreeBaseline, K .cubicBaseline, K .selection] := by
+        K .admissibleQuotientsLabelInjective, K .replacementExclusion,
+        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+        K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
+        K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+        K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+        K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+        K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
+  -- Hoisted from `[20a]`: facts of G read from `[4]`'s selection alone; no decision.
+  let hSelectionFacts :=
+    (entrySelectionFactsRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by key_fresh)
   -- The presentation laws of G, published once on the ledger.
   let hCubic :=
     (cubicBaselineRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by key_fresh)
+      hSelectionFacts (by key_fresh)
+  -- Hoisted: `lem:bridgeless`, from the selection and the presentation laws; no decision.
+  let hBridgeless :=
+    (bridgelessRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hCubic (by key_fresh)
   -- `[1]`--`[3]`: G's baseline `δ(G) ≥ 3`, published once on the ledger.
   let hBaseline :=
     (minDegreeBaselineRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      hCubic (by key_fresh)
+      hBridgeless (by key_fresh)
+  -- Hoisted from `[20a]`: the canonical packing `P₀` of G, from the baseline; no decision.
+  let hPacking :=
+    (sparseExitPackingRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hBaseline (by key_fresh)
+  -- Hoisted from `[20a]`: the primitive carrier count of G; no decision.
+  let hCarriers :=
+    (primitiveCarrierCountRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hPacking (by key_fresh)
   -- `[6]`: Mersenne return exists?
   match returnAvoidanceDichotomy (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)
-      hBaseline (by
+      hCarriers (by
         key_fresh)
       (by
         key_fresh) with
@@ -85,17 +113,29 @@ noncomputable def selectedEntryPrefix
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           h1 (by
             key_fresh)
+      -- Hoisted from `[20a]`: the single-boundary shape, from `[8]` and `lem:bridgeless`; no decision.
+      let hBoundary :=
+        (singleBoundaryShapeRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          h2 (by key_fresh)
       let h3 :=
         (deletionCriticalityRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          h2 (by
+          hBoundary (by
             key_fresh)
+      -- Hoisted from `[20a]`: the dart identity and the high-degree count, from `[9]`/`[10]`; no decision.
+      let hDegreeCount :=
+        (degreeCountRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          h3 (by key_fresh)
       let hRank :=
         (cycleRankConstraintRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          h3 (by
+          hDegreeCount (by
             key_fresh)
       -- `[11]`: boundaried pieces and the boundary degree profile.
       let h11 :=
@@ -116,10 +156,16 @@ noncomputable def selectedEntryPrefix
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run h12 (by
             key_fresh)
+      -- Hoisted from `[20a]`: admissible quotients of G are label-injective, from `[13]`; no decision.
+      let hQuotients :=
+        (sparseExitQuotientsRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          h13 (by key_fresh)
       let h4 :=
         (interfaceReplacementRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run h13 (by
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run hQuotients (by
             key_fresh)
       -- `[15]`: `G` is `P₁₃`-free?
       match windowFreeDichotomy (BranchState := BranchState)
