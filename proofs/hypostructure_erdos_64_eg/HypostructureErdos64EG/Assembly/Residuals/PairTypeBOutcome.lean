@@ -85,6 +85,10 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .cyclesThroughVertex) known]
     [FactKeys.Has (K .cutVertexBlockPaths) known]
     [FactKeys.Has (K .cycleDoubleCount) known]
+    [FactKeys.Has (K .threeRouteFan) known]
+    [FactKeys.Has (K .threeRouteChain) known]
+    [FactKeys.Has (K .windowPositionStubs) known]
+    [FactKeys.Has (K .windowAttachmentGap) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -172,6 +176,10 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .cyclesThroughVertex)).down,
       (history.get (K .cutVertexBlockPaths)).down,
       (history.get (K .cycleDoubleCount)).down,
+      (history.get (K .threeRouteFan)).down,
+      (history.get (K .threeRouteChain)).down,
+      (history.get (K .windowPositionStubs)).down,
+      (history.get (K .windowAttachmentGap)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -289,6 +297,10 @@ theorem pairTypeBIndependentIncrementReturn
     [FactKeys.Has (K .cyclesThroughVertex) known]
     [FactKeys.Has (K .cutVertexBlockPaths) known]
     [FactKeys.Has (K .cycleDoubleCount) known]
+    [FactKeys.Has (K .threeRouteFan) known]
+    [FactKeys.Has (K .threeRouteChain) known]
+    [FactKeys.Has (K .windowPositionStubs) known]
+    [FactKeys.Has (K .windowAttachmentGap) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -382,6 +394,10 @@ theorem pairTypeBIndependentIncrementReturn
       (history.get (K .cyclesThroughVertex)).down,
       (history.get (K .cutVertexBlockPaths)).down,
       (history.get (K .cycleDoubleCount)).down,
+      (history.get (K .threeRouteFan)).down,
+      (history.get (K .threeRouteChain)).down,
+      (history.get (K .windowPositionStubs)).down,
+      (history.get (K .windowAttachmentGap)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -515,6 +531,10 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .cyclesThroughVertex) known]
     [FactKeys.Has (K .cutVertexBlockPaths) known]
     [FactKeys.Has (K .cycleDoubleCount) known]
+    [FactKeys.Has (K .threeRouteFan) known]
+    [FactKeys.Has (K .threeRouteChain) known]
+    [FactKeys.Has (K .windowPositionStubs) known]
+    [FactKeys.Has (K .windowAttachmentGap) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -611,6 +631,10 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .cyclesThroughVertex)).down,
       (history.get (K .cutVertexBlockPaths)).down,
       (history.get (K .cycleDoubleCount)).down,
+      (history.get (K .threeRouteFan)).down,
+      (history.get (K .threeRouteChain)).down,
+      (history.get (K .windowPositionStubs)).down,
+      (history.get (K .windowAttachmentGap)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -755,6 +779,10 @@ theorem pairTypeBDependentIncrementReturn
     [FactKeys.Has (K .cyclesThroughVertex) known]
     [FactKeys.Has (K .cutVertexBlockPaths) known]
     [FactKeys.Has (K .cycleDoubleCount) known]
+    [FactKeys.Has (K .threeRouteFan) known]
+    [FactKeys.Has (K .threeRouteChain) known]
+    [FactKeys.Has (K .windowPositionStubs) known]
+    [FactKeys.Has (K .windowAttachmentGap) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -857,6 +885,10 @@ theorem pairTypeBDependentIncrementReturn
       (history.get (K .cyclesThroughVertex)).down,
       (history.get (K .cutVertexBlockPaths)).down,
       (history.get (K .cycleDoubleCount)).down,
+      (history.get (K .threeRouteFan)).down,
+      (history.get (K .threeRouteChain)).down,
+      (history.get (K .windowPositionStubs)).down,
+      (history.get (K .windowAttachmentGap)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
