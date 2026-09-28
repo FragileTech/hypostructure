@@ -14,6 +14,7 @@ import Hypostructure.Graph.Statements.ColdGerm
 import Hypostructure.Graph.Statements.SpineDominantType
 import Hypostructure.Graph.Statements.ColdResiduals
 import Hypostructure.Graph.Statements.DensityOrder
+import Hypostructure.Graph.Statements.SparseExitResidual
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1711,6 +1712,151 @@ inductive Key where
   G's selected cold branch-excess family is empty and G has no ambient-cubic
   cold window. -/
   | coldSelectedFamilyEmpty
+  -- [20a] enrichment keys (6606-)
+  /-- Node `[20a]`: **Edge–surplus identity**: `2m = δ·n + σ`. -/
+  | edgeSurplusIdentity
+  /-- Node `[20a]`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`). -/
+  | surplusDartIdentity
+  /-- Node `[20a]`: **High-degree count**: `|H| ≤ σ`. -/
+  | highDegreeCountBound
+  /-- Node `[20a]`: **At least one high-degree vertex**: `1 ≤ |H|`. -/
+  | highDegreePositive
+  /-- Node `[20a]`: **The surplus fits on the high vertices**: `σ ≤ |H|·(n − |H| − δ)` (every high vertex has all its neighbours among the `n − |H|` baseline vertices). -/
+  | highDegreeSurplusCapacity
+  /-- Node `[20a]`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`). -/
+  | packingOrderBound
+  /-- Node `[20a]`: **`C + 1 ≤ ⌈√n⌉`.** -/
+  | ceilSqrtAboveScale
+  /-- Node `[20a]`: **`C(C+1) + 9 ≤ n`** (¬K4, sharpened by `σ + 8 ≤ n`). -/
+  | orderAboveScaleSquare
+  /-- Node `[20a]`: **Envelope from `ex(6, C₄) = 7`**: `m + 4 ≤ 2n`. -/
+  | sixVertexExtremalEnvelope
+  /-- Node `[20a]`: **The readings are not target-complete.** -/
+  | witnessReadingsNotTargetComplete
+  /-- Node `[20a]`: **Neither reading has an accepted cycle at `G − Z`.** -/
+  | witnessActualOutsideNegative
+  /-- Node `[20a]`: **Both reading pieces are cycle-free** (each embeds in G). -/
+  | witnessReadingsCycleFree
+  /-- Node `[20a]`: **`|Z| + 1 ≤ n`.** -/
+  | witnessSupportOrderBound
+  /-- Node `[20a]`: **No reading's gluing with `G − Z` is a lexicographically smaller baseline object** (¬K3). -/
+  | witnessReadingGluesNotSmallerBaseline
+  /-- Node `[20a]`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`. -/
+  | noSuppressionChordViolation
+  /-- Node `[20a]`: **`O` is not realized in `G − Z`.** -/
+  | witnessOutsideNotRealized
+  /-- Node `[20a]`: **Both readings are negative in every context realized in `G − Z`.** -/
+  | realizedContextsNegative
+  /-- Node `[20a]`: **No negative sub-gluing is a lexicographically smaller baseline object**: the negative reading `N` at `O`, against every sub-context `O' ≤ O`. -/
+  | negativeSubGluingNotSmallerBaseline
+  /-- Node `[20a]`: **The O-part of one positive cycle still separates**: a sub-context `O' ≤ O` with `P` positive and `N` negative, every `O'`-internal vertex of `O'`-degree at most `2`, and `glue N O'` not a baseline object. -/
+  | cycleSubContextSeparates
+  /-- Node `[20a]`: **The path-length spectrum split** at the witness: for the positive reading `P` and the negative reading `N` at `O`, either (i) labels `a ≠ b` of `∂Z`, a path `π : a → b` of `ret_P` and an `O`-path `σ : b → a` meeting no other label with `|π| + |σ| = 2^k` (`k ≥ 2`), such that every `a → b` path `π'` of `ret_N` has `|π'| ≠ |π|` and `|π'| + |σ| ≠ 2^j` for every `j ≥ 2`; or (ii) every accepted cycle of `glue ret_P O` meets three distinct labels. -/
+  | pathSpectrumSplit
+  /-- Node `[20a]`: **Every admissible quotient of G is label-injective** on its family. -/
+  | admissibleQuotientsLabelInjective
+  /-- Node `[20a]`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex). -/
+  | singleBoundaryShape
+  /-- Node `[20a]`: **`2 ≤ |∂Z ∩ X⁺|`** for one declared support `X⁺ ∈ {A, B}`. -/
+  | positiveSupportBoundaryTwo
+  /-- Node `[20a]`: **`2 ≤ e(∂Z, V ∖ Z)`.** -/
+  | supportCutEdgesTwo
+  /-- Node `[20a]`: **A boundary vertex with at most two neighbours in `Z`.** -/
+  | boundaryLowInsideVertex
+  /-- Node `[20a]`: **An outside vertex with at most two outside neighbours and a neighbour in `Z`.** -/
+  | outsideLowVertex
+  /-- Node `[20a]`: **`∂Z = {a, b}` with an interior vertex: one terminal has at most two neighbours in `T' = (V ∖ Z) ∪ {a, b}`.** -/
+  | twoBoundaryLowOutsideSide
+  /-- Node `[20a]`: **2-sum closure on the `Z` side**: if `a ≁ b` and both have two neighbours in `Z`, then `G[Z]` has an `a`–`b` path `P` with `|P| + 1` accepted. -/
+  | twoBoundarySupportClosure
+  /-- Node `[20a]`: **2-sum closure on the outside side** (interior arm). -/
+  | twoBoundaryOutsideClosure
+  /-- Node `[20a]`: **The length-set constraint at `∂Z = {a, b}`**: an `a`–`b` path in `Z` and a `b`–`a` path in `T'` (not both single edges) never sum to an accepted length. -/
+  | twoBoundaryNoTargetSum
+  /-- Node `[20a]`: **`2 ≤ |W|` or `3 ≤ |∂Z|`.** -/
+  | outsideOrBoundaryLarge
+  /-- Node `[20a]`: **Every G-edge a reading drops at `G − Z` has an endpoint below the baseline there.** -/
+  | droppedEdgeTightDeficit
+  /-- Node `[20a]`: **At most one reading is whole**: `¬ (Z ⊆ A ∧ Z ⊆ B)`. -/
+  | notBothReadingsWhole
+  /-- Node `[20a]`: **Whole case `Z ⊆ A`: `A` positive and `B` negative at `O`.** -/
+  | firstWholeOrientation
+  /-- Node `[20a]`: **Whole case `Z ⊆ A`: `1 ≤ |Z ∖ B|`.** -/
+  | firstWholeDeficitNonempty
+  /-- Node `[20a]`: **Whole case `Z ⊆ A`: the deficit set `Z ∖ B` is internal, has no `∂Z`-neighbour, and is isolated in every gluing of `ret_B`.** -/
+  | firstWholeDeficitStructure
+  /-- Node `[20a]`: **Whole case `Z ⊆ A`: `δ·|Z ∖ B| ≤ Σ (δ − deg)` in every gluing of `ret_B`.** -/
+  | firstWholeDeficitSum
+  /-- Node `[20a]`: **Whole case `Z ⊆ B`: `B` positive and `A` negative at `O`.** -/
+  | secondWholeOrientation
+  /-- Node `[20a]`: **Whole case `Z ⊆ B`: `1 ≤ |Z ∖ A|`.** -/
+  | secondWholeDeficitNonempty
+  /-- Node `[20a]`: **Whole case `Z ⊆ B`: the deficit set `Z ∖ A` is internal, has no `∂Z`-neighbour, and is isolated in every gluing of `ret_A`.** -/
+  | secondWholeDeficitStructure
+  /-- Node `[20a]`: **Whole case `Z ⊆ B`: `δ·|Z ∖ A| ≤ Σ (δ − deg)` in every gluing of `ret_A`.** -/
+  | secondWholeDeficitSum
+  /-- Node `[20a]`: **Whole case (`Z ⊆ A` with `S = Z ∖ B`, and `Z ⊆ B` with `S = Z ∖ A`): `G − S` is lexicographically smaller than G, has no accepted cycle, and fails `δ ≥ 3`.** -/
+  | deletedSupportReduction
+  /-- Node `[20a]`: **Whole case: a deficient vertex of `G − S` exists, and every one lies in `Z ∩ B`, is internal to `Z`, and has a neighbour in `S`.** -/
+  | deletedSupportDeficientVertex
+  /-- Node `[20a]`: **Whole case: the deficit sums** `1 ≤ Σ_T (3 − deg_{G−S}) = Σ_T (d_S − (deg − 3)) ≤ e(S, T)`, with equality `= e(S, T)` when every `T`-neighbour of `S` has degree `3`. -/
+  | deletedSupportDeficitSums
+  /-- Node `[20a]`: **Whole case: one restoring edge forces an accepted closing path**: if adding `xy` to `G − S` restores `δ ≥ 3`, then `G − S` has a `y → x` path of length `ℓ` with `ℓ + 1` accepted. -/
+  | deletedSupportEdgeRestoration
+  /-- Node `[20a]`: **Whole case: any restoring edge set forces an accepted cycle through a new edge.** -/
+  | deletedSupportEdgeSetRestoration
+  /-- Node `[20a]`: **Keeps-all for `A` with `Z ⊄ A`**: `Z ⊄ B`, and both readings' profiles differ from the whole piece's. -/
+  | firstKeepsAllNotWhole
+  /-- Node `[20a]`: **Keeps-all for `B` with `Z ⊄ B`**: `Z ⊄ A`, and both readings' profiles differ from the whole piece's. -/
+  | secondKeepsAllNotWhole
+  /-- Node `[20a]`: **The pair arm does not occur**: `¬ (∂Z = Z = {a, b})` (equal profiles on a two-vertex all-boundary support force equal readings, against the separation at `O`). -/
+  | pairArmExcluded
+  /-- Node `[20a]`: **`|∂Z| = 2` forces arm (i) of the spectrum split**, `∂Z = {a, b}` inside one declared support, an interior vertex of `Z`, and `{a, b}` separating the interior from `V ∖ Z`. -/
+  | twoBoundaryForcesArmOne
+  /-- Node `[20a]`: **Arm (i) gives a forced path in `G[Z]`**: a simple `a–b` path `p` of `G[Z]` between two boundary vertices with `|p| + 1 ≤ |Z|` and `|p| + s = 2^k` (`k ≥ 2`, `s ≥ 1`, `(|p| + s) % 4 = 0`). -/
+  | armOneForcedPath
+  /-- Node `[20a]`: **`|∂Z| = 2`, the K1 × K2 cross constraint**: `∂Z = {a, b}` carries the forced path `p ⊆ G[Z]` (`|p| + s = 2^k`); no simple `b → a` path `q` in `T' = (V ∖ Z) ∪ {a, b}` (not both single edges) has `|p| + |q|` accepted; and if `a ≁ b` with both terminals of `T'`-degree `≥ 2`, the outside closure `q` exists with `|q| + 1` accepted and `|p| + |q|` not accepted. -/
+  | twoBoundaryForcedPathCross
+  /-- Node `[20a]`: **`Z` is a minimum connected set containing `A ∪ B`.** -/
+  | supportSteinerMinimal
+  /-- Node `[20a]`: **Every vertex of `Z ∖ (A ∪ B)` is a cut vertex of `G[Z]`.** -/
+  | steinerVerticesCut
+  /-- Node `[20a]`: **The whole case pins `Z`**: `Z ⊆ A ⇒ Z = A ∧ B ⊆ A`, and `Z ⊆ B ⇒ Z = B ∧ A ⊆ B`. -/
+  | wholeSupportEqual
+  /-- Node `[20a]`: **Whole case: `|S| + |∂Z| ≤ |Z|`** (`S = Z ∖ B` resp. `Z ∖ A`). -/
+  | wholeDeficitBoundaryCount
+  /-- Node `[20a]`: **Whole case: `e(S, T) ≤ D_T + σ`**, with `D_T = Σ_T (3 − deg_{G−S})`. -/
+  | wholeCutEdgeSurplusBound
+  /-- Node `[20a]`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder). -/
+  | remainderDeficiencyBelowCut
+  /-- Node `[20a]`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`. -/
+  | windowCutCapacity
+  /-- Node `[20a]`: **G's canonical capacity presentation is the explicit one**: the recorded blocker activation of G's active family on the node-`[19]` packing. -/
+  | canonicalCapacityExplicit
+  /-- Node `[20a]`: **`|𝔘_sp(G)| = 4n + 2σ`.** -/
+  | primitiveCarrierCount
+  /-- Node `[20a]`: **The exact token count at the canonical presentation**: `|𝔗_cap| + 2(order − 1)·ν = 4n + 3σ + 3·order·ν` (at order `13`: `|𝔗_cap| = 4n + 3σ + 15ν`). -/
+  | canonicalTokenCount
+  /-- Node `[20a]`: **`|Π_blk| + |Π_free| = C(σ, 2)`** at the canonical ledger. -/
+  | canonicalBlockedFreePartition
+  /-- Node `[20a]`: **The deficit at the canonical ledger** (G2): with `c = ⌈√n⌉`, `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B) + 2(|Π_blk| − M₀|𝔗|)`. -/
+  | canonicalLedgerDeficit
+  /-- Node `[20a]`: **The pair-count deficit** (G3): `c²K + 2M₀(8n + σ) ≤ 2(C(σ, 2) − B)`. -/
+  | pairCountDeficit
+  /-- Node `[20a]`: **The certification criterion at the canonical presentation**: its canonical certified ledger exists iff `|Π_free| ≤ B`. -/
+  | canonicalCertificationCriterion
+  /-- Node `[20a]`: **The paper's budget at the canonical spine family fits the certification budget**: `E_paper ≤ B`. -/
+  | paperBudgetBound
+  /-- Node `[20a]`: **`|Π_free| ≤ E_paper` certifies**: at the canonical spine family and presentation, `|Π_free| ≤ E_paper` makes the canonical certified ledger exist. -/
+  | paperBudgetCertifies
+  /-- Node `[20a]`: **If the free side fits `B`, the blocked side is overloaded**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_blk| − M₀|𝔗|)`, and some token has load `> M₀` and carries an `L_geom` role-homogeneous matching or star. -/
+  | canonicalOverloadOfFits
+  /-- Node `[20a]`: **If every token carries load `≤ M₀`, the free side exceeds `B`**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B)`. -/
+  | canonicalFreeExcessOfCapped
+  /-- Node `[20a]`: **Where G sits in the pair-code chain**: either the `[137]`→`[143]` configuration holds at the canonical objects (blocked pair, `[137]` count, canonical pattern, overload, caps fail), or G's canonical first failure exists and yields the `[182]` residual, or the target defect of the canonical return system's obstruction coordinates, or that obstruction's handoff together with the Type B fan entry `[65]`. -/
+  | pairCodeConfiguration
+  /-- Node `[20a]`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`. -/
+  | specWitnessStructure
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2517,6 +2663,151 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       BoundedOrderLargeStatement data.toParameters object
   | .boundedOrderSmall, object =>
       BoundedOrderSmallStatement data.toParameters object
+  -- [20a] enrichment keys
+  | .edgeSurplusIdentity, object =>
+      EdgeSurplusIdentityStatement data.toParameters object
+  | .surplusDartIdentity, object =>
+      SurplusDartIdentityStatement data.toParameters object
+  | .highDegreeCountBound, object =>
+      HighDegreeCountBoundStatement data.toParameters object
+  | .highDegreePositive, object =>
+      HighDegreePositiveStatement data.toParameters object
+  | .highDegreeSurplusCapacity, object =>
+      HighDegreeSurplusCapacityStatement data.toParameters object
+  | .packingOrderBound, object =>
+      PackingOrderBoundStatement data.toParameters object
+  | .ceilSqrtAboveScale, object =>
+      CeilSqrtAboveScaleStatement data.toParameters object
+  | .orderAboveScaleSquare, object =>
+      OrderAboveScaleSquareStatement data.toParameters object
+  | .sixVertexExtremalEnvelope, object =>
+      SixVertexExtremalEnvelopeStatement object
+  | .witnessReadingsNotTargetComplete, object =>
+      WitnessReadingsNotTargetCompleteStatement data.toParameters object
+  | .witnessActualOutsideNegative, object =>
+      WitnessActualOutsideNegativeStatement data.toParameters object
+  | .witnessReadingsCycleFree, object =>
+      WitnessReadingsCycleFreeStatement data.toParameters object
+  | .witnessSupportOrderBound, object =>
+      WitnessSupportOrderBoundStatement data.toParameters object
+  | .witnessReadingGluesNotSmallerBaseline, object =>
+      WitnessReadingGluesNotSmallerBaselineStatement data.toParameters object
+  | .noSuppressionChordViolation, object =>
+      NoSuppressionChordViolationStatement data.toParameters object
+  | .witnessOutsideNotRealized, object =>
+      WitnessOutsideNotRealizedStatement data.toParameters object
+  | .realizedContextsNegative, object =>
+      RealizedContextsNegativeStatement data.toParameters object
+  | .negativeSubGluingNotSmallerBaseline, object =>
+      NegativeSubGluingNotSmallerBaselineStatement data.toParameters object
+  | .cycleSubContextSeparates, object =>
+      CycleSubContextSeparatesStatement data.toParameters object
+  | .pathSpectrumSplit, object =>
+      PathSpectrumSplitStatement data.toParameters object
+  | .admissibleQuotientsLabelInjective, object =>
+      AdmissibleQuotientsLabelInjectiveStatement data.toParameters object
+  | .singleBoundaryShape, object =>
+      SingleBoundaryShapeStatement object
+  | .positiveSupportBoundaryTwo, object =>
+      PositiveSupportBoundaryTwoStatement data.toParameters object
+  | .supportCutEdgesTwo, object =>
+      SupportCutEdgesTwoStatement data.toParameters object
+  | .boundaryLowInsideVertex, object =>
+      BoundaryLowInsideVertexStatement data.toParameters object
+  | .outsideLowVertex, object =>
+      OutsideLowVertexStatement data.toParameters object
+  | .twoBoundaryLowOutsideSide, object =>
+      TwoBoundaryLowOutsideSideStatement data.toParameters object
+  | .twoBoundarySupportClosure, object =>
+      TwoBoundarySupportClosureStatement data.toParameters object
+  | .twoBoundaryOutsideClosure, object =>
+      TwoBoundaryOutsideClosureStatement data.toParameters object
+  | .twoBoundaryNoTargetSum, object =>
+      TwoBoundaryNoTargetSumStatement data.toParameters object
+  | .outsideOrBoundaryLarge, object =>
+      OutsideOrBoundaryLargeStatement data.toParameters object
+  | .droppedEdgeTightDeficit, object =>
+      DroppedEdgeTightDeficitStatement data.toParameters object
+  | .notBothReadingsWhole, object =>
+      NotBothReadingsWholeStatement data.toParameters object
+  | .firstWholeOrientation, object =>
+      FirstWholeOrientationStatement data.toParameters object
+  | .firstWholeDeficitNonempty, object =>
+      FirstWholeDeficitNonemptyStatement data.toParameters object
+  | .firstWholeDeficitStructure, object =>
+      FirstWholeDeficitStructureStatement data.toParameters object
+  | .firstWholeDeficitSum, object =>
+      FirstWholeDeficitSumStatement data.toParameters object
+  | .secondWholeOrientation, object =>
+      SecondWholeOrientationStatement data.toParameters object
+  | .secondWholeDeficitNonempty, object =>
+      SecondWholeDeficitNonemptyStatement data.toParameters object
+  | .secondWholeDeficitStructure, object =>
+      SecondWholeDeficitStructureStatement data.toParameters object
+  | .secondWholeDeficitSum, object =>
+      SecondWholeDeficitSumStatement data.toParameters object
+  | .deletedSupportReduction, object =>
+      DeletedSupportReductionStatement data.toParameters object
+  | .deletedSupportDeficientVertex, object =>
+      DeletedSupportDeficientVertexStatement data.toParameters object
+  | .deletedSupportDeficitSums, object =>
+      DeletedSupportDeficitSumsStatement data.toParameters object
+  | .deletedSupportEdgeRestoration, object =>
+      DeletedSupportEdgeRestorationStatement data.toParameters object
+  | .deletedSupportEdgeSetRestoration, object =>
+      DeletedSupportEdgeSetRestorationStatement data.toParameters object
+  | .firstKeepsAllNotWhole, object =>
+      FirstKeepsAllNotWholeStatement data.toParameters object
+  | .secondKeepsAllNotWhole, object =>
+      SecondKeepsAllNotWholeStatement data.toParameters object
+  | .pairArmExcluded, object =>
+      PairArmExcludedStatement data.toParameters object
+  | .twoBoundaryForcesArmOne, object =>
+      TwoBoundaryForcesArmOneStatement data.toParameters object
+  | .armOneForcedPath, object =>
+      ArmOneForcedPathStatement data.toParameters object
+  | .twoBoundaryForcedPathCross, object =>
+      TwoBoundaryForcedPathCrossStatement data.toParameters object
+  | .supportSteinerMinimal, object =>
+      SupportSteinerMinimalStatement data.toParameters object
+  | .steinerVerticesCut, object =>
+      SteinerVerticesCutStatement data.toParameters object
+  | .wholeSupportEqual, object =>
+      WholeSupportEqualStatement data.toParameters object
+  | .wholeDeficitBoundaryCount, object =>
+      WholeDeficitBoundaryCountStatement data.toParameters object
+  | .wholeCutEdgeSurplusBound, object =>
+      WholeCutEdgeSurplusBoundStatement data.toParameters object
+  | .remainderDeficiencyBelowCut, object =>
+      RemainderDeficiencyBelowCutStatement data.toParameters object
+  | .windowCutCapacity, object =>
+      WindowCutCapacityStatement data.toParameters object
+  | .canonicalCapacityExplicit, object =>
+      CanonicalCapacityExplicitStatement data.toParameters object
+  | .primitiveCarrierCount, object =>
+      PrimitiveCarrierCountStatement data.toParameters object
+  | .canonicalTokenCount, object =>
+      CanonicalTokenCountStatement data.toParameters object
+  | .canonicalBlockedFreePartition, object =>
+      CanonicalBlockedFreePartitionStatement data.toParameters object
+  | .canonicalLedgerDeficit, object =>
+      CanonicalLedgerDeficitStatement data.toParameters object
+  | .pairCountDeficit, object =>
+      PairCountDeficitStatement data.toParameters object
+  | .canonicalCertificationCriterion, object =>
+      CanonicalCertificationCriterionStatement data.toParameters object
+  | .paperBudgetBound, object =>
+      PaperBudgetBoundStatement data.toParameters object
+  | .paperBudgetCertifies, object =>
+      PaperBudgetCertifiesStatement data.toParameters object
+  | .canonicalOverloadOfFits, object =>
+      CanonicalOverloadOfFitsStatement data.toParameters object
+  | .canonicalFreeExcessOfCapped, object =>
+      CanonicalFreeExcessOfCappedStatement data.toParameters object
+  | .pairCodeConfiguration, object =>
+      PairCodeConfigurationStatement data.toParameters object
+  | .specWitnessStructure, object =>
+      SpecWitnessStructureStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -2897,6 +3188,79 @@ def label : Key → String
   | .boundedDensityOrder => "boundedDensityOrder"
   | .boundedOrderLarge => "boundedOrderLarge"
   | .boundedOrderSmall => "boundedOrderSmall"
+  -- [20a] enrichment keys
+  | .edgeSurplusIdentity => "edgeSurplusIdentity"
+  | .surplusDartIdentity => "surplusDartIdentity"
+  | .highDegreeCountBound => "highDegreeCountBound"
+  | .highDegreePositive => "highDegreePositive"
+  | .highDegreeSurplusCapacity => "highDegreeSurplusCapacity"
+  | .packingOrderBound => "packingOrderBound"
+  | .ceilSqrtAboveScale => "ceilSqrtAboveScale"
+  | .orderAboveScaleSquare => "orderAboveScaleSquare"
+  | .sixVertexExtremalEnvelope => "sixVertexExtremalEnvelope"
+  | .witnessReadingsNotTargetComplete => "witnessReadingsNotTargetComplete"
+  | .witnessActualOutsideNegative => "witnessActualOutsideNegative"
+  | .witnessReadingsCycleFree => "witnessReadingsCycleFree"
+  | .witnessSupportOrderBound => "witnessSupportOrderBound"
+  | .witnessReadingGluesNotSmallerBaseline => "witnessReadingGluesNotSmallerBaseline"
+  | .noSuppressionChordViolation => "noSuppressionChordViolation"
+  | .witnessOutsideNotRealized => "witnessOutsideNotRealized"
+  | .realizedContextsNegative => "realizedContextsNegative"
+  | .negativeSubGluingNotSmallerBaseline => "negativeSubGluingNotSmallerBaseline"
+  | .cycleSubContextSeparates => "cycleSubContextSeparates"
+  | .pathSpectrumSplit => "pathSpectrumSplit"
+  | .admissibleQuotientsLabelInjective => "admissibleQuotientsLabelInjective"
+  | .singleBoundaryShape => "singleBoundaryShape"
+  | .positiveSupportBoundaryTwo => "positiveSupportBoundaryTwo"
+  | .supportCutEdgesTwo => "supportCutEdgesTwo"
+  | .boundaryLowInsideVertex => "boundaryLowInsideVertex"
+  | .outsideLowVertex => "outsideLowVertex"
+  | .twoBoundaryLowOutsideSide => "twoBoundaryLowOutsideSide"
+  | .twoBoundarySupportClosure => "twoBoundarySupportClosure"
+  | .twoBoundaryOutsideClosure => "twoBoundaryOutsideClosure"
+  | .twoBoundaryNoTargetSum => "twoBoundaryNoTargetSum"
+  | .outsideOrBoundaryLarge => "outsideOrBoundaryLarge"
+  | .droppedEdgeTightDeficit => "droppedEdgeTightDeficit"
+  | .notBothReadingsWhole => "notBothReadingsWhole"
+  | .firstWholeOrientation => "firstWholeOrientation"
+  | .firstWholeDeficitNonempty => "firstWholeDeficitNonempty"
+  | .firstWholeDeficitStructure => "firstWholeDeficitStructure"
+  | .firstWholeDeficitSum => "firstWholeDeficitSum"
+  | .secondWholeOrientation => "secondWholeOrientation"
+  | .secondWholeDeficitNonempty => "secondWholeDeficitNonempty"
+  | .secondWholeDeficitStructure => "secondWholeDeficitStructure"
+  | .secondWholeDeficitSum => "secondWholeDeficitSum"
+  | .deletedSupportReduction => "deletedSupportReduction"
+  | .deletedSupportDeficientVertex => "deletedSupportDeficientVertex"
+  | .deletedSupportDeficitSums => "deletedSupportDeficitSums"
+  | .deletedSupportEdgeRestoration => "deletedSupportEdgeRestoration"
+  | .deletedSupportEdgeSetRestoration => "deletedSupportEdgeSetRestoration"
+  | .firstKeepsAllNotWhole => "firstKeepsAllNotWhole"
+  | .secondKeepsAllNotWhole => "secondKeepsAllNotWhole"
+  | .pairArmExcluded => "pairArmExcluded"
+  | .twoBoundaryForcesArmOne => "twoBoundaryForcesArmOne"
+  | .armOneForcedPath => "armOneForcedPath"
+  | .twoBoundaryForcedPathCross => "twoBoundaryForcedPathCross"
+  | .supportSteinerMinimal => "supportSteinerMinimal"
+  | .steinerVerticesCut => "steinerVerticesCut"
+  | .wholeSupportEqual => "wholeSupportEqual"
+  | .wholeDeficitBoundaryCount => "wholeDeficitBoundaryCount"
+  | .wholeCutEdgeSurplusBound => "wholeCutEdgeSurplusBound"
+  | .remainderDeficiencyBelowCut => "remainderDeficiencyBelowCut"
+  | .windowCutCapacity => "windowCutCapacity"
+  | .canonicalCapacityExplicit => "canonicalCapacityExplicit"
+  | .primitiveCarrierCount => "primitiveCarrierCount"
+  | .canonicalTokenCount => "canonicalTokenCount"
+  | .canonicalBlockedFreePartition => "canonicalBlockedFreePartition"
+  | .canonicalLedgerDeficit => "canonicalLedgerDeficit"
+  | .pairCountDeficit => "pairCountDeficit"
+  | .canonicalCertificationCriterion => "canonicalCertificationCriterion"
+  | .paperBudgetBound => "paperBudgetBound"
+  | .paperBudgetCertifies => "paperBudgetCertifies"
+  | .canonicalOverloadOfFits => "canonicalOverloadOfFits"
+  | .canonicalFreeExcessOfCapped => "canonicalFreeExcessOfCapped"
+  | .pairCodeConfiguration => "pairCodeConfiguration"
+  | .specWitnessStructure => "specWitnessStructure"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3282,6 +3646,78 @@ example : label .realizedOrderSmall = "realizedOrderSmall" := rfl
 example : label .boundedDensityOrder = "boundedDensityOrder" := rfl
 example : label .boundedOrderLarge = "boundedOrderLarge" := rfl
 example : label .boundedOrderSmall = "boundedOrderSmall" := rfl
+example : label .edgeSurplusIdentity = "edgeSurplusIdentity" := rfl
+example : label .surplusDartIdentity = "surplusDartIdentity" := rfl
+example : label .highDegreeCountBound = "highDegreeCountBound" := rfl
+example : label .highDegreePositive = "highDegreePositive" := rfl
+example : label .highDegreeSurplusCapacity = "highDegreeSurplusCapacity" := rfl
+example : label .packingOrderBound = "packingOrderBound" := rfl
+example : label .ceilSqrtAboveScale = "ceilSqrtAboveScale" := rfl
+example : label .orderAboveScaleSquare = "orderAboveScaleSquare" := rfl
+example : label .sixVertexExtremalEnvelope = "sixVertexExtremalEnvelope" := rfl
+example : label .witnessReadingsNotTargetComplete = "witnessReadingsNotTargetComplete" := rfl
+example : label .witnessActualOutsideNegative = "witnessActualOutsideNegative" := rfl
+example : label .witnessReadingsCycleFree = "witnessReadingsCycleFree" := rfl
+example : label .witnessSupportOrderBound = "witnessSupportOrderBound" := rfl
+example : label .witnessReadingGluesNotSmallerBaseline = "witnessReadingGluesNotSmallerBaseline" := rfl
+example : label .noSuppressionChordViolation = "noSuppressionChordViolation" := rfl
+example : label .witnessOutsideNotRealized = "witnessOutsideNotRealized" := rfl
+example : label .realizedContextsNegative = "realizedContextsNegative" := rfl
+example : label .negativeSubGluingNotSmallerBaseline = "negativeSubGluingNotSmallerBaseline" := rfl
+example : label .cycleSubContextSeparates = "cycleSubContextSeparates" := rfl
+example : label .pathSpectrumSplit = "pathSpectrumSplit" := rfl
+example : label .admissibleQuotientsLabelInjective = "admissibleQuotientsLabelInjective" := rfl
+example : label .singleBoundaryShape = "singleBoundaryShape" := rfl
+example : label .positiveSupportBoundaryTwo = "positiveSupportBoundaryTwo" := rfl
+example : label .supportCutEdgesTwo = "supportCutEdgesTwo" := rfl
+example : label .boundaryLowInsideVertex = "boundaryLowInsideVertex" := rfl
+example : label .outsideLowVertex = "outsideLowVertex" := rfl
+example : label .twoBoundaryLowOutsideSide = "twoBoundaryLowOutsideSide" := rfl
+example : label .twoBoundarySupportClosure = "twoBoundarySupportClosure" := rfl
+example : label .twoBoundaryOutsideClosure = "twoBoundaryOutsideClosure" := rfl
+example : label .twoBoundaryNoTargetSum = "twoBoundaryNoTargetSum" := rfl
+example : label .outsideOrBoundaryLarge = "outsideOrBoundaryLarge" := rfl
+example : label .droppedEdgeTightDeficit = "droppedEdgeTightDeficit" := rfl
+example : label .notBothReadingsWhole = "notBothReadingsWhole" := rfl
+example : label .firstWholeOrientation = "firstWholeOrientation" := rfl
+example : label .firstWholeDeficitNonempty = "firstWholeDeficitNonempty" := rfl
+example : label .firstWholeDeficitStructure = "firstWholeDeficitStructure" := rfl
+example : label .firstWholeDeficitSum = "firstWholeDeficitSum" := rfl
+example : label .secondWholeOrientation = "secondWholeOrientation" := rfl
+example : label .secondWholeDeficitNonempty = "secondWholeDeficitNonempty" := rfl
+example : label .secondWholeDeficitStructure = "secondWholeDeficitStructure" := rfl
+example : label .secondWholeDeficitSum = "secondWholeDeficitSum" := rfl
+example : label .deletedSupportReduction = "deletedSupportReduction" := rfl
+example : label .deletedSupportDeficientVertex = "deletedSupportDeficientVertex" := rfl
+example : label .deletedSupportDeficitSums = "deletedSupportDeficitSums" := rfl
+example : label .deletedSupportEdgeRestoration = "deletedSupportEdgeRestoration" := rfl
+example : label .deletedSupportEdgeSetRestoration = "deletedSupportEdgeSetRestoration" := rfl
+example : label .firstKeepsAllNotWhole = "firstKeepsAllNotWhole" := rfl
+example : label .secondKeepsAllNotWhole = "secondKeepsAllNotWhole" := rfl
+example : label .pairArmExcluded = "pairArmExcluded" := rfl
+example : label .twoBoundaryForcesArmOne = "twoBoundaryForcesArmOne" := rfl
+example : label .armOneForcedPath = "armOneForcedPath" := rfl
+example : label .twoBoundaryForcedPathCross = "twoBoundaryForcedPathCross" := rfl
+example : label .supportSteinerMinimal = "supportSteinerMinimal" := rfl
+example : label .steinerVerticesCut = "steinerVerticesCut" := rfl
+example : label .wholeSupportEqual = "wholeSupportEqual" := rfl
+example : label .wholeDeficitBoundaryCount = "wholeDeficitBoundaryCount" := rfl
+example : label .wholeCutEdgeSurplusBound = "wholeCutEdgeSurplusBound" := rfl
+example : label .remainderDeficiencyBelowCut = "remainderDeficiencyBelowCut" := rfl
+example : label .windowCutCapacity = "windowCutCapacity" := rfl
+example : label .canonicalCapacityExplicit = "canonicalCapacityExplicit" := rfl
+example : label .primitiveCarrierCount = "primitiveCarrierCount" := rfl
+example : label .canonicalTokenCount = "canonicalTokenCount" := rfl
+example : label .canonicalBlockedFreePartition = "canonicalBlockedFreePartition" := rfl
+example : label .canonicalLedgerDeficit = "canonicalLedgerDeficit" := rfl
+example : label .pairCountDeficit = "pairCountDeficit" := rfl
+example : label .canonicalCertificationCriterion = "canonicalCertificationCriterion" := rfl
+example : label .paperBudgetBound = "paperBudgetBound" := rfl
+example : label .paperBudgetCertifies = "paperBudgetCertifies" := rfl
+example : label .canonicalOverloadOfFits = "canonicalOverloadOfFits" := rfl
+example : label .canonicalFreeExcessOfCapped = "canonicalFreeExcessOfCapped" := rfl
+example : label .pairCodeConfiguration = "pairCodeConfiguration" := rfl
+example : label .specWitnessStructure = "specWitnessStructure" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -3656,6 +4092,79 @@ def idx : Key → Nat
   | .boundedDensityOrder => 6603
   | .boundedOrderLarge => 6604
   | .boundedOrderSmall => 6605
+  -- [20a] enrichment keys
+  | .edgeSurplusIdentity => 6606
+  | .surplusDartIdentity => 6607
+  | .highDegreeCountBound => 6608
+  | .highDegreePositive => 6609
+  | .highDegreeSurplusCapacity => 6610
+  | .packingOrderBound => 6611
+  | .ceilSqrtAboveScale => 6612
+  | .orderAboveScaleSquare => 6613
+  | .sixVertexExtremalEnvelope => 6614
+  | .witnessReadingsNotTargetComplete => 6615
+  | .witnessActualOutsideNegative => 6616
+  | .witnessReadingsCycleFree => 6617
+  | .witnessSupportOrderBound => 6618
+  | .witnessReadingGluesNotSmallerBaseline => 6619
+  | .noSuppressionChordViolation => 6620
+  | .witnessOutsideNotRealized => 6621
+  | .realizedContextsNegative => 6622
+  | .negativeSubGluingNotSmallerBaseline => 6623
+  | .cycleSubContextSeparates => 6624
+  | .pathSpectrumSplit => 6625
+  | .admissibleQuotientsLabelInjective => 6626
+  | .singleBoundaryShape => 6627
+  | .positiveSupportBoundaryTwo => 6628
+  | .supportCutEdgesTwo => 6629
+  | .boundaryLowInsideVertex => 6630
+  | .outsideLowVertex => 6631
+  | .twoBoundaryLowOutsideSide => 6632
+  | .twoBoundarySupportClosure => 6633
+  | .twoBoundaryOutsideClosure => 6634
+  | .twoBoundaryNoTargetSum => 6635
+  | .outsideOrBoundaryLarge => 6636
+  | .droppedEdgeTightDeficit => 6637
+  | .notBothReadingsWhole => 6638
+  | .firstWholeOrientation => 6639
+  | .firstWholeDeficitNonempty => 6640
+  | .firstWholeDeficitStructure => 6641
+  | .firstWholeDeficitSum => 6642
+  | .secondWholeOrientation => 6643
+  | .secondWholeDeficitNonempty => 6644
+  | .secondWholeDeficitStructure => 6645
+  | .secondWholeDeficitSum => 6646
+  | .deletedSupportReduction => 6647
+  | .deletedSupportDeficientVertex => 6648
+  | .deletedSupportDeficitSums => 6649
+  | .deletedSupportEdgeRestoration => 6650
+  | .deletedSupportEdgeSetRestoration => 6651
+  | .firstKeepsAllNotWhole => 6652
+  | .secondKeepsAllNotWhole => 6653
+  | .pairArmExcluded => 6654
+  | .twoBoundaryForcesArmOne => 6655
+  | .armOneForcedPath => 6656
+  | .twoBoundaryForcedPathCross => 6657
+  | .supportSteinerMinimal => 6658
+  | .steinerVerticesCut => 6659
+  | .wholeSupportEqual => 6660
+  | .wholeDeficitBoundaryCount => 6661
+  | .wholeCutEdgeSurplusBound => 6662
+  | .remainderDeficiencyBelowCut => 6663
+  | .windowCutCapacity => 6664
+  | .canonicalCapacityExplicit => 6665
+  | .primitiveCarrierCount => 6666
+  | .canonicalTokenCount => 6667
+  | .canonicalBlockedFreePartition => 6668
+  | .canonicalLedgerDeficit => 6669
+  | .pairCountDeficit => 6670
+  | .canonicalCertificationCriterion => 6671
+  | .paperBudgetBound => 6672
+  | .paperBudgetCertifies => 6673
+  | .canonicalOverloadOfFits => 6674
+  | .canonicalFreeExcessOfCapped => 6675
+  | .pairCodeConfiguration => 6676
+  | .specWitnessStructure => 6677
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4019,6 +4528,79 @@ def ofIdx : Nat → Key
   | 6603 => .boundedDensityOrder
   | 6604 => .boundedOrderLarge
   | 6605 => .boundedOrderSmall
+  -- [20a] enrichment keys
+  | 6606 => .edgeSurplusIdentity
+  | 6607 => .surplusDartIdentity
+  | 6608 => .highDegreeCountBound
+  | 6609 => .highDegreePositive
+  | 6610 => .highDegreeSurplusCapacity
+  | 6611 => .packingOrderBound
+  | 6612 => .ceilSqrtAboveScale
+  | 6613 => .orderAboveScaleSquare
+  | 6614 => .sixVertexExtremalEnvelope
+  | 6615 => .witnessReadingsNotTargetComplete
+  | 6616 => .witnessActualOutsideNegative
+  | 6617 => .witnessReadingsCycleFree
+  | 6618 => .witnessSupportOrderBound
+  | 6619 => .witnessReadingGluesNotSmallerBaseline
+  | 6620 => .noSuppressionChordViolation
+  | 6621 => .witnessOutsideNotRealized
+  | 6622 => .realizedContextsNegative
+  | 6623 => .negativeSubGluingNotSmallerBaseline
+  | 6624 => .cycleSubContextSeparates
+  | 6625 => .pathSpectrumSplit
+  | 6626 => .admissibleQuotientsLabelInjective
+  | 6627 => .singleBoundaryShape
+  | 6628 => .positiveSupportBoundaryTwo
+  | 6629 => .supportCutEdgesTwo
+  | 6630 => .boundaryLowInsideVertex
+  | 6631 => .outsideLowVertex
+  | 6632 => .twoBoundaryLowOutsideSide
+  | 6633 => .twoBoundarySupportClosure
+  | 6634 => .twoBoundaryOutsideClosure
+  | 6635 => .twoBoundaryNoTargetSum
+  | 6636 => .outsideOrBoundaryLarge
+  | 6637 => .droppedEdgeTightDeficit
+  | 6638 => .notBothReadingsWhole
+  | 6639 => .firstWholeOrientation
+  | 6640 => .firstWholeDeficitNonempty
+  | 6641 => .firstWholeDeficitStructure
+  | 6642 => .firstWholeDeficitSum
+  | 6643 => .secondWholeOrientation
+  | 6644 => .secondWholeDeficitNonempty
+  | 6645 => .secondWholeDeficitStructure
+  | 6646 => .secondWholeDeficitSum
+  | 6647 => .deletedSupportReduction
+  | 6648 => .deletedSupportDeficientVertex
+  | 6649 => .deletedSupportDeficitSums
+  | 6650 => .deletedSupportEdgeRestoration
+  | 6651 => .deletedSupportEdgeSetRestoration
+  | 6652 => .firstKeepsAllNotWhole
+  | 6653 => .secondKeepsAllNotWhole
+  | 6654 => .pairArmExcluded
+  | 6655 => .twoBoundaryForcesArmOne
+  | 6656 => .armOneForcedPath
+  | 6657 => .twoBoundaryForcedPathCross
+  | 6658 => .supportSteinerMinimal
+  | 6659 => .steinerVerticesCut
+  | 6660 => .wholeSupportEqual
+  | 6661 => .wholeDeficitBoundaryCount
+  | 6662 => .wholeCutEdgeSurplusBound
+  | 6663 => .remainderDeficiencyBelowCut
+  | 6664 => .windowCutCapacity
+  | 6665 => .canonicalCapacityExplicit
+  | 6666 => .primitiveCarrierCount
+  | 6667 => .canonicalTokenCount
+  | 6668 => .canonicalBlockedFreePartition
+  | 6669 => .canonicalLedgerDeficit
+  | 6670 => .pairCountDeficit
+  | 6671 => .canonicalCertificationCriterion
+  | 6672 => .paperBudgetBound
+  | 6673 => .paperBudgetCertifies
+  | 6674 => .canonicalOverloadOfFits
+  | 6675 => .canonicalFreeExcessOfCapped
+  | 6676 => .pairCodeConfiguration
+  | 6677 => .specWitnessStructure
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -4848,6 +5430,151 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "boundedOrderLarge") 6604
   | .boundedOrderSmall =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "boundedOrderSmall") 6605
+  -- [20a] enrichment keys
+  | .edgeSurplusIdentity =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "edgeSurplusIdentity") 6606
+  | .surplusDartIdentity =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "surplusDartIdentity") 6607
+  | .highDegreeCountBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "highDegreeCountBound") 6608
+  | .highDegreePositive =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "highDegreePositive") 6609
+  | .highDegreeSurplusCapacity =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "highDegreeSurplusCapacity") 6610
+  | .packingOrderBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "packingOrderBound") 6611
+  | .ceilSqrtAboveScale =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "ceilSqrtAboveScale") 6612
+  | .orderAboveScaleSquare =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "orderAboveScaleSquare") 6613
+  | .sixVertexExtremalEnvelope =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sixVertexExtremalEnvelope") 6614
+  | .witnessReadingsNotTargetComplete =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "witnessReadingsNotTargetComplete") 6615
+  | .witnessActualOutsideNegative =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "witnessActualOutsideNegative") 6616
+  | .witnessReadingsCycleFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "witnessReadingsCycleFree") 6617
+  | .witnessSupportOrderBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "witnessSupportOrderBound") 6618
+  | .witnessReadingGluesNotSmallerBaseline =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "witnessReadingGluesNotSmallerBaseline") 6619
+  | .noSuppressionChordViolation =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "noSuppressionChordViolation") 6620
+  | .witnessOutsideNotRealized =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "witnessOutsideNotRealized") 6621
+  | .realizedContextsNegative =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "realizedContextsNegative") 6622
+  | .negativeSubGluingNotSmallerBaseline =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "negativeSubGluingNotSmallerBaseline") 6623
+  | .cycleSubContextSeparates =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "cycleSubContextSeparates") 6624
+  | .pathSpectrumSplit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pathSpectrumSplit") 6625
+  | .admissibleQuotientsLabelInjective =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "admissibleQuotientsLabelInjective") 6626
+  | .singleBoundaryShape =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "singleBoundaryShape") 6627
+  | .positiveSupportBoundaryTwo =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "positiveSupportBoundaryTwo") 6628
+  | .supportCutEdgesTwo =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "supportCutEdgesTwo") 6629
+  | .boundaryLowInsideVertex =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "boundaryLowInsideVertex") 6630
+  | .outsideLowVertex =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "outsideLowVertex") 6631
+  | .twoBoundaryLowOutsideSide =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "twoBoundaryLowOutsideSide") 6632
+  | .twoBoundarySupportClosure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "twoBoundarySupportClosure") 6633
+  | .twoBoundaryOutsideClosure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "twoBoundaryOutsideClosure") 6634
+  | .twoBoundaryNoTargetSum =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "twoBoundaryNoTargetSum") 6635
+  | .outsideOrBoundaryLarge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "outsideOrBoundaryLarge") 6636
+  | .droppedEdgeTightDeficit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "droppedEdgeTightDeficit") 6637
+  | .notBothReadingsWhole =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "notBothReadingsWhole") 6638
+  | .firstWholeOrientation =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "firstWholeOrientation") 6639
+  | .firstWholeDeficitNonempty =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "firstWholeDeficitNonempty") 6640
+  | .firstWholeDeficitStructure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "firstWholeDeficitStructure") 6641
+  | .firstWholeDeficitSum =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "firstWholeDeficitSum") 6642
+  | .secondWholeOrientation =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "secondWholeOrientation") 6643
+  | .secondWholeDeficitNonempty =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "secondWholeDeficitNonempty") 6644
+  | .secondWholeDeficitStructure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "secondWholeDeficitStructure") 6645
+  | .secondWholeDeficitSum =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "secondWholeDeficitSum") 6646
+  | .deletedSupportReduction =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "deletedSupportReduction") 6647
+  | .deletedSupportDeficientVertex =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "deletedSupportDeficientVertex") 6648
+  | .deletedSupportDeficitSums =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "deletedSupportDeficitSums") 6649
+  | .deletedSupportEdgeRestoration =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "deletedSupportEdgeRestoration") 6650
+  | .deletedSupportEdgeSetRestoration =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "deletedSupportEdgeSetRestoration") 6651
+  | .firstKeepsAllNotWhole =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "firstKeepsAllNotWhole") 6652
+  | .secondKeepsAllNotWhole =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "secondKeepsAllNotWhole") 6653
+  | .pairArmExcluded =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmExcluded") 6654
+  | .twoBoundaryForcesArmOne =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "twoBoundaryForcesArmOne") 6655
+  | .armOneForcedPath =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "armOneForcedPath") 6656
+  | .twoBoundaryForcedPathCross =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "twoBoundaryForcedPathCross") 6657
+  | .supportSteinerMinimal =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "supportSteinerMinimal") 6658
+  | .steinerVerticesCut =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "steinerVerticesCut") 6659
+  | .wholeSupportEqual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "wholeSupportEqual") 6660
+  | .wholeDeficitBoundaryCount =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "wholeDeficitBoundaryCount") 6661
+  | .wholeCutEdgeSurplusBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "wholeCutEdgeSurplusBound") 6662
+  | .remainderDeficiencyBelowCut =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "remainderDeficiencyBelowCut") 6663
+  | .windowCutCapacity =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowCutCapacity") 6664
+  | .canonicalCapacityExplicit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalCapacityExplicit") 6665
+  | .primitiveCarrierCount =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "primitiveCarrierCount") 6666
+  | .canonicalTokenCount =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalTokenCount") 6667
+  | .canonicalBlockedFreePartition =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalBlockedFreePartition") 6668
+  | .canonicalLedgerDeficit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalLedgerDeficit") 6669
+  | .pairCountDeficit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairCountDeficit") 6670
+  | .canonicalCertificationCriterion =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalCertificationCriterion") 6671
+  | .paperBudgetBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "paperBudgetBound") 6672
+  | .paperBudgetCertifies =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "paperBudgetCertifies") 6673
+  | .canonicalOverloadOfFits =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalOverloadOfFits") 6674
+  | .canonicalFreeExcessOfCapped =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalFreeExcessOfCapped") 6675
+  | .pairCodeConfiguration =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairCodeConfiguration") 6676
+  | .specWitnessStructure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "specWitnessStructure") 6677
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

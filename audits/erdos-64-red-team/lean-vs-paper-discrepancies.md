@@ -1839,7 +1839,7 @@ free side.
 
 | Residual (abbrev) | Node | Form | Paths | Facts |
 |---|---|---|---:|---:|
-| `Node20aOutcome` | [20a] | single | 1 | 19 |
+| `Node20aOutcome` | [20a] | single | 1 | 95 |
 | `NearCubicTargetDefectOutcome` | [187] (near-cubic target defect) | single | 1 | 19 |
 | `Node144aOutcome_*` | [144a] | 6 subtypes | 6 | 45 generic; 48, 49, 49, 50, 50, 51 |
 | `BlockedBarrierOverlapOutcome_*` | [172a] | 2 subtypes (`[160]` arm) | 2 | 72 generic; 73, 74 |
@@ -1930,6 +1930,83 @@ route-8 product has 750 paths.
   17. `K .sparseTargetDefectResidual`: Node `[125]`, the sole nonterminal named-exit payload: clause (b) of `def:named-surplus-exits` at G's canonical witness `sparseTargetDefectWitness` (the identified pair of declared coordinates, their canonical support `Z` and the separating context `O`).
   18. `K .sparseTargetDefectStructure`: Node `[20]`: the bound target-defect geometry at the same canonical witness as `[125]` (the same pair, support `Z` and separating context `O`), with its proved target-free negative constituents.
   19. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
+- **Enrichment on the `[20a]` path (76 more facts, 95 in all).** Type A rows in `hypostructure/Hypostructure/Graph/Strategy/SpineRows/SparseExitResidual.lean` (plus the existing `bridgelessRow` and `exactWindowJoinPressureRow`) run after `K .sparseTargetDefectStructure` and before `node20aReturn`; no decision, no split, one residual.  Statements: `Graph/Statements/SparseExitResidual.lean`, `Graph/Statements/CanonicalCapacityExplicit.lean`; contracts (`<key>_holds`): `Graph/Contracts/Spine/SparseExitResidual.lean`; vocabulary-free library: `Graph/GluedReadingMaps.lean`, `Graph/SparseOrderArithmetic.lean` (incl. the finite check `ex(6, C₄) = 7`, `native_decide`), `Graph/DeclaredQuotientRank.lean`.  Tagged **Lean improvement (not routed by the paper)**: every fact is derived from the 19 facts above, at G, at `[125]`'s pinned witness `w = (first, second, Z, O)`, at `P₀`, and at G's canonical capacity presentation, canonical object ledger and canonical spine family.  ¬K4 is `K .orderAboveScaleSquare`; ¬K5 follows from `K .sixVertexExtremalEnvelope`; K6 is ¬`K .surplusAbove`, and its quantitative form is `K .canonicalLedgerDeficit` / `K .pairCountDeficit`.  Registered constants of the presentation (not ledger facts): `Assembly/Surplus/RegisteredConstants.lean`.
+  20. `K .bridgeless` (existing key, existing `bridgelessRow`): `lem:bridgeless` at G.
+  21. `K .sparseUpperEnvelope` (existing key, existing `exactWindowJoinPressureRow`): `m + 2 ≤ (δ−1)n` and the exact window-join identity at `P₀`.
+  22. `K .baselineSpineDemand` (existing key, new row `sparseExitBaselineSpineDemandRow`): `[129]`'s baseline spine demand, its survivor premise replaced by the replacement exclusion and selection.
+  23. `K .freePairCountFails` (existing key, new row `sparseExitFreePairCountRow`): node `[131]`'s full-schedule entropy count fails at G's canonical objects, unconditionally.
+  24. `K .witnessReadingsNotTargetComplete` (idx 6615): **The readings are not target-complete.**
+  25. `K .witnessActualOutsideNegative` (idx 6616): **Neither reading has an accepted cycle at `G − Z`.**
+  26. `K .witnessReadingsCycleFree` (idx 6617): **Both reading pieces are cycle-free** (each embeds in G).
+  27. `K .witnessSupportOrderBound` (idx 6618): **`|Z| + 1 ≤ n`.**
+  28. `K .witnessReadingGluesNotSmallerBaseline` (idx 6619): **No reading's gluing with `G − Z` is a lexicographically smaller baseline object** (¬K3).
+  29. `K .noSuppressionChordViolation` (idx 6620): **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.
+  30. `K .edgeSurplusIdentity` (idx 6606): **Edge–surplus identity**: `2m = δ·n + σ`.
+  31. `K .surplusDartIdentity` (idx 6607): **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).
+  32. `K .highDegreeCountBound` (idx 6608): **High-degree count**: `|H| ≤ σ`.
+  33. `K .packingOrderBound` (idx 6611): **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).
+  34. `K .ceilSqrtAboveScale` (idx 6612): **`C + 1 ≤ ⌈√n⌉`.**
+  35. `K .orderAboveScaleSquare` (idx 6613): **`C(C+1) + 9 ≤ n`** (¬K4, sharpened by `σ + 8 ≤ n`).
+  36. `K .sixVertexExtremalEnvelope` (idx 6614): **Envelope from `ex(6, C₄) = 7`**: `m + 4 ≤ 2n`.
+  37. `K .remainderDeficiencyBelowCut` (idx 6663): **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).
+  38. `K .windowCutCapacity` (idx 6664): **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.
+  39. `K .witnessOutsideNotRealized` (idx 6621): **`O` is not realized in `G − Z`.**
+  40. `K .realizedContextsNegative` (idx 6622): **Both readings are negative in every context realized in `G − Z`.**
+  41. `K .negativeSubGluingNotSmallerBaseline` (idx 6623): **No negative sub-gluing is a lexicographically smaller baseline object**: the negative reading `N` at `O`, against every sub-context `O' ≤ O`.
+  42. `K .cycleSubContextSeparates` (idx 6624): **The O-part of one positive cycle still separates**: a sub-context `O' ≤ O` with `P` positive and `N` negative, every `O'`-internal vertex of `O'`-degree at most `2`, and `glue N O'` not a baseline object.
+  43. `K .pathSpectrumSplit` (idx 6625): **The path-length spectrum split** at the witness: for the positive reading `P` and the negative reading `N` at `O`, either (i) labels `a ≠ b` of `∂Z`, a path `π : a → b` of `ret_P` and an `O`-path `σ : b → a` meeting no other label with `|π| + |σ| = 2^k` (`k ≥ 2`), such that every `a → b` path `π'` of `ret_N` has `|π'| ≠ |π|` and `|π'| + |σ| ≠ 2^j` for every `j ≥ 2`; or (ii) every accepted cycle of `glue ret_P O` meets three distinct labels.
+  44. `K .admissibleQuotientsLabelInjective` (idx 6626): **Every admissible quotient of G is label-injective** on its family.
+  45. `K .singleBoundaryShape` (idx 6627): **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).
+  46. `K .positiveSupportBoundaryTwo` (idx 6628): **`2 ≤ |∂Z ∩ X⁺|`** for one declared support `X⁺ ∈ {A, B}`.
+  47. `K .supportCutEdgesTwo` (idx 6629): **`2 ≤ e(∂Z, V ∖ Z)`.**
+  48. `K .boundaryLowInsideVertex` (idx 6630): **A boundary vertex with at most two neighbours in `Z`.**
+  49. `K .outsideLowVertex` (idx 6631): **An outside vertex with at most two outside neighbours and a neighbour in `Z`.**
+  50. `K .twoBoundaryLowOutsideSide` (idx 6632): **`∂Z = {a, b}` with an interior vertex: one terminal has at most two neighbours in `T' = (V ∖ Z) ∪ {a, b}`.**
+  51. `K .twoBoundarySupportClosure` (idx 6633): **2-sum closure on the `Z` side**: if `a ≁ b` and both have two neighbours in `Z`, then `G[Z]` has an `a`–`b` path `P` with `|P| + 1` accepted.
+  52. `K .twoBoundaryOutsideClosure` (idx 6634): **2-sum closure on the outside side** (interior arm).
+  53. `K .twoBoundaryNoTargetSum` (idx 6635): **The length-set constraint at `∂Z = {a, b}`**: an `a`–`b` path in `Z` and a `b`–`a` path in `T'` (not both single edges) never sum to an accepted length.
+  54. `K .outsideOrBoundaryLarge` (idx 6636): **`2 ≤ |W|` or `3 ≤ |∂Z|`.**
+  55. `K .droppedEdgeTightDeficit` (idx 6637): **Every G-edge a reading drops at `G − Z` has an endpoint below the baseline there.**
+  56. `K .notBothReadingsWhole` (idx 6638): **At most one reading is whole**: `¬ (Z ⊆ A ∧ Z ⊆ B)`.
+  57. `K .firstWholeOrientation` (idx 6639): **Whole case `Z ⊆ A`: `A` positive and `B` negative at `O`.**
+  58. `K .firstWholeDeficitNonempty` (idx 6640): **Whole case `Z ⊆ A`: `1 ≤ |Z ∖ B|`.**
+  59. `K .firstWholeDeficitStructure` (idx 6641): **Whole case `Z ⊆ A`: the deficit set `Z ∖ B` is internal, has no `∂Z`-neighbour, and is isolated in every gluing of `ret_B`.**
+  60. `K .firstWholeDeficitSum` (idx 6642): **Whole case `Z ⊆ A`: `δ·|Z ∖ B| ≤ Σ (δ − deg)` in every gluing of `ret_B`.**
+  61. `K .secondWholeOrientation` (idx 6643): **Whole case `Z ⊆ B`: `B` positive and `A` negative at `O`.**
+  62. `K .secondWholeDeficitNonempty` (idx 6644): **Whole case `Z ⊆ B`: `1 ≤ |Z ∖ A|`.**
+  63. `K .secondWholeDeficitStructure` (idx 6645): **Whole case `Z ⊆ B`: the deficit set `Z ∖ A` is internal, has no `∂Z`-neighbour, and is isolated in every gluing of `ret_A`.**
+  64. `K .secondWholeDeficitSum` (idx 6646): **Whole case `Z ⊆ B`: `δ·|Z ∖ A| ≤ Σ (δ − deg)` in every gluing of `ret_A`.**
+  65. `K .deletedSupportReduction` (idx 6647): **Whole case (`Z ⊆ A` with `S = Z ∖ B`, and `Z ⊆ B` with `S = Z ∖ A`): `G − S` is lexicographically smaller than G, has no accepted cycle, and fails `δ ≥ 3`.**
+  66. `K .deletedSupportDeficientVertex` (idx 6648): **Whole case: a deficient vertex of `G − S` exists, and every one lies in `Z ∩ B`, is internal to `Z`, and has a neighbour in `S`.**
+  67. `K .deletedSupportDeficitSums` (idx 6649): **Whole case: the deficit sums** `1 ≤ Σ_T (3 − deg_{G−S}) = Σ_T (d_S − (deg − 3)) ≤ e(S, T)`, with equality `= e(S, T)` when every `T`-neighbour of `S` has degree `3`.
+  68. `K .deletedSupportEdgeRestoration` (idx 6650): **Whole case: one restoring edge forces an accepted closing path**: if adding `xy` to `G − S` restores `δ ≥ 3`, then `G − S` has a `y → x` path of length `ℓ` with `ℓ + 1` accepted.
+  69. `K .deletedSupportEdgeSetRestoration` (idx 6651): **Whole case: any restoring edge set forces an accepted cycle through a new edge.**
+  70. `K .firstKeepsAllNotWhole` (idx 6652): **Keeps-all for `A` with `Z ⊄ A`**: `Z ⊄ B`, and both readings' profiles differ from the whole piece's.
+  71. `K .secondKeepsAllNotWhole` (idx 6653): **Keeps-all for `B` with `Z ⊄ B`**: `Z ⊄ A`, and both readings' profiles differ from the whole piece's.
+  72. `K .highDegreePositive` (idx 6609): **At least one high-degree vertex**: `1 ≤ |H|`.
+  73. `K .highDegreeSurplusCapacity` (idx 6610): **The surplus fits on the high vertices**: `σ ≤ |H|·(n − |H| − δ)` (every high vertex has all its neighbours among the `n − |H|` baseline vertices).
+  74. `K .pairArmExcluded` (idx 6654): **The pair arm does not occur**: `¬ (∂Z = Z = {a, b})` (equal profiles on a two-vertex all-boundary support force equal readings, against the separation at `O`).
+  75. `K .twoBoundaryForcesArmOne` (idx 6655): **`|∂Z| = 2` forces arm (i) of the spectrum split**, `∂Z = {a, b}` inside one declared support, an interior vertex of `Z`, and `{a, b}` separating the interior from `V ∖ Z`.
+  76. `K .armOneForcedPath` (idx 6656): **Arm (i) gives a forced path in `G[Z]`**: a simple `a–b` path `p` of `G[Z]` between two boundary vertices with `|p| + 1 ≤ |Z|` and `|p| + s = 2^k` (`k ≥ 2`, `s ≥ 1`, `(|p| + s) % 4 = 0`).
+  77. `K .twoBoundaryForcedPathCross` (idx 6657): **`|∂Z| = 2`, the K1 × K2 cross constraint**: `∂Z = {a, b}` carries the forced path `p ⊆ G[Z]` (`|p| + s = 2^k`); no simple `b → a` path `q` in `T' = (V ∖ Z) ∪ {a, b}` (not both single edges) has `|p| + |q|` accepted; and if `a ≁ b` with both terminals of `T'`-degree `≥ 2`, the outside closure `q` exists with `|q| + 1` accepted and `|p| + |q|` not accepted.
+  78. `K .supportSteinerMinimal` (idx 6658): **`Z` is a minimum connected set containing `A ∪ B`.**
+  79. `K .steinerVerticesCut` (idx 6659): **Every vertex of `Z ∖ (A ∪ B)` is a cut vertex of `G[Z]`.**
+  80. `K .wholeSupportEqual` (idx 6660): **The whole case pins `Z`**: `Z ⊆ A ⇒ Z = A ∧ B ⊆ A`, and `Z ⊆ B ⇒ Z = B ∧ A ⊆ B`.
+  81. `K .wholeDeficitBoundaryCount` (idx 6661): **Whole case: `|S| + |∂Z| ≤ |Z|`** (`S = Z ∖ B` resp. `Z ∖ A`).
+  82. `K .wholeCutEdgeSurplusBound` (idx 6662): **Whole case: `e(S, T) ≤ D_T + σ`**, with `D_T = Σ_T (3 − deg_{G−S})`.
+  83. `K .canonicalCapacityExplicit` (idx 6665): **G's canonical capacity presentation is the explicit one**: the recorded blocker activation of G's active family on the node-`[19]` packing.
+  84. `K .primitiveCarrierCount` (idx 6666): **`|𝔘_sp(G)| = 4n + 2σ`.**
+  85. `K .canonicalTokenCount` (idx 6667): **The exact token count at the canonical presentation**: `|𝔗_cap| + 2(order − 1)·ν = 4n + 3σ + 3·order·ν` (at order `13`: `|𝔗_cap| = 4n + 3σ + 15ν`).
+  86. `K .canonicalBlockedFreePartition` (idx 6668): **`|Π_blk| + |Π_free| = C(σ, 2)`** at the canonical ledger.
+  87. `K .canonicalLedgerDeficit` (idx 6669): **The deficit at the canonical ledger** (G2): with `c = ⌈√n⌉`, `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B) + 2(|Π_blk| − M₀|𝔗|)`.
+  88. `K .pairCountDeficit` (idx 6670): **The pair-count deficit** (G3): `c²K + 2M₀(8n + σ) ≤ 2(C(σ, 2) − B)`.
+  89. `K .canonicalCertificationCriterion` (idx 6671): **The certification criterion at the canonical presentation**: its canonical certified ledger exists iff `|Π_free| ≤ B`.
+  90. `K .canonicalOverloadOfFits` (idx 6674): **If the free side fits `B`, the blocked side is overloaded**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_blk| − M₀|𝔗|)`, and some token has load `> M₀` and carries an `L_geom` role-homogeneous matching or star.
+  91. `K .canonicalFreeExcessOfCapped` (idx 6675): **If every token carries load `≤ M₀`, the free side exceeds `B`**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B)`.
+  92. `K .paperBudgetBound` (idx 6672): **The paper's budget at the canonical spine family fits the certification budget**: `E_paper ≤ B`.
+  93. `K .paperBudgetCertifies` (idx 6673): **`|Π_free| ≤ E_paper` certifies**: at the canonical spine family and presentation, `|Π_free| ≤ E_paper` makes the canonical certified ledger exist.
+  94. `K .pairCodeConfiguration` (idx 6676): **Where G sits in the pair-code chain**: either the `[137]`→`[143]` configuration holds at the canonical objects (blocked pair, `[137]` count, canonical pattern, overload, caps fail), or G's canonical first failure exists and yields the `[182]` residual, or the target defect of the canonical return system's obstruction coordinates, or that obstruction's handoff together with the Type B fan entry `[65]`.
+  95. `K .specWitnessStructure` (idx 6677): **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.
 
 <a id="residual-187-near-cubic-target-defect"></a>
 
