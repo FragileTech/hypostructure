@@ -75,12 +75,11 @@ set_option maxHeartbeats 8000000 in
 `[115]` decides the zero/one-core entry, closed at `[116]` against the true
 residual; `[117]` decides the two-support entry: its no arm publishes the
 private-support budget `[119]`--`[120]`, closed at `[121]`--`[122]` against the
-census, and its yes arm `[118]` enters the descent decision `[123]` of
-`thm:large-budget-route8-only` on the unified ledger (tex 1134), whose yes arm
-closes at `[124]` and whose no arm reaches `[181]`, `[183]`--`[186]`.
-
-`arm` names the Type A lane arms with the route-8 residual block; the deficit
-block is added at the two-support entry. -/
+census, and its yes arm `[118]` is a two-support entry of the route-`8`
+collection carrying the large-budget deficit: `thm:large-budget-route8-only`
+(its route-`8` alternative) and `prop:typeA-route8-closure-from-nogo` make it
+the terminal obstruction, closed at `[124]` by `thm:typeA-two-carrier-nogo`.
+Every arm of `[113]`-yes closes. -/
 -- EG-NODE [114] each entry passes to its canonical minimal target-complete response-support core inside the declared $u$-supported response algebra
 -- EG-NODE [115] some entry has $\alpha_{\mathcal X}(\xi)\le1$?
 -- EG-NODE [116] exits (4)--(7) occur
@@ -90,10 +89,9 @@ block is added at the two-support entry. -/
 -- EG-NODE [120] private-support budget: $3N_{\rm basin}(\mathcal X_A)\le\defp(R)+o(|R|)\le\tau_{\rm win}|R|+o(|R|)$
 -- EG-NODE [121] burden plus deficit: $N_{\rm basin}(\mathcal X_A)\ge4(1/4-\tau_{\rm win})|R|-o(|R|)$
 -- EG-NODE [122] contradiction: $\tau_{\rm win}\ge12(1/4-\tau_{\rm win})$, but $\tau_{\rm win}<3/13$
-noncomputable def selectedRouteEightCollection
+theorem selectedRouteEightCollection
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (deficit : ExactLedger EGInput.{u} selected known)
-    (arm : TypeAExitFourArms selected ∧ TypeAArmBlock_route8Residual selected)
     [FactKeys.Has (K .route8ResidualProfile) known]
     [FactKeys.Has (K .route8BasinBurden) known]
     [FactKeys.Has (K .route8LargeBudgetDeficit) known]
@@ -119,98 +117,8 @@ noncomputable def selectedRouteEightCollection
     (twoCarrierExitFresh : K .route8TwoCarrierExit ∉ known := by key_fresh)
     (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known := by
       key_fresh)
-    (bridgeMassFresh : K .typeBBridgeMass ∉ known := by key_fresh)
-    (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by key_fresh)
-    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by key_fresh)
-    (typeAExclusionFresh : K .typeAExclusion ∉ known := by key_fresh)
-    (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known := by
-      key_fresh)
-    (piecesClassifiedFresh : K .route8PiecesClassified ∉ known := by
-      key_fresh)
-    (extractedCensusFresh : K .route8ExtractedEntryCensus ∉ known := by
-      key_fresh)
-    (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known := by key_fresh)
-    (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by
-      key_fresh)
-    (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known := by key_fresh)
-    (quotientFreeFresh : K .route8QuotientFree ∉ known := by key_fresh)
-    (quotientResidualFresh : K .route8QuotientResidual ∉ known := by
-      key_fresh)
-    (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known := by key_fresh)
-    (peelingFresh : K .route8PeelingDescent ∉ known := by key_fresh)
-    (stageRateFresh : K .route8StageRate ∉ known := by key_fresh)
-    (stageFailedFresh : K .route8StageRateFailed ∉ known := by key_fresh)
-    (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by
-      key_fresh)
-    (unifiedExitFresh : K .route8UnifiedTwoCarrierExit ∉ known := by
-      key_fresh)
-    (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
-    (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
-      key_fresh)
-    (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known := by
-      key_fresh)
-    (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by key_fresh)
-    (windowBlockersFresh : K .route8WindowBlockers ∉ known := by key_fresh)
-    (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by
-      key_fresh)
-    (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by
-      key_fresh)
-    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
-    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
-    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
-      key_fresh)
-    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
-      key_fresh)
-    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
-      key_fresh)
-    (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh)
-    (closureFresh : closed ∉ known := by key_fresh)
-    [FactKeys.Has (K .barrierCap) known]
-    [FactKeys.Has (K .barrierEnumeration) known]
-    [FactKeys.Has (K .boundaryDemand) known]
-    [FactKeys.Has (K .bridgeless) known]
-    [FactKeys.Has (K .coldAmbientCubic) known]
-    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
-    [FactKeys.Has (K .coldCorridorState) known]
-    [FactKeys.Has (K .coldFailureCompression) known]
-    [FactKeys.Has (K .coldFailureCycle) known]
-    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
-    [FactKeys.Has (K .coldHandoffTransfer) known]
-    [FactKeys.Has (K .coldHotEntropyCap) known]
-    [FactKeys.Has (K .coldMass) known]
-    [FactKeys.Has (K .coldReturnCorridors) known]
-    [FactKeys.Has (K .coldSelectedBranchExcess) known]
-    [FactKeys.Has (K .coldStubExcess) known]
-    [FactKeys.Has (K .curvatureFullRank) known]
-    [FactKeys.Has (K .curvatureTargetRank) known]
-    [FactKeys.Has (K .cycleRankConstraint) known]
-    [FactKeys.Has (K .degreeProfileFibres) known]
-    [FactKeys.Has (K .exactResponseProfile) known]
-    [FactKeys.Has (K .forcedCurvatureCost) known]
-    [FactKeys.Has (K .highCentreNormalForm) known]
-    [FactKeys.Has (K .hotColdPartition) known]
-    [FactKeys.Has (K .largeBudgetResidual) known]
-    [FactKeys.Has (K .localAlgebra) known]
-    [FactKeys.Has (K .maximalPacking) known]
-    [FactKeys.Has (K .netChargeLocalization) known]
-    [FactKeys.Has (K .netDeficiencyCap) known]
-    [FactKeys.Has (K .noProperBaseline) known]
-    [FactKeys.Has (K .returnAvoidance) known]
-    [FactKeys.Has (K .sameCenterOpenPortCompatibility) known]
-    [FactKeys.Has (K .skeletonDominates) known]
-    [FactKeys.Has (K .slackIndependent) known]
-    [FactKeys.Has (K .sparseSurplusSurvivor) known]
-    [FactKeys.Has (K .stubSupply) known]
-    [FactKeys.Has (K .targetCompleteContextUniversality) known]
-    [FactKeys.Has (K .targetRankCircuit) known]
-    [FactKeys.Has (K .tightEndpoint) known]
-    [FactKeys.Has (K .triangularPortReturn) known]
-    [FactKeys.Has (K .triangularShoulderCompletion) known]
-    [FactKeys.Has (K .typeBAbsorbedCharge) known]
-    [FactKeys.Has (K .wedgeSupply) known]
-    [FactKeys.Has (K .windowPackageSeparated) known]
-    [FactKeys.Has (K .windowPresent) known] :
-    SelectedRouteEightBoundary selected := by
+    (closureFresh : closed ∉ known := by key_fresh) :
+    False := by
   -- `[114]`
   let cored :=
     (route8CarrierCoreRow (BranchState := BranchState)
@@ -261,13 +169,31 @@ noncomputable def selectedRouteEightCollection
             (K .route8PrivateCarrierBudget) (by key_fresh)).elimClosed
               (by infer_instance)).elim
       | .left twoCarrier =>
-          -- `[118]` → `[123]`: the two-support entry enters the exhaustive
-          -- descent decision of `thm:large-budget-route8-only` (tex 1134,
-          -- edge `(residual)--(pressure)`), run on the unified ledger; its yes
-          -- arm closes at `[124]`, its no arm reaches `[181]`, `[183]`--`[186]`.
-          exact selectedTypeBRoute8Continuation twoCarrier
-            (arm.1.route8Residual arm.2
-              (Or.inl (Route8DeficitBlock_holds.ret twoCarrier)))
+          -- `[118]`: the two-support entry `ι₂` of `𝒳_A` is a true route-`8`
+          -- entry, (T2), and carries its declared deletion witnesses, (T5).
+          -- It is a route-`8` entry of the collection carrying the
+          -- large-budget deficit, so `thm:large-budget-route8-only` sends it
+          -- through `prop:typeA-route8-closure-from-nogo` to `[124]`.
+          let trueEntry :=
+            (route8TrueTwoCarrierEntryRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run twoCarrier (by key_fresh)
+          let witnesses :=
+            (route8CarrierDeletionWitnessesRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run trueEntry (by key_fresh)
+          -- `[124]`, `thm:typeA-two-carrier-nogo`: the deletion witnesses and
+          -- `α ≥ 2` (the `[115]` no arm) give `ι₂` its canonical exit-`(4)`
+          -- witness, while (T2) says it has none.
+          exact (((route8TwoCarrierExitRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).runAndCloseIncompatible witnesses
+              (K .route8TrueTwoCarrierEntry) (K .route8TwoCarrierExit)
+              (by key_fresh) (by key_fresh)).elimClosed
+                (by infer_instance)).elim
 
 set_option maxHeartbeats 8000000 in
 /-- **Part IX: the route-`8` residual of exit `(8)`** (node `[109]` → `[110]`).
@@ -412,8 +338,7 @@ noncomputable def selectedRouteEightResidual
   match route8LargeBudgetDeficitRow (data := spineData) burdened
       (by key_fresh) (by key_fresh) with
   | .left deficit =>
-      exact selectedRouteEightCollection deficit
-        ⟨arm, TypeAArmBlock_route8Residual.ret burdened⟩
+      exact (selectedRouteEightCollection deficit).elim
   | .right deficitFails =>
       -- The carrier cores `[114]` are a fact of G on this arm too.
       let cored :=
@@ -423,6 +348,6 @@ noncomputable def selectedRouteEightResidual
           deficitFails (by key_fresh)
       exact selectedTypeBRoute8Continuation cored
         (arm.route8Residual (TypeAArmBlock_route8Residual.ret burdened)
-          (Or.inr (Route8DeficitBlock_fails.ret deficitFails)))
+          (Route8DeficitBlock_fails.ret deficitFails))
 
 end HypostructureErdos64EG

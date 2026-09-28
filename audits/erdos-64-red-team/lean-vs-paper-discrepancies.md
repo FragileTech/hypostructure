@@ -563,16 +563,20 @@ The former split of node `[109]` by the node-`[94]` silent provenance
 (tex:1077, 1122).  The closure it fed at node `[184]` is quarantined
 (`Quarantine/PaperRepairs/SilentLaneClosure.lean`).
 
-## [118] → [123] → [124]: now paper-exact
+## [118] → [123] → [124]: the route-8 alternative of `[123]`, closed at `[124]`
 
-*fix2-TR.*  The two-support entry `[118]` (the yes arm of `[117]`) enters the
-descent decision `[123]` (tex 1134, edge `(residual)--(pressure)`): the
-`[117]`-yes ledger continues through `selectedTypeBRoute8Continuation`, the
-unified ledger on which `[123]` is asked; its yes arm closes at `[124]`
-(`K .route8UnifiedTrueTwoCarrierEntry` against `K .route8UnifiedTwoCarrierExit`),
-its no arm reaches `[181]`, `[183]`--`[186]`
-(`Assembly/RouteEight/Residual.lean`, `selectedRouteEightCollection`).  The
-earlier direct closure of `[118]` at `[124]` is no longer used.
+*fix2-TR, then close-C3.*  fix2-TR sent the two-support entry `[118]` (the
+yes arm of `[117]`) through the unified ledger `selectedTypeBRoute8Continuation`
+(tex 1134, edge `(residual)--(pressure)`).  close-C3 closes it at `[124]`
+instead, because on this arm the entry is a route-`8` entry of the collection
+`𝒳_A` that carries the large-budget deficit (`[113]` yes): that is the
+route-`8` alternative of `thm:large-budget-route8-only` ("If that two-support
+entry is a route-8 entry, then `prop:typeA-route8-closure-from-nogo`
+applies", tex 17124-17127), and `prop:typeA-route8-closure-from-nogo`
+(tex 12758-12785) derives (T1)--(T5) of `def:typeA-terminal-two-carrier`
+(tex 12636-12668) on exactly this path.  See Closed from G's facts,
+"[118]/[124]".  The unified ledger of `[123]` is still entered from the
+`[113]`-no arm, which reaches `[181]`, `[183]`--`[186]`.
 
 ## [123]: the deterministic procedure, now paper-exact
 
@@ -1210,7 +1214,8 @@ theorem and argument path; no `sorry` is involved.
   (`hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8LargeBudgetDeficit.lean`)
   decides the exact inequality `Route8LargeBudgetDeficit` against its negation
   `Route8LargeBudgetDeficitFailsStatement` on the same collection `𝒳_A`.
-  The positive arm continues to `[114]`--`[122]`, `[118]` → `[123]`; the
+  The positive arm continues to `[114]`--`[124]` and closes on every arm
+  (`[116]`, `[122]`, and `[118]` at `[124]`); the
   negative arm enters the unified target-defect/route-8 ledger
   (`selectedTypeBRoute8Continuation`, `Assembly/RouteEight/TypeBContinuation.lean`)
   and reaches `[123]`, `[181]`, `[183]`--`[186]`.
@@ -1412,6 +1417,46 @@ inhabited at G.
   (K .contextDefect)`.  The definitional character of `[11]`/`[12]` stays
   under Paper findings (no sorry) ("[11], [12], [36]/[37]").
 
+### [118]/[124]: the `[113]`-yes two-support entry of `𝒳_A` is the terminal obstruction (tex 12636-12668, 12670-12696, 12758-12785, 17124-17127)
+
+- **Branch.** `[113]` yes (`K .route8LargeBudgetDeficit` on `𝒳_A`), `[115]`
+  no (`K .route8NoSmallCoreEntry`), `[117]` yes (`K .route8TwoCarrierEntry`):
+  the former factor choice `Route8DeficitBlock_holds` of the three route-8
+  products ([186], [187] Type B sublinear, [187] [348]), 120 paths each.
+- **Faithfulness.** The paper puts every fact used here on this path.
+  `prop:typeA-route8-closure-from-nogo` (tex 12758-12785) takes a route-8
+  collection carrying the large-budget deficit (here `[113]` yes), obtains the
+  two-support entry by `prop:typeA-route8-carrier-reduction` (here `[117]`
+  yes, the canonical `ι₂`), states that it is a true route-8 residual entry
+  (T2) "since the collection survives only through route 8", that
+  `α_𝒳(ξ) ≥ 2` (T3) by `lem:typeA-one-terminal-collapse` (here `[115]` no),
+  and that the declared deletion witnesses (T5) exist.
+  `thm:large-budget-route8-only` (tex 17124-17127) routes a route-8
+  two-support entry to exactly this proposition.  The Lean statements match
+  (T2)/(T5) at `ι₂`: `Route8TrueTwoCarrierEntryStatement` is "no exit-(4)
+  witness at `ι₂`", derived from `K .route8TrueResidual` (the
+  `TargetCompleteMinimal`/no-exit-(4) clause of (R1)--(R4)) and the
+  minimum-degree baseline (`route8TrueTwoCarrierEntry`,
+  `Contracts/RouteEight/TwoCarrier.lean`); `Route8CarrierDeletionWitnesses` is
+  (T5) at `ι₂` (`route8CarrierDeletionWitnesses`).  Neither is stronger than
+  the paper's: both are proved from G's facts at the node.
+- **Why it is closed.** `thm:typeA-two-carrier-nogo` (tex 12670-12696):
+  `route8SurvivorTwoCarrierExit` (`Contracts/RouteEight/Terminal.lean`) turns
+  the deletion witnesses, the selected basin of the true residual and
+  `α ≥ 2` into the canonical exit-(4) witness at `ι₂`
+  (`lem:typeA-two-carrier-deletion-canonical`,
+  `lem:typeA-carrier-deletion-exit`); `route8TrueTwoCarrierEntry_false`
+  refutes it against (T2).
+- **Closed at the node.** `Assembly/RouteEight/Residual.lean`,
+  `selectedRouteEightCollection` (now `: False`), arm `.left twoCarrier`:
+  `route8TrueTwoCarrierEntryRow`, `route8CarrierDeletionWitnessesRow`, then
+  `route8TwoCarrierExitRow.runAndCloseIncompatible witnesses
+  (K .route8TrueTwoCarrierEntry) (K .route8TwoCarrierExit)` with `elimClosed`
+  (instance `instIncompatibleRoute8TrueTwoCarrierEntryTwoCarrierExit`).
+  `Route8DeficitBlock_holds` and the `Route8Deficit` disjunction are removed
+  from `Assembly/Residuals/Route8Blocks.lean`; `TypeAArm` carries
+  `Route8DeficitBlock_fails` directly.
+
 ## Returned residuals
 
 The current description of every returned residual of
@@ -1445,10 +1490,10 @@ free side.
 | `Node144aOutcome_*` | [144a] | 6 subtypes | 6 | 44 generic; 47, 48, 48, 49, 49, 50 |
 | `BlockedBarrierOverlapOutcome_*` | [172a] | 2 subtypes (`[160]` arm) | 2 | 71 generic; 72, 73 |
 | `PairConditionalFactorizationOutcome_*` | [182] | 6 subtypes | 6 | 33 generic; 37, 40, 43, 45, 48, 51 |
-| `Route8JointBalanceOutcome_product` | [186] | product: prefix (5) × entropy (4) × continuation (68) | 1360 | 79 generic; 99–136 |
+| `Route8JointBalanceOutcome_product` | [186] | product: prefix (5) × entropy (4) × continuation (62) | 1240 | 79 generic; 99–136 |
 | `PairTypeBOutcome_*` | [187] ([179]/[180] Type B entry) | 4 subtypes | 4 | 42 generic; 46, 49, 54, 57 |
-| `TypeBSublinearOutcome_product` | [187] (Type B sublinear failure) | product: prefix (5) × entropy (4) × continuation (68) | 1360 | 62 generic; 82–119 |
-| `Route8QuotientOutcome_product` | [187] ([348], route-8 quotient failure) | product: prefix (5) × entropy (4) × continuation (68) | 1360 | 64 generic; 84–121 |
+| `TypeBSublinearOutcome_product` | [187] (Type B sublinear failure) | product: prefix (5) × entropy (4) × continuation (62) | 1240 | 62 generic; 82–119 |
+| `Route8QuotientOutcome_product` | [187] ([348], route-8 quotient failure) | product: prefix (5) × entropy (4) × continuation (62) | 1240 | 64 generic; 84–121 |
 | `Route8RateFailsOutcome_*` | [187] (private-carrier rate failure) | 12 subtypes | 12 | 42 generic; 45–49 |
 | `ColdBranchClosedOutcome_product`, `ColdBranchClosedOutcome_linear*` | [187] (local cold-terminal exclusion) | product: entropy (4) × window (5) × exit (5), plus 4 singletons | 104 | 57 generic; product 69–83, singletons 63, 63, 66, 67 |
 | `Node153ResidualOutcome_*` | [153] | 23 subtypes | 23 | 42 generic; 45, 46, 47 (linear arms), 51–57 (absorbed lane) |
@@ -1480,9 +1525,11 @@ continuation) on `selectedTypeBRoute8Continuation` and
 is introduced.  The B-chain factor of `Route8Blocks.lean` lists only its 6
 realized fan/certificate arms (the B2 test `[72]` runs only after a heavy-centre
 fan and `[81]` only after a degree-four fan), so the net-charge continuation
-has 68 arms and the route-8 products 1360 paths (the earlier count 2 × 5 fan ×
+had 68 arms and the route-8 products 1360 paths (the earlier count 2 × 5 fan ×
 certificate combinations, 104 arms and 2080 paths, included 4 unrealized
-fan/certificate pairs).
+fan/certificate pairs).  Closing the `[113]`-yes/`[117]`-yes arm at `[124]`
+(Closed from G's facts) removes the `Route8DeficitBlock_holds` factor choice:
+the continuation has 62 arms and each route-8 product 1240 paths.
 
 <a id="open-constructions"></a>
 <a id="residual-20a"></a>
@@ -1831,7 +1878,7 @@ fan/certificate pairs).
 ### Node [186] (thm:main (v), tex 364-368)
 
 - **Configuration at G.** The visible-entry route-8 residual after [181], [183]-[185], with the joint balances of lem:typeA-unified-joint-balance.
-- **Lean.** `Route8JointBalanceOutcome` (`Assembly/Residuals.lean`, the generic residual: the 79 keys common to every path); return theorem `route8JointBalanceReturn`, called once, at `Assembly/RouteEight/Local.lean` (`selectedRouteEightUnifiedResidual`, the quotient-free arm after `[123]`, `[181]`, `[183]`--`[185]`). The 1360 paths from `selectedLedgerBoundary` carry 1360 distinct fact sets (probe of the elaborated `known` at every call site, R06, 2026-09-27; B-chain count corrected at integration), and form an exact product of arm blocks: `Route8JointBalanceOutcome_product := Route8JointBalanceOutcome ∧ Route8LanePrefix ∧ EntropyArm ∧ NetChargeContinuation` (`Assembly/Residuals/Route8JointBalanceOutcome.lean`; `.toGeneric`; return theorem `route8JointBalanceProductReturn`, parameterised by the arm blocks, each built by its block's `.ret` with one `get` per key). The factors are those of `Route8QuotientOutcome` (same composition, same incoming ledgers); the blocks are shared (`Assembly/Residuals/Route8Blocks.lean`). Every path is the 79 common keys plus exactly one block per factor, and every one of the `5 × 4 × 68 = 1360` combinations occurs. Totals: 99 to 136 facts. Wired: the return site calls `route8JointBalanceProductReturn` with its `Route8Arms` argument.
+- **Lean.** `Route8JointBalanceOutcome` (`Assembly/Residuals.lean`, the generic residual: the 79 keys common to every path); return theorem `route8JointBalanceReturn`, called once, at `Assembly/RouteEight/Local.lean` (`selectedRouteEightUnifiedResidual`, the quotient-free arm after `[123]`, `[181]`, `[183]`--`[185]`). The 1240 paths from `selectedLedgerBoundary` carry 1240 distinct fact sets (probe of the elaborated `known` at every call site, R06, 2026-09-27; B-chain count corrected at integration), and form an exact product of arm blocks: `Route8JointBalanceOutcome_product := Route8JointBalanceOutcome ∧ Route8LanePrefix ∧ EntropyArm ∧ NetChargeContinuation` (`Assembly/Residuals/Route8JointBalanceOutcome.lean`; `.toGeneric`; return theorem `route8JointBalanceProductReturn`, parameterised by the arm blocks, each built by its block's `.ret` with one `get` per key). The factors are those of `Route8QuotientOutcome` (same composition, same incoming ledgers); the blocks are shared (`Assembly/Residuals/Route8Blocks.lean`). Every path is the 79 common keys plus exactly one block per factor, and every one of the `5 × 4 × 62 = 1240` combinations occurs. Totals: 99 to 136 facts. Wired: the return site calls `route8JointBalanceProductReturn` with its `Route8Arms` argument.
 - **Facts carried (79).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
@@ -1913,7 +1960,7 @@ fan/certificate pairs).
   78. `K .route8UnifiedVisibleOverload`: Node `[185]`, `lem:typeA-unified-visible-overload`: every retained visible excess entry lies at a receiver with an actually overloaded completion port.
   79. `K .route8JointBalance`: Node `[186]`, `lem:typeA-unified-joint-balance`: the failed peel rate, unified deficit, committed maximal demand ledger, and maximal type-(A1) absorption are read simultaneously.
 - **Product of arm blocks (keys beyond the 79 common facts).**
-  Structure: `5 prefix × 4 entropy × NetChargeContinuation`; `NetChargeContinuation = TypeALane ∨ AbsorbedLane ∨ TypeBHighSurplusLane` (68 = 2·25 + 12 + 6); `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry (2) ∧ TypeAArm (25)`; `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour (3) ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour (3) ∧ Route8Deficit (2)) ∨ TypeAArmBlock_dischargedRetest`; `AbsorbedLane = NetChargeLaneBlock_absorbedGerm ∧ AbsorbedGerm (2) ∧ BChain`; `TypeBHighSurplusLane = NetChargeLaneBlock_typeBHighSurplus ∧ BChain`; `BChain = BChainEntryBlock ∧ BChainFanCertificate (6)`, `BChainFanCertificate = (BChainFanBlock_heavyCentre ∧ (residual ∨ b2Choice ∨ overlapObstruction)) ∨ (BChainFanBlock_degreeFour ∧ (residual ∨ degreeFourClosed ∨ degreeFourOverlap))`.
+  Structure: `5 prefix × 4 entropy × NetChargeContinuation`; `NetChargeContinuation = TypeALane ∨ AbsorbedLane ∨ TypeBHighSurplusLane` (62 = 2·22 + 12 + 6); `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry (2) ∧ TypeAArm (22)`; `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour (3) ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour (3) ∧ Route8DeficitBlock_fails) ∨ TypeAArmBlock_dischargedRetest`; `AbsorbedLane = NetChargeLaneBlock_absorbedGerm ∧ AbsorbedGerm (2) ∧ BChain`; `TypeBHighSurplusLane = NetChargeLaneBlock_typeBHighSurplus ∧ BChain`; `BChain = BChainEntryBlock ∧ BChainFanCertificate (6)`, `BChainFanCertificate = (BChainFanBlock_heavyCentre ∧ (residual ∨ b2Choice ∨ overlapObstruction)) ∨ (BChainFanBlock_degreeFour ∧ (residual ∨ degreeFourClosed ∨ degreeFourOverlap))`.
   - Prefix factor `Route8LanePrefix` (one of 5):
     - `Route8LanePrefixBlock_realizedColdBelow` (2): window package realized; cold route-8 rate below (`nearCubicRealized` → `nearCubicLargeBudgetColdRate`)
       - `K .coldRoute8Below`
@@ -2003,7 +2050,7 @@ fan/certificate pairs).
       - `K .typeAExitSixFree`
       - `K .typeASaturatedHandoffExitFourFree`
       - `K .typeBDecoratedAssignedSupport`
-    - `TypeAArmBlock_route8Residual` (5): route-8 residual, then `TypeAExitFour` and `Route8Deficit`
+    - `TypeAArmBlock_route8Residual` (5): route-8 residual, then `TypeAExitFour` and `Route8DeficitBlock_fails`
       - `K .route8ResidualProfile`
       - `K .typeAExitFiveFree`
       - `K .typeAExitSevenFree`
@@ -2031,13 +2078,7 @@ fan/certificate pairs).
       - `K .typeAPeeledSaturatedReceiver`
       - `K .typeAPeeledSilentExcess`
       - `K .typeASaturatedHandoffExitFour`
-  - Route-8 deficit `Route8Deficit` (one of 2):
-    - `Route8DeficitBlock_holds` (5): deficit holds
-      - `K .route8CarrierCutParity`
-      - `K .route8LargeBudgetDeficit`
-      - `K .route8NoSmallCoreEntry`
-      - `K .route8TrueResidual`
-      - `K .route8TwoCarrierEntry`
+  - Route-8 deficit (one block; the deficit-holds arm is closed at `[124]`, see Closed from G's facts):
     - `Route8DeficitBlock_fails` (1): deficit fails
       - `K .route8LargeBudgetDeficitFails`
   - Absorbed cold germ `AbsorbedGerm` (one of 2):
@@ -2203,7 +2244,7 @@ fan/certificate pairs).
 ### Node [187] (Type B sublinear failure) (thm:main (vi), tex 369-378)
 
 - **Configuration at G.** Failure of the Type B sublinear hypothesis package on the unified route-8 ledger.
-- **Lean.** Generic residual `TypeBSublinearOutcome` (`Assembly/Residuals.lean`), return theorem `typeBSublinearReturn`: the 62 facts common to all paths. It is returned at one Lean site (`Assembly/RouteEight/Local.lean`, the negative arm of `typeBSublinearDichotomy` in `selectedRouteEightUnifiedResidual`), which 1360 paths from the root reach with 1360 distinct fact sets. Product form: `TypeBSublinearOutcome_product` (`Assembly/Residuals/TypeBSublinearOutcome.lean`), below; wired: the return site calls `typeBSublinearProductReturn` with its `Route8Arms` argument.
+- **Lean.** Generic residual `TypeBSublinearOutcome` (`Assembly/Residuals.lean`), return theorem `typeBSublinearReturn`: the 62 facts common to all paths. It is returned at one Lean site (`Assembly/RouteEight/Local.lean`, the negative arm of `typeBSublinearDichotomy` in `selectedRouteEightUnifiedResidual`), which 1240 paths from the root reach with 1240 distinct fact sets. Product form: `TypeBSublinearOutcome_product` (`Assembly/Residuals/TypeBSublinearOutcome.lean`), below; wired: the return site calls `typeBSublinearProductReturn` with its `Route8Arms` argument.
 - **Facts carried (62).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
@@ -2267,58 +2308,58 @@ fan/certificate pairs).
   60. `K .route8PiecesClassified`: `thm:branch-kill`'s all-pieces classification: every negative piece of the canonical decomposition is silent-first when it has no ambient surplus, and is a Type B bridge component when it has positive surplus.
   61. `K .route8ExtractedEntryCensus`: `def:typeA-unified-entries` with `lem:typeA-unified-carriers` at the extracted route-8 cores of the Type B bridge pieces (node `[123]`): the exact per-entry census of `lem:typeB-bridge-with-route8-core`'s collection `𝒜_X`.
   62. `K .typeBSublinearResidual`: The exact negation of the sublinear hypotheses, retained as the tested residual state (the manuscript's Part IX bridge-residual continuation).
-- **Product of arm blocks (user ruling).** The 1360 paths hold 1360 distinct fact sets. Each is exactly the 62 generic facts above together with the keys of one block choice in each factor below. The chosen blocks are pairwise key-disjoint, and every combination occurs on exactly one path, so the product is full: 1360 = 5 (prefix) × 4 (entropy) × 68 (continuation), with 68 = 50 (Type A lane) + 12 (absorbed lane) + 6 (Type B high-surplus lane). The check was made path by path against the elaborated ledgers.
+- **Product of arm blocks (user ruling).** The 1240 paths hold 1240 distinct fact sets. Each is exactly the 62 generic facts above together with the keys of one block choice in each factor below. The chosen blocks are pairwise key-disjoint, and every combination occurs on exactly one path, so the product is full: 1240 = 5 (prefix) × 4 (entropy) × 62 (continuation), with 62 = 44 (Type A lane) + 12 (absorbed lane) + 6 (Type B high-surplus lane); the 120 former `Route8DeficitBlock_holds` paths close at `[124]`. The check was made path by path against the elaborated ledgers (on the 1360-path product; the 1240 are that product with the closed choice removed).
   - Lean: `TypeBSublinearOutcome_product := TypeBSublinearOutcome ∧ Route8LanePrefix ∧ EntropyArm ∧ NetChargeContinuation` (`Assembly/Residuals/TypeBSublinearOutcome.lean`), with `.toGeneric` and return theorem `typeBSublinearProductReturn`. The blocks are the shared route-8 blocks of `Assembly/Residuals/Route8Blocks.lean`, the same ones `Route8QuotientOutcome` uses; each has a `.ret` theorem with one `get` per key.
   - `NetChargeContinuation = TypeALane ∨ AbsorbedLane ∨ TypeBHighSurplusLane`.
-  - `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry ∧ TypeAArm`, where `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour ∧ Route8Deficit) ∨ TypeAArmBlock_dischargedRetest`.
+  - `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry ∧ TypeAArm`, where `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour ∧ Route8DeficitBlock_fails) ∨ TypeAArmBlock_dischargedRetest`.
   - `AbsorbedLane = NetChargeLaneBlock_absorbedGerm ∧ AbsorbedGerm ∧ BChain`.
   - `TypeBHighSurplusLane = NetChargeLaneBlock_typeBHighSurplus ∧ BChain`.
   - `BChain = BChainEntryBlock ∧ BChainFanCertificate` (6 fan/certificate arms: the heavy-centre fan with the residual, B2-choice and overlap-obstruction certificates; the degree-four fan with the residual, degree-four-closed and degree-four-overlap certificates).
   - Total facts per path: 62 + the chosen blocks, from 82 to 119.
 - **Arm blocks (each with its arms, the number of paths it is on, and its keys).**
   - **Prefix factor `Route8LanePrefix` (5 blocks).**
-    - `Route8LanePrefixBlock_realizedColdBelow` ([158] window package realized; [146] θ < 1/78); on 416 paths; 2 keys:
+    - `Route8LanePrefixBlock_realizedColdBelow` ([158] window package realized; [146] θ < 1/78); on 248 paths; 2 keys:
       - `K .coldRoute8Below`: Node `[146]`, yes: the canonical packing lies below the route-8 private-carrier threshold.
       - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of ...
-    - `Route8LanePrefixBlock_realizedColdAtOrAbove` ([158] window package realized; [146] θ ≥ 1/78; [153] bounded cold mass under the density cap); on 416 paths; 4 keys:
+    - `Route8LanePrefixBlock_realizedColdAtOrAbove` ([158] window package realized; [146] θ ≥ 1/78; [153] bounded cold mass under the density cap); on 248 paths; 4 keys:
       - `K .coldMassBounded`: Node `[153]`, complementary arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
       - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
       - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in the object's own dyadic scale.
       - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of ...
-    - `Route8LanePrefixBlock_unrealizedDenseBelow` ([158] window package unrealized; [160] first test: dense deficiency below); on 416 paths; 2 keys:
+    - `Route8LanePrefixBlock_unrealizedDenseBelow` ([158] window package unrealized; [160] first test: dense deficiency below); on 248 paths; 2 keys:
       - `K .denseDeficiencyBelow`: On the `[21]` unrealized residual: `prop:negative-net-charge`'s exact large-budget net-deficiency comparison holds at the fixed maximal packing — the manuscript's `τ(θ) < 1/4` deficiency reading with the exact `√n` allowance, i.e.
       - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
-    - `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow` ([158] unrealized; [160] dense deficiency at or above; [146] θ < 1/78); on 416 paths; 3 keys:
+    - `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow` ([158] unrealized; [160] dense deficiency at or above; [146] θ < 1/78); on 248 paths; 3 keys:
       - `K .coldRoute8Below`: Node `[146]`, yes: the canonical packing lies below the route-8 private-carrier threshold.
       - `K .denseDeficiencyAtOrAbove`: Its exact complement: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
       - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
-    - `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove` ([158] unrealized; [160] dense deficiency at or above; [146] θ ≥ 1/78; [153] bounded cold mass under the density cap); on 416 paths; 5 keys:
+    - `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove` ([158] unrealized; [160] dense deficiency at or above; [146] θ ≥ 1/78; [153] bounded cold mass under the density cap); on 248 paths; 5 keys:
       - `K .coldMassBounded`: Node `[153]`, complementary arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
       - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
       - `K .denseDeficiencyAtOrAbove`: Its exact complement: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
       - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in the object's own dyadic scale.
       - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
   - **Entropy factor `EntropyArm` (4 blocks).**
-    - `EntropyArmBlock_high` ([50] remainder entropy high; [53] entropy cap); on 520 paths; 3 keys:
+    - `EntropyArmBlock_high` ([50] remainder entropy high; [53] entropy cap); on 310 paths; 3 keys:
       - `K .entropyCapBound`: Node `[54]`: the independently realized window/remainder code fits in the labelled skeleton class.
       - `K .entropyPackageDemand`: Node `[52]`: the window package and the remainder accounting, joined.
       - `K .remainderEntropyHigh`: Node `[50]`, yes arm — node `[51]`, the high-entropy remainder branch: `η(R) ≥ (1/d)·log₂ n`, i.e.
-    - `EntropyArmBlock_lowNonrepetitive` ([50] remainder entropy low; local-type coordinate non-repetitive); on 520 paths; 2 keys:
+    - `EntropyArmBlock_lowNonrepetitive` ([50] remainder entropy low; local-type coordinate non-repetitive); on 310 paths; 2 keys:
       - `K .localTypeCoordinateNonrepetitive`: `prop:two-budget` (c): the same literal coordinate is not structurally repetitive.
       - `K .remainderEntropyLow`: Node `[50]`, no arm: `η(R) < (1/d)·log₂ n`, the low-entropy branch `prop:two-budget` (b) and (c) share.
-    - `EntropyArmBlock_lowRepetitiveWedgeFree` ([50] remainder entropy low; local-type coordinate repetitive; root-wedge split wedge-free); on 520 paths; 4 keys:
+    - `EntropyArmBlock_lowRepetitiveWedgeFree` ([50] remainder entropy low; local-type coordinate repetitive; root-wedge split wedge-free); on 310 paths; 4 keys:
       - `K .dominantRootedType`: `lem:dominant-type`: the repetitive coordinate has a single rooted radius-two type outside only the registered finite `o(n)` allowance.
       - `K .dominantRootedTypeWedgeFree`: The wedge-free subarm after `lem:dominant-type`; the manuscript makes no translate-rank claim and passes this arm to the large-budget analysis.
       - `K .localTypeCoordinateRepetitive`: `prop:two-budget` (b): on the low-entropy residual, the radius-two rooted-type coordinate lies below the exact finite relabelling threshold.
       - `K .remainderEntropyLow`: Node `[50]`, no arm: `η(R) < (1/d)·log₂ n`, the low-entropy branch `prop:two-budget` (b) and (c) share.
-    - `EntropyArmBlock_lowRepetitiveWedge` ([50] remainder entropy low; local-type coordinate repetitive; root-wedge split wedge type); on 520 paths; 5 keys:
+    - `EntropyArmBlock_lowRepetitiveWedge` ([50] remainder entropy low; local-type coordinate repetitive; root-wedge split wedge type); on 310 paths; 5 keys:
       - `K .dominantRootedType`: `lem:dominant-type`: the repetitive coordinate has a single rooted radius-two type outside only the registered finite `o(n)` allowance.
       - `K .dominantRootedWedgeType`: The literal incoming wedge subarm of `lem:translates-independent`: the preceding executor proved the dominant rooted type and the decision found an internal root wedge in that same type.
       - `K .independentObstructionTranslates`: Nodes `[51]`--`[52]`, `lem:translates-independent`: a dominant rooted radius-`r` type with an internal root wedge admits a maximal `2r`-separated family of translates.
       - `K .localTypeCoordinateRepetitive`: `prop:two-budget` (b): on the low-entropy residual, the radius-two rooted-type coordinate lies below the exact finite relabelling threshold.
       - `K .remainderEntropyLow`: Node `[50]`, no arm: `η(R) < (1/d)·log₂ n`, the low-entropy branch `prop:two-budget` (b) and (c) share.
   - **Absorbed lane `AbsorbedLane` (20 = 2 × 10).**
-    - `NetChargeLaneBlock_absorbedGerm` ([59] net charge nonnegative; [57]/[173] exact collision fails; [177] counted core; [153] (★)); on 400 paths; 11 keys:
+    - `NetChargeLaneBlock_absorbedGerm` ([59] net charge nonnegative; [57]/[173] exact collision fails; [177] counted core; [153] (★)); on 240 paths; 11 keys:
       - `K .absorbedConfigurationResidual`: Node `[174]`, `lem:exact-collision-test`, the consequence of the failed collision: the failure witness packing `P` of `[173]` satisfies `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`, `A = netChargeCoefficient`, the manuscript's `C ≥ (n − 73|𝒫_hot| − 4(σ_W − σ_R))/73` without subtraction: the residual carries ...
       - `K .absorbedGermFanData`: Node `[177]`, `lem:absorbed-germ-fan-data` (ii): every selected branch-excess half-edge outside node `[153]`'s exact subcubic candidate class meets a vertex of degree above the threshold, a heavy centre, and is decorated handoff fan data for Type B.
       - `K .absorbedGermSplit`: Node `[175]`, `lem:absorbed-germ-fan-data`: the per-half-edge dichotomy — every selected branch-excess half-edge's first-failure support is subcubic (a charged candidate germ) or meets a heavy centre whose neighbours all sit at the threshold (node `[10]`).
@@ -2330,9 +2371,9 @@ fan/certificate pairs).
       - `K .coldGermCandidates`: Node `[153]`: a positive current-residual bounded-germ family.
       - `K .exactCollisionFails`: Node `[173]`, `lem:exact-collision-test`, no arm: node `[56]`'s collision, decided exactly on the current object, fails at some maximal packing — the absorbed-germ residual `[174]`.
       - `K .typeBAbsorbedHalfEdge`: Node `[175]`, yes, read at `[177]`: some selected corridor meets a high-degree vertex --- `G`'s canonical absorbed half-edge exists.
-    - `AbsorbedGermBlock_none` ([175] no positive germ); on 200 paths; 1 keys:
+    - `AbsorbedGermBlock_none` ([175] no positive germ); on 120 paths; 1 keys:
       - `K .coldNoPositiveGerm`: Node `[175]`, no arm: every selected corridor meets a high-degree vertex.
-    - `AbsorbedGermBlock_positive` ([175] positive germ; [154] G1/G2 tests; [163] neutral configuration); on 200 paths; 14 keys:
+    - `AbsorbedGermBlock_positive` ([175] positive germ; [154] G1/G2 tests; [163] neutral configuration); on 120 paths; 14 keys:
       - `K .coldAbsorbedNeutralConfiguration`: Node `[176]` on the absorbed-configuration residual (`lem:absorbed-germ-fan-data` (i)): on the G2-silent arm, the neutral equal-length configuration of G's silent extracted family, an (F5) configuration (terminal or repeated-state); the dense-residual terminality of node `[162]` is not assumed.
       - `K .coldBranchClosed`: `thm:cold-branch-quantitative-closure`, local part: the local cold-terminal exclusion at G (no global terminal contradiction).
       - `K .coldCanonicalNeutralConfiguration`: Node `[163]`, no-arm: no neutral zero-increment germ of the incoming extracted family has a graph-realized second strand; its `E` is therefore the canonical-replacement case of `[165]`--`[166]`.
@@ -2348,7 +2389,7 @@ fan/certificate pairs).
       - `K .coldPositiveGerm`: 
       - `K .coldSameInterfaceTable`: `lem:cold-same-interface-table`: the finite same-interface table of G's silent configurations.
   - **Type A lane `TypeALane` (74 = 2 × 37; 37 = 3 × 10 + 3 × 2 + 1).**
-    - `NetChargeLaneBlock_typeALowSurplus` ([59] net charge negative; [62] Type A; [88] saturated receiver); on 1480 paths; 11 keys:
+    - `NetChargeLaneBlock_typeALowSurplus` ([59] net charge negative; [62] Type A; [88] saturated receiver); on 880 paths; 11 keys:
       - `K .negativeSupport`: Node `[61]`: `prop:negative-net-charge`.
       - `K .netChargeCap`: Node `[60]`: the large-budget remainder has negative total net charge once the paper's explicit sufficiently-large predicate holds.
       - `K .netChargeNegative`: Node `[59]`, no arm: `N₀(R) < 0` for that same selected packing.
@@ -2360,22 +2401,22 @@ fan/certificate pairs).
       - `K .typeASaturatedExitEntry`: **The shared entry of nodes `[101]`--`[107]`**, and the hypothesis of `lem:typeA-exit4-residual-routing`: *"let `w` be a saturated Type A receiver with a peeling set `P₄(w)`; if `L₄(w) ≥ 4q(w)`, then the unpeeled routed loads at `w` realize one of exits (1)--(8)"*.
       - `K .typeASaturatedReceiver`: Node `[89]`, yes arm — the entry of node `[93]`: some receiver of a Type A support has reached its saturation threshold, `L(w) ≥ s·q(w)`.
       - `K .typeASupport`: Node `[86]`: the Type A support `X₀`, `s·def⁺(X₀) < |V(X₀)|`.
-    - `TypeAEntryBlock_visible` ([93] visible entry; [95]/[97]/[99] exits (1)--(3) free); on 740 paths; 4 keys:
+    - `TypeAEntryBlock_visible` ([93] visible entry; [95]/[97]/[99] exits (1)--(3) free); on 440 paths; 4 keys:
       - `K .typeAExitOneFree`: Node `[95]`, no arm — the entry of node `[97]`: no anchored return through any completion port of any saturated receiver of any Type A support has accepted length, so exit `(1)` is not the exit this branch realizes and the saturated exit list continues at exit `(2)`.
       - `K .typeAExitThreeFree`: Node `[99]`, no arm — the entry of node `[101]`: every shared window of the packing satisfies its legal-label relation at every outside connector, so exit `(3)` is not the exit this branch realizes and the saturated exit list continues at exit `(4)`.
       - `K .typeAExitTwoFree`: Node `[97]`, no arm — the entry of node `[99]`: at every saturated receiver of every Type A support, no two receiver-entry returns through one of its completion ports are internally vertex-disjoint with accepted total length, so exit `(2)` is not the exit this branch realizes and the saturated exit list continues ...
       - `K .typeAVisibleEntry`: Node `[93]`, yes arm — the entry of the saturated exit chain at node `[95]`: some completion port of a saturated receiver of the Type A support carries `s` visible receiver-entry returns, in the sense of `def:typeA-visible-load`.
-    - `TypeAEntryBlock_noVisible` ([93] no visible entry); on 740 paths; 2 keys:
+    - `TypeAEntryBlock_noVisible` ([93] no visible entry); on 440 paths; 2 keys:
       - `K .typeANoVisibleEntry`: Node `[93]`, no arm: no saturated receiver of `X₀` has an overloaded completion port.
       - `K .typeAVisibleFirstExcess`: Node `[93]`, no arm — node `[94]`, `lem:typeA-silent-excess-count`: no saturated receiver of the Type A support has a completion port carrying `s` visible receiver-entry returns, so the visible-first excess basins of `def:typeA-excess-basin` are silent and carry the whole excess, `S_sil^exc(X) ≥ s·D_A(X)`.
-    - `TypeAArmBlock_decorated` ([103]/[105] exits (5), (6) free; [107] exit (7) handoff, decorated to the Type B chain); on 1200 paths; 6 keys:
+    - `TypeAArmBlock_decorated` ([103]/[105] exits (5), (6) free; [107] exit (7) handoff, decorated to the Type B chain); on 720 paths; 6 keys:
       - `K .typeAExitFiveFree`: Node `[103]`, no arm: the exact selected saturated-handoff residual after no exit `(4)` carries no target-complete proper-support compression, so the branch may continue to exit `(6)`.
       - `K .typeAExitSevenEnvelope`: Node `[108]`: the canonical exit-`(7)` separation and envelope of `X₀` at the terminal state.
       - `K .typeAExitSevenHandoff`: Node `[108]`, on node `[107]`'s yes arm — exit `(7)` of `def:typeA-saturated-exits`: *"a high-degree decorated handoff fan envelope is produced"*, at the visible saturated port node `[93]` delivered.
       - `K .typeAExitSixFree`: Node `[105]`, no arm: that same selected residual has no exit-`(6)` delocalization, so it can continue to exit `(7)`.
       - `K .typeASaturatedHandoffExitFourFree`: `lem:typeA-exit4-residual-routing`, no exit-`(4)` at the exact current saturated receiver/peeling state; this is the predecessor of exit `(5)`.
       - `K .typeBDecoratedAssignedSupport`: Node `[65]` on the decorated lane: the exact exit-`(7)` envelope, its Type-B centres and assigned first-neighbour supports, and every clause of `lem:decorated-fan-admissibility`, all published on the same residual for the common Type B continuation.
-    - `TypeAArmBlock_route8Residual` ([103]/[105] exits (5), (6) free; [107] exit (7) free: route-8 residual profile); on 240 paths; 5 keys:
+    - `TypeAArmBlock_route8Residual` ([103]/[105] exits (5), (6) free; [107] exit (7) free: route-8 residual profile); on 120 paths; 5 keys:
       - `K .route8ResidualProfile`: Node `[110]`, exit `(8)`: the selected route-8 residual satisfies the silent-core residual profile.
       - `K .typeAExitFiveFree`: Node `[103]`, no arm: the exact selected saturated-handoff residual after no exit `(4)` carries no target-complete proper-support compression, so the branch may continue to exit `(6)`.
       - `K .typeAExitSevenFree`: Node `[107]`, no arm — the entry of node `[109]`: no high-degree decorated handoff fan envelope is produced at any visible port of any saturated receiver of any Type A support, so exit `(7)` is not the exit this branch realizes and the saturated exit list continues at exit `(8)`, the route-8 residual of ...
@@ -2386,9 +2427,9 @@ fan/certificate pairs).
       - `K .typeAExitFourReceiverDischarged`: Node `[102]`, no-loop arm: after the exit-`(4)` peel, the selected receiver is no longer saturated at the peeled residual, so its remaining receiver charge is nonnegative by `lem:typeA-exit4-peeling-charge`.
       - `K .typeAPeeledUnsaturatedDischarge`: Node `[91]` after peeling: `|V(X₀)| ≤ s·def⁺(X₀) + Σ_w |P₄(w)|`.
       - `K .typeASaturatedHandoffExitFour`: `lem:typeA-exit4-residual-routing`, exit-`(4)` arm at the exact current saturated receiver/peeling state.
-    - `TypeAExitFourBlock_absent` ([101] exit (4) absent); on 480 paths; 1 keys:
+    - `TypeAExitFourBlock_absent` ([101] exit (4) absent); on 280 paths; 1 keys:
       - `K .typeAExitFourAbsent`: Node `[101]`, no arm: the entry state of the exit-chain receiver of `X₀` has no exit `(4)`.
-    - `TypeAExitFourBlock_peeledVisible` ([101] exit (4) peeled; [89] peeled visible entry); on 480 paths; 7 keys:
+    - `TypeAExitFourBlock_peeledVisible` ([101] exit (4) peeled; [89] peeled visible entry); on 280 paths; 7 keys:
       - `K .typeAExitFourPeeled`: Node `[102]`: the exit-`(4)` witness has been charged to the peeling ledger by adjoining its routed load to `P₄(w)`, preserving the routed-load condition and dropping the residual load by one.
       - `K .typeAPeeledExitOneFree`: Node `[95]` after peeling, no arm.
       - `K .typeAPeeledExitThreeFree`: Node `[99]` after peeling, no arm.
@@ -2396,29 +2437,23 @@ fan/certificate pairs).
       - `K .typeAPeeledSaturatedReceiver`: Node `[102]` → `[89]`, yes arm: the terminal receiver of `X₀` is saturated at its terminal peeling set.
       - `K .typeAPeeledVisibleEntry`: Node `[93]` after peeling, yes arm: the terminal state has an overloaded port.
       - `K .typeASaturatedHandoffExitFour`: `lem:typeA-exit4-residual-routing`, exit-`(4)` arm at the exact current saturated receiver/peeling state.
-    - `TypeAExitFourBlock_peeledNoVisible` ([101] exit (4) peeled; [89] no peeled visible entry); on 480 paths; 5 keys:
+    - `TypeAExitFourBlock_peeledNoVisible` ([101] exit (4) peeled; [89] no peeled visible entry); on 280 paths; 5 keys:
       - `K .typeAExitFourPeeled`: Node `[102]`: the exit-`(4)` witness has been charged to the peeling ledger by adjoining its routed load to `P₄(w)`, preserving the routed-load condition and dropping the residual load by one.
       - `K .typeAPeeledNoVisibleEntry`: Node `[93]` after peeling, no arm: the terminal state has no overloaded port.
       - `K .typeAPeeledSaturatedReceiver`: Node `[102]` → `[89]`, yes arm: the terminal receiver of `X₀` is saturated at its terminal peeling set.
       - `K .typeAPeeledSilentExcess`: Node `[94]` after peeling: the residual excess `E₄(w)` is nonempty and silent.
       - `K .typeASaturatedHandoffExitFour`: `lem:typeA-exit4-residual-routing`, exit-`(4)` arm at the exact current saturated receiver/peeling state.
-    - `Route8DeficitBlock_holds` ([113] large-budget deficit; [115] small core; [117] two-support entry); on 120 paths; 5 keys:
-      - `K .route8CarrierCutParity`: Node `[114]`, `lem:typeA-carrier-cut-parity`: every surviving target event which uses an edge internal to its selected trace basin and an edge leaving its ambient piece records at least two distinct incidences from the canonical essential carrier core.
-      - `K .route8LargeBudgetDeficit`: Node `[113]`, yes arm.
-      - `K .route8NoSmallCoreEntry`: Node `[115]`, no arm.
-      - `K .route8TrueResidual`: Node `[114]`, `def:typeA-true-route8-residual`: every actual indexed entry of the selected route-`8` collection satisfies clauses (R1)--(R4).
-      - `K .route8TwoCarrierEntry`: Node `[117]`, yes: some indexed route-8 entry of `𝒳_A` has at most `δ` private essential carriers (`prop:typeA-route8-carrier-reduction`).
     - `Route8DeficitBlock_fails` ([113] large-budget deficit fails); on 120 paths; 1 keys:
       - `K .route8LargeBudgetDeficitFails`: Node `[113]`, no arm.
   - **Type B high-surplus lane `TypeBHighSurplusLane` (10).**
-    - `NetChargeLaneBlock_typeBHighSurplus` ([59] net charge negative; [62] Type B); on 200 paths; 5 keys:
+    - `NetChargeLaneBlock_typeBHighSurplus` ([59] net charge negative; [62] Type B); on 120 paths; 5 keys:
       - `K .negativeSupport`: Node `[61]`: `prop:negative-net-charge`.
       - `K .netChargeCap`: Node `[60]`: the large-budget remainder has negative total net charge once the paper's explicit sufficiently-large predicate holds.
       - `K .netChargeNegative`: Node `[59]`, no arm: `N₀(R) < 0` for that same selected packing.
       - `K .typeBAssignedSupport`: Node `[65]` at the `[64]` entry: the ordinary Type B assigned support.
       - `K .typeBHighSurplus`: Node `[62]`, yes arm — node `[64]`, Type B: the selected negative support carries assigned high-degree surplus.
   - **B-chain `BChain` (10 = 2 × 5).**
-    - `BChainEntryBlock` (Type B chain entry, common to every B-chain arm); on 1800 paths; 7 keys:
+    - `BChainEntryBlock` (Type B chain entry, common to every B-chain arm); on 1080 paths; 7 keys:
       - `K .compatiblePairFanClosure`: `lem:compatible-pair-fan-closure`: compatible open ports recorded by one assigned profile are distinct fan-closed ports.
       - `K .compatiblePairTypeBRouting`: `cor:compatible-pair-typeB-routing`: a recorded compatible open pair gives the positive local Type-B deficit.
       - `K .fanCertificateCap`: Node `[70]`: the certificate-marked fan-degree cap.
@@ -2426,40 +2461,40 @@ fan/certificate pairs).
       - `K .typeBExclusionResidual`: Node `[76]`/`[85]`: Type B cannot carry the linear deficit outside route `8`; the B2-paid support keeps its deficit in its remaining core, and a bridge-residual support is charged to its assigned surplus.
       - `K .typeBFanEntry`: Nodes `[65]`/`[66]`: the common Type B fan support entry (`def:typeB-assigned-ledger`): a canonical core with its assigned centres — the ordinary support's own high centres at `[65]`, or the decorations of the handoff envelope at the dashed input `[66]` — nonempty and all high.
       - `K .typeBRoute8Entry`: Node `[77]`: the Type B entry into route `8`; a negative Type B support hands a negative remaining core to route `8` or is a bridge residual charged to its surplus.
-    - `BChainFanBlock_heavyCentre` ([68] heavy centre); on 900 paths; 6 keys:
+    - `BChainFanBlock_heavyCentre` ([68] heavy centre); on 540 paths; 6 keys:
       - `K .triangularCrossShoulder`: `lem:triangular-cross-shoulder`: two cross edges between distinct triangular shoulder pairs force a high shoulder; after that branch is routed away, the surviving cross edges have cardinality at most one.
       - `K .triangularFanCore`: Node `[79]`, `def:triangular-fan-core`: the shoulder sets, induced core vertex set, and completion-incidence classifications of every nonempty triangular-port family at a heavy centre.
       - `K .triangularFirstLanding`: `lem:triangular-first-landing`: every completion incidence in a triangular fan core is uniquely central, cross-triangular, or outside.
       - `K .triangularPortTypeBRouting`: `prop:triangular-port-typeB-routing`: a degree-`k` heavy triangular family of exactly `k - 2` assigned ports gives the stronger positive local Type-B deficit bound `(5k - 19) / 4`.
       - `K .typeBFanHeavyCentre`: Node `[68]`, yes arm, on either literal `[65]` input: some assigned centre of the canonical support, or an actual centre of an indexed `[177]` handoff datum, is *heavy* — degree above the high-centre degree `δ + 1` (`d_G(h) > 4` at the manuscript's baseline).
       - `K .typeBFanLocalDichotomy`: Node `[69]` at the `[64]` entry: `cor:heavy-center-local-dichotomy` at every heavy fan centre of the ordinary Type B support — a fan-compatible open pair, or at least `d_G(h) − 2` triangular ports, hence three.
-    - `BChainFanBlock_degreeFour` ([68] degree four); on 900 paths; 2 keys:
+    - `BChainFanBlock_degreeFour` ([68] degree four); on 540 paths; 2 keys:
       - `K .typeBFanDegreeFourCentres`: Node `[68]`, no arm, on either literal `[65]` input — the entry of node `[78]`: every assigned centre of the canonical support, or a retained witness for every indexed `[177]` datum, has degree exactly `δ + 1` (`d_G(h) = 4` at the manuscript's baseline).
       - `K .typeBFanDegreeFourProfile`: Nodes `[78]`--`[79]` at the `[64]` entry: the degree-four fan profile of the ordinary Type B support.
-    - `BChainCertificateBlock_residual` ([71]/[80] certificate labelling: residual); on 360 paths; 2 keys:
+    - `BChainCertificateBlock_residual` ([71]/[80] certificate labelling: residual); on 180 paths; 2 keys:
       - `K .fanCertificateResidual`: Node `[71]`/`[80]`, no arm: some assigned centre of the Type B support carries no fan-certificate labelling (G's canonical labelling is absent).
       - `K .fanCertificateResidualMass`: Nodes `[75]`/`[84]` on the certificate-residual arm: the support-level bound `lem:typeB-bridge-deficit-bound` at the fan-certificate residual support.
-    - `BChainCertificateBlock_b2Choice` ([71]/[80] marked; [72] B2 disjoint); on 360 paths; 6 keys:
+    - `BChainCertificateBlock_b2Choice` ([71]/[80] marked; [72] B2 disjoint); on 180 paths; 6 keys:
       - `K .fanCertificateMarked`: Node `[71]`/`[80]`, yes arm: every assigned centre of the Type B support carries G's canonical fan-certificate labelling, under the label-packing cap (`def:marked-typeB-fan`).
       - `K .typeBB2Choice`: Node `[72]`, yes arm: the local B1 ledger is complete and B2 holds at the Type B support: its certificate-marked assigned centres have a pairwise-disjoint choice of candidate entries on the assigned fan envelopes of the support.
       - `K .typeBDirectCycleFree`: Nodes `[72]`/`[81]`, inside the local fan-window ledger: every assigned centre of the marked Type B support is direct-cycle-free at `P₀` (`lem:typeB-direct-fan-window-cycles`, `def:direct-cycle-free-closed-pair`); a direct configuration would be a cycle of accepted length.
       - `K .typeBDisjointLedger`: Node `[74]`, B2(a)--(d): the Type B support is B2-paid; its canonical B2 ledger exists with its exact augmented-ledger refinement, the inherited Type A hygiene of every remaining component, and the grouped exit-`(7)` handoff coverage used by B2(d).
       - `K .typeBExcluded`: Node `[74]`, `prop:typeB-bridge-reduction`: the remaining core of the Type B support's canonical B2 ledger carries the whole deficit.
       - `K .typeBHybridEntry`: Nodes `[72]`/`[81]`: the hybrid B1 fan ledger.
-    - `BChainCertificateBlock_overlapObstruction` ([71]/[80] marked; [72] B2 overlap obstruction); on 360 paths; 6 keys:
+    - `BChainCertificateBlock_overlapObstruction` ([71]/[80] marked; [72] B2 overlap obstruction); on 180 paths; 6 keys:
       - `K .fanCertificateMarked`: Node `[71]`/`[80]`, yes arm: every assigned centre of the Type B support carries G's canonical fan-certificate labelling, under the label-packing cap (`def:marked-typeB-fan`).
       - `K .typeBDirectCycleFree`: Nodes `[72]`/`[81]`, inside the local fan-window ledger: every assigned centre of the marked Type B support is direct-cycle-free at `P₀` (`lem:typeB-direct-fan-window-cycles`, `def:direct-cycle-free-closed-pair`); a direct configuration would be a cycle of accepted length.
       - `K .typeBGlobalLocalBridge`: Node `[73]`/`[83]`: the canonical minimal obstruction together with all five global-to-local reflection clauses.
       - `K .typeBHybridEntry`: Nodes `[72]`/`[81]`: the hybrid B1 fan ledger.
       - `K .typeBOverlapObstruction`: Node `[72]`, no arm — the entry of `[73]`: B2's disjoint-carrier clause fails at the certificate-marked Type B support, which by `lem:typeB-bridge-to-overlap` carries G's canonical minimal Type B overlap obstruction of `def:typeB-overlap-obstruction`.
       - `K .typeBOverlapObstructionMass`: Nodes `[75]`/`[84]` on the B2-failure arm: the support-level bound `lem:typeB-bridge-deficit-bound` at the reflected obstructed support.
-    - `BChainCertificateBlock_degreeFourClosed` ([71]/[80] marked; [81] degree-four ledger closed); on 360 paths; 5 keys:
+    - `BChainCertificateBlock_degreeFourClosed` ([71]/[80] marked; [81] degree-four ledger closed); on 180 paths; 5 keys:
       - `K .fanCertificateMarked`: Node `[71]`/`[80]`, yes arm: every assigned centre of the Type B support carries G's canonical fan-certificate labelling, under the label-packing cap (`def:marked-typeB-fan`).
       - `K .typeBDegreeFourClosed`: Node `[82]`: certificate-closed (`c ≤ 1`, `lem:typeB-exclusion` Step 1) or B2-paid with its remaining core carrying the whole deficit, at the degree-four Type B support.
       - `K .typeBDegreeFourLedger`: Node `[81]`, yes: `c ≤ 1` at every assigned centre, or `c ≥ 2` with the B2 disjoint choice, at the degree-four Type B support.
       - `K .typeBDirectCycleFree`: Nodes `[72]`/`[81]`, inside the local fan-window ledger: every assigned centre of the marked Type B support is direct-cycle-free at `P₀` (`lem:typeB-direct-fan-window-cycles`, `def:direct-cycle-free-closed-pair`); a direct configuration would be a cycle of accepted length.
       - `K .typeBHybridEntry`: Nodes `[72]`/`[81]`: the hybrid B1 fan ledger.
-    - `BChainCertificateBlock_degreeFourOverlap` ([71]/[80] marked; [81] degree-four overlap); on 360 paths; 6 keys:
+    - `BChainCertificateBlock_degreeFourOverlap` ([71]/[80] marked; [81] degree-four overlap); on 180 paths; 6 keys:
       - `K .fanCertificateMarked`: Node `[71]`/`[80]`, yes arm: every assigned centre of the Type B support carries G's canonical fan-certificate labelling, under the label-packing cap (`def:marked-typeB-fan`).
       - `K .typeBDegreeFourOverlap`: Node `[81]`, no → `[83]`: some assigned centre has `c ≥ 2` and B2 fails; minimal Type B overlap obstruction.
       - `K .typeBDirectCycleFree`: Nodes `[72]`/`[81]`, inside the local fan-window ledger: every assigned centre of the marked Type B support is direct-cycle-free at `P₀` (`lem:typeB-direct-fan-window-cycles`, `def:direct-cycle-free-closed-pair`); a direct configuration would be a cycle of accepted length.
@@ -2473,7 +2508,7 @@ fan/certificate pairs).
 
 - **Configuration at G.** Failure of route-8 quotient freeness of the unified census.
 - **The paper step it carries.** `thm:main` (tex 369-372, 388-390) returns the failure of route-8 quotient freeness at `[187]`; the proof of `lem:typeA-unified-carriers` (tex 15360-15364) instead dismisses alternative (b) as exit (5), which needs a smaller connected realization of G's quotient that the paper does not supply (see "Paper findings", [348]).
-- **Lean.** `Route8QuotientOutcome` (`Assembly/Residuals.lean`, the generic residual: the 64 keys common to every path); return theorem `route8QuotientReturn`, called once, at `Assembly/RouteEight/Local.lean` (`selectedRouteEightUnifiedResidual`, arm `[348]`). The 1360 paths from `selectedLedgerBoundary` carry 1360 distinct fact sets (probe of the elaborated `known` at every call site, R09, 2026-09-27; B-chain count corrected at integration), and form an exact product of arm blocks: `Route8QuotientOutcome_product := Route8QuotientOutcome ∧ Route8LanePrefix ∧ EntropyArm ∧ NetChargeContinuation` (`Assembly/Residuals/Route8QuotientOutcome.lean`; `.toGeneric`; return theorem `route8QuotientProductReturn`, parameterised by the arm blocks, each built by its block's `.ret` with one `get` per key). The blocks are shared (`Assembly/Residuals/Route8Blocks.lean`). Every path is the 64 common keys plus exactly one block per factor, and every one of the `5 × 4 × 68 = 1360` combinations occurs. Totals: 84 to 121 facts. Wired: the return site calls `route8QuotientProductReturn` with its `Route8Arms` argument.
+- **Lean.** `Route8QuotientOutcome` (`Assembly/Residuals.lean`, the generic residual: the 64 keys common to every path); return theorem `route8QuotientReturn`, called once, at `Assembly/RouteEight/Local.lean` (`selectedRouteEightUnifiedResidual`, arm `[348]`). The 1240 paths from `selectedLedgerBoundary` carry 1240 distinct fact sets (probe of the elaborated `known` at every call site, R09, 2026-09-27; B-chain count corrected at integration), and form an exact product of arm blocks: `Route8QuotientOutcome_product := Route8QuotientOutcome ∧ Route8LanePrefix ∧ EntropyArm ∧ NetChargeContinuation` (`Assembly/Residuals/Route8QuotientOutcome.lean`; `.toGeneric`; return theorem `route8QuotientProductReturn`, parameterised by the arm blocks, each built by its block's `.ret` with one `get` per key). The blocks are shared (`Assembly/Residuals/Route8Blocks.lean`). Every path is the 64 common keys plus exactly one block per factor, and every one of the `5 × 4 × 62 = 1240` combinations occurs. Totals: 84 to 121 facts. Wired: the return site calls `route8QuotientProductReturn` with its `Route8Arms` argument.
 - **Facts carried (64).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
@@ -2540,7 +2575,7 @@ fan/certificate pairs).
   63. `K .route8UnifiedDeficit`: Node `[123]`, `lem:typeA-unified-deficit`: the unified collection carries the whole large-budget deficit — `|R| ≤ s·D̃_A + s·|∂R| + 2F·s·T(n)`.
   64. `K .route8QuotientResidual`: The exact negation: some unified entry realizes alternative (b).
 - **Product of arm blocks (keys beyond the 64 common facts).**
-  Structure: `5 prefix × 4 entropy × NetChargeContinuation`; `NetChargeContinuation = TypeALane ∨ AbsorbedLane ∨ TypeBHighSurplusLane` (68 = 2·25 + 12 + 6); `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry (2) ∧ TypeAArm (25)`; `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour (3) ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour (3) ∧ Route8Deficit (2)) ∨ TypeAArmBlock_dischargedRetest`; `AbsorbedLane = NetChargeLaneBlock_absorbedGerm ∧ AbsorbedGerm (2) ∧ BChain`; `TypeBHighSurplusLane = NetChargeLaneBlock_typeBHighSurplus ∧ BChain`; `BChain = BChainEntryBlock ∧ BChainFanCertificate (6)`, `BChainFanCertificate = (BChainFanBlock_heavyCentre ∧ (residual ∨ b2Choice ∨ overlapObstruction)) ∨ (BChainFanBlock_degreeFour ∧ (residual ∨ degreeFourClosed ∨ degreeFourOverlap))`.
+  Structure: `5 prefix × 4 entropy × NetChargeContinuation`; `NetChargeContinuation = TypeALane ∨ AbsorbedLane ∨ TypeBHighSurplusLane` (62 = 2·22 + 12 + 6); `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry (2) ∧ TypeAArm (22)`; `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour (3) ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour (3) ∧ Route8DeficitBlock_fails) ∨ TypeAArmBlock_dischargedRetest`; `AbsorbedLane = NetChargeLaneBlock_absorbedGerm ∧ AbsorbedGerm (2) ∧ BChain`; `TypeBHighSurplusLane = NetChargeLaneBlock_typeBHighSurplus ∧ BChain`; `BChain = BChainEntryBlock ∧ BChainFanCertificate (6)`, `BChainFanCertificate = (BChainFanBlock_heavyCentre ∧ (residual ∨ b2Choice ∨ overlapObstruction)) ∨ (BChainFanBlock_degreeFour ∧ (residual ∨ degreeFourClosed ∨ degreeFourOverlap))`.
   - Prefix factor `Route8LanePrefix` (one of 5):
     - `Route8LanePrefixBlock_realizedColdBelow` (2): window package realized; cold route-8 rate below (`nearCubicRealized` → `nearCubicLargeBudgetColdRate`)
       - `K .coldRoute8Below`
@@ -2630,7 +2665,7 @@ fan/certificate pairs).
       - `K .typeAExitSixFree`
       - `K .typeASaturatedHandoffExitFourFree`
       - `K .typeBDecoratedAssignedSupport`
-    - `TypeAArmBlock_route8Residual` (5): route-8 residual, then `TypeAExitFour` and `Route8Deficit`
+    - `TypeAArmBlock_route8Residual` (5): route-8 residual, then `TypeAExitFour` and `Route8DeficitBlock_fails`
       - `K .route8ResidualProfile`
       - `K .typeAExitFiveFree`
       - `K .typeAExitSevenFree`
@@ -2658,13 +2693,7 @@ fan/certificate pairs).
       - `K .typeAPeeledSaturatedReceiver`
       - `K .typeAPeeledSilentExcess`
       - `K .typeASaturatedHandoffExitFour`
-  - Route-8 deficit `Route8Deficit` (one of 2):
-    - `Route8DeficitBlock_holds` (5): deficit holds
-      - `K .route8CarrierCutParity`
-      - `K .route8LargeBudgetDeficit`
-      - `K .route8NoSmallCoreEntry`
-      - `K .route8TrueResidual`
-      - `K .route8TwoCarrierEntry`
+  - Route-8 deficit (one block; the deficit-holds arm is closed at `[124]`, see Closed from G's facts):
     - `Route8DeficitBlock_fails` (1): deficit fails
       - `K .route8LargeBudgetDeficitFails`
   - Absorbed cold germ `AbsorbedGerm` (one of 2):
