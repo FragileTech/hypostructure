@@ -29,8 +29,8 @@ universe u
 /-- **Node `[187]` ([179]/[180] Type B entry), `independentSystem`** (thm:main
 (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] independent arm (canonical pair split), [131] free-pair count
-fails; then [179] early outcome.  Every fact of its ledger: the 76 common facts
-and 3 explicit extra facts (79 facts). -/
+fails; then [179] early outcome.  Every fact of its ledger: the 84 common facts
+and 3 explicit extra facts (87 facts). -/
 abbrev PairTypeBOutcome_independentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -76,6 +76,14 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -152,6 +160,14 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .windowCutCapacity)).down,
       (history.get (K .primitiveCarrierCount)).down,
       (history.get (K .singleBoundaryShape)).down,
+      (history.get (K .neighbourhoodPairCount)).down,
+      (history.get (K .starCycleConstraint)).down,
+      (history.get (K .meetingCycleConstraint)).down,
+      (history.get (K .highDegreePairSum)).down,
+      (history.get (K .vertexDeletionComponents)).down,
+      (history.get (K .cyclesThroughVertex)).down,
+      (history.get (K .cutVertexBlockPaths)).down,
+      (history.get (K .cycleDoubleCount)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -205,8 +221,8 @@ theorem pairTypeBIndependentSystemReturn
 (thm:main (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the
 ledger reached by [130] independent arm (canonical pair split), [131] free-pair
 count fails; then [179] serial arm, [180] covered increment, [180] early
-outcome.  Every fact of its ledger: the 76 common facts and 6 explicit extra
-facts (82 facts). -/
+outcome.  Every fact of its ledger: the 84 common facts and 6 explicit extra
+facts (90 facts). -/
 abbrev PairTypeBOutcome_independentIncrement (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -258,6 +274,14 @@ theorem pairTypeBIndependentIncrementReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -340,6 +364,14 @@ theorem pairTypeBIndependentIncrementReturn
       (history.get (K .windowCutCapacity)).down,
       (history.get (K .primitiveCarrierCount)).down,
       (history.get (K .singleBoundaryShape)).down,
+      (history.get (K .neighbourhoodPairCount)).down,
+      (history.get (K .starCycleConstraint)).down,
+      (history.get (K .meetingCycleConstraint)).down,
+      (history.get (K .highDegreePairSum)).down,
+      (history.get (K .vertexDeletionComponents)).down,
+      (history.get (K .cyclesThroughVertex)).down,
+      (history.get (K .cutVertexBlockPaths)).down,
+      (history.get (K .cycleDoubleCount)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -397,8 +429,8 @@ theorem pairTypeBIndependentIncrementReturn
 (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] dependent arm (canonical pair split: fibres, no blocker (d), no
 blocker (e)), [132] blocker arm, [137] blocked-side count fails; then [179]
-early outcome.  Every fact of its ledger: the 76 common facts and 12 explicit
-extra facts (88 facts). -/
+early outcome.  Every fact of its ledger: the 84 common facts and 12 explicit
+extra facts (96 facts). -/
 abbrev PairTypeBOutcome_dependentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -462,6 +494,14 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -547,6 +587,14 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .windowCutCapacity)).down,
       (history.get (K .primitiveCarrierCount)).down,
       (history.get (K .singleBoundaryShape)).down,
+      (history.get (K .neighbourhoodPairCount)).down,
+      (history.get (K .starCycleConstraint)).down,
+      (history.get (K .meetingCycleConstraint)).down,
+      (history.get (K .highDegreePairSum)).down,
+      (history.get (K .vertexDeletionComponents)).down,
+      (history.get (K .cyclesThroughVertex)).down,
+      (history.get (K .cutVertexBlockPaths)).down,
+      (history.get (K .cycleDoubleCount)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -610,7 +658,7 @@ theorem pairTypeBDependentSystemReturn
 reached by [130] dependent arm (canonical pair split: fibres, no blocker (d), no
 blocker (e)), [132] blocker arm, [137] blocked-side count fails; then [179]
 serial arm, [180] covered increment, [180] early outcome.  Every fact of its
-ledger: the 76 common facts and 15 explicit extra facts (91 facts). -/
+ledger: the 84 common facts and 15 explicit extra facts (99 facts). -/
 abbrev PairTypeBOutcome_dependentIncrement (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -680,6 +728,14 @@ theorem pairTypeBDependentIncrementReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -771,6 +827,14 @@ theorem pairTypeBDependentIncrementReturn
       (history.get (K .windowCutCapacity)).down,
       (history.get (K .primitiveCarrierCount)).down,
       (history.get (K .singleBoundaryShape)).down,
+      (history.get (K .neighbourhoodPairCount)).down,
+      (history.get (K .starCycleConstraint)).down,
+      (history.get (K .meetingCycleConstraint)).down,
+      (history.get (K .highDegreePairSum)).down,
+      (history.get (K .vertexDeletionComponents)).down,
+      (history.get (K .cyclesThroughVertex)).down,
+      (history.get (K .cutVertexBlockPaths)).down,
+      (history.get (K .cycleDoubleCount)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
