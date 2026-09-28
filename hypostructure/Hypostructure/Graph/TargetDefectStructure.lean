@@ -257,14 +257,21 @@ structure PositiveStructure (G : FiniteObject.{u}) (S : Finset G.Vertex)
 
 end DefectGeometry
 
+/-- The bound target-defect geometry at one fixed separating context `O`:
+`O` separates the two readings, and the positive one carries the positive
+structure against the negative one, in either orientation. -/
+def BoundTargetDefectGeometryAt (G : FiniteObject.{u}) (S : Finset G.Vertex)
+    {boundary : Boundary.{u}} (LengthOK : Nat → Prop)
+    (left right : BoundaryPiece boundary) (O : OutsideContext boundary) : Prop :=
+  (¬ (HasCycleWithLength LengthOK (glue left O) ↔
+      HasCycleWithLength LengthOK (glue right O))) ∧
+    (DefectGeometry.PositiveStructure G S LengthOK left right O ∨
+     DefectGeometry.PositiveStructure G S LengthOK right left O)
+
 /-- One publication, retaining the same defect context in either orientation. -/
 def BoundTargetDefectGeometry (G : FiniteObject.{u}) (S : Finset G.Vertex)
     {boundary : Boundary.{u}} (LengthOK : Nat → Prop)
     (left right : BoundaryPiece boundary) : Prop :=
-  ∃ O : OutsideContext boundary,
-    (¬ (HasCycleWithLength LengthOK (glue left O) ↔
-        HasCycleWithLength LengthOK (glue right O))) ∧
-    (DefectGeometry.PositiveStructure G S LengthOK left right O ∨
-     DefectGeometry.PositiveStructure G S LengthOK right left O)
+  ∃ O : OutsideContext boundary, BoundTargetDefectGeometryAt G S LengthOK left right O
 
 end Hypostructure.Graph

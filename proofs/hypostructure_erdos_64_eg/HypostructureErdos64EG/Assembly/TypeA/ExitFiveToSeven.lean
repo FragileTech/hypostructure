@@ -156,6 +156,7 @@ noncomputable def selectedTypeAExitFiveToEight
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
     [FactKeys.Has (K .typeALowSurplus) known]

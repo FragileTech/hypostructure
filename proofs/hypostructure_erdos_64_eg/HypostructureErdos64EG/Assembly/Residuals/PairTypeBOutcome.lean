@@ -29,7 +29,7 @@ universe u
 /-- **Node `[187]` ([179]/[180] Type B entry), `independentSystem`** (thm:main
 (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] independent arm (canonical pair split), [131] free-pair count
-fails; then [179] early outcome.  Every fact of its ledger: the 37 common facts
+fails; then [179] early outcome.  Every fact of its ledger: the 38 common facts
 and 4 explicit extra facts (41 facts). -/
 abbrev PairTypeBOutcome_independentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
@@ -53,6 +53,7 @@ theorem pairTypeBIndependentSystemReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -96,6 +97,7 @@ theorem pairTypeBIndependentSystemReturn
   have pairSystemEarlyOutcome := (history.get (K .pairSystemEarlyOutcome)).down
   ⟨⟨(history.get (K .selection)).down,
       (history.get (K .cubicBaseline)).down,
+      (history.get (K .minDegreeBaseline)).down,
       (history.get (K .returnAvoidance)).down,
       (history.get (K .noProperBaseline)).down,
       (history.get (K .slackIndependent)).down,
@@ -141,7 +143,7 @@ theorem pairTypeBIndependentSystemReturn
 (thm:main (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the
 ledger reached by [130] independent arm (canonical pair split), [131] free-pair
 count fails; then [179] serial arm, [180] covered increment, [180] early
-outcome.  Every fact of its ledger: the 37 common facts and 7 explicit extra
+outcome.  Every fact of its ledger: the 38 common facts and 7 explicit extra
 facts (44 facts). -/
 abbrev PairTypeBOutcome_independentIncrement (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
@@ -171,6 +173,7 @@ theorem pairTypeBIndependentIncrementReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -220,6 +223,7 @@ theorem pairTypeBIndependentIncrementReturn
   have pairIncrementEarlyOutcome := (history.get (K .pairIncrementEarlyOutcome)).down
   ⟨⟨(history.get (K .selection)).down,
       (history.get (K .cubicBaseline)).down,
+      (history.get (K .minDegreeBaseline)).down,
       (history.get (K .returnAvoidance)).down,
       (history.get (K .noProperBaseline)).down,
       (history.get (K .slackIndependent)).down,
@@ -269,7 +273,7 @@ theorem pairTypeBIndependentIncrementReturn
 (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] dependent arm (canonical pair split: fibres, no blocker (d), no
 blocker (e)), [132] blocker arm, [137] blocked-side count fails; then [179]
-early outcome.  Every fact of its ledger: the 37 common facts and 12 explicit
+early outcome.  Every fact of its ledger: the 38 common facts and 12 explicit
 extra facts (49 facts). -/
 abbrev PairTypeBOutcome_dependentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
@@ -309,6 +313,7 @@ theorem pairTypeBDependentSystemReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -360,6 +365,7 @@ theorem pairTypeBDependentSystemReturn
   have pairSystemEarlyOutcome := (history.get (K .pairSystemEarlyOutcome)).down
   ⟨⟨(history.get (K .selection)).down,
       (history.get (K .cubicBaseline)).down,
+      (history.get (K .minDegreeBaseline)).down,
       (history.get (K .returnAvoidance)).down,
       (history.get (K .noProperBaseline)).down,
       (history.get (K .slackIndependent)).down,
@@ -414,7 +420,7 @@ theorem pairTypeBDependentSystemReturn
 reached by [130] dependent arm (canonical pair split: fibres, no blocker (d), no
 blocker (e)), [132] blocker arm, [137] blocked-side count fails; then [179]
 serial arm, [180] covered increment, [180] early outcome.  Every fact of its
-ledger: the 37 common facts and 15 explicit extra facts (52 facts). -/
+ledger: the 38 common facts and 15 explicit extra facts (52 facts). -/
 abbrev PairTypeBOutcome_dependentIncrement (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -459,6 +465,7 @@ theorem pairTypeBDependentIncrementReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -516,6 +523,7 @@ theorem pairTypeBDependentIncrementReturn
   have pairIncrementEarlyOutcome := (history.get (K .pairIncrementEarlyOutcome)).down
   ⟨⟨(history.get (K .selection)).down,
       (history.get (K .cubicBaseline)).down,
+      (history.get (K .minDegreeBaseline)).down,
       (history.get (K .returnAvoidance)).down,
       (history.get (K .noProperBaseline)).down,
       (history.get (K .slackIndependent)).down,

@@ -7,7 +7,7 @@ Node `[153]`'s returned residual (`Node153ResidualOutcome`, G's first
 equal-state pair on a retained cold corridor) is reached along 3 root paths,
 the three linear arms of `[153]`, and the single ExactLedger holds a different
 fact set on each of them.  Each distinct fact set is its own open node, stated
-here as a subtype of the generic residual: the generic conjunction (the 42
+here as a subtype of the generic residual: the generic conjunction (the 43
 facts common to every path) together with every extra fact of that path's
 ledger, one `Holds` conjunct per key, in ledger order.  Each subtype has one
 return theorem reading every fact with one `ExactLedger.get`, and projects to
@@ -109,7 +109,7 @@ theorem Node153LinearBlock_realized.ret
 
 /-- **Node `[153]` residual, arms: `[158]` no, `[160]` first test no (`τ(θ) ≥ 1/4`); `[146]` no, `[153]` linear cold mass.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicDenseLinear`.
 The generic residual and the 4 extra facts of this path's ledger
-(46 facts). -/
+(47 facts). -/
 abbrev Node153ResidualOutcome_denseAtOrAbove_linear (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -135,6 +135,7 @@ theorem node153Return_denseAtOrAbove_linear
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -185,7 +186,7 @@ theorem node153Return_denseAtOrAbove_linear
 
 /-- **Node `[153]` residual, arms: `[158]` no, `[160]` first test yes, second test no (private-carrier rate fails); `[146]` no, `[153]` linear cold mass.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicUnrealized → nearCubicDensePassRateFailed → nearCubicDenseLinear`.
 The generic residual and the 5 extra facts of this path's ledger
-(47 facts). -/
+(48 facts). -/
 abbrev Node153ResidualOutcome_denseRateFails_linear (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -213,6 +214,7 @@ theorem node153Return_denseRateFails_linear
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -264,7 +266,7 @@ theorem node153Return_denseRateFails_linear
 
 /-- **Node `[153]` residual, arms: `[158]` yes (window package realized); `[146]` no, `[153]` linear cold mass.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicRealized`.
 The generic residual and the 3 extra facts of this path's ledger
-(45 facts). -/
+(46 facts). -/
 abbrev Node153ResidualOutcome_realized_linear (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -288,6 +290,7 @@ theorem node153Return_realized_linear
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]
@@ -373,6 +376,7 @@ theorem node153SubtypesReturn
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .slackIndependent) known]

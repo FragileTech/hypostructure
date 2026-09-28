@@ -38,7 +38,9 @@ theorem sparseTargetDefectResidual_of_exit
   | dyadic cycle =>
       exact (selected.1 cycle).elim
   | targetDefect defect =>
-      exact defect
+      obtain ⟨witness, canonical⟩ := exists_sparseTargetDefectWitness defect
+      exact ⟨witness, canonical,
+        sparseTargetDefectWitness_spec_of_eq_some canonical⟩
   | compression support replacement =>
       exact (replacementExcluded support replacement).elim
   | delocalization representative smaller baseline transfer =>
@@ -55,19 +57,21 @@ theorem sparseTargetDefectResidual_of_exit
           expanded.isCycle, accepted⟩⟩
       exact (selected.1 cycle).elim
 
-/-- The bound target-defect geometry of any two readings of one support of a
-target-avoiding object that some boundaried context separates. -/
-theorem boundTargetDefectGeometry_of_targetDefect
+/-- The bound target-defect geometry of two readings of one support of a
+target-avoiding object, at the boundaried context that separates them. -/
+theorem boundTargetDefectGeometryAt_of_separated
     {support : Finset object.Vertex}
     {reduced full : Graph.BoundaryPiece
       (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object support)}
-    (defect : Graph.Response.TargetDefect
-      (Graph.HasCycleWithLength data.LengthOK) reduced full)
+    {outside : Graph.OutsideContext
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object support)}
+    (different : ¬ (Graph.HasCycleWithLength data.LengthOK (Graph.glue reduced outside) ↔
+      Graph.HasCycleWithLength data.LengthOK (Graph.glue full outside)))
     (noCycle : ¬ Graph.HasCycleWithLength data.LengthOK object) :
-    Graph.BoundTargetDefectGeometry object support data.LengthOK reduced full := by
+    Graph.BoundTargetDefectGeometryAt object support data.LengthOK reduced full
+      outside := by
   classical
-  obtain ⟨outside, different⟩ := defect
-  refine ⟨outside, different, ?_⟩
+  refine ⟨different, ?_⟩
   by_cases positiveLeft : Graph.HasCycleWithLength data.LengthOK
       (Graph.glue reduced outside)
   · have negativeRight : ¬ Graph.HasCycleWithLength data.LengthOK
@@ -146,17 +150,29 @@ theorem boundTargetDefectGeometry_of_targetDefect
       · exact Or.inr ⟨mixed, Graph.DefectGeometry.twoLabels_of_exclusive c
           (Graph.DefectGeometry.pieceExclusive c contextFree) mixed⟩
 
+/-- The bound target-defect geometry of any two readings of one support of a
+target-avoiding object that some boundaried context separates. -/
+theorem boundTargetDefectGeometry_of_targetDefect
+    {support : Finset object.Vertex}
+    {reduced full : Graph.BoundaryPiece
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object support)}
+    (defect : Graph.Response.TargetDefect
+      (Graph.HasCycleWithLength data.LengthOK) reduced full)
+    (noCycle : ¬ Graph.HasCycleWithLength data.LengthOK object) :
+    Graph.BoundTargetDefectGeometry object support data.LengthOK reduced full := by
+  obtain ⟨outside, different⟩ := defect
+  exact ⟨outside, boundTargetDefectGeometryAt_of_separated different noCycle⟩
+
 /-- Node `[20]`: on an object with no accepted cycle, the target-defective
 identification of the sparse residual has the bound target-defect geometry of
-its two readings on G's piece. -/
+its two readings on G's piece, at the residual's own canonical witness: the
+same pair, the same support `Z` and the same separating context `O`. -/
 theorem sparseTargetDefectStructure_of_residual
     (residual : SparseTargetDefectResidualStatement data object)
     (noCycle : ¬ Graph.HasCycleWithLength data.LengthOK object) :
     SparseTargetDefectStructureStatement data object := by
-  classical
-  obtain ⟨first, firstMem, second, secondMem, different, support, selected,
-    _profile, _actual, defect⟩ := residual
-  exact ⟨first, firstMem, second, secondMem, different, support, selected,
-    boundTargetDefectGeometry_of_targetDefect defect noCycle⟩
+  obtain ⟨witness, canonical, spec⟩ := residual
+  exact ⟨witness, canonical,
+    boundTargetDefectGeometryAt_of_separated spec.2.2.2.2.2.2 noCycle⟩
 
 end Hypostructure.Graph.Contracts.SurplusPair

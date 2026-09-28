@@ -65,6 +65,7 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (closureFresh : closed ∉ known := by key_fresh)
     (normalFormFresh : K .highCentreNormalForm ∉ known := by key_fresh)
     (heavyFresh : K .typeBFanHeavyCentre ∉ known := by key_fresh)

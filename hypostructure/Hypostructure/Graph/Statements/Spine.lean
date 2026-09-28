@@ -2526,6 +2526,15 @@ noncomputable abbrev SelectionStatement
   (¬ Graph.HasCycleWithLength data.LengthOK object ∧
     SelectionMinimality BranchState Presentation presentation data object)
 
+/-- **G meets the registered baseline** (`def:counterexample`, nodes
+`[1]`--`[3]`, tex 714, 1370: `δ(G) ≥ 3`): every vertex of G has degree at least
+the registered threshold (`δ = 3` by `CubicBaselineStatement`).  Published once
+at the entry (key `minDegreeBaseline`) from the selected object's own baseline
+proof, so the fact is on G's ledger rather than only in the input. -/
+noncomputable abbrev MinDegreeBaselineStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Graph.MinimumDegreeAtLeast data.threshold object
+
 /-- **The registered presentation facts of the Type B fan analysis**, the
 second component of `PresentationLawsStatement` (key `cubicBaseline`), and the
 one place the dyadic target law is published: the quadrilateral is an accepted length

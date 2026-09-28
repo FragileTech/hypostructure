@@ -176,6 +176,7 @@ noncomputable def selectedNetChargeContinuation
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (fresh : List.Disjoint netChargeContinuationKeys.{u} known := by key_fresh)
     [FactKeys.Has (K .barrierCap) known]
     [FactKeys.Has (K .barrierEnumeration) known]

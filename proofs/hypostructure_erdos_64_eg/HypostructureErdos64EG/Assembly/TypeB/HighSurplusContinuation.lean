@@ -138,6 +138,7 @@ noncomputable def selectedTypeBHighSurplusContinuation
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .curvatureFullRank) known]
     [FactKeys.Has (K .curvatureTargetRank) known]
     [FactKeys.Has (K .cycleRankConstraint) known]

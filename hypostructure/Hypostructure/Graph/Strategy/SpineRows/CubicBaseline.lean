@@ -65,4 +65,33 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             data.windowBarrier_sum_semantic⟩⟩ .nil)
     0 0
 
+/-! ## G's baseline, published once at the entry
+
+`minDegreeBaselineRow` publishes `δ(G) ≥ δ` (`def:counterexample`, nodes
+`[1]`--`[3]`) as the ledger fact `K .minDegreeBaseline`, read from the
+incoming residual's own baseline proof, so every later node and every returned
+residual carries it as a fact about `G`. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def minDegreeBaselineRow
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.minDegreeBaseline
+    { Requires := []
+      Produces := [K .minDegreeBaseline]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .minDegreeBaseline) ⟨inputs.current.baseline⟩ .nil)
+    0 0
+
 end Hypostructure.Graph.Strategy.Spine

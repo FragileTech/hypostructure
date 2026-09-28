@@ -38,7 +38,7 @@ noncomputable def selectedSparseSurplusActivation
     (history : ExactLedger EGInput.{u} selected
       [K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .cubicBaseline,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .minDegreeBaseline, K .cubicBaseline,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .activeSurplusDemands, K .sparsePortActivation,
@@ -47,7 +47,7 @@ noncomputable def selectedSparseSurplusActivation
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression, K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .cubicBaseline,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .minDegreeBaseline, K .cubicBaseline,
         K .selection] := by
   -- The presentation identities the surplus rows spend are read from the one
   -- presentation-law fact `K .cubicBaseline`, published at the entry.
@@ -116,6 +116,7 @@ noncomputable def selectedPairCodeChainIndependent
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (systemFresh : K .pairOverlapSystem ∉ known := by key_fresh)
     (factorizationFresh : K .pairConditionalFactorization ∉ known := by key_fresh)
     (factorizationFailsFresh : K .pairFactorizationFails ∉ known := by key_fresh)
@@ -277,6 +278,7 @@ noncomputable def selectedPairCodeChainDependent
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (systemFresh : K .pairOverlapSystem ∉ known := by key_fresh)
     (factorizationFresh : K .pairConditionalFactorization ∉ known := by key_fresh)
     (factorizationFailsFresh : K .pairFactorizationFails ∉ known := by key_fresh)
@@ -448,6 +450,7 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .capacityTokenLedger) known]
     [FactKeys.Has (K .activeSurplusDemands) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .highCentreNormalForm) known]
     [FactKeys.Has (K .sparseSlackSurplus) known]

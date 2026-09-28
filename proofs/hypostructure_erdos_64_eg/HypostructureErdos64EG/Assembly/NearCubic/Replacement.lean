@@ -74,6 +74,7 @@ noncomputable def selectedCanonicalReplacementContinuation
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (fresh : List.Disjoint
       [K .coldCanonicalReplacementTrivial, K .blockedClassMember,
         K .blockedScaleAdditive, K .blockedBarrierOverlap,
