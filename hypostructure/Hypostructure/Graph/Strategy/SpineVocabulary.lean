@@ -15,6 +15,7 @@ import Hypostructure.Graph.Statements.SpineDominantType
 import Hypostructure.Graph.Statements.ColdResiduals
 import Hypostructure.Graph.Statements.DensityOrder
 import Hypostructure.Graph.Statements.SparseExitResidual
+import Hypostructure.Graph.Statements.CycleCounting
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1857,6 +1858,23 @@ inductive Key where
   | pairCodeConfiguration
   /-- Node `[20a]`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`. -/
   | specWitnessStructure
+  -- port-cycles keys (6900–6999)
+  /-- Entry prefix (cycle counting): **Neighbourhood pairs of G**: at every vertex `h`, `G[N(h)]` is a matching, `N(h)` has at least `C(d_h, 2) − ⌊d_h/2⌋` nonadjacent pairs, and every `x ∈ N(h)` has at least `d_h − 2` nonadjacent partners. -/
+  | neighbourhoodPairCount
+  /-- Entry prefix (cycle counting): **Star constraint**: two paths `x → y`, `x → z` of `G − h` to distinct neighbours of `h`, meeting only at `x`, have `|P| + |Q| + 2 ≠ 2^k` (`k ≥ 2`). -/
+  | starCycleConstraint
+  /-- Entry prefix (cycle counting): **Meeting constraint**: two paths `x → y`, `x → z` of `G − h` to distinct neighbours of `h` meet at `t` (depths `P₁`, `Q₁`) with `|P| + |Q| + 2 ≠ 2^k + |P₁| + |Q₁|` (`k ≥ 2`). -/
+  | meetingCycleConstraint
+  /-- Entry prefix (cycle counting): **Pair sums at the high vertices** `H = {d ≠ δ}`: `σ = Σ_H (d_h − 3)`, `5σ ≤ Σ_H C(d_h, 2)`, `σ² + 5σ|H| + 6|H|² ≤ 2|H| Σ_H C(d_h, 2)`, `2 Σ_H C(d_h, 2) ≤ 16σ²`, and a heavy centre `σ ≤ |H|(d_h − 3)` unless `σ = 0`. -/
+  | highDegreePairSum
+  /-- Entry prefix (cycle counting): **Vertex deletions**: at every vertex `h`, `G − h` is connected, or `d_h = 2·#blocks(h)` is even and every component of `G − h` meeting `N(h)` holds exactly two neighbours of `h`. -/
+  | vertexDeletionComponents
+  /-- Entry prefix (cycle counting): **Cycles through every vertex**: `C(d_h, 2) ≤ #cycles(h)` when `G − h` is connected; otherwise `2·#pairs(h) = d_h` and `d_h / 2 ≤ #cycles(h)`. -/
+  | cyclesThroughVertex
+  /-- Entry prefix (cycle counting): **Block paths at the cut vertices**: for `G − h` disconnected, the block `{a, b}` of every neighbour `a`, the lengths of its `a → b` paths, its returns, and the cross splits at `h` with their dyadic residues. -/
+  | cutVertexBlockPaths
+  /-- Entry prefix (cycle counting): **Double count at the high vertices**: `2 Σ_H #cycles(h) ≤ n · #cycles(G)`, `2 Σ_H L_h ≤ n · #cycles(G)` (per-vertex lower bounds), and `#cycles(G) ≤ 2^m`. -/
+  | cycleDoubleCount
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2808,6 +2826,23 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairCodeConfigurationStatement data.toParameters object
   | .specWitnessStructure, object =>
       SpecWitnessStructureStatement data.toParameters object
+  -- port-cycles keys
+  | .neighbourhoodPairCount, object =>
+      NeighbourhoodPairCountStatement object
+  | .starCycleConstraint, object =>
+      StarCycleConstraintStatement object
+  | .meetingCycleConstraint, object =>
+      MeetingCycleConstraintStatement object
+  | .highDegreePairSum, object =>
+      HighDegreePairSumStatement data.toParameters object
+  | .vertexDeletionComponents, object =>
+      VertexDeletionComponentsStatement object
+  | .cyclesThroughVertex, object =>
+      CyclesThroughVertexStatement object
+  | .cutVertexBlockPaths, object =>
+      CutVertexBlockPathsStatement object
+  | .cycleDoubleCount, object =>
+      CycleDoubleCountStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3261,6 +3296,15 @@ def label : Key → String
   | .canonicalFreeExcessOfCapped => "canonicalFreeExcessOfCapped"
   | .pairCodeConfiguration => "pairCodeConfiguration"
   | .specWitnessStructure => "specWitnessStructure"
+  -- port-cycles keys
+  | .neighbourhoodPairCount => "neighbourhoodPairCount"
+  | .starCycleConstraint => "starCycleConstraint"
+  | .meetingCycleConstraint => "meetingCycleConstraint"
+  | .highDegreePairSum => "highDegreePairSum"
+  | .vertexDeletionComponents => "vertexDeletionComponents"
+  | .cyclesThroughVertex => "cyclesThroughVertex"
+  | .cutVertexBlockPaths => "cutVertexBlockPaths"
+  | .cycleDoubleCount => "cycleDoubleCount"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3718,6 +3762,14 @@ example : label .canonicalOverloadOfFits = "canonicalOverloadOfFits" := rfl
 example : label .canonicalFreeExcessOfCapped = "canonicalFreeExcessOfCapped" := rfl
 example : label .pairCodeConfiguration = "pairCodeConfiguration" := rfl
 example : label .specWitnessStructure = "specWitnessStructure" := rfl
+example : label .neighbourhoodPairCount = "neighbourhoodPairCount" := rfl
+example : label .starCycleConstraint = "starCycleConstraint" := rfl
+example : label .meetingCycleConstraint = "meetingCycleConstraint" := rfl
+example : label .highDegreePairSum = "highDegreePairSum" := rfl
+example : label .vertexDeletionComponents = "vertexDeletionComponents" := rfl
+example : label .cyclesThroughVertex = "cyclesThroughVertex" := rfl
+example : label .cutVertexBlockPaths = "cutVertexBlockPaths" := rfl
+example : label .cycleDoubleCount = "cycleDoubleCount" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4165,6 +4217,15 @@ def idx : Key → Nat
   | .canonicalFreeExcessOfCapped => 6675
   | .pairCodeConfiguration => 6676
   | .specWitnessStructure => 6677
+  -- port-cycles keys
+  | .neighbourhoodPairCount => 6900
+  | .starCycleConstraint => 6901
+  | .meetingCycleConstraint => 6902
+  | .highDegreePairSum => 6903
+  | .vertexDeletionComponents => 6904
+  | .cyclesThroughVertex => 6905
+  | .cutVertexBlockPaths => 6906
+  | .cycleDoubleCount => 6907
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4601,6 +4662,15 @@ def ofIdx : Nat → Key
   | 6675 => .canonicalFreeExcessOfCapped
   | 6676 => .pairCodeConfiguration
   | 6677 => .specWitnessStructure
+  -- port-cycles keys
+  | 6900 => .neighbourhoodPairCount
+  | 6901 => .starCycleConstraint
+  | 6902 => .meetingCycleConstraint
+  | 6903 => .highDegreePairSum
+  | 6904 => .vertexDeletionComponents
+  | 6905 => .cyclesThroughVertex
+  | 6906 => .cutVertexBlockPaths
+  | 6907 => .cycleDoubleCount
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -5575,6 +5645,23 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairCodeConfiguration") 6676
   | .specWitnessStructure =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "specWitnessStructure") 6677
+  -- port-cycles keys
+  | .neighbourhoodPairCount =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "neighbourhoodPairCount") 6900
+  | .starCycleConstraint =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "starCycleConstraint") 6901
+  | .meetingCycleConstraint =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "meetingCycleConstraint") 6902
+  | .highDegreePairSum =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "highDegreePairSum") 6903
+  | .vertexDeletionComponents =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "vertexDeletionComponents") 6904
+  | .cyclesThroughVertex =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "cyclesThroughVertex") 6905
+  | .cutVertexBlockPaths =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "cutVertexBlockPaths") 6906
+  | .cycleDoubleCount =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "cycleDoubleCount") 6907
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

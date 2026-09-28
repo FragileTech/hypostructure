@@ -126,6 +126,22 @@ abbrev Node20aOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .positiveSupportBoundaryTwo selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .supportCutEdgesTwo selected.object ∧
@@ -276,6 +292,14 @@ theorem node20aReturn
     [FactKeys.Has (K .pathSpectrumSplit) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .positiveSupportBoundaryTwo) known]
     [FactKeys.Has (K .supportCutEdgesTwo) known]
     [FactKeys.Has (K .boundaryLowInsideVertex) known]
@@ -372,6 +396,14 @@ theorem node20aReturn
     (history.get (K .pathSpectrumSplit)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .positiveSupportBoundaryTwo)).down,
     (history.get (K .supportCutEdgesTwo)).down,
     (history.get (K .boundaryLowInsideVertex)).down,
@@ -475,6 +507,22 @@ abbrev NearCubicTargetDefectOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .highDegreeCountBound selected.object ∧
@@ -517,6 +565,14 @@ theorem nearCubicTargetDefectReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -548,6 +604,14 @@ theorem nearCubicTargetDefectReturn
     (history.get (K .windowCutCapacity)).down,
     (history.get (K .primitiveCarrierCount)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .surplusDartIdentity)).down,
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -607,6 +671,22 @@ abbrev Node144aOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .primitiveCarrierCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -735,6 +815,14 @@ theorem node144aReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -808,6 +896,14 @@ theorem node144aReturn
     (history.get (K .windowCutCapacity)).down,
     (history.get (K .primitiveCarrierCount)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .surplusDartIdentity)).down,
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -908,6 +1004,22 @@ abbrev BlockedBarrierOverlapOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .primitiveCarrierCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1056,6 +1168,14 @@ theorem blockedBarrierOverlapReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -1139,6 +1259,14 @@ theorem blockedBarrierOverlapReturn
     (history.get (K .windowCutCapacity)).down,
     (history.get (K .primitiveCarrierCount)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .surplusDartIdentity)).down,
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -1252,6 +1380,22 @@ abbrev PairConditionalFactorizationOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .highDegreeCountBound selected.object ∧
@@ -1358,6 +1502,14 @@ theorem pairConditionalFactorizationReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -1421,6 +1573,14 @@ theorem pairConditionalFactorizationReturn
     (history.get (K .windowCutCapacity)).down,
     (history.get (K .primitiveCarrierCount)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .surplusDartIdentity)).down,
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -1510,6 +1670,22 @@ abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .primitiveCarrierCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1674,6 +1850,14 @@ theorem route8JointBalanceReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -1765,6 +1949,14 @@ theorem route8JointBalanceReturn
     (history.get (K .windowCutCapacity)).down,
     (history.get (K .primitiveCarrierCount)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .surplusDartIdentity)).down,
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -1886,6 +2078,22 @@ abbrev PairTypeBOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .primitiveCarrierCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2011,6 +2219,14 @@ theorem pairTypeBSystemReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -2079,6 +2295,14 @@ theorem pairTypeBSystemReturn
     (history.get (K .windowCutCapacity)).down,
     (history.get (K .primitiveCarrierCount)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .surplusDartIdentity)).down,
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -2152,6 +2376,14 @@ theorem pairTypeBIncrementReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -2223,6 +2455,14 @@ theorem pairTypeBIncrementReturn
     (history.get (K .windowCutCapacity)).down,
     (history.get (K .primitiveCarrierCount)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .surplusDartIdentity)).down,
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -2320,6 +2560,22 @@ abbrev TypeBSublinearOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .primitiveCarrierCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2450,6 +2706,14 @@ theorem typeBSublinearReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -2524,6 +2788,14 @@ theorem typeBSublinearReturn
     (history.get (K .windowCutCapacity)).down,
     (history.get (K .primitiveCarrierCount)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .surplusDartIdentity)).down,
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -2625,6 +2897,22 @@ abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .primitiveCarrierCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2759,6 +3047,14 @@ theorem route8QuotientReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -2835,6 +3131,14 @@ theorem route8QuotientReturn
     (history.get (K .windowCutCapacity)).down,
     (history.get (K .primitiveCarrierCount)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .surplusDartIdentity)).down,
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -2941,6 +3245,22 @@ abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .highDegreeCountBound selected.object ∧
@@ -3031,6 +3351,14 @@ theorem route8RateFailsReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -3086,6 +3414,14 @@ theorem route8RateFailsReturn
     (history.get (K .windowCutCapacity)).down,
     (history.get (K .primitiveCarrierCount)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .surplusDartIdentity)).down,
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -3167,6 +3503,22 @@ abbrev ColdBranchClosedOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .primitiveCarrierCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -3287,6 +3639,14 @@ theorem coldBranchClosedReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -3356,6 +3716,14 @@ theorem coldBranchClosedReturn
     (history.get (K .windowCutCapacity)).down,
     (history.get (K .primitiveCarrierCount)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .surplusDartIdentity)).down,
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -3453,6 +3821,22 @@ abbrev Node153ResidualOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .highDegreeCountBound selected.object ∧
@@ -3542,6 +3926,14 @@ theorem node153Return
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -3596,6 +3988,14 @@ theorem node153Return
     (history.get (K .windowCutCapacity)).down,
     (history.get (K .primitiveCarrierCount)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .surplusDartIdentity)).down,
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -3677,6 +4077,22 @@ abbrev Node162ResidualOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .primitiveCarrierCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -3775,6 +4191,14 @@ theorem node162Return
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -3833,6 +4257,14 @@ theorem node162Return
     (history.get (K .windowCutCapacity)).down,
     (history.get (K .primitiveCarrierCount)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .surplusDartIdentity)).down,
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -3921,6 +4353,22 @@ abbrev Node54ResidualOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .highDegreeCountBound selected.object ∧
@@ -4007,6 +4455,14 @@ theorem node54Return
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -4060,6 +4516,14 @@ theorem node54Return
     (history.get (K .windowCutCapacity)).down,
     (history.get (K .primitiveCarrierCount)).down,
     (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
     (history.get (K .surplusDartIdentity)).down,
     (history.get (K .highDegreeCountBound)).down,
     (history.get (K .admissibleQuotientsLabelInjective)).down,
