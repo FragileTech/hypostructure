@@ -7,11 +7,15 @@ import HypostructureErdos64EG.Assembly.Residuals.Route8Blocks
 `TypeBSublinearOutcome` (node `[187]`, Type B sublinear failure) is returned
 at one Lean site, the negative arm of `typeBSublinearDichotomy` in
 `selectedRouteEightUnifiedResidual` (`Assembly/RouteEight/Local.lean`), and
-is reached there by 1360 selected-root paths whose ledgers hold 1360 distinct
+is reached there by 1020 selected-root paths whose ledgers hold 1020 distinct
 fact sets.  Those fact sets are exactly the 62 common keys of the generic
 residual `TypeBSublinearOutcome` together with one choice in each factor of the
 nested arm-block product of `Assembly/Residuals/Route8Blocks.lean`; the
-product is full (all 5 × 4 × 68 combinations occur, each on one path).
+product is full (all 15 × 68 combinations of lane entry and continuation
+occur, each on one path; the lane entry `Route8LaneEntry` is 3 prefixes × 4
+entropy arms plus the `[161]` prefix × 3 low-entropy arms, the two closed
+combinations being "unrealized, `τ(θ) ≥ 1/4`, `θ < 1/78`" (closed at `[146]`)
+and "`[161]`, high entropy" (closed at `[53]`)).
 -/
 
 namespace HypostructureErdos64EG
@@ -24,12 +28,12 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **Node `[187]` (Type B sublinear failure), as a product of arm blocks**:
-the 62 common facts of the generic residual, one of the 5 prefix blocks, one of
-the 4 entropy blocks and one of the 68 continuation combinations. -/
+the 62 common facts of the generic residual, one of the 15 lane entries
+(prefix block with entropy block) and one of the 68 continuation
+combinations. -/
 abbrev TypeBSublinearOutcome_product (selected : EGInput.{u}) : Prop :=
   TypeBSublinearOutcome selected ∧
-  Route8LanePrefix selected ∧
-  EntropyArm selected ∧
+  Route8LaneEntry selected ∧
   NetChargeContinuation selected
 
 /-- The product residual forgets to the generic residual. -/
@@ -107,10 +111,9 @@ theorem typeBSublinearProductReturn
     [FactKeys.Has (K .route8PiecesClassified) known]
     [FactKeys.Has (K .route8ExtractedEntryCensus) known]
     [FactKeys.Has (K .typeBSublinearResidual) known]
-    (prefixArm : Route8LanePrefix selected)
-    (entropyArm : EntropyArm selected)
+    (entryArm : Route8LaneEntry selected)
     (continuationArm : NetChargeContinuation selected) :
     TypeBSublinearOutcome_product selected :=
-  ⟨typeBSublinearReturn history, prefixArm, entropyArm, continuationArm⟩
+  ⟨typeBSublinearReturn history, entryArm, continuationArm⟩
 
 end HypostructureErdos64EG

@@ -38,6 +38,18 @@ noncomputable def denseDeficiencyDichotomy
       .inr ⟨below⟩)
     belowFresh atOrAboveFresh
 
+/-- **`[146]` yes on `[160]`'s first complement** (`lem:dense-cold-pass`,
+`def:cold-window-ledger`): the dense hot/cold pass `[162]` runs `[146]` on the
+arm that retains `τ(θ) ≥ 1/4`, and `θ < 1/78` gives `τ(θ) < 3/13 < 1/4`
+(`Contracts.Spine.denseDeficiencyBelow_of_coldRoute8Below`), the literal
+negation of the retained failure; Core closes the pair. -/
+noncomputable instance instIncompatibleDenseDeficiencyAtOrAboveColdRoute8Below :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .denseDeficiencyAtOrAbove) (K .coldRoute8Below) where
+  contradiction := fun residual atOrAbove below =>
+    atOrAbove.down (Contracts.Spine.denseDeficiencyBelow_of_coldRoute8Below
+      data.toParameters residual.object below.down)
+
 variable [FactSystem (Input BranchState Presentation presentation data)]
 
 /-! ## Node `[56]`, the large-budget net-deficiency cap (dense arm).

@@ -370,7 +370,7 @@ noncomputable def selectedAbsorbedGermResidual
                   (by key_fresh)
               let closedHistory := nearCubicColdTable charged
               exact Or.inr (coldBranchClosedProductReturn closedHistory
-                arm.2.toColdBranchClosedEntropyArm arm.1.toColdBranchClosedWindowArm
+                arm.toColdBranchClosedEntryArm
                 (coldBranchClosedExitNoGermChargedReturn closedHistory))
       | .right subcubicHistory =>
           -- `[176]` on this arm: no candidate and no absorbed half-edge, so
@@ -382,7 +382,7 @@ noncomputable def selectedAbsorbedGermResidual
               (by key_fresh)
           let closedHistory := nearCubicColdTable emptyHistory
           exact Or.inr (coldBranchClosedProductReturn closedHistory
-            arm.2.toColdBranchClosedEntropyArm arm.1.toColdBranchClosedWindowArm
+            arm.toColdBranchClosedEntryArm
             (coldBranchClosedExitNoGermSubcubicReturn closedHistory))
   | .left positiveHistory =>
       let positiveFamily :=
@@ -403,7 +403,7 @@ noncomputable def selectedAbsorbedGermResidual
               distinguishedHistory (by key_fresh)
           let closedHistory := nearCubicColdTable fanData
           exact Or.inr (coldBranchClosedProductReturn closedHistory
-            arm.2.toColdBranchClosedEntropyArm arm.1.toColdBranchClosedWindowArm
+            arm.toColdBranchClosedEntryArm
             (coldBranchClosedExitGermDistinguishedReturn closedHistory))
       | .right silentHistory =>
           -- `[176]` on the absorbed residual: the silent family's neutral
@@ -459,7 +459,7 @@ noncomputable def selectedAbsorbedGermResidual
                         (absorbedF4ChargeRow (data := spineData)).run
                           noCoreHistory (by key_fresh)
                       exact Or.inr (coldBranchClosedProductReturn charged
-                        arm.2.toColdBranchClosedEntropyArm arm.1.toColdBranchClosedWindowArm
+                        arm.toColdBranchClosedEntryArm
                         (coldBranchClosedExitGermCanonicalChargedReturn charged))
               | .right subcubicHistory =>
                   -- `[176]`: every selected corridor is a genuine (F5)
@@ -467,7 +467,7 @@ noncomputable def selectedAbsorbedGermResidual
                   -- `[165]`--`[168]`; the local cold-terminal exclusion is
                   -- retained at `[187]`.
                   exact Or.inr (coldBranchClosedProductReturn subcubicHistory
-                    arm.2.toColdBranchClosedEntropyArm arm.1.toColdBranchClosedWindowArm
+                    arm.toColdBranchClosedEntryArm
                     (coldBranchClosedExitGermCanonicalSubcubicReturn subcubicHistory))
 
 end HypostructureErdos64EG

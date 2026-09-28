@@ -96,7 +96,7 @@ noncomputable def selectedAbsorbedGermPrerequisites
       (Node153ResidualSubtypes selected) :=
   let state := nearCubicColdCorridorState history
   match nearCubicColdOccurrence state
-      (Or.inl ⟨coldBranchClosedAbsorbedCommonReturn history, arm.1, arm.2⟩) with
+      (Or.inl ⟨coldBranchClosedAbsorbedCommonReturn history, arm⟩) with
   | .inl distinct => .inl (nearCubicColdCandidates distinct)
   | .inr repeated => .inr repeated
 

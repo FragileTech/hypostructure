@@ -309,7 +309,7 @@ noncomputable def selectedRouteEightUnifiedResidual
   match typeBSublinearDichotomy (data := spineData) history
       (by key_fresh) (by key_fresh) with
   | .right residualHistory =>
-      exact Or.inl (typeBSublinearProductReturn residualHistory arm.1 arm.2.1 arm.2.2)
+      exact Or.inl (typeBSublinearProductReturn residualHistory arm.1 arm.2)
   | .left sublinearHistory =>
       let unifiedDeficit :=
         (route8UnifiedDeficitRow (BranchState := BranchState)
@@ -322,7 +322,7 @@ noncomputable def selectedRouteEightUnifiedResidual
           -- `[348]` → `[187]`: `thm:main` returns the failure of route-8
           -- quotient freeness as an open outcome (tex 369-372, 388-390).
           exact Or.inr (Or.inl
-            (route8QuotientProductReturn residualHistory arm.1 arm.2.1 arm.2.2))
+            (route8QuotientProductReturn residualHistory arm.1 arm.2))
       | .left quotientFreeHistory =>
           let census :=
             (route8UnifiedEntryCensusRow (BranchState := BranchState)
@@ -350,6 +350,6 @@ noncomputable def selectedRouteEightUnifiedResidual
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run visibleOverload (by key_fresh)
           exact Or.inr (Or.inr
-            (route8JointBalanceProductReturn jointBalance arm.1 arm.2.1 arm.2.2))
+            (route8JointBalanceProductReturn jointBalance arm.1 arm.2))
 
 end HypostructureErdos64EG

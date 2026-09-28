@@ -60,7 +60,7 @@ noncomputable def Assembly.Internal.nearCubicRealized
       -- carries them.
       let stubbed := nearCubicColdStubFacts rated
       exact nearCubicLargeBudgetColdRate (nearCubicFullRank stubbed)
-        (Or.inl (Route8LanePrefixBlock_realizedColdBelow.ret stubbed))
+        (Route8LanePrefixBlock_realizedColdBelow.ret stubbed)
   | .right atOrAboveHistory =>
       let stubs := nearCubicColdStubs atOrAboveHistory
       match coldMassDichotomy (data := spineData) stubs

@@ -6,13 +6,18 @@ import HypostructureErdos64EG.Assembly.Residuals.Route8Blocks
 
 Node `[187] ([348], route-8 quotient failure)` as a PRODUCT OF ARM BLOCKS.
 
-The 1360 paths from `selectedLedgerBoundary` to the one return site
+The 1020 paths from `selectedLedgerBoundary` to the one return site
 (`route8QuotientReturn` in `selectedRouteEightUnifiedResidual`,
-`Assembly/RouteEight/Local.lean`) carry 1360 distinct fact sets.  Each is
+`Assembly/RouteEight/Local.lean`) carry 1020 distinct fact sets.  Each is
 exactly the 64 common keys of `Route8QuotientOutcome` together with one block
 per factor of
 
-  `5 prefix × 4 entropy × 68 continuation`,  `68 = 2·25 + 12 + 6`,
+  `15 lane entries × 68 continuation`,  `68 = 2·25 + 12 + 6`,
+
+where the lane entry (`Route8LaneEntry`) is `3 prefix × 4 entropy` or the
+`[161]` prefix with one of the 3 low-entropy arms: the near-cubic route
+"unrealized, `τ(θ) ≥ 1/4`, `θ < 1/78`" is closed at `[146]`, and the `[161]`
+route with high entropy is closed at `[53]`,
 
 and every combination occurs (checked against the elaborated ledger of every
 path).  The blocks live in `Residuals/Route8Blocks.lean`.
@@ -28,13 +33,13 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **Node `[187] ([348])` as a product of arm blocks**: the generic
-residual (64 common facts), one near-cubic prefix block, one entropy block,
-and one net-charge continuation (Type A lane, absorbed lane, or Type B
+residual (64 common facts), one lane entry (a near-cubic prefix block with an
+entropy block), and one net-charge continuation (Type A lane, absorbed lane, or Type B
 high-surplus lane, each a nested product of its own blocks).  Totals run from
 84 to 121 facts. -/
 abbrev Route8QuotientOutcome_product (selected : EGInput.{u}) : Prop :=
-  Route8QuotientOutcome selected ∧ Route8LanePrefix selected ∧
-    EntropyArm selected ∧ NetChargeContinuation selected
+  Route8QuotientOutcome selected ∧ Route8LaneEntry selected ∧
+    NetChargeContinuation selected
 
 theorem Route8QuotientOutcome_product.toGeneric {selected : EGInput.{u}}
     (h : Route8QuotientOutcome_product selected) :
@@ -112,10 +117,9 @@ theorem route8QuotientProductReturn
     [FactKeys.Has (K .typeBSublinearLedger) known]
     [FactKeys.Has (K .route8UnifiedDeficit) known]
     [FactKeys.Has (K .route8QuotientResidual) known]
-    (lanePrefix : Route8LanePrefix selected)
-    (entropy : EntropyArm selected)
+    (entry : Route8LaneEntry selected)
     (continuation : NetChargeContinuation selected) :
     Route8QuotientOutcome_product selected :=
-  ⟨route8QuotientReturn history, lanePrefix, entropy, continuation⟩
+  ⟨route8QuotientReturn history, entry, continuation⟩
 
 end HypostructureErdos64EG

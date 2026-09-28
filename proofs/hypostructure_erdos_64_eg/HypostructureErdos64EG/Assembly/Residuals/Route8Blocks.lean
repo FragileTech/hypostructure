@@ -6,9 +6,10 @@ import HypostructureErdos64EG.Assembly.Basic
 The arm blocks of the route-`8` lane, shared by every residual returned from
 `selectedRouteEightUnifiedResidual` (`Route8QuotientOutcome`,
 `TypeBSublinearOutcome`, ...).  The paths into that return site form the
-product `5 prefix × 4 entropy × 68 continuation`, with
-`68 = 2·25 + 12 + 6` (Type A lane, absorbed lane, Type B high-surplus lane;
-the B-chain has 6 fan/certificate arms).
+product `15 lane entries × 68 continuation`: the lane entry is
+`3 prefix × 4 entropy` together with the `[161]` prefix × 3 low-entropy arms
+(`Route8LaneEntry`), and `68 = 2·25 + 12 + 6` (Type A lane, absorbed lane,
+Type B high-surplus lane; the B-chain has 6 fan/certificate arms).
 Each block is an explicit conjunction of EVERY key of its arm as a `Holds`
 conjunct, with a `.ret` theorem that reads each key with one `get` from the
 single ledger.  Keys common to all paths are not listed here: they belong to
@@ -26,7 +27,7 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u
 
--- Prefix: the five near-cubic routes into `selectedNetChargeContinuation`.
+-- Prefix: the four live near-cubic routes into `selectedNetChargeContinuation`.
 /-- Route-8 lane prefix arm: window package realized; cold route-8 rate below (`nearCubicRealized` → `nearCubicLargeBudgetColdRate`) (2 facts). -/
 abbrev Route8LanePrefixBlock_realizedColdBelow (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -68,27 +69,6 @@ theorem Route8LanePrefixBlock_realizedColdAtOrAbove.ret
     (history.get (K .coldRoute8AtOrAbove)).down,
     (history.get (K .densityCap)).down,
     (history.get (K .windowPackageRealized)).down⟩
-
-/-- Route-8 lane prefix arm: window package unrealized; dense deficiency at or above; cold route-8 rate below (`nearCubicUnrealized` → `nearCubicDensePassAtOrAbove` → `nearCubicLargeBudgetColdRate`) (3 facts). -/
-abbrev Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow (selected : EGInput.{u}) : Prop :=
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldRoute8Below selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .denseDeficiencyAtOrAbove selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageUnrealized selected.object
-
-/-- `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow` from the one ledger: one `get` per key. -/
-theorem Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow.ret
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .coldRoute8Below) known]
-    [FactKeys.Has (K .denseDeficiencyAtOrAbove) known]
-    [FactKeys.Has (K .windowPackageUnrealized) known] :
-    Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow selected :=
-  ⟨(history.get (K .coldRoute8Below)).down,
-    (history.get (K .denseDeficiencyAtOrAbove)).down,
-    (history.get (K .windowPackageUnrealized)).down⟩
 
 /-- Route-8 lane prefix arm: window package unrealized; dense deficiency at or above; cold route-8 rate at or above, density cap (`nearCubicUnrealized` → `nearCubicDensePassAtOrAbove` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`) (5 facts). -/
 abbrev Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove (selected : EGInput.{u}) : Prop :=
@@ -136,13 +116,18 @@ theorem Route8LanePrefixBlock_unrealizedDenseBelow.ret
   ⟨(history.get (K .denseDeficiencyBelow)).down,
     (history.get (K .windowPackageUnrealized)).down⟩
 
-/-- The prefix factor: exactly one of the five near-cubic routes. -/
+-- The fifth near-cubic route, "unrealized; dense deficiency at or above; cold
+-- route-8 rate below" (`nearCubicDensePassAtOrAbove` → `[146]` yes), is closed
+-- where `[146]` publishes `K .coldRoute8Below`: `θ < 1/78` gives
+-- `τ(θ) < 3/13 < 1/4` against the retained `K .denseDeficiencyAtOrAbove`
+-- (`instIncompatibleDenseDeficiencyAtOrAboveColdRoute8Below`).
+
+/-- The prefix factor on the routes whose every entropy arm survives: one of
+the three near-cubic routes other than the `[161]` double-yes arm. -/
 abbrev Route8LanePrefix (selected : EGInput.{u}) : Prop :=
   Route8LanePrefixBlock_realizedColdBelow selected ∨
   Route8LanePrefixBlock_realizedColdAtOrAbove selected ∨
-  Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow selected ∨
-  Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove selected ∨
-  Route8LanePrefixBlock_unrealizedDenseBelow selected
+  Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove selected
 
 -- Entropy: the four remainder-entropy / local-type arms.
 /-- Entropy arm: remainder entropy high (3 facts). -/
@@ -237,12 +222,27 @@ theorem EntropyArmBlock_lowRepetitiveWedge.ret
     (history.get (K .localTypeCoordinateRepetitive)).down,
     (history.get (K .remainderEntropyLow)).down⟩
 
-/-- The entropy factor: exactly one of the four entropy arms. -/
-abbrev EntropyArm (selected : EGInput.{u}) : Prop :=
-  EntropyArmBlock_high selected ∨
+/-- The three low-entropy arms. -/
+abbrev EntropyArmLow (selected : EGInput.{u}) : Prop :=
   EntropyArmBlock_lowNonrepetitive selected ∨
   EntropyArmBlock_lowRepetitiveWedgeFree selected ∨
   EntropyArmBlock_lowRepetitiveWedge selected
+
+/-- The entropy factor: exactly one of the four entropy arms. -/
+abbrev EntropyArm (selected : EGInput.{u}) : Prop :=
+  EntropyArmBlock_high selected ∨ EntropyArmLow selected
+
+/-- The near-cubic route and the entropy arm on entry to the net-charge
+continuation `[57]`: a route of `Route8LanePrefix` with any of the four
+entropy arms, or the `[161]` double-yes arm
+(`Route8LanePrefixBlock_unrealizedDenseBelow`) with a low-entropy arm.  The
+`[161]` arm with high entropy is closed where `[53]` publishes
+`K .entropyCapBound`: on the dense residual the package overflows the skeleton
+budget, so the entropy cap is active (`denseEntropyCapActiveRow`).  So this
+factor has `3·4 + 1·3 = 15` arms. -/
+abbrev Route8LaneEntry (selected : EGInput.{u}) : Prop :=
+  (Route8LanePrefix selected ∧ EntropyArm selected) ∨
+  (Route8LanePrefixBlock_unrealizedDenseBelow selected ∧ EntropyArmLow selected)
 
 -- B-chain: the Type B fan entry and the 6 fan/certificate arms.
 /-- B-chain entry: the Type B route-8 entry and fan/certificate routing facts carried on every B-chain arm (7 facts). -/

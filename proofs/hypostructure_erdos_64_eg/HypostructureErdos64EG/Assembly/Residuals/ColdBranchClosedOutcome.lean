@@ -4,12 +4,13 @@ import HypostructureErdos64EG.Assembly.Residuals.ArmBlocks
 # Assembly: the `ColdBranchClosedOutcome` residual, split by fact set
 
 `ColdBranchClosedOutcome` ([187], local cold-terminal exclusion) is reached
-along 104 root paths, each with its own ledger fact set.  They split as:
+along 79 root paths, each with its own ledger fact set.  They split as:
 
-* 100 paths through `selectedAbsorbedGermResidual`, which form an exact
-  product 4 × 5 × 5 of arm blocks: the entropy-side arm (4 blocks), the
-  window/test arm (5 blocks) and the absorbed-germ exit (5 blocks), over the
-  generic 57 facts and 5 further facts common to all 100
+* 75 paths through `selectedAbsorbedGermResidual`, which form an exact
+  product 15 × 5 of arm blocks: the window/test arm with the entropy-side arm
+  (`ColdBranchClosedEntryArm`: 3 window blocks × 4 entropy blocks, and the
+  `[161]` window block × 3 low-entropy blocks) and the absorbed-germ exit
+  (5 blocks), over the generic 57 facts and 5 further facts common to all 75
   (`ColdBranchClosedAbsorbedCommon`).  Their residual is
   `ColdBranchClosedOutcome_product`.
 * 4 paths on the [153] linear cold-mass arm, each its own subtype.
@@ -126,15 +127,6 @@ abbrev ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaAtOrAbove (selected : EG
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .windowPackageUnrealized selected.object
 
-/-- Block `W4` (3 facts): [158] window package unrealized, [160] tau at or above 1/4, [146] theta below 1/78. -/
-abbrev ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaBelow (selected : EGInput.{u}) : Prop :=
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldRoute8Below selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .denseDeficiencyAtOrAbove selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageUnrealized selected.object
-
 /-- Block `W5` (2 facts): [158] window package unrealized, [160] tau below 1/4. -/
 abbrev ColdBranchClosedWindowUnrealizedTauBelow (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -219,19 +211,29 @@ abbrev ColdBranchClosedExitGermCanonicalSubcubic (selected : EGInput.{u}) : Prop
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .typeBAbsorbedHalfEdgeAbsent selected.object
 
-/-- the entropy-side arm ([50], [53]): one of its 4 blocks. -/
-abbrev ColdBranchClosedEntropyArm (selected : EGInput.{u}) : Prop :=
-  ColdBranchClosedEntropyHighCap selected ∨
+/-- the low-entropy blocks `E2`--`E4` of the entropy-side arm. -/
+abbrev ColdBranchClosedEntropyLowArm (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedEntropyLowNonrepetitive selected ∨
   ColdBranchClosedEntropyLowWedgeFree selected ∨
   ColdBranchClosedEntropyLowWedgeType selected
-/-- the window/test arm ([158], [160], [146], [153]): one of its 5 blocks. -/
+/-- the entropy-side arm ([50], [53]): one of its 4 blocks. -/
+abbrev ColdBranchClosedEntropyArm (selected : EGInput.{u}) : Prop :=
+  ColdBranchClosedEntropyHighCap selected ∨ ColdBranchClosedEntropyLowArm selected
+/-- the window/test arm ([158], [160], [146], [153]) on the routes whose every
+entropy arm survives: one of `W1`--`W3`.  The block "[158] no, [160] `τ ≥ 1/4`,
+[146] `θ < 1/78`" is closed at `[146]` (`θ < 1/78` forces `τ(θ) < 1/4`). -/
 abbrev ColdBranchClosedWindowArm (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedWindowRealizedThetaAtOrAbove selected ∨
   ColdBranchClosedWindowRealizedThetaBelow selected ∨
-  ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaAtOrAbove selected ∨
-  ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaBelow selected ∨
-  ColdBranchClosedWindowUnrealizedTauBelow selected
+  ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaAtOrAbove selected
+/-- the window/test arm with the entropy-side arm: `W1`--`W3` with any of
+`E1`--`E4`, or `W5` (`[161]`) with a low-entropy block (the high-entropy arm
+of `[161]` is closed at `[53]`: the dense package overflows the skeleton
+budget).  `3·4 + 3 = 15` blocks. -/
+abbrev ColdBranchClosedEntryArm (selected : EGInput.{u}) : Prop :=
+  (ColdBranchClosedWindowArm selected ∧ ColdBranchClosedEntropyArm selected) ∨
+  (ColdBranchClosedWindowUnrealizedTauBelow selected ∧
+    ColdBranchClosedEntropyLowArm selected)
 /-- the absorbed-germ exit ([175], [154], [163], [177]): one of its 5 blocks. -/
 abbrev ColdBranchClosedExitArm (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedExitNoGermCharged selected ∨
@@ -334,12 +336,11 @@ theorem coldBranchClosedExitGermCanonicalSubcubicReturn
     (history.get (K .typeBAbsorbedHalfEdgeAbsent)).down⟩))))
 
 /-- **`[187]` (local cold-terminal exclusion), absorbed-germ product.**  The
-100 absorbed-germ paths: the generic 57 facts, the 5 absorbed-common
-facts, and exactly one block of each arm family. -/
+75 absorbed-germ paths: the generic 57 facts, the 5 absorbed-common
+facts, one lane-entry block and one exit block. -/
 abbrev ColdBranchClosedOutcome_product (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedOutcome selected ∧ ColdBranchClosedAbsorbedCommon selected ∧
-  ColdBranchClosedEntropyArm selected ∧ ColdBranchClosedWindowArm selected ∧
-  ColdBranchClosedExitArm selected
+  ColdBranchClosedEntryArm selected ∧ ColdBranchClosedExitArm selected
 
 theorem ColdBranchClosedOutcome_product.toGeneric {selected : EGInput.{u}}
     (h : ColdBranchClosedOutcome_product selected) :
@@ -347,8 +348,8 @@ theorem ColdBranchClosedOutcome_product.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- The return of `ColdBranchClosedOutcome_product`, parameterised by the arm
-of each family: the entropy and window arms are the path's `EntropyArm` and
-`Route8LanePrefix` (read as `E1`--`E4` and `W1`--`W5`), each block built by
+of each family: the entry arm is the path's `Route8LaneEntry` (read as
+`W1`--`W3`, `W5` with `E1`--`E4`), each block built by
 its `Route8Blocks` `.ret` where the arm's keys are in scope, and the exit arm
 is `coldBranchClosed<Exit>Return history`.  With those, one `get` per fact. -/
 theorem coldBranchClosedProductReturn
@@ -416,12 +417,11 @@ theorem coldBranchClosedProductReturn
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8Rate) known]
-    (entropy : ColdBranchClosedEntropyArm selected)
-    (window : ColdBranchClosedWindowArm selected)
+    (entry : ColdBranchClosedEntryArm selected)
     (exit : ColdBranchClosedExitArm selected) :
     ColdBranchClosedOutcome_product selected :=
   ⟨coldBranchClosedReturn history, coldBranchClosedAbsorbedCommonReturn history,
-    entropy, window, exit⟩
+    entry, exit⟩
 
 /-- **`[187]` (local cold-terminal exclusion), singleton `linearDenseAtOrAbove`**
 (66 facts): [153] linear cold mass through `nearCubicDenseLinear` after `nearCubicDensePassAtOrAbove`: [158] unrealized, [160] tau at or above 1/4, [146] theta at or above, [162] heavy entry, [154] none realizing / some distinguishing. -/
@@ -848,23 +848,20 @@ theorem coldBranchClosed_linearRealizedSilentReturn
     (history.get (K .coldRoute8AtOrAbove)).down,
     (history.get (K .windowPackageRealized)).down⟩
 
-/-- The near-cubic prefix block of a path, read as its window/test block
-(`W1`--`W5` list the same keys as the five `Route8LanePrefix` blocks). -/
-theorem Route8LanePrefix.toColdBranchClosedWindowArm {selected : EGInput.{u}}
-    (lanePrefix : Route8LanePrefix selected) :
-    ColdBranchClosedWindowArm selected := by
-  rcases lanePrefix with p | p | p | p | p
-  · exact Or.inr (Or.inl p)
-  · exact Or.inl p
-  · exact Or.inr (Or.inr (Or.inr (Or.inl p)))
-  · exact Or.inr (Or.inr (Or.inl p))
-  · exact Or.inr (Or.inr (Or.inr (Or.inr p)))
-
-/-- The entropy arm of a path, read as its entropy-side block (`E1`--`E4` are
-the four `EntropyArm` blocks, key for key). -/
-theorem EntropyArm.toColdBranchClosedEntropyArm {selected : EGInput.{u}}
-    (entropy : EntropyArm selected) : ColdBranchClosedEntropyArm selected :=
-  entropy
+/-- The lane entry of a path (near-cubic prefix and entropy arm), read as its
+window/test and entropy-side blocks (`W1`--`W3`, `W5` list the same keys as the
+`Route8LanePrefix` blocks and `Route8LanePrefixBlock_unrealizedDenseBelow`,
+`E1`--`E4` the same keys as the four `EntropyArm` blocks). -/
+theorem Route8LaneEntry.toColdBranchClosedEntryArm {selected : EGInput.{u}}
+    (entry : Route8LaneEntry selected) :
+    ColdBranchClosedEntryArm selected := by
+  rcases entry with ⟨lanePrefix, entropy⟩ | ⟨dense, low⟩
+  · refine Or.inl ⟨?_, entropy⟩
+    rcases lanePrefix with p | p | p
+    · exact Or.inr (Or.inl p)
+    · exact Or.inl p
+    · exact Or.inr (Or.inr p)
+  · exact Or.inr ⟨dense, low⟩
 
 /-- The four linear-arm singletons of the residual `[187]` (local
 cold-terminal exclusion), returned on the `[153]` linear arm of the near-cubic

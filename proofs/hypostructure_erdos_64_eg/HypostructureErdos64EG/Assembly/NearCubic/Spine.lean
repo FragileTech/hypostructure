@@ -21,6 +21,7 @@ import Hypostructure.Graph.Strategy.SpineRows.StubSupply
 import Hypostructure.Graph.Strategy.SpineRows.TargetRankCircuit
 import Hypostructure.Graph.Strategy.SpineRows.WedgeSupply
 import HypostructureErdos64EG.Assembly.NearCubic.Boundary
+import HypostructureErdos64EG.Assembly.NearCubic.DenseEntropy
 import HypostructureErdos64EG.Assembly.NearCubic.Local
 import HypostructureErdos64EG.Assembly.NetCharge.Continuation
 
@@ -285,7 +286,7 @@ noncomputable def nearCubicRouteEightEntry
     SelectedNearCubicSurvivorBoundary selected :=
   match route8RateDichotomy (data := spineData) history .netDeficiencyCap
       (Or.inl rfl) (by key_fresh) (by key_fresh) with
-  | .left rated => Or.inl (selectedNetChargeContinuation rated ⟨arm.1.toPrefix, arm.2⟩)
+  | .left rated => Or.inl (selectedNetChargeContinuation rated (Or.inl ⟨arm.1.toPrefix, arm.2⟩))
   | .right rateFails =>
       Or.inr (Or.inl (route8RateFailsSubtypesReturn_routeEightEntry rateFails arm.1 arm.2))
 
@@ -295,12 +296,13 @@ set_option maxHeartbeats 8000000 in
 the continuation would consume at `[120]`--`[122]`, and the retained failure is
 the `[187]` outcome.
 
-`entropy` names the entropy arm; the failed rate is returned as the subtype of
-that path. -/
+`entropy` names the entropy arm (a low-entropy arm: the high-entropy arm of
+this dense residual is closed at `[53]`); the failed rate is returned as the
+subtype of that path. -/
 noncomputable def nearCubicRateFailedExit
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    (entropy : EntropyArm selected)
+    (entropy : EntropyArmLow selected)
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
     [FactKeys.Has (K .route8RateFails) known]
@@ -458,7 +460,7 @@ noncomputable def nearCubicLargeBudgetColdRate
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   largeHistory (by key_fresh))
-                (⟨lanePrefix.toPrefix, Or.inl (EntropyArmBlock_high.ret largeHistory)⟩))
+                (Or.inl ⟨lanePrefix.toPrefix, Or.inl (EntropyArmBlock_high.ret largeHistory)⟩))
   | .right lowHistory =>
       match localTypeCoordinateDichotomy (data := spineData) lowHistory
           (by key_fresh) (by key_fresh) with
@@ -473,7 +475,7 @@ noncomputable def nearCubicLargeBudgetColdRate
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   large (by key_fresh))
-                (⟨lanePrefix.toPrefix, Or.inr (Or.inl (EntropyArmBlock_lowNonrepetitive.ret large))⟩))
+                (Or.inl ⟨lanePrefix.toPrefix, Or.inr (Or.inl (EntropyArmBlock_lowNonrepetitive.ret large))⟩))
       | .left repetitiveHistory =>
           let dominant :=
             (dominantRootedTypeRow (BranchState := BranchState)
@@ -493,7 +495,7 @@ noncomputable def nearCubicLargeBudgetColdRate
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   large (by key_fresh))
-                (⟨lanePrefix.toPrefix, Or.inr (Or.inr (Or.inl (EntropyArmBlock_lowRepetitiveWedgeFree.ret large)))⟩))
+                (Or.inl ⟨lanePrefix.toPrefix, Or.inr (Or.inr (Or.inl (EntropyArmBlock_lowRepetitiveWedgeFree.ret large)))⟩))
           | .left wedgeHistory =>
               let translated :=
                 (independentObstructionTranslatesRow (BranchState := BranchState)
@@ -510,7 +512,7 @@ noncomputable def nearCubicLargeBudgetColdRate
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   large (by key_fresh))
-                (⟨lanePrefix.toPrefix, Or.inr (Or.inr (Or.inr (EntropyArmBlock_lowRepetitiveWedge.ret large)))⟩))
+                (Or.inl ⟨lanePrefix.toPrefix, Or.inr (Or.inr (Or.inr (EntropyArmBlock_lowRepetitiveWedge.ret large)))⟩))
 
 set_option maxHeartbeats 8000000 in
 /-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[161]` arm: `[56]` reads `[160]`'s deficiency cap `K .denseDeficiencyBelow` in place
@@ -520,7 +522,9 @@ of `[24]` (`lem:dense-deficiency-routing`); `[160]`'s second test left
 `[47]`/`[48]`: `cor:forced-curvature-cost`; `[49]`/`[50]`: the per-vertex
 remainder-entropy split; on the high arm `[52]`/`[53]` the joint account and the
 entropy-cap test, closed at `[54]`; on the low arm the repetitive and root-wedge
-splits of `lem:dominant-type`; every surviving arm is Residual C `[55]`. -/
+splits of `lem:dominant-type`; every surviving arm is Residual C `[55]`.  On this dense residual `[53]`'s
+bound arm is empty: the package of `[159]` overflows the skeleton budget, so
+the entropy cap is active (`denseEntropyCapActiveRow`). -/
 noncomputable def nearCubicLargeBudgetDenseRate
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -594,23 +598,16 @@ noncomputable def nearCubicLargeBudgetDenseRate
               -- the configuration at G where the joint realization fails,
               -- returned.
               exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                  (node54Return_unrealizedBothRates residualHistory)))))))))))
+                (Or.inr (Or.inr (Or.inr (Or.inr
+                  (node54Return_unrealizedBothRates residualHistory))))))))))
       | .right boundHistory =>
-          -- `[55]`: Residual C on the high-entropy arm.
-          let largeHistory :=
-            (highEntropyLargeBudgetRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              boundHistory (by key_fresh)
-          exact Or.inl (selectedNetChargeContinuation
-                ((denseNetDeficiencyCapRow (BranchState := BranchState)
-                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  largeHistory (by key_fresh))
-                (⟨Or.inr (Or.inr (Or.inr (Or.inr
-                  (Route8LanePrefixBlock_unrealizedDenseBelow.ret largeHistory)))),
-                  Or.inl (EntropyArmBlock_high.ret largeHistory)⟩))
+          -- `[53]`'s bound arm on the dense residual `[159]` with
+          -- `τ(θ) < 1/4`: the package of `[159]` overflows the skeleton
+          -- budget, so `[52]`'s demand makes the entropy cap active
+          -- (`prop:entropy-high-theta`); Residual C `[55]` is not reached.
+          exact (denseEntropyCapActiveRow.runAndCloseIncompatible boundHistory
+            (K .entropyCapBound) (K .entropyCapActive)
+            (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
   | .right lowHistory =>
       match localTypeCoordinateDichotomy (data := spineData) lowHistory
           (by key_fresh) (by key_fresh) with
@@ -625,9 +622,8 @@ noncomputable def nearCubicLargeBudgetDenseRate
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   large (by key_fresh))
-                (⟨Or.inr (Or.inr (Or.inr (Or.inr
-                  (Route8LanePrefixBlock_unrealizedDenseBelow.ret large)))),
-                  Or.inr (Or.inl (EntropyArmBlock_lowNonrepetitive.ret large))⟩))
+                (Or.inr ⟨Route8LanePrefixBlock_unrealizedDenseBelow.ret large,
+                  Or.inl (EntropyArmBlock_lowNonrepetitive.ret large)⟩))
       | .left repetitiveHistory =>
           let dominant :=
             (dominantRootedTypeRow (BranchState := BranchState)
@@ -647,9 +643,8 @@ noncomputable def nearCubicLargeBudgetDenseRate
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   large (by key_fresh))
-                (⟨Or.inr (Or.inr (Or.inr (Or.inr
-                  (Route8LanePrefixBlock_unrealizedDenseBelow.ret large)))),
-                  Or.inr (Or.inr (Or.inl (EntropyArmBlock_lowRepetitiveWedgeFree.ret large)))⟩))
+                (Or.inr ⟨Route8LanePrefixBlock_unrealizedDenseBelow.ret large,
+                  Or.inr (Or.inl (EntropyArmBlock_lowRepetitiveWedgeFree.ret large))⟩))
           | .left wedgeHistory =>
               let translated :=
                 (independentObstructionTranslatesRow (BranchState := BranchState)
@@ -666,9 +661,8 @@ noncomputable def nearCubicLargeBudgetDenseRate
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   large (by key_fresh))
-                (⟨Or.inr (Or.inr (Or.inr (Or.inr
-                  (Route8LanePrefixBlock_unrealizedDenseBelow.ret large)))),
-                  Or.inr (Or.inr (Or.inr (EntropyArmBlock_lowRepetitiveWedge.ret large)))⟩))
+                (Or.inr ⟨Route8LanePrefixBlock_unrealizedDenseBelow.ret large,
+                  Or.inr (Or.inr (EntropyArmBlock_lowRepetitiveWedge.ret large))⟩))
 
 set_option maxHeartbeats 8000000 in
 /-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[24]` arm (bounded arm of `[153]`): `[56]` reads `[24]`'s density cap
@@ -833,7 +827,9 @@ consume at `[120]`--`[122]`; the retained failure is the `[187]` outcome.
 `[47]`/`[48]`: `cor:forced-curvature-cost`; `[49]`/`[50]`: the per-vertex
 remainder-entropy split; on the high arm `[52]`/`[53]` the joint account and the
 entropy-cap test, closed at `[54]`; on the low arm the repetitive and root-wedge
-splits of `lem:dominant-type`; every surviving arm is Residual C `[55]`. -/
+splits of `lem:dominant-type`; every surviving arm is Residual C `[55]`.  On this dense residual `[53]`'s
+bound arm is empty: the package of `[159]` overflows the skeleton budget, so
+the entropy cap is active (`denseEntropyCapActiveRow`). -/
 noncomputable def nearCubicLargeBudgetRateFailed
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -910,20 +906,16 @@ noncomputable def nearCubicLargeBudgetRateFailed
               -- the configuration at G where the joint realization fails,
               -- returned.
               exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl
-                  (node54Return_unrealizedRateFailsBounded residualHistory)))))))))))
+                (Or.inr (Or.inr (Or.inr (Or.inl
+                  (node54Return_unrealizedRateFailsBounded residualHistory))))))))))
       | .right boundHistory =>
-          -- `[55]`: Residual C on the high-entropy arm.
-          let largeHistory :=
-            (highEntropyLargeBudgetRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              boundHistory (by key_fresh)
-          exact nearCubicRateFailedExit ((netDeficiencyCapRow (BranchState := BranchState)
-                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  largeHistory (by key_fresh))
-                (Or.inl (EntropyArmBlock_high.ret largeHistory))
+          -- `[53]`'s bound arm on the dense residual `[159]` with
+          -- `τ(θ) < 1/4`: the package of `[159]` overflows the skeleton
+          -- budget, so `[52]`'s demand makes the entropy cap active
+          -- (`prop:entropy-high-theta`); Residual C `[55]` is not reached.
+          exact (denseEntropyCapActiveRow.runAndCloseIncompatible boundHistory
+            (K .entropyCapBound) (K .entropyCapActive)
+            (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
   | .right lowHistory =>
       match localTypeCoordinateDichotomy (data := spineData) lowHistory
           (by key_fresh) (by key_fresh) with
@@ -937,7 +929,7 @@ noncomputable def nearCubicLargeBudgetRateFailed
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   large (by key_fresh))
-                (Or.inr (Or.inl (EntropyArmBlock_lowNonrepetitive.ret large)))
+                (Or.inl (EntropyArmBlock_lowNonrepetitive.ret large))
       | .left repetitiveHistory =>
           let dominant :=
             (dominantRootedTypeRow (BranchState := BranchState)
@@ -956,7 +948,7 @@ noncomputable def nearCubicLargeBudgetRateFailed
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   large (by key_fresh))
-                (Or.inr (Or.inr (Or.inl (EntropyArmBlock_lowRepetitiveWedgeFree.ret large))))
+                (Or.inr (Or.inl (EntropyArmBlock_lowRepetitiveWedgeFree.ret large)))
           | .left wedgeHistory =>
               let translated :=
                 (independentObstructionTranslatesRow (BranchState := BranchState)
@@ -972,6 +964,6 @@ noncomputable def nearCubicLargeBudgetRateFailed
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   large (by key_fresh))
-                (Or.inr (Or.inr (Or.inr (EntropyArmBlock_lowRepetitiveWedge.ret large))))
+                (Or.inr (Or.inr (EntropyArmBlock_lowRepetitiveWedge.ret large)))
 
 end HypostructureErdos64EG
