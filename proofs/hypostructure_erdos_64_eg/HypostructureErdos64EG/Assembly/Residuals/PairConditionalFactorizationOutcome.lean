@@ -29,8 +29,6 @@ abbrev PairConditionalFactorizationOutcome_freeFactorizationFails (selected : EG
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .independentPairFamily selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .freePairCountFails selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .freePairCodeUnrealized selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairFactorizationFails selected.object
@@ -113,7 +111,6 @@ theorem pairConditionalFactorizationReturn_freeFactorizationFails
     : PairConditionalFactorizationOutcome_freeFactorizationFails selected :=
   ⟨pairConditionalFactorizationReturn history,
     (history.get (K .independentPairFamily)).down,
-    (history.get (K .freePairCountFails)).down,
     (history.get (K .freePairCodeUnrealized)).down,
     (history.get (K .pairFactorizationFails)).down⟩
 
@@ -123,8 +120,6 @@ abbrev PairConditionalFactorizationOutcome_freeRealizabilityFails (selected : EG
   PairConditionalFactorizationOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .independentPairFamily selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .freePairCountFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .freePairCodeUnrealized selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -217,7 +212,6 @@ theorem pairConditionalFactorizationReturn_freeRealizabilityFails
     : PairConditionalFactorizationOutcome_freeRealizabilityFails selected :=
   ⟨pairConditionalFactorizationReturn history,
     (history.get (K .independentPairFamily)).down,
-    (history.get (K .freePairCountFails)).down,
     (history.get (K .freePairCodeUnrealized)).down,
     (history.get (K .pairConditionalFactorization)).down,
     (history.get (K .pairFailureOverlap)).down,
@@ -230,8 +224,6 @@ abbrev PairConditionalFactorizationOutcome_freeIncrementFails (selected : EGInpu
   PairConditionalFactorizationOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .independentPairFamily selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .freePairCountFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .freePairCodeUnrealized selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -333,7 +325,6 @@ theorem pairConditionalFactorizationReturn_freeIncrementFails
     : PairConditionalFactorizationOutcome_freeIncrementFails selected :=
   ⟨pairConditionalFactorizationReturn history,
     (history.get (K .independentPairFamily)).down,
-    (history.get (K .freePairCountFails)).down,
     (history.get (K .freePairCodeUnrealized)).down,
     (history.get (K .pairConditionalFactorization)).down,
     (history.get (K .pairFailureOverlap)).down,
@@ -435,6 +426,7 @@ theorem pairConditionalFactorizationReturn_blockedFactorizationFails
     [FactKeys.Has (K .sparsePortActivation) known]
     [FactKeys.Has (K .activeSurplusDemands) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .sparseUpperEnvelope) known]
     [FactKeys.Has (K .pairOverlapFirstFailure) known]
     [FactKeys.Has (K .mixedSparseSpineDependence) known]
@@ -568,6 +560,7 @@ theorem pairConditionalFactorizationReturn_blockedRealizabilityFails
     [FactKeys.Has (K .sparsePortActivation) known]
     [FactKeys.Has (K .activeSurplusDemands) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .sparseUpperEnvelope) known]
     [FactKeys.Has (K .pairOverlapFirstFailure) known]
     [FactKeys.Has (K .mixedSparseSpineDependence) known]
@@ -713,6 +706,7 @@ theorem pairConditionalFactorizationReturn_blockedIncrementFails
     [FactKeys.Has (K .sparsePortActivation) known]
     [FactKeys.Has (K .activeSurplusDemands) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .sparseUpperEnvelope) known]
     [FactKeys.Has (K .pairOverlapFirstFailure) known]
     [FactKeys.Has (K .mixedSparseSpineDependence) known]

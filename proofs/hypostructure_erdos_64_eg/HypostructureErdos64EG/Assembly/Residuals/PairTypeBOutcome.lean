@@ -36,8 +36,6 @@ abbrev PairTypeBOutcome_independentSystem (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .independentPairFamily selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .freePairCountFails selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .freePairCodeUnrealized selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairSystemEarlyOutcome selected.object
@@ -177,6 +175,7 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .sparsePortActivation)).down,
       (history.get (K .activeSurplusDemands)).down,
       (history.get (K .baselineSpineDemand)).down,
+      (history.get (K .freePairCountFails)).down,
       (history.get (K .sparseUpperEnvelope)).down,
       (history.get (K .pairOverlapFirstFailure)).down,
       (history.get (K .mixedSparseSpineDependence)).down,
@@ -191,7 +190,6 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .typeBFanEntry)).down,
       Or.inl pairSystemEarlyOutcome⟩,
     (history.get (K .independentPairFamily)).down,
-    (history.get (K .freePairCountFails)).down,
     (history.get (K .freePairCodeUnrealized)).down,
     pairSystemEarlyOutcome⟩
 
@@ -205,8 +203,6 @@ abbrev PairTypeBOutcome_independentIncrement (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .independentPairFamily selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .freePairCountFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .freePairCodeUnrealized selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -359,6 +355,7 @@ theorem pairTypeBIndependentIncrementReturn
       (history.get (K .sparsePortActivation)).down,
       (history.get (K .activeSurplusDemands)).down,
       (history.get (K .baselineSpineDemand)).down,
+      (history.get (K .freePairCountFails)).down,
       (history.get (K .sparseUpperEnvelope)).down,
       (history.get (K .pairOverlapFirstFailure)).down,
       (history.get (K .mixedSparseSpineDependence)).down,
@@ -374,7 +371,6 @@ theorem pairTypeBIndependentIncrementReturn
       Or.inr ⟨pairSystemNoEarlyOutcome, pairSerialDemandSystem,
         pairIncrementCovered, pairIncrementEarlyOutcome⟩⟩,
     (history.get (K .independentPairFamily)).down,
-    (history.get (K .freePairCountFails)).down,
     (history.get (K .freePairCodeUnrealized)).down,
     pairSystemNoEarlyOutcome,
     pairSerialDemandSystem,
@@ -477,6 +473,7 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .sparsePortActivation) known]
     [FactKeys.Has (K .activeSurplusDemands) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .sparseUpperEnvelope) known]
     [FactKeys.Has (K .pairOverlapFirstFailure) known]
     [FactKeys.Has (K .mixedSparseSpineDependence) known]
@@ -557,7 +554,8 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .sparsePortActivation)).down,
       (history.get (K .activeSurplusDemands)).down,
       (history.get (K .baselineSpineDemand)).down,
-      (history.get (K .sparseUpperEnvelope)).down,
+      (history.get (K .freePairCountFails)).down,
+        (history.get (K .sparseUpperEnvelope)).down,
       (history.get (K .pairOverlapFirstFailure)).down,
       (history.get (K .mixedSparseSpineDependence)).down,
       (history.get (K .exactCubicBaselineBudget)).down,
@@ -685,6 +683,7 @@ theorem pairTypeBDependentIncrementReturn
     [FactKeys.Has (K .sparsePortActivation) known]
     [FactKeys.Has (K .activeSurplusDemands) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .sparseUpperEnvelope) known]
     [FactKeys.Has (K .pairOverlapFirstFailure) known]
     [FactKeys.Has (K .mixedSparseSpineDependence) known]
@@ -771,7 +770,8 @@ theorem pairTypeBDependentIncrementReturn
       (history.get (K .sparsePortActivation)).down,
       (history.get (K .activeSurplusDemands)).down,
       (history.get (K .baselineSpineDemand)).down,
-      (history.get (K .sparseUpperEnvelope)).down,
+      (history.get (K .freePairCountFails)).down,
+        (history.get (K .sparseUpperEnvelope)).down,
       (history.get (K .pairOverlapFirstFailure)).down,
       (history.get (K .mixedSparseSpineDependence)).down,
       (history.get (K .exactCubicBaselineBudget)).down,

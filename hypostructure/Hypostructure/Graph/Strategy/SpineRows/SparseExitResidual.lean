@@ -15,6 +15,15 @@ the shared prefix, so every branch below inherits its facts:
   for rows reading `K .surplusAbove`;
 - the `[20a]` exit arm, for rows reading `K .sparseTargetDefectResidual`, and
   for `K .freePairCountFails` (the no-arm key of `[131]`'s decision on `[125]`).
+
+Reuse (re-invocation, not a move): a row is run again, unchanged, on every
+other ledger that carries the keys it reads, once per ledger:
+- the six witness rows (`sparseExitWitnessFactsRow` ... `sparseExitCombinationRow`)
+  also run on `[187]`'s near-cubic target defect, which carries the same
+  `K .sparseTargetDefectResidual` (the same canonical witness);
+- `sparseExitFreePairCountRow` also runs at the top of the dependent arm of
+  `[130]` (`Assembly/Surplus/Strict/Dependent.lean`); on the independent arm
+  the key comes from `[131]`'s decision, so no ledger publishes it twice.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -417,8 +426,9 @@ it is on both `[20]` arms (`[20a]` and `[125]`--`[129]`). -/
         .nil)
 
 /-- Node `[131]`'s full-schedule entropy count fails at G's canonical objects
-(unconditionally); published on the `[20a]` arm only: on `[125]`'s independent
-arm the same key is the no-arm of the paper's `[131]` decision. -/
+(unconditionally); run on the `[20a]` arm and at the top of `[130]`'s dependent
+arm (it reads only strict-arm facts).  It is not run on `[130]`'s independent
+arm: there the same key is the no-arm of the paper's `[131]` decision. -/
 @[reducible] noncomputable def sparseExitFreePairCountRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitFreePairCount
