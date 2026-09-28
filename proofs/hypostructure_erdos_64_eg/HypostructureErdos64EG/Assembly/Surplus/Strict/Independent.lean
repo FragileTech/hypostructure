@@ -36,10 +36,12 @@ noncomputable def Assembly.Internal.strictSurplusIndependent
         K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
           K .admissibleQuotientsLabelInjective, K .replacementExclusion,
           K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-          K .twoHighForcedPath, K .sameHighForcedPath, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
-        K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+          K .cycleDoubleCount, K .twoHighForcedPath, K .sameHighForcedPath, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
+        K .slackIndependent, K .vertexDeletionComponents, K .cyclesThroughVertex,
+        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
           K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-          K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
+          K .highDegreePairSum, K .minDegreeBaseline, K .bridgeless, K .neighbourhoodPairCount, K .starCycleConstraint,
+        K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     StrictSurplusBoundaryResult selected := by
   -- `[131]` first commits the manuscript's named arithmetic and

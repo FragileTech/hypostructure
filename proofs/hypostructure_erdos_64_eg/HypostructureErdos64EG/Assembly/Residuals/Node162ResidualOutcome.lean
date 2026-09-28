@@ -10,9 +10,9 @@ the pass on the no-arm of `[158]`.  Their ledgers differ only by the arm of
 two residuals, each a subtype of the generic `Node162ResidualOutcome`:
 
 - `Node162ResidualOutcome_tauAtOrAbove`: `[160]` first test fails,
-  `τ(θ) ≥ 1/4` (61 facts);
+  `τ(θ) ≥ 1/4` (69 facts);
 - `Node162ResidualOutcome_tauBelowRateFails`: `[160]` first test holds,
-  `τ(θ) < 1/4`, and the private-carrier rate `τ(θ) < 3/13` fails (62 facts).
+  `τ(θ) < 1/4`, and the private-carrier rate `τ(θ) < 3/13` fails (70 facts).
 -/
 
 namespace HypostructureErdos64EG
@@ -26,7 +26,7 @@ universe u
 
 /-- **Node `[162]` on `[160]`'s first complement** (`τ(θ) ≥ 1/4`).
 The generic `[162]` residual together with every fact its arm of `[160]`
-adds to the ledger (61 facts in all). -/
+adds to the ledger (69 facts in all). -/
 abbrev Node162ResidualOutcome_tauAtOrAbove (selected : EGInput.{u}) : Prop :=
   Node162ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -68,6 +68,14 @@ theorem node162Return_tauAtOrAbove
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -111,7 +119,7 @@ theorem node162Return_tauAtOrAbove
 /-- **Node `[162]` on `[160]`'s second complement** (`τ(θ) < 1/4`, the
 private-carrier rate `τ(θ) < 3/13` failed).
 The generic `[162]` residual together with every fact its arm of `[160]`
-adds to the ledger (62 facts in all). -/
+adds to the ledger (70 facts in all). -/
 abbrev Node162ResidualOutcome_tauBelowRateFails (selected : EGInput.{u}) : Prop :=
   Node162ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -155,6 +163,14 @@ theorem node162Return_tauBelowRateFails
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -230,6 +246,14 @@ theorem node162SubtypesReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]

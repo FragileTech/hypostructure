@@ -49,10 +49,12 @@ noncomputable def selectedSparseSurplusActivation
         K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-        K .twoHighForcedPath, K .sameHighForcedPath, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
-        K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+        K .cycleDoubleCount, K .twoHighForcedPath, K .sameHighForcedPath, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
+        K .vertexDeletionComponents, K .cyclesThroughVertex,
+        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
         K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-        K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
+        K .highDegreePairSum, K .minDegreeBaseline, K .bridgeless, K .neighbourhoodPairCount, K .starCycleConstraint,
+        K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .activeSurplusDemands, K .sparsePortActivation,
@@ -72,10 +74,12 @@ noncomputable def selectedSparseSurplusActivation
         K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
           K .admissibleQuotientsLabelInjective, K .replacementExclusion,
           K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-          K .twoHighForcedPath, K .sameHighForcedPath, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
-        K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+          K .cycleDoubleCount, K .twoHighForcedPath, K .sameHighForcedPath, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
+        K .slackIndependent, K .vertexDeletionComponents, K .cyclesThroughVertex,
+        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
           K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-          K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
+          K .highDegreePairSum, K .minDegreeBaseline, K .bridgeless, K .neighbourhoodPairCount, K .starCycleConstraint,
+        K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
   -- The presentation identities the surplus rows spend are read from the one
   -- presentation-law fact `K .cubicBaseline`, published at the entry.
@@ -202,6 +206,14 @@ noncomputable def selectedPairCodeChainIndependent
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -398,6 +410,14 @@ noncomputable def selectedPairCodeChainDependent
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -603,6 +623,14 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]

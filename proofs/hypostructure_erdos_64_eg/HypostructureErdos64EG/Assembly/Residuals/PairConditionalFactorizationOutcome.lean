@@ -8,7 +8,7 @@ the pair-code chain `[178]`--`[180]` is entered from the free side of `[131]`
 or from the blocked side of `[137]`, and returns `[182]` at the failure of
 `[178]`'s conditional factorization, of `[179]`'s realizability, or of `[180]`'s
 increment coverage.  Each fact set is its own open node, stated as a subtype of
-the generic residual `PairConditionalFactorizationOutcome` (the 62 facts common
+the generic residual `PairConditionalFactorizationOutcome` (the 76 facts common
 to all six): the generic residual conjoined with every extra fact of its set,
 each read with one `ExactLedger.get`.
 -/
@@ -23,7 +23,7 @@ open Hypostructure.Graph.Strategy.Spine
 universe u w
 
 /-- **Node `[182]`, free side, factorizationFails**: `[130]` blocker-free arm, `[131]` free-pair count fails; `[178]` conditional factorization fails.
-The generic residual and the 4 extra facts of this ledger (66 facts). -/
+The generic residual and the 4 extra facts of this ledger (80 facts). -/
 abbrev PairConditionalFactorizationOutcome_freeFactorizationFails (selected : EGInput.{u}) : Prop :=
   PairConditionalFactorizationOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -68,6 +68,14 @@ theorem pairConditionalFactorizationReturn_freeFactorizationFails
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -120,7 +128,7 @@ theorem pairConditionalFactorizationReturn_freeFactorizationFails
     (history.get (K .pairFactorizationFails)).down⟩
 
 /-- **Node `[182]`, free side, realizabilityFails**: `[130]` blocker-free arm, `[131]` free-pair count fails; `[178]` factorization holds, `[179]` realizability fails.
-The generic residual and the 7 extra facts of this ledger (69 facts). -/
+The generic residual and the 7 extra facts of this ledger (83 facts). -/
 abbrev PairConditionalFactorizationOutcome_freeRealizabilityFails (selected : EGInput.{u}) : Prop :=
   PairConditionalFactorizationOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -171,6 +179,14 @@ theorem pairConditionalFactorizationReturn_freeRealizabilityFails
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -229,7 +245,7 @@ theorem pairConditionalFactorizationReturn_freeRealizabilityFails
     (history.get (K .pairRealizabilityFails)).down⟩
 
 /-- **Node `[182]`, free side, incrementFails**: `[130]` blocker-free arm, `[131]` free-pair count fails; `[179]` realizability holds with no early outcome, `[180]` increment coverage fails.
-The generic residual and the 10 extra facts of this ledger (72 facts). -/
+The generic residual and the 10 extra facts of this ledger (86 facts). -/
 abbrev PairConditionalFactorizationOutcome_freeIncrementFails (selected : EGInput.{u}) : Prop :=
   PairConditionalFactorizationOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -286,6 +302,14 @@ theorem pairConditionalFactorizationReturn_freeIncrementFails
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -350,7 +374,7 @@ theorem pairConditionalFactorizationReturn_freeIncrementFails
     (history.get (K .pairIncrementFails)).down⟩
 
 /-- **Node `[182]`, blocked side, factorizationFails**: `[130]` blocked arm (no (d)/(e) blocker), `[132]` no sparse exit, `[134]`--`[137]` token ledger, `[137]` blocked-side count fails; `[178]` conditional factorization fails.
-The generic residual and the 12 extra facts of this ledger (74 facts). -/
+The generic residual and the 12 extra facts of this ledger (88 facts). -/
 abbrev PairConditionalFactorizationOutcome_blockedFactorizationFails (selected : EGInput.{u}) : Prop :=
   PairConditionalFactorizationOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -413,6 +437,14 @@ theorem pairConditionalFactorizationReturn_blockedFactorizationFails
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -483,7 +515,7 @@ theorem pairConditionalFactorizationReturn_blockedFactorizationFails
     (history.get (K .pairFactorizationFails)).down⟩
 
 /-- **Node `[182]`, blocked side, realizabilityFails**: `[130]` blocked arm (no (d)/(e) blocker), `[132]` no sparse exit, `[134]`--`[137]` token ledger, `[137]` blocked-side count fails; `[178]` factorization holds, `[179]` realizability fails.
-The generic residual and the 15 extra facts of this ledger (77 facts). -/
+The generic residual and the 15 extra facts of this ledger (91 facts). -/
 abbrev PairConditionalFactorizationOutcome_blockedRealizabilityFails (selected : EGInput.{u}) : Prop :=
   PairConditionalFactorizationOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -552,6 +584,14 @@ theorem pairConditionalFactorizationReturn_blockedRealizabilityFails
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -628,7 +668,7 @@ theorem pairConditionalFactorizationReturn_blockedRealizabilityFails
     (history.get (K .pairRealizabilityFails)).down⟩
 
 /-- **Node `[182]`, blocked side, incrementFails**: `[130]` blocked arm (no (d)/(e) blocker), `[132]` no sparse exit, `[134]`--`[137]` token ledger, `[137]` blocked-side count fails; `[179]` realizability holds with no early outcome, `[180]` increment coverage fails.
-The generic residual and the 18 extra facts of this ledger (80 facts). -/
+The generic residual and the 18 extra facts of this ledger (94 facts). -/
 abbrev PairConditionalFactorizationOutcome_blockedIncrementFails (selected : EGInput.{u}) : Prop :=
   PairConditionalFactorizationOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -703,6 +743,14 @@ theorem pairConditionalFactorizationReturn_blockedIncrementFails
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]

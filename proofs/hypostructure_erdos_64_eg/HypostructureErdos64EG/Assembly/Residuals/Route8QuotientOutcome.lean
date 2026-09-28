@@ -36,10 +36,10 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **Node `[187] ([348])` as a product of arm blocks**: the generic
-residual (75 common facts), one lane entry (a near-cubic prefix block with an
+residual (83 common facts), one lane entry (a near-cubic prefix block with an
 entropy block), and one net-charge continuation (Type A lane or Type B
 high-surplus lane, each a nested product of its own blocks).  Totals run from
-95 to 134 facts. -/
+95 to 142 facts. -/
 abbrev Route8QuotientOutcome_product (selected : EGInput.{u}) : Prop :=
   Route8QuotientOutcome selected ∧ Route8LaneEntry selected ∧
     NetChargeContinuation selected
@@ -50,7 +50,7 @@ theorem Route8QuotientOutcome_product.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- The return of `Route8QuotientOutcome_product`, parameterised by the arm
-choices: the 75 common facts are read from the ledger by
+choices: the 83 common facts are read from the ledger by
 `route8QuotientReturn`, and each factor is the arm block the path took, built
 by that block's `.ret` from the same ledger (one `get` per key). -/
 theorem route8QuotientProductReturn
@@ -81,6 +81,14 @@ theorem route8QuotientProductReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]

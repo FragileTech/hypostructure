@@ -5,7 +5,7 @@ import HypostructureErdos64EG.Assembly.Residuals.ArmBlocks
 
 Node `[187]` (private-carrier rate failure), split by the distinct fact set of
 the single ledger at its return.  The generic `Route8RateFailsOutcome`
-(`Assembly/Residuals.lean`) carries the 57 facts common to every path; the
+(`Assembly/Residuals.lean`) carries the 65 facts common to every path; the
 eleven paths reach it through `[158]`/`[160]` (three upstream arms) times the
 four surviving arms of `[50]`--`[55]`, less the high-entropy arm after the
 failed dense rate (closed at `[53]`: on the dense residual with `τ(θ) < 1/4`
@@ -27,7 +27,7 @@ universe u w
 `[158]` yes (realized package);
 `[50]` high, `[53]` bound (Residual C).
 The generic residual and the 6 extra facts of this path
-(63 facts). -/
+(71 facts). -/
 abbrev Route8RateFailsOutcome_realized_highEntropy (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -82,6 +82,14 @@ theorem route8RateFailsReturn_realized_highEntropy
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -128,7 +136,7 @@ theorem route8RateFailsReturn_realized_highEntropy
 `[158]` yes (realized package);
 `[50]` low, local-type coordinate nonrepetitive.
 The generic residual and the 5 extra facts of this path
-(62 facts). -/
+(70 facts). -/
 abbrev Route8RateFailsOutcome_realized_lowNonrepetitive (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -182,6 +190,14 @@ theorem route8RateFailsReturn_realized_lowNonrepetitive
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -227,7 +243,7 @@ theorem route8RateFailsReturn_realized_lowNonrepetitive
 `[158]` yes (realized package);
 `[50]` low, local-type coordinate repetitive, dominant rooted type wedge-free.
 The generic residual and the 7 extra facts of this path
-(64 facts). -/
+(72 facts). -/
 abbrev Route8RateFailsOutcome_realized_lowWedgeFree (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -285,6 +301,14 @@ theorem route8RateFailsReturn_realized_lowWedgeFree
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -332,7 +356,7 @@ theorem route8RateFailsReturn_realized_lowWedgeFree
 `[158]` yes (realized package);
 `[50]` low, local-type coordinate repetitive, dominant rooted wedge type.
 The generic residual and the 8 extra facts of this path
-(65 facts). -/
+(73 facts). -/
 abbrev Route8RateFailsOutcome_realized_lowWedge (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -392,6 +416,14 @@ theorem route8RateFailsReturn_realized_lowWedge
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -440,7 +472,7 @@ theorem route8RateFailsReturn_realized_lowWedge
 `[158]` no (unrealized package), `[160]` first test no (`τ(θ) ≥ 1/4`);
 `[50]` high, `[53]` bound (Residual C).
 The generic residual and the 7 extra facts of this path
-(64 facts). -/
+(72 facts). -/
 abbrev Route8RateFailsOutcome_denseAtOrAbove_highEntropy (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -498,6 +530,14 @@ theorem route8RateFailsReturn_denseAtOrAbove_highEntropy
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -545,7 +585,7 @@ theorem route8RateFailsReturn_denseAtOrAbove_highEntropy
 `[158]` no (unrealized package), `[160]` first test no (`τ(θ) ≥ 1/4`);
 `[50]` low, local-type coordinate nonrepetitive.
 The generic residual and the 6 extra facts of this path
-(63 facts). -/
+(71 facts). -/
 abbrev Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -601,6 +641,14 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowNonrepetitive
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -647,7 +695,7 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowNonrepetitive
 `[158]` no (unrealized package), `[160]` first test no (`τ(θ) ≥ 1/4`);
 `[50]` low, local-type coordinate repetitive, dominant rooted type wedge-free.
 The generic residual and the 8 extra facts of this path
-(65 facts). -/
+(73 facts). -/
 abbrev Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -707,6 +755,14 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowWedgeFree
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -755,7 +811,7 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowWedgeFree
 `[158]` no (unrealized package), `[160]` first test no (`τ(θ) ≥ 1/4`);
 `[50]` low, local-type coordinate repetitive, dominant rooted wedge type.
 The generic residual and the 9 extra facts of this path
-(66 facts). -/
+(74 facts). -/
 abbrev Route8RateFailsOutcome_denseAtOrAbove_lowWedge (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -817,6 +873,14 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowWedge
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -866,7 +930,7 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowWedge
 `[158]` no (unrealized package), `[160]` first test yes (`τ(θ) < 1/4`), private-carrier rate failed;
 `[50]` low, local-type coordinate nonrepetitive.
 The generic residual and the 6 extra facts of this path
-(63 facts). -/
+(71 facts). -/
 abbrev Route8RateFailsOutcome_denseBelow_lowNonrepetitive (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -921,6 +985,14 @@ theorem route8RateFailsReturn_denseBelow_lowNonrepetitive
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -970,7 +1042,7 @@ theorem route8RateFailsReturn_denseBelow_lowNonrepetitive
 `[158]` no (unrealized package), `[160]` first test yes (`τ(θ) < 1/4`), private-carrier rate failed;
 `[50]` low, local-type coordinate repetitive, dominant rooted type wedge-free.
 The generic residual and the 8 extra facts of this path
-(65 facts). -/
+(73 facts). -/
 abbrev Route8RateFailsOutcome_denseBelow_lowWedgeFree (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1029,6 +1101,14 @@ theorem route8RateFailsReturn_denseBelow_lowWedgeFree
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -1080,7 +1160,7 @@ theorem route8RateFailsReturn_denseBelow_lowWedgeFree
 `[158]` no (unrealized package), `[160]` first test yes (`τ(θ) < 1/4`), private-carrier rate failed;
 `[50]` low, local-type coordinate repetitive, dominant rooted wedge type.
 The generic residual and the 9 extra facts of this path
-(66 facts). -/
+(74 facts). -/
 abbrev Route8RateFailsOutcome_denseBelow_lowWedge (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1141,6 +1221,14 @@ theorem route8RateFailsReturn_denseBelow_lowWedge
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -1233,6 +1321,14 @@ theorem route8RateFailsSubtypesReturn_routeEightEntry
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -1309,6 +1405,14 @@ theorem route8RateFailsSubtypesReturn_rateFailedExit
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
