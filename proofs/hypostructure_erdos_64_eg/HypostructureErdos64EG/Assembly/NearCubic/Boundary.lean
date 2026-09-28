@@ -1,4 +1,5 @@
 import HypostructureErdos64EG.Assembly.NetCharge.Boundary
+import HypostructureErdos64EG.Assembly.Residuals.ColdBranchClosedOutcome
 import HypostructureErdos64EG.Assembly.Residuals.Node54ResidualOutcome
 import HypostructureErdos64EG.Assembly.Residuals.Node162ResidualOutcome
 import HypostructureErdos64EG.Assembly.Residuals.BlockedBarrierOverlapOutcome

@@ -1,7 +1,3 @@
-import HypostructureErdos64EG.Assembly.Absorbed.Boundary
-import HypostructureErdos64EG.Assembly.Absorbed.FanCharge
-import HypostructureErdos64EG.Assembly.Absorbed.Prerequisites
-import HypostructureErdos64EG.Assembly.Absorbed.Residual
 import HypostructureErdos64EG.Assembly.Basic
 import HypostructureErdos64EG.Assembly.Entry
 import HypostructureErdos64EG.Assembly.Final

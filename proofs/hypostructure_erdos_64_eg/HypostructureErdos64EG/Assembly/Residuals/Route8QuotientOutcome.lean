@@ -6,16 +6,19 @@ import HypostructureErdos64EG.Assembly.Residuals.Route8Blocks
 
 Node `[187] ([348], route-8 quotient failure)` as a PRODUCT OF ARM BLOCKS.
 
-The 1360 paths from `selectedLedgerBoundary` to the one return site
+The 1120 paths from `selectedLedgerBoundary` to the one return site
 (`route8QuotientReturn` in `selectedRouteEightUnifiedResidual`,
-`Assembly/RouteEight/Local.lean`) carry 1360 distinct fact sets.  Each is
+`Assembly/RouteEight/Local.lean`) carry 1120 distinct fact sets.  Each is
 exactly the 64 common keys of `Route8QuotientOutcome` together with one block
 per factor of
 
-  `5 prefix × 4 entropy × 68 continuation`,  `68 = 2·25 + 12 + 6`,
+  `5 prefix × 4 entropy × 56 continuation`,  `56 = 2·25 + 6`,
 
 and every combination occurs (checked against the elaborated ledger of every
 path).  The blocks live in `Residuals/Route8Blocks.lean`.
+The absorbed lane `[174]`--`[177]` contributes no path: `[173]`'s no-arm is
+closed at the node against the private-carrier rate `K .route8Rate`
+(`instIncompatibleExactCollisionFailsRoute8Rate`).
 -/
 
 namespace HypostructureErdos64EG
@@ -29,7 +32,7 @@ universe u
 
 /-- **Node `[187] ([348])` as a product of arm blocks**: the generic
 residual (64 common facts), one near-cubic prefix block, one entropy block,
-and one net-charge continuation (Type A lane, absorbed lane, or Type B
+and one net-charge continuation (Type A lane or Type B
 high-surplus lane, each a nested product of its own blocks).  Totals run from
 84 to 121 facts. -/
 abbrev Route8QuotientOutcome_product (selected : EGInput.{u}) : Prop :=

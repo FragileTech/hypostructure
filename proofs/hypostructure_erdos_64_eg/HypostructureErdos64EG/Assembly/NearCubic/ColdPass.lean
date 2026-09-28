@@ -178,9 +178,9 @@ which routing continues; the ¬(★) arm returns the explicitly constructed
 residual `K .coldRepeatedStateResidual` (G's first equal-state pair, its
 separating path context and its profile separation).
 
-`arm` names the path into `[153]` (the absorbed lane with its prefix and
-entropy arm, or one of the three linear arms); the ¬(★) return is that path's
-subtype. -/
+`arm` names the path into `[153]` (one of its three linear arms; the absorbed
+lane is not entered, `[173]`'s no-arm being closed against `K .route8Rate`);
+the ¬(★) return is that path's subtype. -/
 noncomputable def nearCubicColdOccurrence
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)

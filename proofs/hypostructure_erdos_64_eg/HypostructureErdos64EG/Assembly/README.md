@@ -40,8 +40,10 @@ command needs a clean build for ordinary proof changes.
 - `Entry`, `Surplus/Local`, `NearCubic/Local`, and `RouteEight/Local` contain
   independently reusable steps; `NearCubic/{Spine,ColdPass,DensePass}` hold the
   near-cubic spine and cold/dense corridor passes.
-- `TypeA/*`, `TypeB/*`, and `Absorbed/*` contain individual continuations.
-- `NetCharge/Continuation` combines the Type A/B and absorbed continuations.
+- `TypeA/*` and `TypeB/*` contain individual continuations.
+- `NetCharge/Continuation` combines the Type A/B continuations; its `[173]`
+  no-arm (the absorbed-configuration residual `[174]`) is closed at the node
+  against the private-carrier rate.
 - `NearCubic/Survivor` combines the survivor branches, split into
   `Survivor/Realized` and `Survivor/Unrealized`.
 - `Final` connects the entry decisions to strict-surplus and near-cubic results.

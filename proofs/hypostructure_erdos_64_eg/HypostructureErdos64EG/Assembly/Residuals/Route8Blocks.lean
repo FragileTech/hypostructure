@@ -6,9 +6,10 @@ import HypostructureErdos64EG.Assembly.Basic
 The arm blocks of the route-`8` lane, shared by every residual returned from
 `selectedRouteEightUnifiedResidual` (`Route8QuotientOutcome`,
 `TypeBSublinearOutcome`, ...).  The paths into that return site form the
-product `5 prefix × 4 entropy × 68 continuation`, with
-`68 = 2·25 + 12 + 6` (Type A lane, absorbed lane, Type B high-surplus lane;
-the B-chain has 6 fan/certificate arms).
+product `5 prefix × 4 entropy × 56 continuation`, with
+`56 = 2·25 + 6` (Type A lane, Type B high-surplus lane; the B-chain has 6
+fan/certificate arms).  The absorbed lane `[174]`--`[177]` is closed at
+`[173]` against the private-carrier rate and contributes no path.
 Each block is an explicit conjunction of EVERY key of its arm as a `Holds`
 conjunct, with a `.ret` theorem that reads each key with one `get` from the
 single ledger.  Keys common to all paths are not listed here: they belong to
@@ -556,59 +557,6 @@ theorem NetChargeLaneBlock_typeALowSurplus.ret
     (history.get (K .typeASaturatedReceiver)).down,
     (history.get (K .typeASupport)).down⟩
 
-/-- Net-charge lane: absorbed germ (`selectedAbsorbedGermResidual`) (11 facts). -/
-abbrev NetChargeLaneBlock_absorbedGerm (selected : EGInput.{u}) : Prop :=
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .absorbedGermFanData selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .absorbedGermSplit selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .absorbedHandoffCore selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldCutStatesDistinct selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldExchangeBound selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldFailureDefectRoute selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldFailureRouting selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermCandidates selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .exactCollisionFails selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBAbsorbedHalfEdge selected.object
-
-/-- `NetChargeLaneBlock_absorbedGerm` from the one ledger: one `get` per key. -/
-theorem NetChargeLaneBlock_absorbedGerm.ret
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .absorbedConfigurationResidual) known]
-    [FactKeys.Has (K .absorbedGermFanData) known]
-    [FactKeys.Has (K .absorbedGermSplit) known]
-    [FactKeys.Has (K .absorbedHandoffCore) known]
-    [FactKeys.Has (K .coldCutStatesDistinct) known]
-    [FactKeys.Has (K .coldExchangeBound) known]
-    [FactKeys.Has (K .coldFailureDefectRoute) known]
-    [FactKeys.Has (K .coldFailureRouting) known]
-    [FactKeys.Has (K .coldGermCandidates) known]
-    [FactKeys.Has (K .exactCollisionFails) known]
-    [FactKeys.Has (K .typeBAbsorbedHalfEdge) known] :
-    NetChargeLaneBlock_absorbedGerm selected :=
-  ⟨(history.get (K .absorbedConfigurationResidual)).down,
-    (history.get (K .absorbedGermFanData)).down,
-    (history.get (K .absorbedGermSplit)).down,
-    (history.get (K .absorbedHandoffCore)).down,
-    (history.get (K .coldCutStatesDistinct)).down,
-    (history.get (K .coldExchangeBound)).down,
-    (history.get (K .coldFailureDefectRoute)).down,
-    (history.get (K .coldFailureRouting)).down,
-    (history.get (K .coldGermCandidates)).down,
-    (history.get (K .exactCollisionFails)).down,
-    (history.get (K .typeBAbsorbedHalfEdge)).down⟩
-
 /-- Net-charge lane: Type B high surplus (`selectedTypeBHighSurplusContinuation`) (5 facts). -/
 abbrev NetChargeLaneBlock_typeBHighSurplus (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -917,100 +865,14 @@ abbrev TypeALane (selected : EGInput.{u}) : Prop :=
   NetChargeLaneBlock_typeALowSurplus selected ∧ TypeAEntry selected ∧
     TypeAArm selected
 
-/-- Absorbed cold-germ arm: a positive germ (14 facts). -/
-abbrev AbsorbedGermBlock_positive (selected : EGInput.{u}) : Prop :=
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldAbsorbedNeutralConfiguration selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldBranchClosed selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldCanonicalNeutralConfiguration selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldCanonicalReplacementSwap selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldCanonicalReplacementTrivial selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermDistinguished selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermFamilyPositive selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermNoneDistinguishing selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermNoneRealizing selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermRealized selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermRouted selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermSilent selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldPositiveGerm selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldSameInterfaceTable selected.object
-
-/-- `AbsorbedGermBlock_positive` from the one ledger: one `get` per key. -/
-theorem AbsorbedGermBlock_positive.ret
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .coldAbsorbedNeutralConfiguration) known]
-    [FactKeys.Has (K .coldBranchClosed) known]
-    [FactKeys.Has (K .coldCanonicalNeutralConfiguration) known]
-    [FactKeys.Has (K .coldCanonicalReplacementSwap) known]
-    [FactKeys.Has (K .coldCanonicalReplacementTrivial) known]
-    [FactKeys.Has (K .coldGermDistinguished) known]
-    [FactKeys.Has (K .coldGermFamilyPositive) known]
-    [FactKeys.Has (K .coldGermNoneDistinguishing) known]
-    [FactKeys.Has (K .coldGermNoneRealizing) known]
-    [FactKeys.Has (K .coldGermRealized) known]
-    [FactKeys.Has (K .coldGermRouted) known]
-    [FactKeys.Has (K .coldGermSilent) known]
-    [FactKeys.Has (K .coldPositiveGerm) known]
-    [FactKeys.Has (K .coldSameInterfaceTable) known] :
-    AbsorbedGermBlock_positive selected :=
-  ⟨(history.get (K .coldAbsorbedNeutralConfiguration)).down,
-    (history.get (K .coldBranchClosed)).down,
-    (history.get (K .coldCanonicalNeutralConfiguration)).down,
-    (history.get (K .coldCanonicalReplacementSwap)).down,
-    (history.get (K .coldCanonicalReplacementTrivial)).down,
-    (history.get (K .coldGermDistinguished)).down,
-    (history.get (K .coldGermFamilyPositive)).down,
-    (history.get (K .coldGermNoneDistinguishing)).down,
-    (history.get (K .coldGermNoneRealizing)).down,
-    (history.get (K .coldGermRealized)).down,
-    (history.get (K .coldGermRouted)).down,
-    (history.get (K .coldGermSilent)).down,
-    (history.get (K .coldPositiveGerm)).down,
-    (history.get (K .coldSameInterfaceTable)).down⟩
-
-/-- Absorbed cold-germ arm: no positive germ (1 fact). -/
-abbrev AbsorbedGermBlock_none (selected : EGInput.{u}) : Prop :=
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldNoPositiveGerm selected.object
-
-/-- `AbsorbedGermBlock_none` from the one ledger: one `get` per key. -/
-theorem AbsorbedGermBlock_none.ret
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .coldNoPositiveGerm) known] :
-    AbsorbedGermBlock_none selected :=
-  (history.get (K .coldNoPositiveGerm)).down
-
-/-- The absorbed cold-germ factor. -/
-abbrev AbsorbedGerm (selected : EGInput.{u}) : Prop :=
-  AbsorbedGermBlock_positive selected ∨
-  AbsorbedGermBlock_none selected
-
-/-- The absorbed lane: 2 cold-germ blocks × B-chain. -/
-abbrev AbsorbedLane (selected : EGInput.{u}) : Prop :=
-  NetChargeLaneBlock_absorbedGerm selected ∧ AbsorbedGerm selected ∧
-    BChain selected
-
 /-- The Type B high-surplus lane: the B-chain. -/
 abbrev TypeBHighSurplusLane (selected : EGInput.{u}) : Prop :=
   NetChargeLaneBlock_typeBHighSurplus selected ∧ BChain selected
 
-/-- The continuation factor (68 arms = 2·25 + 12 + 6). -/
+/-- The continuation factor (56 arms = 2·25 + 6).  The absorbed lane
+`[174]`--`[177]` is not a factor: the `[173]` no-arm is closed at the node
+against `K .route8Rate` (`instIncompatibleExactCollisionFailsRoute8Rate`). -/
 abbrev NetChargeContinuation (selected : EGInput.{u}) : Prop :=
-  TypeALane selected ∨ AbsorbedLane selected ∨ TypeBHighSurplusLane selected
+  TypeALane selected ∨ TypeBHighSurplusLane selected
 
 end HypostructureErdos64EG

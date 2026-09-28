@@ -1,4 +1,4 @@
-import HypostructureErdos64EG.Assembly.Absorbed.Boundary
+import HypostructureErdos64EG.Assembly.RouteEight.Boundary
 import HypostructureErdos64EG.Assembly.Residuals.Node153ResidualOutcome
 
 /-!
@@ -17,11 +17,10 @@ open Hypostructure.Graph.Strategy.Spine
 universe u w
 
 /-- The only live conclusions of the net-charge continuation are the literal
-Route-8 residuals, the literal absorbed-germ residuals published by their
-own ledger owners, or the returned residual of node `[153]` on the absorbed
-lane (G's first equal-state pair, `K .coldRepeatedStateResidual`). -/
+Route-8 residuals.  The `[173]` no-arm (the absorbed-configuration residual
+`[174]`, with its fan data, its cold-closure exits and its node-`[153]` return)
+is closed at the node against the private-carrier rate `K .route8Rate`. -/
 abbrev SelectedNetChargeBoundary (selected : EGInput.{u}) :=
-  SelectedRouteEightBoundary selected ∨ SelectedAbsorbedGermBoundary selected ∨
-    Node153ResidualSubtypes selected
+  SelectedRouteEightBoundary selected
 
 end HypostructureErdos64EG
