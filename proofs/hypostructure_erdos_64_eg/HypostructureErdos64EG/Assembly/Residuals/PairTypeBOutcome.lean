@@ -29,14 +29,12 @@ universe u
 /-- **Node `[187]` ([179]/[180] Type B entry), `independentSystem`** (thm:main
 (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] independent arm (canonical pair split), [131] free-pair count
-fails; then [179] early outcome.  Every fact of its ledger: the 75 common facts
-and 4 explicit extra facts (79 facts). -/
+fails; then [179] early outcome.  Every fact of its ledger: the 76 common facts
+and 3 explicit extra facts (79 facts). -/
 abbrev PairTypeBOutcome_independentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .independentPairFamily selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .freePairCountFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .freePairCodeUnrealized selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -185,6 +183,7 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .sparsePortActivation)).down,
       (history.get (K .activeSurplusDemands)).down,
       (history.get (K .baselineSpineDemand)).down,
+      (history.get (K .freePairCountFails)).down,
       (history.get (K .sparseUpperEnvelope)).down,
       (history.get (K .pairOverlapFirstFailure)).down,
       (history.get (K .mixedSparseSpineDependence)).down,
@@ -199,7 +198,6 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .typeBFanEntry)).down,
       Or.inl pairSystemEarlyOutcome⟩,
     (history.get (K .independentPairFamily)).down,
-    (history.get (K .freePairCountFails)).down,
     (history.get (K .freePairCodeUnrealized)).down,
     pairSystemEarlyOutcome⟩
 
@@ -207,14 +205,12 @@ theorem pairTypeBIndependentSystemReturn
 (thm:main (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the
 ledger reached by [130] independent arm (canonical pair split), [131] free-pair
 count fails; then [179] serial arm, [180] covered increment, [180] early
-outcome.  Every fact of its ledger: the 75 common facts and 7 explicit extra
+outcome.  Every fact of its ledger: the 76 common facts and 6 explicit extra
 facts (82 facts). -/
 abbrev PairTypeBOutcome_independentIncrement (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .independentPairFamily selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .freePairCountFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .freePairCodeUnrealized selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -375,6 +371,7 @@ theorem pairTypeBIndependentIncrementReturn
       (history.get (K .sparsePortActivation)).down,
       (history.get (K .activeSurplusDemands)).down,
       (history.get (K .baselineSpineDemand)).down,
+      (history.get (K .freePairCountFails)).down,
       (history.get (K .sparseUpperEnvelope)).down,
       (history.get (K .pairOverlapFirstFailure)).down,
       (history.get (K .mixedSparseSpineDependence)).down,
@@ -390,7 +387,6 @@ theorem pairTypeBIndependentIncrementReturn
       Or.inr ⟨pairSystemNoEarlyOutcome, pairSerialDemandSystem,
         pairIncrementCovered, pairIncrementEarlyOutcome⟩⟩,
     (history.get (K .independentPairFamily)).down,
-    (history.get (K .freePairCountFails)).down,
     (history.get (K .freePairCodeUnrealized)).down,
     pairSystemNoEarlyOutcome,
     pairSerialDemandSystem,
@@ -401,8 +397,8 @@ theorem pairTypeBIndependentIncrementReturn
 (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] dependent arm (canonical pair split: fibres, no blocker (d), no
 blocker (e)), [132] blocker arm, [137] blocked-side count fails; then [179]
-early outcome.  Every fact of its ledger: the 75 common facts and 12 explicit
-extra facts (87 facts). -/
+early outcome.  Every fact of its ledger: the 76 common facts and 12 explicit
+extra facts (88 facts). -/
 abbrev PairTypeBOutcome_dependentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -497,6 +493,7 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .sparsePortActivation) known]
     [FactKeys.Has (K .activeSurplusDemands) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .sparseUpperEnvelope) known]
     [FactKeys.Has (K .pairOverlapFirstFailure) known]
     [FactKeys.Has (K .mixedSparseSpineDependence) known]
@@ -581,7 +578,8 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .sparsePortActivation)).down,
       (history.get (K .activeSurplusDemands)).down,
       (history.get (K .baselineSpineDemand)).down,
-      (history.get (K .sparseUpperEnvelope)).down,
+      (history.get (K .freePairCountFails)).down,
+        (history.get (K .sparseUpperEnvelope)).down,
       (history.get (K .pairOverlapFirstFailure)).down,
       (history.get (K .mixedSparseSpineDependence)).down,
       (history.get (K .exactCubicBaselineBudget)).down,
@@ -612,7 +610,7 @@ theorem pairTypeBDependentSystemReturn
 reached by [130] dependent arm (canonical pair split: fibres, no blocker (d), no
 blocker (e)), [132] blocker arm, [137] blocked-side count fails; then [179]
 serial arm, [180] covered increment, [180] early outcome.  Every fact of its
-ledger: the 75 common facts and 15 explicit extra facts (90 facts). -/
+ledger: the 76 common facts and 15 explicit extra facts (91 facts). -/
 abbrev PairTypeBOutcome_dependentIncrement (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -713,6 +711,7 @@ theorem pairTypeBDependentIncrementReturn
     [FactKeys.Has (K .sparsePortActivation) known]
     [FactKeys.Has (K .activeSurplusDemands) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .sparseUpperEnvelope) known]
     [FactKeys.Has (K .pairOverlapFirstFailure) known]
     [FactKeys.Has (K .mixedSparseSpineDependence) known]
@@ -803,7 +802,8 @@ theorem pairTypeBDependentIncrementReturn
       (history.get (K .sparsePortActivation)).down,
       (history.get (K .activeSurplusDemands)).down,
       (history.get (K .baselineSpineDemand)).down,
-      (history.get (K .sparseUpperEnvelope)).down,
+      (history.get (K .freePairCountFails)).down,
+        (history.get (K .sparseUpperEnvelope)).down,
       (history.get (K .pairOverlapFirstFailure)).down,
       (history.get (K .mixedSparseSpineDependence)).down,
       (history.get (K .exactCubicBaselineBudget)).down,
