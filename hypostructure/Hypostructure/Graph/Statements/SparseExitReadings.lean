@@ -215,21 +215,40 @@ abbrev WholePrivateEdgesAt (w : SparseTargetDefectWitness data object)
 
 end Readings
 
+/-- `WitnessReadingCountsStatement` at one target-defect witness `w`. -/
+noncomputable abbrev WitnessReadingCountsAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (w : SparseTargetDefectWitness data object) : Prop :=
+  (∀ b, w.count w.first b = w.count w.second b) ∧
+  (∀ b : (SupportAtom.boundary object w.support).Vertex,
+    b.1 ∈ sparseDeclaredSupport data object w.first →
+    ∀ x ∈ sparseDeclaredSupport data object w.first, object.graph.Adj b.1 x →
+    b.1 ∈ sparseDeclaredSupport data object w.second) ∧
+  (∀ b : (SupportAtom.boundary object w.support).Vertex,
+    b.1 ∈ sparseDeclaredSupport data object w.second →
+    ∀ x ∈ sparseDeclaredSupport data object w.second, object.graph.Adj b.1 x →
+    b.1 ∈ sparseDeclaredSupport data object w.first)
+
 /-- **Reading counts and transfer at the canonical witness**: `c_A(b) = c_B(b)`
 at every `b ∈ ∂Z`; a boundary vertex of `A` with an `A`-neighbour lies in `B`,
 and conversely. -/
 noncomputable def WitnessReadingCountsStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    (∀ b, w.count w.first b = w.count w.second b) ∧
-    (∀ b : (SupportAtom.boundary object w.support).Vertex,
-      b.1 ∈ sparseDeclaredSupport data object w.first →
-      ∀ x ∈ sparseDeclaredSupport data object w.first, object.graph.Adj b.1 x →
-      b.1 ∈ sparseDeclaredSupport data object w.second) ∧
-    (∀ b : (SupportAtom.boundary object w.support).Vertex,
-      b.1 ∈ sparseDeclaredSupport data object w.second →
-      ∀ x ∈ sparseDeclaredSupport data object w.second, object.graph.Adj b.1 x →
-      b.1 ∈ sparseDeclaredSupport data object w.first)
+  AtSparseTargetDefectWitness data object WitnessReadingCountsAtWitness
+
+/-- `WitnessActiveLabelsStatement` at one target-defect witness `w`. -/
+noncomputable abbrev WitnessActiveLabelsAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (w : SparseTargetDefectWitness data object) : Prop :=
+  2 ≤ {l : (SupportAtom.boundary object w.support).Vertex | 0 < w.count w.first l}.ncard ∧
+  (∃ x ∈ sparseDeclaredSupport data object w.first,
+    x ∈ SupportAtom.cutBoundary object w.support) ∧
+  (∃ x ∈ sparseDeclaredSupport data object w.second,
+    x ∈ SupportAtom.cutBoundary object w.support) ∧
+  ∃ l₁ l₂ : (SupportAtom.boundary object w.support).Vertex, l₁ ≠ l₂ ∧
+    ∀ l, (l = l₁ ∨ l = l₂) →
+      0 < w.count w.first l ∧ w.count w.first l = w.count w.second l ∧
+      l.1 ∈ sparseDeclaredSupport data object w.first ∧
+      l.1 ∈ sparseDeclaredSupport data object w.second ∧
+      w.count w.first l + 1 ≤ object.degree l.1
 
 /-- **At least two active labels at the canonical witness**: the set of labels
 `l ∈ ∂Z` with `c_A(l) > 0` has at least two elements; two distinct ones have
@@ -237,49 +256,54 @@ noncomputable def WitnessReadingCountsStatement (data : Parameters)
 and `B` meet `∂Z` (no reading is boundary-free). -/
 noncomputable def WitnessActiveLabelsStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    2 ≤ {l : (SupportAtom.boundary object w.support).Vertex | 0 < w.count w.first l}.ncard ∧
-    (∃ x ∈ sparseDeclaredSupport data object w.first,
-      x ∈ SupportAtom.cutBoundary object w.support) ∧
-    (∃ x ∈ sparseDeclaredSupport data object w.second,
-      x ∈ SupportAtom.cutBoundary object w.support) ∧
-    ∃ l₁ l₂ : (SupportAtom.boundary object w.support).Vertex, l₁ ≠ l₂ ∧
-      ∀ l, (l = l₁ ∨ l = l₂) →
-        0 < w.count w.first l ∧ w.count w.first l = w.count w.second l ∧
-        l.1 ∈ sparseDeclaredSupport data object w.first ∧
-        l.1 ∈ sparseDeclaredSupport data object w.second ∧
-        w.count w.first l + 1 ≤ object.degree l.1
+  AtSparseTargetDefectWitness data object WitnessActiveLabelsAtWitness
+
+/-- `TwoBoundaryAllActiveStatement` at one target-defect witness `w`. -/
+noncomputable abbrev TwoBoundaryAllActiveAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (w : SparseTargetDefectWitness data object) : Prop :=
+  (SupportAtom.cutBoundary object w.support).card = 2 →
+  ∀ b : (SupportAtom.boundary object w.support).Vertex,
+    0 < w.count w.first b ∧ b.1 ∈ sparseDeclaredSupport data object w.first ∧
+      b.1 ∈ sparseDeclaredSupport data object w.second
 
 /-- **`|∂Z| = 2`: the whole boundary is active and lies in `A ∩ B`.** -/
 noncomputable def TwoBoundaryAllActiveStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    (SupportAtom.cutBoundary object w.support).card = 2 →
-    ∀ b : (SupportAtom.boundary object w.support).Vertex,
-      0 < w.count w.first b ∧ b.1 ∈ sparseDeclaredSupport data object w.first ∧
-        b.1 ∈ sparseDeclaredSupport data object w.second
+  AtSparseTargetDefectWitness data object TwoBoundaryAllActiveAtWitness
 
 open Classical in
+/-- `BoundaryPartitionStatement` at one target-defect witness `w`. -/
+noncomputable abbrev BoundaryPartitionAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (w : SparseTargetDefectWitness data object) : Prop :=
+  ∀ b : (SupportAtom.boundary object w.support).Vertex,
+    (0 < w.count w.first b ∧ b.1 ∈ sparseDeclaredSupport data object w.first ∧
+      b.1 ∈ sparseDeclaredSupport data object w.second) ∨
+    (w.count w.first b = 0 ∧ w.count w.second b = 0 ∧
+      (b.1 ∈ sparseDeclaredSupport data object w.first ∨
+        b.1 ∈ sparseDeclaredSupport data object w.second) ∧
+      (b.1 ∈ sparseDeclaredSupport data object w.first →
+        ∀ x ∈ sparseDeclaredSupport data object w.first, ¬ object.graph.Adj b.1 x) ∧
+      (b.1 ∈ sparseDeclaredSupport data object w.second →
+        ∀ x ∈ sparseDeclaredSupport data object w.second, ¬ object.graph.Adj b.1 x)) ∨
+    (b.1 ∉ sparseDeclaredSupport data object w.first ∧
+      b.1 ∉ sparseDeclaredSupport data object w.second ∧
+      ¬ Graph.SupportComponents.Connected.ConnectedOn object (w.support.erase b.1))
+
 /-- **The exact partition of `∂Z`** at the canonical witness: every boundary
 vertex is (i) active (`c_A = c_B ≥ 1`, in `A ∩ B`), or (ii) a zero-count vertex
 of `A ∪ B`, isolated in `G[A]` resp. `G[B]`, or (iii) a Steiner vertex
 (`∉ A ∪ B`), a cut vertex of `G[Z]`. -/
 noncomputable def BoundaryPartitionStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∀ b : (SupportAtom.boundary object w.support).Vertex,
-      (0 < w.count w.first b ∧ b.1 ∈ sparseDeclaredSupport data object w.first ∧
-        b.1 ∈ sparseDeclaredSupport data object w.second) ∨
-      (w.count w.first b = 0 ∧ w.count w.second b = 0 ∧
-        (b.1 ∈ sparseDeclaredSupport data object w.first ∨
-          b.1 ∈ sparseDeclaredSupport data object w.second) ∧
-        (b.1 ∈ sparseDeclaredSupport data object w.first →
-          ∀ x ∈ sparseDeclaredSupport data object w.first, ¬ object.graph.Adj b.1 x) ∧
-        (b.1 ∈ sparseDeclaredSupport data object w.second →
-          ∀ x ∈ sparseDeclaredSupport data object w.second, ¬ object.graph.Adj b.1 x)) ∨
-      (b.1 ∉ sparseDeclaredSupport data object w.first ∧
-        b.1 ∉ sparseDeclaredSupport data object w.second ∧
-        ¬ Graph.SupportComponents.Connected.ConnectedOn object (w.support.erase b.1))
+  AtSparseTargetDefectWitness data object BoundaryPartitionAtWitness
+
+/-- `PositiveCyclePrivateEdgeStatement` at one target-defect witness `w`. -/
+noncomputable abbrev PositiveCyclePrivateEdgeAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (w : SparseTargetDefectWitness data object) : Prop :=
+  ∃ P N : Finset object.Vertex, w.Orientation P N ∧ w.Separates P N ∧
+    w.CyclesUsePrivateEdge P N ∧
+    ¬ ((SupportAtom.retainedPiece object w.support P).graph ≤
+      (SupportAtom.retainedPiece object w.support N).graph)
 
 /-- **Every positive cycle uses a private edge, so `ret_P ⊄ ret_N`**: at the
 canonical witness, with `P` the positive and `N` the negative reading at `O`,
@@ -288,25 +312,38 @@ every accepted cycle of `glue ret_P O` traverses a private edge `xy` of `P`
 an edge of `ret_N`. -/
 noncomputable def PositiveCyclePrivateEdgeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∃ P N : Finset object.Vertex, w.Orientation P N ∧ w.Separates P N ∧
-      w.CyclesUsePrivateEdge P N ∧
-      ¬ ((SupportAtom.retainedPiece object w.support P).graph ≤
-        (SupportAtom.retainedPiece object w.support N).graph)
+  AtSparseTargetDefectWitness data object PositiveCyclePrivateEdgeAtWitness
+
+/-- `WholeCycleMeetsDeficitStatement` at one target-defect witness `w`. -/
+noncomputable abbrev WholeCycleMeetsDeficitAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (w : SparseTargetDefectWitness data object) : Prop :=
+  WholeCycleMeetsDeficitAt w w.first w.second ∧ WholeCycleMeetsDeficitAt w w.second w.first
 
 /-- **Whole case: every positive cycle passes through `Z ∖ Y`**, at both
 orientations (`Z ⊆ A` and `Z ⊆ B`). -/
 noncomputable def WholeCycleMeetsDeficitStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    WholeCycleMeetsDeficitAt w w.first w.second ∧ WholeCycleMeetsDeficitAt w w.second w.first
+  AtSparseTargetDefectWitness data object WholeCycleMeetsDeficitAtWitness
+
+/-- `WholePrivateEdgesStatement` at one target-defect witness `w`. -/
+noncomputable abbrev WholePrivateEdgesAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (w : SparseTargetDefectWitness data object) : Prop :=
+  WholePrivateEdgesAt w w.first w.second ∧ WholePrivateEdgesAt w w.second w.first
 
 /-- **Whole case: the private edges of `X` are exactly the edges at `Z ∖ Y`**,
 at both orientations. -/
 noncomputable def WholePrivateEdgesStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    WholePrivateEdgesAt w w.first w.second ∧ WholePrivateEdgesAt w w.second w.first
+  AtSparseTargetDefectWitness data object WholePrivateEdgesAtWitness
+
+/-- `SpectrumArmOneRefinedStatement` at one target-defect witness `w`. -/
+noncomputable abbrev SpectrumArmOneRefinedAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (w : SparseTargetDefectWitness data object) : Prop :=
+  ∃ P N : Finset object.Vertex, w.Orientation P N ∧ w.Separates P N ∧
+    (Graph.ReadingSpectrumArms.ArmOneRefined w.support P N w.outside ∨
+      w.CyclesMeetThreeLabels P) ∧
+    ((SupportAtom.cutBoundary object w.support).card = 2 →
+      Graph.ReadingSpectrumArms.ArmOneRefined w.support P N w.outside)
 
 /-- **Arm (i) of the spectrum split, refined, at the canonical witness**: with
 `P` positive and `N` negative at `O`, either the refined arm (i)
@@ -317,12 +354,7 @@ classes and the outside closures; no outside `b → a` path completes `π`; and
 `|∂Z| = 2` forces the refined arm (i). -/
 noncomputable def SpectrumArmOneRefinedStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∃ P N : Finset object.Vertex, w.Orientation P N ∧ w.Separates P N ∧
-      (Graph.ReadingSpectrumArms.ArmOneRefined w.support P N w.outside ∨
-        w.CyclesMeetThreeLabels P) ∧
-      ((SupportAtom.cutBoundary object w.support).card = 2 →
-        Graph.ReadingSpectrumArms.ArmOneRefined w.support P N w.outside)
+  AtSparseTargetDefectWitness data object SpectrumArmOneRefinedAtWitness
 
 /-- The witness with the single-edge context `a — b` in place of `O`. -/
 noncomputable abbrev SparseTargetDefectWitness.atEdge {data : Parameters}
@@ -340,15 +372,49 @@ abbrev SparseTargetDefectWitness.EdgeSeparates {data : Parameters}
     Graph.HasCycleWithLength data.LengthOK
       (Graph.glue (w.reading w.second) (Graph.SingleEdgeContext.edgeContext w.support a b)))
 
+/-- `SeparatingEdgeContextWitnessStatement` at one target-defect witness `w`. -/
+noncomputable abbrev SeparatingEdgeContextWitnessAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (w : SparseTargetDefectWitness data object) : Prop :=
+  ∀ a b : (SupportAtom.boundary object w.support).Vertex, a ≠ b → w.EdgeSeparates a b →
+    ¬ object.graph.Adj a.1 b.1 ∧ (w.atEdge a b).Spec
+
 /-- **A separating single-edge context is never at an adjacent pair, and is a
 clause-(b) witness**: at the canonical witness, if the single-edge context
 `a — b` (`a ≠ b` in `∂Z`) separates the readings, then `a ≁ b` in G and
 `w_ab = (A, B, Z, a — b)` satisfies the clause-(b) specification. -/
 noncomputable def SeparatingEdgeContextWitnessStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∀ a b : (SupportAtom.boundary object w.support).Vertex, a ≠ b → w.EdgeSeparates a b →
-      ¬ object.graph.Adj a.1 b.1 ∧ (w.atEdge a b).Spec
+  AtSparseTargetDefectWitness data object SeparatingEdgeContextWitnessAtWitness
+
+/-- `SeparatingEdgeContextSpectrumStatement` at one target-defect witness `w`. -/
+noncomputable abbrev SeparatingEdgeContextSpectrumAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (w : SparseTargetDefectWitness data object) : Prop :=
+  ∀ a b : (SupportAtom.boundary object w.support).Vertex, a ≠ b → w.EdgeSeparates a b →
+    ¬ object.graph.Adj a.1 b.1 ∧
+    ∃ P N : Finset object.Vertex,
+      Graph.HasCycleWithLength data.LengthOK
+        (Graph.glue (SupportAtom.retainedPiece object w.support P)
+          (Graph.SingleEdgeContext.edgeContext w.support a b)) ∧
+      ¬ Graph.HasCycleWithLength data.LengthOK
+        (Graph.glue (SupportAtom.retainedPiece object w.support N)
+          (Graph.SingleEdgeContext.edgeContext w.support a b)) ∧
+      ((∃ a' b' : (SupportAtom.boundary object w.support).Vertex, a' ≠ b' ∧
+          ∃ π : (SupportAtom.retainedPiece object w.support P).graph.Walk
+              (.inl a') (.inl b'), π.IsPath ∧ data.LengthOK (π.length + 1) ∧
+          ∀ π' : (SupportAtom.retainedPiece object w.support N).graph.Walk
+              (.inl a') (.inl b'), π'.IsPath →
+            π'.length ≠ π.length ∧ (1 < π'.length → ¬ data.LengthOK (π'.length + 1))) ∨
+        (∀ c : Graph.CycleCertificate
+            (Graph.glue (SupportAtom.retainedPiece object w.support P)
+              (Graph.SingleEdgeContext.edgeContext w.support a b)) data.LengthOK,
+          ∃ x y d : (SupportAtom.boundary object w.support).Vertex,
+            x ≠ y ∧ x ≠ d ∧ y ≠ d ∧
+            (Sum.inl x : Graph.GluedVertex _
+              (Graph.SingleEdgeContext.edgeContext w.support a b)) ∈ c.walk.support ∧
+            (Sum.inl y : Graph.GluedVertex _
+              (Graph.SingleEdgeContext.edgeContext w.support a b)) ∈ c.walk.support ∧
+            (Sum.inl d : Graph.GluedVertex _
+              (Graph.SingleEdgeContext.edgeContext w.support a b)) ∈ c.walk.support))
 
 /-- **The spectrum split at a separating single-edge context**: at the
 canonical witness, if `a — b` separates the readings, then `a ≁ b`, one reading
@@ -358,33 +424,20 @@ same labels has `|π'| ≠ |π|` and (if `|π'| ≥ 2`) `|π'| + 1` not accepted
 every accepted cycle of the positive gluing meets three labels. -/
 noncomputable def SeparatingEdgeContextSpectrumStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∀ a b : (SupportAtom.boundary object w.support).Vertex, a ≠ b → w.EdgeSeparates a b →
-      ¬ object.graph.Adj a.1 b.1 ∧
-      ∃ P N : Finset object.Vertex,
-        Graph.HasCycleWithLength data.LengthOK
-          (Graph.glue (SupportAtom.retainedPiece object w.support P)
-            (Graph.SingleEdgeContext.edgeContext w.support a b)) ∧
-        ¬ Graph.HasCycleWithLength data.LengthOK
-          (Graph.glue (SupportAtom.retainedPiece object w.support N)
-            (Graph.SingleEdgeContext.edgeContext w.support a b)) ∧
-        ((∃ a' b' : (SupportAtom.boundary object w.support).Vertex, a' ≠ b' ∧
-            ∃ π : (SupportAtom.retainedPiece object w.support P).graph.Walk
-                (.inl a') (.inl b'), π.IsPath ∧ data.LengthOK (π.length + 1) ∧
-            ∀ π' : (SupportAtom.retainedPiece object w.support N).graph.Walk
-                (.inl a') (.inl b'), π'.IsPath →
-              π'.length ≠ π.length ∧ (1 < π'.length → ¬ data.LengthOK (π'.length + 1))) ∨
-          (∀ c : Graph.CycleCertificate
-              (Graph.glue (SupportAtom.retainedPiece object w.support P)
-                (Graph.SingleEdgeContext.edgeContext w.support a b)) data.LengthOK,
-            ∃ x y d : (SupportAtom.boundary object w.support).Vertex,
-              x ≠ y ∧ x ≠ d ∧ y ≠ d ∧
-              (Sum.inl x : Graph.GluedVertex _
-                (Graph.SingleEdgeContext.edgeContext w.support a b)) ∈ c.walk.support ∧
-              (Sum.inl y : Graph.GluedVertex _
-                (Graph.SingleEdgeContext.edgeContext w.support a b)) ∈ c.walk.support ∧
-              (Sum.inl d : Graph.GluedVertex _
-                (Graph.SingleEdgeContext.edgeContext w.support a b)) ∈ c.walk.support))
+  AtSparseTargetDefectWitness data object SeparatingEdgeContextSpectrumAtWitness
+
+/-- `PrivateEdgeSwapStatement` at one target-defect witness `w`. -/
+noncomputable abbrev PrivateEdgeSwapAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (w : SparseTargetDefectWitness data object) : Prop :=
+  ∃ P N : Finset object.Vertex, w.Orientation P N ∧
+    (∃ x y, object.graph.Adj x y ∧ x ∈ P ∧ y ∈ P ∧ y ∉ N ∧
+      x ∈ w.support ∧ y ∈ w.support ∧ y ∉ SupportAtom.cutBoundary object w.support) ∧
+    ∃ x y, object.graph.Adj x y ∧ x ∈ P ∧ y ∈ P ∧ ¬ (x ∈ N ∧ y ∈ N) ∧
+      ∃ v, (v = x ∨ v = y) ∧
+        (Graph.EdgeSwitchPaths.spanning object
+          (Graph.EdgeSwitchPaths.swapGraph N P)).degree v + 1 ≤ data.threshold ∧
+        ¬ Graph.MinimumDegreeAtLeast data.threshold
+          (Graph.EdgeSwitchPaths.spanning object (Graph.EdgeSwitchPaths.swapGraph N P))
 
 /-- **The swap object of the canonical witness**: the positive reading `P` has
 a private edge `xy` (`x, y ∈ P ⊆ Z`, `y ∉ N`, `y` internal to `Z`), and
@@ -392,16 +445,30 @@ a private edge `xy` (`x, y ∈ P ⊆ Z`, `y ∉ N`, `y` internal to `Z`), and
 a tight endpoint of a private edge. -/
 noncomputable def PrivateEdgeSwapStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∃ P N : Finset object.Vertex, w.Orientation P N ∧
-      (∃ x y, object.graph.Adj x y ∧ x ∈ P ∧ y ∈ P ∧ y ∉ N ∧
-        x ∈ w.support ∧ y ∈ w.support ∧ y ∉ SupportAtom.cutBoundary object w.support) ∧
-      ∃ x y, object.graph.Adj x y ∧ x ∈ P ∧ y ∈ P ∧ ¬ (x ∈ N ∧ y ∈ N) ∧
-        ∃ v, (v = x ∨ v = y) ∧
+  AtSparseTargetDefectWitness data object PrivateEdgeSwapAtWitness
+
+/-- `PrivateEdgeSwitchStatement` at one target-defect witness `w`. -/
+noncomputable abbrev PrivateEdgeSwitchAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (w : SparseTargetDefectWitness data object) : Prop :=
+  ∃ P N : Finset object.Vertex, w.Orientation P N ∧
+    ∃ x y, object.graph.Adj x y ∧ x ∈ P ∧ y ∈ P ∧ y ∉ N ∧
+      x ∈ w.support ∧ y ∈ w.support ∧
+      y ∉ SupportAtom.cutBoundary object w.support ∧
+      ((object.degree x = data.threshold ∧ object.degree y = data.threshold ∧
           (Graph.EdgeSwitchPaths.spanning object
-            (Graph.EdgeSwitchPaths.swapGraph N P)).degree v + 1 ≤ data.threshold ∧
-          ¬ Graph.MinimumDegreeAtLeast data.threshold
-            (Graph.EdgeSwitchPaths.spanning object (Graph.EdgeSwitchPaths.swapGraph N P))
+            (Graph.EdgeSwitchPaths.swapGraph N P)).degree x + 1 ≤ data.threshold ∧
+          (Graph.EdgeSwitchPaths.spanning object
+            (Graph.EdgeSwitchPaths.swapGraph N P)).degree y + 1 ≤ data.threshold) ∨
+        ∃ h c, ((h = x ∧ c = y) ∨ (h = y ∧ c = x)) ∧
+          data.threshold + 1 ≤ object.degree h ∧ object.degree c = data.threshold ∧
+          ((data.threshold + 2 ≤ object.degree h ∧ ∃ u, object.graph.Adj h u ∧ u ≠ c ∧
+              ¬ object.graph.Adj c u ∧
+              ∃ p : (object.graph.deleteEdges {s(h, c), s(h, u)}).Walk c u,
+                p.IsPath ∧ data.LengthOK (p.length + 1)) ∨
+            ∃ h₂ u₂, h₂ ≠ h ∧ data.threshold + 1 ≤ object.degree h₂ ∧
+              object.graph.Adj u₂ h₂ ∧ u₂ ≠ c ∧ ¬ object.graph.Adj c u₂ ∧
+              ∃ p : (object.graph.deleteEdges {s(c, h), s(u₂, h₂)}).Walk c u₂,
+                p.IsPath ∧ data.LengthOK (p.length + 1)))
 
 /-- **The private edge of the positive reading and its switch**: at the
 canonical witness there is a private edge `xy` of `P` (`x, y ∈ P ⊆ Z`, `y ∉ N`,
@@ -411,50 +478,39 @@ the swap object (`deg ≤ δ − 1` at `x` and at `y`), or a high end `h`
 switch at `hc`. -/
 noncomputable def PrivateEdgeSwitchStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∃ P N : Finset object.Vertex, w.Orientation P N ∧
-      ∃ x y, object.graph.Adj x y ∧ x ∈ P ∧ y ∈ P ∧ y ∉ N ∧
-        x ∈ w.support ∧ y ∈ w.support ∧
-        y ∉ SupportAtom.cutBoundary object w.support ∧
-        ((object.degree x = data.threshold ∧ object.degree y = data.threshold ∧
-            (Graph.EdgeSwitchPaths.spanning object
-              (Graph.EdgeSwitchPaths.swapGraph N P)).degree x + 1 ≤ data.threshold ∧
-            (Graph.EdgeSwitchPaths.spanning object
-              (Graph.EdgeSwitchPaths.swapGraph N P)).degree y + 1 ≤ data.threshold) ∨
-          ∃ h c, ((h = x ∧ c = y) ∨ (h = y ∧ c = x)) ∧
-            data.threshold + 1 ≤ object.degree h ∧ object.degree c = data.threshold ∧
-            ((data.threshold + 2 ≤ object.degree h ∧ ∃ u, object.graph.Adj h u ∧ u ≠ c ∧
-                ¬ object.graph.Adj c u ∧
-                ∃ p : (object.graph.deleteEdges {s(h, c), s(h, u)}).Walk c u,
-                  p.IsPath ∧ data.LengthOK (p.length + 1)) ∨
-              ∃ h₂ u₂, h₂ ≠ h ∧ data.threshold + 1 ≤ object.degree h₂ ∧
-                object.graph.Adj u₂ h₂ ∧ u₂ ≠ c ∧ ¬ object.graph.Adj c u₂ ∧
-                ∃ p : (object.graph.deleteEdges {s(c, h), s(u₂, h₂)}).Walk c u₂,
-                  p.IsPath ∧ data.LengthOK (p.length + 1)))
+  AtSparseTargetDefectWitness data object PrivateEdgeSwitchAtWitness
+
+/-- `CubicLabelOutsidePathStatement` at one target-defect witness `w`. -/
+noncomputable abbrev CubicLabelOutsidePathAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (w : SparseTargetDefectWitness data object) : Prop :=
+  ∀ a ∈ SupportAtom.cutBoundary object w.support, object.degree a = data.threshold →
+    ∃ b' ∈ SupportAtom.cutBoundary object w.support, b' ≠ a ∧
+      ∃ τ : object.graph.Walk a b', τ.IsPath ∧
+        (∀ x ∈ τ.support, x ∉ w.support ∨ x = a ∨ x = b') ∧ 2 ≤ τ.length
 
 /-- **Every baseline label has an outside return**: at the canonical witness,
 every `a ∈ ∂Z` of degree `δ` is joined to another `b' ∈ ∂Z` by a path `τ` of
 length `≥ 2` with interior in `V ∖ Z`. -/
 noncomputable def CubicLabelOutsidePathStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∀ a ∈ SupportAtom.cutBoundary object w.support, object.degree a = data.threshold →
-      ∃ b' ∈ SupportAtom.cutBoundary object w.support, b' ≠ a ∧
-        ∃ τ : object.graph.Walk a b', τ.IsPath ∧
-          (∀ x ∈ τ.support, x ∉ w.support ∨ x = a ∨ x = b') ∧ 2 ≤ τ.length
+  AtSparseTargetDefectWitness data object CubicLabelOutsidePathAtWitness
 
 open Classical in
+/-- `TwoBoundaryOutsideBothStatement` at one target-defect witness `w`. -/
+noncomputable abbrev TwoBoundaryOutsideBothAtWitness {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (w : SparseTargetDefectWitness data object) : Prop :=
+  ∀ x y, x ≠ y → SupportAtom.cutBoundary object w.support = {x, y} →
+    (object.degree x = data.threshold ∨ object.degree y = data.threshold) →
+    (∃ τ : object.graph.Walk x y, τ.IsPath ∧
+      (∀ v ∈ τ.support, v ∉ w.support ∨ v = x ∨ v = y) ∧ 2 ≤ τ.length) ∧
+    (∃ τ : object.graph.Walk y x, τ.IsPath ∧
+      (∀ v ∈ τ.support, v ∉ w.support ∨ v = y ∨ v = x) ∧ 2 ≤ τ.length)
+
 /-- **`|∂Z| = 2` with a baseline label: outside paths in both orientations**:
 if `∂Z = {x, y}` and one of `x, y` has degree `δ`, then G has paths `x → y`
 and `y → x` of length `≥ 2` with interior in `V ∖ Z`. -/
 noncomputable def TwoBoundaryOutsideBothStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∀ x y, x ≠ y → SupportAtom.cutBoundary object w.support = {x, y} →
-      (object.degree x = data.threshold ∨ object.degree y = data.threshold) →
-      (∃ τ : object.graph.Walk x y, τ.IsPath ∧
-        (∀ v ∈ τ.support, v ∉ w.support ∨ v = x ∨ v = y) ∧ 2 ≤ τ.length) ∧
-      (∃ τ : object.graph.Walk y x, τ.IsPath ∧
-        (∀ v ∈ τ.support, v ∉ w.support ∨ v = y ∨ v = x) ∧ 2 ≤ τ.length)
+  AtSparseTargetDefectWitness data object TwoBoundaryOutsideBothAtWitness
 
 end Hypostructure.Graph.Strategy.Spine

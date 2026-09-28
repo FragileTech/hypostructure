@@ -113,18 +113,12 @@ surplus of G sits. -/
           (inputs.get (K .highSurplusConfiguration)).down⟩
       .nil)
 
-/-- Node `[20a]`: the readings at the canonical witness: counts, active labels,
-the partition of `∂Z`, private edges, the whole case, arm (i) refined, and the
-single-edge contexts. -/
+/-- Node `[20a]` (and `[187]`): the readings at the canonical witness: counts, active labels, the partition of `∂Z`, private edges, the whole case, arm (i) refined, and the single-edge contexts. -/
 @[reducible] noncomputable def sparseExitReadingsRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitReadings
-    { Requires := [K .cubicBaseline, K .selection, K .returnAvoidance,
-        K .sparseTargetDefectResidual, K .pathSpectrumSplit, K .steinerVerticesCut,
-        K .firstWholeDeficitStructure, K .secondWholeDeficitStructure]
-      Produces := [K .witnessReadingCounts, K .witnessActiveLabels, K .boundaryPartition,
-        K .positiveCyclePrivateEdge, K .wholeCycleMeetsDeficit, K .wholePrivateEdges,
-        K .spectrumArmOneRefined, K .separatingEdgeContextWitness]
+    { Requires := [K .cubicBaseline, K .selection, K .returnAvoidance, K .sparseTargetDefectResidual]
+      Produces := [K .witnessReadingCounts, K .witnessActiveLabels, K .boundaryPartition, K .positiveCyclePrivateEdge, K .wholeCycleMeetsDeficit, K .wholePrivateEdges, K .spectrumArmOneRefined, K .separatingEdgeContextWitness]
       requiresUnique := by key_fresh
       producesUnique := by key_fresh
       producesNonempty := by simp }
@@ -136,56 +130,49 @@ single-edge contexts. -/
       (.cons (key := K .witnessActiveLabels)
         ⟨Contracts.Spine.SparseExitReadings.witnessActiveLabels_holds
           (object := inputs.current.object)
-          (inputs.get (K .selection)).down.1
-          (inputs.get (K .sparseTargetDefectResidual)).down⟩
+          (inputs.get (K .sparseTargetDefectResidual)).down
+          (inputs.get (K .selection)).down.1⟩
       (.cons (key := K .boundaryPartition)
         ⟨Contracts.Spine.SparseExitReadings.boundaryPartition_holds
           (object := inputs.current.object)
-          (inputs.get (K .sparseTargetDefectResidual)).down
-          (inputs.get (K .steinerVerticesCut)).down⟩
+          (inputs.get (K .sparseTargetDefectResidual)).down⟩
       (.cons (key := K .positiveCyclePrivateEdge)
         ⟨Contracts.Spine.SparseExitReadings.positiveCyclePrivateEdge_holds
           (object := inputs.current.object)
-          (inputs.get (K .selection)).down.1
-          (inputs.get (K .sparseTargetDefectResidual)).down⟩
+          (inputs.get (K .sparseTargetDefectResidual)).down
+          (inputs.get (K .selection)).down.1⟩
       (.cons (key := K .wholeCycleMeetsDeficit)
         ⟨Contracts.Spine.SparseExitReadings.wholeCycleMeetsDeficit_holds
           (object := inputs.current.object)
-          (inputs.get (K .selection)).down.1
-          (inputs.get (K .sparseTargetDefectResidual)).down⟩
+          (inputs.get (K .sparseTargetDefectResidual)).down
+          (inputs.get (K .selection)).down.1⟩
       (.cons (key := K .wholePrivateEdges)
         ⟨Contracts.Spine.SparseExitReadings.wholePrivateEdges_holds
           (object := inputs.current.object)
           (inputs.get (K .sparseTargetDefectResidual)).down
-          (inputs.get (K .firstWholeDeficitStructure)).down
-          (inputs.get (K .secondWholeDeficitStructure)).down⟩
+          (inputs.get (K .cubicBaseline)).down.1.1
+          (inputs.get (K .selection)).down.1⟩
       (.cons (key := K .spectrumArmOneRefined)
         ⟨Contracts.Spine.SparseExitReadings.spectrumArmOneRefined_holds
           (object := inputs.current.object)
+          (inputs.get (K .sparseTargetDefectResidual)).down
           (inputs.get (K .cubicBaseline)).down.2.1.2.1
           (inputs.get (K .selection)).down.1
-          (inputs.get (K .returnAvoidance)).down
-          (inputs.get (K .sparseTargetDefectResidual)).down
-          (inputs.get (K .pathSpectrumSplit)).down⟩
+          (inputs.get (K .returnAvoidance)).down⟩
       (.cons (key := K .separatingEdgeContextWitness)
         ⟨Contracts.Spine.SparseExitReadings.separatingEdgeContextWitness_holds
           (object := inputs.current.object)
+          (inputs.get (K .sparseTargetDefectResidual)).down
           (inputs.get (K .selection)).down.1
-          (inputs.get (K .returnAvoidance)).down
-          (inputs.get (K .sparseTargetDefectResidual)).down⟩
+          (inputs.get (K .returnAvoidance)).down⟩
       .nil))))))))
 
-/-- Node `[20a]`: consequences of the readings: `|∂Z| = 2` all active, the swap
-object, the outside returns of baseline labels, and the spectrum at a separating
-single-edge context. -/
+/-- Node `[20a]` (and `[187]`): `|∂Z| = 2` all active, the swap object, the outside returns of baseline labels, the two-boundary outside paths, and the spectrum at a separating single-edge context. -/
 @[reducible] noncomputable def sparseExitReadingsConsequencesRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitReadingsConsequences
-    { Requires := [K .cubicBaseline, K .minDegreeBaseline, K .noProperBaseline,
-        K .tightEndpoint, K .bridgeless, K .everyWitnessSpectrumSplit, K .witnessActiveLabels,
-        K .positiveCyclePrivateEdge, K .separatingEdgeContextWitness]
-      Produces := [K .twoBoundaryAllActive, K .privateEdgeSwap, K .cubicLabelOutsidePath,
-        K .separatingEdgeContextSpectrum]
+    { Requires := [K .cubicBaseline, K .selection, K .minDegreeBaseline, K .noProperBaseline, K .tightEndpoint, K .bridgeless, K .returnAvoidance, K .everyWitnessSpectrumSplit, K .sparseTargetDefectResidual]
+      Produces := [K .twoBoundaryAllActive, K .privateEdgeSwap, K .cubicLabelOutsidePath, K .separatingEdgeContextSpectrum, K .twoBoundaryOutsideBoth]
       requiresUnique := by key_fresh
       producesUnique := by key_fresh
       producesNonempty := by simp }
@@ -193,50 +180,59 @@ single-edge context. -/
       .cons (key := K .twoBoundaryAllActive)
         ⟨Contracts.Spine.SparseExitReadings.twoBoundaryAllActive_holds
           (object := inputs.current.object)
-          (inputs.get (K .witnessActiveLabels)).down⟩
+          (inputs.get (K .sparseTargetDefectResidual)).down
+          (inputs.get (K .selection)).down.1⟩
       (.cons (key := K .privateEdgeSwap)
         ⟨Contracts.Spine.SparseExitReadings.privateEdgeSwap_holds
           (object := inputs.current.object)
+          (inputs.get (K .sparseTargetDefectResidual)).down
           (inputs.get (K .tightEndpoint)).down
-          (inputs.get (K .positiveCyclePrivateEdge)).down⟩
+          (inputs.get (K .selection)).down.1⟩
       (.cons (key := K .cubicLabelOutsidePath)
         ⟨Contracts.Spine.SparseExitReadings.cubicLabelOutsidePath_holds
           (object := inputs.current.object)
+          (inputs.get (K .sparseTargetDefectResidual)).down
           (inputs.get (K .cubicBaseline)).down.1.1
           (inputs.get (K .minDegreeBaseline)).down
           (inputs.get (K .noProperBaseline)).down
           (inputs.get (K .bridgeless)).down
-          (inputs.get (K .witnessActiveLabels)).down⟩
+          (inputs.get (K .selection)).down.1⟩
       (.cons (key := K .separatingEdgeContextSpectrum)
         ⟨Contracts.Spine.SparseExitReadings.separatingEdgeContextSpectrum_holds
           (object := inputs.current.object)
-          (inputs.get (K .separatingEdgeContextWitness)).down
+          (inputs.get (K .sparseTargetDefectResidual)).down
+          (inputs.get (K .selection)).down.1
+          (inputs.get (K .returnAvoidance)).down
           (inputs.get (K .everyWitnessSpectrumSplit)).down⟩
-      .nil))))
+      (.cons (key := K .twoBoundaryOutsideBoth)
+        ⟨Contracts.Spine.SparseExitReadings.twoBoundaryOutsideBoth_holds
+          (object := inputs.current.object)
+          (inputs.get (K .sparseTargetDefectResidual)).down
+          (inputs.get (K .cubicBaseline)).down.1.1
+          (inputs.get (K .minDegreeBaseline)).down
+          (inputs.get (K .noProperBaseline)).down
+          (inputs.get (K .bridgeless)).down
+          (inputs.get (K .selection)).down.1⟩
+      .nil)))))
 
-/-- Node `[20a]`: the switch at the private edge, and the two-boundary outside
-paths. -/
+/-- Node `[20a]` (strict arm only: it reads the switch at every high/baseline edge): the switch at the private edge. -/
 @[reducible] noncomputable def sparseExitPrivateSwitchRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitPrivateSwitch
-    { Requires := [K .minDegreeBaseline, K .tightEndpoint, K .highEndpointSwitch,
-        K .privateEdgeSwap, K .cubicLabelOutsidePath]
-      Produces := [K .privateEdgeSwitch, K .twoBoundaryOutsideBoth]
+    { Requires := [K .selection, K .minDegreeBaseline, K .tightEndpoint, K .highEndpointSwitch, K .sparseTargetDefectResidual]
+      Produces := [K .privateEdgeSwitch]
       requiresUnique := by key_fresh
-      producesUnique := by key_fresh
+      producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .privateEdgeSwitch)
         ⟨Contracts.Spine.SparseExitReadings.privateEdgeSwitch_holds
           (object := inputs.current.object)
+          (inputs.get (K .sparseTargetDefectResidual)).down
           (inputs.get (K .minDegreeBaseline)).down
           (inputs.get (K .tightEndpoint)).down
-          (inputs.get (K .privateEdgeSwap)).down
-          (inputs.get (K .highEndpointSwitch)).down⟩
-      (.cons (key := K .twoBoundaryOutsideBoth)
-        ⟨Contracts.Spine.SparseExitReadings.twoBoundaryOutsideBoth_holds
-          (object := inputs.current.object)
-          (inputs.get (K .cubicLabelOutsidePath)).down⟩
-      .nil))
+          (inputs.get (K .highEndpointSwitch)).down
+          (inputs.get (K .selection)).down.1⟩
+      .nil)
 
 end Hypostructure.Graph.Strategy.Spine

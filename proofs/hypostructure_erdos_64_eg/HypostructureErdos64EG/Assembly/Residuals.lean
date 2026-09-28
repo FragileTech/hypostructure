@@ -502,13 +502,16 @@ theorem node20aReturn
 
 /-- **Node `[187] (near-cubic target defect)`** (thm:main (vi), tex 369-378):
 the sparse target-defect exit of [20] on the at-or-below-surplus arm of
-[19].  The explicit conjunction of every fact on its maximal ledger (75
-facts): the 30 facts of the path, then the 45 witness-level facts first
+[19].  The explicit conjunction of every fact on its maximal ledger (91
+facts): the 33 facts of the path (with the three entry-prefix facts of
+`SpineRows/SparseExitReadings.lean`), then the 45 witness-level facts first
 published on `[20a]` (`SpineRows/SparseExitResidual.lean`), re-invoked here by
-the same six rows: this ledger carries the same `K .sparseTargetDefectResidual`,
-so they are the same keys at the same canonical witness
-`sparseTargetDefectWitness` (each contract is `atWitness_of_spec` of its
-`<key>_of_spec`, stated for every `Spec` witness). -/
+the same six rows, and the 13 witness-level readings facts of
+`SpineRows/SparseExitReadings.lean` (two rows; the private-edge switch reads the
+strict-arm switch and stays on `[20a]`): this ledger carries the same
+`K .sparseTargetDefectResidual`, so they are the same keys at the same
+canonical witness `sparseTargetDefectWitness` (each contract is
+`atWitness_of_spec` of its `<key>_of_spec`, stated for every `Spec` witness). -/
 abbrev NearCubicTargetDefectOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -665,7 +668,33 @@ abbrev NearCubicTargetDefectOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .wholeDeficitBoundaryCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .wholeCutEdgeSurplusBound selected.object
+      erdosReceiverLoadProfile spineData .wholeCutEdgeSurplusBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .witnessReadingCounts selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .witnessActiveLabels selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundaryPartition selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .positiveCyclePrivateEdge selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .wholeCycleMeetsDeficit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .wholePrivateEdges selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .spectrumArmOneRefined selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .separatingEdgeContextWitness selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoBoundaryAllActive selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .privateEdgeSwap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cubicLabelOutsidePath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .separatingEdgeContextSpectrum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoBoundaryOutsideBoth selected.object
 
 /-- The return of `NearCubicTargetDefectOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -749,7 +778,20 @@ theorem nearCubicTargetDefectReturn
     [FactKeys.Has (K .steinerVerticesCut) known]
     [FactKeys.Has (K .wholeSupportEqual) known]
     [FactKeys.Has (K .wholeDeficitBoundaryCount) known]
-    [FactKeys.Has (K .wholeCutEdgeSurplusBound) known] :
+    [FactKeys.Has (K .wholeCutEdgeSurplusBound) known]
+    [FactKeys.Has (K .witnessReadingCounts) known]
+    [FactKeys.Has (K .witnessActiveLabels) known]
+    [FactKeys.Has (K .boundaryPartition) known]
+    [FactKeys.Has (K .positiveCyclePrivateEdge) known]
+    [FactKeys.Has (K .wholeCycleMeetsDeficit) known]
+    [FactKeys.Has (K .wholePrivateEdges) known]
+    [FactKeys.Has (K .spectrumArmOneRefined) known]
+    [FactKeys.Has (K .separatingEdgeContextWitness) known]
+    [FactKeys.Has (K .twoBoundaryAllActive) known]
+    [FactKeys.Has (K .privateEdgeSwap) known]
+    [FactKeys.Has (K .cubicLabelOutsidePath) known]
+    [FactKeys.Has (K .separatingEdgeContextSpectrum) known]
+    [FactKeys.Has (K .twoBoundaryOutsideBoth) known] :
     NearCubicTargetDefectOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -828,7 +870,20 @@ theorem nearCubicTargetDefectReturn
     (history.get (K .steinerVerticesCut)).down,
     (history.get (K .wholeSupportEqual)).down,
     (history.get (K .wholeDeficitBoundaryCount)).down,
-    (history.get (K .wholeCutEdgeSurplusBound)).down⟩
+    (history.get (K .wholeCutEdgeSurplusBound)).down,
+    (history.get (K .witnessReadingCounts)).down,
+    (history.get (K .witnessActiveLabels)).down,
+    (history.get (K .boundaryPartition)).down,
+    (history.get (K .positiveCyclePrivateEdge)).down,
+    (history.get (K .wholeCycleMeetsDeficit)).down,
+    (history.get (K .wholePrivateEdges)).down,
+    (history.get (K .spectrumArmOneRefined)).down,
+    (history.get (K .separatingEdgeContextWitness)).down,
+    (history.get (K .twoBoundaryAllActive)).down,
+    (history.get (K .privateEdgeSwap)).down,
+    (history.get (K .cubicLabelOutsidePath)).down,
+    (history.get (K .separatingEdgeContextSpectrum)).down,
+    (history.get (K .twoBoundaryOutsideBoth)).down⟩
 
 /-- **Node `[144a]`** (thm:main (ii), tex 347-353): the same-token Type B
 handoff of [144] on the strict-surplus survivor, or (the paper error at

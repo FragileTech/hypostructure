@@ -86,7 +86,19 @@ noncomputable def selectedNearCubicBranch
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run deletionHistory (by key_fresh)
-      exact Or.inl (nearCubicTargetDefectReturn combinationHistory)
+      -- The readings of the canonical witness (port-20a); none reads
+      -- `K .surplusAbove` or the strict-arm switch.  No decision.
+      let readingsHistory :=
+        (sparseExitReadingsRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run combinationHistory (by key_fresh)
+      let readingsConsequencesHistory :=
+        (sparseExitReadingsConsequencesRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run readingsHistory (by key_fresh)
+      exact Or.inl (nearCubicTargetDefectReturn readingsConsequencesHistory)
   | .right survivorHistory =>
       -- The at-or-below survivor goes to `[21]`; `[125]` is entered only
       -- from the strict arm `[20]`.

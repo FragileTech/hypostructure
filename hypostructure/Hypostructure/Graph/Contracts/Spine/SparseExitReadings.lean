@@ -333,25 +333,28 @@ theorem wholePrivate_at (spec : w.Spec) {x y : SparseDeclaredCoordinate data obj
 
 end WitnessLevel
 
-/-! ## The readings at the canonical witness -/
+/-! ## The readings at every clause-(b) witness, and at the canonical one
 
-theorem witnessReadingCounts_holds
-    (residual : SparseTargetDefectResidualStatement data object) :
-    WitnessReadingCountsStatement data object := by
-  obtain ⟨w, hw, spec⟩ := residual
+Each witness-level contract `<key>_of_spec` holds at every `w` with `w.Spec`;
+`<key>_holds` instantiates it at the canonical witness through
+`SparseExitResidual.atWitness_of_spec`. -/
+
+section Spec
+
+variable {w : SparseTargetDefectWitness data object}
+
+theorem witnessReadingCounts_of_spec (spec : w.Spec) : WitnessReadingCountsAtWitness w := by
   obtain ⟨AZ, BZ⟩ := supports_subset_of_spec spec
   have prof := spec.2.2.2.2.1
-  refine ⟨w, hw, counts_of_spec spec, ?_, ?_⟩
+  refine ⟨counts_of_spec spec, ?_, ?_⟩
   · intro b hb x hx adj
     exact ReadingCounts.mem_of_profile_eq prof b hb (AZ x hx) hx adj
   · intro b hb x hx adj
     exact ReadingCounts.mem_of_profile_eq prof.symm b hb (BZ x hx) hx adj
 
-theorem witnessActiveLabels_holds
-    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (residual : SparseTargetDefectResidualStatement data object) :
-    WitnessActiveLabelsStatement data object := by
-  obtain ⟨w, hw, spec⟩ := residual
+theorem witnessActiveLabels_of_spec
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) (spec : w.Spec) :
+    WitnessActiveLabelsAtWitness w := by
   have counts := counts_of_spec spec
   obtain ⟨l₁, l₂, ne, h1, h2⟩ := two_active_of_spec avoid spec
   have facts : ∀ l, (l = l₁ ∨ l = l₂) →
@@ -377,13 +380,14 @@ theorem witnessActiveLabels_holds
     have := Set.ncard_le_ncard sub (Set.toFinite _)
     rwa [Set.ncard_pair ne] at this
   obtain ⟨-, -, iA, iB, -⟩ := facts l₁ (Or.inl rfl)
-  exact ⟨w, hw, card, ⟨l₁.1, iA, l₁.2⟩, ⟨l₁.1, iB, l₁.2⟩, l₁, l₂, ne, facts⟩
+  exact ⟨card, ⟨l₁.1, iA, l₁.2⟩, ⟨l₁.1, iB, l₁.2⟩, l₁, l₂, ne, facts⟩
 
-theorem twoBoundaryAllActive_holds (active : WitnessActiveLabelsStatement data object) :
-    TwoBoundaryAllActiveStatement data object := by
+theorem twoBoundaryAllActive_of_spec
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) (spec : w.Spec) :
+    TwoBoundaryAllActiveAtWitness w := by
   classical
-  obtain ⟨w, hw, -, -, -, l₁, l₂, ne, h⟩ := active
-  refine ⟨w, hw, fun two b => ?_⟩
+  obtain ⟨-, -, -, l₁, l₂, ne, h⟩ := witnessActiveLabels_of_spec avoid spec
+  intro two b
   have hb : b = l₁ ∨ b = l₂ := by
     by_contra hn
     push Not at hn
@@ -404,75 +408,54 @@ theorem twoBoundaryAllActive_holds (active : WitnessActiveLabelsStatement data o
   obtain ⟨p, -, iA, iB, -⟩ := h b hb
   exact ⟨p, iA, iB⟩
 
-theorem boundaryPartition_holds
-    (residual : SparseTargetDefectResidualStatement data object)
-    (steiner : SteinerVerticesCutStatement data object) :
-    BoundaryPartitionStatement data object := by
+theorem boundaryPartition_of_spec (spec : w.Spec) : BoundaryPartitionAtWitness w := by
   classical
-  obtain ⟨w, hw, spec⟩ := residual
-  obtain ⟨w', hw', cut⟩ := steiner
-  have e : w' = w := Option.some.inj (hw'.symm.trans hw)
-  subst e
+  have cut := SparseExitResidual.steinerVerticesCut_of_spec spec
   have counts := counts_of_spec spec
   obtain ⟨AZ, BZ⟩ := supports_subset_of_spec spec
-  refine ⟨w', hw, fun b => ?_⟩
-  have bZ : b.1 ∈ w'.support := ((SupportAtom.mem_cutBoundary_iff _ _ b.1).1 b.2).1
-  rcases Nat.eq_zero_or_pos (w'.count w'.first b) with zA | pA
-  · have zB : w'.count w'.second b = 0 := by rw [← counts]; exact zA
-    have iso : ∀ {X : Finset object.Vertex}, (∀ v ∈ X, v ∈ w'.support) →
-        ReadingCounts.readingCount w'.support X b = 0 → b.1 ∈ X → ∀ x ∈ X,
+  intro b
+  have bZ : b.1 ∈ w.support := ((SupportAtom.mem_cutBoundary_iff _ _ b.1).1 b.2).1
+  rcases Nat.eq_zero_or_pos (w.count w.first b) with zA | pA
+  · have zB : w.count w.second b = 0 := by rw [← counts]; exact zA
+    have iso : ∀ {X : Finset object.Vertex}, (∀ v ∈ X, v ∈ w.support) →
+        ReadingCounts.readingCount w.support X b = 0 → b.1 ∈ X → ∀ x ∈ X,
           ¬ object.graph.Adj b.1 x := by
       intro X XZ z hb x hx adj
-      have : 0 < ReadingCounts.readingCount w'.support X b := by
+      have : 0 < ReadingCounts.readingCount w.support X b := by
         unfold ReadingCounts.readingCount
         exact (Set.ncard_pos (Set.toFinite _)).2 ⟨x, XZ x hx, adj, hb, hx⟩
       omega
-    by_cases inU : b.1 ∈ sparseDeclaredSupport data object w'.first ∨
-        b.1 ∈ sparseDeclaredSupport data object w'.second
+    by_cases inU : b.1 ∈ sparseDeclaredSupport data object w.first ∨
+        b.1 ∈ sparseDeclaredSupport data object w.second
     · exact Or.inr (Or.inl ⟨zA, zB, inU, iso AZ zA, iso BZ zB⟩)
     · push Not at inU
       exact Or.inr (Or.inr ⟨inU.1, inU.2, cut b.1 bZ inU.1 inU.2⟩)
-  · have pB : 0 < w'.count w'.second b := by rw [← counts]; exact pA
+  · have pB : 0 < w.count w.second b := by rw [← counts]; exact pA
     exact Or.inl ⟨pA, (ReadingCounts.readingCount_pos pA).1,
       (ReadingCounts.readingCount_pos pB).1⟩
 
-theorem positiveCyclePrivateEdge_holds
-    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (residual : SparseTargetDefectResidualStatement data object) :
-    PositiveCyclePrivateEdgeStatement data object := by
-  obtain ⟨w, hw, spec⟩ := residual
-  exact ⟨w, hw, private_of_spec avoid spec⟩
+theorem positiveCyclePrivateEdge_of_spec
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) (spec : w.Spec) :
+    PositiveCyclePrivateEdgeAtWitness w :=
+  private_of_spec avoid spec
 
-theorem wholeCycleMeetsDeficit_holds
-    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (residual : SparseTargetDefectResidualStatement data object) :
-    WholeCycleMeetsDeficitStatement data object := by
-  obtain ⟨w, hw, spec⟩ := residual
-  exact ⟨w, hw, wholeCycle_at avoid spec (Or.inl ⟨rfl, rfl⟩),
-    wholeCycle_at avoid spec (Or.inr ⟨rfl, rfl⟩)⟩
+theorem wholeCycleMeetsDeficit_of_spec
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) (spec : w.Spec) :
+    WholeCycleMeetsDeficitAtWitness w :=
+  ⟨wholeCycle_at avoid spec (Or.inl ⟨rfl, rfl⟩), wholeCycle_at avoid spec (Or.inr ⟨rfl, rfl⟩)⟩
 
-theorem wholePrivateEdges_holds
-    (residual : SparseTargetDefectResidualStatement data object)
-    (firstStructure : FirstWholeDeficitStructureStatement data object)
-    (secondStructure : SecondWholeDeficitStructureStatement data object) :
-    WholePrivateEdgesStatement data object := by
-  obtain ⟨w, hw, spec⟩ := residual
-  obtain ⟨w₁, hw₁, s₁⟩ := firstStructure
-  obtain ⟨w₂, hw₂, s₂⟩ := secondStructure
-  have e₁ : w₁ = w := Option.some.inj (hw₁.symm.trans hw)
-  have e₂ : w₂ = w := Option.some.inj (hw₂.symm.trans hw)
-  have s₁' : WholeDeficitStructure w w.first w.second := e₁ ▸ s₁
-  have s₂' : WholeDeficitStructure w w.second w.first := e₂ ▸ s₂
+theorem wholePrivateEdges_of_spec (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) (spec : w.Spec) :
+    WholePrivateEdgesAtWitness w := by
   obtain ⟨AZ, BZ⟩ := supports_subset_of_spec spec
-  exact ⟨w, hw, wholePrivate_at spec AZ s₁', wholePrivate_at spec BZ s₂'⟩
+  exact ⟨wholePrivate_at spec AZ (SparseExitResidual.firstWholeDeficitStructure_of_spec three avoid spec),
+    wholePrivate_at spec BZ (SparseExitResidual.secondWholeDeficitStructure_of_spec three avoid spec)⟩
 
-theorem spectrumArmOneRefined_holds
+theorem spectrumArmOneRefined_of_spec
     (lengthLaw : ∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (ret : ReturnAvoidanceStatement data object)
-    (residual : SparseTargetDefectResidualStatement data object)
-    (spectrum : PathSpectrumSplitStatement data object) :
-    SpectrumArmOneRefinedStatement data object := by
+    (ret : ReturnAvoidanceStatement data object) (spec : w.Spec) :
+    SpectrumArmOneRefinedAtWitness w := by
   have hL : data.LengthOK = Core.DyadicLength.PowerOfTwoLength :=
     funext fun n => propext (lengthLaw n)
   have avoidP : ¬ Graph.HasCycleWithLength Core.DyadicLength.PowerOfTwoLength object := by
@@ -480,29 +463,25 @@ theorem spectrumArmOneRefined_holds
   have retP : ∀ dart : object.graph.Dart, Disjoint (Graph.returnLengthSet object dart)
       (Graph.shiftedAcceptedSet Core.DyadicLength.PowerOfTwoLength) := by
     rw [← hL]; exact ret
-  obtain ⟨w, hw, spec⟩ := residual
-  obtain ⟨w', hw', P, hP, N, hN, pos, neg, arms⟩ := spectrum
-  have e : w' = w := Option.some.inj (hw'.symm.trans hw)
-  subst e
+  obtain ⟨P, hP, N, hN, pos, neg, arms⟩ :=
+    SparseExitResidual.pathSpectrumSplit_of_spec lengthLaw avoid spec
   obtain ⟨orient, prof⟩ := pair_orient spec hP hN pos neg
-  have arms' : ReadingSpectrumArms.ArmOneRefined w'.support P N w'.outside ∨
-      w'.CyclesMeetThreeLabels P := by
+  have arms' : ReadingSpectrumArms.ArmOneRefined w.support P N w.outside ∨
+      w.CyclesMeetThreeLabels P := by
     rcases arms with ⟨a, b, ab, π, hπ, σ, hσ, lab, hk, spc⟩ | many
     · exact Or.inl (ReadingSpectrumArms.armOneRefined_of_arm avoidP retP prof ab π hπ σ hσ
         lab hk spc)
     · exact Or.inr many
-  refine ⟨w', hw, P, N, orient, ⟨pos, neg⟩, arms', fun two => ?_⟩
+  refine ⟨P, N, orient, ⟨pos, neg⟩, arms', fun two => ?_⟩
   rcases arms' with done | many
   · exact done
   · exact (GluedReadings.armII_two_false two pos many).elim
 
-theorem separatingEdgeContextWitness_holds
+theorem separatingEdgeContextWitness_of_spec
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (ret : ReturnAvoidanceStatement data object)
-    (residual : SparseTargetDefectResidualStatement data object) :
-    SeparatingEdgeContextWitnessStatement data object := by
-  obtain ⟨w, hw, spec⟩ := residual
-  refine ⟨w, hw, fun a b ne differ => ⟨fun adj => differ ?_, ?_⟩⟩
+    (ret : ReturnAvoidanceStatement data object) (spec : w.Spec) :
+    SeparatingEdgeContextWitnessAtWitness w := by
+  refine fun a b ne differ => ⟨fun adj => differ ?_, ?_⟩
   · have neg : ∀ X, ¬ Graph.HasCycleWithLength data.LengthOK
         (glue (SupportAtom.retainedPiece object w.support X)
           (SingleEdgeContext.edgeContext w.support a b)) := by
@@ -513,12 +492,13 @@ theorem separatingEdgeContextWitness_holds
   · obtain ⟨fm, sm, ne', sel, prof, act, -⟩ := spec
     exact ⟨fm, sm, ne', sel, prof, act, differ⟩
 
-theorem separatingEdgeContextSpectrum_holds
-    (edgeWitness : SeparatingEdgeContextWitnessStatement data object)
-    (every : EveryWitnessSpectrumSplitStatement data object) :
-    SeparatingEdgeContextSpectrumStatement data object := by
-  obtain ⟨w, hw, sepW⟩ := edgeWitness
-  refine ⟨w, hw, fun a b ne differ => ?_⟩
+theorem separatingEdgeContextSpectrum_of_spec
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (ret : ReturnAvoidanceStatement data object)
+    (every : EveryWitnessSpectrumSplitStatement data object) (spec : w.Spec) :
+    SeparatingEdgeContextSpectrumAtWitness w := by
+  have sepW := separatingEdgeContextWitness_of_spec avoid ret spec
+  refine fun a b ne differ => ?_
   obtain ⟨nadj, spec'⟩ := sepW a b ne differ
   refine ⟨nadj, ?_⟩
   obtain ⟨P, -, N, -, pos, neg, arms⟩ := every _ spec'
@@ -531,25 +511,26 @@ theorem separatingEdgeContextSpectrum_holds
     rwa [one] at this
   · exact Or.inr many
 
-theorem privateEdgeSwap_holds (tight : TightEndpointStatement data object)
-    (priv : PositiveCyclePrivateEdgeStatement data object) :
-    PrivateEdgeSwapStatement data object := by
-  obtain ⟨w, hw, P, N, orient, ⟨pos, -⟩, cyc, -⟩ := priv
+theorem privateEdgeSwap_of_spec (tight : TightEndpointStatement data object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) (spec : w.Spec) :
+    PrivateEdgeSwapAtWitness w := by
+  obtain ⟨P, N, orient, ⟨pos, -⟩, cyc, -⟩ := private_of_spec avoid spec
   obtain ⟨c⟩ := pos
   obtain ⟨pl, pr, -, adj, hl, hr, hrN, hrB⟩ := cyc c
-  refine ⟨w, hw, P, N, orient, ⟨_, _, adj, hl, hr, hrN, ReadingCounts.pieceDecode_mem _ pl,
+  refine ⟨P, N, orient, ⟨_, _, adj, hl, hr, hrN, ReadingCounts.pieceDecode_mem _ pl,
     ReadingCounts.pieceDecode_mem _ pr, hrB⟩, ?_⟩
   rcases EdgeSwitchPaths.swap_exact tight N P with none | some
   · exact absurd (none _ _ adj hl hr).2 hrN
   · exact some
 
-theorem privateEdgeSwitch_holds (baseline : MinDegreeBaselineStatement data object)
+theorem privateEdgeSwitch_of_spec (baseline : MinDegreeBaselineStatement data object)
     (tight : TightEndpointStatement data object)
-    (swap : PrivateEdgeSwapStatement data object)
-    (switch : HighEndpointSwitchStatement data object) :
-    PrivateEdgeSwitchStatement data object := by
-  obtain ⟨w, hw, P, N, orient, ⟨x, y, adj, hx, hy, hyN, xZ, yZ, yB⟩, -⟩ := swap
-  refine ⟨w, hw, P, N, orient, x, y, adj, hx, hy, hyN, xZ, yZ, yB, ?_⟩
+    (switch : HighEndpointSwitchStatement data object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) (spec : w.Spec) :
+    PrivateEdgeSwitchAtWitness w := by
+  obtain ⟨P, N, orient, ⟨x, y, adj, hx, hy, hyN, xZ, yZ, yB⟩, -⟩ :=
+    privateEdgeSwap_of_spec tight avoid spec
+  refine ⟨P, N, orient, x, y, adj, hx, hy, hyN, xZ, yZ, yB, ?_⟩
   have base : ∀ v, data.threshold ≤ object.degree v := fun v =>
     le_trans baseline (object.minDegree_le_degree v)
   have le : EdgeSwitchPaths.swapGraph N P ≤ object.graph :=
@@ -574,17 +555,17 @@ theorem privateEdgeSwitch_holds (baseline : MinDegreeBaselineStatement data obje
       · exact t
     exact ⟨x, y, Or.inl ⟨rfl, rfl⟩, hx4, dy, switch x y hx4 dy adj⟩
 
-theorem cubicLabelOutsidePath_holds (three : data.threshold = 3)
+theorem cubicLabelOutsidePath_of_spec (three : data.threshold = 3)
     (baseline : MinDegreeBaselineStatement data object)
     (noProper : NoProperBaselineStatement data object)
     (bridgeless : BridgelessStatement object)
-    (active : WitnessActiveLabelsStatement data object) :
-    CubicLabelOutsidePathStatement data object := by
-  obtain ⟨w, hw, -, -, -, l₁, l₂, ne, -⟩ := active
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) (spec : w.Spec) :
+    CubicLabelOutsidePathAtWitness w := by
+  obtain ⟨-, -, -, l₁, l₂, ne, -⟩ := witnessActiveLabels_of_spec avoid spec
   have mdb : Graph.MinimumDegreeAtLeast 3 object := three ▸ baseline
   have np : ∀ sub : Graph.ProperSubgraph object, ¬ Graph.MinimumDegreeAtLeast 3 sub.value :=
     three ▸ noProper.1
-  refine ⟨w, hw, fun a aB cubic => ?_⟩
+  intro a aB cubic
   rw [three] at cubic
   obtain ⟨aZ, y, ay, yZ⟩ := (SupportAtom.mem_cutBoundary_iff _ _ a).1 aB
   have other : ∃ z ∈ w.support, z ≠ a := by
@@ -601,10 +582,14 @@ theorem cubicLabelOutsidePath_holds (three : data.threshold = 3)
     ReadingSpectrumArms.outside_path_of_walk aZ bZ (Ne.symm ba) ay p hp vb
   exact ⟨b', bB, ba, τ, hτ, out, two⟩
 
-theorem twoBoundaryOutsideBoth_holds (ret : CubicLabelOutsidePathStatement data object) :
-    TwoBoundaryOutsideBothStatement data object := by
-  obtain ⟨w, hw, ret⟩ := ret
-  refine ⟨w, hw, fun x y xy hB cub => ?_⟩
+theorem twoBoundaryOutsideBoth_of_spec (three : data.threshold = 3)
+    (baseline : MinDegreeBaselineStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (bridgeless : BridgelessStatement object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) (spec : w.Spec) :
+    TwoBoundaryOutsideBothAtWitness w := by
+  have ret := cubicLabelOutsidePath_of_spec three baseline noProper bridgeless avoid spec
+  intro x y xy hB cub
   have mem : ∀ v, v ∈ SupportAtom.cutBoundary object w.support ↔ v = x ∨ v = y := by
     intro v; rw [hB]; simp
   have fromX : object.degree x = data.threshold →
@@ -639,5 +624,105 @@ theorem twoBoundaryOutsideBoth_holds (ret : CubicLabelOutsidePathStatement data 
     exact ⟨⟨τ, hτ, out, two⟩, rev τ hτ out two⟩
   · obtain ⟨τ, hτ, out, two⟩ := fromY d
     exact ⟨rev τ hτ out two, ⟨τ, hτ, out, two⟩⟩
+
+end Spec
+
+section Canonical
+
+variable (residual : SparseTargetDefectResidualStatement data object)
+include residual
+
+theorem witnessReadingCounts_holds : WitnessReadingCountsStatement data object :=
+  SparseExitResidual.atWitness_of_spec (fun _ spec => witnessReadingCounts_of_spec spec) residual
+
+theorem witnessActiveLabels_holds (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) :
+    WitnessActiveLabelsStatement data object :=
+  SparseExitResidual.atWitness_of_spec
+    (fun _ spec => witnessActiveLabels_of_spec avoid spec) residual
+
+theorem twoBoundaryAllActive_holds (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) :
+    TwoBoundaryAllActiveStatement data object :=
+  SparseExitResidual.atWitness_of_spec
+    (fun _ spec => twoBoundaryAllActive_of_spec avoid spec) residual
+
+theorem boundaryPartition_holds : BoundaryPartitionStatement data object :=
+  SparseExitResidual.atWitness_of_spec (fun _ spec => boundaryPartition_of_spec spec) residual
+
+theorem positiveCyclePrivateEdge_holds
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) :
+    PositiveCyclePrivateEdgeStatement data object :=
+  SparseExitResidual.atWitness_of_spec
+    (fun _ spec => positiveCyclePrivateEdge_of_spec avoid spec) residual
+
+theorem wholeCycleMeetsDeficit_holds
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) :
+    WholeCycleMeetsDeficitStatement data object :=
+  SparseExitResidual.atWitness_of_spec
+    (fun _ spec => wholeCycleMeetsDeficit_of_spec avoid spec) residual
+
+theorem wholePrivateEdges_holds (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) :
+    WholePrivateEdgesStatement data object :=
+  SparseExitResidual.atWitness_of_spec
+    (fun _ spec => wholePrivateEdges_of_spec three avoid spec) residual
+
+theorem spectrumArmOneRefined_holds
+    (lengthLaw : ∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (ret : ReturnAvoidanceStatement data object) :
+    SpectrumArmOneRefinedStatement data object :=
+  SparseExitResidual.atWitness_of_spec
+    (fun _ spec => spectrumArmOneRefined_of_spec lengthLaw avoid ret spec) residual
+
+theorem separatingEdgeContextWitness_holds
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (ret : ReturnAvoidanceStatement data object) :
+    SeparatingEdgeContextWitnessStatement data object :=
+  SparseExitResidual.atWitness_of_spec
+    (fun _ spec => separatingEdgeContextWitness_of_spec avoid ret spec) residual
+
+theorem separatingEdgeContextSpectrum_holds
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (ret : ReturnAvoidanceStatement data object)
+    (every : EveryWitnessSpectrumSplitStatement data object) :
+    SeparatingEdgeContextSpectrumStatement data object :=
+  SparseExitResidual.atWitness_of_spec
+    (fun _ spec => separatingEdgeContextSpectrum_of_spec avoid ret every spec) residual
+
+theorem privateEdgeSwap_holds (tight : TightEndpointStatement data object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) :
+    PrivateEdgeSwapStatement data object :=
+  SparseExitResidual.atWitness_of_spec
+    (fun _ spec => privateEdgeSwap_of_spec tight avoid spec) residual
+
+theorem privateEdgeSwitch_holds (baseline : MinDegreeBaselineStatement data object)
+    (tight : TightEndpointStatement data object)
+    (switch : HighEndpointSwitchStatement data object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) :
+    PrivateEdgeSwitchStatement data object :=
+  SparseExitResidual.atWitness_of_spec
+    (fun _ spec => privateEdgeSwitch_of_spec baseline tight switch avoid spec) residual
+
+theorem cubicLabelOutsidePath_holds (three : data.threshold = 3)
+    (baseline : MinDegreeBaselineStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (bridgeless : BridgelessStatement object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) :
+    CubicLabelOutsidePathStatement data object :=
+  SparseExitResidual.atWitness_of_spec
+    (fun _ spec => cubicLabelOutsidePath_of_spec three baseline noProper bridgeless avoid spec)
+    residual
+
+theorem twoBoundaryOutsideBoth_holds (three : data.threshold = 3)
+    (baseline : MinDegreeBaselineStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (bridgeless : BridgelessStatement object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) :
+    TwoBoundaryOutsideBothStatement data object :=
+  SparseExitResidual.atWitness_of_spec
+    (fun _ spec => twoBoundaryOutsideBoth_of_spec three baseline noProper bridgeless avoid spec)
+    residual
+
+end Canonical
 
 end Hypostructure.Graph.Contracts.Spine.SparseExitReadings
