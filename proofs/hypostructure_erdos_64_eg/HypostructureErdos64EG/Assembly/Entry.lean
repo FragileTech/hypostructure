@@ -11,6 +11,7 @@ import Hypostructure.Graph.Strategy.SpineRows.ReturnAvoidance
 import Hypostructure.Graph.Strategy.SpineRows.TargetCompleteContextUniversality
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.SparseExitResidual
+import Hypostructure.Graph.Strategy.SpineRows.CycleCounting
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseSurplusExit
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseTargetDefectStructure
 import HypostructureErdos64EG.Assembly.Basic
@@ -52,10 +53,12 @@ noncomputable def selectedEntryPrefix
       [K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-        K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
-        K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+        K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
+        K .vertexDeletionComponents, K .cyclesThroughVertex,
+        K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
         K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-        K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+        K .highDegreePairSum, K .minDegreeBaseline, K .bridgeless, K .neighbourhoodPairCount, K .starCycleConstraint,
+        K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
   -- Hoisted from `[20a]`: facts of G read from `[4]`'s selection alone; no decision.
   let hSelectionFacts :=
@@ -69,24 +72,36 @@ noncomputable def selectedEntryPrefix
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       hSelectionFacts (by key_fresh)
+  -- Cycle counting (Lean improvement): the neighbourhood pairs and the star and meeting constraints at every vertex of G, from the selection and the presentation laws; no decision.
+  let hCycleNeighbourhood :=
+    (cycleNeighbourhoodRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hCubic (by key_fresh)
   -- Hoisted: `lem:bridgeless`, from the selection and the presentation laws; no decision.
   let hBridgeless :=
     (bridgelessRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      hCubic (by key_fresh)
+      hCycleNeighbourhood (by key_fresh)
   -- `[1]`--`[3]`: G's baseline `δ(G) ≥ 3`, published once on the ledger.
   let hBaseline :=
     (minDegreeBaselineRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       hBridgeless (by key_fresh)
+  -- Cycle counting (Lean improvement): the pair sums at the high vertices of G against σ, from the baseline; no decision.
+  let hPairSum :=
+    (highDegreePairSumRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hBaseline (by key_fresh)
   -- Hoisted from `[20a]`: the canonical packing `P₀` of G, from the baseline; no decision.
   let hPacking :=
     (sparseExitPackingRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      hBaseline (by key_fresh)
+      hPairSum (by key_fresh)
   -- Hoisted from `[20a]`: the primitive carrier count of G; no decision.
   let hCarriers :=
     (primitiveCarrierCountRow (BranchState := BranchState)
@@ -119,11 +134,18 @@ noncomputable def selectedEntryPrefix
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           h2 (by key_fresh)
+      -- Cycle counting (Lean improvement): vertex deletions, cycles through every vertex and
+      -- the block paths at the cut vertices of G, from `[8]` and `lem:bridgeless`; no decision.
+      let hCutVertex :=
+        (cutVertexCyclesRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          hBoundary (by key_fresh)
       let h3 :=
         (deletionCriticalityRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          hBoundary (by
+          hCutVertex (by
             key_fresh)
       -- Hoisted from `[20a]`: the dart identity and the high-degree count, from `[9]`/`[10]`; no decision.
       let hDegreeCount :=
@@ -131,11 +153,18 @@ noncomputable def selectedEntryPrefix
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           h3 (by key_fresh)
+      -- Cycle counting (Lean improvement): the double count of the cycles of G at its
+      -- independent high vertices, from `[9]`/`[10]`; no decision.
+      let hDoubleCount :=
+        (cycleDoubleCountRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          hDegreeCount (by key_fresh)
       let hRank :=
         (cycleRankConstraintRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          hDegreeCount (by
+          hDoubleCount (by
             key_fresh)
       -- `[11]`: boundaried pieces and the boundary degree profile.
       let h11 :=

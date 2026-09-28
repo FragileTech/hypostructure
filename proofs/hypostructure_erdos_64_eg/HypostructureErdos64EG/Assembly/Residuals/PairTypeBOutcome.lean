@@ -72,6 +72,14 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -144,6 +152,14 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .windowCutCapacity)).down,
       (history.get (K .primitiveCarrierCount)).down,
       (history.get (K .singleBoundaryShape)).down,
+      (history.get (K .neighbourhoodPairCount)).down,
+      (history.get (K .starCycleConstraint)).down,
+      (history.get (K .meetingCycleConstraint)).down,
+      (history.get (K .highDegreePairSum)).down,
+      (history.get (K .vertexDeletionComponents)).down,
+      (history.get (K .cyclesThroughVertex)).down,
+      (history.get (K .cutVertexBlockPaths)).down,
+      (history.get (K .cycleDoubleCount)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -246,6 +262,14 @@ theorem pairTypeBIndependentIncrementReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -324,6 +348,14 @@ theorem pairTypeBIndependentIncrementReturn
       (history.get (K .windowCutCapacity)).down,
       (history.get (K .primitiveCarrierCount)).down,
       (history.get (K .singleBoundaryShape)).down,
+      (history.get (K .neighbourhoodPairCount)).down,
+      (history.get (K .starCycleConstraint)).down,
+      (history.get (K .meetingCycleConstraint)).down,
+      (history.get (K .highDegreePairSum)).down,
+      (history.get (K .vertexDeletionComponents)).down,
+      (history.get (K .cyclesThroughVertex)).down,
+      (history.get (K .cutVertexBlockPaths)).down,
+      (history.get (K .cycleDoubleCount)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -442,6 +474,14 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -523,6 +563,14 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .windowCutCapacity)).down,
       (history.get (K .primitiveCarrierCount)).down,
       (history.get (K .singleBoundaryShape)).down,
+      (history.get (K .neighbourhoodPairCount)).down,
+      (history.get (K .starCycleConstraint)).down,
+      (history.get (K .meetingCycleConstraint)).down,
+      (history.get (K .highDegreePairSum)).down,
+      (history.get (K .vertexDeletionComponents)).down,
+      (history.get (K .cyclesThroughVertex)).down,
+      (history.get (K .cutVertexBlockPaths)).down,
+      (history.get (K .cycleDoubleCount)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
@@ -652,6 +700,14 @@ theorem pairTypeBDependentIncrementReturn
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]
     [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -739,6 +795,14 @@ theorem pairTypeBDependentIncrementReturn
       (history.get (K .windowCutCapacity)).down,
       (history.get (K .primitiveCarrierCount)).down,
       (history.get (K .singleBoundaryShape)).down,
+      (history.get (K .neighbourhoodPairCount)).down,
+      (history.get (K .starCycleConstraint)).down,
+      (history.get (K .meetingCycleConstraint)).down,
+      (history.get (K .highDegreePairSum)).down,
+      (history.get (K .vertexDeletionComponents)).down,
+      (history.get (K .cyclesThroughVertex)).down,
+      (history.get (K .cutVertexBlockPaths)).down,
+      (history.get (K .cycleDoubleCount)).down,
       (history.get (K .surplusDartIdentity)).down,
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
