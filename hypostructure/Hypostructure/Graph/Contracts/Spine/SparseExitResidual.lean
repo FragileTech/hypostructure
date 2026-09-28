@@ -108,50 +108,101 @@ theorem swap_spec (spec : w.Spec) : w.swap.Spec := by
   convert d using 2
   exact Finset.union_comm _ _
 
+/-- **Canonicity only transports**: a property proved at EVERY witness with
+`w.Spec` holds at G's canonical witness once `[125]`'s residual pins it.  Each
+witness-level contract `<key>_of_spec` is stated for any `Spec` witness; its
+`<key>_holds` is this transport. -/
+theorem atWitness_of_spec {Φ : SparseTargetDefectWitness data object → Prop}
+    (generic : ∀ w, w.Spec → Φ w)
+    (residual : SparseTargetDefectResidualStatement data object) :
+    AtSparseTargetDefectWitness data object Φ := by
+  obtain ⟨w, canon, spec⟩ := residual
+  exact ⟨w, canon, generic w spec⟩
+
+/-- **No `Spec` witness on a `[125]` survivor ledger.**  A witness with
+`w.Spec` is clause (b) of `def:named-surplus-exits` at G's declared family, so
+it contradicts `K .sparseSurplusSurvivor`.  Hence the witness-level contracts
+`<key>_of_spec` have no second canonical witness to be re-invoked at below the
+survivor arm of `[20]` (`[125]`--`[144a]`, `[182]`, the Type B entries, and the
+near-cubic survivor): they apply exactly on the two exits `[20a]` and `[187]`
+(near-cubic target defect), at G's one canonical witness. -/
+theorem not_spec_of_survivor (survives : SparseSurplusSurvivorStatement data object)
+    (w : SparseTargetDefectWitness data object) : ¬ w.Spec := by
+  rintro ⟨m₁, m₂, ne, sel, prof, actual, sep⟩
+  exact survives (.targetDefect
+    ⟨w.first, m₁, w.second, m₂, ne, w.support, sel, prof, actual, w.outside, sep⟩)
+
 end WitnessLevel
 
 /-! ## Witness-level G facts -/
 
 section WitnessFacts
 
+theorem witnessReadingsNotTargetComplete_of_spec
+    (universality : TargetCompleteContextUniversalityStatement data object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    WitnessReadingsNotTargetCompleteAtWitness w := by
+  exact (universality.2 w.support _ _ spec.2.2.2.2.2.1
+    (fun ce => separated_of_spec spec (ce w.outside))).2
+
 theorem witnessReadingsNotTargetComplete_holds
     (universality : TargetCompleteContextUniversalityStatement data object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    WitnessReadingsNotTargetCompleteStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, (universality.2 w.support _ _ spec.2.2.2.2.2.1
-    (fun ce => separated_of_spec spec (ce w.outside))).2⟩
+    WitnessReadingsNotTargetCompleteStatement data object :=
+  atWitness_of_spec (fun _ spec => witnessReadingsNotTargetComplete_of_spec universality spec) residual
+
+theorem witnessActualOutsideNegative_of_spec
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (_spec : w.Spec) :
+    WitnessActualOutsideNegativeAtWitness w := by
+  exact ⟨retainedGlue_avoids avoid _ _, retainedGlue_avoids avoid _ _⟩
 
 theorem witnessActualOutsideNegative_holds
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    WitnessActualOutsideNegativeStatement data object := by
-  obtain ⟨w, canon, -⟩ := residual
-  exact ⟨w, canon, retainedGlue_avoids avoid _ _, retainedGlue_avoids avoid _ _⟩
+    WitnessActualOutsideNegativeStatement data object :=
+  atWitness_of_spec (fun _ spec => witnessActualOutsideNegative_of_spec avoid spec) residual
+
+theorem witnessReadingsCycleFree_of_spec
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (_spec : w.Spec) :
+    WitnessReadingsCycleFreeAtWitness w := by
+  exact ⟨retainedPiece_avoids avoid _ _, retainedPiece_avoids avoid _ _⟩
 
 theorem witnessReadingsCycleFree_holds
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    WitnessReadingsCycleFreeStatement data object := by
-  obtain ⟨w, canon, -⟩ := residual
-  exact ⟨w, canon, retainedPiece_avoids avoid _ _, retainedPiece_avoids avoid _ _⟩
+    WitnessReadingsCycleFreeStatement data object :=
+  atWitness_of_spec (fun _ spec => witnessReadingsCycleFree_of_spec avoid spec) residual
+
+theorem witnessSupportOrderBound_of_spec
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    WitnessSupportOrderBoundAtWitness w := by
+  exact support_card_lt_of_spec avoid spec
 
 theorem witnessSupportOrderBound_holds
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    WitnessSupportOrderBoundStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, support_card_lt_of_spec avoid spec⟩
+    WitnessSupportOrderBoundStatement data object :=
+  atWitness_of_spec (fun _ spec => witnessSupportOrderBound_of_spec avoid spec) residual
+
+theorem witnessReadingGluesNotSmallerBaseline_of_spec
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
+    {w : SparseTargetDefectWitness data object} (_spec : w.Spec) :
+    WitnessReadingGluesNotSmallerBaselineAtWitness w := by
+  refine fun X _ ⟨baseline, smaller⟩ => ?_
+  exact retainedGlue_avoids avoid w.support X (minimal _ smaller baseline)
 
 theorem witnessReadingGluesNotSmallerBaseline_holds
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
       Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
     (residual : SparseTargetDefectResidualStatement data object) :
-    WitnessReadingGluesNotSmallerBaselineStatement data object := by
-  obtain ⟨w, canon, -⟩ := residual
-  refine ⟨w, canon, fun X _ ⟨baseline, smaller⟩ => ?_⟩
-  exact retainedGlue_avoids avoid w.support X (minimal _ smaller baseline)
+    WitnessReadingGluesNotSmallerBaselineStatement data object :=
+  atWitness_of_spec (fun _ spec => witnessReadingGluesNotSmallerBaseline_of_spec avoid minimal spec) residual
 
 theorem noSuppressionChordViolation_holds
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) :
@@ -577,21 +628,29 @@ end Capacity
 
 section Realized
 
-theorem witnessOutsideNotRealized_holds (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (residual : SparseTargetDefectResidualStatement data object) :
-    WitnessOutsideNotRealizedStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  refine ⟨w, canon, ⟨fun r => ?_⟩⟩
+theorem witnessOutsideNotRealized_of_spec (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    WitnessOutsideNotRealizedAtWitness w := by
+  refine ⟨fun r => ?_⟩
   apply separated_of_spec spec
   exact ⟨fun h => (realized_context_negative avoid r _ h).elim,
     fun h => (realized_context_negative avoid r _ h).elim⟩
 
+theorem witnessOutsideNotRealized_holds (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (residual : SparseTargetDefectResidualStatement data object) :
+    WitnessOutsideNotRealizedStatement data object :=
+  atWitness_of_spec (fun _ spec => witnessOutsideNotRealized_of_spec avoid spec) residual
+
+theorem realizedContextsNegative_of_spec (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (_spec : w.Spec) :
+    RealizedContextsNegativeAtWitness w := by
+  exact fun O' ⟨r⟩ =>
+    ⟨realized_context_negative avoid r _, realized_context_negative avoid r _⟩
+
 theorem realizedContextsNegative_holds (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    RealizedContextsNegativeStatement data object := by
-  obtain ⟨w, canon, -⟩ := residual
-  exact ⟨w, canon, fun O' ⟨r⟩ =>
-    ⟨realized_context_negative avoid r _, realized_context_negative avoid r _⟩⟩
+    RealizedContextsNegativeStatement data object :=
+  atWitness_of_spec (fun _ spec => realizedContextsNegative_of_spec avoid spec) residual
 
 /-- The positive/negative ordering of the two readings at `O`. -/
 theorem positive_negative_of_spec {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
@@ -610,41 +669,53 @@ theorem positive_negative_of_spec {w : SparseTargetDefectWitness data object} (s
       exact sep ⟨fun h => (h1 h).elim, fun h => (h2 h).elim⟩
     exact ⟨_, Or.inr rfl, _, Or.inl rfl, h2, h1⟩
 
+theorem negativeSubGluingNotSmallerBaseline_of_spec
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    NegativeSubGluingNotSmallerBaselineAtWitness w := by
+  obtain ⟨-, -, N, hN, -, neg⟩ := positive_negative_of_spec spec
+  exact ⟨N, hN, neg, fun g le =>
+    negative_subContext_not_smaller_baseline minimal _ _ neg g le⟩
+
 theorem negativeSubGluingNotSmallerBaseline_holds
     (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
       Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
     (residual : SparseTargetDefectResidualStatement data object) :
-    NegativeSubGluingNotSmallerBaselineStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  obtain ⟨-, -, N, hN, -, neg⟩ := positive_negative_of_spec spec
-  exact ⟨w, canon, N, hN, neg, fun g le =>
-    negative_subContext_not_smaller_baseline minimal _ _ neg g le⟩
+    NegativeSubGluingNotSmallerBaselineStatement data object :=
+  atWitness_of_spec (fun _ spec => negativeSubGluingNotSmallerBaseline_of_spec minimal spec) residual
 
-theorem cycleSubContextSeparates_holds (three : data.threshold = 3)
+theorem cycleSubContextSeparates_of_spec (three : data.threshold = 3)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
       Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
-    (residual : SparseTargetDefectResidualStatement data object) :
-    CycleSubContextSeparatesStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    CycleSubContextSeparatesAtWitness w := by
   have proper := proper_of_spec avoid spec
   obtain ⟨P, hP, N, hN, pos, neg⟩ := positive_negative_of_spec spec
   obtain ⟨c⟩ := pos
-  refine ⟨w, canon, P, hP, N, hN, _, cycleContext_le _ _ c, cycleContext_positive _ _ c,
+  refine ⟨P, hP, N, hN, _, cycleContext_le _ _ c, cycleContext_positive _ _ c,
     subContext_negative _ _ neg _ (cycleContext_le _ _ c),
     cycleContext_degree_le_two _ _ c, fun baseline => ?_⟩
   have empty := cycleContext_baseline_chordOnly _ _ _ c (by omega) baseline
   exact negative_subContext_not_smaller_baseline minimal _ _ neg _ (cycleContext_le _ _ c)
     ⟨baseline, chordOnly_retainedGlue_smaller _ empty proper⟩
 
-theorem pathSpectrumSplit_holds
+theorem cycleSubContextSeparates_holds (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
+    (residual : SparseTargetDefectResidualStatement data object) :
+    CycleSubContextSeparatesStatement data object :=
+  atWitness_of_spec (fun _ spec => cycleSubContextSeparates_of_spec three avoid minimal spec) residual
+
+theorem pathSpectrumSplit_of_spec
     (lengthLaw : ∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (residual : SparseTargetDefectResidualStatement data object) :
-    PathSpectrumSplitStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    PathSpectrumSplitAtWitness w := by
   obtain ⟨P, hP, N, hN, pos, neg⟩ := positive_negative_of_spec spec
-  refine ⟨w, canon, P, hP, N, hN, pos, neg, ?_⟩
+  refine ⟨P, hP, N, hN, pos, neg, ?_⟩
   rcases spectrum_split pos neg (retainedPiece_avoids avoid w.support P) with
     ⟨a, b, hab, π, hπ, σ, hσ, lab, ok, three, rest⟩ | many
   · left
@@ -660,6 +731,13 @@ theorem pathSpectrumSplit_holds
           _ ≤ 2 ^ j := Nat.pow_le_pow_right (by norm_num) hj
       omega
   · exact Or.inr many
+
+theorem pathSpectrumSplit_holds
+    (lengthLaw : ∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (residual : SparseTargetDefectResidualStatement data object) :
+    PathSpectrumSplitStatement data object :=
+  atWitness_of_spec (fun _ spec => pathSpectrumSplit_of_spec lengthLaw avoid spec) residual
 
 end Realized
 
@@ -763,23 +841,31 @@ theorem positive_support_two_boundary (avoid : ¬ Graph.HasCycleWithLength data.
   · exact Or.inl (go _ _ ps)
   · exact Or.inr (go _ _ ps)
 
+theorem positiveSupportBoundaryTwo_of_spec
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    PositiveSupportBoundaryTwoAtWitness w := by
+  convert positive_support_two_boundary avoid spec
+
 theorem positiveSupportBoundaryTwo_holds
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    PositiveSupportBoundaryTwoStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  refine ⟨w, canon, ?_⟩
-  convert positive_support_two_boundary avoid spec
+    PositiveSupportBoundaryTwoStatement data object :=
+  atWitness_of_spec (fun _ spec => positiveSupportBoundaryTwo_of_spec avoid spec) residual
 
-theorem supportCutEdgesTwo_holds (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (residual : SparseTargetDefectResidualStatement data object) :
-    SupportCutEdgesTwoStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  refine ⟨w, canon, ?_⟩
+theorem supportCutEdgesTwo_of_spec (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    SupportCutEdgesTwoAtWitness w := by
+  unfold SupportCutEdgesTwoAtWitness
   have := le_trans (two_le_cutBoundary_of_spec avoid spec)
     (card_cutBoundary_le_cutEdges object w.support)
   unfold supportCutEdgeCount
   convert this
+
+theorem supportCutEdgesTwo_holds (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (residual : SparseTargetDefectResidualStatement data object) :
+    SupportCutEdgesTwoStatement data object :=
+  atWitness_of_spec (fun _ spec => supportCutEdgesTwo_of_spec avoid spec) residual
 
 theorem support_nonempty_of_spec (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     {w : SparseTargetDefectWitness data object} (spec : w.Spec) : w.support.Nonempty := by
@@ -790,38 +876,51 @@ theorem support_nonempty_of_spec (avoid : ¬ Graph.HasCycleWithLength data.Lengt
   have := two_le_cutBoundary_of_spec avoid spec
   omega
 
+theorem boundaryLowInsideVertex_of_spec (three : data.threshold = 3)
+    (baseline : MinDegreeBaselineStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    BoundaryLowInsideVertexAtWitness w := by
+  obtain ⟨b, hb, low⟩ := exists_boundary_low_inside object 3 (baseline_three three baseline)
+    (noProper_three three noProper) w.support (support_nonempty_of_spec avoid spec)
+    (proper_of_spec avoid spec)
+  exact ⟨b, hb, by omega⟩
+
 theorem boundaryLowInsideVertex_holds (three : data.threshold = 3)
     (baseline : MinDegreeBaselineStatement data object)
     (noProper : NoProperBaselineStatement data object)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    BoundaryLowInsideVertexStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  obtain ⟨b, hb, low⟩ := exists_boundary_low_inside object 3 (baseline_three three baseline)
+    BoundaryLowInsideVertexStatement data object :=
+  atWitness_of_spec (fun _ spec => boundaryLowInsideVertex_of_spec three baseline noProper avoid spec) residual
+
+theorem outsideLowVertex_of_spec (three : data.threshold = 3)
+    (baseline : MinDegreeBaselineStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    OutsideLowVertexAtWitness w := by
+  obtain ⟨x, hx, xlow, xadj⟩ := exists_outside_low object 3 (baseline_three three baseline)
     (noProper_three three noProper) w.support (support_nonempty_of_spec avoid spec)
     (proper_of_spec avoid spec)
-  exact ⟨w, canon, b, hb, by omega⟩
+  refine ⟨x, hx, ?_, xadj⟩
+  convert Nat.le_of_lt_succ xlow using 2
 
 theorem outsideLowVertex_holds (three : data.threshold = 3)
     (baseline : MinDegreeBaselineStatement data object)
     (noProper : NoProperBaselineStatement data object)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    OutsideLowVertexStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  obtain ⟨x, hx, xlow, xadj⟩ := exists_outside_low object 3 (baseline_three three baseline)
-    (noProper_three three noProper) w.support (support_nonempty_of_spec avoid spec)
-    (proper_of_spec avoid spec)
-  refine ⟨w, canon, x, hx, ?_, xadj⟩
-  convert Nat.le_of_lt_succ xlow using 2
+    OutsideLowVertexStatement data object :=
+  atWitness_of_spec (fun _ spec => outsideLowVertex_of_spec three baseline noProper avoid spec) residual
 
-theorem twoBoundaryLowOutsideSide_holds (three : data.threshold = 3)
+theorem twoBoundaryLowOutsideSide_of_spec (three : data.threshold = 3)
     (baseline : MinDegreeBaselineStatement data object)
     (noProper : NoProperBaselineStatement data object)
-    (residual : SparseTargetDefectResidualStatement data object) :
-    TwoBoundaryLowOutsideSideStatement data object := by
-  obtain ⟨w, canon, -⟩ := residual
-  refine ⟨w, canon, fun a b hab interior => ?_⟩
+    {w : SparseTargetDefectWitness data object} (_spec : w.Spec) :
+    TwoBoundaryLowOutsideSideAtWitness w := by
+  refine fun a b hab interior => ?_
   obtain ⟨i, hi, hib⟩ := interior
   have iNot : i ∉ outsideSide object w.support a b := by
     rw [hab] at hib
@@ -844,15 +943,21 @@ theorem twoBoundaryLowOutsideSide_holds (three : data.threshold = 3)
   have := le_trans (baseline_three three baseline) (object.minDegree_le_degree v)
   omega
 
-theorem twoBoundarySupportClosure_holds (three : data.threshold = 3)
+theorem twoBoundaryLowOutsideSide_holds (three : data.threshold = 3)
+    (baseline : MinDegreeBaselineStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (residual : SparseTargetDefectResidualStatement data object) :
+    TwoBoundaryLowOutsideSideStatement data object :=
+  atWitness_of_spec (fun _ spec => twoBoundaryLowOutsideSide_of_spec three baseline noProper spec) residual
+
+theorem twoBoundarySupportClosure_of_spec (three : data.threshold = 3)
     (baseline : MinDegreeBaselineStatement data object)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
       Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
-    (residual : SparseTargetDefectResidualStatement data object) :
-    TwoBoundarySupportClosureStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  refine ⟨w, canon, fun a b ab hab notAdj da db => ?_⟩
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    TwoBoundarySupportClosureAtWitness w := by
+  refine fun a b ab hab notAdj da db => ?_
   obtain ⟨x, hx⟩ := proper_of_spec avoid spec
   have mem : ∀ v, v ∈ SupportAtom.cutBoundary object w.support → v ∈ w.support :=
     fun v hv => ((SupportAtom.mem_cutBoundary_iff _ _ v).1 hv).1
@@ -866,15 +971,23 @@ theorem twoBoundarySupportClosure_holds (three : data.threshold = 3)
     (mem b (by rw [hab]; simp)) ab notAdj lt
     (closedZ_of_two object w.support hab) da db
 
-theorem twoBoundaryOutsideClosure_holds (three : data.threshold = 3)
+theorem twoBoundarySupportClosure_holds (three : data.threshold = 3)
     (baseline : MinDegreeBaselineStatement data object)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
       Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
     (residual : SparseTargetDefectResidualStatement data object) :
-    TwoBoundaryOutsideClosureStatement data object := by
-  obtain ⟨w, canon, -⟩ := residual
-  refine ⟨w, canon, fun a b ab hab interior notAdj da db => ?_⟩
+    TwoBoundarySupportClosureStatement data object :=
+  atWitness_of_spec (fun _ spec => twoBoundarySupportClosure_of_spec three baseline avoid minimal spec) residual
+
+theorem twoBoundaryOutsideClosure_of_spec (three : data.threshold = 3)
+    (baseline : MinDegreeBaselineStatement data object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
+    {w : SparseTargetDefectWitness data object} (_spec : w.Spec) :
+    TwoBoundaryOutsideClosureAtWitness w := by
+  refine fun a b ab hab interior notAdj da db => ?_
   obtain ⟨i, hi, hib⟩ := interior
   have iNot : i ∉ outsideSide object w.support a b := by
     rw [hab] at hib
@@ -889,11 +1002,19 @@ theorem twoBoundaryOutsideClosure_holds (three : data.threshold = 3)
     (minimal_three three minimal) _ (by simp [outsideSide]) (by simp [outsideSide]) ab notAdj
     lt (outsideSide_closed object w.support hab) da db
 
-theorem twoBoundaryNoTargetSum_holds (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+theorem twoBoundaryOutsideClosure_holds (three : data.threshold = 3)
+    (baseline : MinDegreeBaselineStatement data object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
     (residual : SparseTargetDefectResidualStatement data object) :
-    TwoBoundaryNoTargetSumStatement data object := by
-  obtain ⟨w, canon, -⟩ := residual
-  refine ⟨w, canon, fun a b hab p hp pZ q hq qT long => ?_⟩
+    TwoBoundaryOutsideClosureStatement data object :=
+  atWitness_of_spec (fun _ spec => twoBoundaryOutsideClosure_of_spec three baseline avoid minimal spec) residual
+
+theorem twoBoundaryNoTargetSum_of_spec (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (_spec : w.Spec) :
+    TwoBoundaryNoTargetSumAtWitness w := by
+  refine fun a b hab p hp pZ q hq qT long => ?_
   refine no_target_two_sides object avoid w.support
     (outsideSide object w.support a b) ?_ p hp pZ q hq qT long
   intro v vZ vT
@@ -903,13 +1024,16 @@ theorem twoBoundaryNoTargetSum_holds (avoid : ¬ Graph.HasCycleWithLength data.L
   · exact Or.inl h
   · exact Or.inr h
 
-theorem outsideOrBoundaryLarge_holds (three : data.threshold = 3)
+theorem twoBoundaryNoTargetSum_holds (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (residual : SparseTargetDefectResidualStatement data object) :
+    TwoBoundaryNoTargetSumStatement data object :=
+  atWitness_of_spec (fun _ spec => twoBoundaryNoTargetSum_of_spec avoid spec) residual
+
+theorem outsideOrBoundaryLarge_of_spec (three : data.threshold = 3)
     (baseline : MinDegreeBaselineStatement data object)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (residual : SparseTargetDefectResidualStatement data object) :
-    OutsideOrBoundaryLargeStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  refine ⟨w, canon, ?_⟩
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    OutsideOrBoundaryLargeAtWitness w := by
   obtain ⟨x, hx⟩ := proper_of_spec avoid spec
   have xW : x ∈ supportOutside object w.support := by simp [supportOutside, hx]
   by_cases one : (supportOutside object w.support).card = 1
@@ -926,6 +1050,13 @@ theorem outsideOrBoundaryLarge_holds (three : data.threshold = 3)
   · left
     have := Finset.card_pos.2 ⟨x, xW⟩
     omega
+
+theorem outsideOrBoundaryLarge_holds (three : data.threshold = 3)
+    (baseline : MinDegreeBaselineStatement data object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (residual : SparseTargetDefectResidualStatement data object) :
+    OutsideOrBoundaryLargeStatement data object :=
+  atWitness_of_spec (fun _ spec => outsideOrBoundaryLarge_of_spec three baseline avoid spec) residual
 
 end Boundary
 
@@ -1130,17 +1261,25 @@ theorem whole_case_deficit_budget
     _ ≤ Finset.univ.sum fun v => k - (glue (w.reading w.second) O').degree v :=
         Finset.sum_le_sum_of_subset (Finset.subset_univ _)
 
+theorem droppedEdgeTightDeficit_of_spec (tight : TightEndpointStatement data object)
+    {w : SparseTargetDefectWitness data object} (_spec : w.Spec) :
+    DroppedEdgeTightDeficitAtWitness w := by
+  exact fun X _ a b inG notIn =>
+    dropped_edge_tight_deficit tight w.support X a b inG notIn
+
 theorem droppedEdgeTightDeficit_holds (tight : TightEndpointStatement data object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    DroppedEdgeTightDeficitStatement data object := by
-  obtain ⟨w, canon, -⟩ := residual
-  exact ⟨w, canon, fun X _ a b inG notIn =>
-    dropped_edge_tight_deficit tight w.support X a b inG notIn⟩
+    DroppedEdgeTightDeficitStatement data object :=
+  atWitness_of_spec (fun _ spec => droppedEdgeTightDeficit_of_spec tight spec) residual
+
+theorem notBothReadingsWhole_of_spec
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    NotBothReadingsWholeAtWitness w := by
+  exact not_both_whole spec
 
 theorem notBothReadingsWhole_holds (residual : SparseTargetDefectResidualStatement data object) :
-    NotBothReadingsWholeStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, not_both_whole spec⟩
+    NotBothReadingsWholeStatement data object :=
+  atWitness_of_spec (fun _ spec => notBothReadingsWhole_of_spec spec) residual
 
 /-- The whole-case facts, for the witness and for its swap. -/
 theorem whole_case_facts (three : data.threshold = 3)
@@ -1160,61 +1299,101 @@ theorem whole_case_facts (three : data.threshold = 3)
   · convert (whole_case_deficit_budget avoid spec hA O' data.threshold).2.1
   · convert (whole_case_deficit_budget avoid spec hA O' data.threshold).2.2
 
+theorem firstWholeOrientation_of_spec (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    FirstWholeOrientationAtWitness w := by
+  exact (whole_case_facts three avoid spec).1
+
 theorem firstWholeOrientation_holds (three : data.threshold = 3)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    FirstWholeOrientationStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, (whole_case_facts three avoid spec).1⟩
+    FirstWholeOrientationStatement data object :=
+  atWitness_of_spec (fun _ spec => firstWholeOrientation_of_spec three avoid spec) residual
+
+theorem firstWholeDeficitNonempty_of_spec (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    FirstWholeDeficitNonemptyAtWitness w := by
+  exact (whole_case_facts three avoid spec).2.1
 
 theorem firstWholeDeficitNonempty_holds (three : data.threshold = 3)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    FirstWholeDeficitNonemptyStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, (whole_case_facts three avoid spec).2.1⟩
+    FirstWholeDeficitNonemptyStatement data object :=
+  atWitness_of_spec (fun _ spec => firstWholeDeficitNonempty_of_spec three avoid spec) residual
+
+theorem firstWholeDeficitStructure_of_spec (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    FirstWholeDeficitStructureAtWitness w := by
+  exact (whole_case_facts three avoid spec).2.2.1
 
 theorem firstWholeDeficitStructure_holds (three : data.threshold = 3)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    FirstWholeDeficitStructureStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, (whole_case_facts three avoid spec).2.2.1⟩
+    FirstWholeDeficitStructureStatement data object :=
+  atWitness_of_spec (fun _ spec => firstWholeDeficitStructure_of_spec three avoid spec) residual
+
+theorem firstWholeDeficitSum_of_spec (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    FirstWholeDeficitSumAtWitness w := by
+  exact (whole_case_facts three avoid spec).2.2.2.2.2
 
 theorem firstWholeDeficitSum_holds (three : data.threshold = 3)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    FirstWholeDeficitSumStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, (whole_case_facts three avoid spec).2.2.2.2.2⟩
+    FirstWholeDeficitSumStatement data object :=
+  atWitness_of_spec (fun _ spec => firstWholeDeficitSum_of_spec three avoid spec) residual
+
+theorem secondWholeOrientation_of_spec (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    SecondWholeOrientationAtWitness w := by
+  exact (whole_case_facts three avoid (swap_spec spec)).1
 
 theorem secondWholeOrientation_holds (three : data.threshold = 3)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    SecondWholeOrientationStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, (whole_case_facts three avoid (swap_spec spec)).1⟩
+    SecondWholeOrientationStatement data object :=
+  atWitness_of_spec (fun _ spec => secondWholeOrientation_of_spec three avoid spec) residual
+
+theorem secondWholeDeficitNonempty_of_spec (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    SecondWholeDeficitNonemptyAtWitness w := by
+  exact (whole_case_facts three avoid (swap_spec spec)).2.1
 
 theorem secondWholeDeficitNonempty_holds (three : data.threshold = 3)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    SecondWholeDeficitNonemptyStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, (whole_case_facts three avoid (swap_spec spec)).2.1⟩
+    SecondWholeDeficitNonemptyStatement data object :=
+  atWitness_of_spec (fun _ spec => secondWholeDeficitNonempty_of_spec three avoid spec) residual
+
+theorem secondWholeDeficitStructure_of_spec (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    SecondWholeDeficitStructureAtWitness w := by
+  exact (whole_case_facts three avoid (swap_spec spec)).2.2.1
 
 theorem secondWholeDeficitStructure_holds (three : data.threshold = 3)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    SecondWholeDeficitStructureStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, (whole_case_facts three avoid (swap_spec spec)).2.2.1⟩
+    SecondWholeDeficitStructureStatement data object :=
+  atWitness_of_spec (fun _ spec => secondWholeDeficitStructure_of_spec three avoid spec) residual
+
+theorem secondWholeDeficitSum_of_spec (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    SecondWholeDeficitSumAtWitness w := by
+  exact (whole_case_facts three avoid (swap_spec spec)).2.2.2.2.2
 
 theorem secondWholeDeficitSum_holds (three : data.threshold = 3)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    SecondWholeDeficitSumStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, (whole_case_facts three avoid (swap_spec spec)).2.2.2.2.2⟩
+    SecondWholeDeficitSumStatement data object :=
+  atWitness_of_spec (fun _ spec => secondWholeDeficitSum_of_spec three avoid spec) residual
 
 end Compression
 
@@ -1418,6 +1597,17 @@ theorem deleted_core (three : data.threshold = 3)
     exact ⟨c, addEdges_cycle_uses_new (object.induce T) F freeK c⟩
 
 
+theorem deletedSupportReduction_of_spec (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
+    (baseline : MinDegreeBaselineStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (tight : TightEndpointStatement data object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    DeletedSupportReductionAtWitness w := by
+  exact ⟨fun whole => (deleted_core three avoid minimal baseline noProper tight spec whole).1, fun whole => (deleted_core three avoid minimal baseline noProper tight (swap_spec spec) whole).1⟩
+
 theorem deletedSupportReduction_holds (three : data.threshold = 3)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
@@ -1426,9 +1616,19 @@ theorem deletedSupportReduction_holds (three : data.threshold = 3)
     (noProper : NoProperBaselineStatement data object)
     (tight : TightEndpointStatement data object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    DeletedSupportReductionStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, fun whole => (deleted_core three avoid minimal baseline noProper tight spec whole).1, fun whole => (deleted_core three avoid minimal baseline noProper tight (swap_spec spec) whole).1⟩
+    DeletedSupportReductionStatement data object :=
+  atWitness_of_spec (fun _ spec => deletedSupportReduction_of_spec three avoid minimal baseline noProper tight spec) residual
+
+theorem deletedSupportDeficientVertex_of_spec (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
+    (baseline : MinDegreeBaselineStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (tight : TightEndpointStatement data object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    DeletedSupportDeficientVertexAtWitness w := by
+  exact ⟨fun whole => ⟨(deleted_core three avoid minimal baseline noProper tight spec whole).2.2.2.2.1, (deleted_core three avoid minimal baseline noProper tight spec whole).2.2.2.2.2.1⟩, fun whole => ⟨(deleted_core three avoid minimal baseline noProper tight (swap_spec spec) whole).2.2.2.2.1, (deleted_core three avoid minimal baseline noProper tight (swap_spec spec) whole).2.2.2.2.2.1⟩⟩
 
 theorem deletedSupportDeficientVertex_holds (three : data.threshold = 3)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
@@ -1438,9 +1638,19 @@ theorem deletedSupportDeficientVertex_holds (three : data.threshold = 3)
     (noProper : NoProperBaselineStatement data object)
     (tight : TightEndpointStatement data object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    DeletedSupportDeficientVertexStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, fun whole => ⟨(deleted_core three avoid minimal baseline noProper tight spec whole).2.2.2.2.1, (deleted_core three avoid minimal baseline noProper tight spec whole).2.2.2.2.2.1⟩, fun whole => ⟨(deleted_core three avoid minimal baseline noProper tight (swap_spec spec) whole).2.2.2.2.1, (deleted_core three avoid minimal baseline noProper tight (swap_spec spec) whole).2.2.2.2.2.1⟩⟩
+    DeletedSupportDeficientVertexStatement data object :=
+  atWitness_of_spec (fun _ spec => deletedSupportDeficientVertex_of_spec three avoid minimal baseline noProper tight spec) residual
+
+theorem deletedSupportDeficitSums_of_spec (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
+    (baseline : MinDegreeBaselineStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (tight : TightEndpointStatement data object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    DeletedSupportDeficitSumsAtWitness w := by
+  exact ⟨fun whole => (deleted_core three avoid minimal baseline noProper tight spec whole).2.2.2.2.2.2.1, fun whole => (deleted_core three avoid minimal baseline noProper tight (swap_spec spec) whole).2.2.2.2.2.2.1⟩
 
 theorem deletedSupportDeficitSums_holds (three : data.threshold = 3)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
@@ -1450,9 +1660,19 @@ theorem deletedSupportDeficitSums_holds (three : data.threshold = 3)
     (noProper : NoProperBaselineStatement data object)
     (tight : TightEndpointStatement data object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    DeletedSupportDeficitSumsStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, fun whole => (deleted_core three avoid minimal baseline noProper tight spec whole).2.2.2.2.2.2.1, fun whole => (deleted_core three avoid minimal baseline noProper tight (swap_spec spec) whole).2.2.2.2.2.2.1⟩
+    DeletedSupportDeficitSumsStatement data object :=
+  atWitness_of_spec (fun _ spec => deletedSupportDeficitSums_of_spec three avoid minimal baseline noProper tight spec) residual
+
+theorem deletedSupportEdgeRestoration_of_spec (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
+    (baseline : MinDegreeBaselineStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (tight : TightEndpointStatement data object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    DeletedSupportEdgeRestorationAtWitness w := by
+  exact ⟨fun whole => (deleted_core three avoid minimal baseline noProper tight spec whole).2.2.2.2.2.2.2.2.1, fun whole => (deleted_core three avoid minimal baseline noProper tight (swap_spec spec) whole).2.2.2.2.2.2.2.2.1⟩
 
 theorem deletedSupportEdgeRestoration_holds (three : data.threshold = 3)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
@@ -1462,9 +1682,19 @@ theorem deletedSupportEdgeRestoration_holds (three : data.threshold = 3)
     (noProper : NoProperBaselineStatement data object)
     (tight : TightEndpointStatement data object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    DeletedSupportEdgeRestorationStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, fun whole => (deleted_core three avoid minimal baseline noProper tight spec whole).2.2.2.2.2.2.2.2.1, fun whole => (deleted_core three avoid minimal baseline noProper tight (swap_spec spec) whole).2.2.2.2.2.2.2.2.1⟩
+    DeletedSupportEdgeRestorationStatement data object :=
+  atWitness_of_spec (fun _ spec => deletedSupportEdgeRestoration_of_spec three avoid minimal baseline noProper tight spec) residual
+
+theorem deletedSupportEdgeSetRestoration_of_spec (three : data.threshold = 3)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
+    (baseline : MinDegreeBaselineStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (tight : TightEndpointStatement data object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    DeletedSupportEdgeSetRestorationAtWitness w := by
+  exact ⟨fun whole => (deleted_core three avoid minimal baseline noProper tight spec whole).2.2.2.2.2.2.2.2.2, fun whole => (deleted_core three avoid minimal baseline noProper tight (swap_spec spec) whole).2.2.2.2.2.2.2.2.2⟩
 
 theorem deletedSupportEdgeSetRestoration_holds (three : data.threshold = 3)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
@@ -1474,21 +1704,28 @@ theorem deletedSupportEdgeSetRestoration_holds (three : data.threshold = 3)
     (noProper : NoProperBaselineStatement data object)
     (tight : TightEndpointStatement data object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    DeletedSupportEdgeSetRestorationStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, fun whole => (deleted_core three avoid minimal baseline noProper tight spec whole).2.2.2.2.2.2.2.2.2, fun whole => (deleted_core three avoid minimal baseline noProper tight (swap_spec spec) whole).2.2.2.2.2.2.2.2.2⟩
+    DeletedSupportEdgeSetRestorationStatement data object :=
+  atWitness_of_spec (fun _ spec => deletedSupportEdgeSetRestoration_of_spec three avoid minimal baseline noProper tight spec) residual
+
+theorem firstKeepsAllNotWhole_of_spec (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    FirstKeepsAllNotWholeAtWitness w := by
+  exact fun keep nw => keepsAll_notWhole_first_global avoid spec keep nw
 
 theorem firstKeepsAllNotWhole_holds (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    FirstKeepsAllNotWholeStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, fun keep nw => keepsAll_notWhole_first_global avoid spec keep nw⟩
+    FirstKeepsAllNotWholeStatement data object :=
+  atWitness_of_spec (fun _ spec => firstKeepsAllNotWhole_of_spec avoid spec) residual
+
+theorem secondKeepsAllNotWhole_of_spec (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    SecondKeepsAllNotWholeAtWitness w := by
+  exact fun keep nw => keepsAll_notWhole_first_global avoid (swap_spec spec) keep nw
 
 theorem secondKeepsAllNotWhole_holds (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    SecondKeepsAllNotWholeStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, fun keep nw => keepsAll_notWhole_first_global avoid (swap_spec spec) keep nw⟩
+    SecondKeepsAllNotWholeStatement data object :=
+  atWitness_of_spec (fun _ spec => secondKeepsAllNotWhole_of_spec avoid spec) residual
 
 end Deleted
 
@@ -1576,10 +1813,14 @@ theorem pairArm_false {w : SparseTargetDefectWitness data object} (spec : w.Spec
   have le2 := pair_le hZ hB prof.symm
   exact separated_of_spec spec ⟨glue_mono_of_le le1 w.outside, glue_mono_of_le le2 w.outside⟩
 
+theorem pairArmExcluded_of_spec
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    PairArmExcludedAtWitness w := by
+  exact fun ⟨a, b, hB, hZ⟩ => pairArm_false spec hB hZ
+
 theorem pairArmExcluded_holds (residual : SparseTargetDefectResidualStatement data object) :
-    PairArmExcludedStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, fun ⟨a, b, hB, hZ⟩ => pairArm_false spec hB hZ⟩
+    PairArmExcludedStatement data object :=
+  atWitness_of_spec (fun _ spec => pairArmExcluded_of_spec spec) residual
 
 theorem spectrumArmOne_of_two
     (lengthLaw : ∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
@@ -1602,19 +1843,25 @@ theorem spectrumArmOne_of_two
       omega
   · exact (armII_two_false two pos many).elim
 
-theorem twoBoundaryForcesArmOne_holds
+theorem twoBoundaryForcesArmOne_of_spec
     (lengthLaw : ∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (residual : SparseTargetDefectResidualStatement data object) :
-    TwoBoundaryForcesArmOneStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  refine ⟨w, canon, fun two => ⟨spectrumArmOne_of_two lengthLaw avoid spec two, ?_⟩⟩
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    TwoBoundaryForcesArmOneAtWitness w := by
+  refine fun two => ⟨spectrumArmOne_of_two lengthLaw avoid spec two, ?_⟩
   obtain ⟨a, b, ab, hab, split⟩ := two_boundary_split object w.support two
   rcases split with pair | int
   · exact (pairArm_false spec hab pair).elim
   refine ⟨a, b, ab, hab, ?_, int⟩
   rw [← hab]
   exact boundary_two_in_positive avoid spec two
+
+theorem twoBoundaryForcesArmOne_holds
+    (lengthLaw : ∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (residual : SparseTargetDefectResidualStatement data object) :
+    TwoBoundaryForcesArmOneStatement data object :=
+  atWitness_of_spec (fun _ spec => twoBoundaryForcesArmOne_of_spec lengthLaw avoid spec) residual
 
 theorem armOne_path {w : SparseTargetDefectWitness data object} (h : w.SpectrumArmOne) :
     ∃ a b : object.Vertex, a ≠ b ∧
@@ -1653,21 +1900,24 @@ theorem armOne_path {w : SparseTargetDefectWitness data object} (h : w.SpectrumA
     obtain ⟨i, rfl⟩ := Nat.exists_eq_add_of_le hk
     rw [pow_add]; simp [Nat.mul_mod_right]
 
-theorem armOneForcedPath_holds (residual : SparseTargetDefectResidualStatement data object) :
-    ArmOneForcedPathStatement data object := by
-  obtain ⟨w, canon, -⟩ := residual
-  exact ⟨w, canon, armOne_path⟩
+theorem armOneForcedPath_of_spec
+    {w : SparseTargetDefectWitness data object} (_spec : w.Spec) :
+    ArmOneForcedPathAtWitness w := by
+  exact armOne_path
 
-theorem twoBoundaryForcedPathCross_holds (three : data.threshold = 3)
+theorem armOneForcedPath_holds (residual : SparseTargetDefectResidualStatement data object) :
+    ArmOneForcedPathStatement data object :=
+  atWitness_of_spec (fun _ spec => armOneForcedPath_of_spec spec) residual
+
+theorem twoBoundaryForcedPathCross_of_spec (three : data.threshold = 3)
     (lengthLaw : ∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
     (baseline : MinDegreeBaselineStatement data object)
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
       Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
-    (residual : SparseTargetDefectResidualStatement data object) :
-    TwoBoundaryForcedPathCrossStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  refine ⟨w, canon, fun two => ?_⟩
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    TwoBoundaryForcedPathCrossAtWitness w := by
+  refine fun two => ?_
   obtain ⟨a', b', ab', hab', interior⟩ : ∃ a b, a ≠ b ∧
       SupportAtom.cutBoundary object w.support = {a, b} ∧
       ∃ i ∈ w.support, i ∉ SupportAtom.cutBoundary object w.support := by
@@ -1730,16 +1980,30 @@ theorem twoBoundaryForcedPathCross_holds (three : data.threshold = 3)
     rw [SimpleGraph.Walk.length_reverse]
     omega
 
-theorem supportSteinerMinimal_holds (residual : SparseTargetDefectResidualStatement data object) :
-    SupportSteinerMinimalStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, fun Y hY conn => CanonicalSupport.select?_card_le spec.2.2.2.1
-    (CanonicalSupport.mem_candidates_iff.2 ⟨fun v hv => hY v (Finset.mem_union.1 hv), conn⟩)⟩
+theorem twoBoundaryForcedPathCross_holds (three : data.threshold = 3)
+    (lengthLaw : ∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
+    (baseline : MinDegreeBaselineStatement data object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
+    (residual : SparseTargetDefectResidualStatement data object) :
+    TwoBoundaryForcedPathCrossStatement data object :=
+  atWitness_of_spec (fun _ spec => twoBoundaryForcedPathCross_of_spec three lengthLaw baseline avoid minimal spec) residual
 
-theorem steinerVerticesCut_holds (residual : SparseTargetDefectResidualStatement data object) :
-    SteinerVerticesCutStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  refine ⟨w, canon, fun v hv hA hB conn => ?_⟩
+theorem supportSteinerMinimal_of_spec
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    SupportSteinerMinimalAtWitness w := by
+  exact fun Y hY conn => CanonicalSupport.select?_card_le spec.2.2.2.1
+    (CanonicalSupport.mem_candidates_iff.2 ⟨fun v hv => hY v (Finset.mem_union.1 hv), conn⟩)
+
+theorem supportSteinerMinimal_holds (residual : SparseTargetDefectResidualStatement data object) :
+    SupportSteinerMinimalStatement data object :=
+  atWitness_of_spec (fun _ spec => supportSteinerMinimal_of_spec spec) residual
+
+theorem steinerVerticesCut_of_spec
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    SteinerVerticesCutAtWitness w := by
+  refine fun v hv hA hB conn => ?_
   have := CanonicalSupport.select?_card_le spec.2.2.2.1
     (CanonicalSupport.mem_candidates_iff.2 ⟨fun x hx => by
       refine Finset.mem_erase.2 ⟨?_, ?_⟩
@@ -1753,14 +2017,21 @@ theorem steinerVerticesCut_holds (residual : SparseTargetDefectResidualStatement
   have : 0 < w.support.card := Finset.card_pos.2 ⟨v, hv⟩
   omega
 
-theorem wholeSupportEqual_holds (residual : SparseTargetDefectResidualStatement data object) :
-    WholeSupportEqualStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon,
-    fun whole => ⟨Finset.Subset.antisymm whole (first_subset_support spec),
+theorem steinerVerticesCut_holds (residual : SparseTargetDefectResidualStatement data object) :
+    SteinerVerticesCutStatement data object :=
+  atWitness_of_spec (fun _ spec => steinerVerticesCut_of_spec spec) residual
+
+theorem wholeSupportEqual_of_spec
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    WholeSupportEqualAtWitness w := by
+  exact ⟨fun whole => ⟨Finset.Subset.antisymm whole (first_subset_support spec),
       fun _ h => whole (second_subset_support spec h)⟩,
     fun whole => ⟨Finset.Subset.antisymm whole (second_subset_support spec),
       fun _ h => whole (first_subset_support spec h)⟩⟩
+
+theorem wholeSupportEqual_holds (residual : SparseTargetDefectResidualStatement data object) :
+    WholeSupportEqualStatement data object :=
+  atWitness_of_spec (fun _ spec => wholeSupportEqual_of_spec spec) residual
 
 theorem wholeDeficitBoundaryCount_at (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
@@ -1781,13 +2052,18 @@ theorem wholeDeficitBoundaryCount_at (avoid : ¬ Graph.HasCycleWithLength data.L
   rw [Finset.card_union_of_disjoint disj] at this
   exact this
 
+theorem wholeDeficitBoundaryCount_of_spec
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
+    WholeDeficitBoundaryCountAtWitness w := by
+  exact ⟨wholeDeficitBoundaryCount_at avoid spec,
+    wholeDeficitBoundaryCount_at avoid (swap_spec spec)⟩
+
 theorem wholeDeficitBoundaryCount_holds
     (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    WholeDeficitBoundaryCountStatement data object := by
-  obtain ⟨w, canon, spec⟩ := residual
-  exact ⟨w, canon, wholeDeficitBoundaryCount_at avoid spec,
-    wholeDeficitBoundaryCount_at avoid (swap_spec spec)⟩
+    WholeDeficitBoundaryCountStatement data object :=
+  atWitness_of_spec (fun _ spec => wholeDeficitBoundaryCount_of_spec avoid spec) residual
 
 theorem wholeCutEdgeSurplusBound_at (three : data.threshold = 3)
     (baseline : MinDegreeBaselineStatement data object)
@@ -1813,13 +2089,18 @@ theorem wholeCutEdgeSurplusBound_at (three : data.threshold = 3)
     _ ≤ T.sum (fun v => 3 - object.localDegree T v) + object.degreeSurplus 3 :=
         Nat.add_le_add_left (SparseOrderArithmetic.sum_sub_le_sigma object base T) _
 
+theorem wholeCutEdgeSurplusBound_of_spec (three : data.threshold = 3)
+    (baseline : MinDegreeBaselineStatement data object)
+    {w : SparseTargetDefectWitness data object} (_spec : w.Spec) :
+    WholeCutEdgeSurplusBoundAtWitness w := by
+  exact ⟨wholeCutEdgeSurplusBound_at three baseline w,
+    wholeCutEdgeSurplusBound_at three baseline w.swap⟩
+
 theorem wholeCutEdgeSurplusBound_holds (three : data.threshold = 3)
     (baseline : MinDegreeBaselineStatement data object)
     (residual : SparseTargetDefectResidualStatement data object) :
-    WholeCutEdgeSurplusBoundStatement data object := by
-  obtain ⟨w, canon, -⟩ := residual
-  exact ⟨w, canon, wholeCutEdgeSurplusBound_at three baseline w,
-    wholeCutEdgeSurplusBound_at three baseline w.swap⟩
+    WholeCutEdgeSurplusBoundStatement data object :=
+  atWitness_of_spec (fun _ spec => wholeCutEdgeSurplusBound_of_spec three baseline spec) residual
 
 end Combination
 

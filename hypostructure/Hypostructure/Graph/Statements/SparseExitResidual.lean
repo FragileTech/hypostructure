@@ -132,45 +132,76 @@ def SixVertexExtremalEnvelopeStatement (object : Graph.FiniteObject.{u}) : Prop 
 
 /-! ## The canonical witness (A26–A39) -/
 
+/-- `WitnessReadingsNotTargetCompleteStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev WitnessReadingsNotTargetCompleteAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ¬ Graph.Response.TargetComplete Graph.BoundaryPiece.boundaryDegreeProfile
+    (Graph.HasCycleWithLength data.LengthOK) (w.reading w.first) (w.reading w.second)
+
 /-- **The readings are not target-complete.** -/
 noncomputable def WitnessReadingsNotTargetCompleteStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ¬ Graph.Response.TargetComplete Graph.BoundaryPiece.boundaryDegreeProfile
-      (Graph.HasCycleWithLength data.LengthOK) (w.reading w.first) (w.reading w.second)
+  AtSparseTargetDefectWitness data object WitnessReadingsNotTargetCompleteAtWitness
+
+/-- `WitnessActualOutsideNegativeStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev WitnessActualOutsideNegativeAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ¬ Graph.HasCycleWithLength data.LengthOK
+      (Graph.glue (w.reading w.first) (SupportAtom.outside object w.support)) ∧
+    ¬ Graph.HasCycleWithLength data.LengthOK
+      (Graph.glue (w.reading w.second) (SupportAtom.outside object w.support))
 
 /-- **Neither reading has an accepted cycle at `G − Z`.** -/
 noncomputable def WitnessActualOutsideNegativeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ¬ Graph.HasCycleWithLength data.LengthOK
-        (Graph.glue (w.reading w.first) (SupportAtom.outside object w.support)) ∧
-      ¬ Graph.HasCycleWithLength data.LengthOK
-        (Graph.glue (w.reading w.second) (SupportAtom.outside object w.support))
+  AtSparseTargetDefectWitness data object WitnessActualOutsideNegativeAtWitness
+
+/-- `WitnessReadingsCycleFreeStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev WitnessReadingsCycleFreeAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ¬ Graph.HasCycleWithLength data.LengthOK (w.reading w.first).pack ∧
+    ¬ Graph.HasCycleWithLength data.LengthOK (w.reading w.second).pack
 
 /-- **Both reading pieces are cycle-free** (each embeds in G). -/
 noncomputable def WitnessReadingsCycleFreeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ¬ Graph.HasCycleWithLength data.LengthOK (w.reading w.first).pack ∧
-      ¬ Graph.HasCycleWithLength data.LengthOK (w.reading w.second).pack
+  AtSparseTargetDefectWitness data object WitnessReadingsCycleFreeAtWitness
+
+/-- `WitnessSupportOrderBoundStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev WitnessSupportOrderBoundAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  w.support.card + 1 ≤ object.vertexCount
 
 /-- **`|Z| + 1 ≤ n`.** -/
 noncomputable def WitnessSupportOrderBoundStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w => w.support.card + 1 ≤ object.vertexCount
+  AtSparseTargetDefectWitness data object WitnessSupportOrderBoundAtWitness
+
+/-- `WitnessReadingGluesNotSmallerBaselineStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev WitnessReadingGluesNotSmallerBaselineAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ∀ X ∈ w.pairSupports,
+    ¬ (Graph.MinimumDegreeAtLeast data.threshold
+          (Graph.glue (SupportAtom.retainedPiece object w.support X)
+            (SupportAtom.outside object w.support)) ∧
+        (Graph.glue (SupportAtom.retainedPiece object w.support X)
+          (SupportAtom.outside object w.support)).LexicographicallySmaller object)
 
 /-- **No reading's gluing with `G − Z` is a lexicographically smaller
 baseline object** (¬K3). -/
 noncomputable def WitnessReadingGluesNotSmallerBaselineStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∀ X ∈ w.pairSupports,
-      ¬ (Graph.MinimumDegreeAtLeast data.threshold
-            (Graph.glue (SupportAtom.retainedPiece object w.support X)
-              (SupportAtom.outside object w.support)) ∧
-          (Graph.glue (SupportAtom.retainedPiece object w.support X)
-            (SupportAtom.outside object w.support)).LexicographicallySmaller object)
+  AtSparseTargetDefectWitness data object WitnessReadingGluesNotSmallerBaselineAtWitness
 
 /-- **Exit (e) is excluded at G**: no open-port suppression cycle has an
 accepted lifted length `|walk| + |chords|`. -/
@@ -182,54 +213,78 @@ def NoSuppressionChordViolationStatement (data : Parameters)
 
 /-! ## Contexts realized in G (K1) -/
 
+/-- `WitnessOutsideNotRealizedStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev WitnessOutsideNotRealizedAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  IsEmpty (Graph.GluedReadings.RealizedIn w.outside)
+
 /-- **`O` is not realized in `G − Z`.** -/
 noncomputable def WitnessOutsideNotRealizedStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    IsEmpty (Graph.GluedReadings.RealizedIn w.outside)
+  AtSparseTargetDefectWitness data object WitnessOutsideNotRealizedAtWitness
+
+/-- `RealizedContextsNegativeStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev RealizedContextsNegativeAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ∀ O' : Graph.OutsideContext (SupportAtom.boundary object w.support),
+    Nonempty (Graph.GluedReadings.RealizedIn O') →
+      ¬ Graph.HasCycleWithLength data.LengthOK (Graph.glue (w.reading w.first) O') ∧
+        ¬ Graph.HasCycleWithLength data.LengthOK (Graph.glue (w.reading w.second) O')
 
 /-- **Both readings are negative in every context realized in `G − Z`.** -/
 noncomputable def RealizedContextsNegativeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∀ O' : Graph.OutsideContext (SupportAtom.boundary object w.support),
-      Nonempty (Graph.GluedReadings.RealizedIn O') →
-        ¬ Graph.HasCycleWithLength data.LengthOK (Graph.glue (w.reading w.first) O') ∧
-          ¬ Graph.HasCycleWithLength data.LengthOK (Graph.glue (w.reading w.second) O')
+  AtSparseTargetDefectWitness data object RealizedContextsNegativeAtWitness
+
+/-- `NegativeSubGluingNotSmallerBaselineStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev NegativeSubGluingNotSmallerBaselineAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ∃ N ∈ w.pairSupports,
+    ¬ Graph.HasCycleWithLength data.LengthOK
+      (Graph.glue (SupportAtom.retainedPiece object w.support N) w.outside) ∧
+    ∀ g ≤ w.outside.graph,
+      ¬ (Graph.MinimumDegreeAtLeast data.threshold
+            (Graph.glue (SupportAtom.retainedPiece object w.support N)
+              (Graph.GluedReadings.subContext w.outside g)) ∧
+          (Graph.glue (SupportAtom.retainedPiece object w.support N)
+            (Graph.GluedReadings.subContext w.outside g)).LexicographicallySmaller object)
 
 /-- **No negative sub-gluing is a lexicographically smaller baseline object**:
 the negative reading `N` at `O`, against every sub-context `O' ≤ O`. -/
 noncomputable def NegativeSubGluingNotSmallerBaselineStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∃ N ∈ w.pairSupports,
-      ¬ Graph.HasCycleWithLength data.LengthOK
-        (Graph.glue (SupportAtom.retainedPiece object w.support N) w.outside) ∧
-      ∀ g ≤ w.outside.graph,
-        ¬ (Graph.MinimumDegreeAtLeast data.threshold
-              (Graph.glue (SupportAtom.retainedPiece object w.support N)
-                (Graph.GluedReadings.subContext w.outside g)) ∧
-            (Graph.glue (SupportAtom.retainedPiece object w.support N)
-              (Graph.GluedReadings.subContext w.outside g)).LexicographicallySmaller object)
+  AtSparseTargetDefectWitness data object NegativeSubGluingNotSmallerBaselineAtWitness
+
+/-- `CycleSubContextSeparatesStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev CycleSubContextSeparatesAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ∃ P ∈ w.pairSupports, ∃ N ∈ w.pairSupports, ∃ g ≤ w.outside.graph,
+    Graph.HasCycleWithLength data.LengthOK
+      (Graph.glue (SupportAtom.retainedPiece object w.support P)
+        (Graph.GluedReadings.subContext w.outside g)) ∧
+    ¬ Graph.HasCycleWithLength data.LengthOK
+      (Graph.glue (SupportAtom.retainedPiece object w.support N)
+        (Graph.GluedReadings.subContext w.outside g)) ∧
+    (∀ o : w.outside.Internal,
+      (Graph.GluedReadings.subContext w.outside g).pack.degree (.inr o) ≤ 2) ∧
+    ¬ Graph.MinimumDegreeAtLeast data.threshold
+      (Graph.glue (SupportAtom.retainedPiece object w.support N)
+        (Graph.GluedReadings.subContext w.outside g))
 
 /-- **The O-part of one positive cycle still separates**: a sub-context
 `O' ≤ O` with `P` positive and `N` negative, every `O'`-internal vertex of
 `O'`-degree at most `2`, and `glue N O'` not a baseline object. -/
 noncomputable def CycleSubContextSeparatesStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∃ P ∈ w.pairSupports, ∃ N ∈ w.pairSupports, ∃ g ≤ w.outside.graph,
-      Graph.HasCycleWithLength data.LengthOK
-        (Graph.glue (SupportAtom.retainedPiece object w.support P)
-          (Graph.GluedReadings.subContext w.outside g)) ∧
-      ¬ Graph.HasCycleWithLength data.LengthOK
-        (Graph.glue (SupportAtom.retainedPiece object w.support N)
-          (Graph.GluedReadings.subContext w.outside g)) ∧
-      (∀ o : w.outside.Internal,
-        (Graph.GluedReadings.subContext w.outside g).pack.degree (.inr o) ≤ 2) ∧
-      ¬ Graph.MinimumDegreeAtLeast data.threshold
-        (Graph.glue (SupportAtom.retainedPiece object w.support N)
-          (Graph.GluedReadings.subContext w.outside g))
+  AtSparseTargetDefectWitness data object CycleSubContextSeparatesAtWitness
 
 /-- Arm (i) of the path-spectrum split at the witness: the positive reading
 `P` and the negative reading `N` at `O`, labels `a ≠ b` of `∂Z`, a path
@@ -252,6 +307,34 @@ noncomputable abbrev SparseTargetDefectWitness.SpectrumArmOne {data : Parameters
         ∀ π' : (SupportAtom.retainedPiece object w.support N).graph.Walk (.inl a) (.inl b),
           π'.IsPath → π'.length ≠ π.length ∧ ∀ j, 2 ≤ j → π'.length + σ.length ≠ 2 ^ j
 
+/-- `PathSpectrumSplitStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev PathSpectrumSplitAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ∃ P ∈ w.pairSupports, ∃ N ∈ w.pairSupports,
+    Graph.HasCycleWithLength data.LengthOK
+        (Graph.glue (SupportAtom.retainedPiece object w.support P) w.outside) ∧
+    ¬ Graph.HasCycleWithLength data.LengthOK
+        (Graph.glue (SupportAtom.retainedPiece object w.support N) w.outside) ∧
+    ((∃ a b : (SupportAtom.boundary object w.support).Vertex, a ≠ b ∧
+        ∃ π : (SupportAtom.retainedPiece object w.support P).graph.Walk
+            (.inl a) (.inl b), π.IsPath ∧
+        ∃ σ : w.outside.graph.Walk (.inl b) (.inl a), σ.IsPath ∧
+          (∀ d, (Sum.inl d : _ ⊕ w.outside.Internal) ∈ σ.support → d = a ∨ d = b) ∧
+          (∃ k, 2 ≤ k ∧ π.length + σ.length = 2 ^ k) ∧
+          ∀ π' : (SupportAtom.retainedPiece object w.support N).graph.Walk
+              (.inl a) (.inl b), π'.IsPath →
+            π'.length ≠ π.length ∧ ∀ j, 2 ≤ j → π'.length + σ.length ≠ 2 ^ j) ∨
+      (∀ c : Graph.CycleCertificate
+          (Graph.glue (SupportAtom.retainedPiece object w.support P) w.outside)
+          data.LengthOK,
+        ∃ a b d : (SupportAtom.boundary object w.support).Vertex,
+          a ≠ b ∧ a ≠ d ∧ b ≠ d ∧
+          (Sum.inl a : Graph.GluedVertex _ w.outside) ∈ c.walk.support ∧
+          (Sum.inl b : Graph.GluedVertex _ w.outside) ∈ c.walk.support ∧
+          (Sum.inl d : Graph.GluedVertex _ w.outside) ∈ c.walk.support))
+
 /-- **The path-length spectrum split** at the witness: for the positive
 reading `P` and the negative reading `N` at `O`, either (i) labels `a ≠ b` of
 `∂Z`, a path `π : a → b` of `ret_P` and an `O`-path `σ : b → a` meeting no
@@ -260,29 +343,7 @@ other label with `|π| + |σ| = 2^k` (`k ≥ 2`), such that every `a → b` path
 (ii) every accepted cycle of `glue ret_P O` meets three distinct labels. -/
 noncomputable def PathSpectrumSplitStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∃ P ∈ w.pairSupports, ∃ N ∈ w.pairSupports,
-      Graph.HasCycleWithLength data.LengthOK
-          (Graph.glue (SupportAtom.retainedPiece object w.support P) w.outside) ∧
-      ¬ Graph.HasCycleWithLength data.LengthOK
-          (Graph.glue (SupportAtom.retainedPiece object w.support N) w.outside) ∧
-      ((∃ a b : (SupportAtom.boundary object w.support).Vertex, a ≠ b ∧
-          ∃ π : (SupportAtom.retainedPiece object w.support P).graph.Walk
-              (.inl a) (.inl b), π.IsPath ∧
-          ∃ σ : w.outside.graph.Walk (.inl b) (.inl a), σ.IsPath ∧
-            (∀ d, (Sum.inl d : _ ⊕ w.outside.Internal) ∈ σ.support → d = a ∨ d = b) ∧
-            (∃ k, 2 ≤ k ∧ π.length + σ.length = 2 ^ k) ∧
-            ∀ π' : (SupportAtom.retainedPiece object w.support N).graph.Walk
-                (.inl a) (.inl b), π'.IsPath →
-              π'.length ≠ π.length ∧ ∀ j, 2 ≤ j → π'.length + σ.length ≠ 2 ^ j) ∨
-        (∀ c : Graph.CycleCertificate
-            (Graph.glue (SupportAtom.retainedPiece object w.support P) w.outside)
-            data.LengthOK,
-          ∃ a b d : (SupportAtom.boundary object w.support).Vertex,
-            a ≠ b ∧ a ≠ d ∧ b ≠ d ∧
-            (Sum.inl a : Graph.GluedVertex _ w.outside) ∈ c.walk.support ∧
-            (Sum.inl b : Graph.GluedVertex _ w.outside) ∈ c.walk.support ∧
-            (Sum.inl d : Graph.GluedVertex _ w.outside) ∈ c.walk.support))
+  AtSparseTargetDefectWitness data object PathSpectrumSplitAtWitness
 
 
 /-! ## Admissible quotients of G (K7) -/
@@ -317,14 +378,20 @@ def SingleBoundaryShapeStatement (object : Graph.FiniteObject.{u}) : Prop :=
       (by classical exact (object.vertexFinset.filter fun y =>
           object.graph.Adj b y ∧ y ∉ S).card) = 2
 
+/-- `PositiveSupportBoundaryTwoStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev PositiveSupportBoundaryTwoAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  (by classical exact 2 ≤ (SupportAtom.cutBoundary object w.support ∩
+      sparseDeclaredSupport data object w.first).card) ∨
+    (by classical exact 2 ≤ (SupportAtom.cutBoundary object w.support ∩
+      sparseDeclaredSupport data object w.second).card)
+
 /-- **`2 ≤ |∂Z ∩ X⁺|`** for one declared support `X⁺ ∈ {A, B}`. -/
 noncomputable def PositiveSupportBoundaryTwoStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    (by classical exact 2 ≤ (SupportAtom.cutBoundary object w.support ∩
-        sparseDeclaredSupport data object w.first).card) ∨
-      (by classical exact 2 ≤ (SupportAtom.cutBoundary object w.support ∩
-        sparseDeclaredSupport data object w.second).card)
+  AtSparseTargetDefectWitness data object PositiveSupportBoundaryTwoAtWitness
 
 /-- The number of edges from `∂Z` to `V ∖ Z`. -/
 noncomputable abbrev supportCutEdgeCount (object : Graph.FiniteObject.{u})
@@ -333,74 +400,116 @@ noncomputable abbrev supportCutEdgeCount (object : Graph.FiniteObject.{u})
   exact ∑ v ∈ SupportAtom.cutBoundary object Z,
     (object.vertexFinset.filter fun y => object.graph.Adj v y ∧ y ∉ Z).card
 
+/-- `SupportCutEdgesTwoStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev SupportCutEdgesTwoAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  2 ≤ supportCutEdgeCount object w.support
+
 /-- **`2 ≤ e(∂Z, V ∖ Z)`.** -/
 noncomputable def SupportCutEdgesTwoStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    2 ≤ supportCutEdgeCount object w.support
+  AtSparseTargetDefectWitness data object SupportCutEdgesTwoAtWitness
+
+/-- `BoundaryLowInsideVertexStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev BoundaryLowInsideVertexAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ∃ b ∈ SupportAtom.cutBoundary object w.support, object.internalDegree w.support b ≤ 2
 
 /-- **A boundary vertex with at most two neighbours in `Z`.** -/
 noncomputable def BoundaryLowInsideVertexStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∃ b ∈ SupportAtom.cutBoundary object w.support, object.internalDegree w.support b ≤ 2
+  AtSparseTargetDefectWitness data object BoundaryLowInsideVertexAtWitness
+
+/-- `OutsideLowVertexStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev OutsideLowVertexAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ∃ x, x ∉ w.support ∧
+    (by classical exact (object.vertexFinset.filter fun y =>
+      object.graph.Adj x y ∧ y ∉ w.support).card) ≤ 2 ∧
+    ∃ y ∈ w.support, object.graph.Adj x y
 
 /-- **An outside vertex with at most two outside neighbours and a neighbour in
 `Z`.** -/
 noncomputable def OutsideLowVertexStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∃ x, x ∉ w.support ∧
-      (by classical exact (object.vertexFinset.filter fun y =>
-        object.graph.Adj x y ∧ y ∉ w.support).card) ≤ 2 ∧
-      ∃ y ∈ w.support, object.graph.Adj x y
+  AtSparseTargetDefectWitness data object OutsideLowVertexAtWitness
+
+/-- `TwoBoundaryLowOutsideSideStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev TwoBoundaryLowOutsideSideAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ∀ a b : object.Vertex, SupportAtom.cutBoundary object w.support = {a, b} →
+    (∃ i ∈ w.support, i ∉ SupportAtom.cutBoundary object w.support) →
+    object.internalDegree (Graph.GluedReadings.outsideSide object w.support a b) a ≤ 2 ∨
+      object.internalDegree (Graph.GluedReadings.outsideSide object w.support a b) b ≤ 2
 
 /-- **`∂Z = {a, b}` with an interior vertex: one terminal has at most two
 neighbours in `T' = (V ∖ Z) ∪ {a, b}`.** -/
 noncomputable def TwoBoundaryLowOutsideSideStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∀ a b : object.Vertex, SupportAtom.cutBoundary object w.support = {a, b} →
-      (∃ i ∈ w.support, i ∉ SupportAtom.cutBoundary object w.support) →
-      object.internalDegree (Graph.GluedReadings.outsideSide object w.support a b) a ≤ 2 ∨
-        object.internalDegree (Graph.GluedReadings.outsideSide object w.support a b) b ≤ 2
+  AtSparseTargetDefectWitness data object TwoBoundaryLowOutsideSideAtWitness
+
+/-- `TwoBoundarySupportClosureStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev TwoBoundarySupportClosureAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ∀ a b : object.Vertex, a ≠ b → SupportAtom.cutBoundary object w.support = {a, b} →
+    ¬ object.graph.Adj a b →
+    2 ≤ object.internalDegree w.support a → 2 ≤ object.internalDegree w.support b →
+    ∃ p : object.graph.Walk a b, p.IsPath ∧ (∀ v ∈ p.support, v ∈ w.support) ∧
+      data.LengthOK (p.length + 1)
 
 /-- **2-sum closure on the `Z` side**: if `a ≁ b` and both have two
 neighbours in `Z`, then `G[Z]` has an `a`–`b` path `P` with `|P| + 1`
 accepted. -/
 noncomputable def TwoBoundarySupportClosureStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∀ a b : object.Vertex, a ≠ b → SupportAtom.cutBoundary object w.support = {a, b} →
-      ¬ object.graph.Adj a b →
-      2 ≤ object.internalDegree w.support a → 2 ≤ object.internalDegree w.support b →
-      ∃ p : object.graph.Walk a b, p.IsPath ∧ (∀ v ∈ p.support, v ∈ w.support) ∧
-        data.LengthOK (p.length + 1)
+  AtSparseTargetDefectWitness data object TwoBoundarySupportClosureAtWitness
+
+/-- `TwoBoundaryOutsideClosureStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev TwoBoundaryOutsideClosureAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ∀ a b : object.Vertex, a ≠ b → SupportAtom.cutBoundary object w.support = {a, b} →
+    (∃ i ∈ w.support, i ∉ SupportAtom.cutBoundary object w.support) →
+    ¬ object.graph.Adj a b →
+    2 ≤ object.internalDegree (Graph.GluedReadings.outsideSide object w.support a b) a →
+    2 ≤ object.internalDegree (Graph.GluedReadings.outsideSide object w.support a b) b →
+    ∃ q : object.graph.Walk a b, q.IsPath ∧
+      (∀ v ∈ q.support, v ∈ Graph.GluedReadings.outsideSide object w.support a b) ∧
+      data.LengthOK (q.length + 1)
 
 /-- **2-sum closure on the outside side** (interior arm). -/
 noncomputable def TwoBoundaryOutsideClosureStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∀ a b : object.Vertex, a ≠ b → SupportAtom.cutBoundary object w.support = {a, b} →
-      (∃ i ∈ w.support, i ∉ SupportAtom.cutBoundary object w.support) →
-      ¬ object.graph.Adj a b →
-      2 ≤ object.internalDegree (Graph.GluedReadings.outsideSide object w.support a b) a →
-      2 ≤ object.internalDegree (Graph.GluedReadings.outsideSide object w.support a b) b →
-      ∃ q : object.graph.Walk a b, q.IsPath ∧
-        (∀ v ∈ q.support, v ∈ Graph.GluedReadings.outsideSide object w.support a b) ∧
-        data.LengthOK (q.length + 1)
+  AtSparseTargetDefectWitness data object TwoBoundaryOutsideClosureAtWitness
+
+/-- `TwoBoundaryNoTargetSumStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev TwoBoundaryNoTargetSumAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ∀ a b : object.Vertex, SupportAtom.cutBoundary object w.support = {a, b} →
+    ∀ (p : object.graph.Walk a b), p.IsPath → (∀ v ∈ p.support, v ∈ w.support) →
+    ∀ (q : object.graph.Walk b a), q.IsPath →
+      (∀ v ∈ q.support, v ∈ Graph.GluedReadings.outsideSide object w.support a b) →
+      (1 < p.length ∨ 1 < q.length) → ¬ data.LengthOK (p.length + q.length)
 
 /-- **The length-set constraint at `∂Z = {a, b}`**: an `a`–`b` path in `Z`
 and a `b`–`a` path in `T'` (not both single edges) never sum to an accepted
 length. -/
 noncomputable def TwoBoundaryNoTargetSumStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∀ a b : object.Vertex, SupportAtom.cutBoundary object w.support = {a, b} →
-      ∀ (p : object.graph.Walk a b), p.IsPath → (∀ v ∈ p.support, v ∈ w.support) →
-      ∀ (q : object.graph.Walk b a), q.IsPath →
-        (∀ v ∈ q.support, v ∈ Graph.GluedReadings.outsideSide object w.support a b) →
-        (1 < p.length ∨ 1 < q.length) → ¬ data.LengthOK (p.length + q.length)
+  AtSparseTargetDefectWitness data object TwoBoundaryNoTargetSumAtWitness
 
 /-- The outside `W = V ∖ Z` of a support. -/
 noncomputable abbrev supportOutside (object : Graph.FiniteObject.{u})
@@ -408,38 +517,56 @@ noncomputable abbrev supportOutside (object : Graph.FiniteObject.{u})
   classical
   exact object.vertexFinset.filter fun y => y ∉ Z
 
+/-- `OutsideOrBoundaryLargeStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev OutsideOrBoundaryLargeAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  2 ≤ (supportOutside object w.support).card ∨
+    3 ≤ (SupportAtom.cutBoundary object w.support).card
+
 /-- **`2 ≤ |W|` or `3 ≤ |∂Z|`.** -/
 noncomputable def OutsideOrBoundaryLargeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    2 ≤ (supportOutside object w.support).card ∨
-      3 ≤ (SupportAtom.cutBoundary object w.support).card
+  AtSparseTargetDefectWitness data object OutsideOrBoundaryLargeAtWitness
 
 /-! ## The compression route at G's own pieces (K3) -/
+
+/-- `DroppedEdgeTightDeficitStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev DroppedEdgeTightDeficitAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ∀ X ∈ w.pairSupports,
+    ∀ a b : (Graph.glue (SupportAtom.retainedPiece object w.support X)
+        (SupportAtom.outside object w.support)).Vertex,
+      object.graph.Adj (Graph.GluedReadings.retainedGlueHom w.support X a)
+        (Graph.GluedReadings.retainedGlueHom w.support X b) →
+      ¬ (Graph.glue (SupportAtom.retainedPiece object w.support X)
+          (SupportAtom.outside object w.support)).graph.Adj a b →
+      (Graph.glue (SupportAtom.retainedPiece object w.support X)
+          (SupportAtom.outside object w.support)).degree a < data.threshold ∨
+        (Graph.glue (SupportAtom.retainedPiece object w.support X)
+          (SupportAtom.outside object w.support)).degree b < data.threshold
 
 /-- **Every G-edge a reading drops at `G − Z` has an endpoint below the
 baseline there.** -/
 noncomputable def DroppedEdgeTightDeficitStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∀ X ∈ w.pairSupports,
-      ∀ a b : (Graph.glue (SupportAtom.retainedPiece object w.support X)
-          (SupportAtom.outside object w.support)).Vertex,
-        object.graph.Adj (Graph.GluedReadings.retainedGlueHom w.support X a)
-          (Graph.GluedReadings.retainedGlueHom w.support X b) →
-        ¬ (Graph.glue (SupportAtom.retainedPiece object w.support X)
-            (SupportAtom.outside object w.support)).graph.Adj a b →
-        (Graph.glue (SupportAtom.retainedPiece object w.support X)
-            (SupportAtom.outside object w.support)).degree a < data.threshold ∨
-          (Graph.glue (SupportAtom.retainedPiece object w.support X)
-            (SupportAtom.outside object w.support)).degree b < data.threshold
+  AtSparseTargetDefectWitness data object DroppedEdgeTightDeficitAtWitness
+
+/-- `NotBothReadingsWholeStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev NotBothReadingsWholeAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ¬ (w.support ⊆ sparseDeclaredSupport data object w.first ∧
+      w.support ⊆ sparseDeclaredSupport data object w.second)
 
 /-- **At most one reading is whole**: `¬ (Z ⊆ A ∧ Z ⊆ B)`. -/
 noncomputable def NotBothReadingsWholeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ¬ (w.support ⊆ sparseDeclaredSupport data object w.first ∧
-        w.support ⊆ sparseDeclaredSupport data object w.second)
+  AtSparseTargetDefectWitness data object NotBothReadingsWholeAtWitness
 
 /-! The whole-case facts with `X` the whole reading and `Y` the other one. -/
 section WholeCase
@@ -502,49 +629,105 @@ noncomputable abbrev WholeDeficitSum (w : SparseTargetDefectWitness data object)
 
 end WholeCase
 
+/-- `FirstWholeOrientationStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev FirstWholeOrientationAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  WholeOrientation w w.first w.second
+
 /-- **Whole case `Z ⊆ A`: `A` positive and `B` negative at `O`.** -/
 noncomputable def FirstWholeOrientationStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w => WholeOrientation w w.first w.second
+  AtSparseTargetDefectWitness data object FirstWholeOrientationAtWitness
+
+/-- `FirstWholeDeficitNonemptyStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev FirstWholeDeficitNonemptyAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  WholeDeficitNonempty w w.first w.second
 
 /-- **Whole case `Z ⊆ A`: `1 ≤ |Z ∖ B|`.** -/
 noncomputable def FirstWholeDeficitNonemptyStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w => WholeDeficitNonempty w w.first w.second
+  AtSparseTargetDefectWitness data object FirstWholeDeficitNonemptyAtWitness
+
+/-- `FirstWholeDeficitStructureStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev FirstWholeDeficitStructureAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  WholeDeficitStructure w w.first w.second
 
 /-- **Whole case `Z ⊆ A`: the deficit set `Z ∖ B` is internal, has no
 `∂Z`-neighbour, and is isolated in every gluing of `ret_B`.** -/
 noncomputable def FirstWholeDeficitStructureStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w => WholeDeficitStructure w w.first w.second
+  AtSparseTargetDefectWitness data object FirstWholeDeficitStructureAtWitness
+
+/-- `FirstWholeDeficitSumStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev FirstWholeDeficitSumAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  WholeDeficitSum w w.first w.second
 
 /-- **Whole case `Z ⊆ A`: `δ·|Z ∖ B| ≤ Σ (δ − deg)` in every gluing of
 `ret_B`.** -/
 noncomputable def FirstWholeDeficitSumStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w => WholeDeficitSum w w.first w.second
+  AtSparseTargetDefectWitness data object FirstWholeDeficitSumAtWitness
+
+/-- `SecondWholeOrientationStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev SecondWholeOrientationAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  WholeOrientation w w.second w.first
 
 /-- **Whole case `Z ⊆ B`: `B` positive and `A` negative at `O`.** -/
 noncomputable def SecondWholeOrientationStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w => WholeOrientation w w.second w.first
+  AtSparseTargetDefectWitness data object SecondWholeOrientationAtWitness
+
+/-- `SecondWholeDeficitNonemptyStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev SecondWholeDeficitNonemptyAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  WholeDeficitNonempty w w.second w.first
 
 /-- **Whole case `Z ⊆ B`: `1 ≤ |Z ∖ A|`.** -/
 noncomputable def SecondWholeDeficitNonemptyStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w => WholeDeficitNonempty w w.second w.first
+  AtSparseTargetDefectWitness data object SecondWholeDeficitNonemptyAtWitness
+
+/-- `SecondWholeDeficitStructureStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev SecondWholeDeficitStructureAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  WholeDeficitStructure w w.second w.first
 
 /-- **Whole case `Z ⊆ B`: the deficit set `Z ∖ A` is internal, has no
 `∂Z`-neighbour, and is isolated in every gluing of `ret_A`.** -/
 noncomputable def SecondWholeDeficitStructureStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w => WholeDeficitStructure w w.second w.first
+  AtSparseTargetDefectWitness data object SecondWholeDeficitStructureAtWitness
+
+/-- `SecondWholeDeficitSumStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev SecondWholeDeficitSumAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  WholeDeficitSum w w.second w.first
 
 /-- **Whole case `Z ⊆ B`: `δ·|Z ∖ A| ≤ Σ (δ − deg)` in every gluing of
 `ret_A`.** -/
 noncomputable def SecondWholeDeficitSumStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w => WholeDeficitSum w w.second w.first
+  AtSparseTargetDefectWitness data object SecondWholeDeficitSumAtWitness
 
 
 /-! ## Deleting the deficit set, and the keeps-all split (K3, continued) -/
@@ -569,9 +752,16 @@ noncomputable abbrev DeletedSupportReductionAt {data : Parameters} {object : Gra
       ¬ Graph.HasCycleWithLength data.LengthOK (object.induce (wholeKeptSet w)) ∧
       ¬ Graph.MinimumDegreeAtLeast 3 (object.induce (wholeKeptSet w))
 
+/-- `DeletedSupportReductionStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev DeletedSupportReductionAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  DeletedSupportReductionAt w ∧ DeletedSupportReductionAt w.swap
+
 noncomputable def DeletedSupportReductionStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w => DeletedSupportReductionAt w ∧ DeletedSupportReductionAt w.swap
+  AtSparseTargetDefectWitness data object DeletedSupportReductionAtWitness
 
 /-- **Whole case: a deficient vertex of `G − S` exists, and every one lies in
 `Z ∩ B`, is internal to `Z`, and has a neighbour in `S`.** -/
@@ -584,9 +774,16 @@ noncomputable abbrev DeletedSupportDeficientVertexAt {data : Parameters} {object
         v ∉ SupportAtom.cutBoundary object w.support ∧
         1 ≤ object.localDegree (wholeDeletedSet w) v)
 
+/-- `DeletedSupportDeficientVertexStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev DeletedSupportDeficientVertexAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  DeletedSupportDeficientVertexAt w ∧ DeletedSupportDeficientVertexAt w.swap
+
 noncomputable def DeletedSupportDeficientVertexStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w => DeletedSupportDeficientVertexAt w ∧ DeletedSupportDeficientVertexAt w.swap
+  AtSparseTargetDefectWitness data object DeletedSupportDeficientVertexAtWitness
 
 /-- **Whole case: the deficit sums**
 `1 ≤ Σ_T (3 − deg_{G−S}) = Σ_T (d_S − (deg − 3)) ≤ e(S, T)`, with equality
@@ -605,9 +802,16 @@ noncomputable abbrev DeletedSupportDeficitSumsAt {data : Parameters} {object : G
         (wholeKeptSet w).sum (fun v => 3 - object.localDegree (wholeKeptSet w) v) =
           (wholeKeptSet w).sum (fun v => object.localDegree (wholeDeletedSet w) v))
 
+/-- `DeletedSupportDeficitSumsStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev DeletedSupportDeficitSumsAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  DeletedSupportDeficitSumsAt w ∧ DeletedSupportDeficitSumsAt w.swap
+
 noncomputable def DeletedSupportDeficitSumsStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w => DeletedSupportDeficitSumsAt w ∧ DeletedSupportDeficitSumsAt w.swap
+  AtSparseTargetDefectWitness data object DeletedSupportDeficitSumsAtWitness
 
 /-- **Whole case: one restoring edge forces an accepted closing path**: if
 adding `xy` to `G − S` restores `δ ≥ 3`, then `G − S` has a `y → x` path of
@@ -621,9 +825,16 @@ noncomputable abbrev DeletedSupportEdgeRestorationAt {data : Parameters} {object
         ∃ p : (object.induce (wholeKeptSet w)).graph.Walk y x, p.IsPath ∧
           data.LengthOK (p.length + 1)
 
+/-- `DeletedSupportEdgeRestorationStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev DeletedSupportEdgeRestorationAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  DeletedSupportEdgeRestorationAt w ∧ DeletedSupportEdgeRestorationAt w.swap
+
 noncomputable def DeletedSupportEdgeRestorationStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w => DeletedSupportEdgeRestorationAt w ∧ DeletedSupportEdgeRestorationAt w.swap
+  AtSparseTargetDefectWitness data object DeletedSupportEdgeRestorationAtWitness
 
 /-- **Whole case: any restoring edge set forces an accepted cycle through a
 new edge.** -/
@@ -637,73 +848,128 @@ noncomputable abbrev DeletedSupportEdgeSetRestorationAt {data : Parameters} {obj
             (Graph.GluedReadings.addEdgesObj (object.induce (wholeKeptSet w)) F) data.LengthOK,
           ∃ e ∈ c.walk.edges, e ∈ F.edgeSet ∧ e ∉ (object.induce (wholeKeptSet w)).graph.edgeSet
 
+/-- `DeletedSupportEdgeSetRestorationStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev DeletedSupportEdgeSetRestorationAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  DeletedSupportEdgeSetRestorationAt w ∧ DeletedSupportEdgeSetRestorationAt w.swap
+
 noncomputable def DeletedSupportEdgeSetRestorationStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w => DeletedSupportEdgeSetRestorationAt w ∧ DeletedSupportEdgeSetRestorationAt w.swap
+  AtSparseTargetDefectWitness data object DeletedSupportEdgeSetRestorationAtWitness
+
+/-- `FirstKeepsAllNotWholeStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev FirstKeepsAllNotWholeAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  Graph.GluedReadings.KeepsAll w.support (sparseDeclaredSupport data object w.first) →
+  ¬ w.support ⊆ sparseDeclaredSupport data object w.first →
+    ¬ w.support ⊆ sparseDeclaredSupport data object w.second ∧
+    (w.reading w.first).boundaryDegreeProfile ≠
+      (SupportAtom.piece object w.support).boundaryDegreeProfile ∧
+    (w.reading w.second).boundaryDegreeProfile ≠
+      (SupportAtom.piece object w.support).boundaryDegreeProfile
 
 /-- **Keeps-all for `A` with `Z ⊄ A`**: `Z ⊄ B`, and both readings' profiles
 differ from the whole piece's. -/
 noncomputable def FirstKeepsAllNotWholeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    Graph.GluedReadings.KeepsAll w.support (sparseDeclaredSupport data object w.first) →
-    ¬ w.support ⊆ sparseDeclaredSupport data object w.first →
-      ¬ w.support ⊆ sparseDeclaredSupport data object w.second ∧
-      (w.reading w.first).boundaryDegreeProfile ≠
-        (SupportAtom.piece object w.support).boundaryDegreeProfile ∧
-      (w.reading w.second).boundaryDegreeProfile ≠
-        (SupportAtom.piece object w.support).boundaryDegreeProfile
+  AtSparseTargetDefectWitness data object FirstKeepsAllNotWholeAtWitness
+
+/-- `SecondKeepsAllNotWholeStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev SecondKeepsAllNotWholeAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  Graph.GluedReadings.KeepsAll w.support (sparseDeclaredSupport data object w.second) →
+  ¬ w.support ⊆ sparseDeclaredSupport data object w.second →
+    ¬ w.support ⊆ sparseDeclaredSupport data object w.first ∧
+    (w.reading w.second).boundaryDegreeProfile ≠
+      (SupportAtom.piece object w.support).boundaryDegreeProfile ∧
+    (w.reading w.first).boundaryDegreeProfile ≠
+      (SupportAtom.piece object w.support).boundaryDegreeProfile
 
 /-- **Keeps-all for `B` with `Z ⊄ B`**: `Z ⊄ A`, and both readings' profiles
 differ from the whole piece's. -/
 noncomputable def SecondKeepsAllNotWholeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    Graph.GluedReadings.KeepsAll w.support (sparseDeclaredSupport data object w.second) →
-    ¬ w.support ⊆ sparseDeclaredSupport data object w.second →
-      ¬ w.support ⊆ sparseDeclaredSupport data object w.first ∧
-      (w.reading w.second).boundaryDegreeProfile ≠
-        (SupportAtom.piece object w.support).boundaryDegreeProfile ∧
-      (w.reading w.first).boundaryDegreeProfile ≠
-        (SupportAtom.piece object w.support).boundaryDegreeProfile
+  AtSparseTargetDefectWitness data object SecondKeepsAllNotWholeAtWitness
+
+/-- `PairArmExcludedStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev PairArmExcludedAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ¬ ∃ a b, SupportAtom.cutBoundary object w.support = {a, b} ∧ w.support = {a, b}
 
 /-- **The pair arm does not occur**: `¬ (∂Z = Z = {a, b})` (equal profiles
 on a two-vertex all-boundary support force equal readings, against the
 separation at `O`). -/
 noncomputable def PairArmExcludedStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ¬ ∃ a b, SupportAtom.cutBoundary object w.support = {a, b} ∧ w.support = {a, b}
+  AtSparseTargetDefectWitness data object PairArmExcludedAtWitness
+
+/-- `TwoBoundaryForcesArmOneStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev TwoBoundaryForcesArmOneAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  (SupportAtom.cutBoundary object w.support).card = 2 →
+  w.SpectrumArmOne ∧
+  ∃ a b, a ≠ b ∧ SupportAtom.cutBoundary object w.support = {a, b} ∧
+    ({a, b} ⊆ sparseDeclaredSupport data object w.first ∨
+      {a, b} ⊆ sparseDeclaredSupport data object w.second) ∧
+    (∃ i ∈ w.support, i ∉ SupportAtom.cutBoundary object w.support) ∧
+    ∀ i ∈ w.support, i ∉ SupportAtom.cutBoundary object w.support →
+      ∀ x, x ∉ w.support → ∀ walk : object.graph.Walk i x,
+        a ∈ walk.support ∨ b ∈ walk.support
 
 /-- **`|∂Z| = 2` forces arm (i) of the spectrum split**, `∂Z = {a, b}` inside
 one declared support, an interior vertex of `Z`, and `{a, b}` separating the
 interior from `V ∖ Z`. -/
 noncomputable def TwoBoundaryForcesArmOneStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    (SupportAtom.cutBoundary object w.support).card = 2 →
-    w.SpectrumArmOne ∧
-    ∃ a b, a ≠ b ∧ SupportAtom.cutBoundary object w.support = {a, b} ∧
-      ({a, b} ⊆ sparseDeclaredSupport data object w.first ∨
-        {a, b} ⊆ sparseDeclaredSupport data object w.second) ∧
-      (∃ i ∈ w.support, i ∉ SupportAtom.cutBoundary object w.support) ∧
-      ∀ i ∈ w.support, i ∉ SupportAtom.cutBoundary object w.support →
-        ∀ x, x ∉ w.support → ∀ walk : object.graph.Walk i x,
-          a ∈ walk.support ∨ b ∈ walk.support
+  AtSparseTargetDefectWitness data object TwoBoundaryForcesArmOneAtWitness
+
+/-- `ArmOneForcedPathStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev ArmOneForcedPathAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  w.SpectrumArmOne →
+  ∃ a b : object.Vertex, a ≠ b ∧
+    a ∈ SupportAtom.cutBoundary object w.support ∧
+    b ∈ SupportAtom.cutBoundary object w.support ∧
+    ∃ p : object.graph.Walk a b, p.IsPath ∧
+      (∀ v ∈ p.support, v ∈ w.support) ∧ p.length + 1 ≤ w.support.card ∧
+      ∃ s k, 2 ≤ k ∧ p.length + s = 2 ^ k ∧ 1 ≤ s ∧ (p.length + s) % 4 = 0
 
 /-- **Arm (i) gives a forced path in `G[Z]`**: a simple `a–b` path `p` of
 `G[Z]` between two boundary vertices with `|p| + 1 ≤ |Z|` and `|p| + s = 2^k`
 (`k ≥ 2`, `s ≥ 1`, `(|p| + s) % 4 = 0`). -/
 noncomputable def ArmOneForcedPathStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    w.SpectrumArmOne →
-    ∃ a b : object.Vertex, a ≠ b ∧
-      a ∈ SupportAtom.cutBoundary object w.support ∧
-      b ∈ SupportAtom.cutBoundary object w.support ∧
-      ∃ p : object.graph.Walk a b, p.IsPath ∧
-        (∀ v ∈ p.support, v ∈ w.support) ∧ p.length + 1 ≤ w.support.card ∧
-        ∃ s k, 2 ≤ k ∧ p.length + s = 2 ^ k ∧ 1 ≤ s ∧ (p.length + s) % 4 = 0
+  AtSparseTargetDefectWitness data object ArmOneForcedPathAtWitness
+
+/-- `TwoBoundaryForcedPathCrossStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev TwoBoundaryForcedPathCrossAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  (SupportAtom.cutBoundary object w.support).card = 2 →
+  ∃ a b : object.Vertex, a ≠ b ∧ SupportAtom.cutBoundary object w.support = {a, b} ∧
+    ∃ p : object.graph.Walk a b, p.IsPath ∧ (∀ v ∈ p.support, v ∈ w.support) ∧
+      (∃ s k, 2 ≤ k ∧ p.length + s = 2 ^ k ∧ 1 ≤ s) ∧
+      (∀ q : object.graph.Walk b a, q.IsPath →
+        (∀ v ∈ q.support, v ∈ Graph.GluedReadings.outsideSide object w.support a b) →
+        (1 < p.length ∨ 1 < q.length) → ¬ data.LengthOK (p.length + q.length)) ∧
+      (¬ object.graph.Adj a b →
+        2 ≤ object.internalDegree (Graph.GluedReadings.outsideSide object w.support a b) a →
+        2 ≤ object.internalDegree (Graph.GluedReadings.outsideSide object w.support a b) b →
+        ∃ q : object.graph.Walk b a, q.IsPath ∧ data.LengthOK (q.length + 1) ∧
+          ¬ data.LengthOK (p.length + q.length))
 
 /-- **`|∂Z| = 2`, the K1 × K2 cross constraint**: `∂Z = {a, b}` carries the
 forced path `p ⊆ G[Z]` (`|p| + s = 2^k`); no simple `b → a` path `q` in
@@ -712,47 +978,53 @@ if `a ≁ b` with both terminals of `T'`-degree `≥ 2`, the outside closure `q`
 exists with `|q| + 1` accepted and `|p| + |q|` not accepted. -/
 noncomputable def TwoBoundaryForcedPathCrossStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    (SupportAtom.cutBoundary object w.support).card = 2 →
-    ∃ a b : object.Vertex, a ≠ b ∧ SupportAtom.cutBoundary object w.support = {a, b} ∧
-      ∃ p : object.graph.Walk a b, p.IsPath ∧ (∀ v ∈ p.support, v ∈ w.support) ∧
-        (∃ s k, 2 ≤ k ∧ p.length + s = 2 ^ k ∧ 1 ≤ s) ∧
-        (∀ q : object.graph.Walk b a, q.IsPath →
-          (∀ v ∈ q.support, v ∈ Graph.GluedReadings.outsideSide object w.support a b) →
-          (1 < p.length ∨ 1 < q.length) → ¬ data.LengthOK (p.length + q.length)) ∧
-        (¬ object.graph.Adj a b →
-          2 ≤ object.internalDegree (Graph.GluedReadings.outsideSide object w.support a b) a →
-          2 ≤ object.internalDegree (Graph.GluedReadings.outsideSide object w.support a b) b →
-          ∃ q : object.graph.Walk b a, q.IsPath ∧ data.LengthOK (q.length + 1) ∧
-            ¬ data.LengthOK (p.length + q.length))
+  AtSparseTargetDefectWitness data object TwoBoundaryForcedPathCrossAtWitness
+
+/-- `SupportSteinerMinimalStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev SupportSteinerMinimalAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ∀ Y : Finset object.Vertex,
+    (∀ v, v ∈ sparseDeclaredSupport data object w.first ∨
+      v ∈ sparseDeclaredSupport data object w.second → v ∈ Y) →
+    Graph.SupportComponents.Connected.ConnectedOn object Y → w.support.card ≤ Y.card
 
 /-- **`Z` is a minimum connected set containing `A ∪ B`.** -/
 noncomputable def SupportSteinerMinimalStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∀ Y : Finset object.Vertex,
-      (∀ v, v ∈ sparseDeclaredSupport data object w.first ∨
-        v ∈ sparseDeclaredSupport data object w.second → v ∈ Y) →
-      Graph.SupportComponents.Connected.ConnectedOn object Y → w.support.card ≤ Y.card
+  AtSparseTargetDefectWitness data object SupportSteinerMinimalAtWitness
+
+/-- `SteinerVerticesCutStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev SteinerVerticesCutAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  ∀ v ∈ w.support, v ∉ sparseDeclaredSupport data object w.first →
+    v ∉ sparseDeclaredSupport data object w.second →
+    ¬ Graph.SupportComponents.Connected.ConnectedOn object (w.support.erase v)
 
 /-- **Every vertex of `Z ∖ (A ∪ B)` is a cut vertex of `G[Z]`.** -/
 noncomputable def SteinerVerticesCutStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    ∀ v ∈ w.support, v ∉ sparseDeclaredSupport data object w.first →
-      v ∉ sparseDeclaredSupport data object w.second →
-      ¬ Graph.SupportComponents.Connected.ConnectedOn object (w.support.erase v)
+  AtSparseTargetDefectWitness data object SteinerVerticesCutAtWitness
+
+/-- `WholeSupportEqualStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev WholeSupportEqualAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  (w.support ⊆ sparseDeclaredSupport data object w.first →
+    w.support = sparseDeclaredSupport data object w.first ∧
+      sparseDeclaredSupport data object w.second ⊆ sparseDeclaredSupport data object w.first) ∧
+  (w.support ⊆ sparseDeclaredSupport data object w.second →
+    w.support = sparseDeclaredSupport data object w.second ∧
+      sparseDeclaredSupport data object w.first ⊆ sparseDeclaredSupport data object w.second)
 
 /-- **The whole case pins `Z`**: `Z ⊆ A ⇒ Z = A ∧ B ⊆ A`, and `Z ⊆ B ⇒ Z = B ∧ A ⊆ B`. -/
 noncomputable def WholeSupportEqualStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    (w.support ⊆ sparseDeclaredSupport data object w.first →
-      w.support = sparseDeclaredSupport data object w.first ∧
-        sparseDeclaredSupport data object w.second ⊆ sparseDeclaredSupport data object w.first) ∧
-    (w.support ⊆ sparseDeclaredSupport data object w.second →
-      w.support = sparseDeclaredSupport data object w.second ∧
-        sparseDeclaredSupport data object w.first ⊆ sparseDeclaredSupport data object w.second)
+  AtSparseTargetDefectWitness data object WholeSupportEqualAtWitness
 
 /-- The whole-case count `|S| + |∂Z| ≤ |Z|` at one orientation. -/
 noncomputable abbrev WholeDeficitBoundaryCountAt {data : Parameters}
@@ -760,11 +1032,17 @@ noncomputable abbrev WholeDeficitBoundaryCountAt {data : Parameters}
   w.support ⊆ sparseDeclaredSupport data object w.first →
     (wholeDeletedSet w).card + (SupportAtom.cutBoundary object w.support).card ≤ w.support.card
 
+/-- `WholeDeficitBoundaryCountStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev WholeDeficitBoundaryCountAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  WholeDeficitBoundaryCountAt w ∧ WholeDeficitBoundaryCountAt w.swap
+
 /-- **Whole case: `|S| + |∂Z| ≤ |Z|`** (`S = Z ∖ B` resp. `Z ∖ A`). -/
 noncomputable def WholeDeficitBoundaryCountStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    WholeDeficitBoundaryCountAt w ∧ WholeDeficitBoundaryCountAt w.swap
+  AtSparseTargetDefectWitness data object WholeDeficitBoundaryCountAtWitness
 
 /-- The whole-case cut bound `e(S, T) ≤ D_T + σ` at one orientation. -/
 noncomputable abbrev WholeCutEdgeSurplusBoundAt {data : Parameters}
@@ -774,11 +1052,17 @@ noncomputable abbrev WholeCutEdgeSurplusBoundAt {data : Parameters}
       (wholeKeptSet w).sum (fun v => 3 - object.localDegree (wholeKeptSet w) v) +
         object.degreeSurplus data.threshold
 
+/-- `WholeCutEdgeSurplusBoundStatement` at one target-defect witness `w`; the
+contract `<key>_of_spec` proves it at every `w` with `w.Spec`, not only at the
+canonical witness. -/
+noncomputable abbrev WholeCutEdgeSurplusBoundAtWitness {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) : Prop :=
+  WholeCutEdgeSurplusBoundAt w ∧ WholeCutEdgeSurplusBoundAt w.swap
+
 /-- **Whole case: `e(S, T) ≤ D_T + σ`**, with `D_T = Σ_T (3 − deg_{G−S})`. -/
 noncomputable def WholeCutEdgeSurplusBoundStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  AtSparseTargetDefectWitness data object fun w =>
-    WholeCutEdgeSurplusBoundAt w ∧ WholeCutEdgeSurplusBoundAt w.swap
+  AtSparseTargetDefectWitness data object WholeCutEdgeSurplusBoundAtWitness
 
 end BoundaryStatements
 

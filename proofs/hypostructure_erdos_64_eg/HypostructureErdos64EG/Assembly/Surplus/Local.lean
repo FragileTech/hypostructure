@@ -386,6 +386,7 @@ noncomputable def selectedPairCodeChainDependent
     [FactKeys.Has (K .activeSurplusDemands) known]
     [FactKeys.Has (K .activeSurplusFamily) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .cycleRankConstraint) known]
     [FactKeys.Has (K .degreeProfileFibres) known]
     [FactKeys.Has (K .exactCubicBaselineBudget) known]
@@ -590,6 +591,7 @@ noncomputable def selectedBottleneckDischarge
     (closedFresh : closed ∉ known := by key_fresh)
     [FactKeys.Has (K .activeSurplusFamily) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .blockedPairEntropySandwich) known]
     [FactKeys.Has (K .blockedPairEntropySetup) known]
     [FactKeys.Has (K .blockedPairNoExit) known]
