@@ -29,8 +29,8 @@ universe u
 /-- **Node `[187]` ([179]/[180] Type B entry), `independentSystem`** (thm:main
 (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] independent arm (canonical pair split), [131] free-pair count
-fails; then [179] early outcome.  Every fact of its ledger: the 71 common facts
-and 4 explicit extra facts (75 facts). -/
+fails; then [179] early outcome.  Every fact of its ledger: the 76 common facts
+and 4 explicit extra facts (80 facts). -/
 abbrev PairTypeBOutcome_independentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -66,6 +66,9 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
+    [FactKeys.Has (K .twoHighForcedPath) known]
+    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .specWitnessStructure) known]
@@ -78,6 +81,8 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -138,6 +143,9 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .windowPresent)).down,
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
+      (history.get (K .everyWitnessSpectrumSplit)).down,
+      (history.get (K .twoHighForcedPath)).down,
+      (history.get (K .sameHighForcedPath)).down,
       (history.get (K .packingOrderBound)).down,
       (history.get (K .noSuppressionChordViolation)).down,
       (history.get (K .specWitnessStructure)).down,
@@ -150,6 +158,8 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
+      (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .highEndpointSwitch)).down,
       (history.get (K .edgeSurplusIdentity)).down,
       (history.get (K .ceilSqrtAboveScale)).down,
       (history.get (K .orderAboveScaleSquare)).down,
@@ -199,8 +209,8 @@ theorem pairTypeBIndependentSystemReturn
 (thm:main (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the
 ledger reached by [130] independent arm (canonical pair split), [131] free-pair
 count fails; then [179] serial arm, [180] covered increment, [180] early
-outcome.  Every fact of its ledger: the 71 common facts and 7 explicit extra
-facts (78 facts). -/
+outcome.  Every fact of its ledger: the 76 common facts and 7 explicit extra
+facts (83 facts). -/
 abbrev PairTypeBOutcome_independentIncrement (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -242,6 +252,9 @@ theorem pairTypeBIndependentIncrementReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
+    [FactKeys.Has (K .twoHighForcedPath) known]
+    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .specWitnessStructure) known]
@@ -254,6 +267,8 @@ theorem pairTypeBIndependentIncrementReturn
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -320,6 +335,9 @@ theorem pairTypeBIndependentIncrementReturn
       (history.get (K .windowPresent)).down,
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
+      (history.get (K .everyWitnessSpectrumSplit)).down,
+      (history.get (K .twoHighForcedPath)).down,
+      (history.get (K .sameHighForcedPath)).down,
       (history.get (K .packingOrderBound)).down,
       (history.get (K .noSuppressionChordViolation)).down,
       (history.get (K .specWitnessStructure)).down,
@@ -332,6 +350,8 @@ theorem pairTypeBIndependentIncrementReturn
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
+      (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .highEndpointSwitch)).down,
       (history.get (K .edgeSurplusIdentity)).down,
       (history.get (K .ceilSqrtAboveScale)).down,
       (history.get (K .orderAboveScaleSquare)).down,
@@ -385,8 +405,8 @@ theorem pairTypeBIndependentIncrementReturn
 (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] dependent arm (canonical pair split: fibres, no blocker (d), no
 blocker (e)), [132] blocker arm, [137] blocked-side count fails; then [179]
-early outcome.  Every fact of its ledger: the 71 common facts and 12 explicit
-extra facts (83 facts). -/
+early outcome.  Every fact of its ledger: the 76 common facts and 12 explicit
+extra facts (88 facts). -/
 abbrev PairTypeBOutcome_dependentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -438,6 +458,9 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
+    [FactKeys.Has (K .twoHighForcedPath) known]
+    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .specWitnessStructure) known]
@@ -450,6 +473,8 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -518,6 +543,9 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .windowPresent)).down,
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
+      (history.get (K .everyWitnessSpectrumSplit)).down,
+      (history.get (K .twoHighForcedPath)).down,
+      (history.get (K .sameHighForcedPath)).down,
       (history.get (K .packingOrderBound)).down,
       (history.get (K .noSuppressionChordViolation)).down,
       (history.get (K .specWitnessStructure)).down,
@@ -530,6 +558,8 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
+      (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .highEndpointSwitch)).down,
       (history.get (K .edgeSurplusIdentity)).down,
       (history.get (K .ceilSqrtAboveScale)).down,
       (history.get (K .orderAboveScaleSquare)).down,
@@ -588,7 +618,7 @@ theorem pairTypeBDependentSystemReturn
 reached by [130] dependent arm (canonical pair split: fibres, no blocker (d), no
 blocker (e)), [132] blocker arm, [137] blocked-side count fails; then [179]
 serial arm, [180] covered increment, [180] early outcome.  Every fact of its
-ledger: the 71 common facts and 15 explicit extra facts (86 facts). -/
+ledger: the 76 common facts and 15 explicit extra facts (91 facts). -/
 abbrev PairTypeBOutcome_dependentIncrement (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -646,6 +676,9 @@ theorem pairTypeBDependentIncrementReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
+    [FactKeys.Has (K .twoHighForcedPath) known]
+    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .specWitnessStructure) known]
@@ -658,6 +691,8 @@ theorem pairTypeBDependentIncrementReturn
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .highEndpointSwitch) known]
     [FactKeys.Has (K .edgeSurplusIdentity) known]
     [FactKeys.Has (K .ceilSqrtAboveScale) known]
     [FactKeys.Has (K .orderAboveScaleSquare) known]
@@ -732,6 +767,9 @@ theorem pairTypeBDependentIncrementReturn
       (history.get (K .windowPresent)).down,
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
+      (history.get (K .everyWitnessSpectrumSplit)).down,
+      (history.get (K .twoHighForcedPath)).down,
+      (history.get (K .sameHighForcedPath)).down,
       (history.get (K .packingOrderBound)).down,
       (history.get (K .noSuppressionChordViolation)).down,
       (history.get (K .specWitnessStructure)).down,
@@ -744,6 +782,8 @@ theorem pairTypeBDependentIncrementReturn
       (history.get (K .highDegreeCountBound)).down,
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
+      (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .highEndpointSwitch)).down,
       (history.get (K .edgeSurplusIdentity)).down,
       (history.get (K .ceilSqrtAboveScale)).down,
       (history.get (K .orderAboveScaleSquare)).down,

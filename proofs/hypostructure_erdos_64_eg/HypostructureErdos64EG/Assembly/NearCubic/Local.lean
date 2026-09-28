@@ -39,10 +39,10 @@ noncomputable def selectedNearCubicNode21
         K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
           K .admissibleQuotientsLabelInjective, K .replacementExclusion,
           K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-          K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
+          K .twoHighForcedPath, K .sameHighForcedPath, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
         K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
           K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-          K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+          K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
@@ -50,10 +50,10 @@ noncomputable def selectedNearCubicNode21
         K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
           K .admissibleQuotientsLabelInjective, K .replacementExclusion,
           K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-          K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
+          K .twoHighForcedPath, K .sameHighForcedPath, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
         K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
           K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-          K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+          K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] :=
   let enumerated :=
     (barrierEnumerationRow (BranchState := BranchState)

@@ -11,6 +11,7 @@ import Hypostructure.Graph.Strategy.SpineRows.ReturnAvoidance
 import Hypostructure.Graph.Strategy.SpineRows.TargetCompleteContextUniversality
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.SparseExitResidual
+import Hypostructure.Graph.Strategy.SpineRows.SparseExitReadings
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseSurplusExit
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseTargetDefectStructure
 import HypostructureErdos64EG.Assembly.Basic
@@ -52,10 +53,10 @@ noncomputable def selectedEntryPrefix
       [K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-        K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
+        K .twoHighForcedPath, K .sameHighForcedPath, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
         K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
         K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-        K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+        K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
   -- Hoisted from `[20a]`: facts of G read from `[4]`'s selection alone; no decision.
   let hSelectionFacts :=
@@ -63,12 +64,19 @@ noncomputable def selectedEntryPrefix
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
+  -- The path-spectrum split at every clause-(b) witness of G, from `[4]`'s
+  -- selection alone; no decision.
+  let hSpectrum :=
+    (everyWitnessSpectrumRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hSelectionFacts (by key_fresh)
   -- The presentation laws of G, published once on the ledger.
   let hCubic :=
     (cubicBaselineRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      hSelectionFacts (by key_fresh)
+      hSpectrum (by key_fresh)
   -- Hoisted: `lem:bridgeless`, from the selection and the presentation laws; no decision.
   let hBridgeless :=
     (bridgelessRow (BranchState := BranchState)
@@ -131,11 +139,18 @@ noncomputable def selectedEntryPrefix
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           h3 (by key_fresh)
+      -- The two-edge and same-vertex switches of G force paths, from `[4]`, `[6]`,
+      -- `[9]` and `[10]`; no decision.
+      let hSwitch :=
+        (switchForcedPathsRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          hDegreeCount (by key_fresh)
       let hRank :=
         (cycleRankConstraintRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          hDegreeCount (by
+          hSwitch (by
             key_fresh)
       -- `[11]`: boundaried pieces and the boundary degree profile.
       let h11 :=

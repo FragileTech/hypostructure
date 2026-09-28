@@ -1,6 +1,7 @@
 import HypostructureErdos64EG.Assembly.NearCubic.Survivor
 import HypostructureErdos64EG.Assembly.Surplus.Strict
 import Hypostructure.Graph.Strategy.SpineRows.SparseExitResidual
+import Hypostructure.Graph.Strategy.SpineRows.SparseExitReadings
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SurplusRows
 import HypostructureErdos64EG.Assembly.Surplus.RegisteredConstants
@@ -30,10 +31,10 @@ noncomputable def selectedNearCubicBranch
       [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-        K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
+        K .twoHighForcedPath, K .sameHighForcedPath, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
         K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
         K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-        K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+        K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     SelectedNearCubicBoundary selected := by
   match sparseSurplusSurvivorDichotomy
@@ -166,12 +167,24 @@ noncomputable def selectedLedgerBoundary
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run baselineDemandHistory (by key_fresh)
+      -- where the surplus of G sits, once `C + 1 ≤ ⌈√n⌉` is on the ledger; no decision.
+      let highConfigHistory :=
+        (highSurplusConfigurationRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run budgetHistory (by key_fresh)
+      -- the switch at every high/baseline edge of G; no decision.
+      let highSwitchHistory :=
+        (highEndpointSwitchRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run highConfigHistory (by key_fresh)
       -- hoisted from `[20a]`: the sharpened envelope; no decision.
       let envelopeHistory :=
         (sparseExitEnvelopeRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).run budgetHistory (by key_fresh)
+          (data := spineData)).run highSwitchHistory (by key_fresh)
       -- hoisted from `[20a]`: the high-degree range; no decision.
       let highDegreeHistory :=
         (highDegreeSurplusRow (BranchState := BranchState)
@@ -262,7 +275,25 @@ noncomputable def selectedLedgerBoundary
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run deletionHistory (by key_fresh)
-          exact Or.inl (node20aReturn combinationHistory)
+          -- [20a]: the readings at the canonical witness; no decision.
+          let readingsHistory :=
+            (sparseExitReadingsRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run combinationHistory (by key_fresh)
+          -- [20a]: consequences of the readings; no decision.
+          let readingsConsequencesHistory :=
+            (sparseExitReadingsConsequencesRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run readingsHistory (by key_fresh)
+          -- [20a]: the switch at the private edge; no decision.
+          let privateSwitchHistory :=
+            (sparseExitPrivateSwitchRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run readingsConsequencesHistory (by key_fresh)
+          exact Or.inl (node20aReturn privateSwitchHistory)
       | .right survivorHistory =>
           match selectedStrictSurplusBranch survivorHistory with
           | .inl handoff => exact Or.inr (Or.inl handoff)

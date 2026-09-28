@@ -117,7 +117,7 @@ theorem Node153LinearBlock_realized.ret
 
 /-- **Node `[153]` residual, arms: `[158]` no, `[160]` first test no (`τ(θ) ≥ 1/4`); `[146]` no, `[153]` linear cold mass.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicDenseLinear`.
 The generic residual and the 4 extra facts of this path's ledger
-(57 facts). -/
+(60 facts). -/
 abbrev Node153ResidualOutcome_denseAtOrAbove_linear (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -156,6 +156,9 @@ theorem node153Return_denseAtOrAbove_linear
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
+    [FactKeys.Has (K .twoHighForcedPath) known]
+    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .specWitnessStructure) known]
@@ -204,7 +207,7 @@ theorem node153Return_denseAtOrAbove_linear
 
 /-- **Node `[153]` residual, arms: `[158]` no, `[160]` first test yes, second test no (private-carrier rate fails); `[146]` no, `[153]` linear cold mass.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicUnrealized → nearCubicDensePassRateFailed → nearCubicDenseLinear`.
 The generic residual and the 5 extra facts of this path's ledger
-(58 facts). -/
+(61 facts). -/
 abbrev Node153ResidualOutcome_denseRateFails_linear (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -245,6 +248,9 @@ theorem node153Return_denseRateFails_linear
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
+    [FactKeys.Has (K .twoHighForcedPath) known]
+    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .specWitnessStructure) known]
@@ -294,7 +300,7 @@ theorem node153Return_denseRateFails_linear
 
 /-- **Node `[153]` residual, arms: `[158]` yes (window package realized); `[146]` no, `[153]` linear cold mass.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicRealized`.
 The generic residual and the 5 extra facts of this path's ledger
-(58 facts). -/
+(61 facts). -/
 abbrev Node153ResidualOutcome_realized_linear (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -335,6 +341,9 @@ theorem node153Return_realized_linear
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
+    [FactKeys.Has (K .twoHighForcedPath) known]
+    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .specWitnessStructure) known]
@@ -433,6 +442,9 @@ theorem node153SubtypesReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
+    [FactKeys.Has (K .twoHighForcedPath) known]
+    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .specWitnessStructure) known]

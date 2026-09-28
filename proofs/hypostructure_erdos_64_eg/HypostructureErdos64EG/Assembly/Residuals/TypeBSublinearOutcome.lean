@@ -31,7 +31,7 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **Node `[187]` (Type B sublinear failure), as a product of arm blocks**:
-the 73 common facts of the generic residual, one of the 15 lane entries
+the 76 common facts of the generic residual, one of the 15 lane entries
 (prefix block with entropy block) and one of the 50 continuation
 combinations. -/
 abbrev TypeBSublinearOutcome_product (selected : EGInput.{u}) : Prop :=
@@ -67,6 +67,9 @@ theorem typeBSublinearProductReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
+    [FactKeys.Has (K .twoHighForcedPath) known]
+    [FactKeys.Has (K .sameHighForcedPath) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .specWitnessStructure) known]
