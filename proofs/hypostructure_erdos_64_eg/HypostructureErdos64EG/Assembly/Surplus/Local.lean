@@ -29,6 +29,8 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
+set_option synthInstance.maxHeartbeats 400000 in
+set_option synthInstance.maxSize 2048 in
 /-- Nodes `[126]`--`[128]`, sparse-surplus activation on node `[125]`'s
 unchanged literal survivor residual. -/
 -- EG-NODE [126] sparse envelope: \(m\le2n-2\), \(\sigma=n-6-2\lambda\)
@@ -53,8 +55,8 @@ noncomputable def selectedSparseSurplusActivation
         K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint, K .slackIndependent,
         K .vertexDeletionComponents, K .cyclesThroughVertex,
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
-        K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-        K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .neighbourhoodPairCount, K .starCycleConstraint,
+        K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+        K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -78,8 +80,8 @@ noncomputable def selectedSparseSurplusActivation
           K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .tightEndpoint,
         K .slackIndependent, K .vertexDeletionComponents, K .cyclesThroughVertex,
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
-          K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-          K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .neighbourhoodPairCount, K .starCycleConstraint,
+          K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+          K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
   -- The presentation identities the surplus rows spend are read from the one
@@ -214,6 +216,10 @@ noncomputable def selectedPairCodeChainIndependent
     [FactKeys.Has (K .cyclesThroughVertex) known]
     [FactKeys.Has (K .cutVertexBlockPaths) known]
     [FactKeys.Has (K .cycleDoubleCount) known]
+    [FactKeys.Has (K .threeRouteFan) known]
+    [FactKeys.Has (K .threeRouteChain) known]
+    [FactKeys.Has (K .windowPositionStubs) known]
+    [FactKeys.Has (K .windowAttachmentGap) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -417,6 +423,10 @@ noncomputable def selectedPairCodeChainDependent
     [FactKeys.Has (K .cyclesThroughVertex) known]
     [FactKeys.Has (K .cutVertexBlockPaths) known]
     [FactKeys.Has (K .cycleDoubleCount) known]
+    [FactKeys.Has (K .threeRouteFan) known]
+    [FactKeys.Has (K .threeRouteChain) known]
+    [FactKeys.Has (K .windowPositionStubs) known]
+    [FactKeys.Has (K .windowAttachmentGap) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
@@ -632,6 +642,10 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .cyclesThroughVertex) known]
     [FactKeys.Has (K .cutVertexBlockPaths) known]
     [FactKeys.Has (K .cycleDoubleCount) known]
+    [FactKeys.Has (K .threeRouteFan) known]
+    [FactKeys.Has (K .threeRouteChain) known]
+    [FactKeys.Has (K .windowPositionStubs) known]
+    [FactKeys.Has (K .windowAttachmentGap) known]
     [FactKeys.Has (K .surplusDartIdentity) known]
     [FactKeys.Has (K .highDegreeCountBound) known]
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
