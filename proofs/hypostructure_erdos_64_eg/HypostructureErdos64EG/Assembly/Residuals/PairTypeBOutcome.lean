@@ -89,6 +89,7 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .threeRouteChain) known]
     [FactKeys.Has (K .windowPositionStubs) known]
     [FactKeys.Has (K .windowAttachmentGap) known]
+    [FactKeys.Has (K .portEndDegree) known]
     [FactKeys.Has (K .hubLinkStructure) known]
     [FactKeys.Has (K .hubClassCounts) known]
     [FactKeys.Has (K .slotRelation) known]
@@ -114,6 +115,9 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .pairArmAPattern) known]
+    [FactKeys.Has (K .pairArmARoleAlphabet) known]
+    [FactKeys.Has (K .pairArmB) known]
     [FactKeys.Has (K .extFreeEmpty) known]
     [FactKeys.Has (K .extLoadSum) known]
     [FactKeys.Has (K .extOverload) known]
@@ -213,6 +217,7 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .threeRouteChain)).down,
       (history.get (K .windowPositionStubs)).down,
       (history.get (K .windowAttachmentGap)).down,
+      (history.get (K .portEndDegree)).down,
       (history.get (K .hubLinkStructure)).down,
       (history.get (K .hubClassCounts)).down,
       (history.get (K .slotRelation)).down,
@@ -238,6 +243,9 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
       (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .pairArmAPattern)).down,
+      (history.get (K .pairArmARoleAlphabet)).down,
+      (history.get (K .pairArmB)).down,
       (history.get (K .extFreeEmpty)).down,
       (history.get (K .extLoadSum)).down,
       (history.get (K .extOverload)).down,
@@ -367,6 +375,7 @@ theorem pairTypeBIndependentIncrementReturn
     [FactKeys.Has (K .threeRouteChain) known]
     [FactKeys.Has (K .windowPositionStubs) known]
     [FactKeys.Has (K .windowAttachmentGap) known]
+    [FactKeys.Has (K .portEndDegree) known]
     [FactKeys.Has (K .hubLinkStructure) known]
     [FactKeys.Has (K .hubClassCounts) known]
     [FactKeys.Has (K .slotRelation) known]
@@ -392,6 +401,9 @@ theorem pairTypeBIndependentIncrementReturn
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .pairArmAPattern) known]
+    [FactKeys.Has (K .pairArmARoleAlphabet) known]
+    [FactKeys.Has (K .pairArmB) known]
     [FactKeys.Has (K .extFreeEmpty) known]
     [FactKeys.Has (K .extLoadSum) known]
     [FactKeys.Has (K .extOverload) known]
@@ -497,6 +509,7 @@ theorem pairTypeBIndependentIncrementReturn
       (history.get (K .threeRouteChain)).down,
       (history.get (K .windowPositionStubs)).down,
       (history.get (K .windowAttachmentGap)).down,
+      (history.get (K .portEndDegree)).down,
       (history.get (K .hubLinkStructure)).down,
       (history.get (K .hubClassCounts)).down,
       (history.get (K .slotRelation)).down,
@@ -522,6 +535,9 @@ theorem pairTypeBIndependentIncrementReturn
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
       (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .pairArmAPattern)).down,
+      (history.get (K .pairArmARoleAlphabet)).down,
+      (history.get (K .pairArmB)).down,
       (history.get (K .extFreeEmpty)).down,
       (history.get (K .extLoadSum)).down,
       (history.get (K .extOverload)).down,
@@ -667,6 +683,7 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .threeRouteChain) known]
     [FactKeys.Has (K .windowPositionStubs) known]
     [FactKeys.Has (K .windowAttachmentGap) known]
+    [FactKeys.Has (K .portEndDegree) known]
     [FactKeys.Has (K .hubLinkStructure) known]
     [FactKeys.Has (K .hubClassCounts) known]
     [FactKeys.Has (K .slotRelation) known]
@@ -692,6 +709,9 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .pairArmAPattern) known]
+    [FactKeys.Has (K .pairArmARoleAlphabet) known]
+    [FactKeys.Has (K .pairArmB) known]
     [FactKeys.Has (K .extFreeEmpty) known]
     [FactKeys.Has (K .extLoadSum) known]
     [FactKeys.Has (K .extOverload) known]
@@ -800,6 +820,7 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .threeRouteChain)).down,
       (history.get (K .windowPositionStubs)).down,
       (history.get (K .windowAttachmentGap)).down,
+      (history.get (K .portEndDegree)).down,
       (history.get (K .hubLinkStructure)).down,
       (history.get (K .hubClassCounts)).down,
       (history.get (K .slotRelation)).down,
@@ -825,6 +846,9 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
       (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .pairArmAPattern)).down,
+      (history.get (K .pairArmARoleAlphabet)).down,
+      (history.get (K .pairArmB)).down,
       (history.get (K .extFreeEmpty)).down,
       (history.get (K .extLoadSum)).down,
       (history.get (K .extOverload)).down,
@@ -981,6 +1005,7 @@ theorem pairTypeBDependentIncrementReturn
     [FactKeys.Has (K .threeRouteChain) known]
     [FactKeys.Has (K .windowPositionStubs) known]
     [FactKeys.Has (K .windowAttachmentGap) known]
+    [FactKeys.Has (K .portEndDegree) known]
     [FactKeys.Has (K .hubLinkStructure) known]
     [FactKeys.Has (K .hubClassCounts) known]
     [FactKeys.Has (K .slotRelation) known]
@@ -1006,6 +1031,9 @@ theorem pairTypeBDependentIncrementReturn
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
+    [FactKeys.Has (K .pairArmAPattern) known]
+    [FactKeys.Has (K .pairArmARoleAlphabet) known]
+    [FactKeys.Has (K .pairArmB) known]
     [FactKeys.Has (K .extFreeEmpty) known]
     [FactKeys.Has (K .extLoadSum) known]
     [FactKeys.Has (K .extOverload) known]
@@ -1120,6 +1148,7 @@ theorem pairTypeBDependentIncrementReturn
       (history.get (K .threeRouteChain)).down,
       (history.get (K .windowPositionStubs)).down,
       (history.get (K .windowAttachmentGap)).down,
+      (history.get (K .portEndDegree)).down,
       (history.get (K .hubLinkStructure)).down,
       (history.get (K .hubClassCounts)).down,
       (history.get (K .slotRelation)).down,
@@ -1145,6 +1174,9 @@ theorem pairTypeBDependentIncrementReturn
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
       (history.get (K .highSurplusConfiguration)).down,
+      (history.get (K .pairArmAPattern)).down,
+      (history.get (K .pairArmARoleAlphabet)).down,
+      (history.get (K .pairArmB)).down,
       (history.get (K .extFreeEmpty)).down,
       (history.get (K .extLoadSum)).down,
       (history.get (K .extOverload)).down,

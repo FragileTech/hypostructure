@@ -37,7 +37,7 @@ noncomputable def selectedNearCubicBranch
       [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .admissibleQuotientsLabelInjective, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-        K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .hubLinkStructure, K .hubClassCounts, K .slotRelation, K .closedClasses, K .hubTwoHopLinks, K .slotLinear, K .hubWindowBudget, K .windowHubBounds, K .cubicNeighbourSupply, K .hubCountBound, K .lowEdgeParity, K .bigHubBound, K .bigHubVShapes, K .highSurplusBound, K .hubLengthThreePairs, K .tightEndpoint, K .slackIndependent,
+        K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .highCentreSplitForced, K .portEndDegree, K .hubLinkStructure, K .hubClassCounts, K .slotRelation, K .closedClasses, K .hubTwoHopLinks, K .slotLinear, K .hubWindowBudget, K .windowHubBounds, K .cubicNeighbourSupply, K .hubCountBound, K .lowEdgeParity, K .bigHubBound, K .bigHubVShapes, K .highSurplusBound, K .hubLengthThreePairs, K .tightEndpoint, K .slackIndependent,
         K .vertexDeletionComponents, K .cyclesThroughVertex,
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .densityExcess, K .remainderSlack, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
         K .primitiveCarrierCount, K .remainderPathBounds, K .windowFreeGeometry, K .inducedPathAttachment, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
@@ -247,12 +247,18 @@ noncomputable def selectedLedgerBoundary
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run highConfigHistory (by key_fresh)
+      -- Pair arms (Lean improvement): arm B of the pair code as implications; no decision.
+      let pairArmBHistory :=
+        (pairArmBRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run highSwitchHistory (by key_fresh)
       -- hoisted from `[20a]`: the sharpened envelope; no decision.
       let envelopeHistory :=
         (sparseExitEnvelopeRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).run highSwitchHistory (by key_fresh)
+          (data := spineData)).run pairArmBHistory (by key_fresh)
       -- hoisted from `[20a]`: the high-degree range; no decision.
       let highDegreeHistory :=
         (highDegreeSurplusRow (BranchState := BranchState)
@@ -280,11 +286,17 @@ noncomputable def selectedLedgerBoundary
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run windowChargeHistory (by key_fresh)
+      -- Pair arms (Lean improvement): arm A of the pair code as implications; no decision.
+      let pairArmAHistory :=
+        (pairArmARow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run freeSideStructureHistory (by key_fresh)
       let canonicalCountsHistory :=
         (sparseExitCanonicalCapacityCountsRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).run freeSideStructureHistory (by key_fresh)
+          (data := spineData)).run pairArmAHistory (by key_fresh)
       -- Free side (Lean improvement): the free-side count, G2 with it, and the capped arm;
       -- no decision.
       let freeSideCountHistory :=
@@ -331,6 +343,12 @@ noncomputable def selectedLedgerBoundary
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run targetDefectHistory (by key_fresh)
+          -- Pair arms (Lean improvement): arm B, (B2) at the pinned witness; no decision.
+          let pairArmBDefectHistory :=
+            (pairArmBDefectRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run structuredHistory (by key_fresh)
           -- `[131]`'s full-schedule count fails at G (unconditionally).  Kept on the
           -- `[20a]` arm: on `[125]`'s independent arm `K .freePairCountFails` is the
           -- no-arm key of the paper's `[131]` decision, so it cannot be published
@@ -339,7 +357,7 @@ noncomputable def selectedLedgerBoundary
             (sparseExitFreePairCountRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run structuredHistory (by key_fresh)
+              (data := spineData)).run pairArmBDefectHistory (by key_fresh)
           -- [20a] enrichment: facts at G that read `K .sparseTargetDefectResidual`; no decision.
           let witnessFactsHistory :=
             (sparseExitWitnessFactsRow (BranchState := BranchState)

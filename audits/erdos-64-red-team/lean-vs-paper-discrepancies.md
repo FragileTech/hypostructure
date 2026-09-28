@@ -1974,10 +1974,10 @@ residual case is closed by these facts.
 `joint/Joint.lean`, `windows/Windows.lean`, `windows/LiveCharge.lean`,
 `windows/ClauseE.lean`, `density/Density.lean`, `hubwin/HubWin/*`, `grs/Grs/*`)
 and the hub-link (scratch `hublink/HubLink/*`, rounds 1-2) and accounting (scratch
-`account/Account/*`) analyses are proved in vocabulary-free libraries and published as 33
-facts of G (idx 7200-7232; 7233-7399 free): 20 on the entry prefix (carried by every
-residual) and 13 at the top of the strict arm of `[19]` (carried by every strict-surplus
-residual).  One `Holds` conjunct and one `get` each at every
+`account/Account/*`) analyses are proved in vocabulary-free libraries together with the pair-code arm analyses (scratch `armA/ArmA/*`, `armB/ArmB/*`) and
+published as 38 facts of G (idx 7200-7237; 7238-7399 free): 21 on the entry prefix (carried
+by every residual), 16 at the top of the strict arm of `[19]` (carried by every
+strict-surplus residual), and 1 on the `[20a]` arm.  One `Holds` conjunct and one `get` each at every
 return.  No decision is added, moved or removed; no split.  One closure (the first
 band at `C_sp`), recorded under "Closed from G's facts"; it excludes orders of the
 strict arm without splitting any residual.
@@ -2073,6 +2073,23 @@ strict arm without splitting any residual.
     `head_filter_map`, `chordOrder`, `chordObstructions_head`, `canonicalBlocker_eq_chord`,
     `capacityCharge_of_singleton_chord`, `separated_charge`, `sep_blockers_kind`;
     `PairCount.card_pairs_le`, `PairCount.card_meeting_pairs_le`.
+  - `PairArms/*` (any activation, capacity presentation and the canonical pair-code
+    objects): arm A `canonicalBlocker_ne_localBuffer`, `chord_head_of_canonical`,
+    `eKind_charge_subtype`, `mem_chordOrder_iff`, `first_of_two`, `mem_portT_iff`,
+    `chordObstruction_ports`, `fKind_charge_ordered`, `fKind_charge`, `card_support_ge`,
+    `canonical_of_charge`, `canonical_ne_profile`, `FKind`, `pair_classification`,
+    `hno_of_separated`, `separated_fKind`, `mem_roleFibre_charge`, `liveRoles`; arm B (G1–G13)
+    `obstructionCoordinate_support`, `sparseDeclaredSupport_pair`, `specWitness_of_pairDefect`,
+    `specWitness_of_obstructionDefect`, `support_eq_union_of_meet`, `cycle_of_disjoint`,
+    `serialOfDisjoint`, `realizability_of_disjoint`, `disjointRoutes_trivial_of_fails`,
+    `routes_meet_of_same_centre`, `pairObstructionSeparator_spec_of_eq_some`,
+    `pairObstructionEnvelope_conditions`, `mem_route_of_route`, `handoff_structure`,
+    `pairDefect_of_spec`, `spec_not_both_obstruction`, `serial_lengths_not_accepted`,
+    `realizabilityFails_content`, `realizabilityFails_reversed`,
+    `realizabilityFails_reversed_high`, `incrementFails_content`,
+    `realizabilityFails_routes_meet`, `select_steiner_cut`, `serialOfPiece`,
+    `serial_ends_mem`, `noSerial_of_end_outside`, `realizabilityFails_path_meets`,
+    `exists_U_path`, `port_end_degree`.
   - `JointObject.lean` (any `FiniteObject` with the cubic baseline and any window
     packing of order `13`): the bridge (`hubs`, `c4Free`, `noC8`, `properTwoLow`,
     `density`, `cubic_nbr`, `degreeSurplus_eq`, `window_degrees`, `jmin`, `jind`,
@@ -2083,15 +2100,17 @@ strict arm without splitting any residual.
     `remainder_noP13`, `bag_card`, `remainder_path_bound`, `remainder_cycle_bound`,
     `remainder_long_cycle`, `remainder_span_bound`), and the object-level fact bundles
     below with their proofs.
-- **Statements** `Graph/Statements/JointHubs.lean`, `Graph/Statements/HubLinks.lean`;
-  **contracts** `Graph/Contracts/Spine/JointHubs.lean`, `Graph/Contracts/Spine/HubLinks.lean` (one `<key>_holds` per key; hypotheses are
+- **Statements** `Graph/Statements/JointHubs.lean`, `Graph/Statements/HubLinks.lean`,
+  `Graph/Statements/PairArms.lean`; **contracts** `Graph/Contracts/Spine/JointHubs.lean`,
+  `Graph/Contracts/Spine/HubLinks.lean`, `Graph/Contracts/Spine/PairArms.lean` (one `<key>_holds` per key; hypotheses are
   ledger facts only: selection, presentation laws, baseline, `[8]`, `lem:bridgeless`,
   `[10]`, the replacement exclusion, `K .surplusAbove`, `K .ceilSqrtAboveScale`,
   `K .canonicalCapacityExplicit`, and the published `K .highSurplusBound`,
   `K .bigHubBound`); **rows** `Graph/Strategy/SpineRows/JointHubs.lean`
   (`remainderGeometryRow`, `densitySlackRow`, `jointHubRow`, `hubWindowRow`,
   `highSurplusOrderRow`, `windowChargeRow`, `hubLinkRow`, `scalePressureRow`,
-  `freeSideStructureRow`, `freeSideCountRow`, `freeSideHubsRow`, `extendedChargeRow`); wired in `Assembly/Entry.lean` and
+  `freeSideStructureRow`, `freeSideCountRow`, `freeSideHubsRow`, `extendedChargeRow`, `portEndDegreeRow`, `pairArmARow`, `pairArmBRow`,
+  `pairArmBDefectRow`); wired in `Assembly/Entry.lean` and
   `Assembly/Final.lean`.  Registered corollary (presentation identity, not a key):
   `registered_firstBand_excluded`, `registered_cappedForces`,
   `registered_extOverloadedToken`
@@ -2138,6 +2157,11 @@ surplus in `W`, `slack(S) = 4|S| − 6 − 2e(S)`.
 | 7230 | `extOverloadedToken` | `K > 0` ⇒ some token has `load_ext > M₀` (unconditional at the registered presentation: `registered_extOverloadedToken`) | same | same row |
 | 7231 | `newLoadBound` | `newLoad(p) ≤ (|H| − 1) + [p triangular]·σ` for every selected port | same | same row |
 | 7232 | `separatedPairs` | a pair with disjoint declared supports and returns has only (e)/(f) blockers; `C(σ, 2) ≤ Σ_v C(d_D(v), 2) + Σ_v C(d_R(v), 2) + |Sep|` | canonicalCapacityExplicit | strict arm, with `freeSideStructureRow` |
+| 7233 | `portEndDegree` | every selected port endpoint has degree `δ` | minDegreeBaseline, slackIndependent | entry, after `hubLinkRow` (`portEndDegreeRow`) |
+| 7234 | `pairArmAPattern` | arm A of `pairCodeConfiguration` → the canonical homogeneous pattern covers `≥ |𝓜| + 1` ports, every pair charged to the overload token with a canonical blocker of the role's kind, and exactly one of (a) a common shared declared vertex, (b) a common shared return vertex, (e) target responses with `t ∉ I ∪ P`, (f) fully separated singleton chord blockers (a star at `p₀` with `t = P(p₀)`, or a common shoulder `v` with `t = R(v, k)`) | canonicalCapacityExplicit | strict arm, after `freeSideStructureRow` (`pairArmARow`) |
+| 7235 | `pairArmARoleAlphabet` | arm A → the canonical overload role lies in the ten live roles (of 36); `M₀`, `C_sp` unchanged | same | same row |
+| 7236 | `pairArmB` | arm B → the overlap system exists and G is in (B1), (B2) or (B3); (B1) the `[182]` residual in three exact configurations; (B3) → separator of degree `> 3`, next vertices in `U`, no label collision, envelope escape, Type B fan entry; realizability failure → forward routes in `U` meet backward routes, and the demand-end split; serial system → ends in `U`, centres high, port ends cubic, no accepted route length, the switch at the left port | cubicBaseline, selection, minDegreeBaseline, noProperBaseline, slackIndependent, surplusAbove, highEndpointSwitch | strict arm, after `highEndpointSwitchRow` (`pairArmBRow`) |
+| 7237 | `pairArmBDefect` | (B2) the pinned defect of the canonical return system's obstruction coordinates → a second `Spec` witness `w''` on two distinct obstruction coordinates, `|Z''| ≤ |U|`, with the full witness structure | cubicBaseline, selection, minDegreeBaseline, noProperBaseline, tightEndpoint, returnAvoidance, highEndpointSwitch, sparseTargetDefectResidual, specWitnessStructure | `[20a]` arm, after `sparseTargetDefectStructureRow` (`pairArmBDefectRow`) |
 
 **Deduplicated (not published; already on the ledger).**
 - `LL_identity` (`2e(L) + 6|H| + σ = 3n`) is literally `K .surplusDartIdentity`
@@ -2159,7 +2183,10 @@ surplus in `W`, `slack(S) = 4|S| − 6 − 2e(S)`.
 
 **Not published.**  The numerical escape/feasibility lemmas of the scratch
 (`accumulated_escape`, `escape_with_paths`, `AccSystem`) are not facts about G and are
-not ported; likewise `escape_killed` (hub-link) is not ported.  All accounting rounds sent to this lane (1-3) are ported.  Scratch `Moore.lean` (girth bound) and `Local.lean` are not needed by any
+not ported; likewise `escape_killed` (hub-link) is not ported.  All accounting rounds sent to this lane (1-3) are ported.  Arm A: `LiveCharge.lean` and
+`ClauseE.lean` there are copies of the windows sources (deduplicated into
+`WindowChargeKinds`); `KindA.lean`, `KindE.lean`, `At20aA.lean` were not in the port list.
+Arm B: `Linkage.lean` (a statement about `C₄`, not about G) is not ported.  Scratch `Moore.lean` (girth bound) and `Local.lean` are not needed by any
 published fact (`Local.lean` duplicates `LocalRigidity`).  The capped-arm lemmas
 `capped_single_hub_closed` and `capped_hub_lower` are ported as library arithmetic only:
 their G-instantiation needs, respectively, `|Π_free| = 0` from `|H| = 1` and
@@ -2173,7 +2200,7 @@ so it does not instantiate at G as stated; `window_density` is published (in
 
 ## Returned residuals
 
-- **port-joint count note (2026-09-28).**  Every returned residual (generic, subtype, product) now also carries the 20 entry-prefix keys of "Hubs, windows and the remainder at G" (`K .remainderPathBounds`, `K .windowFreeGeometry`, `K .inducedPathAttachment`, `K .densityExcess`, `K .remainderSlack`, `K .cubicNeighbourSupply`, `K .hubCountBound`, `K .lowEdgeParity`, `K .bigHubBound`, `K .bigHubVShapes`, `K .highSurplusBound`, `K .hubLengthThreePairs`, `K .hubWindowBudget`, `K .windowHubBounds`, `K .hubLinkStructure`, `K .hubClassCounts`, `K .slotRelation`, `K .closedClasses`, `K .hubTwoHopLinks`, `K .slotLinear`; +20), and every strict-surplus residual (`[20a]`, `[144a]`, `[182]`, the `[187]` Type B entry) also the 13 strict-arm keys `K .highSurplusOrder`, `K .scalePressure`, `K .windowChargeKinds`, `K .responseObstructionTargetDefect`, `K .freeSideStructure`, `K .separatedPairs`, `K .freeSideCount`, `K .freeSideHubs`, `K .extFreeEmpty`, `K .extLoadSum`, `K .extOverload`, `K .extOverloadedToken`, `K .newLoadBound` (+33 in all); one `get` per key at every return.  Counts quoted below that predate this note are +20 (+33 on the strict arm).
+- **port-joint count note (2026-09-28).**  Every returned residual (generic, subtype, product) now also carries the 21 entry-prefix keys of "Hubs, windows and the remainder at G" (`K .remainderPathBounds`, `K .windowFreeGeometry`, `K .inducedPathAttachment`, `K .densityExcess`, `K .remainderSlack`, `K .cubicNeighbourSupply`, `K .hubCountBound`, `K .lowEdgeParity`, `K .bigHubBound`, `K .bigHubVShapes`, `K .highSurplusBound`, `K .hubLengthThreePairs`, `K .hubWindowBudget`, `K .windowHubBounds`, `K .hubLinkStructure`, `K .hubClassCounts`, `K .slotRelation`, `K .closedClasses`, `K .hubTwoHopLinks`, `K .slotLinear`, `K .portEndDegree`; +21), and every strict-surplus residual (`[20a]`, `[144a]`, `[182]`, the `[187]` Type B entry) also the 16 strict-arm keys `K .highSurplusOrder`, `K .scalePressure`, `K .windowChargeKinds`, `K .responseObstructionTargetDefect`, `K .freeSideStructure`, `K .separatedPairs`, `K .freeSideCount`, `K .freeSideHubs`, `K .extFreeEmpty`, `K .extLoadSum`, `K .extOverload`, `K .extOverloadedToken`, `K .newLoadBound`, `K .pairArmAPattern`, `K .pairArmARoleAlphabet`, `K .pairArmB` (+37 in all), and `[20a]` also `K .pairArmBDefect` (+38); one `get` per key at every return.  Counts quoted below that predate this note are +21 (+37 on the strict arm, +38 at `[20a]`).
 - **port-20a count note (2026-09-28).**  Every returned residual (generic, subtype, product) now also carries the entry-prefix key `K .everyWitnessSpectrumSplit` (+1), and every strict-surplus residual (`[20a]`, `[144a]`, `[182]`, the `[187]` Type B entry) also the two strict-arm keys `K .highSurplusConfiguration`, `K .highEndpointSwitch` (+3 in all); one `get` per key at every return.  The per-residual counts in `Assembly/Residuals*.lean` docs are updated; counts quoted below that predate this note are +1 (+3 on the strict arm).  See Node [20a], items 96–98.
 
 The current description of every returned residual of

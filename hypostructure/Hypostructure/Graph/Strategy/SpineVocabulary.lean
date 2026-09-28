@@ -22,6 +22,7 @@ import Hypostructure.Graph.Statements.CycleCounting
 import Hypostructure.Graph.Statements.LocalRigidity
 import Hypostructure.Graph.Statements.JointHubs
 import Hypostructure.Graph.Statements.HubLinks
+import Hypostructure.Graph.Statements.PairArms
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1938,7 +1939,7 @@ inductive Key where
   | windowPositionStubs
   /-- Entry prefix (local rigidity): **Cross-edge gap**: two vertex-disjoint placed paths of G joined at `(i, j)`, `(i', j')` have `|i − i'| + 2 + |j − j'|` not accepted; at the windows of `P₀`: legal attachment labels, `C₁` safety, the cross-window gap rule, no ladder. -/
   | windowAttachmentGap
-  -- port-joint keys (7200–7399; 7200–7216 joint/windows/charge, 7217–7223 hub links, 7224–7232 free side, extended charge, separated pairs)
+  -- port-joint keys (7200–7399; 7200–7216 joint/windows/charge, 7217–7223 hub links, 7224–7232 free side, extended charge, separated pairs; 7233–7237 pair-code arms)
   /-- Entry prefix (joint hubs): **Cubic neighbours**: every cubic vertex of G has a cubic neighbour and at most two hub neighbours; `|L| ≤ Σ_{v∈L} |N(v) ∩ L| = 2e(L)`. -/
   | cubicNeighbourSupply
   /-- Entry prefix (joint hubs): **`5|H| + σ ≤ 2n`** (`H = {d ≠ 3}`). -/
@@ -2005,6 +2006,16 @@ inductive Key where
   | newLoadBound
   /-- Strict arm of `[19]`: **Separated pairs and the congestion trade-off**: a pair with disjoint declared supports and returns has only target-response or chord-set blockers; `C(σ, 2) ≤ Σ_v C(d_D(v), 2) + Σ_v C(d_R(v), 2) + |Sep|`. -/
   | separatedPairs
+  /-- Entry prefix (pair arms): **Every selected port endpoint has degree `δ`** (the centre is high and the high vertices are independent). -/
+  | portEndDegree
+  /-- Strict arm of `[19]`: **Arm A of the pair code → the kind structure of the canonical pattern**: covers `≥ |𝓜| + 1` ports; every pair charged to the overload token with canonical blocker of the role's kind; exactly one of (a) one shared declared vertex, (b) one shared return vertex, (e) target responses with `t ∉ I ∪ P`, (f) fully separated singleton chord blockers (a star at `p₀` or a common shoulder `v`). -/
+  | pairArmAPattern
+  /-- Strict arm of `[19]`: **Arm A → the canonical overload role is one of ten** (`liveRoles`; no incidence token, no clause (c)/(d) role; `M₀`, `C_sp` unchanged). -/
+  | pairArmARoleAlphabet
+  /-- Strict arm of `[19]`: **Arm B of the pair code, exactly**: the overlap system exists and G is in (B1), (B2) or (B3); (B1) the `[182]` residual in three exact configurations; (B3) the obstruction handoff's separator (`deg > 3`), envelope and escape; on the realizability failure forward routes in `U` meet backward routes and the demand ends split; at the serial system the ends lie in `U`, centres high, port ends cubic, no route length accepted, and the switch at the left port. -/
+  | pairArmB
+  /-- Node `[20a]`: **Arm B, (B2)**: the pinned defect of the canonical return system's obstruction coordinates gives a second `Spec` witness on two distinct obstruction coordinates (`|Z''| ≤ |U|`) with the full witness structure. -/
+  | pairArmBDefect
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -3097,6 +3108,16 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       NewLoadBoundStatement data.toParameters object
   | .separatedPairs, object =>
       SeparatedPairsStatement data.toParameters object
+  | .portEndDegree, object =>
+      PortEndDegreeStatement data.toParameters object
+  | .pairArmAPattern, object =>
+      PairArmAPatternStatement data.toParameters object
+  | .pairArmARoleAlphabet, object =>
+      PairArmARoleAlphabetStatement data.toParameters object
+  | .pairArmB, object =>
+      PairArmBStatement data.toParameters object
+  | .pairArmBDefect, object =>
+      PairArmBDefectStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3622,6 +3643,11 @@ def label : Key → String
   | .extOverloadedToken => "extOverloadedToken"
   | .newLoadBound => "newLoadBound"
   | .separatedPairs => "separatedPairs"
+  | .portEndDegree => "portEndDegree"
+  | .pairArmAPattern => "pairArmAPattern"
+  | .pairArmARoleAlphabet => "pairArmARoleAlphabet"
+  | .pairArmB => "pairArmB"
+  | .pairArmBDefect => "pairArmBDefect"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -4148,6 +4174,11 @@ example : label .extOverload = "extOverload" := rfl
 example : label .extOverloadedToken = "extOverloadedToken" := rfl
 example : label .newLoadBound = "newLoadBound" := rfl
 example : label .separatedPairs = "separatedPairs" := rfl
+example : label .portEndDegree = "portEndDegree" := rfl
+example : label .pairArmAPattern = "pairArmAPattern" := rfl
+example : label .pairArmARoleAlphabet = "pairArmARoleAlphabet" := rfl
+example : label .pairArmB = "pairArmB" := rfl
+example : label .pairArmBDefect = "pairArmBDefect" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4667,6 +4698,11 @@ def idx : Key → Nat
   | .extOverloadedToken => 7230
   | .newLoadBound => 7231
   | .separatedPairs => 7232
+  | .portEndDegree => 7233
+  | .pairArmAPattern => 7234
+  | .pairArmARoleAlphabet => 7235
+  | .pairArmB => 7236
+  | .pairArmBDefect => 7237
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -5175,6 +5211,11 @@ def ofIdx : Nat → Key
   | 7230 => .extOverloadedToken
   | 7231 => .newLoadBound
   | 7232 => .separatedPairs
+  | 7233 => .portEndDegree
+  | 7234 => .pairArmAPattern
+  | 7235 => .pairArmARoleAlphabet
+  | 7236 => .pairArmB
+  | 7237 => .pairArmBDefect
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -6291,6 +6332,16 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "newLoadBound") 7231
   | .separatedPairs =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "separatedPairs") 7232
+  | .portEndDegree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "portEndDegree") 7233
+  | .pairArmAPattern =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmAPattern") 7234
+  | .pairArmARoleAlphabet =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmARoleAlphabet") 7235
+  | .pairArmB =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmB") 7236
+  | .pairArmBDefect =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmBDefect") 7237
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

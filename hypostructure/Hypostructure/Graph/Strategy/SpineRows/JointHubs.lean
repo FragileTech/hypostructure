@@ -1,6 +1,7 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Contracts.Spine.JointHubs
 import Hypostructure.Graph.Contracts.Spine.HubLinks
+import Hypostructure.Graph.Contracts.Spine.PairArms
 
 /-!
 # Hubs, cubic vertices, windows and the remainder of G, each published at the earliest point
@@ -345,5 +346,83 @@ charge `Θ_ext` at G's canonical capacity presentation. -/
           (inputs.get (K .pairCountDeficit)).down (inputs.get (K .canonicalBlockedFreePartition)).down
           (inputs.get (K .ceilSqrtAboveScale)).down⟩
       .nil)))))
+
+/-- Entry prefix, right after the hub links: every selected port endpoint has degree `δ`. -/
+@[reducible] noncomputable def portEndDegreeRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.portEndDegree
+    { Requires := [K .minDegreeBaseline, K .slackIndependent]
+      Produces := [K .portEndDegree]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .portEndDegree)
+        ⟨Contracts.Spine.PairArms.portEndDegree_holds (object := inputs.current.object)
+          (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down⟩
+      .nil)
+
+/-- Top of the strict arm of `[19]`, right after the free-side structure: arm A of the pair
+code as implications. -/
+@[reducible] noncomputable def pairArmARow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairArmA
+    { Requires := [K .canonicalCapacityExplicit]
+      Produces := [K .pairArmAPattern, K .pairArmARoleAlphabet]
+      requiresUnique := by simp
+      producesUnique := by key_fresh
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairArmAPattern)
+        ⟨Contracts.Spine.PairArms.pairArmAPattern_holds (object := inputs.current.object)
+          (inputs.get (K .canonicalCapacityExplicit)).down⟩
+      (.cons (key := K .pairArmARoleAlphabet)
+        ⟨Contracts.Spine.PairArms.pairArmARoleAlphabet_holds (object := inputs.current.object)
+          (Contracts.Spine.PairArms.pairArmAPattern_holds (object := inputs.current.object)
+            (inputs.get (K .canonicalCapacityExplicit)).down)⟩
+      .nil))
+
+/-- Top of the strict arm of `[19]`, right after the high-endpoint switch: arm B of the pair
+code as implications. -/
+@[reducible] noncomputable def pairArmBRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairArmB
+    { Requires := [K .cubicBaseline, K .selection, K .minDegreeBaseline, K .noProperBaseline,
+        K .slackIndependent, K .surplusAbove, K .highEndpointSwitch]
+      Produces := [K .pairArmB]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairArmB)
+        ⟨Contracts.Spine.PairArms.pairArmB_holds (object := inputs.current.object)
+          (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .selection)).down.1
+          (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .noProperBaseline)).down
+          (inputs.get (K .slackIndependent)).down (inputs.get (K .surplusAbove)).down
+          (inputs.get (K .highEndpointSwitch)).down⟩
+      .nil)
+
+/-- Node `[20a]`, after the witness rows: arm B, (B2) at the pinned witness. -/
+@[reducible] noncomputable def pairArmBDefectRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairArmBDefect
+    { Requires := [K .cubicBaseline, K .selection, K .minDegreeBaseline, K .noProperBaseline,
+        K .tightEndpoint, K .returnAvoidance, K .highEndpointSwitch,
+        K .sparseTargetDefectResidual, K .specWitnessStructure]
+      Produces := [K .pairArmBDefect]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairArmBDefect)
+        ⟨Contracts.Spine.PairArms.pairArmBDefect_holds (object := inputs.current.object)
+          (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .selection)).down.1
+          (inputs.get (K .cubicBaseline)).down.2.1.2.1
+          (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .noProperBaseline)).down
+          (inputs.get (K .tightEndpoint)).down (inputs.get (K .returnAvoidance)).down
+          (inputs.get (K .highEndpointSwitch)).down
+          (inputs.get (K .sparseTargetDefectResidual)).down
+          (inputs.get (K .specWitnessStructure)).down⟩
+      .nil)
 
 end Hypostructure.Graph.Strategy.Spine

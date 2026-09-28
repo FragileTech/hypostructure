@@ -215,6 +215,7 @@ noncomputable def selectedTypeALowSurplusContinuation
     [FactKeys.Has (K .threeRouteChain) known]
     [FactKeys.Has (K .windowPositionStubs) known]
     [FactKeys.Has (K .windowAttachmentGap) known]
+    [FactKeys.Has (K .portEndDegree) known]
     [FactKeys.Has (K .hubLinkStructure) known]
     [FactKeys.Has (K .hubClassCounts) known]
     [FactKeys.Has (K .slotRelation) known]
