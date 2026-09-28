@@ -177,12 +177,18 @@ noncomputable def selectedLedgerBoundary
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run windowJoinHistory (by key_fresh)
+          -- [20a] enrichment (freePairCount): facts at G, no decision
+          let freePairCountHistory :=
+            (sparseExitFreePairCountRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run baselineDemandHistory (by key_fresh)
           -- [20a] enrichment (sparseExitWitnessFacts): facts at G, no decision
           let sparseExitWitnessFactsHistory :=
             (sparseExitWitnessFactsRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run baselineDemandHistory (by key_fresh)
+              (data := spineData)).run freePairCountHistory (by key_fresh)
           -- [20a] enrichment (sparseExitBudget): facts at G, no decision
           let sparseExitBudgetHistory :=
             (sparseExitBudgetRow (BranchState := BranchState)
@@ -237,7 +243,25 @@ noncomputable def selectedLedgerBoundary
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run sparseExitDeletionHistory (by key_fresh)
-          exact Or.inl (node20aReturn sparseExitCombinationHistory)
+          -- [20a] enrichment (sparseExitCanonicalCapacity): facts at G, no decision
+          let sparseExitCanonicalCapacityHistory :=
+            (sparseExitCanonicalCapacityRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run sparseExitCombinationHistory (by key_fresh)
+          -- [20a] enrichment (sparseExitCanonicalCapacityCounts): facts at G, no decision
+          let sparseExitCanonicalCapacityCountsHistory :=
+            (sparseExitCanonicalCapacityCountsRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run sparseExitCanonicalCapacityHistory (by key_fresh)
+          -- [20a] enrichment (sparseExitPairChain): facts at G, no decision
+          let sparseExitPairChainHistory :=
+            (sparseExitPairChainRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run sparseExitCanonicalCapacityCountsHistory (by key_fresh)
+          exact Or.inl (node20aReturn sparseExitPairChainHistory)
       | .right survivorHistory =>
           match selectedStrictSurplusBranch survivorHistory with
           | .inl handoff => exact Or.inr (Or.inl handoff)

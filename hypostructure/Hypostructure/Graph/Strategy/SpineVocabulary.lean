@@ -1831,6 +1831,32 @@ inductive Key where
   | remainderDeficiencyBelowCut
   /-- Node `[20a]`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`. -/
   | windowCutCapacity
+  /-- Node `[20a]`: **G's canonical capacity presentation is the explicit one**: the recorded blocker activation of G's active family on the node-`[19]` packing. -/
+  | canonicalCapacityExplicit
+  /-- Node `[20a]`: **`|𝔘_sp(G)| = 4n + 2σ`.** -/
+  | primitiveCarrierCount
+  /-- Node `[20a]`: **The exact token count at the canonical presentation**: `|𝔗_cap| + 2(order − 1)·ν = 4n + 3σ + 3·order·ν` (at order `13`: `|𝔗_cap| = 4n + 3σ + 15ν`). -/
+  | canonicalTokenCount
+  /-- Node `[20a]`: **`|Π_blk| + |Π_free| = C(σ, 2)`** at the canonical ledger. -/
+  | canonicalBlockedFreePartition
+  /-- Node `[20a]`: **The deficit at the canonical ledger** (G2): with `c = ⌈√n⌉`, `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B) + 2(|Π_blk| − M₀|𝔗|)`. -/
+  | canonicalLedgerDeficit
+  /-- Node `[20a]`: **The pair-count deficit** (G3): `c²K + 2M₀(8n + σ) ≤ 2(C(σ, 2) − B)`. -/
+  | pairCountDeficit
+  /-- Node `[20a]`: **The certification criterion at the canonical presentation**: its canonical certified ledger exists iff `|Π_free| ≤ B`. -/
+  | canonicalCertificationCriterion
+  /-- Node `[20a]`: **The paper's budget at the canonical spine family fits the certification budget**: `E_paper ≤ B`. -/
+  | paperBudgetBound
+  /-- Node `[20a]`: **`|Π_free| ≤ E_paper` certifies**: at the canonical spine family and presentation, `|Π_free| ≤ E_paper` makes the canonical certified ledger exist. -/
+  | paperBudgetCertifies
+  /-- Node `[20a]`: **If the free side fits `B`, the blocked side is overloaded**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_blk| − M₀|𝔗|)`, and some token has load `> M₀` and carries an `L_geom` role-homogeneous matching or star. -/
+  | canonicalOverloadOfFits
+  /-- Node `[20a]`: **If every token carries load `≤ M₀`, the free side exceeds `B`**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B)`. -/
+  | canonicalFreeExcessOfCapped
+  /-- Node `[20a]`: **Where G sits in the pair-code chain**: either the `[137]`→`[143]` configuration holds at the canonical objects (blocked pair, `[137]` count, canonical pattern, overload, caps fail), or G's canonical first failure exists and yields the `[182]` residual, or the target defect of the canonical return system's obstruction coordinates, or that obstruction's handoff together with the Type B fan entry `[65]`. -/
+  | pairCodeConfiguration
+  /-- Node `[20a]`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`. -/
+  | specWitnessStructure
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2756,6 +2782,32 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       RemainderDeficiencyBelowCutStatement data.toParameters object
   | .windowCutCapacity, object =>
       WindowCutCapacityStatement data.toParameters object
+  | .canonicalCapacityExplicit, object =>
+      CanonicalCapacityExplicitStatement data.toParameters object
+  | .primitiveCarrierCount, object =>
+      PrimitiveCarrierCountStatement data.toParameters object
+  | .canonicalTokenCount, object =>
+      CanonicalTokenCountStatement data.toParameters object
+  | .canonicalBlockedFreePartition, object =>
+      CanonicalBlockedFreePartitionStatement data.toParameters object
+  | .canonicalLedgerDeficit, object =>
+      CanonicalLedgerDeficitStatement data.toParameters object
+  | .pairCountDeficit, object =>
+      PairCountDeficitStatement data.toParameters object
+  | .canonicalCertificationCriterion, object =>
+      CanonicalCertificationCriterionStatement data.toParameters object
+  | .paperBudgetBound, object =>
+      PaperBudgetBoundStatement data.toParameters object
+  | .paperBudgetCertifies, object =>
+      PaperBudgetCertifiesStatement data.toParameters object
+  | .canonicalOverloadOfFits, object =>
+      CanonicalOverloadOfFitsStatement data.toParameters object
+  | .canonicalFreeExcessOfCapped, object =>
+      CanonicalFreeExcessOfCappedStatement data.toParameters object
+  | .pairCodeConfiguration, object =>
+      PairCodeConfigurationStatement data.toParameters object
+  | .specWitnessStructure, object =>
+      SpecWitnessStructureStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3196,6 +3248,19 @@ def label : Key → String
   | .wholeCutEdgeSurplusBound => "wholeCutEdgeSurplusBound"
   | .remainderDeficiencyBelowCut => "remainderDeficiencyBelowCut"
   | .windowCutCapacity => "windowCutCapacity"
+  | .canonicalCapacityExplicit => "canonicalCapacityExplicit"
+  | .primitiveCarrierCount => "primitiveCarrierCount"
+  | .canonicalTokenCount => "canonicalTokenCount"
+  | .canonicalBlockedFreePartition => "canonicalBlockedFreePartition"
+  | .canonicalLedgerDeficit => "canonicalLedgerDeficit"
+  | .pairCountDeficit => "pairCountDeficit"
+  | .canonicalCertificationCriterion => "canonicalCertificationCriterion"
+  | .paperBudgetBound => "paperBudgetBound"
+  | .paperBudgetCertifies => "paperBudgetCertifies"
+  | .canonicalOverloadOfFits => "canonicalOverloadOfFits"
+  | .canonicalFreeExcessOfCapped => "canonicalFreeExcessOfCapped"
+  | .pairCodeConfiguration => "pairCodeConfiguration"
+  | .specWitnessStructure => "specWitnessStructure"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3640,6 +3705,19 @@ example : label .wholeDeficitBoundaryCount = "wholeDeficitBoundaryCount" := rfl
 example : label .wholeCutEdgeSurplusBound = "wholeCutEdgeSurplusBound" := rfl
 example : label .remainderDeficiencyBelowCut = "remainderDeficiencyBelowCut" := rfl
 example : label .windowCutCapacity = "windowCutCapacity" := rfl
+example : label .canonicalCapacityExplicit = "canonicalCapacityExplicit" := rfl
+example : label .primitiveCarrierCount = "primitiveCarrierCount" := rfl
+example : label .canonicalTokenCount = "canonicalTokenCount" := rfl
+example : label .canonicalBlockedFreePartition = "canonicalBlockedFreePartition" := rfl
+example : label .canonicalLedgerDeficit = "canonicalLedgerDeficit" := rfl
+example : label .pairCountDeficit = "pairCountDeficit" := rfl
+example : label .canonicalCertificationCriterion = "canonicalCertificationCriterion" := rfl
+example : label .paperBudgetBound = "paperBudgetBound" := rfl
+example : label .paperBudgetCertifies = "paperBudgetCertifies" := rfl
+example : label .canonicalOverloadOfFits = "canonicalOverloadOfFits" := rfl
+example : label .canonicalFreeExcessOfCapped = "canonicalFreeExcessOfCapped" := rfl
+example : label .pairCodeConfiguration = "pairCodeConfiguration" := rfl
+example : label .specWitnessStructure = "specWitnessStructure" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4074,6 +4152,19 @@ def idx : Key → Nat
   | .wholeCutEdgeSurplusBound => 6662
   | .remainderDeficiencyBelowCut => 6663
   | .windowCutCapacity => 6664
+  | .canonicalCapacityExplicit => 6665
+  | .primitiveCarrierCount => 6666
+  | .canonicalTokenCount => 6667
+  | .canonicalBlockedFreePartition => 6668
+  | .canonicalLedgerDeficit => 6669
+  | .pairCountDeficit => 6670
+  | .canonicalCertificationCriterion => 6671
+  | .paperBudgetBound => 6672
+  | .paperBudgetCertifies => 6673
+  | .canonicalOverloadOfFits => 6674
+  | .canonicalFreeExcessOfCapped => 6675
+  | .pairCodeConfiguration => 6676
+  | .specWitnessStructure => 6677
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4497,6 +4588,19 @@ def ofIdx : Nat → Key
   | 6662 => .wholeCutEdgeSurplusBound
   | 6663 => .remainderDeficiencyBelowCut
   | 6664 => .windowCutCapacity
+  | 6665 => .canonicalCapacityExplicit
+  | 6666 => .primitiveCarrierCount
+  | 6667 => .canonicalTokenCount
+  | 6668 => .canonicalBlockedFreePartition
+  | 6669 => .canonicalLedgerDeficit
+  | 6670 => .pairCountDeficit
+  | 6671 => .canonicalCertificationCriterion
+  | 6672 => .paperBudgetBound
+  | 6673 => .paperBudgetCertifies
+  | 6674 => .canonicalOverloadOfFits
+  | 6675 => .canonicalFreeExcessOfCapped
+  | 6676 => .pairCodeConfiguration
+  | 6677 => .specWitnessStructure
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -5445,6 +5549,32 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "remainderDeficiencyBelowCut") 6663
   | .windowCutCapacity =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "windowCutCapacity") 6664
+  | .canonicalCapacityExplicit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalCapacityExplicit") 6665
+  | .primitiveCarrierCount =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "primitiveCarrierCount") 6666
+  | .canonicalTokenCount =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalTokenCount") 6667
+  | .canonicalBlockedFreePartition =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalBlockedFreePartition") 6668
+  | .canonicalLedgerDeficit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalLedgerDeficit") 6669
+  | .pairCountDeficit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairCountDeficit") 6670
+  | .canonicalCertificationCriterion =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalCertificationCriterion") 6671
+  | .paperBudgetBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "paperBudgetBound") 6672
+  | .paperBudgetCertifies =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "paperBudgetCertifies") 6673
+  | .canonicalOverloadOfFits =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalOverloadOfFits") 6674
+  | .canonicalFreeExcessOfCapped =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalFreeExcessOfCapped") 6675
+  | .pairCodeConfiguration =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairCodeConfiguration") 6676
+  | .specWitnessStructure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "specWitnessStructure") 6677
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

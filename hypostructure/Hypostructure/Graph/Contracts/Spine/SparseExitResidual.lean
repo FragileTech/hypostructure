@@ -6,6 +6,11 @@ import Hypostructure.Graph.BoundaryDemand
 import Hypostructure.Graph.Contracts.SurplusPair.Estimate
 import Hypostructure.Graph.Contracts.SurplusPair.OverloadClass
 import Hypostructure.Graph.Contracts.SurplusPair.Activation
+import Hypostructure.Graph.Contracts.TypeB.OpenPort
+import Hypostructure.Graph.Contracts.SurplusPair.Entropy
+import Hypostructure.Graph.Contracts.SurplusPair.PairOverlap
+import Hypostructure.Graph.Contracts.SurplusPair.PairCode
+import Hypostructure.Graph.Contracts.SurplusPair.Routing
 
 /-!
 # Contracts: the strict-surplus named sparse exit `[20a]`, made explicit
@@ -1817,5 +1822,630 @@ theorem wholeCutEdgeSurplusBound_holds (three : data.threshold = 3)
     wholeCutEdgeSurplusBound_at three baseline w.swap⟩
 
 end Combination
+
+/-! ## The canonical capacity presentation of G (K6 at the canonical objects) -/
+
+section CanonicalCapacityContracts
+
+open Hypostructure.Graph.SameTokenBlockerRoles
+
+variable {BranchState : Graph.FiniteObject.{u} → Type v}
+variable {Presentation : Type} {presentation : Presentation}
+
+/-- `C(σ,2)·2 = σ(σ−1)` over `ℤ`. -/
+theorem choose_two_mul_two_int (σ : Nat) (hσ : 1 ≤ σ) :
+    ((σ.choose 2 : ℕ) : ℤ) * 2 = (σ : ℤ) * ((σ : ℤ) - 1) := by
+  have h := Nat.choose_two_right σ
+  have hd : 2 ∣ σ * (σ - 1) := (Nat.even_mul_pred_self σ).two_dvd
+  have e : σ.choose 2 * 2 = σ * (σ - 1) := by rw [h]; exact Nat.div_mul_cancel hd
+  have := congrArg (fun x : ℕ => (x : ℤ)) e
+  push_cast [Nat.cast_sub hσ] at this
+  linarith
+
+/-- `C_sp` at the cubic baseline: `C_sp = 2 + 20·M₀ + 2·S`. -/
+theorem spineScale_at_three (three : data.threshold = 3) :
+    data.spineScale = 2 + 20 * homogeneousTokenCap data.routingLabelBound +
+      2 * data.surplusScale := by
+  simp only [Parameters.spineScale, registeredSpineScale, registeredHomogeneousCap, three]
+  ring
+
+/-- `1 ≤ S` from the registered deficit safety. -/
+theorem one_le_surplusScale
+    (deficitSafety : Graph.baselineDeficitCoefficient data.threshold ≤ data.surplusScale) :
+    1 ≤ data.surplusScale := by
+  have : 0 < Graph.baselineDeficitCoefficient data.threshold := by
+    unfold Graph.baselineDeficitCoefficient; positivity
+  omega
+
+/-- The pair-deficit coefficient is positive at the cubic baseline:
+`K = C² − 3C − 2M₀C − 2S − 16M₀ > 0` when `C = 2 + 20M₀ + 2S`, `S ≥ 1`. -/
+theorem pairDeficitCoefficient_pos (three : data.threshold = 3)
+    (deficitSafety : Graph.baselineDeficitCoefficient data.threshold ≤ data.surplusScale) :
+    0 < pairDeficitCoefficient data := by
+  have Ceq := spineScale_at_three (data := data) three
+  have S1 := one_le_surplusScale deficitSafety
+  unfold pairDeficitCoefficient
+  rw [Ceq]
+  push_cast
+  nlinarith [Int.natCast_nonneg (homogeneousTokenCap data.routingLabelBound),
+    (show (1 : ℤ) ≤ data.surplusScale by exact_mod_cast S1)]
+
+/-- `ActiveSurplusDemands` at G from the `[20a]` facts (`[127]`, `[128]`,
+`[125]`), with no survivor fact. -/
+theorem active_of_selection (three : data.threshold = 3)
+    (selection : SelectionStatement BranchState Presentation presentation data object)
+    (baseline : MinDegreeBaselineStatement data object)
+    (slack : SlackIndependentStatement data object) :
+    Graph.ActiveSurplusDemands
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object data.threshold := by
+  have witness : SingleOpenPortSuppressionWitnessStatement data object :=
+    Graph.Contracts.TypeB.singleOpenPortSuppressionWitness baseline selection.1
+      selection.2.sizeMinimal
+  exact Graph.Contracts.SurplusPair.activeSurplusDemands_of_activation three
+    (Graph.Contracts.SurplusPair.activeSurplusFamily_of_slackIndependent baseline slack)
+    (Graph.Contracts.SurplusPair.sparsePortActivation_of_selection baseline selection witness)
+
+theorem canonicalCapacity_eq_explicit_at (three : data.threshold = 3)
+    (joinSlack : data.threshold * data.windowOrder + 2 ≤ 4 * data.windowOrder)
+    (selection : SelectionStatement BranchState Presentation presentation data object)
+    (baseline : MinDegreeBaselineStatement data object)
+    (slack : SlackIndependentStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (tight : TightEndpointStatement data object)
+    (above : SurplusAboveStatement data object) :
+    canonicalCapacity data object =
+      some (explicitCapacity (active_of_selection three selection baseline slack)
+        selection.1 noProper.2) := by
+  have above' : data.surplusThreshold object.vertexCount <
+      object.degreeSurplus data.threshold := above
+  have pos : 0 < object.degreeSurplus data.threshold := lt_of_le_of_lt (Nat.zero_le _) above'
+  have env := object.edgeCount_add_two_le (threshold := data.threshold) (by omega) noProper.1
+    tight (object.edgeCount_pos_of_degreeSurplus_pos pos)
+  exact canonicalCapacity_eq_explicit _ _ _ baseline (by omega) env joinSlack
+
+theorem canonicalCapacityExplicit_holds (three : data.threshold = 3)
+    (joinSlack : data.threshold * data.windowOrder + 2 ≤ 4 * data.windowOrder)
+    (selection : SelectionStatement BranchState Presentation presentation data object)
+    (baseline : MinDegreeBaselineStatement data object)
+    (slack : SlackIndependentStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (tight : TightEndpointStatement data object)
+    (above : SurplusAboveStatement data object) :
+    CanonicalCapacityExplicitStatement data object :=
+  ⟨_, _, _, canonicalCapacity_eq_explicit_at three joinSlack selection baseline slack noProper
+    tight above⟩
+
+theorem primitiveCarrierCount_holds (three : data.threshold = 3)
+    (baseline : MinDegreeBaselineStatement data object) :
+    PrimitiveCarrierCountStatement data object := by
+  have bdeg : ∀ v : object.Vertex, data.threshold ≤ object.degree v :=
+    fun v => le_trans baseline (object.minDegree_le_degree v)
+  have carrier := object.card_primitiveCarrier (threshold := data.threshold) bdeg
+  have slackEq : 2 * object.edgeCount = data.threshold * object.vertexCount +
+      object.degreeSurplus data.threshold :=
+    Graph.Contracts.SurplusPair.sparseSlackSurplus_of_baseline baseline
+  unfold PrimitiveCarrierCountStatement
+  have h3 : data.threshold * object.vertexCount = 3 * object.vertexCount := by rw [three]
+  omega
+
+/-- **Every quantity at the canonical object ledger of the canonical
+presentation**, at the cubic baseline, under the ledger's own facts. -/
+theorem canonicalLedger_quantities (three : data.threshold = 3)
+    (deficitSafety : Graph.baselineDeficitCoefficient data.threshold ≤ data.surplusScale)
+    (capacity : SurplusCapacity data object)
+    (spec : CapacityLedgerSpec data object capacity)
+    (baseline : MinDegreeBaselineStatement data object)
+    (tight : TightEndpointStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (above : SurplusAboveStatement data object) :
+    ∃ L, canonicalObjectLedgerAt data object capacity = some L ∧
+      L.presented.tokens = capacity.tokens ∧
+      capacity.tokens.card + 2 * (data.windowOrder - 1) *
+          (canonicalWindowPacking data object).card =
+        4 * object.vertexCount + 3 * object.degreeSurplus data.threshold +
+          3 * (data.windowOrder * (canonicalWindowPacking data object).card) ∧
+      capacity.tokens.card ≤ 8 * object.vertexCount + object.degreeSurplus data.threshold ∧
+      L.presented.blocked.card + freeCount data object capacity =
+        (object.degreeSurplus data.threshold).choose 2 ∧
+      L.presented.blocked.card = ∑ t ∈ L.presented.tokens, L.presented.load t ∧
+      (Core.ceilSqrt object.vertexCount : ℤ) ^ 2 * pairDeficitCoefficient data +
+          2 * (homogeneousTokenCap data.routingLabelBound : ℤ) *
+            ((8 * object.vertexCount + object.degreeSurplus data.threshold : ℕ) -
+              (capacity.tokens.card : ℤ)) ≤
+        2 * ((freeCount data object capacity : ℤ) - (certificationBudget data object : ℤ)) +
+          2 * ((L.presented.blocked.card : ℤ) -
+            (homogeneousTokenCap data.routingLabelBound : ℤ) * capacity.tokens.card) ∧
+      (Core.ceilSqrt object.vertexCount : ℤ) ^ 2 * pairDeficitCoefficient data +
+          2 * (homogeneousTokenCap data.routingLabelBound : ℤ) *
+            ((8 * object.vertexCount + object.degreeSurplus data.threshold : ℕ) : ℤ) ≤
+        2 * (((object.degreeSurplus data.threshold).choose 2 : ℕ) -
+          (certificationBudget data object : ℤ)) ∧
+      ((canonicalCertifiedCapacityDataAt data object capacity).isSome ↔
+        freeCount data object capacity ≤ certificationBudget data object) := by
+  obtain ⟨h1, -, slackEq, σle, sq⟩ := budget_core three baseline tight noProper above
+  set n := object.vertexCount
+  set σ := object.degreeSurplus data.threshold
+  set C := data.spineScale
+  set S := data.surplusScale
+  set M₀ := homogeneousTokenCap data.routingLabelBound
+  set cs := Core.ceilSqrt n
+  have Ceq : C = 2 + 20 * M₀ + 2 * S := spineScale_at_three three
+  have S1 : 1 ≤ S := one_le_surplusScale deficitSafety
+  have hcs : C + 1 ≤ cs := (SparseOrderArithmetic.sqrt_chain _ _ _ _ h1 σle sq).1
+  have hlog : Nat.log2 n + 1 ≤ cs :=
+    SparseOrderArithmetic.log2_succ_le_of_le_sq (by omega) sq
+  have bdeg : ∀ v : object.Vertex, data.threshold ≤ object.degree v :=
+    fun v => le_trans baseline (object.minDegree_le_degree v)
+  obtain ⟨-, carrierEq, -, concrete, -, packEq⟩ := spec
+  have sizePos : 0 < n := by omega
+  obtain ⟨v0, -⟩ : object.vertexFinset.Nonempty :=
+    Finset.card_pos.mp (by rw [object.card_vertexFinset]; exact sizePos)
+  have inputs : ObjectLedgerInputs data object capacity :=
+    ⟨object.card_portPairSchedule bdeg,
+      object.capacityTokens_nonempty data.threshold capacity.packing v0, concrete.2.1⟩
+  obtain ⟨L, hL, hLE⟩ := canonicalObjectLedgerAt_spec data object capacity inputs
+  have tokId := concrete.1
+  have e : capacity.tokens = object.capacityTokens data.threshold capacity.packing := rfl
+  rw [carrierEq, packEq] at tokId
+  have hmul : data.threshold * (data.windowOrder * (canonicalWindowPacking data object).card) =
+      3 * (data.windowOrder * (canonicalWindowPacking data object).card) := by rw [three]
+  have tokEq : capacity.tokens.card + 2 * (data.windowOrder - 1) *
+      (canonicalWindowPacking data object).card =
+      4 * n + 3 * σ + 3 * (data.windowOrder * (canonicalWindowPacking data object).card) := by
+    rw [e, packEq]
+    have : 2 * object.edgeCount = 3 * n + σ := slackEq
+    omega
+  have supply : object.capacityTokenSupply data.threshold = 8 * n := by
+    simp only [FiniteObject.capacityTokenSupply, FiniteObject.primitiveCarrierSupply, three]
+    ring
+  have supplyT : capacity.tokens.card ≤ 8 * n + σ := by
+    have := concrete.2.1
+    rw [supply] at this
+    exact this
+  have partition := L.presented.blocked_card_add_free_card
+  have freeEq : L.presented.free.card = freeCount data object capacity := ledger_free_card L
+  rw [freeEq] at partition
+  have schedCard := object.card_portPairSchedule bdeg
+  have key : 1 + 2 * cs + 2 * M₀ ≤ C * cs := by
+    rw [Ceq]; nlinarith
+  have core := SparseOrderArithmetic.pairDeficit_lower (σ : ℤ) (cs : ℤ) (n : ℤ)
+    ((S * n + (Nat.log2 n + 1) * σ : ℕ) : ℤ) ((8 * n + σ : ℕ) : ℤ) (M₀ : ℤ) (S : ℤ) (C : ℤ)
+    (Nat.log2 n : ℤ) (by exact_mod_cast (by omega : 1 ≤ cs)) (by positivity) (by positivity)
+    (by positivity) (by exact_mod_cast h1) (by positivity) (by exact_mod_cast sq)
+    (by exact_mod_cast hlog) (by positivity) (by push_cast; linarith) (by push_cast; linarith)
+    (by exact_mod_cast key)
+  have c2 := choose_two_mul_two_int σ (by omega)
+  have partZ : (L.presented.blocked.card : ℤ) + (freeCount data object capacity : ℤ) =
+      ((σ.choose 2 : ℕ) : ℤ) := by exact_mod_cast partition
+  have hK : (cs : ℤ) ^ 2 * pairDeficitCoefficient data ≤ (σ : ℤ) * ((σ : ℤ) - 1) -
+      2 * (((S * n + (Nat.log2 n + 1) * σ : ℕ)) : ℤ) -
+      2 * (M₀ : ℤ) * (((8 * n + σ : ℕ)) : ℤ) := core
+  refine ⟨L, hL, L.tokens_eq, tokEq, supplyT, partition,
+    L.presented.blocked_card_eq_sum_load, ?_, ?_,
+    canonicalCertified_isSome_iff inputs sizePos S1⟩
+  · unfold certificationBudget; push_cast at hK ⊢; linarith
+  · unfold certificationBudget; push_cast at hK ⊢; linarith
+
+section AtG
+
+variable (three : data.threshold = 3)
+  (joinSlack : data.threshold * data.windowOrder + 2 ≤ 4 * data.windowOrder)
+  (deficitSafety : Graph.baselineDeficitCoefficient data.threshold ≤ data.surplusScale)
+  (selection : SelectionStatement BranchState Presentation presentation data object)
+  (baseline : MinDegreeBaselineStatement data object)
+  (slack : SlackIndependentStatement data object)
+  (noProper : NoProperBaselineStatement data object)
+  (tight : TightEndpointStatement data object)
+  (above : SurplusAboveStatement data object)
+
+include three joinSlack deficitSafety selection baseline slack noProper tight above
+
+theorem canonicalLedger_exists :
+    ∃ c, canonicalCapacity data object = some c ∧ CapacityLedgerSpec data object c := by
+  have hc := canonicalCapacity_eq_explicit_at three joinSlack selection baseline slack
+    noProper tight above
+  exact ⟨_, hc, canonicalCapacity_spec_of_eq_some data object hc⟩
+
+theorem canonicalTokenCount_holds : CanonicalTokenCountStatement data object := by
+  obtain ⟨c, hc, spec⟩ := canonicalLedger_exists three joinSlack deficitSafety selection
+    baseline slack noProper tight above
+  obtain ⟨L, hL, -, tok, -⟩ := canonicalLedger_quantities three deficitSafety c spec baseline
+    tight noProper above
+  exact ⟨c, L, hc, hL, tok⟩
+
+theorem canonicalBlockedFreePartition_holds :
+    CanonicalBlockedFreePartitionStatement data object := by
+  obtain ⟨c, hc, spec⟩ := canonicalLedger_exists three joinSlack deficitSafety selection
+    baseline slack noProper tight above
+  obtain ⟨L, hL, -, -, -, part, -⟩ := canonicalLedger_quantities three deficitSafety c spec
+    baseline tight noProper above
+  exact ⟨c, L, hc, hL, part⟩
+
+theorem canonicalLedgerDeficit_holds : CanonicalLedgerDeficitStatement data object := by
+  obtain ⟨c, hc, spec⟩ := canonicalLedger_exists three joinSlack deficitSafety selection
+    baseline slack noProper tight above
+  obtain ⟨L, hL, -, -, -, -, -, g2, -⟩ := canonicalLedger_quantities three deficitSafety c
+    spec baseline tight noProper above
+  exact ⟨c, L, hc, hL, g2⟩
+
+theorem pairCountDeficit_holds : PairCountDeficitStatement data object := by
+  obtain ⟨c, hc, spec⟩ := canonicalLedger_exists three joinSlack deficitSafety selection
+    baseline slack noProper tight above
+  obtain ⟨L, -, -, -, -, -, -, -, g3, -⟩ := canonicalLedger_quantities three deficitSafety c
+    spec baseline tight noProper above
+  exact g3
+
+theorem canonicalCertificationCriterion_holds :
+    CanonicalCertificationCriterionStatement data object := by
+  obtain ⟨c, hc, spec⟩ := canonicalLedger_exists three joinSlack deficitSafety selection
+    baseline slack noProper tight above
+  obtain ⟨L, hL, -, -, -, -, -, -, -, crit⟩ := canonicalLedger_quantities three deficitSafety
+    c spec baseline tight noProper above
+  exact ⟨c, L, hc, hL, crit⟩
+
+theorem canonicalOverloadOfFits_holds : CanonicalOverloadOfFitsStatement data object := by
+  obtain ⟨c, hc, spec⟩ := canonicalLedger_exists three joinSlack deficitSafety selection
+    baseline slack noProper tight above
+  obtain ⟨L, hL, tokEqL, -, supplyT, -, sumLoad, excess, -⟩ :=
+    canonicalLedger_quantities three deficitSafety c spec baseline tight noProper above
+  obtain ⟨-, -, -, -, sq⟩ := budget_core three baseline tight noProper above
+  have Kpos := pairDeficitCoefficient_pos (data := data) three deficitSafety
+  refine ⟨c, L, hc, hL, fun fits => ?_⟩
+  set M₀ := homogeneousTokenCap data.routingLabelBound
+  have fitsZ : ((freeCount data object c : ℕ) : ℤ) ≤ ((certificationBudget data object : ℕ) : ℤ) :=
+    Nat.cast_le.mpr fits
+  have supZ : (c.tokens.card : ℤ) ≤
+      ((8 * object.vertexCount + object.degreeSurplus data.threshold : ℕ) : ℤ) :=
+    Nat.cast_le.mpr supplyT
+  have hb : (Core.ceilSqrt object.vertexCount : ℤ) ^ 2 * pairDeficitCoefficient data +
+      2 * (M₀ : ℤ) * ((8 * object.vertexCount + object.degreeSurplus data.threshold : ℕ) -
+        (c.tokens.card : ℤ)) ≤
+      2 * ((L.presented.blocked.card : ℤ) - M₀ * c.tokens.card) := by linarith
+  refine ⟨hb, ?_⟩
+  by_contra none
+  have le : L.presented.blocked.card ≤ M₀ * L.presented.tokens.card := by
+    rw [sumLoad]
+    calc ∑ t ∈ L.presented.tokens, L.presented.load t
+        ≤ ∑ _t ∈ L.presented.tokens, M₀ :=
+          Finset.sum_le_sum fun t ht => by
+            by_contra h
+            push Not at h
+            obtain ⟨role, pat⟩ :=
+              L.presented.exists_homogeneous_pattern_of_capCharge_lt
+                (fun _ => geometricPatternBound data.routingLabelBound) t
+                (Nat.le_add_left 1 _) h
+            exact none ⟨t, ht, h, role, pat⟩
+      _ = M₀ * L.presented.tokens.card := by rw [Finset.sum_const, smul_eq_mul, Nat.mul_comm]
+  rw [tokEqL] at le
+  have leZ : (L.presented.blocked.card : ℤ) ≤ ((M₀ * c.tokens.card : ℕ) : ℤ) :=
+    Nat.cast_le.mpr le
+  push_cast at leZ
+  have cs1 : (1 : ℤ) ≤ (Core.ceilSqrt object.vertexCount : ℤ) := by
+    have : 1 ≤ Core.ceilSqrt object.vertexCount := by
+      rcases Nat.eq_zero_or_pos (Core.ceilSqrt object.vertexCount) with h | h
+      · have := sq; rw [h] at this
+        have := (budget_core three baseline tight noProper above).2.2.2.1; simp at *; omega
+      · exact h
+    exact_mod_cast this
+  have p1 : (0 : ℤ) < (Core.ceilSqrt object.vertexCount : ℤ) ^ 2 * pairDeficitCoefficient data :=
+    mul_pos (by positivity) Kpos
+  have p2 : (0 : ℤ) ≤ 2 * (M₀ : ℤ) *
+      (((8 * object.vertexCount + object.degreeSurplus data.threshold : ℕ) : ℤ) -
+        (c.tokens.card : ℤ)) :=
+    mul_nonneg (by positivity) (by linarith)
+  linarith
+
+theorem canonicalFreeExcessOfCapped_holds :
+    CanonicalFreeExcessOfCappedStatement data object := by
+  obtain ⟨c, hc, spec⟩ := canonicalLedger_exists three joinSlack deficitSafety selection
+    baseline slack noProper tight above
+  obtain ⟨L, hL, tokEqL, -, -, -, sumLoad, excess, -⟩ :=
+    canonicalLedger_quantities three deficitSafety c spec baseline tight noProper above
+  refine ⟨c, L, hc, hL, fun capped => ?_⟩
+  set M₀ := homogeneousTokenCap data.routingLabelBound
+  have le : L.presented.blocked.card ≤ M₀ * L.presented.tokens.card := by
+    rw [sumLoad]
+    calc ∑ t ∈ L.presented.tokens, L.presented.load t
+        ≤ ∑ _t ∈ L.presented.tokens, M₀ := Finset.sum_le_sum capped
+      _ = M₀ * L.presented.tokens.card := by rw [Finset.sum_const, smul_eq_mul, Nat.mul_comm]
+  rw [tokEqL] at le
+  have leZ : (L.presented.blocked.card : ℤ) ≤ ((M₀ * c.tokens.card : ℕ) : ℤ) :=
+    Nat.cast_le.mpr le
+  push_cast at leZ
+  linarith
+
+end AtG
+
+end CanonicalCapacityContracts
+
+/-! ## The paper's budget, the `[131]` count, the pair-code chain, and the
+structure of every witness -/
+
+section Chain
+
+open Hypostructure.Graph.SameTokenBlockerRoles
+
+variable {BranchState : Graph.FiniteObject.{u} → Type v}
+variable {Presentation : Type} {presentation : Presentation}
+
+theorem paperBudget_le (three : data.threshold = 3)
+    (baseline : MinDegreeBaselineStatement data object)
+    (tight : TightEndpointStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (above : SurplusAboveStatement data object)
+    {spineCount : Nat}
+    (deficitLe : Graph.spineDeficit object.vertexCount data.threshold spineCount ≤
+      data.surplusScale * object.vertexCount) :
+    paperBudget data object spineCount ≤ certificationBudget data object := by
+  obtain ⟨-, -, slackEq, -, -⟩ := budget_core three baseline tight noProper above
+  have he : object.edgeCount - Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ≤
+      object.degreeSurplus data.threshold := by
+    have hc : Graph.cubicBaselineEdgeCount object.vertexCount data.threshold =
+        (3 * object.vertexCount + 1) / 2 := by simp [Graph.cubicBaselineEdgeCount, three]
+    rw [hc]; omega
+  have := Nat.mul_le_mul_right (Nat.log2 object.vertexCount + 1) he
+  unfold paperBudget certificationBudget
+  rw [Nat.mul_comm (object.degreeSurplus data.threshold)] at this
+  omega
+
+theorem paperBudgetBound_holds (three : data.threshold = 3)
+    (baseline : MinDegreeBaselineStatement data object)
+    (tight : TightEndpointStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (above : SurplusAboveStatement data object)
+    (demand : BaselineSpineDemandStatement data object) :
+    PaperBudgetBoundStatement data object := by
+  obtain ⟨spine, hs, -, -, -, deficitLe⟩ := id demand
+  exact ⟨spine, hs, paperBudget_le three baseline tight noProper above deficitLe⟩
+
+theorem paperBudgetCertifies_holds (three : data.threshold = 3)
+    (joinSlack : data.threshold * data.windowOrder + 2 ≤ 4 * data.windowOrder)
+    (deficitSafety : Graph.baselineDeficitCoefficient data.threshold ≤ data.surplusScale)
+    (selection : SelectionStatement BranchState Presentation presentation data object)
+    (baseline : MinDegreeBaselineStatement data object)
+    (slack : SlackIndependentStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (tight : TightEndpointStatement data object)
+    (above : SurplusAboveStatement data object)
+    (demand : BaselineSpineDemandStatement data object) :
+    PaperBudgetCertifiesStatement data object := by
+  obtain ⟨spine, hs, -, -, -, deficitLe⟩ := id demand
+  obtain ⟨c, hc, spec⟩ := canonicalLedger_exists three joinSlack deficitSafety selection
+    baseline slack noProper tight above
+  obtain ⟨L, -, -, -, -, -, -, -, -, crit⟩ := canonicalLedger_quantities three deficitSafety c
+    spec baseline tight noProper above
+  exact ⟨spine, c, hs, hc, fun hf => crit.2
+    (hf.trans (paperBudget_le three baseline tight noProper above deficitLe))⟩
+
+theorem freePairCountFails_at (three : data.threshold = 3)
+    (joinSlack : data.threshold * data.windowOrder + 2 ≤ 4 * data.windowOrder)
+    (deficitSafety : Graph.baselineDeficitCoefficient data.threshold ≤ data.surplusScale)
+    (selection : SelectionStatement BranchState Presentation presentation data object)
+    (baseline : MinDegreeBaselineStatement data object)
+    (slack : SlackIndependentStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (tight : TightEndpointStatement data object)
+    (above : SurplusAboveStatement data object)
+    (demand : BaselineSpineDemandStatement data object) :
+    FreePairCountFailsStatement data object := by
+  rintro ⟨activation, spine, hA, hS, count⟩
+  obtain ⟨spine', hs', -, -, demandIneq, deficitLe⟩ := id demand
+  rw [hS] at hs'; cases hs'
+  obtain ⟨c, hc, spec⟩ := canonicalLedger_exists three joinSlack deficitSafety selection
+    baseline slack noProper tight above
+  obtain ⟨L, -, -, -, -, -, -, -, gap, -⟩ := canonicalLedger_quantities three deficitSafety c
+    spec baseline tight noProper above
+  obtain ⟨h1, -, slackEq, σle, sq⟩ := budget_core three baseline tight noProper above
+  rw [Graph.FiniteObject.DemandActivation.card_pairFamily] at count
+  have aboveEdges : Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ≤
+      object.edgeCount := by
+    have hc : Graph.cubicBaselineEdgeCount object.vertexCount data.threshold =
+        (3 * object.vertexCount + 1) / 2 := by simp [Graph.cubicBaselineEdgeCount, three]
+    rw [hc]; omega
+  have le := Graph.freeCount_le_of_sandwich object (by omega) aboveEdges count demandIneq
+  have bdeg : ∀ v : object.Vertex, data.threshold ≤ object.degree v :=
+    fun v => le_trans baseline (object.minDegree_le_degree v)
+  have sched : (codeSchedule data object).card =
+      (object.degreeSurplus data.threshold).choose 2 := object.card_portPairSchedule bdeg
+  rw [sched] at le
+  have leB := le.trans (paperBudget_le three baseline tight noProper above deficitLe)
+  have leZ := (Nat.cast_le (α := ℤ)).mpr leB
+  have Kpos := pairDeficitCoefficient_pos (data := data) three deficitSafety
+  have hcs := (SparseOrderArithmetic.sqrt_chain _ _ _ _ h1 σle sq).1
+  have cs1 : (1 : ℤ) ≤ (Core.ceilSqrt object.vertexCount : ℤ) := by
+    exact_mod_cast (show 1 ≤ Core.ceilSqrt object.vertexCount by omega)
+  have sqpos : (1 : ℤ) ≤ (Core.ceilSqrt object.vertexCount : ℤ) ^ 2 := by nlinarith
+  have M0 : (0 : ℤ) ≤ (homogeneousTokenCap data.routingLabelBound : ℤ) := Int.natCast_nonneg _
+  have p8 : (0 : ℤ) ≤ ((8 * object.vertexCount +
+      object.degreeSurplus data.threshold : ℕ) : ℤ) := Int.natCast_nonneg _
+  have prod : 0 < (Core.ceilSqrt object.vertexCount : ℤ) ^ 2 * pairDeficitCoefficient data :=
+    mul_pos (by positivity) Kpos
+  unfold paperBudget certificationBudget at *
+  push_cast at leZ gap ⊢
+  nlinarith
+
+theorem not_capped_of_above (above : SurplusAboveStatement data object)
+    (safety : TokenLoad.quadraticSafetyScale ≤ data.spineScale)
+    {capacity : SurplusCapacity data object}
+    (certified : SurplusCertified data object capacity) :
+    ¬ SparsePressureCappedAt certified data.routingLabelBound := fun capped =>
+  absurd (Contracts.SurplusPair.spineSurplusEstimate_of_capped capacity certified
+    capped above safety) (not_le.mpr above)
+
+theorem coupledExcess_pos_of_above (above : SurplusAboveStatement data object)
+    (safety : TokenLoad.quadraticSafetyScale ≤ data.spineScale)
+    {capacity : SurplusCapacity data object}
+    (certified : SurplusCertified data object capacity) :
+    0 < sparseCoupledExcess data certified := by
+  by_contra h
+  apply not_capped_of_above above safety certified
+  exact certified.ledger.presented.demand_le_sparsePressureBound
+    certified.ledger.presented.tokenClass
+    (fun _ => geometricPatternBound data.routingLabelBound)
+    (homogeneousTokenCap data.routingLabelBound)
+    (object.capacityTokenSupply data.threshold)
+    (fun _ => Nat.le_refl _) certified.ledger.tokens_card_le
+    (Nat.eq_zero_of_not_pos h)
+
+/-- **The pair-code chain from the canonical first failure, survivor-free.** -/
+theorem pairChain_outcome
+    (firstFailure : PairOverlapFirstFailureStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (repl : ReplacementExclusionStatement data object)
+    (lengthOK_iff : ∀ length, data.LengthOK length ↔
+      Core.DyadicLength.PowerOfTwoLength length) :
+    PairConditionalFactorizationResidualStatement data object ∨
+      (∃ returns, canonicalPairDemandReturns data object = some returns ∧
+        Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK) object
+          returns.obstructionCoordinates pairCoordinateSupport) ∨
+      (∃ returns, canonicalPairDemandReturns data object = some returns ∧
+        PairObstructionHandoff data object returns) := by
+  classical
+  have system := Contracts.SurplusPair.pairOverlapSystem_of_firstFailure firstFailure noProper
+  by_cases fact : PairConditionalFactorizationStatement data object
+  swap
+  · exact Or.inl (Contracts.SurplusPair.pairUncovered_of_factorizationFails system fact)
+  obtain ⟨returns, hr⟩ := Contracts.SurplusPair.pairDemandReturns_of_failureOverlap
+    (Contracts.SurplusPair.pairFailureOverlap_of_factorization fact)
+  by_cases covered : Nonempty (PairSystemRealizabilityOutcome returns)
+  swap
+  · exact Or.inl ⟨.systemRealizability returns hr covered⟩
+  obtain ⟨outcome⟩ := covered
+  cases outcome with
+  | early early =>
+      cases early with
+      | targetCycle cycle => exact (avoids cycle).elim
+      | targetDefect defect => exact Or.inr (Or.inl ⟨returns, hr, defect⟩)
+      | compression support _ replacement => exact (repl support replacement).elim
+      | typeB handoff => exact Or.inr (Or.inr ⟨returns, hr, handoff⟩)
+  | serial sys same =>
+      obtain ⟨serial, hs, sameR⟩ := canonicalPairSerialSystem_spec data object hr same
+      by_cases inc : Nonempty (PairIncrementOutcome serial)
+      swap
+      · exact Or.inl ⟨.incrementArithmetic serial hs inc⟩
+      obtain ⟨inc⟩ := inc
+      cases inc with
+      | arithmetic input =>
+          exact (avoids (Contracts.SurplusPair.pairPowerOfTwoCycle_of_arithmetic
+            ⟨serial, hs, ⟨input⟩⟩ lengthOK_iff)).elim
+      | early early =>
+          cases early with
+          | targetDefect defect =>
+              exact Or.inr (Or.inl ⟨returns, hr, sameR ▸ defect⟩)
+          | compression support _ replacement => exact (repl support replacement).elim
+          | typeB handoff => exact Or.inr (Or.inr ⟨returns, hr, sameR ▸ handoff⟩)
+
+set_option maxHeartbeats 1000000 in
+theorem pairCodeConfiguration_holds (three : data.threshold = 3)
+    (joinSlack : data.threshold * data.windowOrder + 2 ≤ 4 * data.windowOrder)
+    (deficitSafety : Graph.baselineDeficitCoefficient data.threshold ≤ data.surplusScale)
+    (safety : TokenLoad.quadraticSafetyScale ≤ data.spineScale)
+    (labelCount : data.routingLabelBound = Fintype.card
+      (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+        (Graph.WindowCurvature.Label data.windowOrder)))
+    (lengthLaw : ∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
+    (selection : SelectionStatement BranchState Presentation presentation data object)
+    (baseline : MinDegreeBaselineStatement data object)
+    (slack : SlackIndependentStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (tight : TightEndpointStatement data object)
+    (exclusion : ReplacementExclusionStatement data object)
+    (above : SurplusAboveStatement data object)
+    (demand : BaselineSpineDemandStatement data object) :
+    PairCodeConfigurationStatement data object := by
+  classical
+  obtain ⟨c, hc, spec⟩ := canonicalLedger_exists three joinSlack deficitSafety selection
+    baseline slack noProper tight above
+  obtain ⟨L, hL, -, -, -, partition, -, -, -, crit⟩ :=
+    canonicalLedger_quantities three deficitSafety c spec baseline tight noProper above
+  obtain ⟨spine, hs, -, -, demandIneq, deficitLe⟩ := id demand
+  obtain ⟨-, -, slackEq, -, -⟩ := budget_core three baseline tight noProper above
+  have aboveEdges : Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ≤
+      object.edgeCount := by
+    have hc : Graph.cubicBaselineEdgeCount object.vertexCount data.threshold =
+        (3 * object.vertexCount + 1) / 2 := by simp [Graph.cubicBaselineEdgeCount, three]
+    rw [hc]; omega
+  have Ele := paperBudget_le three baseline tight noProper above deficitLe
+  have countImp : 2 ^ (spine.family.card + freeCount data object c) ≤
+      Graph.skeletonBudget object →
+      freeCount data object c ≤ paperBudget data object spine.family.card :=
+    fun ent => Graph.freeCount_le_of_sandwich object (by omega) aboveEdges ent demandIneq
+  have countIff : BlockedPairEntropySandwichStatement data object ↔
+      2 ^ (spine.family.card + freeCount data object c) ≤ Graph.skeletonBudget object := by
+    constructor
+    · rintro ⟨c', hc', spine', hs', ent⟩
+      rw [hc] at hc'; cases hc'
+      rw [hs] at hs'; cases hs'
+      exact ent
+    · intro ent
+      exact ⟨c, hc, spine, hs, ent⟩
+  have capLedger : CapacityTokenLedgerStatement data object := ⟨c, hc, spec⟩
+  have entry : PairOverlapFirstFailureStatement data object ∨
+      (DependentPairFamilyStatement data object ∧
+        BlockedPairEntropySandwichStatement data object ∧
+        HomogeneousBottleneckPatternSchema data object ∧
+        SparsePressureOverloadSchema data object ∧
+        ¬ HomogeneousCapsHoldStatement data object) := by
+    by_cases dep : DependentPairFamilyStatement data object
+    · by_cases count : BlockedPairEntropySandwichStatement data object
+      · right
+        have fits : freeCount data object c ≤ certificationBudget data object :=
+          (countImp (countIff.1 count)).trans Ele
+        obtain ⟨cert, hcert⟩ := Option.isSome_iff_exists.mp (crit.2 fits)
+        have sel : canonicalCertifiedCapacityData data object = some ⟨c, cert⟩ :=
+          (canonicalCertifiedCapacityData_eq_some_iff data object c cert).2 ⟨hc, hcert⟩
+        have overload : SparsePressureOverloadSchema data object :=
+          ⟨c, cert, sel, coupledExcess_pos_of_above above safety cert⟩
+        obtain ⟨value, classified⟩ :=
+          Contracts.SurplusPair.canonicalOverloadClass_of_overload overload
+        have pattern := Contracts.SurplusPair.homogeneousBottleneckPattern_of_class
+          classified capLedger labelCount
+        exact ⟨dep, count, pattern, overload,
+          fun caps => Contracts.SurplusPair.not_homogeneousCapsHold_of_pattern pattern caps⟩
+      · left
+        have fails : BlockedPairCountFailsStatement data object := count
+        exact Contracts.SurplusPair.pairOverlapFirstFailure_of_blockedCodeUnrealized
+          (Contracts.SurplusPair.blockedPairCodeUnrealized_of_countFails fails
+            ⟨c, spine, hc, hs, object.card_portPairSchedule
+              (fun v => le_trans baseline (object.minDegree_le_degree v))⟩
+            demand) dep noProper
+    · left
+      have indep : IndependentPairFamilyStatement data object := by
+        have act := canonicalPairActivation_eq data object
+          (active_of_selection three selection baseline slack)
+        exact ⟨_, act, fun blocked => dep ⟨_, act, blocked⟩⟩
+      exact Contracts.SurplusPair.pairOverlapFirstFailure_of_freeCodeUnrealized
+        (Contracts.SurplusPair.freePairCodeUnrealized_of_countFails baseline
+          (freePairCountFails_at three joinSlack deficitSafety selection baseline slack noProper
+            tight above demand)
+          demand indep)
+        noProper
+  rcases entry with ff | other
+  · right
+    refine ⟨ff, ?_⟩
+    rcases pairChain_outcome ff noProper selection.1 exclusion lengthLaw with r | d | h
+    · exact Or.inl r
+    · exact Or.inr (Or.inl d)
+    · exact Or.inr (Or.inr ⟨h,
+        Contracts.SurplusPair.typeBFanEntry_of_pairObstructionHandoff above h⟩)
+  · exact Or.inl other
+
+theorem specWitnessStructure_holds (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) :
+    SpecWitnessStructureStatement data object := by
+  intro w spec
+  refine ⟨⟨fun r => separated_of_spec spec
+      ⟨fun h => (realized_context_negative avoid r _ h).elim,
+        fun h => (realized_context_negative avoid r _ h).elim⟩⟩,
+    geometryAt_of_spec avoid spec, two_le_cutBoundary_of_spec avoid spec,
+    proper_of_spec avoid spec, ?_, fun ⟨a, b, hB, hZ⟩ => pairArm_false spec hB hZ,
+    fun whole => ⟨larger_reading_positive spec (fun x hx => whole (second_subset_support spec hx)),
+      (whole_case_deficit_set avoid spec whole).1⟩, fun Y hY conn => ?_⟩
+  · convert positive_support_two_boundary avoid spec
+  · exact CanonicalSupport.select?_card_le spec.2.2.2.1
+      (CanonicalSupport.mem_candidates_iff.2 ⟨by convert hY, conn⟩)
+
+end Chain
 
 end Hypostructure.Graph.Contracts.Spine.SparseExitResidual

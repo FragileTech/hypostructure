@@ -1,4 +1,8 @@
 import Hypostructure.Graph.Statements.SurplusPair
+import Hypostructure.Graph.Statements.CanonicalCapacityExplicit
+import Hypostructure.Graph.Statements.SurplusPairCode
+import Hypostructure.Graph.Statements.TypeBLanes
+import Hypostructure.Graph.Statements.CanonicalPairHandoff
 import Hypostructure.Graph.GluedReadingMaps
 import Hypostructure.Graph.DeclaredRankQuotient
 import Hypostructure.Graph.CurvatureTargetRank
@@ -797,5 +801,204 @@ noncomputable def WindowCutCapacityStatement (data : Parameters)
     data.threshold * (data.windowOrder * (canonicalWindowPacking data object).card) +
       object.ambientSurplus (object.windowSupport (canonicalWindowPacking data object))
         data.threshold
+
+/-! ## The canonical capacity presentation of G (K6 at the canonical objects) -/
+
+section CanonicalCapacity
+
+open Hypostructure.Graph.SameTokenBlockerRoles
+
+/-- The certification budget `B = S·n + (⌊log₂ n⌋ + 1)·σ`. -/
+abbrev certificationBudget (data : Parameters) (object : Graph.FiniteObject.{u}) : Nat :=
+  data.surplusScale * object.vertexCount +
+    (Nat.log2 object.vertexCount + 1) * object.degreeSurplus data.threshold
+
+/-- The pair-deficit coefficient `K = C² − 3C − 2M₀C − 2S − 16M₀`. -/
+abbrev pairDeficitCoefficient (data : Parameters) : ℤ :=
+  (data.spineScale : ℤ) ^ 2 - 3 * data.spineScale -
+    2 * (homogeneousTokenCap data.routingLabelBound : ℤ) * data.spineScale -
+    2 * data.surplusScale - 16 * (homogeneousTokenCap data.routingLabelBound : ℤ)
+
+/-- `P` holds at G's canonical capacity presentation `c` and the canonical
+object ledger `L` at it. -/
+abbrev AtCanonicalCapacityCounts (data : Parameters) (object : Graph.FiniteObject.{u})
+    (P : (c : SurplusCapacity data object) →
+      Graph.ObjectCapacityLedger object data.threshold data.windowOrder c → Prop) : Prop :=
+  ∃ c L, canonicalCapacity data object = some c ∧
+    canonicalObjectLedgerAt data object c = some L ∧ P c L
+
+/-- **G's canonical capacity presentation is the explicit one**: the recorded
+blocker activation of G's active family on the node-`[19]` packing. -/
+noncomputable def CanonicalCapacityExplicitStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ (active : Graph.ActiveSurplusDemands
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object data.threshold)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (connected : object.graph.Connected),
+    canonicalCapacity data object = some (explicitCapacity active avoids connected)
+
+/-- **`|𝔘_sp(G)| = 4n + 2σ`.** -/
+def PrimitiveCarrierCountStatement (data : Parameters) (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  (object.primitiveCarrier data.threshold).card =
+    4 * object.vertexCount + 2 * object.degreeSurplus data.threshold
+
+/-- **The exact token count at the canonical presentation**:
+`|𝔗_cap| + 2(order − 1)·ν = 4n + 3σ + 3·order·ν` (at order `13`:
+`|𝔗_cap| = 4n + 3σ + 15ν`). -/
+noncomputable def CanonicalTokenCountStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  AtCanonicalCapacityCounts data object fun c _ =>
+    c.tokens.card + 2 * (data.windowOrder - 1) * (canonicalWindowPacking data object).card =
+      4 * object.vertexCount + 3 * object.degreeSurplus data.threshold +
+        3 * (data.windowOrder * (canonicalWindowPacking data object).card)
+
+/-- **`|Π_blk| + |Π_free| = C(σ, 2)`** at the canonical ledger. -/
+noncomputable def CanonicalBlockedFreePartitionStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  AtCanonicalCapacityCounts data object fun c L =>
+    L.presented.blocked.card + freeCount data object c =
+      (object.degreeSurplus data.threshold).choose 2
+
+/-- **The deficit at the canonical ledger** (G2): with `c = ⌈√n⌉`,
+`c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B) + 2(|Π_blk| − M₀|𝔗|)`. -/
+noncomputable def CanonicalLedgerDeficitStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  AtCanonicalCapacityCounts data object fun c L =>
+    (Core.ceilSqrt object.vertexCount : ℤ) ^ 2 * pairDeficitCoefficient data +
+        2 * (homogeneousTokenCap data.routingLabelBound : ℤ) *
+          ((8 * object.vertexCount + object.degreeSurplus data.threshold : ℕ) -
+            (c.tokens.card : ℤ)) ≤
+      2 * ((freeCount data object c : ℤ) - (certificationBudget data object : ℤ)) +
+        2 * ((L.presented.blocked.card : ℤ) -
+          (homogeneousTokenCap data.routingLabelBound : ℤ) * c.tokens.card)
+
+/-- **The pair-count deficit** (G3): `c²K + 2M₀(8n + σ) ≤ 2(C(σ, 2) − B)`. -/
+def PairCountDeficitStatement (data : Parameters) (object : Graph.FiniteObject.{u}) : Prop :=
+  (Core.ceilSqrt object.vertexCount : ℤ) ^ 2 * pairDeficitCoefficient data +
+      2 * (homogeneousTokenCap data.routingLabelBound : ℤ) *
+        ((8 * object.vertexCount + object.degreeSurplus data.threshold : ℕ) : ℤ) ≤
+    2 * (((object.degreeSurplus data.threshold).choose 2 : ℕ) -
+      (certificationBudget data object : ℤ))
+
+/-- **The certification criterion at the canonical presentation**: its
+canonical certified ledger exists iff `|Π_free| ≤ B`. -/
+noncomputable def CanonicalCertificationCriterionStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  AtCanonicalCapacityCounts data object fun c _ =>
+    ((canonicalCertifiedCapacityDataAt data object c).isSome ↔
+      freeCount data object c ≤ certificationBudget data object)
+
+/-- The paper's budget `E = E_spine + (m − m₀)(⌊log₂ n⌋ + 1)` at a spine family. -/
+noncomputable abbrev paperBudget (data : Parameters) (object : Graph.FiniteObject.{u})
+    (spineCount : Nat) : Nat :=
+  Graph.spineDeficit object.vertexCount data.threshold spineCount +
+    (object.edgeCount - Graph.cubicBaselineEdgeCount object.vertexCount data.threshold) *
+      (Nat.log2 object.vertexCount + 1)
+
+/-- **The paper's budget at the canonical spine family fits the certification
+budget**: `E_paper ≤ B`. -/
+noncomputable def PaperBudgetBoundStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ spine, canonicalBaselineSpineFamily data object = some spine ∧
+    paperBudget data object spine.family.card ≤ certificationBudget data object
+
+/-- **`|Π_free| ≤ E_paper` certifies**: at the canonical spine family and
+presentation, `|Π_free| ≤ E_paper` makes the canonical certified ledger exist. -/
+noncomputable def PaperBudgetCertifiesStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ spine c, canonicalBaselineSpineFamily data object = some spine ∧
+    canonicalCapacity data object = some c ∧
+    (freeCount data object c ≤ paperBudget data object spine.family.card →
+      (canonicalCertifiedCapacityDataAt data object c).isSome)
+
+/-- **If the free side fits `B`, the blocked side is overloaded**:
+`c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_blk| − M₀|𝔗|)`, and some token has load
+`> M₀` and carries an `L_geom` role-homogeneous matching or star. -/
+noncomputable def CanonicalOverloadOfFitsStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  AtCanonicalCapacityCounts data object fun c L =>
+    freeCount data object c ≤ certificationBudget data object →
+      (Core.ceilSqrt object.vertexCount : ℤ) ^ 2 * pairDeficitCoefficient data +
+          2 * (homogeneousTokenCap data.routingLabelBound : ℤ) *
+            ((8 * object.vertexCount + object.degreeSurplus data.threshold : ℕ) -
+              (c.tokens.card : ℤ)) ≤
+        2 * ((L.presented.blocked.card : ℤ) -
+          (homogeneousTokenCap data.routingLabelBound : ℤ) * c.tokens.card) ∧
+      ∃ token ∈ L.presented.tokens,
+        homogeneousTokenCap data.routingLabelBound < L.presented.load token ∧
+        ∃ role : Role,
+          (∃ pattern ⊆ L.presented.roleFibre token role,
+              PatternFamily.IsMatching pattern ∧
+                geometricPatternBound data.routingLabelBound ≤ pattern.card) ∨
+          (∃ centre, ∃ pattern ⊆ L.presented.roleFibre token role,
+              PatternFamily.IsStar pattern centre ∧
+                geometricPatternBound data.routingLabelBound ≤ pattern.card)
+
+/-- **If every token carries load `≤ M₀`, the free side exceeds `B`**:
+`c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B)`. -/
+noncomputable def CanonicalFreeExcessOfCappedStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  AtCanonicalCapacityCounts data object fun c L =>
+    (∀ t ∈ L.presented.tokens, L.presented.load t ≤ homogeneousTokenCap data.routingLabelBound) →
+      (Core.ceilSqrt object.vertexCount : ℤ) ^ 2 * pairDeficitCoefficient data +
+          2 * (homogeneousTokenCap data.routingLabelBound : ℤ) *
+            ((8 * object.vertexCount + object.degreeSurplus data.threshold : ℕ) -
+              (c.tokens.card : ℤ)) ≤
+        2 * ((freeCount data object c : ℤ) - (certificationBudget data object : ℤ))
+
+/-- **Where G sits in the pair-code chain**: either the `[137]`→`[143]`
+configuration holds at the canonical objects (blocked pair, `[137]` count,
+canonical pattern, overload, caps fail), or G's canonical first failure exists
+and yields the `[182]` residual, or the target defect of the canonical return
+system's obstruction coordinates, or that obstruction's handoff together with
+the Type B fan entry `[65]`. -/
+noncomputable def PairCodeConfigurationStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  (DependentPairFamilyStatement data object ∧
+      BlockedPairEntropySandwichStatement data object ∧
+      HomogeneousBottleneckPatternSchema data object ∧
+      SparsePressureOverloadSchema data object ∧
+      ¬ HomogeneousCapsHoldStatement data object) ∨
+    (PairOverlapFirstFailureStatement data object ∧
+      (PairConditionalFactorizationResidualStatement data object ∨
+        (∃ returns, canonicalPairDemandReturns data object = some returns ∧
+          Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK) object
+            returns.obstructionCoordinates pairCoordinateSupport) ∨
+        ((∃ returns, canonicalPairDemandReturns data object = some returns ∧
+            PairObstructionHandoff data object returns) ∧
+          TypeBFanEntryStatement data object)))
+
+end CanonicalCapacity
+
+open Classical in
+/-- **Every target-defect witness of G has the `[20a]` structure** (not only the
+canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`;
+the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`;
+`2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the
+whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a
+minimum connected set containing `A ∪ B`. -/
+noncomputable def SpecWitnessStructureStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ w : SparseTargetDefectWitness data object, w.Spec →
+    IsEmpty (Graph.GluedReadings.RealizedIn w.outside) ∧
+    Graph.BoundTargetDefectGeometryAt object w.support data.LengthOK
+      (w.reading w.first) (w.reading w.second) w.outside ∧
+    2 ≤ (SupportAtom.cutBoundary object w.support).card ∧
+    (∃ vertex, vertex ∉ w.support) ∧
+    (2 ≤ (by classical exact (SupportAtom.cutBoundary object w.support ∩
+        sparseDeclaredSupport data object w.first).card) ∨
+      2 ≤ (by classical exact (SupportAtom.cutBoundary object w.support ∩
+        sparseDeclaredSupport data object w.second).card)) ∧
+    (¬ ∃ a b, SupportAtom.cutBoundary object w.support = {a, b} ∧ w.support = {a, b}) ∧
+    (w.support ⊆ sparseDeclaredSupport data object w.first →
+      (Graph.HasCycleWithLength data.LengthOK (Graph.glue (w.reading w.first) w.outside) ∧
+        ¬ Graph.HasCycleWithLength data.LengthOK (Graph.glue (w.reading w.second) w.outside)) ∧
+      (∃ s ∈ w.support, s ∉ sparseDeclaredSupport data object w.second)) ∧
+    (∀ Y : Finset object.Vertex,
+      (by classical exact sparseDeclaredSupport data object w.first ∪
+        sparseDeclaredSupport data object w.second) ⊆ Y →
+      Graph.SupportComponents.Connected.ConnectedOn object Y → w.support.card ≤ Y.card)
 
 end Hypostructure.Graph.Strategy.Spine

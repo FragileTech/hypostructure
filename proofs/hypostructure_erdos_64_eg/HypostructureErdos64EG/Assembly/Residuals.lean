@@ -25,10 +25,10 @@ universe u w
 /-- **Node `[20a]`** (thm:main (i), tex 339-346): the strict-surplus named
 sparse exit of [20]: the attempted-quotient target defect and its registered
 structure, on the strict arm of [19].  The explicit conjunction of every
-fact on its maximal ledger: the 19 facts of the path, then the 62 facts the
+fact on its maximal ledger: the 19 facts of the path, then the 76 facts the
 `[20a]` enrichment rows publish at G (`SpineRows/SparseExitResidual.lean`,
-with `K .bridgeless`, `K .sparseUpperEnvelope` and `K .baselineSpineDemand`),
-81 in all. -/
+with `K .bridgeless`, `K .sparseUpperEnvelope`, `K .baselineSpineDemand` and
+`K .freePairCountFails`), 95 facts in all. -/
 abbrev Node20aOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -74,6 +74,8 @@ abbrev Node20aOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .sparseUpperEnvelope selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .baselineSpineDemand selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .freePairCountFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .witnessReadingsNotTargetComplete selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -191,7 +193,33 @@ abbrev Node20aOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .wholeDeficitBoundaryCount selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .wholeCutEdgeSurplusBound selected.object
+      erdosReceiverLoadProfile spineData .wholeCutEdgeSurplusBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .canonicalCapacityExplicit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .primitiveCarrierCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .canonicalTokenCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .canonicalBlockedFreePartition selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .canonicalLedgerDeficit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairCountDeficit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .canonicalCertificationCriterion selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .canonicalOverloadOfFits selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .canonicalFreeExcessOfCapped selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .paperBudgetBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .paperBudgetCertifies selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairCodeConfiguration selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .specWitnessStructure selected.object
 
 /-- The return of `Node20aOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -220,6 +248,7 @@ theorem node20aReturn
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .sparseUpperEnvelope) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .witnessReadingsNotTargetComplete) known]
     [FactKeys.Has (K .witnessActualOutsideNegative) known]
     [FactKeys.Has (K .witnessReadingsCycleFree) known]
@@ -278,7 +307,20 @@ theorem node20aReturn
     [FactKeys.Has (K .steinerVerticesCut) known]
     [FactKeys.Has (K .wholeSupportEqual) known]
     [FactKeys.Has (K .wholeDeficitBoundaryCount) known]
-    [FactKeys.Has (K .wholeCutEdgeSurplusBound) known] :
+    [FactKeys.Has (K .wholeCutEdgeSurplusBound) known]
+    [FactKeys.Has (K .canonicalCapacityExplicit) known]
+    [FactKeys.Has (K .primitiveCarrierCount) known]
+    [FactKeys.Has (K .canonicalTokenCount) known]
+    [FactKeys.Has (K .canonicalBlockedFreePartition) known]
+    [FactKeys.Has (K .canonicalLedgerDeficit) known]
+    [FactKeys.Has (K .pairCountDeficit) known]
+    [FactKeys.Has (K .canonicalCertificationCriterion) known]
+    [FactKeys.Has (K .canonicalOverloadOfFits) known]
+    [FactKeys.Has (K .canonicalFreeExcessOfCapped) known]
+    [FactKeys.Has (K .paperBudgetBound) known]
+    [FactKeys.Has (K .paperBudgetCertifies) known]
+    [FactKeys.Has (K .pairCodeConfiguration) known]
+    [FactKeys.Has (K .specWitnessStructure) known] :
     Node20aOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -302,6 +344,7 @@ theorem node20aReturn
     (history.get (K .bridgeless)).down,
     (history.get (K .sparseUpperEnvelope)).down,
     (history.get (K .baselineSpineDemand)).down,
+    (history.get (K .freePairCountFails)).down,
     (history.get (K .witnessReadingsNotTargetComplete)).down,
     (history.get (K .witnessActualOutsideNegative)).down,
     (history.get (K .witnessReadingsCycleFree)).down,
@@ -360,7 +403,20 @@ theorem node20aReturn
     (history.get (K .steinerVerticesCut)).down,
     (history.get (K .wholeSupportEqual)).down,
     (history.get (K .wholeDeficitBoundaryCount)).down,
-    (history.get (K .wholeCutEdgeSurplusBound)).down⟩
+    (history.get (K .wholeCutEdgeSurplusBound)).down,
+    (history.get (K .canonicalCapacityExplicit)).down,
+    (history.get (K .primitiveCarrierCount)).down,
+    (history.get (K .canonicalTokenCount)).down,
+    (history.get (K .canonicalBlockedFreePartition)).down,
+    (history.get (K .canonicalLedgerDeficit)).down,
+    (history.get (K .pairCountDeficit)).down,
+    (history.get (K .canonicalCertificationCriterion)).down,
+    (history.get (K .canonicalOverloadOfFits)).down,
+    (history.get (K .canonicalFreeExcessOfCapped)).down,
+    (history.get (K .paperBudgetBound)).down,
+    (history.get (K .paperBudgetCertifies)).down,
+    (history.get (K .pairCodeConfiguration)).down,
+    (history.get (K .specWitnessStructure)).down⟩
 
 /-- **Node `[187] (near-cubic target defect)`** (thm:main (vi), tex 369-378):
 the sparse target-defect exit of [20] on the at-or-below-surplus arm of

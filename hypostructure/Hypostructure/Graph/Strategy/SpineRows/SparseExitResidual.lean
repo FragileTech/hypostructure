@@ -261,6 +261,68 @@ variable {data : Data.{u}}
         ⟨Contracts.Spine.SparseExitResidual.wholeCutEdgeSurplusBound_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .sparseTargetDefectResidual)).down⟩
       .nil)))))))))))
 
+/-- Node `[20a]`: G's canonical capacity presentation is the explicit one; `|𝔘_sp(G)| = 4n + 2σ`. -/
+@[reducible] noncomputable def sparseExitCanonicalCapacityRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitCanonicalCapacity
+    { Requires := [K .cubicBaseline, K .selection, K .minDegreeBaseline, K .slackIndependent, K .noProperBaseline, K .tightEndpoint, K .surplusAbove]
+      Produces := [K .canonicalCapacityExplicit, K .primitiveCarrierCount]
+      requiresUnique := by key_fresh
+      producesUnique := by key_fresh
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .canonicalCapacityExplicit)
+        ⟨Contracts.Spine.SparseExitResidual.canonicalCapacityExplicit_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .surplusAbove)).down⟩
+      (.cons (key := K .primitiveCarrierCount)
+        ⟨Contracts.Spine.SparseExitResidual.primitiveCarrierCount_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .minDegreeBaseline)).down⟩
+      .nil))
+
+/-- Node `[20a]`: every quantity at the canonical capacity presentation and its canonical object ledger. -/
+@[reducible] noncomputable def sparseExitCanonicalCapacityCountsRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitCanonicalCapacityCounts
+    { Requires := [K .cubicBaseline, K .selection, K .minDegreeBaseline, K .slackIndependent, K .noProperBaseline, K .tightEndpoint, K .surplusAbove]
+      Produces := [K .canonicalTokenCount, K .canonicalBlockedFreePartition, K .canonicalLedgerDeficit, K .pairCountDeficit, K .canonicalCertificationCriterion, K .canonicalOverloadOfFits, K .canonicalFreeExcessOfCapped]
+      requiresUnique := by key_fresh
+      producesUnique := by key_fresh
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .canonicalTokenCount)
+        ⟨Contracts.Spine.SparseExitResidual.canonicalTokenCount_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .cubicBaseline)).down.2.2.1.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .surplusAbove)).down⟩
+      (.cons (key := K .canonicalBlockedFreePartition)
+        ⟨Contracts.Spine.SparseExitResidual.canonicalBlockedFreePartition_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .cubicBaseline)).down.2.2.1.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .surplusAbove)).down⟩
+      (.cons (key := K .canonicalLedgerDeficit)
+        ⟨Contracts.Spine.SparseExitResidual.canonicalLedgerDeficit_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .cubicBaseline)).down.2.2.1.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .surplusAbove)).down⟩
+      (.cons (key := K .pairCountDeficit)
+        ⟨Contracts.Spine.SparseExitResidual.pairCountDeficit_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .cubicBaseline)).down.2.2.1.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .surplusAbove)).down⟩
+      (.cons (key := K .canonicalCertificationCriterion)
+        ⟨Contracts.Spine.SparseExitResidual.canonicalCertificationCriterion_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .cubicBaseline)).down.2.2.1.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .surplusAbove)).down⟩
+      (.cons (key := K .canonicalOverloadOfFits)
+        ⟨Contracts.Spine.SparseExitResidual.canonicalOverloadOfFits_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .cubicBaseline)).down.2.2.1.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .surplusAbove)).down⟩
+      (.cons (key := K .canonicalFreeExcessOfCapped)
+        ⟨Contracts.Spine.SparseExitResidual.canonicalFreeExcessOfCapped_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .cubicBaseline)).down.2.2.1.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .surplusAbove)).down⟩
+      .nil)))))))
+
+/-- Node `[20a]`: the paper's budget at the canonical spine family, where G sits in the pair-code chain, and the structure of every target-defect witness. -/
+@[reducible] noncomputable def sparseExitPairChainRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitPairChain
+    { Requires := [K .cubicBaseline, K .minDegreeBaseline, K .tightEndpoint, K .noProperBaseline, K .surplusAbove, K .baselineSpineDemand, K .selection, K .slackIndependent, K .replacementExclusion]
+      Produces := [K .paperBudgetBound, K .paperBudgetCertifies, K .pairCodeConfiguration, K .specWitnessStructure]
+      requiresUnique := by key_fresh
+      producesUnique := by key_fresh
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .paperBudgetBound)
+        ⟨Contracts.Spine.SparseExitResidual.paperBudgetBound_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .surplusAbove)).down (inputs.get (K .baselineSpineDemand)).down⟩
+      (.cons (key := K .paperBudgetCertifies)
+        ⟨Contracts.Spine.SparseExitResidual.paperBudgetCertifies_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .cubicBaseline)).down.2.2.1.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .surplusAbove)).down (inputs.get (K .baselineSpineDemand)).down⟩
+      (.cons (key := K .pairCodeConfiguration)
+        ⟨Contracts.Spine.SparseExitResidual.pairCodeConfiguration_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .cubicBaseline)).down.2.2.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.2.2 (inputs.get (K .cubicBaseline)).down.2.2.1.2.2.1 (inputs.get (K .cubicBaseline)).down.2.1.2.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .replacementExclusion)).down (inputs.get (K .surplusAbove)).down (inputs.get (K .baselineSpineDemand)).down⟩
+      (.cons (key := K .specWitnessStructure)
+        ⟨Contracts.Spine.SparseExitResidual.specWitnessStructure_holds (object := inputs.current.object) (inputs.get (K .selection)).down.1⟩
+      .nil))))
+
 /-- Node `[129]`'s baseline spine demand on the `[20a]` path: its survivor
 premise is used only against exits (c) and (d), which the replacement
 exclusion and selection refute. -/
@@ -285,6 +347,32 @@ exclusion and selection refute. -/
           (inputs.get (K .noProperBaseline)).down
           (inputs.get (K .tightEndpoint)).down
           (inputs.get (K .surplusAbove)).down⟩
+        .nil)
+
+/-- Node `[131]` on the `[20a]` path: the full-schedule entropy count fails at G's
+canonical objects (unconditionally). -/
+@[reducible] noncomputable def sparseExitFreePairCountRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitFreePairCount
+    { Requires := [K .cubicBaseline, K .selection, K .minDegreeBaseline, K .slackIndependent,
+        K .noProperBaseline, K .tightEndpoint, K .surplusAbove, K .baselineSpineDemand]
+      Produces := [K .freePairCountFails]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .freePairCountFails)
+        ⟨Contracts.Spine.SparseExitResidual.freePairCountFails_at (object := inputs.current.object)
+          (inputs.get (K .cubicBaseline)).down.1.1
+          (inputs.get (K .cubicBaseline)).down.2.2.1.2.1
+          (inputs.get (K .cubicBaseline)).down.2.2.1.1
+          (inputs.get (K .selection)).down
+          (inputs.get (K .minDegreeBaseline)).down
+          (inputs.get (K .slackIndependent)).down
+          (inputs.get (K .noProperBaseline)).down
+          (inputs.get (K .tightEndpoint)).down
+          (inputs.get (K .surplusAbove)).down
+          (inputs.get (K .baselineSpineDemand)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

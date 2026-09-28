@@ -329,6 +329,25 @@ theorem high_generic (G : Graph.FiniteObject.{u}) (baseline : ∀ v, 3 ≤ G.deg
   exact ⟨hpos, σeq ▸ bound⟩
 
 
+/-- `c² < 2^c` for `c ≥ 5`. -/
+theorem sq_lt_two_pow {c : Nat} (h : 5 ≤ c) : c ^ 2 < 2 ^ c := by
+  induction c, h using Nat.le_induction with
+  | base => norm_num
+  | succ k hk ih =>
+    have h1 : (k + 1) ^ 2 ≤ 2 * k ^ 2 := by nlinarith
+    have h2 : 2 ^ (k + 1) = 2 * 2 ^ k := by rw [pow_succ]; ring
+    omega
+
+/-- `n ≤ c²`, `c ≥ 5` ⇒ `⌊log₂ n⌋ + 1 ≤ c`. -/
+theorem log2_succ_le_of_le_sq {n c : Nat} (hc : 5 ≤ c) (hn : n ≤ c ^ 2) :
+    Nat.log2 n + 1 ≤ c := by
+  rcases Nat.eq_zero_or_pos n with rfl | pos
+  · simp; omega
+  · have : Nat.log2 n < c :=
+      (Nat.log2_lt (Nat.pos_iff_ne_zero.mp pos)).2 (lt_of_le_of_lt hn (sq_lt_two_pow hc))
+    omega
+
+
 end Hypostructure.Graph.SparseOrderArithmetic
 
 namespace Hypostructure.Graph.FiniteObject
