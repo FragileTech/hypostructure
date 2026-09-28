@@ -27,11 +27,14 @@ retained monotonically by every later ExactLedger. -/
 noncomputable def selectedNearCubicBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .windowPresent, K .uncompressible, K .replacementExclusion,
-        K .targetCompleteContextUniversality, K .degreeProfileFibres,
-        K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .minDegreeBaseline, K .cubicBaseline, K .selection]) :
+      [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
+        K .admissibleQuotientsLabelInjective, K .replacementExclusion,
+        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+        K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
+        K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+        K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+        K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+        K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     SelectedNearCubicBoundary selected := by
   match sparseSurplusSurvivorDichotomy
       (BranchState := BranchState)
@@ -127,7 +130,11 @@ abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
     Node54ResidualOutcome_unrealizedBothRates selected)
 
 -- The `[20a]` enrichment rows make `FactKeys.Available` search deeper than the
--- default instance budget along the one `[20a]` ledger.
+-- default instance budget along the one `[20a]` ledger; the facts hoisted to
+-- the entry prefix and to the top of the strict arm of `[19]` lengthen every
+-- ledger here, so the `[20a]` return also needs more than the default
+-- elaboration budget.
+set_option maxHeartbeats 1000000 in
 set_option synthInstance.maxHeartbeats 400000 in
 set_option synthInstance.maxSize 2048 in
 noncomputable def selectedLedgerBoundary
@@ -138,6 +145,57 @@ noncomputable def selectedLedgerBoundary
     fun outcome => Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl outcome)))))
   match selectedSurplusDichotomy history with
   | .left strictHistory =>
+      -- Top of the strict arm of `[19]`: every fact that reads only entry facts
+      -- and `K .surplusAbove` is published here, once, so both `[20]` arms
+      -- (`[20a]` and `[125]`) carry it.  No decision.
+      -- `[135]`'s exact window-join load, hoisted to the top of the strict arm; no decision.
+      let windowJoinHistory :=
+        (exactWindowJoinPressureRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run strictHistory (by key_fresh)
+      -- `[129]`'s baseline spine demand, hoisted to the top of the strict arm; no decision.
+      let baselineDemandHistory :=
+        (sparseExitBaselineSpineDemandRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run windowJoinHistory (by key_fresh)
+      -- hoisted from `[20a]`: the budget identities; no decision.
+      let budgetHistory :=
+        (sparseExitBudgetRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run baselineDemandHistory (by key_fresh)
+      -- hoisted from `[20a]`: the sharpened envelope; no decision.
+      let envelopeHistory :=
+        (sparseExitEnvelopeRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run budgetHistory (by key_fresh)
+      -- hoisted from `[20a]`: the high-degree range; no decision.
+      let highDegreeHistory :=
+        (highDegreeSurplusRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run envelopeHistory (by key_fresh)
+      -- hoisted from `[20a]`: G's canonical capacity presentation; no decision.
+      let canonicalCapacityHistory :=
+        (sparseExitCanonicalCapacityRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run highDegreeHistory (by key_fresh)
+      -- hoisted from `[20a]`: the canonical capacity counts; no decision.
+      let canonicalCountsHistory :=
+        (sparseExitCanonicalCapacityCountsRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run canonicalCapacityHistory (by key_fresh)
+      -- hoisted from `[20a]`: the paper budget and the pair-code chain; no decision.
+      let pairChainHistory :=
+        (sparseExitPairChainRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run canonicalCountsHistory (by key_fresh)
       -- EG-NODE [20] surplus-pair accounting branch
       -- The enclosing `[20]` routing tests `def:named-surplus-exits` before
       -- node `[125]`: the exit arm retains only the attempted-quotient target
@@ -146,7 +204,7 @@ noncomputable def selectedLedgerBoundary
           (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
-          (data := spineData) strictHistory
+          (data := spineData) pairChainHistory
           (by key_fresh) (by key_fresh) with
       | .left exitHistory =>
           let targetDefectHistory :=
@@ -159,109 +217,52 @@ noncomputable def selectedLedgerBoundary
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run targetDefectHistory (by key_fresh)
-          -- [20a] enrichment (bridgeless): facts at G, no decision
-          let bridgelessHistory :=
-            (bridgelessRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run structuredHistory (by key_fresh)
-          -- [20a] enrichment (windowJoin): facts at G, no decision
-          let windowJoinHistory :=
-            (exactWindowJoinPressureRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run bridgelessHistory (by key_fresh)
-          -- [20a] enrichment (baselineDemand): facts at G, no decision
-          let baselineDemandHistory :=
-            (sparseExitBaselineSpineDemandRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run windowJoinHistory (by key_fresh)
-          -- [20a] enrichment (freePairCount): facts at G, no decision
+          -- `[131]`'s full-schedule count fails at G (unconditionally).  Kept on the
+          -- `[20a]` arm: on `[125]`'s independent arm `K .freePairCountFails` is the
+          -- no-arm key of the paper's `[131]` decision, so it cannot be published
+          -- above `[20]` without removing that decision.  No decision here.
           let freePairCountHistory :=
             (sparseExitFreePairCountRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run baselineDemandHistory (by key_fresh)
-          -- [20a] enrichment (sparseExitWitnessFacts): facts at G, no decision
-          let sparseExitWitnessFactsHistory :=
+              (data := spineData)).run structuredHistory (by key_fresh)
+          -- [20a] enrichment: facts at G that read `K .sparseTargetDefectResidual`; no decision.
+          let witnessFactsHistory :=
             (sparseExitWitnessFactsRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run freePairCountHistory (by key_fresh)
-          -- [20a] enrichment (sparseExitBudget): facts at G, no decision
-          let sparseExitBudgetHistory :=
-            (sparseExitBudgetRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run sparseExitWitnessFactsHistory (by key_fresh)
-          -- [20a] enrichment (sparseExitEnvelope): facts at G, no decision
-          let sparseExitEnvelopeHistory :=
-            (sparseExitEnvelopeRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run sparseExitBudgetHistory (by key_fresh)
-          -- [20a] enrichment (sparseExitPacking): facts at G, no decision
-          let sparseExitPackingHistory :=
-            (sparseExitPackingRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run sparseExitEnvelopeHistory (by key_fresh)
-          -- [20a] enrichment (sparseExitRealizedContexts): facts at G, no decision
-          let sparseExitRealizedContextsHistory :=
+          -- [20a] enrichment: facts at G that read `K .sparseTargetDefectResidual`; no decision.
+          let realizedContextsHistory :=
             (sparseExitRealizedContextsRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run sparseExitPackingHistory (by key_fresh)
-          -- [20a] enrichment (sparseExitQuotients): facts at G, no decision
-          let sparseExitQuotientsHistory :=
-            (sparseExitQuotientsRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run sparseExitRealizedContextsHistory (by key_fresh)
-          -- [20a] enrichment (sparseExitBoundary): facts at G, no decision
-          let sparseExitBoundaryHistory :=
+              (data := spineData)).run witnessFactsHistory (by key_fresh)
+          -- [20a] enrichment: facts at G that read `K .sparseTargetDefectResidual`; no decision.
+          let boundaryHistory :=
             (sparseExitBoundaryRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run sparseExitQuotientsHistory (by key_fresh)
-          -- [20a] enrichment (sparseExitCompression): facts at G, no decision
-          let sparseExitCompressionHistory :=
+              (data := spineData)).run realizedContextsHistory (by key_fresh)
+          -- [20a] enrichment: facts at G that read `K .sparseTargetDefectResidual`; no decision.
+          let compressionHistory :=
             (sparseExitCompressionRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run sparseExitBoundaryHistory (by key_fresh)
-          -- [20a] enrichment (sparseExitDeletion): facts at G, no decision
-          let sparseExitDeletionHistory :=
+              (data := spineData)).run boundaryHistory (by key_fresh)
+          -- [20a] enrichment: facts at G that read `K .sparseTargetDefectResidual`; no decision.
+          let deletionHistory :=
             (sparseExitDeletionRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run sparseExitCompressionHistory (by key_fresh)
-          -- [20a] enrichment (sparseExitCombination): facts at G, no decision
-          let sparseExitCombinationHistory :=
+              (data := spineData)).run compressionHistory (by key_fresh)
+          -- [20a] enrichment: facts at G that read `K .sparseTargetDefectResidual`; no decision.
+          let combinationHistory :=
             (sparseExitCombinationRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run sparseExitDeletionHistory (by key_fresh)
-          -- [20a] enrichment (sparseExitCanonicalCapacity): facts at G, no decision
-          let sparseExitCanonicalCapacityHistory :=
-            (sparseExitCanonicalCapacityRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run sparseExitCombinationHistory (by key_fresh)
-          -- [20a] enrichment (sparseExitCanonicalCapacityCounts): facts at G, no decision
-          let sparseExitCanonicalCapacityCountsHistory :=
-            (sparseExitCanonicalCapacityCountsRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run sparseExitCanonicalCapacityHistory (by key_fresh)
-          -- [20a] enrichment (sparseExitPairChain): facts at G, no decision
-          let sparseExitPairChainHistory :=
-            (sparseExitPairChainRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run sparseExitCanonicalCapacityCountsHistory (by key_fresh)
-          exact Or.inl (node20aReturn sparseExitPairChainHistory)
+              (data := spineData)).run deletionHistory (by key_fresh)
+          exact Or.inl (node20aReturn combinationHistory)
       | .right survivorHistory =>
           match selectedStrictSurplusBranch survivorHistory with
           | .inl handoff => exact Or.inr (Or.inl handoff)

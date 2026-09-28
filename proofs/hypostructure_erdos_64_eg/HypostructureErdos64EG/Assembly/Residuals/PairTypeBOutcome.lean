@@ -29,8 +29,8 @@ universe u
 /-- **Node `[187]` ([179]/[180] Type B entry), `independentSystem`** (thm:main
 (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] independent arm (canonical pair split), [131] free-pair count
-fails; then [179] early outcome.  Every fact of its ledger: the 38 common facts
-and 4 explicit extra facts (41 facts). -/
+fails; then [179] early outcome.  Every fact of its ledger: the 71 common facts
+and 4 explicit extra facts (75 facts). -/
 abbrev PairTypeBOutcome_independentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -66,7 +66,35 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .packingOrderBound) known]
+    [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+    [FactKeys.Has (K .windowCutCapacity) known]
+    [FactKeys.Has (K .primitiveCarrierCount) known]
+    [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .surplusDartIdentity) known]
+    [FactKeys.Has (K .highDegreeCountBound) known]
+    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .edgeSurplusIdentity) known]
+    [FactKeys.Has (K .ceilSqrtAboveScale) known]
+    [FactKeys.Has (K .orderAboveScaleSquare) known]
+    [FactKeys.Has (K .sixVertexExtremalEnvelope) known]
+    [FactKeys.Has (K .highDegreePositive) known]
+    [FactKeys.Has (K .highDegreeSurplusCapacity) known]
+    [FactKeys.Has (K .canonicalCapacityExplicit) known]
+    [FactKeys.Has (K .canonicalTokenCount) known]
+    [FactKeys.Has (K .canonicalBlockedFreePartition) known]
+    [FactKeys.Has (K .canonicalLedgerDeficit) known]
+    [FactKeys.Has (K .pairCountDeficit) known]
+    [FactKeys.Has (K .canonicalCertificationCriterion) known]
+    [FactKeys.Has (K .canonicalOverloadOfFits) known]
+    [FactKeys.Has (K .canonicalFreeExcessOfCapped) known]
+    [FactKeys.Has (K .paperBudgetBound) known]
+    [FactKeys.Has (K .paperBudgetCertifies) known]
+    [FactKeys.Has (K .pairCodeConfiguration) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .openPortSuppression) known]
     [FactKeys.Has (K .openPortSuppressionSafe) known]
@@ -110,7 +138,35 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .windowPresent)).down,
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
+      (history.get (K .packingOrderBound)).down,
+      (history.get (K .noSuppressionChordViolation)).down,
+      (history.get (K .specWitnessStructure)).down,
+      (history.get (K .bridgeless)).down,
+      (history.get (K .remainderDeficiencyBelowCut)).down,
+      (history.get (K .windowCutCapacity)).down,
+      (history.get (K .primitiveCarrierCount)).down,
+      (history.get (K .singleBoundaryShape)).down,
+      (history.get (K .surplusDartIdentity)).down,
+      (history.get (K .highDegreeCountBound)).down,
+      (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
+      (history.get (K .edgeSurplusIdentity)).down,
+      (history.get (K .ceilSqrtAboveScale)).down,
+      (history.get (K .orderAboveScaleSquare)).down,
+      (history.get (K .sixVertexExtremalEnvelope)).down,
+      (history.get (K .highDegreePositive)).down,
+      (history.get (K .highDegreeSurplusCapacity)).down,
+      (history.get (K .canonicalCapacityExplicit)).down,
+      (history.get (K .canonicalTokenCount)).down,
+      (history.get (K .canonicalBlockedFreePartition)).down,
+      (history.get (K .canonicalLedgerDeficit)).down,
+      (history.get (K .pairCountDeficit)).down,
+      (history.get (K .canonicalCertificationCriterion)).down,
+      (history.get (K .canonicalOverloadOfFits)).down,
+      (history.get (K .canonicalFreeExcessOfCapped)).down,
+      (history.get (K .paperBudgetBound)).down,
+      (history.get (K .paperBudgetCertifies)).down,
+      (history.get (K .pairCodeConfiguration)).down,
       (history.get (K .sparseSurplusSurvivor)).down,
       (history.get (K .openPortSuppression)).down,
       (history.get (K .openPortSuppressionSafe)).down,
@@ -143,8 +199,8 @@ theorem pairTypeBIndependentSystemReturn
 (thm:main (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the
 ledger reached by [130] independent arm (canonical pair split), [131] free-pair
 count fails; then [179] serial arm, [180] covered increment, [180] early
-outcome.  Every fact of its ledger: the 38 common facts and 7 explicit extra
-facts (44 facts). -/
+outcome.  Every fact of its ledger: the 71 common facts and 7 explicit extra
+facts (78 facts). -/
 abbrev PairTypeBOutcome_independentIncrement (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -186,7 +242,35 @@ theorem pairTypeBIndependentIncrementReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .packingOrderBound) known]
+    [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+    [FactKeys.Has (K .windowCutCapacity) known]
+    [FactKeys.Has (K .primitiveCarrierCount) known]
+    [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .surplusDartIdentity) known]
+    [FactKeys.Has (K .highDegreeCountBound) known]
+    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .edgeSurplusIdentity) known]
+    [FactKeys.Has (K .ceilSqrtAboveScale) known]
+    [FactKeys.Has (K .orderAboveScaleSquare) known]
+    [FactKeys.Has (K .sixVertexExtremalEnvelope) known]
+    [FactKeys.Has (K .highDegreePositive) known]
+    [FactKeys.Has (K .highDegreeSurplusCapacity) known]
+    [FactKeys.Has (K .canonicalCapacityExplicit) known]
+    [FactKeys.Has (K .canonicalTokenCount) known]
+    [FactKeys.Has (K .canonicalBlockedFreePartition) known]
+    [FactKeys.Has (K .canonicalLedgerDeficit) known]
+    [FactKeys.Has (K .pairCountDeficit) known]
+    [FactKeys.Has (K .canonicalCertificationCriterion) known]
+    [FactKeys.Has (K .canonicalOverloadOfFits) known]
+    [FactKeys.Has (K .canonicalFreeExcessOfCapped) known]
+    [FactKeys.Has (K .paperBudgetBound) known]
+    [FactKeys.Has (K .paperBudgetCertifies) known]
+    [FactKeys.Has (K .pairCodeConfiguration) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .openPortSuppression) known]
     [FactKeys.Has (K .openPortSuppressionSafe) known]
@@ -236,7 +320,35 @@ theorem pairTypeBIndependentIncrementReturn
       (history.get (K .windowPresent)).down,
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
+      (history.get (K .packingOrderBound)).down,
+      (history.get (K .noSuppressionChordViolation)).down,
+      (history.get (K .specWitnessStructure)).down,
+      (history.get (K .bridgeless)).down,
+      (history.get (K .remainderDeficiencyBelowCut)).down,
+      (history.get (K .windowCutCapacity)).down,
+      (history.get (K .primitiveCarrierCount)).down,
+      (history.get (K .singleBoundaryShape)).down,
+      (history.get (K .surplusDartIdentity)).down,
+      (history.get (K .highDegreeCountBound)).down,
+      (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
+      (history.get (K .edgeSurplusIdentity)).down,
+      (history.get (K .ceilSqrtAboveScale)).down,
+      (history.get (K .orderAboveScaleSquare)).down,
+      (history.get (K .sixVertexExtremalEnvelope)).down,
+      (history.get (K .highDegreePositive)).down,
+      (history.get (K .highDegreeSurplusCapacity)).down,
+      (history.get (K .canonicalCapacityExplicit)).down,
+      (history.get (K .canonicalTokenCount)).down,
+      (history.get (K .canonicalBlockedFreePartition)).down,
+      (history.get (K .canonicalLedgerDeficit)).down,
+      (history.get (K .pairCountDeficit)).down,
+      (history.get (K .canonicalCertificationCriterion)).down,
+      (history.get (K .canonicalOverloadOfFits)).down,
+      (history.get (K .canonicalFreeExcessOfCapped)).down,
+      (history.get (K .paperBudgetBound)).down,
+      (history.get (K .paperBudgetCertifies)).down,
+      (history.get (K .pairCodeConfiguration)).down,
       (history.get (K .sparseSurplusSurvivor)).down,
       (history.get (K .openPortSuppression)).down,
       (history.get (K .openPortSuppressionSafe)).down,
@@ -273,8 +385,8 @@ theorem pairTypeBIndependentIncrementReturn
 (vi), tex 369-378): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] dependent arm (canonical pair split: fibres, no blocker (d), no
 blocker (e)), [132] blocker arm, [137] blocked-side count fails; then [179]
-early outcome.  Every fact of its ledger: the 38 common facts and 12 explicit
-extra facts (49 facts). -/
+early outcome.  Every fact of its ledger: the 71 common facts and 12 explicit
+extra facts (83 facts). -/
 abbrev PairTypeBOutcome_dependentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -326,7 +438,35 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .packingOrderBound) known]
+    [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+    [FactKeys.Has (K .windowCutCapacity) known]
+    [FactKeys.Has (K .primitiveCarrierCount) known]
+    [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .surplusDartIdentity) known]
+    [FactKeys.Has (K .highDegreeCountBound) known]
+    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .edgeSurplusIdentity) known]
+    [FactKeys.Has (K .ceilSqrtAboveScale) known]
+    [FactKeys.Has (K .orderAboveScaleSquare) known]
+    [FactKeys.Has (K .sixVertexExtremalEnvelope) known]
+    [FactKeys.Has (K .highDegreePositive) known]
+    [FactKeys.Has (K .highDegreeSurplusCapacity) known]
+    [FactKeys.Has (K .canonicalCapacityExplicit) known]
+    [FactKeys.Has (K .canonicalTokenCount) known]
+    [FactKeys.Has (K .canonicalBlockedFreePartition) known]
+    [FactKeys.Has (K .canonicalLedgerDeficit) known]
+    [FactKeys.Has (K .pairCountDeficit) known]
+    [FactKeys.Has (K .canonicalCertificationCriterion) known]
+    [FactKeys.Has (K .canonicalOverloadOfFits) known]
+    [FactKeys.Has (K .canonicalFreeExcessOfCapped) known]
+    [FactKeys.Has (K .paperBudgetBound) known]
+    [FactKeys.Has (K .paperBudgetCertifies) known]
+    [FactKeys.Has (K .pairCodeConfiguration) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .openPortSuppression) known]
     [FactKeys.Has (K .openPortSuppressionSafe) known]
@@ -378,7 +518,35 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .windowPresent)).down,
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
+      (history.get (K .packingOrderBound)).down,
+      (history.get (K .noSuppressionChordViolation)).down,
+      (history.get (K .specWitnessStructure)).down,
+      (history.get (K .bridgeless)).down,
+      (history.get (K .remainderDeficiencyBelowCut)).down,
+      (history.get (K .windowCutCapacity)).down,
+      (history.get (K .primitiveCarrierCount)).down,
+      (history.get (K .singleBoundaryShape)).down,
+      (history.get (K .surplusDartIdentity)).down,
+      (history.get (K .highDegreeCountBound)).down,
+      (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
+      (history.get (K .edgeSurplusIdentity)).down,
+      (history.get (K .ceilSqrtAboveScale)).down,
+      (history.get (K .orderAboveScaleSquare)).down,
+      (history.get (K .sixVertexExtremalEnvelope)).down,
+      (history.get (K .highDegreePositive)).down,
+      (history.get (K .highDegreeSurplusCapacity)).down,
+      (history.get (K .canonicalCapacityExplicit)).down,
+      (history.get (K .canonicalTokenCount)).down,
+      (history.get (K .canonicalBlockedFreePartition)).down,
+      (history.get (K .canonicalLedgerDeficit)).down,
+      (history.get (K .pairCountDeficit)).down,
+      (history.get (K .canonicalCertificationCriterion)).down,
+      (history.get (K .canonicalOverloadOfFits)).down,
+      (history.get (K .canonicalFreeExcessOfCapped)).down,
+      (history.get (K .paperBudgetBound)).down,
+      (history.get (K .paperBudgetCertifies)).down,
+      (history.get (K .pairCodeConfiguration)).down,
       (history.get (K .sparseSurplusSurvivor)).down,
       (history.get (K .openPortSuppression)).down,
       (history.get (K .openPortSuppressionSafe)).down,
@@ -420,7 +588,7 @@ theorem pairTypeBDependentSystemReturn
 reached by [130] dependent arm (canonical pair split: fibres, no blocker (d), no
 blocker (e)), [132] blocker arm, [137] blocked-side count fails; then [179]
 serial arm, [180] covered increment, [180] early outcome.  Every fact of its
-ledger: the 38 common facts and 15 explicit extra facts (52 facts). -/
+ledger: the 71 common facts and 15 explicit extra facts (86 facts). -/
 abbrev PairTypeBOutcome_dependentIncrement (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -478,7 +646,35 @@ theorem pairTypeBDependentIncrementReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .packingOrderBound) known]
+    [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+    [FactKeys.Has (K .windowCutCapacity) known]
+    [FactKeys.Has (K .primitiveCarrierCount) known]
+    [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .surplusDartIdentity) known]
+    [FactKeys.Has (K .highDegreeCountBound) known]
+    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .edgeSurplusIdentity) known]
+    [FactKeys.Has (K .ceilSqrtAboveScale) known]
+    [FactKeys.Has (K .orderAboveScaleSquare) known]
+    [FactKeys.Has (K .sixVertexExtremalEnvelope) known]
+    [FactKeys.Has (K .highDegreePositive) known]
+    [FactKeys.Has (K .highDegreeSurplusCapacity) known]
+    [FactKeys.Has (K .canonicalCapacityExplicit) known]
+    [FactKeys.Has (K .canonicalTokenCount) known]
+    [FactKeys.Has (K .canonicalBlockedFreePartition) known]
+    [FactKeys.Has (K .canonicalLedgerDeficit) known]
+    [FactKeys.Has (K .pairCountDeficit) known]
+    [FactKeys.Has (K .canonicalCertificationCriterion) known]
+    [FactKeys.Has (K .canonicalOverloadOfFits) known]
+    [FactKeys.Has (K .canonicalFreeExcessOfCapped) known]
+    [FactKeys.Has (K .paperBudgetBound) known]
+    [FactKeys.Has (K .paperBudgetCertifies) known]
+    [FactKeys.Has (K .pairCodeConfiguration) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .openPortSuppression) known]
     [FactKeys.Has (K .openPortSuppressionSafe) known]
@@ -536,7 +732,35 @@ theorem pairTypeBDependentIncrementReturn
       (history.get (K .windowPresent)).down,
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
+      (history.get (K .packingOrderBound)).down,
+      (history.get (K .noSuppressionChordViolation)).down,
+      (history.get (K .specWitnessStructure)).down,
+      (history.get (K .bridgeless)).down,
+      (history.get (K .remainderDeficiencyBelowCut)).down,
+      (history.get (K .windowCutCapacity)).down,
+      (history.get (K .primitiveCarrierCount)).down,
+      (history.get (K .singleBoundaryShape)).down,
+      (history.get (K .surplusDartIdentity)).down,
+      (history.get (K .highDegreeCountBound)).down,
+      (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
+      (history.get (K .edgeSurplusIdentity)).down,
+      (history.get (K .ceilSqrtAboveScale)).down,
+      (history.get (K .orderAboveScaleSquare)).down,
+      (history.get (K .sixVertexExtremalEnvelope)).down,
+      (history.get (K .highDegreePositive)).down,
+      (history.get (K .highDegreeSurplusCapacity)).down,
+      (history.get (K .canonicalCapacityExplicit)).down,
+      (history.get (K .canonicalTokenCount)).down,
+      (history.get (K .canonicalBlockedFreePartition)).down,
+      (history.get (K .canonicalLedgerDeficit)).down,
+      (history.get (K .pairCountDeficit)).down,
+      (history.get (K .canonicalCertificationCriterion)).down,
+      (history.get (K .canonicalOverloadOfFits)).down,
+      (history.get (K .canonicalFreeExcessOfCapped)).down,
+      (history.get (K .paperBudgetBound)).down,
+      (history.get (K .paperBudgetCertifies)).down,
+      (history.get (K .pairCodeConfiguration)).down,
       (history.get (K .sparseSurplusSurvivor)).down,
       (history.get (K .openPortSuppression)).down,
       (history.get (K .openPortSuppressionSafe)).down,

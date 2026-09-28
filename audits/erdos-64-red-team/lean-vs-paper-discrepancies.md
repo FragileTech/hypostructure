@@ -1840,19 +1840,19 @@ free side.
 | Residual (abbrev) | Node | Form | Paths | Facts |
 |---|---|---|---:|---:|
 | `Node20aOutcome` | [20a] | single | 1 | 95 |
-| `NearCubicTargetDefectOutcome` | [187] (near-cubic target defect) | single | 1 | 19 |
-| `Node144aOutcome_*` | [144a] | 6 subtypes | 6 | 45 generic; 48, 49, 49, 50, 50, 51 |
-| `BlockedBarrierOverlapOutcome_*` | [172a] | 2 subtypes (`[160]` arm) | 2 | 72 generic; 73, 74 |
-| `PairConditionalFactorizationOutcome_*` | [182] | 6 subtypes | 6 | 34 generic; 38, 41, 44, 46, 49, 52 |
-| `Route8JointBalanceOutcome_product` | [186] | product: lane entry (15 = 3 prefix × 4 entropy + [161] × 3 low entropy) × continuation (50) | 750 (400 bounded-size) | 80 generic; 100–139 |
-| `PairTypeBOutcome_*` | [187] ([179]/[180] Type B entry) | 4 subtypes | 4 | 43 generic; 47, 50, 55, 58 |
-| `TypeBSublinearOutcome_product` | [187] (Type B sublinear failure) | product: lane entry (15) × continuation (50) | 750 (400 bounded-size) | 63 generic; 83–122 |
-| `Route8QuotientOutcome_product` | [187] ([348], route-8 quotient failure) | product: lane entry (15) × continuation (50) | 750 (400 bounded-size) | 65 generic; 85–124 |
-| `Route8RateFailsOutcome_*` | [187] (private-carrier rate failure) | 11 subtypes (all bounded-size) | 11 | 43 generic; 48–52 |
-| `ColdBranchClosedOutcome_linear*` | [187] (local cold-terminal exclusion) | 4 singletons (2 bounded-size) | 4 | 58 generic; 67, 68 (dense), 66, 66 (realized) |
-| `Node153ResidualOutcome_*` | [153] | 3 subtypes (linear arms; 1 bounded-size) | 3 | 43 generic; 47, 48, 48 |
-| `Node162ResidualOutcome_*` | [162] | 2 subtypes (`[160]` arm) | 2 | 47 generic; 48, 49 |
-| `Node54ResidualOutcome_*` | [54] | 5 subtypes (3 bounded-size) | 5 | 41 generic; 44, 44, 47, 48, 49 |
+| `NearCubicTargetDefectOutcome` | [187] (near-cubic target defect) | single | 1 | 30 |
+| `Node144aOutcome_*` | [144a] | 6 subtypes | 6 | 72 generic; 75, 76, 76, 77, 77, 78 |
+| `BlockedBarrierOverlapOutcome_*` | [172a] | 2 subtypes (`[160]` arm) | 2 | 82 generic; 83, 84 |
+| `PairConditionalFactorizationOutcome_*` | [182] | 6 subtypes | 6 | 62 generic; 66, 69, 72, 74, 77, 80 |
+| `Route8JointBalanceOutcome_product` | [186] | product: lane entry (15 = 3 prefix × 4 entropy + [161] × 3 low entropy) × continuation (50) | 750 (400 bounded-size) | 90 generic; 110–149 |
+| `PairTypeBOutcome_*` | [187] ([179]/[180] Type B entry) | 4 subtypes | 4 | 71 generic; 75, 78, 83, 86 |
+| `TypeBSublinearOutcome_product` | [187] (Type B sublinear failure) | product: lane entry (15) × continuation (50) | 750 (400 bounded-size) | 73 generic; 93–132 |
+| `Route8QuotientOutcome_product` | [187] ([348], route-8 quotient failure) | product: lane entry (15) × continuation (50) | 750 (400 bounded-size) | 75 generic; 95–134 |
+| `Route8RateFailsOutcome_*` | [187] (private-carrier rate failure) | 11 subtypes (all bounded-size) | 11 | 54 generic; 59–63 |
+| `ColdBranchClosedOutcome_linear*` | [187] (local cold-terminal exclusion) | 4 singletons (2 bounded-size) | 4 | 68 generic; 77, 78 (dense), 76, 76 (realized) |
+| `Node153ResidualOutcome_*` | [153] | 3 subtypes (linear arms; 1 bounded-size) | 3 | 53 generic; 57, 58, 58 |
+| `Node162ResidualOutcome_*` | [162] | 2 subtypes (`[160]` arm) | 2 | 57 generic; 58, 59 |
+| `Node54ResidualOutcome_*` | [54] | 5 subtypes (3 bounded-size) | 5 | 52 generic; 55, 55, 58, 59, 60 |
 
 **Path-count re-probe (final integration, after C1, C2, C3, C5, C6).**  The
 elaborated-ledger probe (`PathProbe`, call-site `known` lists from the root)
@@ -1867,6 +1867,33 @@ probe reads both branches of `cases degreeFour` in
 `degreeFour` (`BChainFanFor`), so only the matching certificate test runs.
 Per-path totals from the probe: [186] 100–139, [348] 85–124, Type B
 sublinear 83–122 facts, equal to the table.
+
+**Hoisting re-probe (2026-09-28, branch `hoist-facts`).**  The `[20a]`
+facts were moved to the earliest point where the keys each one reads are on
+the ledger (see Node [20a], Placement): 11 keys into the entry prefix
+(`packingOrderBound`, `noSuppressionChordViolation`, `specWitnessStructure`,
+`bridgeless`, `remainderDeficiencyBelowCut`, `windowCutCapacity`,
+`primitiveCarrierCount`, `singleBoundaryShape`, `surplusDartIdentity`,
+`highDegreeCountBound`, `admissibleQuotientsLabelInjective`) and 19 to the top
+of the strict arm of `[19]` (`sparseUpperEnvelope`, `baselineSpineDemand`,
+`edgeSurplusIdentity`, `ceilSqrtAboveScale`, `orderAboveScaleSquare`,
+`sixVertexExtremalEnvelope`, `highDegreePositive`, `highDegreeSurplusCapacity`,
+`canonicalCapacityExplicit`, the seven canonical-capacity counts,
+`paperBudgetBound`, `paperBudgetCertifies`, `pairCodeConfiguration`).  No
+decision was added, moved or removed, so the path counts are unchanged.  The
+same probe (`PathProbe`, call-site `known` lists from the root), run at every
+generic return theorem and at the four Type B entry subtype returns, finds: 1
+path at `[20a]` (95 facts) and at the near-cubic target defect (30); 6 at
+`[144a]` (75–78); 2 at `[172a]` (83–84); 6 at `[182]` (66–80); 1170 each at
+`[186]` (110–149), `[348]` (95–134) and Type B sublinear (93–132); 11 at the
+rate failure (59–63); 4 at the cold-terminal exclusion (76–78); 3 at `[153]`
+(57–58); 2 at `[162]` (58–59); 5 at `[54]` (55–60); and 1 at each Type B entry
+subtype.  On every path every generic key is present, every hoisted key the
+path carries is a key of its generic residual (none is in an arm block), and
+no path lacks a hoisted key published above it.  `[135]`'s envelope on the free
+side of the pair chain, `[129]`'s row on `[125]` and the four downstream
+`bridgelessRow` runs are no longer separate rows: their keys are on the ledger
+from the hoisted rows.
 
 Every return site calls its subtype or product return theorem, and
 `SelectedLedgerBoundaryResult` lists the subtypes and products themselves (the
@@ -1930,33 +1957,33 @@ route-8 product has 750 paths.
   17. `K .sparseTargetDefectResidual`: Node `[125]`, the sole nonterminal named-exit payload: clause (b) of `def:named-surplus-exits` at G's canonical witness `sparseTargetDefectWitness` (the identified pair of declared coordinates, their canonical support `Z` and the separating context `O`).
   18. `K .sparseTargetDefectStructure`: Node `[20]`: the bound target-defect geometry at the same canonical witness as `[125]` (the same pair, support `Z` and separating context `O`), with its proved target-free negative constituents.
   19. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
-- **Enrichment on the `[20a]` path (76 more facts, 95 in all).** Type A rows in `hypostructure/Hypostructure/Graph/Strategy/SpineRows/SparseExitResidual.lean` (plus the existing `bridgelessRow` and `exactWindowJoinPressureRow`) run after `K .sparseTargetDefectStructure` and before `node20aReturn`; no decision, no split, one residual.  Statements: `Graph/Statements/SparseExitResidual.lean`, `Graph/Statements/CanonicalCapacityExplicit.lean`; contracts (`<key>_holds`): `Graph/Contracts/Spine/SparseExitResidual.lean`; vocabulary-free library: `Graph/GluedReadingMaps.lean`, `Graph/SparseOrderArithmetic.lean` (incl. the finite check `ex(6, C₄) = 7`, `native_decide`), `Graph/DeclaredQuotientRank.lean`.  Tagged **Lean improvement (not routed by the paper)**: every fact is derived from the 19 facts above, at G, at `[125]`'s pinned witness `w = (first, second, Z, O)`, at `P₀`, and at G's canonical capacity presentation, canonical object ledger and canonical spine family.  ¬K4 is `K .orderAboveScaleSquare`; ¬K5 follows from `K .sixVertexExtremalEnvelope`; K6 is ¬`K .surplusAbove`, and its quantitative form is `K .canonicalLedgerDeficit` / `K .pairCountDeficit`.  Registered constants of the presentation (not ledger facts): `Assembly/Surplus/RegisteredConstants.lean`.
-  20. `K .bridgeless` (existing key, existing `bridgelessRow`): `lem:bridgeless` at G.
-  21. `K .sparseUpperEnvelope` (existing key, existing `exactWindowJoinPressureRow`): `m + 2 ≤ (δ−1)n` and the exact window-join identity at `P₀`.
-  22. `K .baselineSpineDemand` (existing key, new row `sparseExitBaselineSpineDemandRow`): `[129]`'s baseline spine demand, its survivor premise replaced by the replacement exclusion and selection.
-  23. `K .freePairCountFails` (existing key, new row `sparseExitFreePairCountRow`): node `[131]`'s full-schedule entropy count fails at G's canonical objects, unconditionally.
+- **Enrichment on the `[20a]` path (76 more facts, 95 in all).** Type A rows in `hypostructure/Hypostructure/Graph/Strategy/SpineRows/SparseExitResidual.lean` (plus the existing `bridgelessRow` and `exactWindowJoinPressureRow`); no decision, no split, one residual.  **Placement (hoisted, 2026-09-28; user: "move the facts as far up as possible so that the other branches can also benefit").**  Each row runs right after the last producer of the keys it actually reads (`inputs.get`), on the shared prefix; rows whose keys have different earliest points were split by key (no key restated, no new split).  11 keys are published in the entry prefix (`Assembly/Entry.lean`) and are carried by every residual; 19 at the top of the strict arm of `[19]` (`Assembly/Final.lean`, before `[20]`) and are carried by every strict-surplus residual (`[20a]`, `[144a]`, `[182]`, `[187]` Type B entry); the other 46 (the 45 that read `K .sparseTargetDefectResidual`, and `K .freePairCountFails`) stay on the `[20a]` arm.  The duplicate runs downstream were removed: `bridgelessRow` in `NearCubic/DensePass.lean`, `NearCubic/Survivor/Realized.lean`, `NetCharge/Continuation.lean`, `Surplus/Strict/Dependent.lean`; `exactWindowJoinPressureRow` (`[135]`) in `Surplus/Strict/Independent.lean` and `Surplus/Strict/Dependent.lean`; `[129]`'s `baselineSpineDemandRow` in `Surplus/Strict.lean` (its key is now published by `sparseExitBaselineSpineDemandRow`, which reads only entry facts and `K .surplusAbove`).  The paper strategy is unchanged: no decision is added, moved or removed.  Statements: `Graph/Statements/SparseExitResidual.lean`, `Graph/Statements/CanonicalCapacityExplicit.lean`; contracts (`<key>_holds`): `Graph/Contracts/Spine/SparseExitResidual.lean`; vocabulary-free library: `Graph/GluedReadingMaps.lean`, `Graph/SparseOrderArithmetic.lean` (incl. the finite check `ex(6, C₄) = 7`, `native_decide`), `Graph/DeclaredQuotientRank.lean`.  Tagged **Lean improvement (not routed by the paper)**: every fact is derived from the 19 facts above, at G, at `[125]`'s pinned witness `w = (first, second, Z, O)`, at `P₀`, and at G's canonical capacity presentation, canonical object ledger and canonical spine family.  ¬K4 is `K .orderAboveScaleSquare`; ¬K5 follows from `K .sixVertexExtremalEnvelope`; K6 is ¬`K .surplusAbove`, and its quantitative form is `K .canonicalLedgerDeficit` / `K .pairCountDeficit`.  Registered constants of the presentation (not ledger facts): `Assembly/Surplus/RegisteredConstants.lean`.
+  20. `K .bridgeless` (existing key, existing `bridgelessRow`): `lem:bridgeless` at G.  *Published at: entry prefix, after the presentation laws `K .cubicBaseline` (`bridgelessRow`).*
+  21. `K .sparseUpperEnvelope` (existing key, existing `exactWindowJoinPressureRow`): `m + 2 ≤ (δ−1)n` and the exact window-join identity at `P₀`.  *Published at: top of the strict arm of `[19]`, before `[20]` (`exactWindowJoinPressureRow`).*
+  22. `K .baselineSpineDemand` (existing key, new row `sparseExitBaselineSpineDemandRow`): `[129]`'s baseline spine demand, its survivor premise replaced by the replacement exclusion and selection.  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitBaselineSpineDemandRow`).*
+  23. `K .freePairCountFails` (existing key, new row `sparseExitFreePairCountRow`): node `[131]`'s full-schedule entropy count fails at G's canonical objects, unconditionally.  *Published at: the `[20a]` arm (not hoisted: on `[125]`'s independent arm the key is the no-arm of the paper's `[131]` decision `freePairEntropyDichotomy`, whose `failsFresh` would fail; removing that decision would change the paper's strategy).*
   24. `K .witnessReadingsNotTargetComplete` (idx 6615): **The readings are not target-complete.**
   25. `K .witnessActualOutsideNegative` (idx 6616): **Neither reading has an accepted cycle at `G − Z`.**
   26. `K .witnessReadingsCycleFree` (idx 6617): **Both reading pieces are cycle-free** (each embeds in G).
   27. `K .witnessSupportOrderBound` (idx 6618): **`|Z| + 1 ≤ n`.**
   28. `K .witnessReadingGluesNotSmallerBaseline` (idx 6619): **No reading's gluing with `G − Z` is a lexicographically smaller baseline object** (¬K3).
-  29. `K .noSuppressionChordViolation` (idx 6620): **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.
-  30. `K .edgeSurplusIdentity` (idx 6606): **Edge–surplus identity**: `2m = δ·n + σ`.
-  31. `K .surplusDartIdentity` (idx 6607): **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).
-  32. `K .highDegreeCountBound` (idx 6608): **High-degree count**: `|H| ≤ σ`.
-  33. `K .packingOrderBound` (idx 6611): **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).
-  34. `K .ceilSqrtAboveScale` (idx 6612): **`C + 1 ≤ ⌈√n⌉`.**
-  35. `K .orderAboveScaleSquare` (idx 6613): **`C(C+1) + 9 ≤ n`** (¬K4, sharpened by `σ + 8 ≤ n`).
-  36. `K .sixVertexExtremalEnvelope` (idx 6614): **Envelope from `ex(6, C₄) = 7`**: `m + 4 ≤ 2n`.
-  37. `K .remainderDeficiencyBelowCut` (idx 6663): **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).
-  38. `K .windowCutCapacity` (idx 6664): **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.
+  29. `K .noSuppressionChordViolation` (idx 6620): **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Published at: entry prefix, after `[4]` (`entrySelectionFactsRow`).*
+  30. `K .edgeSurplusIdentity` (idx 6606): **Edge–surplus identity**: `2m = δ·n + σ`.  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitBudgetRow`).*
+  31. `K .surplusDartIdentity` (idx 6607): **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Published at: entry prefix, after `[9]`/`[10]` (`degreeCountRow`).*
+  32. `K .highDegreeCountBound` (idx 6608): **High-degree count**: `|H| ≤ σ`.  *Published at: entry prefix, after `[9]`/`[10]` (`degreeCountRow`).*
+  33. `K .packingOrderBound` (idx 6611): **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Published at: entry prefix, after `[4]` (`entrySelectionFactsRow`).*
+  34. `K .ceilSqrtAboveScale` (idx 6612): **`C + 1 ≤ ⌈√n⌉`.**  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitBudgetRow`).*
+  35. `K .orderAboveScaleSquare` (idx 6613): **`C(C+1) + 9 ≤ n`** (¬K4, sharpened by `σ + 8 ≤ n`).  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitEnvelopeRow`).*
+  36. `K .sixVertexExtremalEnvelope` (idx 6614): **Envelope from `ex(6, C₄) = 7`**: `m + 4 ≤ 2n`.  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitEnvelopeRow`).*
+  37. `K .remainderDeficiencyBelowCut` (idx 6663): **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Published at: entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`).*
+  38. `K .windowCutCapacity` (idx 6664): **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Published at: entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`).*
   39. `K .witnessOutsideNotRealized` (idx 6621): **`O` is not realized in `G − Z`.**
   40. `K .realizedContextsNegative` (idx 6622): **Both readings are negative in every context realized in `G − Z`.**
   41. `K .negativeSubGluingNotSmallerBaseline` (idx 6623): **No negative sub-gluing is a lexicographically smaller baseline object**: the negative reading `N` at `O`, against every sub-context `O' ≤ O`.
   42. `K .cycleSubContextSeparates` (idx 6624): **The O-part of one positive cycle still separates**: a sub-context `O' ≤ O` with `P` positive and `N` negative, every `O'`-internal vertex of `O'`-degree at most `2`, and `glue N O'` not a baseline object.
   43. `K .pathSpectrumSplit` (idx 6625): **The path-length spectrum split** at the witness: for the positive reading `P` and the negative reading `N` at `O`, either (i) labels `a ≠ b` of `∂Z`, a path `π : a → b` of `ret_P` and an `O`-path `σ : b → a` meeting no other label with `|π| + |σ| = 2^k` (`k ≥ 2`), such that every `a → b` path `π'` of `ret_N` has `|π'| ≠ |π|` and `|π'| + |σ| ≠ 2^j` for every `j ≥ 2`; or (ii) every accepted cycle of `glue ret_P O` meets three distinct labels.
-  44. `K .admissibleQuotientsLabelInjective` (idx 6626): **Every admissible quotient of G is label-injective** on its family.
-  45. `K .singleBoundaryShape` (idx 6627): **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).
+  44. `K .admissibleQuotientsLabelInjective` (idx 6626): **Every admissible quotient of G is label-injective** on its family.  *Published at: entry prefix, after `[13]` (`sparseExitQuotientsRow`).*
+  45. `K .singleBoundaryShape` (idx 6627): **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Published at: entry prefix, after `[8]` (`singleBoundaryShapeRow`).*
   46. `K .positiveSupportBoundaryTwo` (idx 6628): **`2 ≤ |∂Z ∩ X⁺|`** for one declared support `X⁺ ∈ {A, B}`.
   47. `K .supportCutEdgesTwo` (idx 6629): **`2 ≤ e(∂Z, V ∖ Z)`.**
   48. `K .boundaryLowInsideVertex` (idx 6630): **A boundary vertex with at most two neighbours in `Z`.**
@@ -1983,8 +2010,8 @@ route-8 product has 750 paths.
   69. `K .deletedSupportEdgeSetRestoration` (idx 6651): **Whole case: any restoring edge set forces an accepted cycle through a new edge.**
   70. `K .firstKeepsAllNotWhole` (idx 6652): **Keeps-all for `A` with `Z ⊄ A`**: `Z ⊄ B`, and both readings' profiles differ from the whole piece's.
   71. `K .secondKeepsAllNotWhole` (idx 6653): **Keeps-all for `B` with `Z ⊄ B`**: `Z ⊄ A`, and both readings' profiles differ from the whole piece's.
-  72. `K .highDegreePositive` (idx 6609): **At least one high-degree vertex**: `1 ≤ |H|`.
-  73. `K .highDegreeSurplusCapacity` (idx 6610): **The surplus fits on the high vertices**: `σ ≤ |H|·(n − |H| − δ)` (every high vertex has all its neighbours among the `n − |H|` baseline vertices).
+  72. `K .highDegreePositive` (idx 6609): **At least one high-degree vertex**: `1 ≤ |H|`.  *Published at: top of the strict arm of `[19]`, before `[20]` (`highDegreeSurplusRow`).*
+  73. `K .highDegreeSurplusCapacity` (idx 6610): **The surplus fits on the high vertices**: `σ ≤ |H|·(n − |H| − δ)` (every high vertex has all its neighbours among the `n − |H|` baseline vertices).  *Published at: top of the strict arm of `[19]`, before `[20]` (`highDegreeSurplusRow`).*
   74. `K .pairArmExcluded` (idx 6654): **The pair arm does not occur**: `¬ (∂Z = Z = {a, b})` (equal profiles on a two-vertex all-boundary support force equal readings, against the separation at `O`).
   75. `K .twoBoundaryForcesArmOne` (idx 6655): **`|∂Z| = 2` forces arm (i) of the spectrum split**, `∂Z = {a, b}` inside one declared support, an interior vertex of `Z`, and `{a, b}` separating the interior from `V ∖ Z`.
   76. `K .armOneForcedPath` (idx 6656): **Arm (i) gives a forced path in `G[Z]`**: a simple `a–b` path `p` of `G[Z]` between two boundary vertices with `|p| + 1 ≤ |Z|` and `|p| + s = 2^k` (`k ≥ 2`, `s ≥ 1`, `(|p| + s) % 4 = 0`).
@@ -1994,19 +2021,19 @@ route-8 product has 750 paths.
   80. `K .wholeSupportEqual` (idx 6660): **The whole case pins `Z`**: `Z ⊆ A ⇒ Z = A ∧ B ⊆ A`, and `Z ⊆ B ⇒ Z = B ∧ A ⊆ B`.
   81. `K .wholeDeficitBoundaryCount` (idx 6661): **Whole case: `|S| + |∂Z| ≤ |Z|`** (`S = Z ∖ B` resp. `Z ∖ A`).
   82. `K .wholeCutEdgeSurplusBound` (idx 6662): **Whole case: `e(S, T) ≤ D_T + σ`**, with `D_T = Σ_T (3 − deg_{G−S})`.
-  83. `K .canonicalCapacityExplicit` (idx 6665): **G's canonical capacity presentation is the explicit one**: the recorded blocker activation of G's active family on the node-`[19]` packing.
-  84. `K .primitiveCarrierCount` (idx 6666): **`|𝔘_sp(G)| = 4n + 2σ`.**
-  85. `K .canonicalTokenCount` (idx 6667): **The exact token count at the canonical presentation**: `|𝔗_cap| + 2(order − 1)·ν = 4n + 3σ + 3·order·ν` (at order `13`: `|𝔗_cap| = 4n + 3σ + 15ν`).
-  86. `K .canonicalBlockedFreePartition` (idx 6668): **`|Π_blk| + |Π_free| = C(σ, 2)`** at the canonical ledger.
-  87. `K .canonicalLedgerDeficit` (idx 6669): **The deficit at the canonical ledger** (G2): with `c = ⌈√n⌉`, `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B) + 2(|Π_blk| − M₀|𝔗|)`.
-  88. `K .pairCountDeficit` (idx 6670): **The pair-count deficit** (G3): `c²K + 2M₀(8n + σ) ≤ 2(C(σ, 2) − B)`.
-  89. `K .canonicalCertificationCriterion` (idx 6671): **The certification criterion at the canonical presentation**: its canonical certified ledger exists iff `|Π_free| ≤ B`.
-  90. `K .canonicalOverloadOfFits` (idx 6674): **If the free side fits `B`, the blocked side is overloaded**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_blk| − M₀|𝔗|)`, and some token has load `> M₀` and carries an `L_geom` role-homogeneous matching or star.
-  91. `K .canonicalFreeExcessOfCapped` (idx 6675): **If every token carries load `≤ M₀`, the free side exceeds `B`**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B)`.
-  92. `K .paperBudgetBound` (idx 6672): **The paper's budget at the canonical spine family fits the certification budget**: `E_paper ≤ B`.
-  93. `K .paperBudgetCertifies` (idx 6673): **`|Π_free| ≤ E_paper` certifies**: at the canonical spine family and presentation, `|Π_free| ≤ E_paper` makes the canonical certified ledger exist.
-  94. `K .pairCodeConfiguration` (idx 6676): **Where G sits in the pair-code chain**: either the `[137]`→`[143]` configuration holds at the canonical objects (blocked pair, `[137]` count, canonical pattern, overload, caps fail), or G's canonical first failure exists and yields the `[182]` residual, or the target defect of the canonical return system's obstruction coordinates, or that obstruction's handoff together with the Type B fan entry `[65]`.
-  95. `K .specWitnessStructure` (idx 6677): **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.
+  83. `K .canonicalCapacityExplicit` (idx 6665): **G's canonical capacity presentation is the explicit one**: the recorded blocker activation of G's active family on the node-`[19]` packing.  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityRow`).*
+  84. `K .primitiveCarrierCount` (idx 6666): **`|𝔘_sp(G)| = 4n + 2σ`.**  *Published at: entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`).*
+  85. `K .canonicalTokenCount` (idx 6667): **The exact token count at the canonical presentation**: `|𝔗_cap| + 2(order − 1)·ν = 4n + 3σ + 3·order·ν` (at order `13`: `|𝔗_cap| = 4n + 3σ + 15ν`).  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`).*
+  86. `K .canonicalBlockedFreePartition` (idx 6668): **`|Π_blk| + |Π_free| = C(σ, 2)`** at the canonical ledger.  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`).*
+  87. `K .canonicalLedgerDeficit` (idx 6669): **The deficit at the canonical ledger** (G2): with `c = ⌈√n⌉`, `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B) + 2(|Π_blk| − M₀|𝔗|)`.  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`).*
+  88. `K .pairCountDeficit` (idx 6670): **The pair-count deficit** (G3): `c²K + 2M₀(8n + σ) ≤ 2(C(σ, 2) − B)`.  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`).*
+  89. `K .canonicalCertificationCriterion` (idx 6671): **The certification criterion at the canonical presentation**: its canonical certified ledger exists iff `|Π_free| ≤ B`.  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`).*
+  90. `K .canonicalOverloadOfFits` (idx 6674): **If the free side fits `B`, the blocked side is overloaded**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_blk| − M₀|𝔗|)`, and some token has load `> M₀` and carries an `L_geom` role-homogeneous matching or star.  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`).*
+  91. `K .canonicalFreeExcessOfCapped` (idx 6675): **If every token carries load `≤ M₀`, the free side exceeds `B`**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B)`.  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`).*
+  92. `K .paperBudgetBound` (idx 6672): **The paper's budget at the canonical spine family fits the certification budget**: `E_paper ≤ B`.  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitPairChainRow`).*
+  93. `K .paperBudgetCertifies` (idx 6673): **`|Π_free| ≤ E_paper` certifies**: at the canonical spine family and presentation, `|Π_free| ≤ E_paper` makes the canonical certified ledger exist.  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitPairChainRow`).*
+  94. `K .pairCodeConfiguration` (idx 6676): **Where G sits in the pair-code chain**: either the `[137]`→`[143]` configuration holds at the canonical objects (blocked pair, `[137]` count, canonical pattern, overload, caps fail), or G's canonical first failure exists and yields the `[182]` residual, or the target defect of the canonical return system's obstruction coordinates, or that obstruction's handoff together with the Type B fan entry `[65]`.  *Published at: top of the strict arm of `[19]`, before `[20]` (`sparseExitPairChainRow`).*
+  95. `K .specWitnessStructure` (idx 6677): **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Published at: entry prefix, after `[4]` (`entrySelectionFactsRow`).*
 
 <a id="residual-187-near-cubic-target-defect"></a>
 
@@ -2015,8 +2042,8 @@ route-8 product has 750 paths.
 - **Configuration at G.** The sparse target-defect exit of [20] on the at-or-below-surplus arm of [19].
 - **Pinned target-defect pair.** `[125]` and `[20]` are stated at one canonical witness `sparseTargetDefectWitness` (`Statements/SurplusPair.lean`: the `Classical.choose` of clause (b)'s pair, support `Z` and separating context `O`): `SparseTargetDefectResidualStatement` is `∃ w, sparseTargetDefectWitness = some w ∧ w.Spec`, and `SparseTargetDefectStructureStatement` is `∃ w, sparseTargetDefectWitness = some w ∧ BoundTargetDefectGeometryAt … Z (piece of w.first) (piece of w.second) O`, proved from `[125]`'s own witness by `boundTargetDefectGeometryAt_of_separated`.  Formerly the two were independent existentials, so `[20]`'s pair, `Z` and `O` need not have been `[125]`'s.
 - **Lean.** `NearCubicTargetDefectOutcome` (`Assembly/Residuals.lean`); return theorem `nearCubicTargetDefectReturn`; reached by 1 path (distinct ledger histories from the root).
-- **Distinct fact sets.** One: the single return site (`selectedNearCubicBranch`, exit arm of `sparseSurplusSurvivorDichotomy`, then `selectedSparseTargetDefectExit`) carries exactly the 18 keys below, so the generic residual is the only node and has no subtypes.
-- **Facts carried (19).**
+- **Distinct fact sets.** One: the single return site (`selectedNearCubicBranch`, exit arm of `sparseSurplusSurvivorDichotomy`, then `selectedSparseTargetDefectExit`) carries exactly the 30 keys below, so the generic residual is the only node and has no subtypes.
+- **Facts carried (30).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -2036,6 +2063,17 @@ route-8 product has 750 paths.
   17. `K .sparseTargetDefectResidual`: Node `[125]`, the sole nonterminal named-exit payload: clause (b) of `def:named-surplus-exits` at G's canonical witness `sparseTargetDefectWitness` (the identified pair of declared coordinates, their canonical support `Z` and the separating context `O`).
   18. `K .sparseTargetDefectStructure`: Node `[20]`: the bound target-defect geometry at the same canonical witness as `[125]` (the same pair, support `Z` and separating context `O`), with its proved target-free negative constituents.
   19. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
+  20. `K .packingOrderBound`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 33).*
+  21. `K .noSuppressionChordViolation`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 29).*
+  22. `K .specWitnessStructure`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 95).*
+  23. `K .bridgeless`: `lem:bridgeless` at G.  *Hoisted (entry prefix, after the presentation laws `K .cubicBaseline` (`bridgelessRow`); `[20a]` item 20).*
+  24. `K .remainderDeficiencyBelowCut`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 37).*
+  25. `K .windowCutCapacity`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 38).*
+  26. `K .primitiveCarrierCount`: **`|𝔘_sp(G)| = 4n + 2σ`.**  *Hoisted (entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`); `[20a]` item 84).*
+  27. `K .singleBoundaryShape`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Hoisted (entry prefix, after `[8]` (`singleBoundaryShapeRow`); `[20a]` item 45).*
+  28. `K .surplusDartIdentity`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 31).*
+  29. `K .highDegreeCountBound`: **High-degree count**: `|H| ≤ σ`.  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 32).*
+  30. `K .admissibleQuotientsLabelInjective`: **Every admissible quotient of G is label-injective** on its family.  *Hoisted (entry prefix, after `[13]` (`sparseExitQuotientsRow`); `[20a]` item 44).*
 
 <a id="residual-144a"></a>
 
@@ -2043,8 +2081,8 @@ route-8 product has 750 paths.
 
 - **Configuration at G.** The same-token Type B handoff of [144] on the strict-surplus survivor, or (the paper error at [144]) the unresolved same-label pattern pair.
 - **The paper step it carries.** `lem:same-token-bottleneck-routing` (tex 5585-5620) routes the two equal-label pattern edges of G's canonical routing to a same-token Type B handoff; where no handoff is produced (`K .typeBHandoffFails`), the unresolved same-label pattern pair (`K .sameTokenPatternUnresolved`: readings profile-separated, neither a sparse exit nor target-complete) and the explicit replacement candidates of tex 5594 (`K .sameTokenReadingsNotReplacement`) are carried instead.
-- **Lean.** Generic residual `Node144aOutcome` (`Assembly/Residuals.lean`), the 45 facts common to every path, return theorem `node144aReturn`; reached by 6 paths (distinct ledger histories from the root), with 6 distinct fact sets, each a subtype `Node144aOutcome_<label>` (`Assembly/Residuals/Node144aOutcome.lean`) of the generic residual (`.toGeneric`), returned by `node144a<Label>Return`. The six subtypes replace the generic disjunct of `SelectedLedgerBoundaryResult` and `StrictSurplusBoundaryResult`.
-- **Generic residual: facts on every path (45).**
+- **Lean.** Generic residual `Node144aOutcome` (`Assembly/Residuals.lean`), the 72 facts common to every path, return theorem `node144aReturn`; reached by 6 paths (distinct ledger histories from the root), with 6 distinct fact sets, each a subtype `Node144aOutcome_<label>` (`Assembly/Residuals/Node144aOutcome.lean`) of the generic residual (`.toGeneric`), returned by `node144a<Label>Return`. The six subtypes replace the generic disjunct of `SelectedLedgerBoundaryResult` and `StrictSurplusBoundaryResult`.
+- **Generic residual: facts on every path (72).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -2090,34 +2128,61 @@ route-8 product has 750 paths.
   43. `K .homogeneousCapsFail`: Node `[144]`, the other arm: the exact complement of the fixed caps.
   44. `K .bottleneckRouting`: Node `[144]`, `lem:same-token-bottleneck-routing` itself: the concrete homogeneous pattern in the current object's canonical capacity presentation yields a sparse-surplus exit or the common Type B fan-ledger entry.
   45. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
+  46. `K .packingOrderBound`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 33).*
+  47. `K .noSuppressionChordViolation`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 29).*
+  48. `K .specWitnessStructure`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 95).*
+  49. `K .remainderDeficiencyBelowCut`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 37).*
+  50. `K .windowCutCapacity`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 38).*
+  51. `K .primitiveCarrierCount`: **`|𝔘_sp(G)| = 4n + 2σ`.**  *Hoisted (entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`); `[20a]` item 84).*
+  52. `K .singleBoundaryShape`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Hoisted (entry prefix, after `[8]` (`singleBoundaryShapeRow`); `[20a]` item 45).*
+  53. `K .surplusDartIdentity`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 31).*
+  54. `K .highDegreeCountBound`: **High-degree count**: `|H| ≤ σ`.  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 32).*
+  55. `K .admissibleQuotientsLabelInjective`: **Every admissible quotient of G is label-injective** on its family.  *Hoisted (entry prefix, after `[13]` (`sparseExitQuotientsRow`); `[20a]` item 44).*
+  56. `K .edgeSurplusIdentity`: **Edge–surplus identity**: `2m = δ·n + σ`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitBudgetRow`); `[20a]` item 30).*
+  57. `K .ceilSqrtAboveScale`: **`C + 1 ≤ ⌈√n⌉`.**  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitBudgetRow`); `[20a]` item 34).*
+  58. `K .orderAboveScaleSquare`: **`C(C+1) + 9 ≤ n`** (¬K4, sharpened by `σ + 8 ≤ n`).  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitEnvelopeRow`); `[20a]` item 35).*
+  59. `K .sixVertexExtremalEnvelope`: **Envelope from `ex(6, C₄) = 7`**: `m + 4 ≤ 2n`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitEnvelopeRow`); `[20a]` item 36).*
+  60. `K .highDegreePositive`: **At least one high-degree vertex**: `1 ≤ |H|`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`highDegreeSurplusRow`); `[20a]` item 72).*
+  61. `K .highDegreeSurplusCapacity`: **The surplus fits on the high vertices**: `σ ≤ |H|·(n − |H| − δ)` (every high vertex has all its neighbours among the `n − |H|` baseline vertices).  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`highDegreeSurplusRow`); `[20a]` item 73).*
+  62. `K .canonicalCapacityExplicit`: **G's canonical capacity presentation is the explicit one**: the recorded blocker activation of G's active family on the node-`[19]` packing.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityRow`); `[20a]` item 83).*
+  63. `K .canonicalTokenCount`: **The exact token count at the canonical presentation**: `|𝔗_cap| + 2(order − 1)·ν = 4n + 3σ + 3·order·ν` (at order `13`: `|𝔗_cap| = 4n + 3σ + 15ν`).  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 85).*
+  64. `K .canonicalBlockedFreePartition`: **`|Π_blk| + |Π_free| = C(σ, 2)`** at the canonical ledger.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 86).*
+  65. `K .canonicalLedgerDeficit`: **The deficit at the canonical ledger** (G2): with `c = ⌈√n⌉`, `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B) + 2(|Π_blk| − M₀|𝔗|)`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 87).*
+  66. `K .pairCountDeficit`: **The pair-count deficit** (G3): `c²K + 2M₀(8n + σ) ≤ 2(C(σ, 2) − B)`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 88).*
+  67. `K .canonicalCertificationCriterion`: **The certification criterion at the canonical presentation**: its canonical certified ledger exists iff `|Π_free| ≤ B`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 89).*
+  68. `K .canonicalOverloadOfFits`: **If the free side fits `B`, the blocked side is overloaded**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_blk| − M₀|𝔗|)`, and some token has load `> M₀` and carries an `L_geom` role-homogeneous matching or star.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 90).*
+  69. `K .canonicalFreeExcessOfCapped`: **If every token carries load `≤ M₀`, the free side exceeds `B`**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B)`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 91).*
+  70. `K .paperBudgetBound`: **The paper's budget at the canonical spine family fits the certification budget**: `E_paper ≤ B`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitPairChainRow`); `[20a]` item 92).*
+  71. `K .paperBudgetCertifies`: **`|Π_free| ≤ E_paper` certifies**: at the canonical spine family and presentation, `|Π_free| ≤ E_paper` makes the canonical certified ledger exist.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitPairChainRow`); `[20a]` item 93).*
+  72. `K .pairCodeConfiguration`: **Where G sits in the pair-code chain**: either the `[137]`→`[143]` configuration holds at the canonical objects (blocked pair, `[137]` count, canonical pattern, overload, caps fail), or G's canonical first failure exists and yields the `[182]` residual, or the target defect of the canonical return system's obstruction coordinates, or that obstruction's handoff together with the Type B fan entry `[65]`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitPairChainRow`); `[20a]` item 94).*
 - **Subtypes.** Label = class arm of `[139]`/`[141]` times arm of `[144]`'s handoff decision.
-  - *`Node144aOutcome_windowHandoff`* ([139] yes (token in 𝔗_W, audit [140]); [144] handoff): 48 facts, the 45 common facts and:
+  - *`Node144aOutcome_windowHandoff`* ([139] yes (token in 𝔗_W, audit [140]); [144] handoff): 75 facts, the 72 common facts and:
     - `K .windowClassOverload`: Node `[139]`, yes arm: the overloading token of node `[137]` lies in `𝔗_W`, so the branch enters the window-incidence audit `[140]`.
     - `K .typeBHandoff`: Node `[144]`, the survivor specialization of the preceding fact: the sparse-exit arm is impossible, so the same current object is entered directly in the Type B fan ledger.
     - `K .typeBFanEntry`: Nodes `[65]`/`[66]`: the common Type B fan support entry (`def:typeB-assigned-ledger`): a canonical core with its assigned centres — the ordinary support's own high centres at `[65]`, or the decorations of the handoff envelope at the dashed input `[66]` — nonempty and all high.
-  - *`Node144aOutcome_windowFails`* ([139] yes (token in 𝔗_W, audit [140]); [144] handoff fails): 49 facts, the 45 common facts and:
+  - *`Node144aOutcome_windowFails`* ([139] yes (token in 𝔗_W, audit [140]); [144] handoff fails): 76 facts, the 72 common facts and:
     - `K .windowClassOverload`: Node `[139]`, yes arm: the overloading token of node `[137]` lies in `𝔗_W`, so the branch enters the window-incidence audit `[140]`.
     - `K .typeBHandoffFails`: Node `[144]`, the exact complement of the same-token handoff.
     - `K .sameTokenPatternUnresolved`: Node `[144a]`, the residual of the paper error at `[144]`: the unresolved same-label pattern pair.
     - `K .sameTokenReadingsNotReplacement`: Node `[144a]`: no reading of G's piece at the pattern support is a replacement representative.
-  - *`Node144aOutcome_remainderHandoff`* ([139] no, [141] yes (token in 𝔗_R, audit [142]); [144] handoff): 49 facts, the 45 common facts and:
+  - *`Node144aOutcome_remainderHandoff`* ([139] no, [141] yes (token in 𝔗_R, audit [142]); [144] handoff): 76 facts, the 72 common facts and:
     - `K .windowClassAbsent`: Node `[139]`, no arm: the selected overloading token does not lie in `𝔗_W`, so that same witness falls through to node `[141]`.
     - `K .remainderClassOverload`: Node `[141]`, yes arm: the overloading token lies in `𝔗_R`, so the branch enters the remainder-surplus audit `[142]`.
     - `K .typeBHandoff`: Node `[144]`, the survivor specialization of the preceding fact: the sparse-exit arm is impossible, so the same current object is entered directly in the Type B fan ledger.
     - `K .typeBFanEntry`: Nodes `[65]`/`[66]`: the common Type B fan support entry (`def:typeB-assigned-ledger`): a canonical core with its assigned centres — the ordinary support's own high centres at `[65]`, or the decorations of the handoff envelope at the dashed input `[66]` — nonempty and all high.
-  - *`Node144aOutcome_remainderFails`* ([139] no, [141] yes (token in 𝔗_R, audit [142]); [144] handoff fails): 50 facts, the 45 common facts and:
+  - *`Node144aOutcome_remainderFails`* ([139] no, [141] yes (token in 𝔗_R, audit [142]); [144] handoff fails): 77 facts, the 72 common facts and:
     - `K .windowClassAbsent`: Node `[139]`, no arm: the selected overloading token does not lie in `𝔗_W`, so that same witness falls through to node `[141]`.
     - `K .remainderClassOverload`: Node `[141]`, yes arm: the overloading token lies in `𝔗_R`, so the branch enters the remainder-surplus audit `[142]`.
     - `K .typeBHandoffFails`: Node `[144]`, the exact complement of the same-token handoff.
     - `K .sameTokenPatternUnresolved`: Node `[144a]`, the residual of the paper error at `[144]`: the unresolved same-label pattern pair.
     - `K .sameTokenReadingsNotReplacement`: Node `[144a]`: no reading of G's piece at the pattern support is a replacement representative.
-  - *`Node144aOutcome_primitiveHandoff`* ([139] no, [141] no (primitive token, audit [143]); [144] handoff): 50 facts, the 45 common facts and:
+  - *`Node144aOutcome_primitiveHandoff`* ([139] no, [141] no (primitive token, audit [143]); [144] handoff): 77 facts, the 72 common facts and:
     - `K .windowClassAbsent`: Node `[139]`, no arm: the selected overloading token does not lie in `𝔗_W`, so that same witness falls through to node `[141]`.
     - `K .remainderClassAbsent`: Node `[141]`, no arm: the selected overloading token lies in `𝔗_prim`, so that same witness enters `[143]`.
     - `K .primitiveClassOverload`: Node `[143]` entry: the overloading token is primitive.
     - `K .typeBHandoff`: Node `[144]`, the survivor specialization of the preceding fact: the sparse-exit arm is impossible, so the same current object is entered directly in the Type B fan ledger.
     - `K .typeBFanEntry`: Nodes `[65]`/`[66]`: the common Type B fan support entry (`def:typeB-assigned-ledger`): a canonical core with its assigned centres — the ordinary support's own high centres at `[65]`, or the decorations of the handoff envelope at the dashed input `[66]` — nonempty and all high.
-  - *`Node144aOutcome_primitiveFails`* ([139] no, [141] no (primitive token, audit [143]); [144] handoff fails): 51 facts, the 45 common facts and:
+  - *`Node144aOutcome_primitiveFails`* ([139] no, [141] no (primitive token, audit [143]); [144] handoff fails): 78 facts, the 72 common facts and:
     - `K .windowClassAbsent`: Node `[139]`, no arm: the selected overloading token does not lie in `𝔗_W`, so that same witness falls through to node `[141]`.
     - `K .remainderClassAbsent`: Node `[141]`, no arm: the selected overloading token lies in `𝔗_prim`, so that same witness enters `[143]`.
     - `K .primitiveClassOverload`: Node `[143]` entry: the overloading token is primitive.
@@ -2131,7 +2196,7 @@ route-8 product has 750 paths.
 
 - **Configuration at G.** The first failed conditional graph-count inequality of lem:scale-additivity on the dense-packing branch, with its minimal same-scale barrier overlap.
 - **Lean.** Generic residual `BlockedBarrierOverlapOutcome` (`Assembly/Residuals.lean`), the facts common to both paths; return theorem `blockedBarrierOverlapReturn`; reached by 2 paths (distinct ledger histories from the root), with 2 distinct fact sets, each its own subtype in `Assembly/Residuals/BlockedBarrierOverlapOutcome.lean` (below). Wired: `selectedCanonicalReplacementContinuation` takes the `[160]` arm (`DenseTauArm`) and returns `blockedBarrierOverlapSubtypesReturn`.
-- **Common facts (72).**
+- **Common facts (82).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -2204,14 +2269,24 @@ route-8 product has 750 paths.
   70. `K .blockedClassMember`: Node `[169]`, `def:blocked-class`: on the trivial neutral-configuration residual the object's own labelled skeleton lies in the blocked class `𝓑(𝒫)` of the fixed maximal packing (near-cubic, windows present, no accepted cycle through a window), and `card 𝓑(𝒫) ≤ skeletonBudget`.
   71. `K .blockedBarrierOverlap`: Node `[170]`, the exact complement (`lem:barrier-failure-overlap`): the conditional saving fails at a specific window, scale, and barrier row; the retained value is the actual oversized conditional fibre, before the overlap lemma constructs its support.
   72. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
+  73. `K .packingOrderBound`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 33).*
+  74. `K .noSuppressionChordViolation`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 29).*
+  75. `K .specWitnessStructure`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 95).*
+  76. `K .remainderDeficiencyBelowCut`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 37).*
+  77. `K .windowCutCapacity`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 38).*
+  78. `K .primitiveCarrierCount`: **`|𝔘_sp(G)| = 4n + 2σ`.**  *Hoisted (entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`); `[20a]` item 84).*
+  79. `K .singleBoundaryShape`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Hoisted (entry prefix, after `[8]` (`singleBoundaryShapeRow`); `[20a]` item 45).*
+  80. `K .surplusDartIdentity`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 31).*
+  81. `K .highDegreeCountBound`: **High-degree count**: `|H| ≤ σ`.  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 32).*
+  82. `K .admissibleQuotientsLabelInjective`: **Every admissible quotient of G is label-injective** on its family.  *Hoisted (entry prefix, after `[13]` (`sparseExitQuotientsRow`); `[20a]` item 44).*
 - **Subtypes** (one per distinct fact set; the two paths differ only by the arm of the `[160]` rate split through which the dense-packing residual enters the dense hot/cold pass `[162]`; each subtype implies the generic residual by `.toGeneric`).
   - `BlockedBarrierOverlapOutcome_DeficiencyAtOrAbove`, `[160]` first test no (`τ(θ) ≥ 1/4`); return theorem `blockedBarrierOverlapReturn_DeficiencyAtOrAbove`. Extra facts:
     72. `K .denseDeficiencyAtOrAbove`: Node `[160]`, first test, no arm: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
-    - Total: 73 facts.
+    - Total: 83 facts.
   - `BlockedBarrierOverlapOutcome_DeficiencyBelowRateFails`, `[160]` first test yes (`τ(θ) < 1/4`), second test no (private-carrier rate fails); return theorem `blockedBarrierOverlapReturn_DeficiencyBelowRateFails`. Extra facts:
     72. `K .denseDeficiencyBelow`: Node `[160]`, first test, yes arm: `prop:negative-net-charge`'s exact large-budget net-deficiency comparison, the `τ(θ) < 1/4` deficiency reading with the exact `√n` allowance.
     73. `K .route8RateFails`: Node `[160]`, second test, no arm: the complement of the private-carrier rate reading (`3/13 ≤ τ`), the manuscript's delicate density interval, carried as its own branch.
-    - Total: 74 facts.
+    - Total: 84 facts.
 
 <a id="residual-182"></a>
 
@@ -2219,7 +2294,7 @@ route-8 product has 750 paths.
 
 - **Configuration at G.** The first failed coverage implication of [178], [179] or [180] on the strict-surplus pair-code chain.
 - **Lean.** `PairConditionalFactorizationOutcome` (`Assembly/Residuals.lean`); return theorem `pairConditionalFactorizationReturn`; reached by 6 paths (distinct ledger histories from the root) with 6 distinct fact sets, one subtype each in `Assembly/Residuals/PairConditionalFactorizationOutcome.lean`.
-- **Generic residual: facts common to all six paths (34).**
+- **Generic residual: facts common to all six paths (62).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -2254,13 +2329,41 @@ route-8 product has 750 paths.
   32. `K .pairOverlapSystem`: Node `[178]`: the exact pair-response conditional fibre, realized joint states, realizing orders, obstructions, overlaps, and support unions.
   33. `K .pairConditionalFactorizationResidual`: Node `[182]`: the exact retained residual where one of the paper's `[178]`--`[180]` implications is not exhaustive.
   34. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
+  35. `K .packingOrderBound`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 33).*
+  36. `K .noSuppressionChordViolation`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 29).*
+  37. `K .specWitnessStructure`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 95).*
+  38. `K .bridgeless`: `lem:bridgeless` at G.  *Hoisted (entry prefix, after the presentation laws `K .cubicBaseline` (`bridgelessRow`); `[20a]` item 20).*
+  39. `K .remainderDeficiencyBelowCut`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 37).*
+  40. `K .windowCutCapacity`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 38).*
+  41. `K .primitiveCarrierCount`: **`|𝔘_sp(G)| = 4n + 2σ`.**  *Hoisted (entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`); `[20a]` item 84).*
+  42. `K .singleBoundaryShape`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Hoisted (entry prefix, after `[8]` (`singleBoundaryShapeRow`); `[20a]` item 45).*
+  43. `K .surplusDartIdentity`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 31).*
+  44. `K .highDegreeCountBound`: **High-degree count**: `|H| ≤ σ`.  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 32).*
+  45. `K .admissibleQuotientsLabelInjective`: **Every admissible quotient of G is label-injective** on its family.  *Hoisted (entry prefix, after `[13]` (`sparseExitQuotientsRow`); `[20a]` item 44).*
+  46. `K .edgeSurplusIdentity`: **Edge–surplus identity**: `2m = δ·n + σ`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitBudgetRow`); `[20a]` item 30).*
+  47. `K .ceilSqrtAboveScale`: **`C + 1 ≤ ⌈√n⌉`.**  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitBudgetRow`); `[20a]` item 34).*
+  48. `K .orderAboveScaleSquare`: **`C(C+1) + 9 ≤ n`** (¬K4, sharpened by `σ + 8 ≤ n`).  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitEnvelopeRow`); `[20a]` item 35).*
+  49. `K .sixVertexExtremalEnvelope`: **Envelope from `ex(6, C₄) = 7`**: `m + 4 ≤ 2n`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitEnvelopeRow`); `[20a]` item 36).*
+  50. `K .highDegreePositive`: **At least one high-degree vertex**: `1 ≤ |H|`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`highDegreeSurplusRow`); `[20a]` item 72).*
+  51. `K .highDegreeSurplusCapacity`: **The surplus fits on the high vertices**: `σ ≤ |H|·(n − |H| − δ)` (every high vertex has all its neighbours among the `n − |H|` baseline vertices).  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`highDegreeSurplusRow`); `[20a]` item 73).*
+  52. `K .canonicalCapacityExplicit`: **G's canonical capacity presentation is the explicit one**: the recorded blocker activation of G's active family on the node-`[19]` packing.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityRow`); `[20a]` item 83).*
+  53. `K .canonicalTokenCount`: **The exact token count at the canonical presentation**: `|𝔗_cap| + 2(order − 1)·ν = 4n + 3σ + 3·order·ν` (at order `13`: `|𝔗_cap| = 4n + 3σ + 15ν`).  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 85).*
+  54. `K .canonicalBlockedFreePartition`: **`|Π_blk| + |Π_free| = C(σ, 2)`** at the canonical ledger.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 86).*
+  55. `K .canonicalLedgerDeficit`: **The deficit at the canonical ledger** (G2): with `c = ⌈√n⌉`, `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B) + 2(|Π_blk| − M₀|𝔗|)`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 87).*
+  56. `K .pairCountDeficit`: **The pair-count deficit** (G3): `c²K + 2M₀(8n + σ) ≤ 2(C(σ, 2) − B)`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 88).*
+  57. `K .canonicalCertificationCriterion`: **The certification criterion at the canonical presentation**: its canonical certified ledger exists iff `|Π_free| ≤ B`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 89).*
+  58. `K .canonicalOverloadOfFits`: **If the free side fits `B`, the blocked side is overloaded**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_blk| − M₀|𝔗|)`, and some token has load `> M₀` and carries an `L_geom` role-homogeneous matching or star.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 90).*
+  59. `K .canonicalFreeExcessOfCapped`: **If every token carries load `≤ M₀`, the free side exceeds `B`**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B)`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 91).*
+  60. `K .paperBudgetBound`: **The paper's budget at the canonical spine family fits the certification budget**: `E_paper ≤ B`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitPairChainRow`); `[20a]` item 92).*
+  61. `K .paperBudgetCertifies`: **`|Π_free| ≤ E_paper` certifies**: at the canonical spine family and presentation, `|Π_free| ≤ E_paper` makes the canonical certified ledger exist.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitPairChainRow`); `[20a]` item 93).*
+  62. `K .pairCodeConfiguration`: **Where G sits in the pair-code chain**: either the `[137]`→`[143]` configuration holds at the canonical objects (blocked pair, `[137]` count, canonical pattern, overload, caps fail), or G's canonical first failure exists and yields the `[182]` residual, or the target defect of the canonical return system's obstruction coordinates, or that obstruction's handoff together with the Type B fan entry `[65]`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitPairChainRow`); `[20a]` item 94).*
 - **Subtypes, one per distinct fact set (6).**  Each is `PairConditionalFactorizationOutcome ∧` its extra facts, with `.toGeneric` and a return theorem `pairConditionalFactorizationReturn_<label>` (one `get` per fact).  The side is the entry into the pair-code chain: free = `[130]` blocker-free arm and `[131]` free-pair count fails; blocked = `[130]` blocked arm with no (d)/(e) blocker, `[132]` no sparse exit, `[134]`--`[136]` token ledger and `[137]` blocked-side count fails.  The arm is the first failed implication: `[178]` factorization, `[179]` realizability, `[180]` increment coverage.
-  - `PairConditionalFactorizationOutcome_freeFactorizationFails` (38 facts): the 34 above, plus
+  - `PairConditionalFactorizationOutcome_freeFactorizationFails` (66 facts): the 62 above, plus
     - `K .independentPairFamily`
     - `K .freePairCountFails`
     - `K .freePairCodeUnrealized`
     - `K .pairFactorizationFails`
-  - `PairConditionalFactorizationOutcome_freeRealizabilityFails` (41 facts): the 34 above, plus
+  - `PairConditionalFactorizationOutcome_freeRealizabilityFails` (69 facts): the 62 above, plus
     - `K .independentPairFamily`
     - `K .freePairCountFails`
     - `K .freePairCodeUnrealized`
@@ -2268,7 +2371,7 @@ route-8 product has 750 paths.
     - `K .pairFailureOverlap`
     - `K .pairDemandReturns`
     - `K .pairRealizabilityFails`
-  - `PairConditionalFactorizationOutcome_freeIncrementFails` (44 facts): the 34 above, plus
+  - `PairConditionalFactorizationOutcome_freeIncrementFails` (72 facts): the 62 above, plus
     - `K .independentPairFamily`
     - `K .freePairCountFails`
     - `K .freePairCodeUnrealized`
@@ -2279,7 +2382,7 @@ route-8 product has 750 paths.
     - `K .pairSystemNoEarlyOutcome`
     - `K .pairSerialDemandSystem`
     - `K .pairIncrementFails`
-  - `PairConditionalFactorizationOutcome_blockedFactorizationFails` (46 facts): the 34 above, plus
+  - `PairConditionalFactorizationOutcome_blockedFactorizationFails` (74 facts): the 62 above, plus
     - `K .dependentPairFamily`
     - `K .pairDegreeProfileFibres`
     - `K .pairNoProfileObstruction`
@@ -2292,7 +2395,7 @@ route-8 product has 750 paths.
     - `K .blockedPairCountFails`
     - `K .blockedPairCodeUnrealized`
     - `K .pairFactorizationFails`
-  - `PairConditionalFactorizationOutcome_blockedRealizabilityFails` (49 facts): the 34 above, plus
+  - `PairConditionalFactorizationOutcome_blockedRealizabilityFails` (77 facts): the 62 above, plus
     - `K .dependentPairFamily`
     - `K .pairDegreeProfileFibres`
     - `K .pairNoProfileObstruction`
@@ -2308,7 +2411,7 @@ route-8 product has 750 paths.
     - `K .pairFailureOverlap`
     - `K .pairDemandReturns`
     - `K .pairRealizabilityFails`
-  - `PairConditionalFactorizationOutcome_blockedIncrementFails` (52 facts): the 34 above, plus
+  - `PairConditionalFactorizationOutcome_blockedIncrementFails` (80 facts): the 62 above, plus
     - `K .dependentPairFamily`
     - `K .pairDegreeProfileFibres`
     - `K .pairNoProfileObstruction`
@@ -2333,8 +2436,8 @@ route-8 product has 750 paths.
 ### Node [186] (thm:main (v), tex 364-368)
 
 - **Configuration at G.** The visible-entry route-8 residual after [181], [183]-[185], with the joint balances of lem:typeA-unified-joint-balance.
-- **Lean.** `Route8JointBalanceOutcome` (`Assembly/Residuals.lean`, the generic residual: the 80 keys common to every path); return theorem `route8JointBalanceReturn`, called once, at `Assembly/RouteEight/Local.lean` (`selectedRouteEightUnifiedResidual`, the quotient-free arm after `[123]`, `[181]`, `[183]`--`[185]`). The 750 paths from `selectedLedgerBoundary` carry 750 distinct fact sets (probe of the elaborated `known` at every call site, R06, 2026-09-27; B-chain count corrected at integration; 250 of the 1000 paths removed by the two lane-entry closures of Closed from G's facts, `[146]` on `[160]`'s first complement and `[53]` on the `[161]` dense residual), and form an exact product of arm blocks: `Route8JointBalanceOutcome_product := Route8JointBalanceOutcome ∧ Route8LaneEntry ∧ NetChargeContinuation` (`Assembly/Residuals/Route8JointBalanceOutcome.lean`; `.toGeneric`; return theorem `route8JointBalanceProductReturn`, parameterised by the arm blocks, each built by its block's `.ret` with one `get` per key). The factors are those of `Route8QuotientOutcome` (same composition, same incoming ledgers); the blocks are shared (`Assembly/Residuals/Route8Blocks.lean`). Every path is the 80 common keys plus exactly one block per factor, and every one of the `15 × 50 = 750` combinations occurs (`Route8LaneEntry = (Route8LanePrefix ∧ EntropyArm) ∨ (Route8LanePrefixBlock_unrealizedDenseBelow ∧ EntropyArmLow)`, `15 = 3·4 + 3`). Totals: 100 to 139 facts. Wired: the return site calls `route8JointBalanceProductReturn` with its `Route8Arms` argument.
-- **Facts carried (80).**
+- **Lean.** `Route8JointBalanceOutcome` (`Assembly/Residuals.lean`, the generic residual: the 90 keys common to every path); return theorem `route8JointBalanceReturn`, called once, at `Assembly/RouteEight/Local.lean` (`selectedRouteEightUnifiedResidual`, the quotient-free arm after `[123]`, `[181]`, `[183]`--`[185]`). The 750 paths from `selectedLedgerBoundary` carry 750 distinct fact sets (probe of the elaborated `known` at every call site, R06, 2026-09-27; B-chain count corrected at integration; 250 of the 1000 paths removed by the two lane-entry closures of Closed from G's facts, `[146]` on `[160]`'s first complement and `[53]` on the `[161]` dense residual), and form an exact product of arm blocks: `Route8JointBalanceOutcome_product := Route8JointBalanceOutcome ∧ Route8LaneEntry ∧ NetChargeContinuation` (`Assembly/Residuals/Route8JointBalanceOutcome.lean`; `.toGeneric`; return theorem `route8JointBalanceProductReturn`, parameterised by the arm blocks, each built by its block's `.ret` with one `get` per key). The factors are those of `Route8QuotientOutcome` (same composition, same incoming ledgers); the blocks are shared (`Assembly/Residuals/Route8Blocks.lean`). Every path is the 80 common keys plus exactly one block per factor, and every one of the `15 × 50 = 750` combinations occurs (`Route8LaneEntry = (Route8LanePrefix ∧ EntropyArm) ∨ (Route8LanePrefixBlock_unrealizedDenseBelow ∧ EntropyArmLow)`, `15 = 3·4 + 3`). Totals: 100 to 149 facts. Wired: the return site calls `route8JointBalanceProductReturn` with its `Route8Arms` argument.
+- **Facts carried (90).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -2415,7 +2518,17 @@ route-8 product has 750 paths.
   78. `K .route8UnifiedVisibleOverload`: Node `[185]`, `lem:typeA-unified-visible-overload`: every retained visible excess entry lies at a receiver with an actually overloaded completion port.
   79. `K .route8JointBalance`: Node `[186]`, `lem:typeA-unified-joint-balance`: the failed peel rate, unified deficit, committed maximal demand ledger, and maximal type-(A1) absorption are read simultaneously.
   80. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
-- **Product of arm blocks (keys beyond the 80 common facts).**
+  81. `K .packingOrderBound`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 33).*
+  82. `K .noSuppressionChordViolation`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 29).*
+  83. `K .specWitnessStructure`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 95).*
+  84. `K .remainderDeficiencyBelowCut`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 37).*
+  85. `K .windowCutCapacity`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 38).*
+  86. `K .primitiveCarrierCount`: **`|𝔘_sp(G)| = 4n + 2σ`.**  *Hoisted (entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`); `[20a]` item 84).*
+  87. `K .singleBoundaryShape`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Hoisted (entry prefix, after `[8]` (`singleBoundaryShapeRow`); `[20a]` item 45).*
+  88. `K .surplusDartIdentity`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 31).*
+  89. `K .highDegreeCountBound`: **High-degree count**: `|H| ≤ σ`.  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 32).*
+  90. `K .admissibleQuotientsLabelInjective`: **Every admissible quotient of G is label-injective** on its family.  *Hoisted (entry prefix, after `[13]` (`sparseExitQuotientsRow`); `[20a]` item 44).*
+- **Product of arm blocks (keys beyond the 90 common facts).**
   Structure: `Route8LaneEntry (15 = 3 prefix × 4 entropy + [161] × 3 low entropy; the `[146]` prefix and `[161]` × high entropy are closed, see "Closed from G's facts") × NetChargeContinuation`; `NetChargeContinuation = TypeALane ∨ TypeBHighSurplusLane` (50 = 2·22 + 6; the absorbed lane is closed at `[173]` and the deficit-holds choice at `[124]`, see "Closed from G's facts"); `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry (2) ∧ TypeAArm (22)`; `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour (3) ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour (3) ∧ Route8DeficitBlock_fails) ∨ TypeAArmBlock_dischargedRetest`; `TypeBHighSurplusLane = NetChargeLaneBlock_typeBHighSurplus ∧ BChain`; `BChain = BChainEntryBlock ∧ BChainFanCertificate (6)`, `BChainFanCertificate = (BChainFanBlock_heavyCentre ∧ (residual ∨ b2Choice ∨ overlapObstruction)) ∨ (BChainFanBlock_degreeFour ∧ (residual ∨ degreeFourClosed ∨ degreeFourOverlap))`.
   - Prefix factor (one of 4; `Route8LanePrefix` is the first three, `Route8LanePrefixBlock_unrealizedDenseBelow` enters only with `EntropyArmLow`):
     - `Route8LanePrefixBlock_realizedColdBelow` (2): window package realized; cold route-8 rate below (`nearCubicRealized` → `nearCubicLargeBudgetColdRate`)
@@ -2582,7 +2695,7 @@ route-8 product has 750 paths.
 
 - **Configuration at G.** A Type B entry produced by the [179] or [180] pair-system outcome, with its strict-surplus and sparse-survivor ancestry.
 - **Lean.** Generic residual `PairTypeBOutcome` (`Assembly/Residuals.lean`), return theorems `pairTypeBSystemReturn`, `pairTypeBIncrementReturn`; subtypes and their return theorems in `Assembly/Residuals/PairTypeBOutcome.lean`.  Reached by 4 paths (the pair-code chain entered from the free side of [131], `selectedPairCodeChainIndependent`, or of [137], `selectedPairCodeChainDependent`, times the chain's two Type B arms), with 4 distinct fact sets, hence 4 subtypes; each return site calls its subtype's return theorem, and the boundary carries the disjunction of the 4 subtypes.
-- **Generic residual: common facts (38), then its own arm as a disjunction.**
+- **Generic residual: common facts (66), then its own arm as a disjunction.**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -2621,15 +2734,43 @@ route-8 product has 750 paths.
   36. `K .pairSystemRealizability`: Node `[179]`: the exact obstruction satisfies one of the five outcomes of `lem:pair-system-realizability`.
   37. `K .typeBFanEntry`: Nodes `[65]`/`[66]`: the common Type B fan support entry (`def:typeB-assigned-ledger`): a canonical core with its assigned centres — the ordinary support's own high centres at `[65]`, or the decorations of the handoff envelope at the dashed input `[66]` — nonempty and all high.
   38. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
+  39. `K .packingOrderBound`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 33).*
+  40. `K .noSuppressionChordViolation`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 29).*
+  41. `K .specWitnessStructure`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 95).*
+  42. `K .bridgeless`: `lem:bridgeless` at G.  *Hoisted (entry prefix, after the presentation laws `K .cubicBaseline` (`bridgelessRow`); `[20a]` item 20).*
+  43. `K .remainderDeficiencyBelowCut`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 37).*
+  44. `K .windowCutCapacity`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 38).*
+  45. `K .primitiveCarrierCount`: **`|𝔘_sp(G)| = 4n + 2σ`.**  *Hoisted (entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`); `[20a]` item 84).*
+  46. `K .singleBoundaryShape`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Hoisted (entry prefix, after `[8]` (`singleBoundaryShapeRow`); `[20a]` item 45).*
+  47. `K .surplusDartIdentity`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 31).*
+  48. `K .highDegreeCountBound`: **High-degree count**: `|H| ≤ σ`.  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 32).*
+  49. `K .admissibleQuotientsLabelInjective`: **Every admissible quotient of G is label-injective** on its family.  *Hoisted (entry prefix, after `[13]` (`sparseExitQuotientsRow`); `[20a]` item 44).*
+  50. `K .edgeSurplusIdentity`: **Edge–surplus identity**: `2m = δ·n + σ`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitBudgetRow`); `[20a]` item 30).*
+  51. `K .ceilSqrtAboveScale`: **`C + 1 ≤ ⌈√n⌉`.**  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitBudgetRow`); `[20a]` item 34).*
+  52. `K .orderAboveScaleSquare`: **`C(C+1) + 9 ≤ n`** (¬K4, sharpened by `σ + 8 ≤ n`).  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitEnvelopeRow`); `[20a]` item 35).*
+  53. `K .sixVertexExtremalEnvelope`: **Envelope from `ex(6, C₄) = 7`**: `m + 4 ≤ 2n`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitEnvelopeRow`); `[20a]` item 36).*
+  54. `K .highDegreePositive`: **At least one high-degree vertex**: `1 ≤ |H|`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`highDegreeSurplusRow`); `[20a]` item 72).*
+  55. `K .highDegreeSurplusCapacity`: **The surplus fits on the high vertices**: `σ ≤ |H|·(n − |H| − δ)` (every high vertex has all its neighbours among the `n − |H|` baseline vertices).  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`highDegreeSurplusRow`); `[20a]` item 73).*
+  56. `K .canonicalCapacityExplicit`: **G's canonical capacity presentation is the explicit one**: the recorded blocker activation of G's active family on the node-`[19]` packing.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityRow`); `[20a]` item 83).*
+  57. `K .canonicalTokenCount`: **The exact token count at the canonical presentation**: `|𝔗_cap| + 2(order − 1)·ν = 4n + 3σ + 3·order·ν` (at order `13`: `|𝔗_cap| = 4n + 3σ + 15ν`).  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 85).*
+  58. `K .canonicalBlockedFreePartition`: **`|Π_blk| + |Π_free| = C(σ, 2)`** at the canonical ledger.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 86).*
+  59. `K .canonicalLedgerDeficit`: **The deficit at the canonical ledger** (G2): with `c = ⌈√n⌉`, `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B) + 2(|Π_blk| − M₀|𝔗|)`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 87).*
+  60. `K .pairCountDeficit`: **The pair-count deficit** (G3): `c²K + 2M₀(8n + σ) ≤ 2(C(σ, 2) − B)`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 88).*
+  61. `K .canonicalCertificationCriterion`: **The certification criterion at the canonical presentation**: its canonical certified ledger exists iff `|Π_free| ≤ B`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 89).*
+  62. `K .canonicalOverloadOfFits`: **If the free side fits `B`, the blocked side is overloaded**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_blk| − M₀|𝔗|)`, and some token has load `> M₀` and carries an `L_geom` role-homogeneous matching or star.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 90).*
+  63. `K .canonicalFreeExcessOfCapped`: **If every token carries load `≤ M₀`, the free side exceeds `B`**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B)`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitCanonicalCapacityCountsRow`); `[20a]` item 91).*
+  64. `K .paperBudgetBound`: **The paper's budget at the canonical spine family fits the certification budget**: `E_paper ≤ B`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitPairChainRow`); `[20a]` item 92).*
+  65. `K .paperBudgetCertifies`: **`|Π_free| ≤ E_paper` certifies**: at the canonical spine family and presentation, `|Π_free| ≤ E_paper` makes the canonical certified ledger exist.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitPairChainRow`); `[20a]` item 93).*
+  66. `K .pairCodeConfiguration`: **Where G sits in the pair-code chain**: either the `[137]`→`[143]` configuration holds at the canonical objects (blocked pair, `[137]` count, canonical pattern, overload, caps fail), or G's canonical first failure exists and yields the `[182]` residual, or the target defect of the canonical return system's obstruction coordinates, or that obstruction's handoff together with the Type B fan entry `[65]`.  *Hoisted (top of the strict arm of `[19]`, before `[20]` (`sparseExitPairChainRow`); `[20a]` item 94).*
   - *Arm `system`* (one disjunct): `K .pairSystemEarlyOutcome`.
   - *Arm `increment`* (one disjunct): `K .pairSystemNoEarlyOutcome`, `K .pairSerialDemandSystem`, `K .pairIncrementCovered`, `K .pairIncrementEarlyOutcome`.
 - **Subtypes** (`PairTypeBOutcome_<label> := PairTypeBOutcome ∧ <extra facts>`; each has `.toGeneric`):
-  - **`PairTypeBOutcome_independentSystem`** ([130] independent (blocker-free) arm; [131] free-pair count fails; [179] early outcome); return theorem `pairTypeBIndependentSystemReturn`; 47 facts (43 common + 4 extra):
+  - **`PairTypeBOutcome_independentSystem`** ([130] independent (blocker-free) arm; [131] free-pair count fails; [179] early outcome); return theorem `pairTypeBIndependentSystemReturn`; 75 facts (71 common + 4 extra):
     38. `K .independentPairFamily`: Node `[130]`, blocker-free arm: the exact negation of `dependentPairFamily` at G's canonical activation (`Π_blk = ∅`).
     39. `K .freePairCountFails`: Node `[131]`, count fails: the exact negation of `freePairEntropySandwich`.
     40. `K .freePairCodeUnrealized`: Node `[131]`, complementary arm: the free-pair code is not realized by the skeleton class.
     41. `K .pairSystemEarlyOutcome`: Node `[179]`, alternatives (i)--(iv), retained for their literal route; (iv) is the first-separator handoff of the obstruction's own overlap support at `P₀`.
-  - **`PairTypeBOutcome_independentIncrement`** ([130] independent (blocker-free) arm; [131] free-pair count fails; [179] serial arm; [180] covered increment; [180] early outcome); return theorem `pairTypeBIndependentIncrementReturn`; 50 facts (43 common + 7 extra):
+  - **`PairTypeBOutcome_independentIncrement`** ([130] independent (blocker-free) arm; [131] free-pair count fails; [179] serial arm; [180] covered increment; [180] early outcome); return theorem `pairTypeBIndependentIncrementReturn`; 78 facts (71 common + 7 extra):
     38. `K .independentPairFamily`: Node `[130]`, blocker-free arm: the exact negation of `dependentPairFamily` at G's canonical activation (`Π_blk = ∅`).
     39. `K .freePairCountFails`: Node `[131]`, count fails: the exact negation of `freePairEntropySandwich`.
     40. `K .freePairCodeUnrealized`: Node `[131]`, complementary arm: the free-pair code is not realized by the skeleton class.
@@ -2637,7 +2778,7 @@ route-8 product has 750 paths.
     42. `K .pairSerialDemandSystem`: Node `[179]`, alternative (v): the graph-realized serial demand system.
     43. `K .pairIncrementCovered`: Node `[180]`: corrected arithmetic or a periodic-response route.
     44. `K .pairIncrementEarlyOutcome`: Node `[180]`, periodic-response sparse-exit or Type B route.
-  - **`PairTypeBOutcome_dependentSystem`** ([130] dependent arm (no blocker (d), no blocker (e)); [132] blocker arm; [137] blocked-side count fails; [179] early outcome); return theorem `pairTypeBDependentSystemReturn`; 55 facts (43 common + 12 extra):
+  - **`PairTypeBOutcome_dependentSystem`** ([130] dependent arm (no blocker (d), no blocker (e)); [132] blocker arm; [137] blocked-side count fails; [179] early outcome); return theorem `pairTypeBDependentSystemReturn`; 83 facts (71 common + 12 extra):
     38. `K .dependentPairFamily`: Node `[130]`, blocked arm of "blocker-free?": at G's canonical activation some scheduled pair has a nonempty blocker set over all six clauses of `def:surplus-blockers` (`Π_blk ≠ ∅`).
     39. `K .pairDegreeProfileFibres`: Node `[130]`, `lem:degree-profile-fibres` at G's pair family.
     40. `K .pairNoProfileObstruction`: Node `[130]`, blocker clause (d) absent at G's canonical activation.
@@ -2650,7 +2791,7 @@ route-8 product has 750 paths.
     47. `K .blockedPairCountFails`: Node `[137]`, free-side count fails: the exact negation of `blockedPairEntropySandwich`.
     48. `K .blockedPairCodeUnrealized`: Node `[137]`, complementary arm: at some declared capacity presentation the free side's code is not realized by the skeleton class.
     49. `K .pairSystemEarlyOutcome`: Node `[179]`, alternatives (i)--(iv), retained for their literal route; (iv) is the first-separator handoff of the obstruction's own overlap support at `P₀`.
-  - **`PairTypeBOutcome_dependentIncrement`** ([130] dependent arm (no blocker (d), no blocker (e)); [132] blocker arm; [137] blocked-side count fails; [179] serial arm; [180] covered increment; [180] early outcome); return theorem `pairTypeBDependentIncrementReturn`; 58 facts (43 common + 15 extra):
+  - **`PairTypeBOutcome_dependentIncrement`** ([130] dependent arm (no blocker (d), no blocker (e)); [132] blocker arm; [137] blocked-side count fails; [179] serial arm; [180] covered increment; [180] early outcome); return theorem `pairTypeBDependentIncrementReturn`; 86 facts (71 common + 15 extra):
     38. `K .dependentPairFamily`: Node `[130]`, blocked arm of "blocker-free?": at G's canonical activation some scheduled pair has a nonempty blocker set over all six clauses of `def:surplus-blockers` (`Π_blk ≠ ∅`).
     39. `K .pairDegreeProfileFibres`: Node `[130]`, `lem:degree-profile-fibres` at G's pair family.
     40. `K .pairNoProfileObstruction`: Node `[130]`, blocker clause (d) absent at G's canonical activation.
@@ -2672,8 +2813,8 @@ route-8 product has 750 paths.
 ### Node [187] (Type B sublinear failure) (thm:main (vi), tex 369-378)
 
 - **Configuration at G.** Failure of the Type B sublinear hypothesis package on the unified route-8 ledger.
-- **Lean.** Generic residual `TypeBSublinearOutcome` (`Assembly/Residuals.lean`), return theorem `typeBSublinearReturn`: the 63 facts common to all paths. It is returned at one Lean site (`Assembly/RouteEight/Local.lean`, the negative arm of `typeBSublinearDichotomy` in `selectedRouteEightUnifiedResidual`), which 750 paths from the root reach with 750 distinct fact sets (after the two lane-entry closures of Closed from G's facts). Product form: `TypeBSublinearOutcome_product` (`Assembly/Residuals/TypeBSublinearOutcome.lean`), below; wired: the return site calls `typeBSublinearProductReturn` with its `Route8Arms` argument.
-- **Facts carried (63).**
+- **Lean.** Generic residual `TypeBSublinearOutcome` (`Assembly/Residuals.lean`), return theorem `typeBSublinearReturn`: the 73 facts common to all paths. It is returned at one Lean site (`Assembly/RouteEight/Local.lean`, the negative arm of `typeBSublinearDichotomy` in `selectedRouteEightUnifiedResidual`), which 750 paths from the root reach with 750 distinct fact sets (after the two lane-entry closures of Closed from G's facts). Product form: `TypeBSublinearOutcome_product` (`Assembly/Residuals/TypeBSublinearOutcome.lean`), below; wired: the return site calls `typeBSublinearProductReturn` with its `Route8Arms` argument.
+- **Facts carried (73).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -2737,13 +2878,23 @@ route-8 product has 750 paths.
   61. `K .route8ExtractedEntryCensus`: `def:typeA-unified-entries` with `lem:typeA-unified-carriers` at the extracted route-8 cores of the Type B bridge pieces (node `[123]`): the exact per-entry census of `lem:typeB-bridge-with-route8-core`'s collection `𝒜_X`.
   62. `K .typeBSublinearResidual`: The exact negation of the sublinear hypotheses, retained as the tested residual state (the manuscript's Part IX bridge-residual continuation).
   63. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
+  64. `K .packingOrderBound`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 33).*
+  65. `K .noSuppressionChordViolation`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 29).*
+  66. `K .specWitnessStructure`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 95).*
+  67. `K .remainderDeficiencyBelowCut`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 37).*
+  68. `K .windowCutCapacity`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 38).*
+  69. `K .primitiveCarrierCount`: **`|𝔘_sp(G)| = 4n + 2σ`.**  *Hoisted (entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`); `[20a]` item 84).*
+  70. `K .singleBoundaryShape`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Hoisted (entry prefix, after `[8]` (`singleBoundaryShapeRow`); `[20a]` item 45).*
+  71. `K .surplusDartIdentity`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 31).*
+  72. `K .highDegreeCountBound`: **High-degree count**: `|H| ≤ σ`.  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 32).*
+  73. `K .admissibleQuotientsLabelInjective`: **Every admissible quotient of G is label-injective** on its family.  *Hoisted (entry prefix, after `[13]` (`sparseExitQuotientsRow`); `[20a]` item 44).*
 - **Product of arm blocks (user ruling).** The 750 paths hold 750 distinct fact sets. Each is exactly the 63 generic facts above together with the keys of one block choice in each factor below. The chosen blocks are pairwise key-disjoint, and every combination occurs on exactly one path, so the product is full: 750 = 15 (lane entry: 3 prefix × 4 entropy + `[161]` prefix × 3 low entropy) × 50 (continuation), with 50 = 44 (Type A lane) + 6 (Type B high-surplus lane). Closed from G's facts: the 120 former `Route8DeficitBlock_holds` paths at `[124]` and the 12 absorbed-lane arms at `[173]` (1360 → 1000), then the `[146]` prefix (200 paths) and `[161]` × high entropy (50 paths) (1000 → 750). The check was made path by path against the elaborated ledgers (on the 1360-path product; the 750 are that product with the closed choices removed).
   - Lean: `TypeBSublinearOutcome_product := TypeBSublinearOutcome ∧ Route8LaneEntry ∧ NetChargeContinuation` (`Assembly/Residuals/TypeBSublinearOutcome.lean`), with `.toGeneric` and return theorem `typeBSublinearProductReturn`. The blocks are the shared route-8 blocks of `Assembly/Residuals/Route8Blocks.lean`, the same ones `Route8QuotientOutcome` uses; each has a `.ret` theorem with one `get` per key.
   - `NetChargeContinuation = TypeALane ∨ TypeBHighSurplusLane` (the absorbed lane is closed at `[173]`, see "Closed from G's facts").
   - `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry ∧ TypeAArm`, where `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour ∧ Route8DeficitBlock_fails) ∨ TypeAArmBlock_dischargedRetest`.
   - `TypeBHighSurplusLane = NetChargeLaneBlock_typeBHighSurplus ∧ BChain`.
   - `BChain = BChainEntryBlock ∧ BChainFanCertificate` (6 fan/certificate arms: the heavy-centre fan with the residual, B2-choice and overlap-obstruction certificates; the degree-four fan with the residual, degree-four-closed and degree-four-overlap certificates).
-  - Total facts per path: 63 + the chosen blocks, from 83 to 122.
+  - Total facts per path: 63 + the chosen blocks, from 93 to 132.
 - **Arm blocks (each with its arms, the number of paths it is on, and its keys).**
   - **Prefix factor (4 live blocks; `Route8LanePrefix` is the three that take every entropy arm, `Route8LanePrefixBlock_unrealizedDenseBelow` takes only `EntropyArmLow`).**
     - `Route8LanePrefixBlock_realizedColdBelow` ([158] window package realized; [146] θ < 1/78); on 200 paths; 2 keys:
@@ -2907,8 +3058,8 @@ route-8 product has 750 paths.
 
 - **Configuration at G.** Failure of route-8 quotient freeness of the unified census.
 - **The paper step it carries.** `thm:main` (tex 369-372, 388-390) returns the failure of route-8 quotient freeness at `[187]`; the proof of `lem:typeA-unified-carriers` (tex 15360-15364) instead dismisses alternative (b) as exit (5), which needs a smaller connected realization of G's quotient that the paper does not supply (see "Paper findings", [348]).
-- **Lean.** `Route8QuotientOutcome` (`Assembly/Residuals.lean`, the generic residual: the 65 keys common to every path); return theorem `route8QuotientReturn`, called once, at `Assembly/RouteEight/Local.lean` (`selectedRouteEightUnifiedResidual`, arm `[348]`). The 750 paths from `selectedLedgerBoundary` carry 750 distinct fact sets (probe of the elaborated `known` at every call site, R09, 2026-09-27; B-chain count corrected at integration; 250 of the 1000 paths removed by the two lane-entry closures of Closed from G's facts), and form an exact product of arm blocks: `Route8QuotientOutcome_product := Route8QuotientOutcome ∧ Route8LaneEntry ∧ NetChargeContinuation` (`Assembly/Residuals/Route8QuotientOutcome.lean`; `.toGeneric`; return theorem `route8QuotientProductReturn`, parameterised by the arm blocks, each built by its block's `.ret` with one `get` per key). The blocks are shared (`Assembly/Residuals/Route8Blocks.lean`). Every path is the 65 common keys plus exactly one block per factor, and every one of the `15 × 50 = 750` combinations occurs (`Route8LaneEntry = (Route8LanePrefix ∧ EntropyArm) ∨ (Route8LanePrefixBlock_unrealizedDenseBelow ∧ EntropyArmLow)`, `15 = 3·4 + 3`). Totals: 85 to 124 facts. Wired: the return site calls `route8QuotientProductReturn` with its `Route8Arms` argument.
-- **Facts carried (65).**
+- **Lean.** `Route8QuotientOutcome` (`Assembly/Residuals.lean`, the generic residual: the 75 keys common to every path); return theorem `route8QuotientReturn`, called once, at `Assembly/RouteEight/Local.lean` (`selectedRouteEightUnifiedResidual`, arm `[348]`). The 750 paths from `selectedLedgerBoundary` carry 750 distinct fact sets (probe of the elaborated `known` at every call site, R09, 2026-09-27; B-chain count corrected at integration; 250 of the 1000 paths removed by the two lane-entry closures of Closed from G's facts), and form an exact product of arm blocks: `Route8QuotientOutcome_product := Route8QuotientOutcome ∧ Route8LaneEntry ∧ NetChargeContinuation` (`Assembly/Residuals/Route8QuotientOutcome.lean`; `.toGeneric`; return theorem `route8QuotientProductReturn`, parameterised by the arm blocks, each built by its block's `.ret` with one `get` per key). The blocks are shared (`Assembly/Residuals/Route8Blocks.lean`). Every path is the 65 common keys plus exactly one block per factor, and every one of the `15 × 50 = 750` combinations occurs (`Route8LaneEntry = (Route8LanePrefix ∧ EntropyArm) ∨ (Route8LanePrefixBlock_unrealizedDenseBelow ∧ EntropyArmLow)`, `15 = 3·4 + 3`). Totals: 85 to 134 facts. Wired: the return site calls `route8QuotientProductReturn` with its `Route8Arms` argument.
+- **Facts carried (75).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -2974,7 +3125,17 @@ route-8 product has 750 paths.
   63. `K .route8UnifiedDeficit`: Node `[123]`, `lem:typeA-unified-deficit`: the unified collection carries the whole large-budget deficit — `|R| ≤ s·D̃_A + s·|∂R| + 2F·s·T(n)`.
   64. `K .route8QuotientResidual`: The exact negation: some unified entry realizes alternative (b).
   65. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
-- **Product of arm blocks (keys beyond the 65 common facts).**
+  66. `K .packingOrderBound`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 33).*
+  67. `K .noSuppressionChordViolation`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 29).*
+  68. `K .specWitnessStructure`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 95).*
+  69. `K .remainderDeficiencyBelowCut`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 37).*
+  70. `K .windowCutCapacity`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 38).*
+  71. `K .primitiveCarrierCount`: **`|𝔘_sp(G)| = 4n + 2σ`.**  *Hoisted (entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`); `[20a]` item 84).*
+  72. `K .singleBoundaryShape`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Hoisted (entry prefix, after `[8]` (`singleBoundaryShapeRow`); `[20a]` item 45).*
+  73. `K .surplusDartIdentity`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 31).*
+  74. `K .highDegreeCountBound`: **High-degree count**: `|H| ≤ σ`.  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 32).*
+  75. `K .admissibleQuotientsLabelInjective`: **Every admissible quotient of G is label-injective** on its family.  *Hoisted (entry prefix, after `[13]` (`sparseExitQuotientsRow`); `[20a]` item 44).*
+- **Product of arm blocks (keys beyond the 75 common facts).**
   Structure: `Route8LaneEntry (15 = 3 prefix × 4 entropy + [161] × 3 low entropy; the `[146]` prefix and `[161]` × high entropy are closed, see "Closed from G's facts") × NetChargeContinuation`; `NetChargeContinuation = TypeALane ∨ TypeBHighSurplusLane` (50 = 2·22 + 6; the absorbed lane is closed at `[173]` and the deficit-holds choice at `[124]`, see "Closed from G's facts"); `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry (2) ∧ TypeAArm (22)`; `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour (3) ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour (3) ∧ Route8DeficitBlock_fails) ∨ TypeAArmBlock_dischargedRetest`; `TypeBHighSurplusLane = NetChargeLaneBlock_typeBHighSurplus ∧ BChain`; `BChain = BChainEntryBlock ∧ BChainFanCertificate (6)`, `BChainFanCertificate = (BChainFanBlock_heavyCentre ∧ (residual ∨ b2Choice ∨ overlapObstruction)) ∨ (BChainFanBlock_degreeFour ∧ (residual ∨ degreeFourClosed ∨ degreeFourOverlap))`.
   - Prefix factor (one of 4; `Route8LanePrefix` is the first three, `Route8LanePrefixBlock_unrealizedDenseBelow` enters only with `EntropyArmLow`):
     - `Route8LanePrefixBlock_realizedColdBelow` (2): window package realized; cold route-8 rate below (`nearCubicRealized` → `nearCubicLargeBudgetColdRate`)
@@ -3141,7 +3302,7 @@ route-8 product has 750 paths.
 
 - **Configuration at G.** Failure of the exact private-carrier rate at the entry of the route-8 continuation.
 - **Lean.** Generic residual `Route8RateFailsOutcome` (`Assembly/Residuals.lean`), the facts common to all 11 paths (distinct ledger histories from the root; the dense-below high-entropy path is closed at `[53]`, see Closed from G's facts); return theorem `route8RateFailsReturn`.  The 12 paths hold 12 distinct fact sets, each its own subtype in `Assembly/Residuals/Route8RateFailsOutcome.lean` (`<Subtype> := Route8RateFailsOutcome ∧ extra facts`, projection `<Subtype>.toGeneric`, return theorem `route8RateFailsReturn_<label>`).  Wired: `nearCubicRouteEightEntry` takes `DensityCapArm ∧ EntropyArm` and returns `route8RateFailsSubtypesReturn_routeEightEntry` (8 subtypes); `nearCubicRateFailedExit` takes `EntropyArm` and returns `route8RateFailsSubtypesReturn_rateFailedExit` (4 subtypes). The upstream-arm facts of each subtype are read from the prefix and entropy blocks.
-- **Common facts carried by the generic residual (43).**
+- **Common facts carried by the generic residual (54).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -3185,21 +3346,32 @@ route-8 product has 750 paths.
   41. `K .netDeficiencyCap`: Node `[56]`: exact cleared finite form of the large-budget net-deficiency cap.
   42. `K .route8RateFails`: The complement of the rate reading on an arm whose density fact does not decide it (`3/13 ≤ τ`): the manuscript's delicate density interval (row 2 of the cold-branch ledger), carried as its own branch.
   43. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
+  44. `K .packingOrderBound`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 33).*
+  45. `K .noSuppressionChordViolation`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 29).*
+  46. `K .specWitnessStructure`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 95).*
+  47. `K .bridgeless`: `lem:bridgeless` at G.  *Hoisted (entry prefix, after the presentation laws `K .cubicBaseline` (`bridgelessRow`); `[20a]` item 20).*
+  48. `K .remainderDeficiencyBelowCut`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 37).*
+  49. `K .windowCutCapacity`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 38).*
+  50. `K .primitiveCarrierCount`: **`|𝔘_sp(G)| = 4n + 2σ`.**  *Hoisted (entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`); `[20a]` item 84).*
+  51. `K .singleBoundaryShape`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Hoisted (entry prefix, after `[8]` (`singleBoundaryShapeRow`); `[20a]` item 45).*
+  52. `K .surplusDartIdentity`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 31).*
+  53. `K .highDegreeCountBound`: **High-degree count**: `|H| ≤ σ`.  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 32).*
+  54. `K .admissibleQuotientsLabelInjective`: **Every admissible quotient of G is label-injective** on its family.  *Hoisted (entry prefix, after `[13]` (`sparseExitQuotientsRow`); `[20a]` item 44).*
 - **Subtypes (11), one per distinct fact set.**
-  - `Route8RateFailsOutcome_realized_highEntropy` ([158] yes (realized package); [50] high; [53] bound, Residual C [55]): 49 facts, the 43 common facts and
+  - `Route8RateFailsOutcome_realized_highEntropy` ([158] yes (realized package); [50] high; [53] bound, Residual C [55]): 60 facts, the 54 common facts and
     - `K .windowPackageRealized`
     - `K .remainderEntropyHigh`
     - `K .entropyPackageDemand`
     - `K .entropyCapBound`
     - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
     - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
-  - `Route8RateFailsOutcome_realized_lowNonrepetitive` ([158] yes (realized package); [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 48 facts, the 43 common facts and
+  - `Route8RateFailsOutcome_realized_lowNonrepetitive` ([158] yes (realized package); [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 59 facts, the 54 common facts and
     - `K .windowPackageRealized`
     - `K .remainderEntropyLow`
     - `K .localTypeCoordinateNonrepetitive`
     - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
     - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
-  - `Route8RateFailsOutcome_realized_lowWedgeFree` ([158] yes (realized package); [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 50 facts, the 43 common facts and
+  - `Route8RateFailsOutcome_realized_lowWedgeFree` ([158] yes (realized package); [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 61 facts, the 54 common facts and
     - `K .windowPackageRealized`
     - `K .remainderEntropyLow`
     - `K .localTypeCoordinateRepetitive`
@@ -3207,7 +3379,7 @@ route-8 product has 750 paths.
     - `K .dominantRootedTypeWedgeFree`
     - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
     - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
-  - `Route8RateFailsOutcome_realized_lowWedge` ([158] yes (realized package); [50] low; local-type coordinate repetitive; dominant rooted wedge type): 51 facts, the 43 common facts and
+  - `Route8RateFailsOutcome_realized_lowWedge` ([158] yes (realized package); [50] low; local-type coordinate repetitive; dominant rooted wedge type): 62 facts, the 54 common facts and
     - `K .windowPackageRealized`
     - `K .remainderEntropyLow`
     - `K .localTypeCoordinateRepetitive`
@@ -3216,7 +3388,7 @@ route-8 product has 750 paths.
     - `K .independentObstructionTranslates`
     - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
     - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
-  - `Route8RateFailsOutcome_denseAtOrAbove_highEntropy` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] high; [53] bound, Residual C [55]): 50 facts, the 43 common facts and
+  - `Route8RateFailsOutcome_denseAtOrAbove_highEntropy` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] high; [53] bound, Residual C [55]): 61 facts, the 54 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyAtOrAbove`
     - `K .remainderEntropyHigh`
@@ -3224,14 +3396,14 @@ route-8 product has 750 paths.
     - `K .entropyCapBound`
     - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
     - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
-  - `Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 49 facts, the 43 common facts and
+  - `Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 60 facts, the 54 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyAtOrAbove`
     - `K .remainderEntropyLow`
     - `K .localTypeCoordinateNonrepetitive`
     - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
     - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
-  - `Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 51 facts, the 43 common facts and
+  - `Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 62 facts, the 54 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyAtOrAbove`
     - `K .remainderEntropyLow`
@@ -3240,7 +3412,7 @@ route-8 product has 750 paths.
     - `K .dominantRootedTypeWedgeFree`
     - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
     - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
-  - `Route8RateFailsOutcome_denseAtOrAbove_lowWedge` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate repetitive; dominant rooted wedge type): 52 facts, the 43 common facts and
+  - `Route8RateFailsOutcome_denseAtOrAbove_lowWedge` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate repetitive; dominant rooted wedge type): 63 facts, the 54 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyAtOrAbove`
     - `K .remainderEntropyLow`
@@ -3251,14 +3423,14 @@ route-8 product has 750 paths.
     - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
     - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
   - `Route8RateFailsOutcome_denseBelow_highEntropy`: closed at `[53]` (the dense package overflows the skeleton budget, so the entropy cap is active; see Closed from G's facts).
-  - `Route8RateFailsOutcome_denseBelow_lowNonrepetitive` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 49 facts, the 43 common facts and
+  - `Route8RateFailsOutcome_denseBelow_lowNonrepetitive` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 60 facts, the 54 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyBelow`
     - `K .remainderEntropyLow`
     - `K .localTypeCoordinateNonrepetitive`
     - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
     - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
-  - `Route8RateFailsOutcome_denseBelow_lowWedgeFree` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 51 facts, the 43 common facts and
+  - `Route8RateFailsOutcome_denseBelow_lowWedgeFree` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 62 facts, the 54 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyBelow`
     - `K .remainderEntropyLow`
@@ -3267,7 +3439,7 @@ route-8 product has 750 paths.
     - `K .dominantRootedTypeWedgeFree`
     - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
     - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
-  - `Route8RateFailsOutcome_denseBelow_lowWedge` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate repetitive; dominant rooted wedge type): 52 facts, the 43 common facts and
+  - `Route8RateFailsOutcome_denseBelow_lowWedge` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate repetitive; dominant rooted wedge type): 63 facts, the 54 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyBelow`
     - `K .remainderEntropyLow`
@@ -3283,8 +3455,8 @@ route-8 product has 750 paths.
 ### Node [187] (local cold-terminal exclusion) (thm:main (vi), tex 369-378)
 
 - **Configuration at G.** The local cold-terminal exclusion of thm:cold-branch-quantitative-closure without a global terminal contradiction.
-- **Lean.** Generic residual `ColdBranchClosedOutcome` (`Assembly/Residuals.lean`, return theorem `coldBranchClosedReturn`): 58 facts, common to every path. The residual is reached by 4 paths (distinct ledger histories from the root), the 4 linear-cold-mass singletons of `Assembly/Residuals/ColdBranchClosedOutcome.lean`. Wired: the dense linear pass returns `coldBranchClosedLinearDenseReturn` on its `[160]` arm; the realized linear arm returns its two singletons. The 100 absorbed-germ paths (formerly the product `ColdBranchClosedOutcome_product`, 4 entropy × 5 window × 5 exit blocks through `selectedAbsorbedGermResidual`) are not entered: the `[173]` no-arm is closed at the node against `K .route8Rate` (see "Closed from G's facts", `[173]`/`[174]`); the product, its blocks and `Assembly/Absorbed/*` are removed.
-- **Generic facts, carried on every path (58).**
+- **Lean.** Generic residual `ColdBranchClosedOutcome` (`Assembly/Residuals.lean`, return theorem `coldBranchClosedReturn`): 68 facts, common to every path. The residual is reached by 4 paths (distinct ledger histories from the root), the 4 linear-cold-mass singletons of `Assembly/Residuals/ColdBranchClosedOutcome.lean`. Wired: the dense linear pass returns `coldBranchClosedLinearDenseReturn` on its `[160]` arm; the realized linear arm returns its two singletons. The 100 absorbed-germ paths (formerly the product `ColdBranchClosedOutcome_product`, 4 entropy × 5 window × 5 exit blocks through `selectedAbsorbedGermResidual`) are not entered: the `[173]` no-arm is closed at the node against `K .route8Rate` (see "Closed from G's facts", `[173]`/`[174]`); the product, its blocks and `Assembly/Absorbed/*` are removed.
+- **Generic facts, carried on every path (68).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -3343,8 +3515,18 @@ route-8 product has 750 paths.
   56. `K .coldBranchClosed`: `thm:cold-branch-quantitative-closure`, local part: the local cold-terminal exclusion at G (no global terminal contradiction).
   57. `K .absorbedGermFanData`: Node `[177]`, `lem:absorbed-germ-fan-data` (ii): every selected branch-excess half-edge outside node `[153]`'s exact subcubic candidate class meets a vertex of degree above the threshold, a heavy centre, and is decorated handoff fan data for Type B.
   58. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
+  59. `K .packingOrderBound`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 33).*
+  60. `K .noSuppressionChordViolation`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 29).*
+  61. `K .specWitnessStructure`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 95).*
+  62. `K .remainderDeficiencyBelowCut`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 37).*
+  63. `K .windowCutCapacity`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 38).*
+  64. `K .primitiveCarrierCount`: **`|𝔘_sp(G)| = 4n + 2σ`.**  *Hoisted (entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`); `[20a]` item 84).*
+  65. `K .singleBoundaryShape`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Hoisted (entry prefix, after `[8]` (`singleBoundaryShapeRow`); `[20a]` item 45).*
+  66. `K .surplusDartIdentity`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 31).*
+  67. `K .highDegreeCountBound`: **High-degree count**: `|H| ≤ σ`.  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 32).*
+  68. `K .admissibleQuotientsLabelInjective`: **Every admissible quotient of G is label-injective** on its family.  *Hoisted (entry prefix, after `[13]` (`sparseExitQuotientsRow`); `[20a]` item 44).*
 - **Linear-cold-mass singletons** (one path each, each `ColdBranchClosedOutcome ∧` its extra facts, with `.toGeneric`):
-  - **`ColdBranchClosedOutcome_linearDenseAtOrAbove`** (67 facts: 58 generic + 9; return `coldBranchClosed_linearDenseAtOrAboveReturn`): [153] linear cold mass through `nearCubicDenseLinear` after `nearCubicDensePassAtOrAbove`: [158] unrealized, [160] tau at or above 1/4, [146] theta at or above, [162] heavy entry, [154] none realizing / some distinguishing.
+  - **`ColdBranchClosedOutcome_linearDenseAtOrAbove`** (77 facts: 58 generic + 9; return `coldBranchClosed_linearDenseAtOrAboveReturn`): [153] linear cold mass through `nearCubicDenseLinear` after `nearCubicDensePassAtOrAbove`: [158] unrealized, [160] tau at or above 1/4, [146] theta at or above, [162] heavy entry, [154] none realizing / some distinguishing.
     - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
     - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
     - `K .coldGermSomeDistinguishing`: Node `[154]`, second binary test on the no-G1 arm (G2): some configuration of the extracted active family is hit-distinguished.
@@ -3354,7 +3536,7 @@ route-8 product has 750 paths.
     - `K .denseColdCorridorsTerminal`: Node `[162]`: every return corridor of the dense hot/cold pass is the terminal (F5) subcase because its selected shortest path lies in the induced-window-free normalized remainder.
     - `K .denseDeficiencyAtOrAbove`: Its exact complement: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
     - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
-  - **`ColdBranchClosedOutcome_linearDenseRateFailed`** (68 facts: 58 generic + 10; return `coldBranchClosed_linearDenseRateFailedReturn`): [153] linear cold mass through `nearCubicDenseLinear` after `nearCubicDensePassRateFailed`: [158] unrealized, [160] tau below 1/4 and route-8 rate failing, [146] theta at or above, [162] heavy entry, [154] none realizing / some distinguishing.
+  - **`ColdBranchClosedOutcome_linearDenseRateFailed`** (78 facts: 58 generic + 10; return `coldBranchClosed_linearDenseRateFailedReturn`): [153] linear cold mass through `nearCubicDenseLinear` after `nearCubicDensePassRateFailed`: [158] unrealized, [160] tau below 1/4 and route-8 rate failing, [146] theta at or above, [162] heavy entry, [154] none realizing / some distinguishing.
     - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
     - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
     - `K .coldGermSomeDistinguishing`: Node `[154]`, second binary test on the no-G1 arm (G2): some configuration of the extracted active family is hit-distinguished.
@@ -3365,7 +3547,7 @@ route-8 product has 750 paths.
     - `K .denseDeficiencyBelow`: On the `[21]` unrealized residual: `prop:negative-net-charge`'s exact large-budget net-deficiency comparison holds at the fixed maximal packing — the manuscript's `τ(θ) < 1/4` deficiency reading with the exact `√n` allowance, i.e. the inequality node `[56]` supplies to `[57]`--`[62]`.
     - `K .route8RateFails`: The complement of the rate reading on an arm whose density fact does not decide it (`3/13 ≤ τ`): the manuscript's delicate density interval (row 2 of the cold-branch ledger), carried as its own branch.
     - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
-  - **`ColdBranchClosedOutcome_linearRealizedDistinguished`** (66 facts: 58 generic + 8; return `coldBranchClosed_linearRealizedDistinguishedReturn`): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / some distinguishing.
+  - **`ColdBranchClosedOutcome_linearRealizedDistinguished`** (76 facts: 58 generic + 8; return `coldBranchClosed_linearRealizedDistinguishedReturn`): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / some distinguishing.
     - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
     - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
     - `K .coldGermSomeDistinguishing`: Node `[154]`, second binary test on the no-G1 arm (G2): some configuration of the extracted active family is hit-distinguished.
@@ -3374,7 +3556,7 @@ route-8 product has 750 paths.
     - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
     - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
     - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
-  - **`ColdBranchClosedOutcome_linearRealizedSilent`** (66 facts: 58 generic + 8; return `coldBranchClosed_linearRealizedSilentReturn`): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing.
+  - **`ColdBranchClosedOutcome_linearRealizedSilent`** (76 facts: 58 generic + 8; return `coldBranchClosed_linearRealizedSilentReturn`): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing.
     - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
     - `K .coldGermNoneDistinguishing`: Node `[154]`, the exact complement of `coldGermSomeDistinguishing`: every active configuration is silent (G3 or the equal-length table).
     - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
@@ -3389,8 +3571,8 @@ route-8 product has 750 paths.
 ### Node [153] (lem:cold-corridor-first-failure (ii), tex 7265-7270)
 
 - **Configuration at G.** G's first equal-state pair on a retained cold corridor, with its separating path context and profile separation; at G's canonical witness `coldRepeatWitness? = some ⟨occurrence, ε, left, right⟩` (`ColdRepeatedStateSpecAt`): the retained corridor `C_ε` of G in its outside component of `G − X_cold`; `left < right` with equal pinned states and no two equal states before `right` (the first equal-state pair); no (F1)--(F5) event before `right` and the (F2) clause at `right`; the separating path context `ColdEqualStates.prefixContext right` (accepted cycle through `piece J_right`, none through `retainedPiece J_right J_left`); the boundary-degree profiles of the two pieces differ; the glue vertices `head left`, `head right` have equal boundary-degree entries.
-- **Lean.** Generic residual `Node153ResidualOutcome` (`Assembly/Residuals.lean`), return theorem `node153Return`: 43 facts, common to every path. The residual is reached by 3 paths (distinct ledger histories from the root), the three linear arms of `[153]`, with 3 distinct fact sets; each is its own open node, a subtype `Node153ResidualOutcome_<label>` (`Assembly/Residuals/Node153ResidualOutcome.lean`) := the generic residual ∧ every extra fact of that path's ledger, with projection `.toGeneric`, return theorem `node153Return_<label>` (one `get` per fact), and their disjunction `Node153ResidualSubtypes`. Wired: the return site `nearCubicColdOccurrence` takes `Node153Arm` (one of the three linear blocks `Node153LinearBlock_*`) and returns `node153SubtypesReturn`, which calls each subtype's return theorem. The 20 absorbed-lane subtypes (`[173]` exact collision fails, returned from `selectedAbsorbedGermPrerequisites`) are not entered: the `[173]` no-arm is closed at the node against `K .route8Rate` (see "Closed from G's facts", `[173]`/`[174]`).
-- **Facts carried (43).**
+- **Lean.** Generic residual `Node153ResidualOutcome` (`Assembly/Residuals.lean`), return theorem `node153Return`: 53 facts, common to every path. The residual is reached by 3 paths (distinct ledger histories from the root), the three linear arms of `[153]`, with 3 distinct fact sets; each is its own open node, a subtype `Node153ResidualOutcome_<label>` (`Assembly/Residuals/Node153ResidualOutcome.lean`) := the generic residual ∧ every extra fact of that path's ledger, with projection `.toGeneric`, return theorem `node153Return_<label>` (one `get` per fact), and their disjunction `Node153ResidualSubtypes`. Wired: the return site `nearCubicColdOccurrence` takes `Node153Arm` (one of the three linear blocks `Node153LinearBlock_*`) and returns `node153SubtypesReturn`, which calls each subtype's return theorem. The 20 absorbed-lane subtypes (`[173]` exact collision fails, returned from `selectedAbsorbedGermPrerequisites`) are not entered: the `[173]` no-arm is closed at the node against `K .route8Rate` (see "Closed from G's facts", `[173]`/`[174]`).
+- **Facts carried (53).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -3434,19 +3616,29 @@ route-8 product has 750 paths.
   41. `K .coldFirstFailureOccurrence`: `lem:cold-corridor-first-failure`: every retained cold return corridor of G has a first failure, an (F1)--(F5) event at its first failing segment.
   42. `K .coldRepeatedStateResidual`: Node `[153]`, returned residual: G's first equal-state pair on a retained cold corridor, with its separating context and profile separation.
   43. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
-- **Subtypes (3).** Each carries the 43 common facts above plus the extra facts listed, in ledger order.
-  1. **`Node153ResidualOutcome_denseAtOrAbove_linear`** ([158] unrealized, [160] τ ≥ 1/4; [146] no, [153] linear cold mass): 47 facts; path `nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicDenseLinear`. Extra facts (4):
+  44. `K .packingOrderBound`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 33).*
+  45. `K .noSuppressionChordViolation`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 29).*
+  46. `K .specWitnessStructure`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 95).*
+  47. `K .remainderDeficiencyBelowCut`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 37).*
+  48. `K .windowCutCapacity`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 38).*
+  49. `K .primitiveCarrierCount`: **`|𝔘_sp(G)| = 4n + 2σ`.**  *Hoisted (entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`); `[20a]` item 84).*
+  50. `K .singleBoundaryShape`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Hoisted (entry prefix, after `[8]` (`singleBoundaryShapeRow`); `[20a]` item 45).*
+  51. `K .surplusDartIdentity`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 31).*
+  52. `K .highDegreeCountBound`: **High-degree count**: `|H| ≤ σ`.  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 32).*
+  53. `K .admissibleQuotientsLabelInjective`: **Every admissible quotient of G is label-injective** on its family.  *Hoisted (entry prefix, after `[13]` (`sparseExitQuotientsRow`); `[20a]` item 44).*
+- **Subtypes (3).** Each carries the 53 common facts above plus the extra facts listed, in ledger order.
+  1. **`Node153ResidualOutcome_denseAtOrAbove_linear`** ([158] unrealized, [160] τ ≥ 1/4; [146] no, [153] linear cold mass): 57 facts; path `nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicDenseLinear`. Extra facts (4):
      - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
      - `K .denseDeficiencyAtOrAbove`: Node `[160]`, first test no, the exact complement of `K .denseDeficiencyBelow`: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
      - `K .coldMassLinear`: Node `[153]`, exact form of "for all sufficiently large `n`": the cold mass exceeds the two branch-excess slacks, so the extracted germ family is positive (`lem:cold-germ-extraction`).
-  2. **`Node153ResidualOutcome_denseRateFails_linear`** ([158] unrealized, [160] τ < 1/4 and private-carrier rate fails; [146] no, [153] linear cold mass): 48 facts; path `nearCubicUnrealized → nearCubicDensePassRateFailed → nearCubicDenseLinear`. Extra facts (5):
+  2. **`Node153ResidualOutcome_denseRateFails_linear`** ([158] unrealized, [160] τ < 1/4 and private-carrier rate fails; [146] no, [153] linear cold mass): 58 facts; path `nearCubicUnrealized → nearCubicDensePassRateFailed → nearCubicDenseLinear`. Extra facts (5):
      - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
      - `K .denseDeficiencyBelow`: On the `[21]` unrealized residual: `prop:negative-net-charge`'s exact large-budget net-deficiency comparison holds at the fixed maximal packing — the manuscript's `τ(θ) < 1/4` deficiency reading with the exact `√n` allowance, i.e. the inequality node `[56]` supplies to `[57]`--`[62]`.
      - `K .route8RateFails`: The complement of the rate reading on an arm whose density fact does not decide it (`3/13 ≤ τ`): the manuscript's delicate density interval (row 2 of the cold-branch ledger), carried as its own branch.
      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
      - `K .coldMassLinear`: Node `[153]`, exact form of "for all sufficiently large `n`": the cold mass exceeds the two branch-excess slacks, so the extracted germ family is positive (`lem:cold-germ-extraction`).
-  3. **`Node153ResidualOutcome_realized_linear`** ([158] realized; [146] no, [153] linear cold mass): 48 facts; path `nearCubicRealized`. Extra facts (5):
+  3. **`Node153ResidualOutcome_realized_linear`** ([158] realized; [146] no, [153] linear cold mass): 58 facts; path `nearCubicRealized`. Extra facts (5):
      - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
      - `K .coldMassLinear`: Node `[153]`, exact form of "for all sufficiently large `n`": the cold mass exceeds the two branch-excess slacks, so the extracted germ family is positive (`lem:cold-germ-extraction`).
@@ -3459,7 +3651,7 @@ route-8 product has 750 paths.
 
 - **Configuration at G.** A retained cold corridor of G whose first failure is a heavy centre strictly before its terminal segment and which reads more than Q_cold states; at G's canonical witness `coldHeavyEntryWitness? = some ⟨occurrence, ε, first, centre⟩` (`ColdDenseHeavyEntrySpecAt`): `head first = centre` with `δ < d_G(centre)`; `first` is an (F4) first failure with no earlier event; the pinned states up to `first` are pairwise distinct, so `first < Q_cold`; `first < |C_ε|`; `Q_cold ≤ |C_ε|` and `C_ε` is not terminal.
 - **Lean.** `Node162ResidualOutcome` (`Assembly/Residuals.lean`); return theorem `node162Return`; reached by 2 paths (distinct ledger histories from the root).
-- **Facts carried (47).**
+- **Facts carried (57).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -3507,6 +3699,16 @@ route-8 product has 750 paths.
   45. `K .coldCutStatesDistinct`: Node `[153]`, distinct-states arm: G's pinned cut states along each retained cold corridor are pairwise distinct up to the first failure.
   46. `K .coldDenseHeavyEntryResidual`: Node `[162]`, returned residual: a non-terminal retained corridor of G first failing at a heavy centre before its terminal segment.
   47. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
+  48. `K .packingOrderBound`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 33).*
+  49. `K .noSuppressionChordViolation`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 29).*
+  50. `K .specWitnessStructure`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 95).*
+  51. `K .remainderDeficiencyBelowCut`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 37).*
+  52. `K .windowCutCapacity`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 38).*
+  53. `K .primitiveCarrierCount`: **`|𝔘_sp(G)| = 4n + 2σ`.**  *Hoisted (entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`); `[20a]` item 84).*
+  54. `K .singleBoundaryShape`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Hoisted (entry prefix, after `[8]` (`singleBoundaryShapeRow`); `[20a]` item 45).*
+  55. `K .surplusDartIdentity`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 31).*
+  56. `K .highDegreeCountBound`: **High-degree count**: `|H| ≤ σ`.  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 32).*
+  57. `K .admissibleQuotientsLabelInjective`: **Every admissible quotient of G is label-injective** on its family.  *Hoisted (entry prefix, after `[13]` (`sparseExitQuotientsRow`); `[20a]` item 44).*
 - **Distinct fact sets: 2** (2 paths, one per set).  Both paths reach the
   return in `nearCubicDenseLinear` (`Assembly/NearCubic/DensePass.lean`) from
   the no-arm of `[158]` (`nearCubicUnrealized`); their ledgers differ only by
@@ -3518,14 +3720,14 @@ route-8 product has 750 paths.
   `τ(θ) ≥ 1/4`; caller `nearCubicDensePassAtOrAbove`; return theorem
   `node162Return_tauAtOrAbove`).  Extra facts:
   - `K .denseDeficiencyAtOrAbove`
-  Total: 48 facts.
+  Total: 58 facts.
 - **Subtype `Node162ResidualOutcome_tauBelowRateFails`** (`[160]` first test
   holds, `τ(θ) < 1/4`, and the private-carrier rate `τ(θ) < 3/13` fails;
   caller `nearCubicDensePassRateFailed`; return theorem
   `node162Return_tauBelowRateFails`).  Extra facts:
   - `K .denseDeficiencyBelow`
   - `K .route8RateFails`
-  Total: 49 facts.
+  Total: 59 facts.
 - **Wired.** `nearCubicDenseLinear` takes the `[160]` arm (`DenseTauArm`),
   built by its two callers, and returns `node162SubtypesReturn`; the boundary
   carries the two subtypes.
@@ -3536,7 +3738,7 @@ route-8 product has 750 paths.
 
 - **Configuration at G.** The configuration at G where the joint realization inequality RS(R0)*2^(rate*s*p13)*2^F <= B fails; at G's `P₀ = canonicalWindowPacking` and `R₀ = R(P₀)` (`AllColdEntropyResidualStatement`): `¬ WindowFamilyRealized P₀`; the remainder glue `RS(R₀)·room ≤ B` with `room = C(C(n,2) − C(|R₀|,2), m − e(G[R₀]))`; `F ≤ c_Ω·r_Ω(R₀)`; `room < 2^{rate·s·p₁₃}·2^F`; `[53]` active, `B < 2^{rate·s·p₁₃}·RS(R₀)·2^F`; and `¬ RS(R₀)·2^{rate·s·p₁₃}·2^F ≤ B`.
 - **Lean.** Generic residual `Node54ResidualOutcome` (`Assembly/Residuals.lean`), return theorem `node54Return`: the facts common to all paths. Reached by 5 paths (distinct ledger histories from the root; the `unrealizedTauHighColdBelow` path is closed at `[146]`, see Closed from G's facts), whose ledgers hold 5 distinct fact sets; each is its own open node, a subtype of the generic residual, in `Assembly/Residuals/Node54ResidualOutcome.lean` (`Node54ResidualOutcome_<label>`, `.toGeneric`, return theorem `node54Return_<label>`). Wired: `nearCubicLargeBudgetColdRate` / `DensityCap` take `ColdRateArm` / `DensityCapArm` and return `node54SubtypesReturn_coldRate` / `_densityCap`; `DenseRate` and `RateFailed`, each reached from one arm, carry that arm's `FactKeys.Has` and call `node54Return_unrealizedBothRates` / `node54Return_unrealizedRateFailsBounded`.
-- **Generic residual: facts common to every path (41).**
+- **Generic residual: facts common to every path (52).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -3578,12 +3780,23 @@ route-8 product has 750 paths.
   39. `K .entropyCapActive`: Node `[53]`, yes arm — the terminal `[54]`: the remaining non-curvature budget is strictly smaller than the forced curvature cost, so the joint package overflows the labelled skeleton budget (`eq:entropy-cap`, `prop:entropy-high-theta`).
   40. `K .allColdEntropyResidual`: Node `[54]`, returned residual: the configuration at G where the joint realization inequality fails.
   41. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
+  42. `K .packingOrderBound`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 33).*
+  43. `K .noSuppressionChordViolation`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 29).*
+  44. `K .specWitnessStructure`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 95).*
+  45. `K .bridgeless`: `lem:bridgeless` at G.  *Hoisted (entry prefix, after the presentation laws `K .cubicBaseline` (`bridgelessRow`); `[20a]` item 20).*
+  46. `K .remainderDeficiencyBelowCut`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 37).*
+  47. `K .windowCutCapacity`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 38).*
+  48. `K .primitiveCarrierCount`: **`|𝔘_sp(G)| = 4n + 2σ`.**  *Hoisted (entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`); `[20a]` item 84).*
+  49. `K .singleBoundaryShape`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Hoisted (entry prefix, after `[8]` (`singleBoundaryShapeRow`); `[20a]` item 45).*
+  50. `K .surplusDartIdentity`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 31).*
+  51. `K .highDegreeCountBound`: **High-degree count**: `|H| ≤ σ`.  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 32).*
+  52. `K .admissibleQuotientsLabelInjective`: **Every admissible quotient of G is label-injective** on its family.  *Hoisted (entry prefix, after `[13]` (`sparseExitQuotientsRow`); `[20a]` item 44).*
 - **Subtypes (5 distinct fact sets).** Each is the generic residual plus the extra facts listed.
-  - `Node54ResidualOutcome_realizedColdBelow` ([158] realized; [146] `θ < 1/78` (`[147]`)); return `node54Return_realizedColdBelow`; 44 facts in total. Extra facts:
+  - `Node54ResidualOutcome_realizedColdBelow` ([158] realized; [146] `θ < 1/78` (`[147]`)); return `node54Return_realizedColdBelow`; 55 facts in total. Extra facts:
     - `K .windowPackageRealized`: Node `[158]`, yes arm: the fixed maximal packing's full package code is realized canonically by the labelled skeletons of G's class (`2^{b_P} ≤ |𝒢_{n,m}|`).
     - `K .coldRoute8Below`: Node `[146]`, yes arm (`θ < 1/78`): the canonical packing is below the cold route-8 threshold.
     - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13`), read from the arm's density fact.
-  - `Node54ResidualOutcome_realizedBounded` ([158] realized; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_realizedBounded`; 47 facts in total. Extra facts:
+  - `Node54ResidualOutcome_realizedBounded` ([158] realized; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_realizedBounded`; 58 facts in total. Extra facts:
     - `K .windowPackageRealized`: Node `[158]`, yes arm: the fixed maximal packing's full package code is realized canonically by the labelled skeletons of G's class (`2^{b_P} ≤ |𝒢_{n,m}|`).
     - `K .coldRoute8AtOrAbove`: Node `[146]`, no arm: the canonical packing is not below the cold route-8 threshold.
     - `K .coldMassBounded`: Node `[153]`, bounded arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
@@ -3591,7 +3804,7 @@ route-8 product has 750 paths.
     - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
     - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
   - `Node54ResidualOutcome_unrealizedTauHighColdBelow`: closed at `[146]` (`θ < 1/78` forces `τ(θ) < 1/4`; see Closed from G's facts).
-  - `Node54ResidualOutcome_unrealizedTauHighBounded` ([158] unrealized; [160] `τ(θ) ≥ 1/4`; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_unrealizedTauHighBounded`; 48 facts in total. Extra facts:
+  - `Node54ResidualOutcome_unrealizedTauHighBounded` ([158] unrealized; [160] `τ(θ) ≥ 1/4`; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_unrealizedTauHighBounded`; 59 facts in total. Extra facts:
     - `K .windowPackageUnrealized`: Node `[158]`, no arm (`[159]`): the fixed maximal packing's full package code is not realized canonically by the labelled skeletons of G's class.
     - `K .denseDeficiencyAtOrAbove`: Node `[160]`, first test no: `τ(θ) ≥ 1/4`.
     - `K .coldRoute8AtOrAbove`: Node `[146]`, no arm: the canonical packing is not below the cold route-8 threshold.
@@ -3599,7 +3812,7 @@ route-8 product has 750 paths.
     - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in G's own dyadic scale.
     - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
     - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
-  - `Node54ResidualOutcome_unrealizedRateFailsBounded` ([158] unrealized; [160] `τ(θ) < 1/4`, rate fails; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_unrealizedRateFailsBounded`; 49 facts in total. Extra facts:
+  - `Node54ResidualOutcome_unrealizedRateFailsBounded` ([158] unrealized; [160] `τ(θ) < 1/4`, rate fails; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_unrealizedRateFailsBounded`; 60 facts in total. Extra facts:
     - `K .windowPackageUnrealized`: Node `[158]`, no arm (`[159]`): the fixed maximal packing's full package code is not realized canonically by the labelled skeletons of G's class.
     - `K .denseDeficiencyBelow`: Node `[160]`, first test yes: `τ(θ) < 1/4`, the dense net-deficiency cap.
     - `K .route8RateFails`: Node `[160]`, second test no: the private-carrier rate fails (`3/13 ≤ τ`), retained as its own branch.
@@ -3608,7 +3821,7 @@ route-8 product has 750 paths.
     - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in G's own dyadic scale.
     - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
     - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
-  - `Node54ResidualOutcome_unrealizedBothRates` ([158] unrealized; [160] both rates hold (`[161]`)); return `node54Return_unrealizedBothRates`; 44 facts in total. Extra facts:
+  - `Node54ResidualOutcome_unrealizedBothRates` ([158] unrealized; [160] both rates hold (`[161]`)); return `node54Return_unrealizedBothRates`; 55 facts in total. Extra facts:
     - `K .windowPackageUnrealized`: Node `[158]`, no arm (`[159]`): the fixed maximal packing's full package code is not realized canonically by the labelled skeletons of G's class.
     - `K .denseDeficiencyBelow`: Node `[160]`, first test yes: `τ(θ) < 1/4`, the dense net-deficiency cap.
     - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13`), read from the arm's density fact.

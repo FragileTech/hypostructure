@@ -9,7 +9,7 @@ class decisions of `[139]`/`[141]` (window, remainder, or primitive class of
 the overloading token, audited at `[140]`/`[142]`/`[143]`) and then through
 the handoff decision of `[144]` (handoff, or handoff fails).  The six paths
 carry six distinct fact sets, each stated here as a subtype of the generic
-`Node144aOutcome` (its 44 common facts) with every extra fact as an explicit
+`Node144aOutcome` (its 72 common facts) with every extra fact as an explicit
 `Holds` conjunct, plus one return theorem per subtype reading each fact with
 one `ExactLedger.get`.
 -/
@@ -24,7 +24,7 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **Node `[144a]`**, subtype `windowHandoff`: [139] token in 𝔗_W, yes arm; audited at [140]; handoff arm of [144].
-The generic 45 common facts and 3 extra facts (48 facts in all). -/
+The generic 72 common facts and 3 extra facts (75 facts in all). -/
 abbrev Node144aOutcome_windowHandoff (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -40,7 +40,7 @@ theorem Node144aOutcome_windowHandoff.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `windowFails`: [139] token in 𝔗_W, yes arm; audited at [140]; handoff-fails arm of [144] (the paper error).
-The generic 45 common facts and 4 extra facts (49 facts in all). -/
+The generic 72 common facts and 4 extra facts (76 facts in all). -/
 abbrev Node144aOutcome_windowFails (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -58,7 +58,7 @@ theorem Node144aOutcome_windowFails.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `remainderHandoff`: [139] no, [141] token in 𝔗_R, yes arm; audited at [142]; handoff arm of [144].
-The generic 45 common facts and 4 extra facts (49 facts in all). -/
+The generic 72 common facts and 4 extra facts (76 facts in all). -/
 abbrev Node144aOutcome_remainderHandoff (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -76,7 +76,7 @@ theorem Node144aOutcome_remainderHandoff.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `remainderFails`: [139] no, [141] token in 𝔗_R, yes arm; audited at [142]; handoff-fails arm of [144] (the paper error).
-The generic 45 common facts and 5 extra facts (50 facts in all). -/
+The generic 72 common facts and 5 extra facts (77 facts in all). -/
 abbrev Node144aOutcome_remainderFails (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -96,7 +96,7 @@ theorem Node144aOutcome_remainderFails.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `primitiveHandoff`: [139] no, [141] no: the primitive class; audited at [143]; handoff arm of [144].
-The generic 45 common facts and 5 extra facts (50 facts in all). -/
+The generic 72 common facts and 5 extra facts (77 facts in all). -/
 abbrev Node144aOutcome_primitiveHandoff (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -116,7 +116,7 @@ theorem Node144aOutcome_primitiveHandoff.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `primitiveFails`: [139] no, [141] no: the primitive class; audited at [143]; handoff-fails arm of [144] (the paper error).
-The generic 45 common facts and 6 extra facts (51 facts in all). -/
+The generic 72 common facts and 6 extra facts (78 facts in all). -/
 abbrev Node144aOutcome_primitiveFails (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -156,7 +156,34 @@ variable [FactKeys.Has (K .uncompressible) known]
 variable [FactKeys.Has (K .windowPresent) known]
 variable [FactKeys.Has (K .maximalPacking) known]
 variable [FactKeys.Has (K .localAlgebra) known]
+variable [FactKeys.Has (K .packingOrderBound) known]
+variable [FactKeys.Has (K .noSuppressionChordViolation) known]
+variable [FactKeys.Has (K .specWitnessStructure) known]
+variable [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+variable [FactKeys.Has (K .windowCutCapacity) known]
+variable [FactKeys.Has (K .primitiveCarrierCount) known]
+variable [FactKeys.Has (K .singleBoundaryShape) known]
+variable [FactKeys.Has (K .surplusDartIdentity) known]
+variable [FactKeys.Has (K .highDegreeCountBound) known]
+variable [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
 variable [FactKeys.Has (K .surplusAbove) known]
+variable [FactKeys.Has (K .edgeSurplusIdentity) known]
+variable [FactKeys.Has (K .ceilSqrtAboveScale) known]
+variable [FactKeys.Has (K .orderAboveScaleSquare) known]
+variable [FactKeys.Has (K .sixVertexExtremalEnvelope) known]
+variable [FactKeys.Has (K .highDegreePositive) known]
+variable [FactKeys.Has (K .highDegreeSurplusCapacity) known]
+variable [FactKeys.Has (K .canonicalCapacityExplicit) known]
+variable [FactKeys.Has (K .canonicalTokenCount) known]
+variable [FactKeys.Has (K .canonicalBlockedFreePartition) known]
+variable [FactKeys.Has (K .canonicalLedgerDeficit) known]
+variable [FactKeys.Has (K .pairCountDeficit) known]
+variable [FactKeys.Has (K .canonicalCertificationCriterion) known]
+variable [FactKeys.Has (K .canonicalOverloadOfFits) known]
+variable [FactKeys.Has (K .canonicalFreeExcessOfCapped) known]
+variable [FactKeys.Has (K .paperBudgetBound) known]
+variable [FactKeys.Has (K .paperBudgetCertifies) known]
+variable [FactKeys.Has (K .pairCodeConfiguration) known]
 variable [FactKeys.Has (K .sparseSurplusSurvivor) known]
 variable [FactKeys.Has (K .openPortSuppression) known]
 variable [FactKeys.Has (K .openPortSuppressionSafe) known]

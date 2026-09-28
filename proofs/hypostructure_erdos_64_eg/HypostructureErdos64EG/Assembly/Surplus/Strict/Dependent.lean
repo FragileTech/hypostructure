@@ -28,18 +28,37 @@ universe u w
 -- EG-NODE [137] coupled excess \(D_{\rm all}>0\)?
 -- EG-NODE [139] token in \(\mathfrak T_W\)?
 -- EG-NODE [141] token in \(\mathfrak T_R\)?
+-- The facts hoisted to the entry prefix and to the top of the strict arm of
+-- `[19]` lengthen this ledger; `FactKeys.Available` then needs more than the
+-- default instance budget.
+set_option synthInstance.maxHeartbeats 400000 in
+set_option synthInstance.maxSize 2048 in
 set_option maxHeartbeats 1000000 in
 noncomputable def Assembly.Internal.strictSurplusDependent
     {selected : EGInput.{u}}
     (dependentHistory : ExactLedger EGInput.{u} selected
-      [K .dependentPairFamily, K .baselineSpineDemand, K .activeSurplusDemands, K .sparsePortActivation,
+      [K .dependentPairFamily, K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .suppressedFamilyCriticalCycle,
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression, K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .minDegreeBaseline, K .cubicBaseline,
-        K .selection]) :
+        K .openPortSuppression, K .sparseSurplusSurvivor,
+        K .paperBudgetBound, K .paperBudgetCertifies, K .pairCodeConfiguration,
+        K .canonicalTokenCount,
+        K .canonicalBlockedFreePartition, K .canonicalLedgerDeficit,
+        K .pairCountDeficit, K .canonicalCertificationCriterion,
+        K .canonicalOverloadOfFits, K .canonicalFreeExcessOfCapped,
+        K .canonicalCapacityExplicit, K .highDegreePositive,
+        K .highDegreeSurplusCapacity, K .orderAboveScaleSquare,
+        K .sixVertexExtremalEnvelope, K .edgeSurplusIdentity,
+        K .ceilSqrtAboveScale, K .baselineSpineDemand, K .sparseUpperEnvelope,
+        K .surplusAbove, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
+          K .admissibleQuotientsLabelInjective, K .replacementExclusion,
+          K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+          K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
+        K .slackIndependent, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
+          K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+          K .minDegreeBaseline, K .bridgeless, K .cubicBaseline, K .packingOrderBound,
+          K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     StrictSurplusBoundaryResult selected := by
   -- `[130]`, blocked arm: `lem:degree-profile-fibres` at G's pair family, then
   -- blocker clause (d) at G's canonical activation, closed against it.
@@ -84,16 +103,13 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   blockerHistory (by key_fresh)
-              let joined :=
-                (exactWindowJoinPressureRow (BranchState := BranchState)
-                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  pairs (by key_fresh)
+              -- `[135]`'s exact window-join load (`K .sparseUpperEnvelope`) is on
+              -- the ledger since the top of the strict arm of `[19]`.
               let tokens :=
                 (capacityTokenLedgerRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  joined (by key_fresh)
+                  pairs (by key_fresh)
               -- `[137]`: the entropy setup at G's `𝔗_cap` and spine family, then
               -- the entropy count on the free side of the capacity charge.
               let setup :=
@@ -163,18 +179,14 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                       exact (closedHistory.elimClosed (by infer_instance)).elim
                   | .right overloadHistory =>
                       -- `[139]`--`[144]` on the literal overload residual.  The
-                      -- node-`[144]` routing reads `lem:bridgeless` and the high-centre
-                      -- normal form; both are published here, once, on this arm.
-                      let bridgeless :=
-                        (bridgelessRow (BranchState := BranchState)
-                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                          (presentation := erdosReceiverLoadProfile)
-                          (data := spineData)).run overloadHistory (by key_fresh)
+                      -- node-`[144]` routing reads `lem:bridgeless` (on the ledger
+                      -- since the entry prefix) and the high-centre normal form,
+                      -- published here, once, on this arm.
                       let normal :=
                         (highCentreNormalFormRow (BranchState := BranchState)
                           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                           (presentation := erdosReceiverLoadProfile)
-                          (data := spineData)).run bridgeless (by key_fresh)
+                          (data := spineData)).run overloadHistory (by key_fresh)
                       match windowOverloadClassDichotomy (data := spineData) normal
                           (by key_fresh) (by key_fresh) with
                       | .left windowHistory =>
