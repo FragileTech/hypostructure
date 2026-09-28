@@ -1,6 +1,7 @@
 import Hypostructure.Graph.Strategy.BlockedCompressionRows
 import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdFamilyClosure
 import Hypostructure.Graph.Strategy.SpineRows.DenseNetDeficiencyCap
+import Hypostructure.Graph.Strategy.SpineRows.DensityOrder
 import Hypostructure.Graph.Strategy.SpineRows.HotColdPartition
 import Hypostructure.Graph.Strategy.SpineRows.Route8RateDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8RateFromColdBelow
@@ -64,7 +65,22 @@ noncomputable def Assembly.Internal.nearCubicDensePassRateFailed
           let density :=
             (densityBudgetRow (data := spineData)).run boundedHistory
               (by key_fresh)
-          exact nearCubicLargeBudgetRateFailed (nearCubicFullRank density)
+          -- `[24]` on `[146]` no: the density cap (`θ ≤ θ_win + o(1)`) against
+          -- `θ ≥ 1/78`, combined at G; the exact size test closes `N₀ ≤ n` and
+          -- retains `n < N₀`.
+          let ordered :=
+            (boundedDensityOrderRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              density (by key_fresh)
+          match boundedOrderDichotomy (data := spineData) ordered
+              (by key_fresh) (by key_fresh) with
+          | .left largeHistory =>
+              exact ((closeIncompatible largeHistory (K .boundedDensityOrder)
+                (K .boundedOrderLarge) (by key_fresh)).elimClosed
+                  (by infer_instance)).elim
+          | .right smallHistory =>
+              exact nearCubicLargeBudgetRateFailed (nearCubicFullRank smallHistory)
 
 set_option maxHeartbeats 8000000 in
 /-- **The dense hot/cold pass `[162]` on `[160]`'s first complement**
@@ -110,9 +126,23 @@ noncomputable def Assembly.Internal.nearCubicDensePassAtOrAbove
           let density :=
             (densityBudgetRow (data := spineData)).run boundedHistory
               (by key_fresh)
-          exact nearCubicLargeBudgetDensityCap (nearCubicFullRank density)
-            (Or.inr
-              (Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove.ret density))
+          -- `[24]` on `[146]` no: the exact size test, as on the rate-failed arm.
+          let ordered :=
+            (boundedDensityOrderRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              density (by key_fresh)
+          match boundedOrderDichotomy (data := spineData) ordered
+              (by key_fresh) (by key_fresh) with
+          | .left largeHistory =>
+              exact ((closeIncompatible largeHistory (K .boundedDensityOrder)
+                (K .boundedOrderLarge) (by key_fresh)).elimClosed
+                  (by infer_instance)).elim
+          | .right smallHistory =>
+              exact nearCubicLargeBudgetDensityCap (nearCubicFullRank smallHistory)
+                (Or.inr
+                  (Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove.ret
+                    smallHistory))
 
 set_option maxHeartbeats 8000000 in
 /-- **The dense-packing residual, the no-arm of `[158]`.**  `[159]`: the exact

@@ -101,8 +101,9 @@ theorem node54Return_realizedColdBelow
 
 /-- **Node `[54]`, fact set `realizedBounded`**: [158] yes (window package
 realized); [146] no (`θ ≥ 1/78`); [153] bounded cold mass, returned through
-`[24]`'s density cap. The generic `Node54ResidualOutcome` (40 facts) and the
-4 facts of this path's ledger outside it (44 facts in total). -/
+`[24]`'s density cap; the realized density order and its size test `n < N₀`.
+The generic `Node54ResidualOutcome` (40 facts) and the 6 facts of this path's
+ledger outside it (46 facts in total). -/
 abbrev Node54ResidualOutcome_realizedBounded (selected : EGInput.{u}) : Prop :=
   Node54ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -112,7 +113,11 @@ abbrev Node54ResidualOutcome_realizedBounded (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldMassBounded selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .densityCap selected.object
+      erdosReceiverLoadProfile spineData .densityCap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 /-- `Node54ResidualOutcome_realizedBounded` is a subtype of the generic `[54]`
 residual. -/
@@ -171,10 +176,12 @@ theorem node54Return_realizedBounded
     (lanePrefix : Route8LanePrefixBlock_realizedColdAtOrAbove selected) :
     Node54ResidualOutcome_realizedBounded selected :=
   ⟨node54Return history,
-    lanePrefix.2.2.2,
+    lanePrefix.2.2.2.1,
     lanePrefix.2.1,
     lanePrefix.1,
-    lanePrefix.2.2.1⟩
+    lanePrefix.2.2.1,
+    lanePrefix.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2⟩
 
 /-- **Node `[54]`, fact set `unrealizedTauHighColdBelow`**: [158] no (window
 package unrealized); [160] first test no (`τ(θ) ≥ 1/4`); [146] yes (`θ <
@@ -256,9 +263,9 @@ theorem node54Return_unrealizedTauHighColdBelow
 
 /-- **Node `[54]`, fact set `unrealizedTauHighBounded`**: [158] no (window
 package unrealized); [160] first test no (`τ(θ) ≥ 1/4`); [146] no (`θ ≥
-1/78`); [153] bounded cold mass, returned through `[24]`. The generic
-`Node54ResidualOutcome` (40 facts) and the 5 facts of this path's ledger
-outside it (45 facts in total). -/
+1/78`); [153] bounded cold mass, returned through `[24]`; the `[24]` density
+order and its size test `n < N₀`. The generic `Node54ResidualOutcome` (40
+facts) and the 7 facts of this path's ledger outside it (47 facts in total). -/
 abbrev Node54ResidualOutcome_unrealizedTauHighBounded (selected : EGInput.{u}) : Prop :=
   Node54ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -270,7 +277,11 @@ abbrev Node54ResidualOutcome_unrealizedTauHighBounded (selected : EGInput.{u}) :
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldMassBounded selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .densityCap selected.object
+      erdosReceiverLoadProfile spineData .densityCap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 /-- `Node54ResidualOutcome_unrealizedTauHighBounded` is a subtype of the generic
 `[54]` residual. -/
@@ -329,11 +340,13 @@ theorem node54Return_unrealizedTauHighBounded
     (lanePrefix : Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove selected) :
     Node54ResidualOutcome_unrealizedTauHighBounded selected :=
   ⟨node54Return history,
-    lanePrefix.2.2.2.2,
+    lanePrefix.2.2.2.2.1,
     lanePrefix.2.2.1,
     lanePrefix.2.1,
     lanePrefix.1,
-    lanePrefix.2.2.2.1⟩
+    lanePrefix.2.2.2.1,
+    lanePrefix.2.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2.2⟩
 
 /-- **Node `[54]`, fact set `unrealizedRateFailsBounded`**: [158] no (window
 package unrealized); [160] first test yes (`τ(θ) < 1/4`), second test no
@@ -353,7 +366,11 @@ abbrev Node54ResidualOutcome_unrealizedRateFailsBounded (selected : EGInput.{u})
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldMassBounded selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .densityCap selected.object
+      erdosReceiverLoadProfile spineData .densityCap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 /-- `Node54ResidualOutcome_unrealizedRateFailsBounded` is a subtype of the
 generic `[54]` residual. -/
@@ -412,7 +429,9 @@ theorem node54Return_unrealizedRateFailsBounded
     [FactKeys.Has (K .route8RateFails) known]
     [FactKeys.Has (K .coldRoute8AtOrAbove) known]
     [FactKeys.Has (K .coldMassBounded) known]
-    [FactKeys.Has (K .densityCap) known] :
+    [FactKeys.Has (K .densityCap) known]
+    [FactKeys.Has (K .boundedDensityOrder) known]
+    [FactKeys.Has (K .boundedOrderSmall) known] :
     Node54ResidualOutcome_unrealizedRateFailsBounded selected :=
   ⟨node54Return history,
     (history.get (K .windowPackageUnrealized)).down,
@@ -420,7 +439,9 @@ theorem node54Return_unrealizedRateFailsBounded
     (history.get (K .route8RateFails)).down,
     (history.get (K .coldRoute8AtOrAbove)).down,
     (history.get (K .coldMassBounded)).down,
-    (history.get (K .densityCap)).down⟩
+    (history.get (K .densityCap)).down,
+    (history.get (K .boundedDensityOrder)).down,
+    (history.get (K .boundedOrderSmall)).down⟩
 
 /-- **Node `[54]`, fact set `unrealizedBothRates`**: [158] no (window package
 unrealized); [160] both tests yes (`τ(θ) < 1/4` and the private-carrier

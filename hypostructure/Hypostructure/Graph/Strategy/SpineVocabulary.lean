@@ -13,6 +13,7 @@ import Hypostructure.Graph.Statements.SurplusPairCode
 import Hypostructure.Graph.Statements.ColdGerm
 import Hypostructure.Graph.Statements.SpineDominantType
 import Hypostructure.Graph.Statements.ColdResiduals
+import Hypostructure.Graph.Statements.DensityOrder
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1653,6 +1654,19 @@ inductive Key where
   | entropyJointRealization
   /-- Node `[54]`, returned residual: the configuration at G where the joint realization inequality fails. -/
   | allColdEntropyResidual
+  -- C6 keys (density order)
+  /-- Node `[146]` no with `[158]` yes: the realized package's entropy count against the `[146]`-no lower bound, combined at G (`Graph.DensityOrderBound`). -/
+  | realizedDensityOrder
+  /-- Node `[146]` no with `[158]` yes, size test yes: `N₀ ≤ n` at the realized cutoff (the rate margin and the baseline included). -/
+  | realizedOrderLarge
+  /-- Node `[146]` no with `[158]` yes, size test no: G has fewer than `N₀` vertices (exact complement). -/
+  | realizedOrderSmall
+  /-- Node `[24]` on `[146]` no: the density cap against the `[146]`-no lower bound, combined at G (`Graph.DensityOrderBound`). -/
+  | boundedDensityOrder
+  /-- Node `[24]` on `[146]` no, size test yes: `N₀ ≤ n` at the `[24]` cutoff. -/
+  | boundedOrderLarge
+  /-- Node `[24]` on `[146]` no, size test no: G has fewer than `N₀` vertices (exact complement). -/
+  | boundedOrderSmall
   -- TA keys
   /-- Node `[102]` → `[89]`, yes arm: the terminal receiver of `X₀` is saturated at its terminal peeling set. -/
   | typeAPeeledSaturatedReceiver
@@ -2482,6 +2496,19 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       EntropyJointRealizationStatement data.toParameters object
   | .allColdEntropyResidual, object =>
       AllColdEntropyResidualStatement data.toParameters object
+  -- C6 keys (density order)
+  | .realizedDensityOrder, object =>
+      RealizedDensityOrderStatement data.toParameters object
+  | .realizedOrderLarge, object =>
+      RealizedOrderLargeStatement data.toParameters object
+  | .realizedOrderSmall, object =>
+      RealizedOrderSmallStatement data.toParameters object
+  | .boundedDensityOrder, object =>
+      BoundedDensityOrderStatement data.toParameters object
+  | .boundedOrderLarge, object =>
+      BoundedOrderLargeStatement data.toParameters object
+  | .boundedOrderSmall, object =>
+      BoundedOrderSmallStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -2854,6 +2881,13 @@ def label : Key → String
   | .coldDenseHeavyEntryResidual => "coldDenseHeavyEntryResidual"
   | .entropyJointRealization => "entropyJointRealization"
   | .allColdEntropyResidual => "allColdEntropyResidual"
+  -- C6 keys (density order)
+  | .realizedDensityOrder => "realizedDensityOrder"
+  | .realizedOrderLarge => "realizedOrderLarge"
+  | .realizedOrderSmall => "realizedOrderSmall"
+  | .boundedDensityOrder => "boundedDensityOrder"
+  | .boundedOrderLarge => "boundedOrderLarge"
+  | .boundedOrderSmall => "boundedOrderSmall"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3232,6 +3266,12 @@ example : label .coldHeavyEntryTerminal = "coldHeavyEntryTerminal" := rfl
 example : label .coldDenseHeavyEntryResidual = "coldDenseHeavyEntryResidual" := rfl
 example : label .entropyJointRealization = "entropyJointRealization" := rfl
 example : label .allColdEntropyResidual = "allColdEntropyResidual" := rfl
+example : label .realizedDensityOrder = "realizedDensityOrder" := rfl
+example : label .realizedOrderLarge = "realizedOrderLarge" := rfl
+example : label .realizedOrderSmall = "realizedOrderSmall" := rfl
+example : label .boundedDensityOrder = "boundedDensityOrder" := rfl
+example : label .boundedOrderLarge = "boundedOrderLarge" := rfl
+example : label .boundedOrderSmall = "boundedOrderSmall" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -3598,6 +3638,13 @@ def idx : Key → Nat
   | .coldDenseHeavyEntryResidual => 3203
   | .entropyJointRealization => 3204
   | .allColdEntropyResidual => 3205
+  -- C6 keys (density order)
+  | .realizedDensityOrder => 6600
+  | .realizedOrderLarge => 6601
+  | .realizedOrderSmall => 6602
+  | .boundedDensityOrder => 6603
+  | .boundedOrderLarge => 6604
+  | .boundedOrderSmall => 6605
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -3953,6 +4000,13 @@ def ofIdx : Nat → Key
   | 3203 => .coldDenseHeavyEntryResidual
   | 3204 => .entropyJointRealization
   | 3205 => .allColdEntropyResidual
+  -- C6 keys (density order)
+  | 6600 => .realizedDensityOrder
+  | 6601 => .realizedOrderLarge
+  | 6602 => .realizedOrderSmall
+  | 6603 => .boundedDensityOrder
+  | 6604 => .boundedOrderLarge
+  | 6605 => .boundedOrderSmall
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -4767,6 +4821,19 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "entropyJointRealization") 3204
   | .allColdEntropyResidual =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "allColdEntropyResidual") 3205
+  -- C6 keys (density order)
+  | .realizedDensityOrder =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "realizedDensityOrder") 6600
+  | .realizedOrderLarge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "realizedOrderLarge") 6601
+  | .realizedOrderSmall =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "realizedOrderSmall") 6602
+  | .boundedDensityOrder =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "boundedDensityOrder") 6603
+  | .boundedOrderLarge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "boundedOrderLarge") 6604
+  | .boundedOrderSmall =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "boundedOrderSmall") 6605
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

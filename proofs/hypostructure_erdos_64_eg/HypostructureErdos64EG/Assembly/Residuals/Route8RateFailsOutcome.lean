@@ -24,8 +24,8 @@ universe u w
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` yes (realized package);
 `[50]` high, `[53]` bound (Residual C).
-The generic residual and the 4 extra facts of this path
-(46 facts). -/
+The generic residual and the 6 extra facts of this path
+(48 facts). -/
 abbrev Route8RateFailsOutcome_realized_highEntropy (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -35,7 +35,11 @@ abbrev Route8RateFailsOutcome_realized_highEntropy (selected : EGInput.{u}) : Pr
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .entropyPackageDemand selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .entropyCapBound selected.object
+      erdosReceiverLoadProfile spineData .entropyCapBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 theorem Route8RateFailsOutcome_realized_highEntropy.toGeneric
     {selected : EGInput.{u}}
@@ -96,16 +100,18 @@ theorem route8RateFailsReturn_realized_highEntropy
     (entropy : EntropyArmBlock_high selected) :
     Route8RateFailsOutcome_realized_highEntropy selected :=
   ⟨route8RateFailsReturn history,
-    lanePrefix.2.2.2,
+    lanePrefix.2.2.2.1,
     entropy.2.2,
     entropy.2.1,
-    entropy.1⟩
+    entropy.1,
+    lanePrefix.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` yes (realized package);
 `[50]` low, local-type coordinate nonrepetitive.
-The generic residual and the 3 extra facts of this path
-(45 facts). -/
+The generic residual and the 5 extra facts of this path
+(47 facts). -/
 abbrev Route8RateFailsOutcome_realized_lowNonrepetitive (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -113,7 +119,11 @@ abbrev Route8RateFailsOutcome_realized_lowNonrepetitive (selected : EGInput.{u})
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .remainderEntropyLow selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .localTypeCoordinateNonrepetitive selected.object
+      erdosReceiverLoadProfile spineData .localTypeCoordinateNonrepetitive selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 theorem Route8RateFailsOutcome_realized_lowNonrepetitive.toGeneric
     {selected : EGInput.{u}}
@@ -175,15 +185,17 @@ theorem route8RateFailsReturn_realized_lowNonrepetitive
     (entropy : EntropyArmBlock_lowNonrepetitive selected) :
     Route8RateFailsOutcome_realized_lowNonrepetitive selected :=
   ⟨route8RateFailsReturn history,
-    lanePrefix.2.2.2,
+    lanePrefix.2.2.2.1,
     entropy.2,
-    entropy.1⟩
+    entropy.1,
+    lanePrefix.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` yes (realized package);
 `[50]` low, local-type coordinate repetitive, dominant rooted type wedge-free.
-The generic residual and the 5 extra facts of this path
-(47 facts). -/
+The generic residual and the 7 extra facts of this path
+(49 facts). -/
 abbrev Route8RateFailsOutcome_realized_lowWedgeFree (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -195,7 +207,11 @@ abbrev Route8RateFailsOutcome_realized_lowWedgeFree (selected : EGInput.{u}) : P
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .dominantRootedType selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .dominantRootedTypeWedgeFree selected.object
+      erdosReceiverLoadProfile spineData .dominantRootedTypeWedgeFree selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 theorem Route8RateFailsOutcome_realized_lowWedgeFree.toGeneric
     {selected : EGInput.{u}}
@@ -257,17 +273,19 @@ theorem route8RateFailsReturn_realized_lowWedgeFree
     (entropy : EntropyArmBlock_lowRepetitiveWedgeFree selected) :
     Route8RateFailsOutcome_realized_lowWedgeFree selected :=
   ⟨route8RateFailsReturn history,
-    lanePrefix.2.2.2,
+    lanePrefix.2.2.2.1,
     entropy.2.2.2,
     entropy.2.2.1,
     entropy.1,
-    entropy.2.1⟩
+    entropy.2.1,
+    lanePrefix.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` yes (realized package);
 `[50]` low, local-type coordinate repetitive, dominant rooted wedge type.
-The generic residual and the 6 extra facts of this path
-(48 facts). -/
+The generic residual and the 8 extra facts of this path
+(50 facts). -/
 abbrev Route8RateFailsOutcome_realized_lowWedge (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -281,7 +299,11 @@ abbrev Route8RateFailsOutcome_realized_lowWedge (selected : EGInput.{u}) : Prop 
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .dominantRootedWedgeType selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .independentObstructionTranslates selected.object
+      erdosReceiverLoadProfile spineData .independentObstructionTranslates selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 theorem Route8RateFailsOutcome_realized_lowWedge.toGeneric
     {selected : EGInput.{u}}
@@ -343,18 +365,20 @@ theorem route8RateFailsReturn_realized_lowWedge
     (entropy : EntropyArmBlock_lowRepetitiveWedge selected) :
     Route8RateFailsOutcome_realized_lowWedge selected :=
   ⟨route8RateFailsReturn history,
-    lanePrefix.2.2.2,
+    lanePrefix.2.2.2.1,
     entropy.2.2.2.2,
     entropy.2.2.2.1,
     entropy.1,
     entropy.2.1,
-    entropy.2.2.1⟩
+    entropy.2.2.1,
+    lanePrefix.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test no (`τ(θ) ≥ 1/4`);
 `[50]` high, `[53]` bound (Residual C).
-The generic residual and the 5 extra facts of this path
-(47 facts). -/
+The generic residual and the 7 extra facts of this path
+(49 facts). -/
 abbrev Route8RateFailsOutcome_denseAtOrAbove_highEntropy (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -366,7 +390,11 @@ abbrev Route8RateFailsOutcome_denseAtOrAbove_highEntropy (selected : EGInput.{u}
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .entropyPackageDemand selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .entropyCapBound selected.object
+      erdosReceiverLoadProfile spineData .entropyCapBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 theorem Route8RateFailsOutcome_denseAtOrAbove_highEntropy.toGeneric
     {selected : EGInput.{u}}
@@ -428,17 +456,19 @@ theorem route8RateFailsReturn_denseAtOrAbove_highEntropy
     (entropy : EntropyArmBlock_high selected) :
     Route8RateFailsOutcome_denseAtOrAbove_highEntropy selected :=
   ⟨route8RateFailsReturn history,
-    lanePrefix.2.2.2.2,
+    lanePrefix.2.2.2.2.1,
     lanePrefix.2.2.1,
     entropy.2.2,
     entropy.2.1,
-    entropy.1⟩
+    entropy.1,
+    lanePrefix.2.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2.2⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test no (`τ(θ) ≥ 1/4`);
 `[50]` low, local-type coordinate nonrepetitive.
-The generic residual and the 4 extra facts of this path
-(46 facts). -/
+The generic residual and the 6 extra facts of this path
+(48 facts). -/
 abbrev Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -448,7 +478,11 @@ abbrev Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive (selected : EGInpu
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .remainderEntropyLow selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .localTypeCoordinateNonrepetitive selected.object
+      erdosReceiverLoadProfile spineData .localTypeCoordinateNonrepetitive selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 theorem Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive.toGeneric
     {selected : EGInput.{u}}
@@ -510,16 +544,18 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowNonrepetitive
     (entropy : EntropyArmBlock_lowNonrepetitive selected) :
     Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive selected :=
   ⟨route8RateFailsReturn history,
-    lanePrefix.2.2.2.2,
+    lanePrefix.2.2.2.2.1,
     lanePrefix.2.2.1,
     entropy.2,
-    entropy.1⟩
+    entropy.1,
+    lanePrefix.2.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2.2⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test no (`τ(θ) ≥ 1/4`);
 `[50]` low, local-type coordinate repetitive, dominant rooted type wedge-free.
-The generic residual and the 6 extra facts of this path
-(48 facts). -/
+The generic residual and the 8 extra facts of this path
+(50 facts). -/
 abbrev Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -533,7 +569,11 @@ abbrev Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree (selected : EGInput.{u
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .dominantRootedType selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .dominantRootedTypeWedgeFree selected.object
+      erdosReceiverLoadProfile spineData .dominantRootedTypeWedgeFree selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 theorem Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree.toGeneric
     {selected : EGInput.{u}}
@@ -595,18 +635,20 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowWedgeFree
     (entropy : EntropyArmBlock_lowRepetitiveWedgeFree selected) :
     Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree selected :=
   ⟨route8RateFailsReturn history,
-    lanePrefix.2.2.2.2,
+    lanePrefix.2.2.2.2.1,
     lanePrefix.2.2.1,
     entropy.2.2.2,
     entropy.2.2.1,
     entropy.1,
-    entropy.2.1⟩
+    entropy.2.1,
+    lanePrefix.2.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2.2⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test no (`τ(θ) ≥ 1/4`);
 `[50]` low, local-type coordinate repetitive, dominant rooted wedge type.
-The generic residual and the 7 extra facts of this path
-(49 facts). -/
+The generic residual and the 9 extra facts of this path
+(51 facts). -/
 abbrev Route8RateFailsOutcome_denseAtOrAbove_lowWedge (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -622,7 +664,11 @@ abbrev Route8RateFailsOutcome_denseAtOrAbove_lowWedge (selected : EGInput.{u}) :
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .dominantRootedWedgeType selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .independentObstructionTranslates selected.object
+      erdosReceiverLoadProfile spineData .independentObstructionTranslates selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 theorem Route8RateFailsOutcome_denseAtOrAbove_lowWedge.toGeneric
     {selected : EGInput.{u}}
@@ -684,19 +730,21 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowWedge
     (entropy : EntropyArmBlock_lowRepetitiveWedge selected) :
     Route8RateFailsOutcome_denseAtOrAbove_lowWedge selected :=
   ⟨route8RateFailsReturn history,
-    lanePrefix.2.2.2.2,
+    lanePrefix.2.2.2.2.1,
     lanePrefix.2.2.1,
     entropy.2.2.2.2,
     entropy.2.2.2.1,
     entropy.1,
     entropy.2.1,
-    entropy.2.2.1⟩
+    entropy.2.2.1,
+    lanePrefix.2.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2.2⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test yes (`τ(θ) < 1/4`), private-carrier rate failed;
 `[50]` high, `[53]` bound (Residual C).
-The generic residual and the 5 extra facts of this path
-(47 facts). -/
+The generic residual and the 7 extra facts of this path
+(49 facts). -/
 abbrev Route8RateFailsOutcome_denseBelow_highEntropy (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -708,7 +756,11 @@ abbrev Route8RateFailsOutcome_denseBelow_highEntropy (selected : EGInput.{u}) : 
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .entropyPackageDemand selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .entropyCapBound selected.object
+      erdosReceiverLoadProfile spineData .entropyCapBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 theorem Route8RateFailsOutcome_denseBelow_highEntropy.toGeneric
     {selected : EGInput.{u}}
@@ -767,6 +819,8 @@ theorem route8RateFailsReturn_denseBelow_highEntropy
     [FactKeys.Has (K .route8RateFails) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
+    [FactKeys.Has (K .boundedDensityOrder) known]
+    [FactKeys.Has (K .boundedOrderSmall) known]
     (entropy : EntropyArmBlock_high selected) :
     Route8RateFailsOutcome_denseBelow_highEntropy selected :=
   ⟨route8RateFailsReturn history,
@@ -774,13 +828,15 @@ theorem route8RateFailsReturn_denseBelow_highEntropy
     (history.get (K .denseDeficiencyBelow)).down,
     entropy.2.2,
     entropy.2.1,
-    entropy.1⟩
+    entropy.1,
+    (history.get (K .boundedDensityOrder)).down,
+    (history.get (K .boundedOrderSmall)).down⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test yes (`τ(θ) < 1/4`), private-carrier rate failed;
 `[50]` low, local-type coordinate nonrepetitive.
-The generic residual and the 4 extra facts of this path
-(46 facts). -/
+The generic residual and the 6 extra facts of this path
+(48 facts). -/
 abbrev Route8RateFailsOutcome_denseBelow_lowNonrepetitive (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -790,7 +846,11 @@ abbrev Route8RateFailsOutcome_denseBelow_lowNonrepetitive (selected : EGInput.{u
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .remainderEntropyLow selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .localTypeCoordinateNonrepetitive selected.object
+      erdosReceiverLoadProfile spineData .localTypeCoordinateNonrepetitive selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 theorem Route8RateFailsOutcome_denseBelow_lowNonrepetitive.toGeneric
     {selected : EGInput.{u}}
@@ -849,19 +909,23 @@ theorem route8RateFailsReturn_denseBelow_lowNonrepetitive
     [FactKeys.Has (K .route8RateFails) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
+    [FactKeys.Has (K .boundedDensityOrder) known]
+    [FactKeys.Has (K .boundedOrderSmall) known]
     (entropy : EntropyArmBlock_lowNonrepetitive selected) :
     Route8RateFailsOutcome_denseBelow_lowNonrepetitive selected :=
   ⟨route8RateFailsReturn history,
     (history.get (K .windowPackageUnrealized)).down,
     (history.get (K .denseDeficiencyBelow)).down,
     entropy.2,
-    entropy.1⟩
+    entropy.1,
+    (history.get (K .boundedDensityOrder)).down,
+    (history.get (K .boundedOrderSmall)).down⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test yes (`τ(θ) < 1/4`), private-carrier rate failed;
 `[50]` low, local-type coordinate repetitive, dominant rooted type wedge-free.
-The generic residual and the 6 extra facts of this path
-(48 facts). -/
+The generic residual and the 8 extra facts of this path
+(50 facts). -/
 abbrev Route8RateFailsOutcome_denseBelow_lowWedgeFree (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -875,7 +939,11 @@ abbrev Route8RateFailsOutcome_denseBelow_lowWedgeFree (selected : EGInput.{u}) :
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .dominantRootedType selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .dominantRootedTypeWedgeFree selected.object
+      erdosReceiverLoadProfile spineData .dominantRootedTypeWedgeFree selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 theorem Route8RateFailsOutcome_denseBelow_lowWedgeFree.toGeneric
     {selected : EGInput.{u}}
@@ -934,6 +1002,8 @@ theorem route8RateFailsReturn_denseBelow_lowWedgeFree
     [FactKeys.Has (K .route8RateFails) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
+    [FactKeys.Has (K .boundedDensityOrder) known]
+    [FactKeys.Has (K .boundedOrderSmall) known]
     (entropy : EntropyArmBlock_lowRepetitiveWedgeFree selected) :
     Route8RateFailsOutcome_denseBelow_lowWedgeFree selected :=
   ⟨route8RateFailsReturn history,
@@ -942,13 +1012,15 @@ theorem route8RateFailsReturn_denseBelow_lowWedgeFree
     entropy.2.2.2,
     entropy.2.2.1,
     entropy.1,
-    entropy.2.1⟩
+    entropy.2.1,
+    (history.get (K .boundedDensityOrder)).down,
+    (history.get (K .boundedOrderSmall)).down⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test yes (`τ(θ) < 1/4`), private-carrier rate failed;
 `[50]` low, local-type coordinate repetitive, dominant rooted wedge type.
-The generic residual and the 7 extra facts of this path
-(49 facts). -/
+The generic residual and the 9 extra facts of this path
+(51 facts). -/
 abbrev Route8RateFailsOutcome_denseBelow_lowWedge (selected : EGInput.{u}) : Prop :=
   Route8RateFailsOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -964,7 +1036,11 @@ abbrev Route8RateFailsOutcome_denseBelow_lowWedge (selected : EGInput.{u}) : Pro
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .dominantRootedWedgeType selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .independentObstructionTranslates selected.object
+      erdosReceiverLoadProfile spineData .independentObstructionTranslates selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 theorem Route8RateFailsOutcome_denseBelow_lowWedge.toGeneric
     {selected : EGInput.{u}}
@@ -1023,6 +1099,8 @@ theorem route8RateFailsReturn_denseBelow_lowWedge
     [FactKeys.Has (K .route8RateFails) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
+    [FactKeys.Has (K .boundedDensityOrder) known]
+    [FactKeys.Has (K .boundedOrderSmall) known]
     (entropy : EntropyArmBlock_lowRepetitiveWedge selected) :
     Route8RateFailsOutcome_denseBelow_lowWedge selected :=
   ⟨route8RateFailsReturn history,
@@ -1032,7 +1110,9 @@ theorem route8RateFailsReturn_denseBelow_lowWedge
     entropy.2.2.2.1,
     entropy.1,
     entropy.2.1,
-    entropy.2.2.1⟩
+    entropy.2.2.1,
+    (history.get (K .boundedDensityOrder)).down,
+    (history.get (K .boundedOrderSmall)).down⟩
 
 /-- The twelve subtypes of the private-carrier rate failure `[187]`, one per distinct fact set. -/
 abbrev Route8RateFailsSubtypes (selected : EGInput.{u}) : Prop :=
@@ -1158,6 +1238,8 @@ theorem route8RateFailsSubtypesReturn_rateFailedExit
     [FactKeys.Has (K .route8RateFails) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
+    [FactKeys.Has (K .boundedDensityOrder) known]
+    [FactKeys.Has (K .boundedOrderSmall) known]
     (entropy : EntropyArm selected) :
     Route8RateFailsSubtypes selected := by
   rcases entropy with e | e | e | e

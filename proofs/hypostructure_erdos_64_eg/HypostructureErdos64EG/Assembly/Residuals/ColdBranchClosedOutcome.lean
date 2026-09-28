@@ -95,7 +95,7 @@ abbrev ColdBranchClosedEntropyLowWedgeType (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .remainderEntropyLow selected.object
 
-/-- Block `W1` (4 facts): [158] window package realized, [146] theta at or above 1/78 (with [153] bounded cold mass and its density cap). -/
+/-- Block `W1` (6 facts): [158] window package realized, [146] theta at or above 1/78 (with [153] bounded cold mass and its density cap; the realized density order and `n < N₀`). -/
 abbrev ColdBranchClosedWindowRealizedThetaAtOrAbove (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldMassBounded selected.object ∧
@@ -104,7 +104,11 @@ abbrev ColdBranchClosedWindowRealizedThetaAtOrAbove (selected : EGInput.{u}) : P
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .densityCap selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageRealized selected.object
+      erdosReceiverLoadProfile spineData .windowPackageRealized selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 /-- Block `W2` (2 facts): [158] window package realized, [146] theta below 1/78. -/
 abbrev ColdBranchClosedWindowRealizedThetaBelow (selected : EGInput.{u}) : Prop :=
@@ -113,7 +117,7 @@ abbrev ColdBranchClosedWindowRealizedThetaBelow (selected : EGInput.{u}) : Prop 
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .windowPackageRealized selected.object
 
-/-- Block `W3` (5 facts): [158] window package unrealized, [160] tau at or above 1/4, [146] theta at or above 1/78 (with [153] bounded cold mass and its density cap). -/
+/-- Block `W3` (7 facts): [158] window package unrealized, [160] tau at or above 1/4, [146] theta at or above 1/78 (with [153] bounded cold mass and its density cap; the `[24]` density order and `n < N₀`). -/
 abbrev ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaAtOrAbove (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldMassBounded selected.object ∧
@@ -124,7 +128,11 @@ abbrev ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaAtOrAbove (selected : EG
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .densityCap selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageUnrealized selected.object
+      erdosReceiverLoadProfile spineData .windowPackageUnrealized selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 /-- Block `W4` (3 facts): [158] window package unrealized, [160] tau at or above 1/4, [146] theta below 1/78. -/
 abbrev ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaBelow (selected : EGInput.{u}) : Prop :=
@@ -653,7 +661,7 @@ theorem coldBranchClosed_linearDenseRateFailedReturn
     (history.get (K .windowPackageUnrealized)).down⟩
 
 /-- **`[187]` (local cold-terminal exclusion), singleton `linearRealizedDistinguished`**
-(63 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / some distinguishing. -/
+(65 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / some distinguishing. -/
 abbrev ColdBranchClosedOutcome_linearRealizedDistinguished (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -667,7 +675,11 @@ abbrev ColdBranchClosedOutcome_linearRealizedDistinguished (selected : EGInput.{
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldRoute8AtOrAbove selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageRealized selected.object
+      erdosReceiverLoadProfile spineData .windowPackageRealized selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 theorem ColdBranchClosedOutcome_linearRealizedDistinguished.toGeneric {selected : EGInput.{u}}
     (h : ColdBranchClosedOutcome_linearRealizedDistinguished selected) :
@@ -741,6 +753,8 @@ theorem coldBranchClosed_linearRealizedDistinguishedReturn
     [FactKeys.Has (K .coldMassLinear) known]
     [FactKeys.Has (K .coldRoute8AtOrAbove) known]
     [FactKeys.Has (K .windowPackageRealized) known]
+    [FactKeys.Has (K .realizedDensityOrder) known]
+    [FactKeys.Has (K .realizedOrderSmall) known]
     : ColdBranchClosedOutcome_linearRealizedDistinguished selected :=
   ⟨coldBranchClosedReturn history,
     (history.get (K .coldGermFamilyPositive)).down,
@@ -748,10 +762,12 @@ theorem coldBranchClosed_linearRealizedDistinguishedReturn
     (history.get (K .coldGermSomeDistinguishing)).down,
     (history.get (K .coldMassLinear)).down,
     (history.get (K .coldRoute8AtOrAbove)).down,
-    (history.get (K .windowPackageRealized)).down⟩
+    (history.get (K .windowPackageRealized)).down,
+    (history.get (K .realizedDensityOrder)).down,
+    (history.get (K .realizedOrderSmall)).down⟩
 
 /-- **`[187]` (local cold-terminal exclusion), singleton `linearRealizedSilent`**
-(63 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing. -/
+(65 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing. -/
 abbrev ColdBranchClosedOutcome_linearRealizedSilent (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -765,7 +781,11 @@ abbrev ColdBranchClosedOutcome_linearRealizedSilent (selected : EGInput.{u}) : P
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldRoute8AtOrAbove selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageRealized selected.object
+      erdosReceiverLoadProfile spineData .windowPackageRealized selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 theorem ColdBranchClosedOutcome_linearRealizedSilent.toGeneric {selected : EGInput.{u}}
     (h : ColdBranchClosedOutcome_linearRealizedSilent selected) :
@@ -839,6 +859,8 @@ theorem coldBranchClosed_linearRealizedSilentReturn
     [FactKeys.Has (K .coldMassLinear) known]
     [FactKeys.Has (K .coldRoute8AtOrAbove) known]
     [FactKeys.Has (K .windowPackageRealized) known]
+    [FactKeys.Has (K .realizedDensityOrder) known]
+    [FactKeys.Has (K .realizedOrderSmall) known]
     : ColdBranchClosedOutcome_linearRealizedSilent selected :=
   ⟨coldBranchClosedReturn history,
     (history.get (K .coldGermFamilyPositive)).down,
@@ -846,7 +868,9 @@ theorem coldBranchClosed_linearRealizedSilentReturn
     (history.get (K .coldGermNoneRealizing)).down,
     (history.get (K .coldMassLinear)).down,
     (history.get (K .coldRoute8AtOrAbove)).down,
-    (history.get (K .windowPackageRealized)).down⟩
+    (history.get (K .windowPackageRealized)).down,
+    (history.get (K .realizedDensityOrder)).down,
+    (history.get (K .realizedOrderSmall)).down⟩
 
 /-- The near-cubic prefix block of a path, read as its window/test block
 (`W1`--`W5` list the same keys as the five `Route8LanePrefix` blocks). -/

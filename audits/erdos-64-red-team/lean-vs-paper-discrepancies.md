@@ -1412,6 +1412,128 @@ inhabited at G.
   (K .contextDefect)`.  The definitional character of `[11]`/`[12]` stays
   under Paper findings (no sorry) ("[11], [12], [36]/[37]").
 
+### [146]-no × [158]-yes and [24] × [146]-no: the density order, closed for every `n ≥ N₀` (Lean improvement (not routed by the paper); tex 6937-6960, 6998-7045, 7537-7541, 8479-8498, 739, 774, 1276, 1304)
+
+*Group C6 (asymptotic closures made exact).*
+
+- **Paper.** Node `[146]` no is `θ ≥ 1/78` (`def:cold-window-ledger`, tex
+  6937-6960: `τ(θ) < 3/13 ⟺ θ < 1/78`; the cold-branch ledger rows 1-3, tex
+  7537-7539).  The paper's density estimates read `θ ≤ θ_win + o(1)` with
+  `θ_win = 3/(2c_hot) = 0.012700…` (tex 6942, 8487): on a realized window
+  package (`prop:p13-density`, tex 8479-8498, from `lem:p13-window-package`
+  and `lem:skeleton-dominates`), and at node `[24]` on the bounded arm of
+  `[153]` (tex 739, 774; Part XI caption tex 1304).  Since `θ_win < 1/78`,
+  the two estimates are incompatible for large `n`.  The paper never draws
+  this conclusion: it routes the bounded arm to `[24]` → `[25]` and keeps the
+  realized `[146]`-no arm alive through `[148]`--`[157]`.
+- **Faithfulness verdict.** Every fact used sits on the path in the paper:
+  `[158]` yes precedes `[22]` (Part I caption, tex 778); `[146]` no is the arm
+  that runs `[148]`--`[153]` (tex 1276, 1304); `[24]` is reached exactly from
+  the bounded arm of `[153]` (tex 739, 774).  The Lean closure uses only
+  these facts at G's canonical packing `P₀`, so it is the paper's own dead
+  branch made exact; since the paper does not route it, it is registered as
+  a Lean improvement (user ruling).
+- **Exact statement at G.**  `[146]` no gives the linear lower bound
+  `δn ≤ A·p₁₃ + D·T(n)` with `A = δ·13 + (δs+1)·15 = 234`,
+  `D = (δs+1) + δ·F·s = 109` (`Contracts.Spine.densityOrderLower_of_coldRoute8AtOrAbove`).
+  The realized package gives `2·118·L·p₁₃ ≤ (L+1)(3n + T(n))`, `L = ⌊log₂ n⌋`
+  (`Graph.two_mul_exponent_le_scale_mul_edgeBudget` with
+  `rate·L ≤ bits`); node `[24]` gives the same with the additive slack
+  `densitySlack·rate·L·T(n)`.  Combined (`Graph.densityOrderBound_of_lower_cap`):
+  `2rL·δn ≤ A(L+1)(δn + T) + L·T·(A·S + 2rD)` with `S = 0` (realized) or
+  `S = densitySlack·rate` (`[24]`).  With the rate margin `A = 234 < 2r = 236`
+  this is false for every `n ≥ N₀` (`Graph.densityOrderBound_false_of_large`),
+  `N₀ = max(2^(⌊2A/(2r−A)⌋+1), (2·(2A + A·S + 2rD)·C_sp + 1)²)`:
+  - realized: `N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235 ≈ 5.52·10⁷⁰`
+    (`C_sp = 674741758654409437347844`, so the square term is `≈ 1.25·10⁵⁷`);
+  - `[24]`: `N₀ = max(2^235, (2·M·C_sp + 1)²)`, `M = 26192 + 55224·(1 + 4·B_cold)`,
+    `B_cold = overlapBound` (the square term dominates).
+- **Lean.** Library: `Hypostructure/Graph/DensityOrder.lean` (vocabulary-free
+  arithmetic core and the cutoff), `Graph/Statements/DensityOrder.lean`,
+  `Graph/Contracts/Spine/DensityOrder.lean`.  Keys (idx 6600-6605):
+  `realizedDensityOrder`, `realizedOrderLarge`, `realizedOrderSmall`,
+  `boundedDensityOrder`, `boundedOrderLarge`, `boundedOrderSmall`.  Rows and
+  decisions: `Graph/Strategy/SpineRows/DensityOrder.lean`
+  (`realizedDensityOrderRow`, `boundedDensityOrderRow`,
+  `realizedOrderDichotomy`, `boundedOrderDichotomy`, instances
+  `instIncompatibleRealizedDensityOrderLarge`,
+  `instIncompatibleBoundedDensityOrderLarge`).
+- **Closed at the node.** `Assembly/NearCubic/Survivor/Realized.lean`
+  (`[146]` no arm of `nearCubicRealized`, before `[148]`):
+  `closeIncompatible largeHistory (K .realizedDensityOrder) (K .realizedOrderLarge)`;
+  `Assembly/NearCubic/Survivor/Unrealized.lean` (`[24]` on the bounded arms of
+  `nearCubicDensePassAtOrAbove` and `nearCubicDensePassRateFailed`):
+  `closeIncompatible largeHistory (K .boundedDensityOrder) (K .boundedOrderLarge)`.
+  The small arms continue exactly as before, with the two facts on the
+  ledger; see "Bounded-size residuals".
+
+## Bounded-size residuals
+
+A returned residual on the small arm of an exact size dichotomy carries, one
+`get` per fact, the combined bound and `n < N₀`: G is a counterexample with
+fewer than `N₀` vertices.  No hypothesis is added to the theorem and
+`Problem.lean` is unchanged.
+
+- **Realized arm (`[158]` yes, `[146]` no; `N₀ = 2^235`), facts
+  `K .realizedDensityOrder`, `K .realizedOrderSmall`:**
+  `Route8RateFailsOutcome_realized_*` (4 subtypes); `Node54ResidualOutcome_realizedBounded`;
+  `Node153ResidualOutcome_realized_bounded_absorbed_*` (4) and
+  `Node153ResidualOutcome_realized_linear` (through `Node153LinearBlock_realized`);
+  `ColdBranchClosedOutcome_linearRealizedDistinguished`,
+  `ColdBranchClosedOutcome_linearRealizedSilent`; and every product path whose
+  prefix is `Route8LanePrefixBlock_realizedColdAtOrAbove` (window block `W1`
+  for the cold-closed product): 272 of the 1360 paths of each of
+  `Route8JointBalanceOutcome_product`, `TypeBSublinearOutcome_product`,
+  `Route8QuotientOutcome_product`, and 20 of the 100 paths of
+  `ColdBranchClosedOutcome_product`.
+- **`[24]` arm (`[158]` no, `[146]` no, bounded arm of `[153]`;
+  `N₀ = max(2^235, (2·(26192 + 55224·(1 + 4·B_cold))·C_sp + 1)²)`), facts
+  `K .boundedDensityOrder`, `K .boundedOrderSmall`:**
+  `Route8RateFailsOutcome_denseAtOrAbove_*` (4) and `Route8RateFailsOutcome_denseBelow_*` (4);
+  `Node54ResidualOutcome_unrealizedTauHighBounded`,
+  `Node54ResidualOutcome_unrealizedRateFailsBounded`;
+  `Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_*` (4); and every
+  product path whose prefix is
+  `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove` (window block
+  `W3`): 272 of the 1360 paths of each route-8 product and 20 of the 100 paths
+  of `ColdBranchClosedOutcome_product`.
+- **Consequently every one of the twelve `Route8RateFailsOutcome_*` subtypes
+  (`[187]`, private-carrier rate failure) and every bounded `[54]` subtype is
+  now a bounded-size residual.**
+- **Paths removed (the large arms, `N₀ ≤ n`):** the whole `[146]`-no
+  continuation of the realized arm and the whole `[24]` continuation of both
+  dense bounded arms, at every `n ≥ N₀`.
+- **Not split: the net-deficiency cap (`SufficientlyLargeForNetCap`).**  The
+  paper consumes the cap at `[57]` and at `[113]`, and states explicitly that
+  it imposes no sufficient-order condition there (`rem:no-sufficient-order`,
+  tex 7960-7965; `lem:exact-collision-test`, tex 7868-7905): `[57]`/`[173]` is
+  decided exactly on the object, and `[113]` is an exact test (register entry
+  "[113] diagram box vs `rem:why-unified`").  Of the three producers of
+  `K .netDeficiencyCap`, the `[24]` one now lies entirely under the size
+  split above; on the `[146]`-yes and `[161]` producers the absorbed arm of
+  `[173]` is contradicted exactly (no condition on `n`) by the facts already
+  on those ledgers (`coldRoute8Below` or `denseDeficiencyBelow` with
+  `exactCollisionFails`, `stubSupply`, `hotColdPartition`; scratch
+  `analysis-153/Closure153.lean`, closures A and B), which is the prefix/absorbed
+  lanes' own work.  A split on `SufficientlyLargeForNetCap` would therefore
+  close nothing and only add a residual.
+- **Diameter ≤ 11 / Moore bound.** Checked against every uncapped count of
+  the returned residuals; it closes or tightens nothing:
+  - `[186]` open units `O` (`Route8JointBalanceStatement`,
+    `Statements/RouteEightPinned.lean:314`) are demand units of entries over
+    linearly many zero-surplus components of `G[R]`.  A per-component bound
+    `|X| ≤ 1 + 3(2^11 − 1) = 6142` gives only `O ≤ c·b`, linear in the
+    boundary incidence, which the residual's own inequalities already allow.
+  - `[162]` counts a corridor's length (`ColdDenseHeavyEntrySpecAt`).  The
+    corridor lies in `G − X_cold`, which contains hot and non-ambient-cubic
+    windows, not in `R`, and it is a simple path, not a shortest one.
+  - `[172a]` counts labelled near-cubic skeletons in two conditional fibres
+    (`Statements/Spine.lean:732-810`), not pieces of `G`.
+  - `B_cold` (hence `densitySlack` and the `[24]` cutoff) bounds first-failure
+    supports `J`, which always meet two cold windows of `P₀` (tex 7204-7210,
+    7336-7345).  So the `P₁₃`-free diameter argument does not reach them and
+    does not lower `N₀`.
+
 ## Returned residuals
 
 The current description of every returned residual of
@@ -1445,15 +1567,15 @@ free side.
 | `Node144aOutcome_*` | [144a] | 6 subtypes | 6 | 44 generic; 47, 48, 48, 49, 49, 50 |
 | `BlockedBarrierOverlapOutcome_*` | [172a] | 2 subtypes (`[160]` arm) | 2 | 71 generic; 72, 73 |
 | `PairConditionalFactorizationOutcome_*` | [182] | 6 subtypes | 6 | 33 generic; 37, 40, 43, 45, 48, 51 |
-| `Route8JointBalanceOutcome_product` | [186] | product: prefix (5) × entropy (4) × continuation (68) | 1360 | 79 generic; 99–136 |
+| `Route8JointBalanceOutcome_product` | [186] | product: prefix (5) × entropy (4) × continuation (68) | 1360 (544 bounded-size) | 79 generic; 99–138 |
 | `PairTypeBOutcome_*` | [187] ([179]/[180] Type B entry) | 4 subtypes | 4 | 42 generic; 46, 49, 54, 57 |
-| `TypeBSublinearOutcome_product` | [187] (Type B sublinear failure) | product: prefix (5) × entropy (4) × continuation (68) | 1360 | 62 generic; 82–119 |
-| `Route8QuotientOutcome_product` | [187] ([348], route-8 quotient failure) | product: prefix (5) × entropy (4) × continuation (68) | 1360 | 64 generic; 84–121 |
-| `Route8RateFailsOutcome_*` | [187] (private-carrier rate failure) | 12 subtypes | 12 | 42 generic; 45–49 |
-| `ColdBranchClosedOutcome_product`, `ColdBranchClosedOutcome_linear*` | [187] (local cold-terminal exclusion) | product: entropy (4) × window (5) × exit (5), plus 4 singletons | 104 | 57 generic; product 69–83, singletons 63, 63, 66, 67 |
-| `Node153ResidualOutcome_*` | [153] | 23 subtypes | 23 | 42 generic; 45, 46, 47 (linear arms), 51–57 (absorbed lane) |
+| `TypeBSublinearOutcome_product` | [187] (Type B sublinear failure) | product: prefix (5) × entropy (4) × continuation (68) | 1360 (544 bounded-size) | 62 generic; 82–121 |
+| `Route8QuotientOutcome_product` | [187] ([348], route-8 quotient failure) | product: prefix (5) × entropy (4) × continuation (68) | 1360 (544 bounded-size) | 64 generic; 84–123 |
+| `Route8RateFailsOutcome_*` | [187] (private-carrier rate failure) | 12 subtypes (all bounded-size) | 12 | 42 generic; 47–51 |
+| `ColdBranchClosedOutcome_product`, `ColdBranchClosedOutcome_linear*` | [187] (local cold-terminal exclusion) | product: entropy (4) × window (5) × exit (5), plus 4 singletons | 104 (40 + 2 bounded-size) | 57 generic; product 69–85, singletons 65, 65, 66, 67 |
+| `Node153ResidualOutcome_*` | [153] | 23 subtypes (9 bounded-size) | 23 | 42 generic; 45, 46, 49 (linear arms), 51–59 (absorbed lane) |
 | `Node162ResidualOutcome_*` | [162] | 2 subtypes (`[160]` arm) | 2 | 46 generic; 47, 48 |
-| `Node54ResidualOutcome_*` | [54] | 6 subtypes | 6 | 40 generic; 43, 43, 44, 44, 45, 46 |
+| `Node54ResidualOutcome_*` | [54] | 6 subtypes (3 bounded-size) | 6 | 40 generic; 43, 43, 44, 46, 47, 48 |
 
 Every return site calls its subtype or product return theorem, and
 `SelectedLedgerBoundaryResult` lists the subtypes and products themselves (the
@@ -1918,21 +2040,25 @@ fan/certificate pairs).
     - `Route8LanePrefixBlock_realizedColdBelow` (2): window package realized; cold route-8 rate below (`nearCubicRealized` → `nearCubicLargeBudgetColdRate`)
       - `K .coldRoute8Below`
       - `K .windowPackageRealized`
-    - `Route8LanePrefixBlock_realizedColdAtOrAbove` (4): window package realized; cold route-8 rate at or above, density cap (`nearCubicRealized` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`)
+    - `Route8LanePrefixBlock_realizedColdAtOrAbove` (6): window package realized; cold route-8 rate at or above, density cap (`nearCubicRealized` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`)
       - `K .coldMassBounded`
       - `K .coldRoute8AtOrAbove`
       - `K .densityCap`
       - `K .windowPackageRealized`
+      - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+      - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
     - `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow` (3): window package unrealized; dense deficiency at or above; cold route-8 rate below (`nearCubicUnrealized` → `nearCubicDensePassAtOrAbove` → `nearCubicLargeBudgetColdRate`)
       - `K .coldRoute8Below`
       - `K .denseDeficiencyAtOrAbove`
       - `K .windowPackageUnrealized`
-    - `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove` (5): window package unrealized; dense deficiency at or above; cold route-8 rate at or above, density cap (`nearCubicUnrealized` → `nearCubicDensePassAtOrAbove` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`)
+    - `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove` (7): window package unrealized; dense deficiency at or above; cold route-8 rate at or above, density cap (`nearCubicUnrealized` → `nearCubicDensePassAtOrAbove` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`)
       - `K .coldMassBounded`
       - `K .coldRoute8AtOrAbove`
       - `K .denseDeficiencyAtOrAbove`
       - `K .densityCap`
       - `K .windowPackageUnrealized`
+      - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+      - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
     - `Route8LanePrefixBlock_unrealizedDenseBelow` (2): window package unrealized; dense deficiency below (`nearCubicUnrealized` → `nearCubicLargeBudgetDenseRate`)
       - `K .denseDeficiencyBelow`
       - `K .windowPackageUnrealized`
@@ -2280,11 +2406,13 @@ fan/certificate pairs).
     - `Route8LanePrefixBlock_realizedColdBelow` ([158] window package realized; [146] θ < 1/78); on 416 paths; 2 keys:
       - `K .coldRoute8Below`: Node `[146]`, yes: the canonical packing lies below the route-8 private-carrier threshold.
       - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of ...
-    - `Route8LanePrefixBlock_realizedColdAtOrAbove` ([158] window package realized; [146] θ ≥ 1/78; [153] bounded cold mass under the density cap); on 416 paths; 4 keys:
+    - `Route8LanePrefixBlock_realizedColdAtOrAbove` ([158] window package realized; [146] θ ≥ 1/78; [153] bounded cold mass under the density cap); on 416 paths; 6 keys:
       - `K .coldMassBounded`: Node `[153]`, complementary arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
       - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
       - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in the object's own dyadic scale.
       - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of ...
+      - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+      - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
     - `Route8LanePrefixBlock_unrealizedDenseBelow` ([158] window package unrealized; [160] first test: dense deficiency below); on 416 paths; 2 keys:
       - `K .denseDeficiencyBelow`: On the `[21]` unrealized residual: `prop:negative-net-charge`'s exact large-budget net-deficiency comparison holds at the fixed maximal packing — the manuscript's `τ(θ) < 1/4` deficiency reading with the exact `√n` allowance, i.e.
       - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
@@ -2292,12 +2420,14 @@ fan/certificate pairs).
       - `K .coldRoute8Below`: Node `[146]`, yes: the canonical packing lies below the route-8 private-carrier threshold.
       - `K .denseDeficiencyAtOrAbove`: Its exact complement: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
       - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
-    - `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove` ([158] unrealized; [160] dense deficiency at or above; [146] θ ≥ 1/78; [153] bounded cold mass under the density cap); on 416 paths; 5 keys:
+    - `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove` ([158] unrealized; [160] dense deficiency at or above; [146] θ ≥ 1/78; [153] bounded cold mass under the density cap); on 416 paths; 7 keys:
       - `K .coldMassBounded`: Node `[153]`, complementary arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
       - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
       - `K .denseDeficiencyAtOrAbove`: Its exact complement: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
       - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in the object's own dyadic scale.
       - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
+      - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+      - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
   - **Entropy factor `EntropyArm` (4 blocks).**
     - `EntropyArmBlock_high` ([50] remainder entropy high; [53] entropy cap); on 520 paths; 3 keys:
       - `K .entropyCapBound`: Node `[54]`: the independently realized window/remainder code fits in the labelled skeleton class.
@@ -2545,21 +2675,25 @@ fan/certificate pairs).
     - `Route8LanePrefixBlock_realizedColdBelow` (2): window package realized; cold route-8 rate below (`nearCubicRealized` → `nearCubicLargeBudgetColdRate`)
       - `K .coldRoute8Below`
       - `K .windowPackageRealized`
-    - `Route8LanePrefixBlock_realizedColdAtOrAbove` (4): window package realized; cold route-8 rate at or above, density cap (`nearCubicRealized` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`)
+    - `Route8LanePrefixBlock_realizedColdAtOrAbove` (6): window package realized; cold route-8 rate at or above, density cap (`nearCubicRealized` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`)
       - `K .coldMassBounded`
       - `K .coldRoute8AtOrAbove`
       - `K .densityCap`
       - `K .windowPackageRealized`
+      - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+      - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
     - `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow` (3): window package unrealized; dense deficiency at or above; cold route-8 rate below (`nearCubicUnrealized` → `nearCubicDensePassAtOrAbove` → `nearCubicLargeBudgetColdRate`)
       - `K .coldRoute8Below`
       - `K .denseDeficiencyAtOrAbove`
       - `K .windowPackageUnrealized`
-    - `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove` (5): window package unrealized; dense deficiency at or above; cold route-8 rate at or above, density cap (`nearCubicUnrealized` → `nearCubicDensePassAtOrAbove` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`)
+    - `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove` (7): window package unrealized; dense deficiency at or above; cold route-8 rate at or above, density cap (`nearCubicUnrealized` → `nearCubicDensePassAtOrAbove` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`)
       - `K .coldMassBounded`
       - `K .coldRoute8AtOrAbove`
       - `K .denseDeficiencyAtOrAbove`
       - `K .densityCap`
       - `K .windowPackageUnrealized`
+      - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+      - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
     - `Route8LanePrefixBlock_unrealizedDenseBelow` (2): window package unrealized; dense deficiency below (`nearCubicUnrealized` → `nearCubicLargeBudgetDenseRate`)
       - `K .denseDeficiencyBelow`
       - `K .windowPackageUnrealized`
@@ -2785,47 +2919,61 @@ fan/certificate pairs).
   41. `K .netDeficiencyCap`: Node `[56]`: exact cleared finite form of the large-budget net-deficiency cap.
   42. `K .route8RateFails`: The complement of the rate reading on an arm whose density fact does not decide it (`3/13 ≤ τ`): the manuscript's delicate density interval (row 2 of the cold-branch ledger), carried as its own branch.
 - **Subtypes (12), one per distinct fact set.**
-  - `Route8RateFailsOutcome_realized_highEntropy` ([158] yes (realized package); [50] high; [53] bound, Residual C [55]): 46 facts, the 42 common facts and
+  - `Route8RateFailsOutcome_realized_highEntropy` ([158] yes (realized package); [50] high; [53] bound, Residual C [55]): 48 facts, the 42 common facts and
     - `K .windowPackageRealized`
     - `K .remainderEntropyHigh`
     - `K .entropyPackageDemand`
     - `K .entropyCapBound`
-  - `Route8RateFailsOutcome_realized_lowNonrepetitive` ([158] yes (realized package); [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 45 facts, the 42 common facts and
+    - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+    - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
+  - `Route8RateFailsOutcome_realized_lowNonrepetitive` ([158] yes (realized package); [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 47 facts, the 42 common facts and
     - `K .windowPackageRealized`
     - `K .remainderEntropyLow`
     - `K .localTypeCoordinateNonrepetitive`
-  - `Route8RateFailsOutcome_realized_lowWedgeFree` ([158] yes (realized package); [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 47 facts, the 42 common facts and
+    - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+    - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
+  - `Route8RateFailsOutcome_realized_lowWedgeFree` ([158] yes (realized package); [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 49 facts, the 42 common facts and
     - `K .windowPackageRealized`
     - `K .remainderEntropyLow`
     - `K .localTypeCoordinateRepetitive`
     - `K .dominantRootedType`
     - `K .dominantRootedTypeWedgeFree`
-  - `Route8RateFailsOutcome_realized_lowWedge` ([158] yes (realized package); [50] low; local-type coordinate repetitive; dominant rooted wedge type): 48 facts, the 42 common facts and
+    - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+    - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
+  - `Route8RateFailsOutcome_realized_lowWedge` ([158] yes (realized package); [50] low; local-type coordinate repetitive; dominant rooted wedge type): 50 facts, the 42 common facts and
     - `K .windowPackageRealized`
     - `K .remainderEntropyLow`
     - `K .localTypeCoordinateRepetitive`
     - `K .dominantRootedType`
     - `K .dominantRootedWedgeType`
     - `K .independentObstructionTranslates`
-  - `Route8RateFailsOutcome_denseAtOrAbove_highEntropy` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] high; [53] bound, Residual C [55]): 47 facts, the 42 common facts and
+    - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+    - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
+  - `Route8RateFailsOutcome_denseAtOrAbove_highEntropy` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] high; [53] bound, Residual C [55]): 49 facts, the 42 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyAtOrAbove`
     - `K .remainderEntropyHigh`
     - `K .entropyPackageDemand`
     - `K .entropyCapBound`
-  - `Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 46 facts, the 42 common facts and
+    - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+    - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
+  - `Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 48 facts, the 42 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyAtOrAbove`
     - `K .remainderEntropyLow`
     - `K .localTypeCoordinateNonrepetitive`
-  - `Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 48 facts, the 42 common facts and
+    - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+    - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
+  - `Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 50 facts, the 42 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyAtOrAbove`
     - `K .remainderEntropyLow`
     - `K .localTypeCoordinateRepetitive`
     - `K .dominantRootedType`
     - `K .dominantRootedTypeWedgeFree`
-  - `Route8RateFailsOutcome_denseAtOrAbove_lowWedge` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate repetitive; dominant rooted wedge type): 49 facts, the 42 common facts and
+    - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+    - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
+  - `Route8RateFailsOutcome_denseAtOrAbove_lowWedge` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate repetitive; dominant rooted wedge type): 51 facts, the 42 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyAtOrAbove`
     - `K .remainderEntropyLow`
@@ -2833,25 +2981,33 @@ fan/certificate pairs).
     - `K .dominantRootedType`
     - `K .dominantRootedWedgeType`
     - `K .independentObstructionTranslates`
-  - `Route8RateFailsOutcome_denseBelow_highEntropy` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] high; [53] bound, Residual C [55]): 47 facts, the 42 common facts and
+    - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+    - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
+  - `Route8RateFailsOutcome_denseBelow_highEntropy` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] high; [53] bound, Residual C [55]): 49 facts, the 42 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyBelow`
     - `K .remainderEntropyHigh`
     - `K .entropyPackageDemand`
     - `K .entropyCapBound`
-  - `Route8RateFailsOutcome_denseBelow_lowNonrepetitive` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 46 facts, the 42 common facts and
+    - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+    - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
+  - `Route8RateFailsOutcome_denseBelow_lowNonrepetitive` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 48 facts, the 42 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyBelow`
     - `K .remainderEntropyLow`
     - `K .localTypeCoordinateNonrepetitive`
-  - `Route8RateFailsOutcome_denseBelow_lowWedgeFree` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 48 facts, the 42 common facts and
+    - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+    - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
+  - `Route8RateFailsOutcome_denseBelow_lowWedgeFree` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 50 facts, the 42 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyBelow`
     - `K .remainderEntropyLow`
     - `K .localTypeCoordinateRepetitive`
     - `K .dominantRootedType`
     - `K .dominantRootedTypeWedgeFree`
-  - `Route8RateFailsOutcome_denseBelow_lowWedge` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate repetitive; dominant rooted wedge type): 49 facts, the 42 common facts and
+    - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+    - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
+  - `Route8RateFailsOutcome_denseBelow_lowWedge` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate repetitive; dominant rooted wedge type): 51 facts, the 42 common facts and
     - `K .windowPackageUnrealized`
     - `K .denseDeficiencyBelow`
     - `K .remainderEntropyLow`
@@ -2859,6 +3015,8 @@ fan/certificate pairs).
     - `K .dominantRootedType`
     - `K .dominantRootedWedgeType`
     - `K .independentObstructionTranslates`
+    - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+    - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
 
 <a id="residual-187-cold-terminal"></a>
 
@@ -2951,20 +3109,24 @@ fan/certificate pairs).
       - `K .localTypeCoordinateRepetitive`: `prop:two-budget` (b): on the low-entropy residual, the radius-two rooted-type coordinate lies below the exact finite relabelling threshold.
       - `K .remainderEntropyLow`: Node `[50]`, no arm: `η(R) < (1/d)·log₂ n`, the low-entropy branch `prop:two-budget` (b) and (c) share.
   - **Family `ColdBranchClosedWindowArm`**: the window/test arm ([158], [160], [146], [153]).
-    - **W1 `ColdBranchClosedWindowRealizedThetaAtOrAbove`** (4 facts; the matching `Route8Blocks` block, built by its `.ret`): [158] window package realized, [146] theta at or above 1/78 (with [153] bounded cold mass and its density cap).
+    - **W1 `ColdBranchClosedWindowRealizedThetaAtOrAbove`** (6 facts; the matching `Route8Blocks` block, built by its `.ret`): [158] window package realized, [146] theta at or above 1/78 (with [153] bounded cold mass and its density cap).
       - `K .coldMassBounded`: Node `[153]`, complementary arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
       - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
       - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in the object's own dyadic scale.
       - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
+      - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+      - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
     - **W2 `ColdBranchClosedWindowRealizedThetaBelow`** (2 facts; the matching `Route8Blocks` block, built by its `.ret`): [158] window package realized, [146] theta below 1/78.
       - `K .coldRoute8Below`: Node `[146]`, yes: the canonical packing lies below the route-8 private-carrier threshold.
       - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
-    - **W3 `ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaAtOrAbove`** (5 facts; the matching `Route8Blocks` block, built by its `.ret`): [158] window package unrealized, [160] tau at or above 1/4, [146] theta at or above 1/78 (with [153] bounded cold mass and its density cap).
+    - **W3 `ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaAtOrAbove`** (7 facts; the matching `Route8Blocks` block, built by its `.ret`): [158] window package unrealized, [160] tau at or above 1/4, [146] theta at or above 1/78 (with [153] bounded cold mass and its density cap).
       - `K .coldMassBounded`: Node `[153]`, complementary arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
       - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
       - `K .denseDeficiencyAtOrAbove`: Its exact complement: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
       - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in the object's own dyadic scale.
       - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
+      - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+      - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
     - **W4 `ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaBelow`** (3 facts; the matching `Route8Blocks` block, built by its `.ret`): [158] window package unrealized, [160] tau at or above 1/4, [146] theta below 1/78.
       - `K .coldRoute8Below`: Node `[146]`, yes: the canonical packing lies below the route-8 private-carrier threshold.
       - `K .denseDeficiencyAtOrAbove`: Its exact complement: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
@@ -3031,20 +3193,24 @@ fan/certificate pairs).
     - `K .denseDeficiencyBelow`: On the `[21]` unrealized residual: `prop:negative-net-charge`'s exact large-budget net-deficiency comparison holds at the fixed maximal packing — the manuscript's `τ(θ) < 1/4` deficiency reading with the exact `√n` allowance, i.e. the inequality node `[56]` supplies to `[57]`--`[62]`.
     - `K .route8RateFails`: The complement of the rate reading on an arm whose density fact does not decide it (`3/13 ≤ τ`): the manuscript's delicate density interval (row 2 of the cold-branch ledger), carried as its own branch.
     - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
-  - **`ColdBranchClosedOutcome_linearRealizedDistinguished`** (63 facts: 57 generic + 6; return `coldBranchClosed_linearRealizedDistinguishedReturn`): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / some distinguishing.
+  - **`ColdBranchClosedOutcome_linearRealizedDistinguished`** (65 facts: 57 generic + 8; return `coldBranchClosed_linearRealizedDistinguishedReturn`): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / some distinguishing.
     - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
     - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
     - `K .coldGermSomeDistinguishing`: Node `[154]`, second binary test on the no-G1 arm (G2): some configuration of the extracted active family is hit-distinguished.
     - `K .coldMassLinear`: Node `[153]`, exact form of "for all sufficiently large `n`": the cold mass exceeds the two branch-excess slacks, so the extracted germ family is positive (`lem:cold-germ-extraction`).
     - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
     - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
-  - **`ColdBranchClosedOutcome_linearRealizedSilent`** (63 facts: 57 generic + 6; return `coldBranchClosed_linearRealizedSilentReturn`): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing.
+    - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+    - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
+  - **`ColdBranchClosedOutcome_linearRealizedSilent`** (65 facts: 57 generic + 8; return `coldBranchClosed_linearRealizedSilentReturn`): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing.
     - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
     - `K .coldGermNoneDistinguishing`: Node `[154]`, the exact complement of `coldGermSomeDistinguishing`: every active configuration is silent (G3 or the equal-length table).
     - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
     - `K .coldMassLinear`: Node `[153]`, exact form of "for all sufficiently large `n`": the cold mass exceeds the two branch-excess slacks, so the extracted germ family is positive (`lem:cold-germ-extraction`).
     - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
     - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
+    - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+    - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
 
 <a id="residual-153"></a>
 
@@ -3151,7 +3317,7 @@ fan/certificate pairs).
      - `K .denseDeficiencyAtOrAbove`: Node `[160]`, first test no, the exact complement of `K .denseDeficiencyBelow`: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
      - `K .coldMassLinear`: Node `[153]`, exact form of "for all sufficiently large `n`": the cold mass exceeds the two branch-excess slacks, so the extracted germ family is positive (`lem:cold-germ-extraction`).
-  6. **`Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_high`** ([158] unrealized, [160] τ ≥ 1/4; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] high entropy, [53] entropy cap bound): 55 facts; path `nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (13):
+  6. **`Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_high`** ([158] unrealized, [160] τ ≥ 1/4; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] high entropy, [53] entropy cap bound): 57 facts; path `nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (15):
      - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
      - `K .denseDeficiencyAtOrAbove`: Node `[160]`, first test no, the exact complement of `K .denseDeficiencyBelow`: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
@@ -3165,7 +3331,9 @@ fan/certificate pairs).
      - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census alone, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13` with the `o(|R|)` allowance, `rem:route8-carrier-margin`), read from the arm's density fact.
      - `K .exactCollisionFails`: Node `[173]`, `lem:exact-collision-test`, no arm: node `[56]`'s collision, decided exactly on the current object, fails at some maximal packing — the absorbed-germ residual `[174]`.
      - `K .absorbedConfigurationResidual`: Node `[174]`, `lem:exact-collision-test`, the consequence of the failed collision: the failure witness packing `P` of `[173]` satisfies `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`, `A = netChargeCoefficient`, the manuscript's `C ≥ (n − 73|𝒫_hot| − 4(σ_W − σ_R))/73` without subtraction: the residual carries linearly many cold windows.
-  7. **`Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowNonrep`** ([158] unrealized, [160] τ ≥ 1/4; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] low entropy, non-repetitive): 54 facts; path `nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (12):
+     - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+     - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
+  7. **`Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowNonrep`** ([158] unrealized, [160] τ ≥ 1/4; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] low entropy, non-repetitive): 56 facts; path `nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (14):
      - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
      - `K .denseDeficiencyAtOrAbove`: Node `[160]`, first test no, the exact complement of `K .denseDeficiencyBelow`: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
@@ -3178,7 +3346,9 @@ fan/certificate pairs).
      - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census alone, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13` with the `o(|R|)` allowance, `rem:route8-carrier-margin`), read from the arm's density fact.
      - `K .exactCollisionFails`: Node `[173]`, `lem:exact-collision-test`, no arm: node `[56]`'s collision, decided exactly on the current object, fails at some maximal packing — the absorbed-germ residual `[174]`.
      - `K .absorbedConfigurationResidual`: Node `[174]`, `lem:exact-collision-test`, the consequence of the failed collision: the failure witness packing `P` of `[173]` satisfies `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`, `A = netChargeCoefficient`, the manuscript's `C ≥ (n − 73|𝒫_hot| − 4(σ_W − σ_R))/73` without subtraction: the residual carries linearly many cold windows.
-  8. **`Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedgeFree`** ([158] unrealized, [160] τ ≥ 1/4; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] low entropy, repetitive, wedge-free): 56 facts; path `nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (14):
+     - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+     - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
+  8. **`Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedgeFree`** ([158] unrealized, [160] τ ≥ 1/4; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] low entropy, repetitive, wedge-free): 58 facts; path `nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (16):
      - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
      - `K .denseDeficiencyAtOrAbove`: Node `[160]`, first test no, the exact complement of `K .denseDeficiencyBelow`: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
@@ -3193,7 +3363,9 @@ fan/certificate pairs).
      - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census alone, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13` with the `o(|R|)` allowance, `rem:route8-carrier-margin`), read from the arm's density fact.
      - `K .exactCollisionFails`: Node `[173]`, `lem:exact-collision-test`, no arm: node `[56]`'s collision, decided exactly on the current object, fails at some maximal packing — the absorbed-germ residual `[174]`.
      - `K .absorbedConfigurationResidual`: Node `[174]`, `lem:exact-collision-test`, the consequence of the failed collision: the failure witness packing `P` of `[173]` satisfies `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`, `A = netChargeCoefficient`, the manuscript's `C ≥ (n − 73|𝒫_hot| − 4(σ_W − σ_R))/73` without subtraction: the residual carries linearly many cold windows.
-  9. **`Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedge`** ([158] unrealized, [160] τ ≥ 1/4; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] low entropy, repetitive, root wedge): 57 facts; path `nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (15):
+     - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+     - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
+  9. **`Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedge`** ([158] unrealized, [160] τ ≥ 1/4; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] low entropy, repetitive, root wedge): 57 facts; path `nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (17):
      - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
      - `K .denseDeficiencyAtOrAbove`: Node `[160]`, first test no, the exact complement of `K .denseDeficiencyBelow`: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
@@ -3209,6 +3381,8 @@ fan/certificate pairs).
      - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census alone, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13` with the `o(|R|)` allowance, `rem:route8-carrier-margin`), read from the arm's density fact.
      - `K .exactCollisionFails`: Node `[173]`, `lem:exact-collision-test`, no arm: node `[56]`'s collision, decided exactly on the current object, fails at some maximal packing — the absorbed-germ residual `[174]`.
      - `K .absorbedConfigurationResidual`: Node `[174]`, `lem:exact-collision-test`, the consequence of the failed collision: the failure witness packing `P` of `[173]` satisfies `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`, `A = netChargeCoefficient`, the manuscript's `C ≥ (n − 73|𝒫_hot| − 4(σ_W − σ_R))/73` without subtraction: the residual carries linearly many cold windows.
+     - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+     - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
   10. **`Node153ResidualOutcome_denseRateFails_linear`** ([158] unrealized, [160] τ < 1/4 and private-carrier rate fails; [146] no, [153] linear cold mass): 47 facts; path `nearCubicUnrealized → nearCubicDensePassRateFailed → nearCubicDenseLinear`. Extra facts (5):
      - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
      - `K .denseDeficiencyBelow`: On the `[21]` unrealized residual: `prop:negative-net-charge`'s exact large-budget net-deficiency comparison holds at the fixed maximal packing — the manuscript's `τ(θ) < 1/4` deficiency reading with the exact `√n` allowance, i.e. the inequality node `[56]` supplies to `[57]`--`[62]`.
@@ -3307,7 +3481,7 @@ fan/certificate pairs).
      - `K .netDeficiencyCap`: Node `[56]`: exact cleared finite form of the large-budget net-deficiency cap.
      - `K .exactCollisionFails`: Node `[173]`, `lem:exact-collision-test`, no arm: node `[56]`'s collision, decided exactly on the current object, fails at some maximal packing — the absorbed-germ residual `[174]`.
      - `K .absorbedConfigurationResidual`: Node `[174]`, `lem:exact-collision-test`, the consequence of the failed collision: the failure witness packing `P` of `[173]` satisfies `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`, `A = netChargeCoefficient`, the manuscript's `C ≥ (n − 73|𝒫_hot| − 4(σ_W − σ_R))/73` without subtraction: the residual carries linearly many cold windows.
-  19. **`Node153ResidualOutcome_realized_bounded_absorbed_high`** ([158] realized; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] high entropy, [53] entropy cap bound): 54 facts; path `nearCubicRealized → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (12):
+  19. **`Node153ResidualOutcome_realized_bounded_absorbed_high`** ([158] realized; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] high entropy, [53] entropy cap bound): 56 facts; path `nearCubicRealized → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (14):
      - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
      - `K .coldMassBounded`: Node `[153]`, complementary arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
@@ -3320,7 +3494,9 @@ fan/certificate pairs).
      - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census alone, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13` with the `o(|R|)` allowance, `rem:route8-carrier-margin`), read from the arm's density fact.
      - `K .exactCollisionFails`: Node `[173]`, `lem:exact-collision-test`, no arm: node `[56]`'s collision, decided exactly on the current object, fails at some maximal packing — the absorbed-germ residual `[174]`.
      - `K .absorbedConfigurationResidual`: Node `[174]`, `lem:exact-collision-test`, the consequence of the failed collision: the failure witness packing `P` of `[173]` satisfies `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`, `A = netChargeCoefficient`, the manuscript's `C ≥ (n − 73|𝒫_hot| − 4(σ_W − σ_R))/73` without subtraction: the residual carries linearly many cold windows.
-  20. **`Node153ResidualOutcome_realized_bounded_absorbed_lowNonrep`** ([158] realized; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] low entropy, non-repetitive): 53 facts; path `nearCubicRealized → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (11):
+     - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+     - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
+  20. **`Node153ResidualOutcome_realized_bounded_absorbed_lowNonrep`** ([158] realized; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] low entropy, non-repetitive): 55 facts; path `nearCubicRealized → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (13):
      - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
      - `K .coldMassBounded`: Node `[153]`, complementary arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
@@ -3332,7 +3508,9 @@ fan/certificate pairs).
      - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census alone, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13` with the `o(|R|)` allowance, `rem:route8-carrier-margin`), read from the arm's density fact.
      - `K .exactCollisionFails`: Node `[173]`, `lem:exact-collision-test`, no arm: node `[56]`'s collision, decided exactly on the current object, fails at some maximal packing — the absorbed-germ residual `[174]`.
      - `K .absorbedConfigurationResidual`: Node `[174]`, `lem:exact-collision-test`, the consequence of the failed collision: the failure witness packing `P` of `[173]` satisfies `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`, `A = netChargeCoefficient`, the manuscript's `C ≥ (n − 73|𝒫_hot| − 4(σ_W − σ_R))/73` without subtraction: the residual carries linearly many cold windows.
-  21. **`Node153ResidualOutcome_realized_bounded_absorbed_lowWedgeFree`** ([158] realized; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] low entropy, repetitive, wedge-free): 55 facts; path `nearCubicRealized → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (13):
+     - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+     - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
+  21. **`Node153ResidualOutcome_realized_bounded_absorbed_lowWedgeFree`** ([158] realized; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] low entropy, repetitive, wedge-free): 57 facts; path `nearCubicRealized → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (15):
      - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
      - `K .coldMassBounded`: Node `[153]`, complementary arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
@@ -3346,7 +3524,9 @@ fan/certificate pairs).
      - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census alone, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13` with the `o(|R|)` allowance, `rem:route8-carrier-margin`), read from the arm's density fact.
      - `K .exactCollisionFails`: Node `[173]`, `lem:exact-collision-test`, no arm: node `[56]`'s collision, decided exactly on the current object, fails at some maximal packing — the absorbed-germ residual `[174]`.
      - `K .absorbedConfigurationResidual`: Node `[174]`, `lem:exact-collision-test`, the consequence of the failed collision: the failure witness packing `P` of `[173]` satisfies `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`, `A = netChargeCoefficient`, the manuscript's `C ≥ (n − 73|𝒫_hot| − 4(σ_W − σ_R))/73` without subtraction: the residual carries linearly many cold windows.
-  22. **`Node153ResidualOutcome_realized_bounded_absorbed_lowWedge`** ([158] realized; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] low entropy, repetitive, root wedge): 56 facts; path `nearCubicRealized → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (14):
+     - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+     - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
+  22. **`Node153ResidualOutcome_realized_bounded_absorbed_lowWedge`** ([158] realized; [146] no, [153] bounded cold mass, route-8 entry rate holds; [173] exact collision fails ([174]); [50] low entropy, repetitive, root wedge): 58 facts; path `nearCubicRealized → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`. Extra facts (16):
      - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
      - `K .coldMassBounded`: Node `[153]`, complementary arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
@@ -3361,10 +3541,14 @@ fan/certificate pairs).
      - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census alone, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13` with the `o(|R|)` allowance, `rem:route8-carrier-margin`), read from the arm's density fact.
      - `K .exactCollisionFails`: Node `[173]`, `lem:exact-collision-test`, no arm: node `[56]`'s collision, decided exactly on the current object, fails at some maximal packing — the absorbed-germ residual `[174]`.
      - `K .absorbedConfigurationResidual`: Node `[174]`, `lem:exact-collision-test`, the consequence of the failed collision: the failure witness packing `P` of `[173]` satisfies `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`, `A = netChargeCoefficient`, the manuscript's `C ≥ (n − 73|𝒫_hot| − 4(σ_W − σ_R))/73` without subtraction: the residual carries linearly many cold windows.
-  23. **`Node153ResidualOutcome_realized_linear`** ([158] realized; [146] no, [153] linear cold mass): 45 facts; path `nearCubicRealized`. Extra facts (3):
+     - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+     - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
+  23. **`Node153ResidualOutcome_realized_linear`** ([158] realized; [146] no, [153] linear cold mass): 47 facts; path `nearCubicRealized`. Extra facts (5):
      - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
      - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
      - `K .coldMassLinear`: Node `[153]`, exact form of "for all sufficiently large `n`": the cold mass exceeds the two branch-excess slacks, so the extracted germ family is positive (`lem:cold-germ-extraction`).
+     - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+     - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
 
 <a id="residual-162"></a>
 
@@ -3494,29 +3678,35 @@ fan/certificate pairs).
     - `K .windowPackageRealized`: Node `[158]`, yes arm: the fixed maximal packing's full package code is realized canonically by the labelled skeletons of G's class (`2^{b_P} ≤ |𝒢_{n,m}|`).
     - `K .coldRoute8Below`: Node `[146]`, yes arm (`θ < 1/78`): the canonical packing is below the cold route-8 threshold.
     - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13`), read from the arm's density fact.
-  - `Node54ResidualOutcome_realizedBounded` ([158] realized; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_realizedBounded`; 44 facts in total. Extra facts:
+  - `Node54ResidualOutcome_realizedBounded` ([158] realized; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_realizedBounded`; 46 facts in total. Extra facts:
     - `K .windowPackageRealized`: Node `[158]`, yes arm: the fixed maximal packing's full package code is realized canonically by the labelled skeletons of G's class (`2^{b_P} ≤ |𝒢_{n,m}|`).
     - `K .coldRoute8AtOrAbove`: Node `[146]`, no arm: the canonical packing is not below the cold route-8 threshold.
     - `K .coldMassBounded`: Node `[153]`, bounded arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
     - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in G's own dyadic scale.
+    - `K .realizedDensityOrder`: Node `[146]` no on the realized-package arm `[158]` yes, made exact (Lean improvement, not routed by the paper): the realized package's entropy count `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n))` (`lem:p13-window-package`, `lem:skeleton-dominates`) against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)` (`A = 234`, `D = 109`), combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.realizedDensityOrder_of_realized`).
+    - `K .realizedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·26192·C_sp + 1)²) = 2^235` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`realizedDensityOrder_false_of_large`).
   - `Node54ResidualOutcome_unrealizedTauHighColdBelow` ([158] unrealized; [160] `τ(θ) ≥ 1/4`; [146] `θ < 1/78` (`[147]`)); return `node54Return_unrealizedTauHighColdBelow`; 44 facts in total. Extra facts:
     - `K .windowPackageUnrealized`: Node `[158]`, no arm (`[159]`): the fixed maximal packing's full package code is not realized canonically by the labelled skeletons of G's class.
     - `K .denseDeficiencyAtOrAbove`: Node `[160]`, first test no: `τ(θ) ≥ 1/4`.
     - `K .coldRoute8Below`: Node `[146]`, yes arm (`θ < 1/78`): the canonical packing is below the cold route-8 threshold.
     - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13`), read from the arm's density fact.
-  - `Node54ResidualOutcome_unrealizedTauHighBounded` ([158] unrealized; [160] `τ(θ) ≥ 1/4`; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_unrealizedTauHighBounded`; 45 facts in total. Extra facts:
+  - `Node54ResidualOutcome_unrealizedTauHighBounded` ([158] unrealized; [160] `τ(θ) ≥ 1/4`; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_unrealizedTauHighBounded`; 47 facts in total. Extra facts:
     - `K .windowPackageUnrealized`: Node `[158]`, no arm (`[159]`): the fixed maximal packing's full package code is not realized canonically by the labelled skeletons of G's class.
     - `K .denseDeficiencyAtOrAbove`: Node `[160]`, first test no: `τ(θ) ≥ 1/4`.
     - `K .coldRoute8AtOrAbove`: Node `[146]`, no arm: the canonical packing is not below the cold route-8 threshold.
     - `K .coldMassBounded`: Node `[153]`, bounded arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
     - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in G's own dyadic scale.
-  - `Node54ResidualOutcome_unrealizedRateFailsBounded` ([158] unrealized; [160] `τ(θ) < 1/4`, rate fails; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_unrealizedRateFailsBounded`; 46 facts in total. Extra facts:
+    - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+    - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
+  - `Node54ResidualOutcome_unrealizedRateFailsBounded` ([158] unrealized; [160] `τ(θ) < 1/4`, rate fails; [146] `θ ≥ 1/78`; [153] bounded (`[24]`)); return `node54Return_unrealizedRateFailsBounded`; 48 facts in total. Extra facts:
     - `K .windowPackageUnrealized`: Node `[158]`, no arm (`[159]`): the fixed maximal packing's full package code is not realized canonically by the labelled skeletons of G's class.
     - `K .denseDeficiencyBelow`: Node `[160]`, first test yes: `τ(θ) < 1/4`, the dense net-deficiency cap.
     - `K .route8RateFails`: Node `[160]`, second test no: the private-carrier rate fails (`3/13 ≤ τ`), retained as its own branch.
     - `K .coldRoute8AtOrAbove`: Node `[146]`, no arm: the canonical packing is not below the cold route-8 threshold.
     - `K .coldMassBounded`: Node `[153]`, bounded arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
     - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in G's own dyadic scale.
+    - `K .boundedDensityOrder`: Node `[24]` on `[146]` no, made exact (Lean improvement, not routed by the paper): `[24]`'s density cap `2·rate·log₂n·p₁₃ ≤ (log₂n+1)(δn + T(n)) + densitySlack·rate·log₂n·T(n)` against the `[146]`-no lower bound `δn ≤ A·p₁₃ + D·T(n)`, combined at G (`Graph.DensityOrderBound`; `Contracts.Spine.boundedDensityOrder_of_densityCap`).
+    - `K .boundedOrderSmall`: the exact size test on G's order, no arm: `n < N₀ = max(2^235, (2·M·C_sp + 1)²)` with `M = 26192 + 55224·(1 + 4·B_cold)` (`¬ Graph.SufficientlyLargeForDensityOrder`); its yes arm `N₀ ≤ n` is closed (`boundedDensityOrder_false_of_large`).
   - `Node54ResidualOutcome_unrealizedBothRates` ([158] unrealized; [160] both rates hold (`[161]`)); return `node54Return_unrealizedBothRates`; 43 facts in total. Extra facts:
     - `K .windowPackageUnrealized`: Node `[158]`, no arm (`[159]`): the fixed maximal packing's full package code is not realized canonically by the labelled skeletons of G's class.
     - `K .denseDeficiencyBelow`: Node `[160]`, first test yes: `τ(θ) < 1/4`, the dense net-deficiency cap.

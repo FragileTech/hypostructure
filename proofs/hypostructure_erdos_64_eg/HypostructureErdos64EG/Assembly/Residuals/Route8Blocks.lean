@@ -44,7 +44,7 @@ theorem Route8LanePrefixBlock_realizedColdBelow.ret
   ⟨(history.get (K .coldRoute8Below)).down,
     (history.get (K .windowPackageRealized)).down⟩
 
-/-- Route-8 lane prefix arm: window package realized; cold route-8 rate at or above, density cap (`nearCubicRealized` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`) (4 facts). -/
+/-- Route-8 lane prefix arm: window package realized; cold route-8 rate at or above, density cap, the realized density order and its size test `n < N₀` (`nearCubicRealized` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`) (6 facts). -/
 abbrev Route8LanePrefixBlock_realizedColdAtOrAbove (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldMassBounded selected.object ∧
@@ -53,7 +53,11 @@ abbrev Route8LanePrefixBlock_realizedColdAtOrAbove (selected : EGInput.{u}) : Pr
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .densityCap selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageRealized selected.object
+      erdosReceiverLoadProfile spineData .windowPackageRealized selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 /-- `Route8LanePrefixBlock_realizedColdAtOrAbove` from the one ledger: one `get` per key. -/
 theorem Route8LanePrefixBlock_realizedColdAtOrAbove.ret
@@ -62,12 +66,16 @@ theorem Route8LanePrefixBlock_realizedColdAtOrAbove.ret
     [FactKeys.Has (K .coldMassBounded) known]
     [FactKeys.Has (K .coldRoute8AtOrAbove) known]
     [FactKeys.Has (K .densityCap) known]
-    [FactKeys.Has (K .windowPackageRealized) known] :
+    [FactKeys.Has (K .windowPackageRealized) known]
+    [FactKeys.Has (K .realizedDensityOrder) known]
+    [FactKeys.Has (K .realizedOrderSmall) known] :
     Route8LanePrefixBlock_realizedColdAtOrAbove selected :=
   ⟨(history.get (K .coldMassBounded)).down,
     (history.get (K .coldRoute8AtOrAbove)).down,
     (history.get (K .densityCap)).down,
-    (history.get (K .windowPackageRealized)).down⟩
+    (history.get (K .windowPackageRealized)).down,
+    (history.get (K .realizedDensityOrder)).down,
+    (history.get (K .realizedOrderSmall)).down⟩
 
 /-- Route-8 lane prefix arm: window package unrealized; dense deficiency at or above; cold route-8 rate below (`nearCubicUnrealized` → `nearCubicDensePassAtOrAbove` → `nearCubicLargeBudgetColdRate`) (3 facts). -/
 abbrev Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow (selected : EGInput.{u}) : Prop :=
@@ -90,7 +98,7 @@ theorem Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow.ret
     (history.get (K .denseDeficiencyAtOrAbove)).down,
     (history.get (K .windowPackageUnrealized)).down⟩
 
-/-- Route-8 lane prefix arm: window package unrealized; dense deficiency at or above; cold route-8 rate at or above, density cap (`nearCubicUnrealized` → `nearCubicDensePassAtOrAbove` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`) (5 facts). -/
+/-- Route-8 lane prefix arm: window package unrealized; dense deficiency at or above; cold route-8 rate at or above, density cap, the `[24]` density order and its size test `n < N₀` (`nearCubicUnrealized` → `nearCubicDensePassAtOrAbove` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`) (7 facts). -/
 abbrev Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldMassBounded selected.object ∧
@@ -101,7 +109,11 @@ abbrev Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove (selected : E
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .densityCap selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageUnrealized selected.object
+      erdosReceiverLoadProfile spineData .windowPackageUnrealized selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 /-- `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove` from the one ledger: one `get` per key. -/
 theorem Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove.ret
@@ -111,13 +123,17 @@ theorem Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove.ret
     [FactKeys.Has (K .coldRoute8AtOrAbove) known]
     [FactKeys.Has (K .denseDeficiencyAtOrAbove) known]
     [FactKeys.Has (K .densityCap) known]
-    [FactKeys.Has (K .windowPackageUnrealized) known] :
+    [FactKeys.Has (K .windowPackageUnrealized) known]
+    [FactKeys.Has (K .boundedDensityOrder) known]
+    [FactKeys.Has (K .boundedOrderSmall) known] :
     Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove selected :=
   ⟨(history.get (K .coldMassBounded)).down,
     (history.get (K .coldRoute8AtOrAbove)).down,
     (history.get (K .denseDeficiencyAtOrAbove)).down,
     (history.get (K .densityCap)).down,
-    (history.get (K .windowPackageUnrealized)).down⟩
+    (history.get (K .windowPackageUnrealized)).down,
+    (history.get (K .boundedDensityOrder)).down,
+    (history.get (K .boundedOrderSmall)).down⟩
 
 /-- Route-8 lane prefix arm: window package unrealized; dense deficiency below (`nearCubicUnrealized` → `nearCubicLargeBudgetDenseRate`) (2 facts). -/
 abbrev Route8LanePrefixBlock_unrealizedDenseBelow (selected : EGInput.{u}) : Prop :=

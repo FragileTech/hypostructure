@@ -86,14 +86,18 @@ theorem Node153LinearBlock_denseRateFails.ret
     (history.get (K .coldRoute8AtOrAbove)).down,
     (history.get (K .coldMassLinear)).down⟩
 
-/-- Node `[153]` linear-arm block: `[158]` yes, `[146]` no, `[153]` linear cold mass (the extra facts of `Node153ResidualOutcome_realized_linear`) (3 facts). -/
+/-- Node `[153]` linear-arm block: `[158]` yes, `[146]` no, `[153]` linear cold mass, the realized density order and its size test `n < N₀` (the extra facts of `Node153ResidualOutcome_realized_linear`) (5 facts). -/
 abbrev Node153LinearBlock_realized (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .windowPackageRealized selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldRoute8AtOrAbove selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldMassLinear selected.object
+      erdosReceiverLoadProfile spineData .coldMassLinear selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 /-- `Node153LinearBlock_realized` from the one ledger: one `get` per key. -/
 theorem Node153LinearBlock_realized.ret
@@ -101,11 +105,15 @@ theorem Node153LinearBlock_realized.ret
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .windowPackageRealized) known]
     [FactKeys.Has (K .coldRoute8AtOrAbove) known]
-    [FactKeys.Has (K .coldMassLinear) known] :
+    [FactKeys.Has (K .coldMassLinear) known]
+    [FactKeys.Has (K .realizedDensityOrder) known]
+    [FactKeys.Has (K .realizedOrderSmall) known] :
     Node153LinearBlock_realized selected :=
   ⟨(history.get (K .windowPackageRealized)).down,
     (history.get (K .coldRoute8AtOrAbove)).down,
-    (history.get (K .coldMassLinear)).down⟩
+    (history.get (K .coldMassLinear)).down,
+    (history.get (K .realizedDensityOrder)).down,
+    (history.get (K .realizedOrderSmall)).down⟩
 
 /-- **Node `[153]` residual, arms: `[158]` no, `[160]` first test no (`τ(θ) ≥ 1/4`); `[146]` yes (`θ < 1/78`, `[147]`); `[57]`/`[173]` exact collision fails (`[174]`); `[50]` high entropy, `[53]` entropy cap bound.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicLargeBudgetColdRate → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`.
 The generic residual and the 11 extra facts of this path's ledger
@@ -598,8 +606,8 @@ theorem node153Return_denseAtOrAbove_linear
     block.2.2.2⟩
 
 /-- **Node `[153]` residual, arms: `[158]` no, `[160]` first test no (`τ(θ) ≥ 1/4`); `[146]` no, `[153]` bounded cold mass (`[24]`), route-8 entry rate holds; `[57]`/`[173]` exact collision fails (`[174]`); `[50]` high entropy, `[53]` entropy cap bound.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`.
-The generic residual and the 13 extra facts of this path's ledger
-(55 facts). -/
+The generic residual and the 15 extra facts of this path's ledger
+(57 facts). -/
 abbrev Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_high (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -627,7 +635,11 @@ abbrev Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_high (selected : E
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .exactCollisionFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object
+      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 /-- `Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_high` is a subtype of the generic `[153]` residual. -/
 theorem Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_high.toGeneric {selected : EGInput.{u}}
@@ -690,7 +702,7 @@ theorem node153Return_denseAtOrAbove_bounded_absorbed_high
     (entropy : EntropyArmBlock_high selected) :
     Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_high selected :=
   ⟨node153Return history,
-    lanePrefix.2.2.2.2,
+    lanePrefix.2.2.2.2.1,
     lanePrefix.2.2.1,
     lanePrefix.2.1,
     lanePrefix.1,
@@ -702,11 +714,13 @@ theorem node153Return_denseAtOrAbove_bounded_absorbed_high
     common.2.2.2.1,
     common.2.2.2.2,
     common.2.1,
-    common.1⟩
+    common.1,
+    lanePrefix.2.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2.2⟩
 
 /-- **Node `[153]` residual, arms: `[158]` no, `[160]` first test no (`τ(θ) ≥ 1/4`); `[146]` no, `[153]` bounded cold mass (`[24]`), route-8 entry rate holds; `[57]`/`[173]` exact collision fails (`[174]`); `[50]` low entropy, local-type coordinate non-repetitive.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`.
-The generic residual and the 12 extra facts of this path's ledger
-(54 facts). -/
+The generic residual and the 14 extra facts of this path's ledger
+(56 facts). -/
 abbrev Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowNonrep (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -732,7 +746,11 @@ abbrev Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowNonrep (selecte
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .exactCollisionFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object
+      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 /-- `Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowNonrep` is a subtype of the generic `[153]` residual. -/
 theorem Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowNonrep.toGeneric {selected : EGInput.{u}}
@@ -796,7 +814,7 @@ theorem node153Return_denseAtOrAbove_bounded_absorbed_lowNonrep
     (entropy : EntropyArmBlock_lowNonrepetitive selected) :
     Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowNonrep selected :=
   ⟨node153Return history,
-    lanePrefix.2.2.2.2,
+    lanePrefix.2.2.2.2.1,
     lanePrefix.2.2.1,
     lanePrefix.2.1,
     lanePrefix.1,
@@ -807,11 +825,13 @@ theorem node153Return_denseAtOrAbove_bounded_absorbed_lowNonrep
     common.2.2.2.1,
     common.2.2.2.2,
     common.2.1,
-    common.1⟩
+    common.1,
+    lanePrefix.2.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2.2⟩
 
 /-- **Node `[153]` residual, arms: `[158]` no, `[160]` first test no (`τ(θ) ≥ 1/4`); `[146]` no, `[153]` bounded cold mass (`[24]`), route-8 entry rate holds; `[57]`/`[173]` exact collision fails (`[174]`); `[50]` low entropy, repetitive, dominant rooted type wedge-free.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`.
-The generic residual and the 14 extra facts of this path's ledger
-(56 facts). -/
+The generic residual and the 16 extra facts of this path's ledger
+(58 facts). -/
 abbrev Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedgeFree (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -841,7 +861,11 @@ abbrev Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedgeFree (sele
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .exactCollisionFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object
+      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 /-- `Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedgeFree` is a subtype of the generic `[153]` residual. -/
 theorem Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedgeFree.toGeneric {selected : EGInput.{u}}
@@ -905,7 +929,7 @@ theorem node153Return_denseAtOrAbove_bounded_absorbed_lowWedgeFree
     (entropy : EntropyArmBlock_lowRepetitiveWedgeFree selected) :
     Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedgeFree selected :=
   ⟨node153Return history,
-    lanePrefix.2.2.2.2,
+    lanePrefix.2.2.2.2.1,
     lanePrefix.2.2.1,
     lanePrefix.2.1,
     lanePrefix.1,
@@ -918,11 +942,13 @@ theorem node153Return_denseAtOrAbove_bounded_absorbed_lowWedgeFree
     common.2.2.2.1,
     common.2.2.2.2,
     common.2.1,
-    common.1⟩
+    common.1,
+    lanePrefix.2.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2.2⟩
 
 /-- **Node `[153]` residual, arms: `[158]` no, `[160]` first test no (`τ(θ) ≥ 1/4`); `[146]` no, `[153]` bounded cold mass (`[24]`), route-8 entry rate holds; `[57]`/`[173]` exact collision fails (`[174]`); `[50]` low entropy, repetitive, dominant rooted wedge type.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicUnrealized → nearCubicDensePassAtOrAbove → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`.
-The generic residual and the 15 extra facts of this path's ledger
-(57 facts). -/
+The generic residual and the 17 extra facts of this path's ledger
+(59 facts). -/
 abbrev Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedge (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -954,7 +980,11 @@ abbrev Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedge (selected
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .exactCollisionFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object
+      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundedOrderSmall selected.object
 
 /-- `Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedge` is a subtype of the generic `[153]` residual. -/
 theorem Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedge.toGeneric {selected : EGInput.{u}}
@@ -1018,7 +1048,7 @@ theorem node153Return_denseAtOrAbove_bounded_absorbed_lowWedge
     (entropy : EntropyArmBlock_lowRepetitiveWedge selected) :
     Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedge selected :=
   ⟨node153Return history,
-    lanePrefix.2.2.2.2,
+    lanePrefix.2.2.2.2.1,
     lanePrefix.2.2.1,
     lanePrefix.2.1,
     lanePrefix.1,
@@ -1032,7 +1062,9 @@ theorem node153Return_denseAtOrAbove_bounded_absorbed_lowWedge
     common.2.2.2.1,
     common.2.2.2.2,
     common.2.1,
-    common.1⟩
+    common.1,
+    lanePrefix.2.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2.2⟩
 
 /-- **Node `[153]` residual, arms: `[158]` no, `[160]` first test yes, second test no (private-carrier rate fails); `[146]` no, `[153]` linear cold mass.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicUnrealized → nearCubicDensePassRateFailed → nearCubicDenseLinear`.
 The generic residual and the 5 extra facts of this path's ledger
@@ -1908,8 +1940,8 @@ theorem node153Return_realized_coldBelow_absorbed_lowWedge
     common.1⟩
 
 /-- **Node `[153]` residual, arms: `[158]` yes (window package realized); `[146]` no, `[153]` bounded cold mass (`[24]`), route-8 entry rate holds; `[57]`/`[173]` exact collision fails (`[174]`); `[50]` high entropy, `[53]` entropy cap bound.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicRealized → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`.
-The generic residual and the 12 extra facts of this path's ledger
-(54 facts). -/
+The generic residual and the 14 extra facts of this path's ledger
+(56 facts). -/
 abbrev Node153ResidualOutcome_realized_bounded_absorbed_high (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1935,7 +1967,11 @@ abbrev Node153ResidualOutcome_realized_bounded_absorbed_high (selected : EGInput
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .exactCollisionFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object
+      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 /-- `Node153ResidualOutcome_realized_bounded_absorbed_high` is a subtype of the generic `[153]` residual. -/
 theorem Node153ResidualOutcome_realized_bounded_absorbed_high.toGeneric {selected : EGInput.{u}}
@@ -1997,7 +2033,7 @@ theorem node153Return_realized_bounded_absorbed_high
     (entropy : EntropyArmBlock_high selected) :
     Node153ResidualOutcome_realized_bounded_absorbed_high selected :=
   ⟨node153Return history,
-    lanePrefix.2.2.2,
+    lanePrefix.2.2.2.1,
     lanePrefix.2.1,
     lanePrefix.1,
     lanePrefix.2.2.1,
@@ -2008,11 +2044,13 @@ theorem node153Return_realized_bounded_absorbed_high
     common.2.2.2.1,
     common.2.2.2.2,
     common.2.1,
-    common.1⟩
+    common.1,
+    lanePrefix.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2⟩
 
 /-- **Node `[153]` residual, arms: `[158]` yes (window package realized); `[146]` no, `[153]` bounded cold mass (`[24]`), route-8 entry rate holds; `[57]`/`[173]` exact collision fails (`[174]`); `[50]` low entropy, local-type coordinate non-repetitive.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicRealized → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`.
-The generic residual and the 11 extra facts of this path's ledger
-(53 facts). -/
+The generic residual and the 13 extra facts of this path's ledger
+(55 facts). -/
 abbrev Node153ResidualOutcome_realized_bounded_absorbed_lowNonrep (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2036,7 +2074,11 @@ abbrev Node153ResidualOutcome_realized_bounded_absorbed_lowNonrep (selected : EG
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .exactCollisionFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object
+      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 /-- `Node153ResidualOutcome_realized_bounded_absorbed_lowNonrep` is a subtype of the generic `[153]` residual. -/
 theorem Node153ResidualOutcome_realized_bounded_absorbed_lowNonrep.toGeneric {selected : EGInput.{u}}
@@ -2099,7 +2141,7 @@ theorem node153Return_realized_bounded_absorbed_lowNonrep
     (entropy : EntropyArmBlock_lowNonrepetitive selected) :
     Node153ResidualOutcome_realized_bounded_absorbed_lowNonrep selected :=
   ⟨node153Return history,
-    lanePrefix.2.2.2,
+    lanePrefix.2.2.2.1,
     lanePrefix.2.1,
     lanePrefix.1,
     lanePrefix.2.2.1,
@@ -2109,11 +2151,13 @@ theorem node153Return_realized_bounded_absorbed_lowNonrep
     common.2.2.2.1,
     common.2.2.2.2,
     common.2.1,
-    common.1⟩
+    common.1,
+    lanePrefix.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2⟩
 
 /-- **Node `[153]` residual, arms: `[158]` yes (window package realized); `[146]` no, `[153]` bounded cold mass (`[24]`), route-8 entry rate holds; `[57]`/`[173]` exact collision fails (`[174]`); `[50]` low entropy, repetitive, dominant rooted type wedge-free.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicRealized → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`.
-The generic residual and the 13 extra facts of this path's ledger
-(55 facts). -/
+The generic residual and the 15 extra facts of this path's ledger
+(57 facts). -/
 abbrev Node153ResidualOutcome_realized_bounded_absorbed_lowWedgeFree (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2141,7 +2185,11 @@ abbrev Node153ResidualOutcome_realized_bounded_absorbed_lowWedgeFree (selected :
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .exactCollisionFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object
+      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 /-- `Node153ResidualOutcome_realized_bounded_absorbed_lowWedgeFree` is a subtype of the generic `[153]` residual. -/
 theorem Node153ResidualOutcome_realized_bounded_absorbed_lowWedgeFree.toGeneric {selected : EGInput.{u}}
@@ -2205,7 +2253,7 @@ theorem node153Return_realized_bounded_absorbed_lowWedgeFree
     (entropy : EntropyArmBlock_lowRepetitiveWedgeFree selected) :
     Node153ResidualOutcome_realized_bounded_absorbed_lowWedgeFree selected :=
   ⟨node153Return history,
-    lanePrefix.2.2.2,
+    lanePrefix.2.2.2.1,
     lanePrefix.2.1,
     lanePrefix.1,
     lanePrefix.2.2.1,
@@ -2217,11 +2265,13 @@ theorem node153Return_realized_bounded_absorbed_lowWedgeFree
     common.2.2.2.1,
     common.2.2.2.2,
     common.2.1,
-    common.1⟩
+    common.1,
+    lanePrefix.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2⟩
 
 /-- **Node `[153]` residual, arms: `[158]` yes (window package realized); `[146]` no, `[153]` bounded cold mass (`[24]`), route-8 entry rate holds; `[57]`/`[173]` exact collision fails (`[174]`); `[50]` low entropy, repetitive, dominant rooted wedge type.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicRealized → nearCubicLargeBudgetDensityCap → nearCubicRouteEightEntry → selectedNetChargeContinuation → selectedAbsorbedGermPrerequisites`.
-The generic residual and the 14 extra facts of this path's ledger
-(56 facts). -/
+The generic residual and the 16 extra facts of this path's ledger
+(58 facts). -/
 abbrev Node153ResidualOutcome_realized_bounded_absorbed_lowWedge (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2251,7 +2301,11 @@ abbrev Node153ResidualOutcome_realized_bounded_absorbed_lowWedge (selected : EGI
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .exactCollisionFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object
+      erdosReceiverLoadProfile spineData .absorbedConfigurationResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 /-- `Node153ResidualOutcome_realized_bounded_absorbed_lowWedge` is a subtype of the generic `[153]` residual. -/
 theorem Node153ResidualOutcome_realized_bounded_absorbed_lowWedge.toGeneric {selected : EGInput.{u}}
@@ -2314,7 +2368,7 @@ theorem node153Return_realized_bounded_absorbed_lowWedge
     (entropy : EntropyArmBlock_lowRepetitiveWedge selected) :
     Node153ResidualOutcome_realized_bounded_absorbed_lowWedge selected :=
   ⟨node153Return history,
-    lanePrefix.2.2.2,
+    lanePrefix.2.2.2.1,
     lanePrefix.2.1,
     lanePrefix.1,
     lanePrefix.2.2.1,
@@ -2327,11 +2381,13 @@ theorem node153Return_realized_bounded_absorbed_lowWedge
     common.2.2.2.1,
     common.2.2.2.2,
     common.2.1,
-    common.1⟩
+    common.1,
+    lanePrefix.2.2.2.2.1,
+    lanePrefix.2.2.2.2.2⟩
 
 /-- **Node `[153]` residual, arms: `[158]` yes (window package realized); `[146]` no, `[153]` linear cold mass.**  Path: `selectedLedgerBoundary → selectedNearCubicBranch → selectedNearCubicSurvivorBranch → nearCubicRealized`.
-The generic residual and the 3 extra facts of this path's ledger
-(45 facts). -/
+The generic residual and the 5 extra facts of this path's ledger
+(47 facts). -/
 abbrev Node153ResidualOutcome_realized_linear (selected : EGInput.{u}) : Prop :=
   Node153ResidualOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -2339,7 +2395,11 @@ abbrev Node153ResidualOutcome_realized_linear (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldRoute8AtOrAbove selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldMassLinear selected.object
+      erdosReceiverLoadProfile spineData .coldMassLinear selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
 
 /-- `Node153ResidualOutcome_realized_linear` is a subtype of the generic `[153]` residual. -/
 theorem Node153ResidualOutcome_realized_linear.toGeneric {selected : EGInput.{u}}
@@ -2400,7 +2460,9 @@ theorem node153Return_realized_linear
   ⟨node153Return history,
     block.1,
     block.2.1,
-    block.2.2⟩
+    block.2.2.1,
+    block.2.2.2.1,
+    block.2.2.2.2⟩
 
 /-- The 23 subtypes of node `[153]`'s residual, one per distinct fact set. -/
 abbrev Node153ResidualSubtypes (selected : EGInput.{u}) : Prop :=
