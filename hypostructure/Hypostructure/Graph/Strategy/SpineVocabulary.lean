@@ -16,6 +16,7 @@ import Hypostructure.Graph.Statements.ColdResiduals
 import Hypostructure.Graph.Statements.DensityOrder
 import Hypostructure.Graph.Statements.SparseExitResidual
 import Hypostructure.Graph.Statements.CycleCounting
+import Hypostructure.Graph.Statements.LocalRigidity
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1875,6 +1876,15 @@ inductive Key where
   | cutVertexBlockPaths
   /-- Entry prefix (cycle counting): **Double count at the high vertices**: `2 Σ_H #cycles(h) ≤ n · #cycles(G)`, `2 Σ_H L_h ≤ n · #cycles(G)` (per-vertex lower bounds), and `#cycles(G) ≤ 2^m`. -/
   | cycleDoubleCount
+  -- port-local keys (7100–7199)
+  /-- Entry prefix (local rigidity): **The length-3 fan**: at every vertex `h`, two paths `a p₁ p₂ b`, `a q₁ q₂ c` of length `3` of `G − h` from a neighbour `a` of `h` to distinct neighbours `b ≠ c` of `h` have `p₁ = q₁`, `p₂ ≠ q₂`, `p₂ ≠ c`, `q₂ ≠ b` (distinct first steps would close the 8-cycle `h b p₂ p₁ a q₁ q₂ c`). -/
+  | threeRouteFan
+  /-- Entry prefix (local rigidity): **The chain `3, 3, 3`**: at every vertex `h`, paths `a p₁ p₂ b`, `b r₁ r₂ c`, `c q₁ q₂ d` of length `3` of `G − h` between neighbours of `h` (`a ≠ c`, `b ≠ d`) have `r₁ = p₂` and `r₂ = q₁`. -/
+  | threeRouteChain
+  /-- Entry prefix (local rigidity): **Window positions of `P₀`**: every window of `P₀` has a placement; an interior placed vertex carries `d − 2` external neighbours (exactly one when cubic), an end vertex `d − 1`. -/
+  | windowPositionStubs
+  /-- Entry prefix (local rigidity): **Cross-edge gap**: two vertex-disjoint placed paths of G joined at `(i, j)`, `(i', j')` have `|i − i'| + 2 + |j − j'|` not accepted; at the windows of `P₀`: legal attachment labels, `C₁` safety, the cross-window gap rule, no ladder. -/
+  | windowAttachmentGap
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2843,6 +2853,15 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       CutVertexBlockPathsStatement object
   | .cycleDoubleCount, object =>
       CycleDoubleCountStatement data.toParameters object
+  -- port-local keys
+  | .threeRouteFan, object =>
+      ThreeRouteFanStatement object
+  | .threeRouteChain, object =>
+      ThreeRouteChainStatement object
+  | .windowPositionStubs, object =>
+      WindowPositionStubsStatement data.toParameters object
+  | .windowAttachmentGap, object =>
+      WindowAttachmentGapStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3305,6 +3324,11 @@ def label : Key → String
   | .cyclesThroughVertex => "cyclesThroughVertex"
   | .cutVertexBlockPaths => "cutVertexBlockPaths"
   | .cycleDoubleCount => "cycleDoubleCount"
+  -- port-local keys
+  | .threeRouteFan => "threeRouteFan"
+  | .threeRouteChain => "threeRouteChain"
+  | .windowPositionStubs => "windowPositionStubs"
+  | .windowAttachmentGap => "windowAttachmentGap"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3770,6 +3794,10 @@ example : label .vertexDeletionComponents = "vertexDeletionComponents" := rfl
 example : label .cyclesThroughVertex = "cyclesThroughVertex" := rfl
 example : label .cutVertexBlockPaths = "cutVertexBlockPaths" := rfl
 example : label .cycleDoubleCount = "cycleDoubleCount" := rfl
+example : label .threeRouteFan = "threeRouteFan" := rfl
+example : label .threeRouteChain = "threeRouteChain" := rfl
+example : label .windowPositionStubs = "windowPositionStubs" := rfl
+example : label .windowAttachmentGap = "windowAttachmentGap" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4226,6 +4254,11 @@ def idx : Key → Nat
   | .cyclesThroughVertex => 6905
   | .cutVertexBlockPaths => 6906
   | .cycleDoubleCount => 6907
+  -- port-local keys
+  | .threeRouteFan => 7100
+  | .threeRouteChain => 7101
+  | .windowPositionStubs => 7102
+  | .windowAttachmentGap => 7103
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4671,6 +4704,11 @@ def ofIdx : Nat → Key
   | 6905 => .cyclesThroughVertex
   | 6906 => .cutVertexBlockPaths
   | 6907 => .cycleDoubleCount
+  -- port-local keys
+  | 7100 => .threeRouteFan
+  | 7101 => .threeRouteChain
+  | 7102 => .windowPositionStubs
+  | 7103 => .windowAttachmentGap
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -5662,6 +5700,15 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "cutVertexBlockPaths") 6906
   | .cycleDoubleCount =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "cycleDoubleCount") 6907
+  -- port-local keys
+  | .threeRouteFan =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "threeRouteFan") 7100
+  | .threeRouteChain =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "threeRouteChain") 7101
+  | .windowPositionStubs =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowPositionStubs") 7102
+  | .windowAttachmentGap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowAttachmentGap") 7103
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

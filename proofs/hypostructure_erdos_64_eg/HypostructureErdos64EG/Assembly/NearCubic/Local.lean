@@ -42,8 +42,8 @@ noncomputable def selectedNearCubicNode21
           K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
         K .slackIndependent, K .vertexDeletionComponents, K .cyclesThroughVertex,
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
-          K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-          K .highDegreePairSum, K .minDegreeBaseline, K .bridgeless, K .neighbourhoodPairCount, K .starCycleConstraint,
+          K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+          K .highDegreePairSum, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -55,8 +55,8 @@ noncomputable def selectedNearCubicNode21
           K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint,
         K .slackIndependent, K .vertexDeletionComponents, K .cyclesThroughVertex,
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
-          K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-          K .highDegreePairSum, K .minDegreeBaseline, K .bridgeless, K .neighbourhoodPairCount, K .starCycleConstraint,
+          K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+          K .highDegreePairSum, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] :=
   let enumerated :=

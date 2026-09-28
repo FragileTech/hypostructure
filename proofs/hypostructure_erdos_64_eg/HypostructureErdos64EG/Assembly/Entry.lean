@@ -12,6 +12,7 @@ import Hypostructure.Graph.Strategy.SpineRows.TargetCompleteContextUniversality
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.SparseExitResidual
 import Hypostructure.Graph.Strategy.SpineRows.CycleCounting
+import Hypostructure.Graph.Strategy.SpineRows.LocalRigidity
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseSurplusExit
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseTargetDefectStructure
 import HypostructureErdos64EG.Assembly.Basic
@@ -56,8 +57,8 @@ noncomputable def selectedEntryPrefix
         K .cycleDoubleCount, K .surplusDartIdentity, K .highDegreeCountBound, K .tightEndpoint, K .slackIndependent,
         K .vertexDeletionComponents, K .cyclesThroughVertex,
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .noProperBaseline, K .returnAvoidance,
-        K .primitiveCarrierCount, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
-        K .highDegreePairSum, K .minDegreeBaseline, K .bridgeless, K .neighbourhoodPairCount, K .starCycleConstraint,
+        K .primitiveCarrierCount, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
+        K .highDegreePairSum, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
   -- Hoisted from `[20a]`: facts of G read from `[4]`'s selection alone; no decision.
@@ -78,12 +79,19 @@ noncomputable def selectedEntryPrefix
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       hCubic (by key_fresh)
+  -- Local rigidity (Lean improvement): the length-3 fan at every vertex of G and the chain
+  -- `3, 3, 3`, from the selection and the presentation laws; no decision.
+  let hThreeRoute :=
+    (threeRouteRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hCycleNeighbourhood (by key_fresh)
   -- Hoisted: `lem:bridgeless`, from the selection and the presentation laws; no decision.
   let hBridgeless :=
     (bridgelessRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      hCycleNeighbourhood (by key_fresh)
+      hThreeRoute (by key_fresh)
   -- `[1]`--`[3]`: G's baseline `δ(G) ≥ 3`, published once on the ledger.
   let hBaseline :=
     (minDegreeBaselineRow (BranchState := BranchState)
@@ -102,12 +110,19 @@ noncomputable def selectedEntryPrefix
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       hPairSum (by key_fresh)
+  -- Local rigidity (Lean improvement): the window positions and stubs of `P₀` and the
+  -- attachment gaps (legal labels, `C₁` safety, cross-window gap, no ladder); no decision.
+  let hWindowRigidity :=
+    (windowRigidityRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hPacking (by key_fresh)
   -- Hoisted from `[20a]`: the primitive carrier count of G; no decision.
   let hCarriers :=
     (primitiveCarrierCountRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      hPacking (by key_fresh)
+      hWindowRigidity (by key_fresh)
   -- `[6]`: Mersenne return exists?
   match returnAvoidanceDichotomy (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
