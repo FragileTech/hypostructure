@@ -84,9 +84,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **860**.
+Compiled declarations: **870**.
 
-Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 178, **Minimum-degree cycle spine vocabulary** 444, **Sealed topology** 6, **Sealed total closure** 12, **Typed partial topology and sealed completion** 16.
+Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 181, **Minimum-degree cycle spine vocabulary** 451, **Sealed topology** 6, **Sealed total closure** 12, **Typed partial topology and sealed completion** 16.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -4417,6 +4417,39 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.boundedDensityOrder`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.boundedOrderLarge`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.boundedOrderSmall`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.branchDependence`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -5616,6 +5649,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.minDegreeBaseline`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.mixedSparseSpineDependence`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -6013,6 +6057,39 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.properDelocalization`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.realizedDensityOrder`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.realizedOrderLarge`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.realizedOrderSmall`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -9065,6 +9142,40 @@ DecidableEq Graph.Strategy.Spine.Key
         Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
+### `Hypostructure.Graph.Strategy.SpineRows.DenseNetDeficiencyCap`
+
+#### `Hypostructure.Graph.Strategy.Spine.instIncompatibleDenseDeficiencyAtOrAboveColdRoute8Below`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/DenseNetDeficiencyCap.lean`
+- Compiled type:
+
+```lean
+∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
+  {data : Graph.Strategy.Spine.Data},
+  Core.Strategy.Incompatible (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.denseDeficiencyAtOrAbove)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.coldRoute8Below)
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows.ExactCollisionDichotomy`
+
+#### `Hypostructure.Graph.Strategy.Spine.instIncompatibleExactCollisionFailsRoute8Rate`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/ExactCollisionDichotomy.lean`
+- Compiled type:
+
+```lean
+∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
+  {data : Graph.Strategy.Spine.Data},
+  Core.Strategy.Incompatible (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.exactCollisionFails)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8Rate)
+```
+
 ### `Hypostructure.Graph.Strategy.SpineRows.NetChargeDichotomy`
 
 #### `Hypostructure.Graph.Strategy.Spine.instIncompatibleNetChargeNonNegativeCap`
@@ -9456,6 +9567,23 @@ Graph.Strategy.Spine.Key → String
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
 - Source: `Hypostructure/Graph/Strategy/SpineRows/LowEntropyLargeBudget.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows.CubicBaseline`
+
+#### `Hypostructure.Graph.Strategy.Spine.minDegreeBaselineRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/CubicBaseline.lean`
 - Compiled type:
 
 ```lean

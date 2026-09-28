@@ -1854,6 +1854,20 @@ free side.
 | `Node162ResidualOutcome_*` | [162] | 2 subtypes (`[160]` arm) | 2 | 47 generic; 48, 49 |
 | `Node54ResidualOutcome_*` | [54] | 5 subtypes (3 bounded-size) | 5 | 41 generic; 44, 44, 47, 48, 49 |
 
+**Path-count re-probe (final integration, after C1, C2, C3, C5, C6).**  The
+elaborated-ledger probe (`PathProbe`, call-site `known` lists from the root)
+finds 1170 call-site paths at each of `route8JointBalanceReturn`,
+`route8QuotientReturn` and `typeBSublinearReturn`, with 1170 distinct fact sets.
+Minus the generic keys, 750 of them are exactly the 750 block combinations of
+`Route8LaneEntry × NetChargeContinuation` (every combination occurs once).  The
+other 420 = 4 × 105 are the four fan/certificate pairs that do not occur (heavy-centre fan with the
+`[81]` certificates, degree-four fan with the `[72]` certificates).  The
+probe reads both branches of `cases degreeFour` in
+`TypeB/Internal/Certificate.lean` for every caller, but each caller fixes
+`degreeFour` (`BChainFanFor`), so only the matching certificate test runs.
+Per-path totals from the probe: [186] 100–139, [348] 85–124, Type B
+sublinear 83–122 facts, equal to the table.
+
 Every return site calls its subtype or product return theorem, and
 `SelectedLedgerBoundaryResult` lists the subtypes and products themselves (the
 generic abbrevs remain as the common conjunct of each subtype and product,
