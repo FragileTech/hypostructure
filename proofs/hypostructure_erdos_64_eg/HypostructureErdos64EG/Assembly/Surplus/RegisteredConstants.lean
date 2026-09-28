@@ -78,37 +78,16 @@ theorem registered_firstBand_excluded {object : Graph.FiniteObject.{u}}
   exact h
 
 
-/-- **The capped arm at the registered presentation** (Lean improvement, not routed by the
-paper): with `K = 413887673520041193494544894373402613429808660482 > 0`, `K .freeSideCount`
-gives, in the capped arm and for every `Δ ≥ max d`, `n·K ≤ 2σ(τ + 3(Δ − 3))`. -/
-theorem registered_cappedForces {object : Graph.FiniteObject.{u}}
-    (count : FreeSideCountStatement (spineData.{u}).toParameters object) :
-    ∃ (active : Graph.ActiveSurplusDemands
-        (Graph.MinimumDegreeAtLeast (spineData.{u}).toParameters.threshold)
-        (Graph.HasCycleWithLength (spineData.{u}).toParameters.LengthOK)
-        (spineData.{u}).toParameters.LengthOK object (spineData.{u}).toParameters.threshold)
-      (c : SurplusCapacity (spineData.{u}).toParameters object)
-      (L : Graph.ObjectCapacityLedger object (spineData.{u}).toParameters.threshold
-        (spineData.{u}).toParameters.windowOrder c),
-      canonicalCapacity (spineData.{u}).toParameters object = some c ∧
-      canonicalObjectLedgerAt (spineData.{u}).toParameters object c = some L ∧
-      ∀ Δ : ℕ, (∀ v : object.Vertex, object.degree v ≤ Δ) →
-        (∀ t ∈ L.presented.tokens, L.presented.load t ≤
-            homogeneousTokenCap (spineData.{u}).toParameters.routingLabelBound) →
-        (object.vertexCount : ℤ) * 413887673520041193494544894373402613429808660482 ≤
-          2 * ((object.degreeSurplus (spineData.{u}).toParameters.threshold *
-            (Graph.CapacityFreeSide.tauAt (threshold := (spineData.{u}).toParameters.threshold)
-              (Graph.pairResponseChordEnds active) + 3 * (Δ - 3)) : ℕ) : ℤ) := by
-  obtain ⟨active, c, L, hc, hL, -, -, -, -, -, -, hΔ⟩ := count
+/-- **`K > 0` at the registered presentation** (`K = 413887673520041193494544894373402613429808660482`):
+this discharges the sign guards of `K .freeSideCount` and `K .freeSideHubs` (capped arm:
+`n·K ≤ 2σ(τ + 3(Δ − 3))` and `n·K ≤ 2σ(τ + |H| − 1)`) and of `K .extOverloadedToken`. -/
+theorem registered_pairDeficitCoefficient_pos :
+    0 < pairDeficitCoefficient (spineData.{u}).toParameters := by
   have hK : pairDeficitCoefficient (spineData.{u}).toParameters =
       413887673520041193494544894373402613429808660482 := by
     unfold pairDeficitCoefficient
     exact registered_pairDeficitCoefficient_value.1
-  refine ⟨active, c, L, hc, hL, fun Δ hdeg cap => ?_⟩
-  have h := (hΔ Δ hdeg).2 cap (by rw [hK]; norm_num)
-  rw [hK] at h
-  exact h
-
+  rw [hK]; norm_num
 
 /-- **An overloaded extended token, unconditionally** at the registered presentation
 (`K > 0`): `K .extOverloadedToken` gives a token of G's canonical capacity presentation with

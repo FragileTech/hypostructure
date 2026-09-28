@@ -190,7 +190,7 @@ abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
 -- the entry prefix and to the top of the strict arm of `[19]` lengthen every
 -- ledger here, so the `[20a]` return also needs more than the default
 -- elaboration budget.
-set_option maxHeartbeats 4000000 in
+set_option maxHeartbeats 16000000 in
 set_option synthInstance.maxHeartbeats 400000 in
 set_option synthInstance.maxSize 2048 in
 noncomputable def selectedLedgerBoundary

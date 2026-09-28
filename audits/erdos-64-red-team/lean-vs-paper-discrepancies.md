@@ -2112,7 +2112,7 @@ strict arm without splitting any residual.
   `freeSideStructureRow`, `freeSideCountRow`, `freeSideHubsRow`, `extendedChargeRow`, `portEndDegreeRow`, `pairArmARow`, `pairArmBRow`,
   `pairArmBDefectRow`); wired in `Assembly/Entry.lean` and
   `Assembly/Final.lean`.  Registered corollary (presentation identity, not a key):
-  `registered_firstBand_excluded`, `registered_cappedForces`,
+  `registered_firstBand_excluded`, `registered_pairDeficitCoefficient_pos`,
   `registered_extOverloadedToken`
   (`Assembly/Surplus/RegisteredConstants.lean`).
 
@@ -2162,6 +2162,17 @@ surplus in `W`, `slack(S) = 4|S| − 6 − 2e(S)`.
 | 7235 | `pairArmARoleAlphabet` | arm A → the canonical overload role lies in the ten live roles (of 36); `M₀`, `C_sp` unchanged | same | same row |
 | 7236 | `pairArmB` | arm B → the overlap system exists and G is in (B1), (B2) or (B3); (B1) the `[182]` residual in three exact configurations; (B3) → separator of degree `> 3`, next vertices in `U`, no label collision, envelope escape, Type B fan entry; realizability failure → forward routes in `U` meet backward routes, and the demand-end split; serial system → ends in `U`, centres high, port ends cubic, no accepted route length, the switch at the left port | cubicBaseline, selection, minDegreeBaseline, noProperBaseline, slackIndependent, surplusAbove, highEndpointSwitch | strict arm, after `highEndpointSwitchRow` (`pairArmBRow`) |
 | 7237 | `pairArmBDefect` | (B2) the pinned defect of the canonical return system's obstruction coordinates → a second `Spec` witness `w''` on two distinct obstruction coordinates, `|Z''| ≤ |U|`, with the full witness structure | cubicBaseline, selection, minDegreeBaseline, noProperBaseline, tightEndpoint, returnAvoidance, highEndpointSwitch, sparseTargetDefectResidual, specWitnessStructure | `[20a]` arm, after `sparseTargetDefectStructureRow` (`pairArmBDefectRow`) |
+
+**Re-probe (`PathProbe`, 2026-09-29).**  Path counts unchanged at every return (1 at
+`[20a]` and the near-cubic target defect, 6 at `[144a]`, 4/2 at `[172a]`, 6/6 at `[182]`,
+1170 each at `[186]`, `[348]` and Type B sublinear, 73/11 at the rate failure, 6/4 at the
+cold-terminal exclusion, 9/3 at `[153]`, 4/2 at `[162]`, 7/5 at `[54]`, 1 at each Type B
+entry subtype); all 21 entry keys are on every probed fact set.  Fact counts after
+(before): `[20a]` 166 (128); near-cubic target defect 126 (105); `[144a]` 134–138
+(97–101); `[172a]` 121–122 (100–101); `[182]` 122–137 (85–100); `[186]` 148–187 (127–166);
+Type B entry 126/129/135/138 (89/92/98/101); Type B sublinear 131–170 (110–149); `[348]`
+133–172 (112–151); rate failure 97–101 (76–80); cold-terminal exclusion 114–116 (93–95);
+`[153]` 95–96 (74–75); `[162]` 96–97 (75–76); `[54]` 93–98 (72–77).
 
 **Deduplicated (not published; already on the ledger).**
 - `LL_identity` (`2e(L) + 6|H| + σ = 3n`) is literally `K .surplusDartIdentity`
