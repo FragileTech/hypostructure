@@ -6,13 +6,18 @@ import HypostructureErdos64EG.Assembly.Residuals.Route8Blocks
 
 Node `[186]` as a PRODUCT OF ARM BLOCKS.
 
-The 1000 paths from `selectedLedgerBoundary` to the one return site
+The 750 paths from `selectedLedgerBoundary` to the one return site
 (`route8JointBalanceReturn` in `selectedRouteEightUnifiedResidual`,
-`Assembly/RouteEight/Local.lean`) carry 1000 distinct fact sets.  Each is
+`Assembly/RouteEight/Local.lean`) carry 750 distinct fact sets.  Each is
 exactly the 79 common keys of `Route8JointBalanceOutcome` together with one
 block per factor of
 
-  `5 prefix × 4 entropy × 50 continuation`,  `50 = 2·22 + 6`,
+  `15 lane entries × 50 continuation`,  `50 = 2·22 + 6`,
+
+where the lane entry (`Route8LaneEntry`) is `3 prefix × 4 entropy` or the
+`[161]` prefix with one of the 3 low-entropy arms: the near-cubic route
+"unrealized, `τ(θ) ≥ 1/4`, `θ < 1/78`" is closed at `[146]`, and the `[161]`
+route with high entropy is closed at `[53]`,
 
 and every combination occurs (checked against the elaborated ledger of every
 path).  These are the same factors as `Route8QuotientOutcome`: both residuals
@@ -34,13 +39,13 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **Node `[186]` as a product of arm blocks**: the generic residual (79
-common facts), one near-cubic prefix block, one entropy block, and one
-net-charge continuation (Type A lane or Type B high-surplus
+common facts), one lane entry (a near-cubic prefix block with an entropy
+block), and one net-charge continuation (Type A lane or Type B high-surplus
 lane, each a nested product of its own blocks).  Totals run from 99 to 136
 facts. -/
 abbrev Route8JointBalanceOutcome_product (selected : EGInput.{u}) : Prop :=
-  Route8JointBalanceOutcome selected ∧ Route8LanePrefix selected ∧
-    EntropyArm selected ∧ NetChargeContinuation selected
+  Route8JointBalanceOutcome selected ∧ Route8LaneEntry selected ∧
+    NetChargeContinuation selected
 
 theorem Route8JointBalanceOutcome_product.toGeneric {selected : EGInput.{u}}
     (h : Route8JointBalanceOutcome_product selected) :
@@ -133,10 +138,9 @@ theorem route8JointBalanceProductReturn
     [FactKeys.Has (K .route8UnifiedVisibleResidual) known]
     [FactKeys.Has (K .route8UnifiedVisibleOverload) known]
     [FactKeys.Has (K .route8JointBalance) known]
-    (lanePrefix : Route8LanePrefix selected)
-    (entropy : EntropyArm selected)
+    (entry : Route8LaneEntry selected)
     (continuation : NetChargeContinuation selected) :
     Route8JointBalanceOutcome_product selected :=
-  ⟨route8JointBalanceReturn history, lanePrefix, entropy, continuation⟩
+  ⟨route8JointBalanceReturn history, entry, continuation⟩
 
 end HypostructureErdos64EG

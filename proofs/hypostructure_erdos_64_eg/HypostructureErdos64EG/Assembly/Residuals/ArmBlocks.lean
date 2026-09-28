@@ -64,17 +64,15 @@ abbrev DenseTauArm (selected : EGInput.{u}) : Prop :=
   DenseTauBlock_atOrAbove selected ∨ DenseTauBlock_belowRateFails selected
 
 -- The arms into the four spine exits `nearCubicLargeBudget*`.
-/-- The two routes into `nearCubicLargeBudgetColdRate` (the `[147]` arm):
-realized package, or unrealized package with `τ(θ) ≥ 1/4`. -/
+/-- The route into `nearCubicLargeBudgetColdRate` (the `[147]` arm): the
+realized package.  The unrealized package with `τ(θ) ≥ 1/4` is closed at
+`[146]`'s yes arm (`θ < 1/78` forces `τ(θ) < 1/4`). -/
 abbrev ColdRateArm (selected : EGInput.{u}) : Prop :=
-  Route8LanePrefixBlock_realizedColdBelow selected ∨
-  Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow selected
+  Route8LanePrefixBlock_realizedColdBelow selected
 
 theorem ColdRateArm.toPrefix {selected : EGInput.{u}}
-    (arm : ColdRateArm selected) : Route8LanePrefix selected := by
-  rcases arm with p | p
-  · exact Or.inl p
-  · exact Or.inr (Or.inr (Or.inl p))
+    (arm : ColdRateArm selected) : Route8LanePrefix selected :=
+  Or.inl arm
 
 /-- The two routes into `nearCubicLargeBudgetDensityCap` (the `[24]` arm):
 realized package, or unrealized package with `τ(θ) ≥ 1/4`. -/
@@ -86,18 +84,18 @@ theorem DensityCapArm.toPrefix {selected : EGInput.{u}}
     (arm : DensityCapArm selected) : Route8LanePrefix selected := by
   rcases arm with p | p
   · exact Or.inr (Or.inl p)
-  · exact Or.inr (Or.inr (Or.inr (Or.inl p)))
+  · exact Or.inr (Or.inr p)
 
 -- The arms carried along the net-charge continuation.
 /-- The arms fixed on entry to the net-charge continuation `[57]`: the
 near-cubic prefix and the entropy arm of `[50]`--`[55]`. -/
 abbrev NetChargeArms (selected : EGInput.{u}) : Prop :=
-  Route8LanePrefix selected ∧ EntropyArm selected
+  Route8LaneEntry selected
 
-/-- The arms at the unified route-`8` return: prefix, entropy and the whole
-net-charge continuation. -/
+/-- The arms at the unified route-`8` return: the lane entry (prefix and
+entropy) and the whole net-charge continuation. -/
 abbrev Route8Arms (selected : EGInput.{u}) : Prop :=
-  Route8LanePrefix selected ∧ EntropyArm selected ∧ NetChargeContinuation selected
+  Route8LaneEntry selected ∧ NetChargeContinuation selected
 
 /-- Type A lane after `[86]`'s visible-entry split. -/
 abbrev TypeAEntryArms (selected : EGInput.{u}) : Prop :=
@@ -154,7 +152,7 @@ theorem BChainLane.continuation {selected : EGInput.{u}}
 theorem BChainArms.route8 {selected : EGInput.{u}}
     (arms : BChainArms selected) (chain : BChain selected) :
     Route8Arms selected :=
-  ⟨arms.1.1, arms.1.2, arms.2.continuation chain⟩
+  ⟨arms.1, arms.2.continuation chain⟩
 
 /-- The Type A route-`8` residual arm (`[109]` → `[113]`): the lane arms, the
 arm's own block and the `[113]` deficit-fails block give the route-`8` arms
@@ -163,7 +161,7 @@ theorem TypeAExitFourArms.route8Residual {selected : EGInput.{u}}
     (arms : TypeAExitFourArms selected)
     (residual : TypeAArmBlock_route8Residual selected)
     (deficit : Route8DeficitBlock_fails selected) : Route8Arms selected :=
-  ⟨arms.1.1.1.1, arms.1.1.1.2,
+  ⟨arms.1.1.1,
     Or.inl ⟨arms.1.2, arms.1.1.2, Or.inr (Or.inl ⟨residual, arms.2, deficit⟩)⟩⟩
 
 /-- The Type A decorated-handoff arm (`[108]`): the lane arms and the arm's own
@@ -178,7 +176,7 @@ own block give the route-`8` arms. -/
 theorem TypeALaneArms.dischargedRetest {selected : EGInput.{u}}
     (arms : TypeALaneArms selected)
     (retest : TypeAArmBlock_dischargedRetest selected) : Route8Arms selected :=
-  ⟨arms.1.1.1, arms.1.1.2, Or.inl ⟨arms.2, arms.1.2, Or.inr (Or.inr retest)⟩⟩
+  ⟨arms.1.1, Or.inl ⟨arms.2, arms.1.2, Or.inr (Or.inr retest)⟩⟩
 
 /-- The Type B high-surplus lane (`[64]`): the net-charge arms and the lane
 block are the B-chain arms. -/

@@ -337,4 +337,147 @@ theorem not_jointRealization_of_residual (data : Parameters)
     ¬ EntropyJointRealizationStatement data object :=
   residual.2.2.2.2.2.2
 
+/-- Arithmetic of a floored rate: if `⌊log₂((S−1)/F)⌋ = r` with `F > 0`, then
+compounding over `L` scales and flooring once gives at most `(r + 1)·L` bits. -/
+theorem log2_compound_le_succ_rate (S F L r : Nat) (hF : 0 < F)
+    (h : Nat.log2 ((S - 1) / F) = r) :
+    Nat.log2 ((S ^ L - 1) / F ^ L) ≤ (r + 1) * L := by
+  have lt1 : (S - 1) / F < 2 ^ (r + 1) := by
+    have := Nat.lt_log2_self (n := (S - 1) / F)
+    rw [h] at this
+    exact this
+  have lt2 : S - 1 < 2 ^ (r + 1) * F := (Nat.div_lt_iff_lt_mul hF).1 lt1
+  have le3 : S ≤ 2 ^ (r + 1) * F := by omega
+  have le4 : S ^ L ≤ 2 ^ ((r + 1) * L) * F ^ L := by
+    calc S ^ L ≤ (2 ^ (r + 1) * F) ^ L := Nat.pow_le_pow_left le3 L
+      _ = 2 ^ ((r + 1) * L) * F ^ L := by rw [Nat.mul_pow, ← Nat.pow_mul]
+  have hFL : 0 < F ^ L := Nat.pow_pos hF
+  by_cases hx : (S ^ L - 1) / F ^ L = 0
+  · rw [hx]
+    simp
+  · have one_le : F ^ L ≤ S ^ L - 1 := by
+      by_contra hc
+      rw [not_le] at hc
+      exact hx (Nat.div_eq_of_lt hc)
+    have xlt : (S ^ L - 1) / F ^ L < 2 ^ ((r + 1) * L) := by
+      rw [Nat.div_lt_iff_lt_mul hFL]
+      omega
+    exact le_of_lt ((Nat.log2_lt hx).2 xlt)
+
+/-- **The package width per scale, `lem:p13-window-package`.**  The exact
+package width `b_𝒫/p = ⌊log₂((S^L − 1)/F^L)⌋` of the certified table,
+compounded over the `L` selected scales, exceeds the registered floored rate by
+at most one bit per scale: `b_𝒫/p ≤ (rate + 1)·L`. -/
+theorem windowPackageBits_le_succ_rate (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (rateEq : data.windowRate = data.windowBarrier.binaryRateFloor) :
+    windowPackageBits data object ≤
+      (data.windowRate + 1) * data.separatedScaleCount object.vertexCount := by
+  classical
+  letI := data.windowBarrier.indexFintype
+  have flat : 0 < Core.Finite.CertifiedTableAggregation.flatProduct
+      data.windowBarrier.table := data.windowBarrier.flatPositive
+  have rate : Nat.log2
+      ((Core.Finite.CertifiedTableAggregation.safeProduct data.windowBarrier.table - 1) /
+        Core.Finite.CertifiedTableAggregation.flatProduct data.windowBarrier.table) =
+      data.windowRate := by
+    rw [rateEq]
+    unfold Core.Finite.CertifiedTableAggregation.BarrierPresentation.binaryRateFloor
+      Core.Finite.CertifiedTableAggregation.binaryRateFloor
+    rw [if_neg (Nat.ne_of_gt flat)]
+  unfold windowPackageBits
+  exact log2_compound_le_succ_rate _ _ _ _ flat rate
+
+/-- **`prop:entropy-high-theta` on the dense-packing residual.**  On the
+no-edge `[159]` of `[158]` the exact package overflows the labelled skeleton
+count, `B < 2^{b_𝒫·p}`, and on the `[160]` yes-arm the remainder exceeds
+`s·stubs·p`.  On the high-entropy arm the `[52]` demand
+`(2^{rate·L·p})^d·n^{|R|} ≤ J^d` then overflows the skeleton budget:
+if `J ≤ B`, then `2^{d·rate·L·p + L·|R|} ≤ J^d ≤ B^d < 2^{d·(rate+1)·L·p}`, so
+`L·|R| < L·d·p`, against `|R| > s·stubs·p ≥ d·p`.  Hence the entropy cap of
+`[53]` is active: `B < J·2^{c_Ω·W}`. -/
+theorem entropyCapActive_of_denseUnrealized (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (rateEq : data.windowRate = data.windowBarrier.binaryRateFloor)
+    (scales : data.separatedScaleCount object.vertexCount ≤ Nat.log2 object.vertexCount)
+    (denominatorPos : 0 < data.entropyDenominator)
+    (slack : data.entropyDenominator ≤ data.dischargeScale * coldExternalStubCount data)
+    (below : DenseDeficiencyBelowStatement data object)
+    (unrealized : WindowPackageUnrealizedStatement data object)
+    (demand : EntropyPackageDemandStatement data object) :
+    EntropyCapActiveStatement data object := by
+  unfold EntropyCapActiveStatement
+  by_contra notActive
+  rw [not_lt] at notActive
+  unfold DenseDeficiencyBelowStatement at below
+  unfold WindowPackageUnrealizedStatement at unrealized
+  unfold EntropyPackageDemandStatement at demand
+  set packing := canonicalWindowPacking data object
+  set p := packing.card
+  set n := object.vertexCount
+  set R := (object.remainderSupport packing).card
+  set L := data.separatedScaleCount n
+  set d := data.entropyDenominator
+  set r := data.windowRate
+  set bits := windowPackageBits data object
+  set J := jointPackageDemand data object
+  set B := Graph.skeletonBudget object
+  have valid : object.IsWindowPacking data.windowOrder packing :=
+    (canonicalWindowPacking_spec data object).1
+  have sizes : R + data.windowOrder * p = n :=
+    object.remainderSupport_card_add_eq valid
+  -- `|R| > s·stubs·p ≥ d·p`.
+  have wide : d * p ≤ R := by
+    -- `stubs + 2(order−1) = δ·order`: otherwise `stubs = 0` and `0 < d ≤ 0`.
+    have split : coldExternalStubCount data + 2 * (data.windowOrder - 1) =
+        data.threshold * data.windowOrder := by
+      by_cases enough : 2 * (data.windowOrder - 1) ≤ data.threshold * data.windowOrder
+      · unfold coldExternalStubCount
+        omega
+      · have zero : coldExternalStubCount data = 0 := by
+          unfold coldExternalStubCount
+          omega
+        rw [zero, Nat.mul_zero] at slack
+        omega
+    have stubs : data.dischargeScale * (data.threshold * (data.windowOrder * p)) =
+        data.dischargeScale * (coldExternalStubCount data * p) +
+          data.dischargeScale * (2 * (data.windowOrder - 1) * p) := by
+      rw [← Nat.mul_add, ← Nat.add_mul, split, Nat.mul_assoc data.threshold]
+    have slackP : d * p ≤ data.dischargeScale * (coldExternalStubCount data * p) := by
+      rw [← Nat.mul_assoc]
+      exact Nat.mul_le_mul_right p slack
+    have remEq : n - data.windowOrder * p = R := by omega
+    rw [remEq, Nat.mul_add] at below
+    omega
+  have hbits : bits ≤ (r + 1) * L := windowPackageBits_le_succ_rate data object rateEq
+  -- `(2^L)^{|R|} ≤ n^{|R|}`.
+  have twoL : (2 ^ L) ^ R ≤ n ^ R := by
+    rcases Nat.eq_zero_or_pos R with hR | hR
+    · rw [hR]
+      simp
+    · have npos : n ≠ 0 := by omega
+      have : 2 ^ L ≤ n :=
+        le_trans (Nat.pow_le_pow_right (by norm_num) scales) (Nat.log2_self_le npos)
+      exact Nat.pow_le_pow_left this R
+  have JB : J ≤ B :=
+    le_trans (Nat.le_mul_of_pos_right J (Nat.pow_pos (by norm_num))) notActive
+  have chain : 2 ^ (r * L * p * d) * 2 ^ (L * R) < 2 ^ (bits * p * d) := by
+    calc 2 ^ (r * L * p * d) * 2 ^ (L * R)
+        = (2 ^ (r * L * p)) ^ d * (2 ^ L) ^ R := by
+          rw [← Nat.pow_mul, ← Nat.pow_mul]
+      _ ≤ (2 ^ (r * L * p)) ^ d * n ^ R := Nat.mul_le_mul_left _ twoL
+      _ ≤ J ^ d := demand
+      _ ≤ B ^ d := Nat.pow_le_pow_left JB d
+      _ < (2 ^ (bits * p)) ^ d := by
+          exact Nat.pow_lt_pow_left unrealized (Nat.ne_of_gt denominatorPos)
+      _ = 2 ^ (bits * p * d) := by rw [← Nat.pow_mul]
+  rw [← Nat.pow_add] at chain
+  have expLt : r * L * p * d + L * R < bits * p * d :=
+    (Nat.pow_lt_pow_iff_right (by norm_num)).1 chain
+  have hb : bits * p * d ≤ (r + 1) * L * p * d :=
+    Nat.mul_le_mul_right d (Nat.mul_le_mul_right p hbits)
+  have hLR : L * (d * p) ≤ L * R := Nat.mul_le_mul_left L wide
+  have expand : (r + 1) * L * p * d = r * L * p * d + L * (d * p) := by ring
+  omega
+
 end Hypostructure.Graph.Contracts.Spine

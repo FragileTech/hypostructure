@@ -6,7 +6,7 @@ import HypostructureErdos64EG.Assembly.Residuals.ArmBlocks
 The returned residual `[54]` (prop:entropy-high-theta, tex 9921), split by the
 distinct fact set of the single ledger at its return.  The generic
 `Node54ResidualOutcome` carries the 40 facts common to every path; it is
-reached along six paths from the root whose ledgers hold six distinct fact
+reached along five paths from the root whose ledgers hold five distinct fact
 sets, one per combination of the arms of `[158]`, `[160]`, `[146]` and
 `[153]` taken before the spine `[25]`--`[54]`.  Each distinct fact set is its
 own open node, stated as a subtype of the generic residual: the generic
@@ -175,84 +175,6 @@ theorem node54Return_realizedBounded
     lanePrefix.2.1,
     lanePrefix.1,
     lanePrefix.2.2.1⟩
-
-/-- **Node `[54]`, fact set `unrealizedTauHighColdBelow`**: [158] no (window
-package unrealized); [160] first test no (`τ(θ) ≥ 1/4`); [146] yes (`θ <
-1/78`), the `[147]` arm. The generic `Node54ResidualOutcome` (40 facts) and
-the 4 facts of this path's ledger outside it (44 facts in total). -/
-abbrev Node54ResidualOutcome_unrealizedTauHighColdBelow (selected : EGInput.{u}) : Prop :=
-  Node54ResidualOutcome selected ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageUnrealized selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .denseDeficiencyAtOrAbove selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldRoute8Below selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8Rate selected.object
-
-/-- `Node54ResidualOutcome_unrealizedTauHighColdBelow` is a subtype of the
-generic `[54]` residual. -/
-theorem Node54ResidualOutcome_unrealizedTauHighColdBelow.toGeneric {selected : EGInput.{u}}
-    (h : Node54ResidualOutcome_unrealizedTauHighColdBelow selected) :
-    Node54ResidualOutcome selected :=
-  h.1
-
-/-- The return of `Node54ResidualOutcome_unrealizedTauHighColdBelow`: one `get`
-per fact of its ledger. The facts of the upstream arm are read from its block
-(`Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow`), built by the
-block's `.ret` with one `get` per key on the same ledger. -/
-theorem node54Return_unrealizedTauHighColdBelow
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .cubicBaseline) known]
-    [FactKeys.Has (K .returnAvoidance) known]
-    [FactKeys.Has (K .noProperBaseline) known]
-    [FactKeys.Has (K .slackIndependent) known]
-    [FactKeys.Has (K .tightEndpoint) known]
-    [FactKeys.Has (K .cycleRankConstraint) known]
-    [FactKeys.Has (K .degreeProfileFibres) known]
-    [FactKeys.Has (K .targetCompleteContextUniversality) known]
-    [FactKeys.Has (K .replacementExclusion) known]
-    [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .windowPresent) known]
-    [FactKeys.Has (K .maximalPacking) known]
-    [FactKeys.Has (K .localAlgebra) known]
-    [FactKeys.Has (K .surplusAtOrBelow) known]
-    [FactKeys.Has (K .sparseSurplusSurvivor) known]
-    [FactKeys.Has (K .barrierEnumeration) known]
-    [FactKeys.Has (K .windowPackageSeparated) known]
-    [FactKeys.Has (K .skeletonDominates) known]
-    [FactKeys.Has (K .hotColdPartition) known]
-    [FactKeys.Has (K .barrierCap) known]
-    [FactKeys.Has (K .coldHotEntropyCap) known]
-    [FactKeys.Has (K .coldMass) known]
-    [FactKeys.Has (K .coldAmbientCubic) known]
-    [FactKeys.Has (K .coldStubExcess) known]
-    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
-    [FactKeys.Has (K .coldSelectedBranchExcess) known]
-    [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .boundaryDemand) known]
-    [FactKeys.Has (K .stubSupply) known]
-    [FactKeys.Has (K .wedgeSupply) known]
-    [FactKeys.Has (K .curvatureTargetRank) known]
-    [FactKeys.Has (K .exactResponseProfile) known]
-    [FactKeys.Has (K .targetRankCircuit) known]
-    [FactKeys.Has (K .curvatureFullRank) known]
-    [FactKeys.Has (K .forcedCurvatureCost) known]
-    [FactKeys.Has (K .remainderEntropyHigh) known]
-    [FactKeys.Has (K .entropyPackageDemand) known]
-    [FactKeys.Has (K .entropyCapActive) known]
-    [FactKeys.Has (K .allColdEntropyResidual) known]
-    [FactKeys.Has (K .route8Rate) known]
-    (lanePrefix : Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow selected) :
-    Node54ResidualOutcome_unrealizedTauHighColdBelow selected :=
-  ⟨node54Return history,
-    lanePrefix.2.2,
-    lanePrefix.2.1,
-    lanePrefix.1,
-    (history.get (K .route8Rate)).down⟩
 
 /-- **Node `[54]`, fact set `unrealizedTauHighBounded`**: [158] no (window
 package unrealized); [160] first test no (`τ(θ) ≥ 1/4`); [146] no (`θ ≥
@@ -496,11 +418,12 @@ theorem node54Return_unrealizedBothRates
     (history.get (K .denseDeficiencyBelow)).down,
     (history.get (K .route8Rate)).down⟩
 
-/-- The six subtypes of node `[54]`'s residual, one per distinct fact set. -/
+/-- The five subtypes of node `[54]`'s residual, one per distinct fact set.
+The fact set "[158] no, [160] `τ(θ) ≥ 1/4`, [146] `θ < 1/78`" is closed at
+`[146]`: `θ < 1/78` forces `τ(θ) < 1/4`. -/
 abbrev Node54ResidualSubtypes (selected : EGInput.{u}) : Prop :=
   Node54ResidualOutcome_realizedColdBelow selected ∨
   Node54ResidualOutcome_realizedBounded selected ∨
-  Node54ResidualOutcome_unrealizedTauHighColdBelow selected ∨
   Node54ResidualOutcome_unrealizedTauHighBounded selected ∨
   Node54ResidualOutcome_unrealizedRateFailsBounded selected ∨
   Node54ResidualOutcome_unrealizedBothRates selected
@@ -551,10 +474,8 @@ theorem node54SubtypesReturn_coldRate
     [FactKeys.Has (K .allColdEntropyResidual) known]
     [FactKeys.Has (K .route8Rate) known]
     (lanePrefix : ColdRateArm selected) :
-    Node54ResidualSubtypes selected := by
-  rcases lanePrefix with p | p
-  · exact Or.inl (node54Return_realizedColdBelow history p)
-  · exact Or.inr (Or.inr (Or.inl (node54Return_unrealizedTauHighColdBelow history p)))
+    Node54ResidualSubtypes selected :=
+  Or.inl (node54Return_realizedColdBelow history lanePrefix)
 
 /-- The return of node `[54]`'s residual in `nearCubicLargeBudgetDensityCap`, on the route named by `lanePrefix`, through that subtype's return theorem. -/
 theorem node54SubtypesReturn_densityCap
@@ -604,6 +525,6 @@ theorem node54SubtypesReturn_densityCap
     Node54ResidualSubtypes selected := by
   rcases lanePrefix with p | p
   · exact Or.inr (Or.inl (node54Return_realizedBounded history p))
-  · exact Or.inr (Or.inr (Or.inr (Or.inl (node54Return_unrealizedTauHighBounded history p))))
+  · exact Or.inr (Or.inr (Or.inl (node54Return_unrealizedTauHighBounded history p)))
 
 end HypostructureErdos64EG

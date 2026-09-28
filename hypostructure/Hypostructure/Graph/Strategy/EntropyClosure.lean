@@ -88,6 +88,15 @@ noncomputable instance instIncompatibleEntropyCapActiveBound :
   contradiction := fun _residual active bound =>
     (Nat.not_lt_of_ge bound.down) active.down
 
+/-- The same pair registered with the skeleton bound visible upstream and the
+active comparison as a row's sole output, as
+`AtomicCT.runAndCloseIncompatible` expects. -/
+noncomputable instance instIncompatibleEntropyCapBoundActive :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .entropyCapBound) (K .entropyCapActive) where
+  contradiction := fun _residual bound active =>
+    (Nat.not_lt_of_ge bound.down) active.down
+
 /-- `[54]`'s returned residual and the joint realization inequality cannot
 coexist (`Contracts.Spine.not_jointRealization_of_residual`). -/
 noncomputable instance instIncompatibleAllColdEntropyJoint :

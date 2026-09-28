@@ -47,7 +47,7 @@ noncomputable def selectedNearCubicBranch
 with every fact of its ledger at its return (`Assembly/Residuals/`): the
 near-cubic target defect, the four pair Type B subtypes, the Type B sublinear
 failure and the route-`8` quotient failure `[348]` as products of their arm
-blocks, the twelve private-carrier rate failure subtypes, and the local
+blocks, the eleven private-carrier rate failure subtypes, and the local
 cold-terminal exclusion as its four linear-arm singletons (its absorbed-germ
 product is not entered: `[173]`'s no-arm is closed against `K .route8Rate`).  The pair-system entry retains its own source key and is not
 `[144a]`. -/
@@ -67,7 +67,6 @@ abbrev OtherReturnedOutcome (selected : EGInput.{u}) :=
     Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive selected ∨
     Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree selected ∨
     Route8RateFailsOutcome_denseAtOrAbove_lowWedge selected ∨
-    Route8RateFailsOutcome_denseBelow_highEntropy selected ∨
     Route8RateFailsOutcome_denseBelow_lowNonrepetitive selected ∨
     Route8RateFailsOutcome_denseBelow_lowWedgeFree selected ∨
     Route8RateFailsOutcome_denseBelow_lowWedge selected) ∨
@@ -83,7 +82,7 @@ or, where the paths form a full product, as the product of their arm blocks:
 `[20a]`; the six `[144a]` subtypes; the two `[172a]` subtypes; the six `[182]`
 subtypes; the `[186]` joint balance product; the remaining `[187]` outcomes;
 and the structural exhaustion residuals `[153]` (3 subtypes), `[162]`
-(2 subtypes) and `[54]` (6 subtypes). -/
+(2 subtypes) and `[54]` (5 subtypes). -/
 abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
   Node20aOutcome selected ∨
   (Node144aOutcome_windowHandoff selected ∨ Node144aOutcome_windowFails selected ∨
@@ -108,7 +107,6 @@ abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
     Node162ResidualOutcome_tauBelowRateFails selected) ∨
   (Node54ResidualOutcome_realizedColdBelow selected ∨
     Node54ResidualOutcome_realizedBounded selected ∨
-    Node54ResidualOutcome_unrealizedTauHighColdBelow selected ∨
     Node54ResidualOutcome_unrealizedTauHighBounded selected ∨
     Node54ResidualOutcome_unrealizedRateFailsBounded selected ∨
     Node54ResidualOutcome_unrealizedBothRates selected)

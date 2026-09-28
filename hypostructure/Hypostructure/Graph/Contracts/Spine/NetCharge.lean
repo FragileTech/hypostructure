@@ -176,6 +176,46 @@ theorem netDeficiencyCap_of_coldRoute8Below (data : Parameters)
     Nat.zero_le (data.bridgeMassFactor * data.dischargeScale *
       (data.spineScale * Core.ceilSqrt object.vertexCount))]
 
+/-- **`def:cold-window-ledger`: `θ < 1/78` forces `τ(θ) < 1/4`.**  The exact
+route-`8` private-support comparison `(δs+1)·(stubs·p + T(n)) + δ·F·s·T(n) <
+δ·(n − order·p)` of node `[146]` implies the exact deficiency comparison
+`s·(δ·order·p + T(n)) < s·2(order−1)·p + (n − order·p)` of node `[160]`: after
+dividing by `δ`, the remainder exceeds `s·(stubs·p + T(n))`, and
+`stubs = δ·order − 2(order−1)`.  (At the registered numbers this is
+`195p + 109T < 3|R|` against `3|R| ≤ 180p + 12T`.) -/
+theorem denseDeficiencyBelow_of_coldRoute8Below (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (below : ColdRoute8BelowStatement data object) :
+    DenseDeficiencyBelowStatement data object := by
+  unfold ColdRoute8BelowStatement coldExternalStubCount Parameters.surplusThreshold at below
+  unfold DenseDeficiencyBelowStatement
+  set a := data.threshold
+  set s := data.dischargeScale
+  set k := data.windowOrder
+  set F := data.bridgeMassFactor
+  set p := (canonicalWindowPacking data object).card
+  set T := data.spineScale * Core.ceilSqrt object.vertexCount
+  set X := object.vertexCount - k * p
+  set c := a * k - 2 * (k - 1)
+  -- `δ·s·(stubs·p + T) ≤ (δs+1)·(stubs·p + T) < δ·X`, so `s·(stubs·p + T) < X`.
+  have scaled : a * (s * (c * p + T)) < a * X := by
+    have grow : a * (s * (c * p + T)) ≤ (a * s + 1) * (c * p + T) := by
+      rw [← Nat.mul_assoc]
+      exact Nat.mul_le_mul_right _ (Nat.le_succ _)
+    omega
+  have remainder : s * (c * p + T) < X := Nat.lt_of_mul_lt_mul_left scaled
+  -- `δ·order ≤ stubs + 2(order−1)`, scaled by `s·p`.
+  have split : a * k ≤ c + 2 * (k - 1) := by omega
+  have splitScaled : s * (a * (k * p)) ≤ s * (c * p) + s * (2 * (k - 1) * p) := by
+    have := Nat.mul_le_mul_right p split
+    have := Nat.mul_le_mul_left s this
+    calc s * (a * (k * p)) = s * (a * k * p) := by rw [Nat.mul_assoc a]
+      _ ≤ s * ((c + 2 * (k - 1)) * p) := this
+      _ = s * (c * p) + s * (2 * (k - 1) * p) := by rw [Nat.add_mul, Nat.mul_add]
+  rw [Nat.mul_add s (a * (k * p)) T]
+  rw [Nat.mul_add s (c * p) T] at remainder
+  omega
+
 /-- **Node `[173]`, `lem:exact-collision-test`, no arm.**  If the remainder
 `R₀` of the fixed maximum packing is not negatively charged, its net charge is
 nonnegative. -/

@@ -68,10 +68,11 @@ noncomputable def Assembly.Internal.nearCubicDensePassRateFailed
 
 set_option maxHeartbeats 8000000 in
 /-- **The dense hot/cold pass `[162]` on `[160]`'s first complement**
-(`τ(θ) ≥ 1/4`).  `[22]`--`[23]`; the `[146]` yes arm `[147]` runs the spine's
-route-8 closure with `τ(θ) < 3/13` from `θ < 1/78`; the `[146]` no arm runs
-`[148]`--`[152]` and decides `[153]`: the linear arm is the dense linear pass,
-the bounded arm returns through `[24]` to `[25]`. -/
+(`τ(θ) ≥ 1/4`).  `[22]`--`[23]`; the `[146]` yes arm is empty: `θ < 1/78` gives
+`τ(θ) < 3/13 < 1/4` (`def:cold-window-ledger`), against the retained
+`τ(θ) ≥ 1/4`; the `[146]` no arm runs `[148]`--`[152]` and decides `[153]`: the
+linear arm is the dense linear pass, the bounded arm returns through `[24]` to
+`[25]`. -/
 noncomputable def Assembly.Internal.nearCubicDensePassAtOrAbove
     {selected : EGInput.{u}}
     (denseHistory : ExactLedger EGInput.{u} selected
@@ -89,16 +90,11 @@ noncomputable def Assembly.Internal.nearCubicDensePassAtOrAbove
   match coldRoute8Dichotomy (data := spineData) cap
       (by key_fresh) (by key_fresh) with
   | .left belowHistory =>
-      let rated :=
-        (route8RateFromColdBelowRow (BranchState := BranchState)
-            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-            (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          belowHistory (by key_fresh)
-      -- `[149]`--`[152]` as facts of G on the `[147]` arm (see the realized
-      -- package arm).
-      let stubbed := nearCubicColdStubFacts rated
-      exact nearCubicLargeBudgetColdRate (nearCubicFullRank stubbed)
-        (Or.inr (Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow.ret stubbed))
+      -- `[146]` yes on the retained `τ(θ) ≥ 1/4`: `θ < 1/78` gives
+      -- `τ(θ) < 3/13 < 1/4` (`def:cold-window-ledger`), the literal negation of
+      -- `[160]`'s first complement, so this arm of the pass is empty.
+      exact (closeIncompatible belowHistory (K .denseDeficiencyAtOrAbove)
+        (K .coldRoute8Below) (by key_fresh)).elimClosed (by infer_instance) |>.elim
   | .right atOrAboveHistory =>
       let stubs := nearCubicColdStubs atOrAboveHistory
       match coldMassDichotomy (data := spineData) stubs
