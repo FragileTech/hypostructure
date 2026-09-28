@@ -1931,6 +1931,12 @@ No decision is added, moved or removed; no split; no closure.
    `K .neighbourhoodPairCount`.  The internally disjoint star is also
    `K .starCycleConstraint` and `SwitchForcedPaths.star_forbidden`; the fan is
    strictly stronger (it decides every coincidence).
+**Re-probe (`PathProbe`, same call-site probe).**  Path counts unchanged at
+every return (1 at `[20a]` and the near-cubic target defect, 6 at `[144a]`, 4/2
+at `[172a]`, 6/6 at `[182]`, 1170 each at `[186]`, `[348]` and Type B sublinear,
+73/11 at the rate failure, 6/4 at the cold-terminal exclusion, 9/3 at `[153]`,
+4/2 at `[162]`, 7/5 at `[54]`, 1 at each Type B entry subtype), and all four
+keys are on every probed fact set.
 Not published: "local consistency" of the surviving configurations (not a
 fact about G).  Every residual's fact count rises by 4 (table below).  No
 residual case is closed by these facts.
