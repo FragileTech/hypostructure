@@ -25,7 +25,10 @@ universe u w
 /-- **Node `[20a]`** (thm:main (i), tex 339-346): the strict-surplus named
 sparse exit of [20]: the attempted-quotient target defect and its registered
 structure, on the strict arm of [19].  The explicit conjunction of every
-fact on its maximal ledger (19 common facts). -/
+fact on its maximal ledger: the 19 facts of the path, then the 62 facts the
+`[20a]` enrichment rows publish at G (`SpineRows/SparseExitResidual.lean`,
+with `K .bridgeless`, `K .sparseUpperEnvelope` and `K .baselineSpineDemand`),
+81 in all. -/
 abbrev Node20aOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -64,7 +67,131 @@ abbrev Node20aOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .sparseTargetDefectResidual selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sparseTargetDefectStructure selected.object
+      erdosReceiverLoadProfile spineData .sparseTargetDefectStructure selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .bridgeless selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sparseUpperEnvelope selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .baselineSpineDemand selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .witnessReadingsNotTargetComplete selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .witnessActualOutsideNegative selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .witnessReadingsCycleFree selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .witnessSupportOrderBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .witnessReadingGluesNotSmallerBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .edgeSurplusIdentity selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreeCountBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .ceilSqrtAboveScale selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .orderAboveScaleSquare selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sixVertexExtremalEnvelope selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .remainderDeficiencyBelowCut selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .windowCutCapacity selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .witnessOutsideNotRealized selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .realizedContextsNegative selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .negativeSubGluingNotSmallerBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleSubContextSeparates selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pathSpectrumSplit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .admissibleQuotientsLabelInjective selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .positiveSupportBoundaryTwo selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .supportCutEdgesTwo selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundaryLowInsideVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .outsideLowVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoBoundaryLowOutsideSide selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoBoundarySupportClosure selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoBoundaryOutsideClosure selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoBoundaryNoTargetSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .outsideOrBoundaryLarge selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .droppedEdgeTightDeficit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .notBothReadingsWhole selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .firstWholeOrientation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .firstWholeDeficitNonempty selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .firstWholeDeficitStructure selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .firstWholeDeficitSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .secondWholeOrientation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .secondWholeDeficitNonempty selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .secondWholeDeficitStructure selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .secondWholeDeficitSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .deletedSupportReduction selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .deletedSupportDeficientVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .deletedSupportDeficitSums selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .deletedSupportEdgeRestoration selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .deletedSupportEdgeSetRestoration selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .firstKeepsAllNotWhole selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .secondKeepsAllNotWhole selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePositive selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreeSurplusCapacity selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairArmExcluded selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoBoundaryForcesArmOne selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .armOneForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoBoundaryForcedPathCross selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .supportSteinerMinimal selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .steinerVerticesCut selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .wholeSupportEqual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .wholeDeficitBoundaryCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .wholeCutEdgeSurplusBound selected.object
 
 /-- The return of `Node20aOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -89,7 +216,69 @@ theorem node20aReturn
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .sparsePairExit) known]
     [FactKeys.Has (K .sparseTargetDefectResidual) known]
-    [FactKeys.Has (K .sparseTargetDefectStructure) known] :
+    [FactKeys.Has (K .sparseTargetDefectStructure) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .sparseUpperEnvelope) known]
+    [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .witnessReadingsNotTargetComplete) known]
+    [FactKeys.Has (K .witnessActualOutsideNegative) known]
+    [FactKeys.Has (K .witnessReadingsCycleFree) known]
+    [FactKeys.Has (K .witnessSupportOrderBound) known]
+    [FactKeys.Has (K .witnessReadingGluesNotSmallerBaseline) known]
+    [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .edgeSurplusIdentity) known]
+    [FactKeys.Has (K .surplusDartIdentity) known]
+    [FactKeys.Has (K .highDegreeCountBound) known]
+    [FactKeys.Has (K .packingOrderBound) known]
+    [FactKeys.Has (K .ceilSqrtAboveScale) known]
+    [FactKeys.Has (K .orderAboveScaleSquare) known]
+    [FactKeys.Has (K .sixVertexExtremalEnvelope) known]
+    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+    [FactKeys.Has (K .windowCutCapacity) known]
+    [FactKeys.Has (K .witnessOutsideNotRealized) known]
+    [FactKeys.Has (K .realizedContextsNegative) known]
+    [FactKeys.Has (K .negativeSubGluingNotSmallerBaseline) known]
+    [FactKeys.Has (K .cycleSubContextSeparates) known]
+    [FactKeys.Has (K .pathSpectrumSplit) known]
+    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
+    [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .positiveSupportBoundaryTwo) known]
+    [FactKeys.Has (K .supportCutEdgesTwo) known]
+    [FactKeys.Has (K .boundaryLowInsideVertex) known]
+    [FactKeys.Has (K .outsideLowVertex) known]
+    [FactKeys.Has (K .twoBoundaryLowOutsideSide) known]
+    [FactKeys.Has (K .twoBoundarySupportClosure) known]
+    [FactKeys.Has (K .twoBoundaryOutsideClosure) known]
+    [FactKeys.Has (K .twoBoundaryNoTargetSum) known]
+    [FactKeys.Has (K .outsideOrBoundaryLarge) known]
+    [FactKeys.Has (K .droppedEdgeTightDeficit) known]
+    [FactKeys.Has (K .notBothReadingsWhole) known]
+    [FactKeys.Has (K .firstWholeOrientation) known]
+    [FactKeys.Has (K .firstWholeDeficitNonempty) known]
+    [FactKeys.Has (K .firstWholeDeficitStructure) known]
+    [FactKeys.Has (K .firstWholeDeficitSum) known]
+    [FactKeys.Has (K .secondWholeOrientation) known]
+    [FactKeys.Has (K .secondWholeDeficitNonempty) known]
+    [FactKeys.Has (K .secondWholeDeficitStructure) known]
+    [FactKeys.Has (K .secondWholeDeficitSum) known]
+    [FactKeys.Has (K .deletedSupportReduction) known]
+    [FactKeys.Has (K .deletedSupportDeficientVertex) known]
+    [FactKeys.Has (K .deletedSupportDeficitSums) known]
+    [FactKeys.Has (K .deletedSupportEdgeRestoration) known]
+    [FactKeys.Has (K .deletedSupportEdgeSetRestoration) known]
+    [FactKeys.Has (K .firstKeepsAllNotWhole) known]
+    [FactKeys.Has (K .secondKeepsAllNotWhole) known]
+    [FactKeys.Has (K .highDegreePositive) known]
+    [FactKeys.Has (K .highDegreeSurplusCapacity) known]
+    [FactKeys.Has (K .pairArmExcluded) known]
+    [FactKeys.Has (K .twoBoundaryForcesArmOne) known]
+    [FactKeys.Has (K .armOneForcedPath) known]
+    [FactKeys.Has (K .twoBoundaryForcedPathCross) known]
+    [FactKeys.Has (K .supportSteinerMinimal) known]
+    [FactKeys.Has (K .steinerVerticesCut) known]
+    [FactKeys.Has (K .wholeSupportEqual) known]
+    [FactKeys.Has (K .wholeDeficitBoundaryCount) known]
+    [FactKeys.Has (K .wholeCutEdgeSurplusBound) known] :
     Node20aOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -109,7 +298,69 @@ theorem node20aReturn
     (history.get (K .surplusAbove)).down,
     (history.get (K .sparsePairExit)).down,
     (history.get (K .sparseTargetDefectResidual)).down,
-    (history.get (K .sparseTargetDefectStructure)).down⟩
+    (history.get (K .sparseTargetDefectStructure)).down,
+    (history.get (K .bridgeless)).down,
+    (history.get (K .sparseUpperEnvelope)).down,
+    (history.get (K .baselineSpineDemand)).down,
+    (history.get (K .witnessReadingsNotTargetComplete)).down,
+    (history.get (K .witnessActualOutsideNegative)).down,
+    (history.get (K .witnessReadingsCycleFree)).down,
+    (history.get (K .witnessSupportOrderBound)).down,
+    (history.get (K .witnessReadingGluesNotSmallerBaseline)).down,
+    (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .edgeSurplusIdentity)).down,
+    (history.get (K .surplusDartIdentity)).down,
+    (history.get (K .highDegreeCountBound)).down,
+    (history.get (K .packingOrderBound)).down,
+    (history.get (K .ceilSqrtAboveScale)).down,
+    (history.get (K .orderAboveScaleSquare)).down,
+    (history.get (K .sixVertexExtremalEnvelope)).down,
+    (history.get (K .remainderDeficiencyBelowCut)).down,
+    (history.get (K .windowCutCapacity)).down,
+    (history.get (K .witnessOutsideNotRealized)).down,
+    (history.get (K .realizedContextsNegative)).down,
+    (history.get (K .negativeSubGluingNotSmallerBaseline)).down,
+    (history.get (K .cycleSubContextSeparates)).down,
+    (history.get (K .pathSpectrumSplit)).down,
+    (history.get (K .admissibleQuotientsLabelInjective)).down,
+    (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .positiveSupportBoundaryTwo)).down,
+    (history.get (K .supportCutEdgesTwo)).down,
+    (history.get (K .boundaryLowInsideVertex)).down,
+    (history.get (K .outsideLowVertex)).down,
+    (history.get (K .twoBoundaryLowOutsideSide)).down,
+    (history.get (K .twoBoundarySupportClosure)).down,
+    (history.get (K .twoBoundaryOutsideClosure)).down,
+    (history.get (K .twoBoundaryNoTargetSum)).down,
+    (history.get (K .outsideOrBoundaryLarge)).down,
+    (history.get (K .droppedEdgeTightDeficit)).down,
+    (history.get (K .notBothReadingsWhole)).down,
+    (history.get (K .firstWholeOrientation)).down,
+    (history.get (K .firstWholeDeficitNonempty)).down,
+    (history.get (K .firstWholeDeficitStructure)).down,
+    (history.get (K .firstWholeDeficitSum)).down,
+    (history.get (K .secondWholeOrientation)).down,
+    (history.get (K .secondWholeDeficitNonempty)).down,
+    (history.get (K .secondWholeDeficitStructure)).down,
+    (history.get (K .secondWholeDeficitSum)).down,
+    (history.get (K .deletedSupportReduction)).down,
+    (history.get (K .deletedSupportDeficientVertex)).down,
+    (history.get (K .deletedSupportDeficitSums)).down,
+    (history.get (K .deletedSupportEdgeRestoration)).down,
+    (history.get (K .deletedSupportEdgeSetRestoration)).down,
+    (history.get (K .firstKeepsAllNotWhole)).down,
+    (history.get (K .secondKeepsAllNotWhole)).down,
+    (history.get (K .highDegreePositive)).down,
+    (history.get (K .highDegreeSurplusCapacity)).down,
+    (history.get (K .pairArmExcluded)).down,
+    (history.get (K .twoBoundaryForcesArmOne)).down,
+    (history.get (K .armOneForcedPath)).down,
+    (history.get (K .twoBoundaryForcedPathCross)).down,
+    (history.get (K .supportSteinerMinimal)).down,
+    (history.get (K .steinerVerticesCut)).down,
+    (history.get (K .wholeSupportEqual)).down,
+    (history.get (K .wholeDeficitBoundaryCount)).down,
+    (history.get (K .wholeCutEdgeSurplusBound)).down⟩
 
 /-- **Node `[187] (near-cubic target defect)`** (thm:main (vi), tex 369-378):
 the sparse target-defect exit of [20] on the at-or-below-surplus arm of
