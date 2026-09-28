@@ -6,13 +6,13 @@ import HypostructureErdos64EG.Assembly.Residuals.Route8Blocks
 
 Node `[186]` as a PRODUCT OF ARM BLOCKS.
 
-The 1360 paths from `selectedLedgerBoundary` to the one return site
+The 1240 paths from `selectedLedgerBoundary` to the one return site
 (`route8JointBalanceReturn` in `selectedRouteEightUnifiedResidual`,
-`Assembly/RouteEight/Local.lean`) carry 1360 distinct fact sets.  Each is
+`Assembly/RouteEight/Local.lean`) carry 1240 distinct fact sets.  Each is
 exactly the 79 common keys of `Route8JointBalanceOutcome` together with one
 block per factor of
 
-  `5 prefix × 4 entropy × 68 continuation`,  `68 = 2·25 + 12 + 6`,
+  `5 prefix × 4 entropy × 62 continuation`,  `62 = 2·22 + 12 + 6`,
 
 and every combination occurs (checked against the elaborated ledger of every
 path).  These are the same factors as `Route8QuotientOutcome`: both residuals

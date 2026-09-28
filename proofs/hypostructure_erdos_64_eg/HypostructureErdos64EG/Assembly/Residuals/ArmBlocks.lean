@@ -158,11 +158,12 @@ theorem BChainArms.route8 {selected : EGInput.{u}}
   ⟨arms.1.1, arms.1.2, arms.2.continuation chain⟩
 
 /-- The Type A route-`8` residual arm (`[109]` → `[113]`): the lane arms, the
-arm's own block and the `[113]` deficit block give the route-`8` arms. -/
+arm's own block and the `[113]` deficit-fails block give the route-`8` arms
+(the deficit-holds arm closes at `[124]`). -/
 theorem TypeAExitFourArms.route8Residual {selected : EGInput.{u}}
     (arms : TypeAExitFourArms selected)
     (residual : TypeAArmBlock_route8Residual selected)
-    (deficit : Route8Deficit selected) : Route8Arms selected :=
+    (deficit : Route8DeficitBlock_fails selected) : Route8Arms selected :=
   ⟨arms.1.1.1.1, arms.1.1.1.2,
     Or.inl ⟨arms.1.2, arms.1.1.2, Or.inr (Or.inl ⟨residual, arms.2, deficit⟩)⟩⟩
 

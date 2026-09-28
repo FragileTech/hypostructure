@@ -6,8 +6,8 @@ import HypostructureErdos64EG.Assembly.Basic
 The arm blocks of the route-`8` lane, shared by every residual returned from
 `selectedRouteEightUnifiedResidual` (`Route8QuotientOutcome`,
 `TypeBSublinearOutcome`, ...).  The paths into that return site form the
-product `5 prefix × 4 entropy × 68 continuation`, with
-`68 = 2·25 + 12 + 6` (Type A lane, absorbed lane, Type B high-surplus lane;
+product `5 prefix × 4 entropy × 62 continuation`, with
+`62 = 2·22 + 12 + 6` (Type A lane, absorbed lane, Type B high-surplus lane;
 the B-chain has 6 fan/certificate arms).
 Each block is an explicit conjunction of EVERY key of its arm as a `Holds`
 conjunct, with a `.ret` theorem that reads each key with one `get` from the
@@ -857,35 +857,6 @@ abbrev TypeAExitFour (selected : EGInput.{u}) : Prop :=
   TypeAExitFourBlock_peeledVisible selected ∨
   TypeAExitFourBlock_peeledNoVisible selected
 
-/-- Route-8 large-budget deficit arm: the deficit holds (true residual) (5 facts). -/
-abbrev Route8DeficitBlock_holds (selected : EGInput.{u}) : Prop :=
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8CarrierCutParity selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8LargeBudgetDeficit selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8NoSmallCoreEntry selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8TrueResidual selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8TwoCarrierEntry selected.object
-
-/-- `Route8DeficitBlock_holds` from the one ledger: one `get` per key. -/
-theorem Route8DeficitBlock_holds.ret
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .route8CarrierCutParity) known]
-    [FactKeys.Has (K .route8LargeBudgetDeficit) known]
-    [FactKeys.Has (K .route8NoSmallCoreEntry) known]
-    [FactKeys.Has (K .route8TrueResidual) known]
-    [FactKeys.Has (K .route8TwoCarrierEntry) known] :
-    Route8DeficitBlock_holds selected :=
-  ⟨(history.get (K .route8CarrierCutParity)).down,
-    (history.get (K .route8LargeBudgetDeficit)).down,
-    (history.get (K .route8NoSmallCoreEntry)).down,
-    (history.get (K .route8TrueResidual)).down,
-    (history.get (K .route8TwoCarrierEntry)).down⟩
-
 /-- Route-8 large-budget deficit arm: the deficit fails (1 fact). -/
 abbrev Route8DeficitBlock_fails (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -899,20 +870,16 @@ theorem Route8DeficitBlock_fails.ret
     Route8DeficitBlock_fails selected :=
   (history.get (K .route8LargeBudgetDeficitFails)).down
 
-/-- The route-8 large-budget deficit factor. -/
-abbrev Route8Deficit (selected : EGInput.{u}) : Prop :=
-  Route8DeficitBlock_holds selected ∨
-  Route8DeficitBlock_fails selected
-
-/-- The 25 Type A continuation arms: decorated (3 exit-four blocks × B-chain),
-route-8 residual (3 exit-four blocks × 2 deficit blocks), discharged retest. -/
+/-- The 22 Type A continuation arms: decorated (3 exit-four blocks × B-chain),
+route-8 residual (3 exit-four blocks × the `[113]` deficit-fails block; the
+deficit-holds arm closes at `[124]`), discharged retest. -/
 abbrev TypeAArm (selected : EGInput.{u}) : Prop :=
   (TypeAArmBlock_decorated selected ∧ TypeAExitFour selected ∧ BChain selected) ∨
   (TypeAArmBlock_route8Residual selected ∧ TypeAExitFour selected ∧
-    Route8Deficit selected) ∨
+    Route8DeficitBlock_fails selected) ∨
   TypeAArmBlock_dischargedRetest selected
 
-/-- The Type A lane: 2 entry blocks × 37 continuation arms. -/
+/-- The Type A lane: 2 entry blocks × 22 continuation arms. -/
 abbrev TypeALane (selected : EGInput.{u}) : Prop :=
   NetChargeLaneBlock_typeALowSurplus selected ∧ TypeAEntry selected ∧
     TypeAArm selected
@@ -1009,7 +976,7 @@ abbrev AbsorbedLane (selected : EGInput.{u}) : Prop :=
 abbrev TypeBHighSurplusLane (selected : EGInput.{u}) : Prop :=
   NetChargeLaneBlock_typeBHighSurplus selected ∧ BChain selected
 
-/-- The continuation factor (68 arms = 2·25 + 12 + 6). -/
+/-- The continuation factor (62 arms = 2·22 + 12 + 6). -/
 abbrev NetChargeContinuation (selected : EGInput.{u}) : Prop :=
   TypeALane selected ∨ AbsorbedLane selected ∨ TypeBHighSurplusLane selected
 
