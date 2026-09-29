@@ -111,6 +111,53 @@ noncomputable def splicePiece (Z : Finset object.Vertex) (a b : object.Vertex)
   classical
   exact rewirePiece object Z (Z \ D) (spliceGraph object a b D)
 
+/-- Decode a vertex of the excision piece to G. -/
+def splicePieceDecode (Z : Finset object.Vertex) (a b : object.Vertex)
+    (D : Finset object.Vertex) :
+    (SupportAtom.boundary object Z).Vertex ⊕ (splicePiece object Z a b D).Internal →
+      object.Vertex
+  | .inl label => label.1
+  | .inr internal => internal.1
+
+/-- The excision piece's incidences are the splice's, between decoded ends. -/
+theorem splicePiece_adj (Z : Finset object.Vertex) (a b : object.Vertex)
+    (D : Finset object.Vertex)
+    (x y : (SupportAtom.boundary object Z).Vertex ⊕
+      (splicePiece object Z a b D).Internal) :
+    (splicePiece object Z a b D).graph.Adj x y ↔
+      (spliceGraph object a b D).Adj (splicePieceDecode object Z a b D x)
+        (splicePieceDecode object Z a b D y) := by
+  cases x <;> cases y <;> exact Iff.rfl
+
+/-- The boundary degree of a label in the excision piece: its splice
+neighbours among the vertices of `Z` that are not excised. -/
+theorem splicePiece_boundaryDegree (Z : Finset object.Vertex) (a b : object.Vertex)
+    (D : Finset object.Vertex) (label : (SupportAtom.boundary object Z).Vertex) :
+    (splicePiece object Z a b D).boundaryDegree label =
+      {w | (spliceGraph object a b D).Adj label.1 w ∧ w ∈ Z ∧
+        (w ∈ SupportAtom.cutBoundary object Z ∨ w ∉ D)}.ncard := by
+  classical
+  unfold splicePiece rewirePiece BoundaryPiece.boundaryDegree
+  rw [FiniteObject.degree_eq_ncard_neighborSet]
+  refine Eq.trans (Transplant.ncard_neighborSet_comap (spliceGraph object a b D)
+    (Transplant.transplantDecode object Z (Z \ D))
+    (Transplant.transplantDecode_injective Z (Z \ D)) (.inl label)) ?_
+  congr 1
+  ext w
+  simp only [Set.mem_setOf_eq, Transplant.range_transplantDecode, Transplant.Removed,
+    Finset.mem_sdiff]
+  constructor
+  · rintro ⟨adjacent, wZ, notRemoved⟩
+    refine ⟨adjacent, wZ, ?_⟩
+    by_cases cut : w ∈ SupportAtom.cutBoundary object Z
+    · exact Or.inl cut
+    · exact Or.inr fun inD => notRemoved ⟨wZ, cut, fun ⟨_, notD⟩ => notD inD⟩
+  · rintro ⟨adjacent, wZ, keep⟩
+    refine ⟨adjacent, wZ, fun ⟨_, notCut, notKept⟩ => ?_⟩
+    rcases keep with cut | notD
+    · exact notCut cut
+    · exact notKept ⟨wZ, notD⟩
+
 end Builders
 
 /-! ## The family -/
@@ -197,6 +244,29 @@ def Separated (Target : FiniteObject.{u} → Prop)
       ¬ FiniteObject.IsCommonNeighbor keep.1 remove.1 common) :
     (fold keep remove different noCommon : GConstructedPiece object Z).toPiece =
       (SupportAtom.piece object Z).identifyInternal keep remove different := rfl
+
+/-- The boundary degree of a label in G's own piece: its G-neighbours in `Z`. -/
+theorem profile_own_apply (label : (SupportAtom.boundary object Z).Vertex) :
+    (own : GConstructedPiece object Z).profile label =
+      {w | object.graph.Adj label.1 w ∧ w ∈ Z}.ncard := by
+  change (SupportAtom.piece object Z).boundaryDegree label = _
+  unfold BoundaryPiece.boundaryDegree
+  rw [FiniteObject.degree_eq_ncard_neighborSet]
+  refine Eq.trans (Transplant.ncard_neighborSet_comap object.graph
+    (SupportAtom.pieceDecode object Z) (Transplant.pieceDecode_injective Z)
+    (.inl label)) ?_
+  congr 1
+  ext w
+  simp only [Set.mem_setOf_eq, Transplant.range_pieceDecode]
+  exact Iff.rfl
+
+/-- The boundary degree of a label in the excision piece. -/
+theorem profile_splice_apply (a b : object.Vertex) (D : Finset object.Vertex)
+    (label : (SupportAtom.boundary object Z).Vertex) :
+    (splice a b D : GConstructedPiece object Z).profile label =
+      {w | (spliceGraph object a b D).Adj label.1 w ∧ w ∈ Z ∧
+        (w ∈ SupportAtom.cutBoundary object Z ∨ w ∉ D)}.ncard :=
+  splicePiece_boundaryDegree object Z a b D label
 
 /-! ## Members that are subgraphs of G once glued -/
 
