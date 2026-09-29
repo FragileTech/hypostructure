@@ -5389,6 +5389,100 @@ Report: `audits/structural-accounting/ColdBranchClosedOutcome_linearRealizedSile
   representative") and what equal cut states record.  Identifying the two heads (rather than
   adding the edge `s(a,b)`) changes the head degree to `deg a + deg b - 2`, still
   `>= t`, but does not repair the deleted vertices' outside neighbours.
+- **Complement arm: what the negation forces (round 3).**
+  New key 8402 `coldMarkedGermStretchIncidence` (requires `coldAbsorbedNeutralConfiguration`,
+  `minDegreeBaseline`): for every path `p` of G spanning the marked germ's support, every
+  interior vertex has degree exactly `t` (subcubic support, baseline) and exactly `t - 2`
+  neighbours besides its two path neighbours (`t = 3`: one extra neighbour, a pendant outside
+  the support or a chord inside it).  Note the correction to the negation: a failed baseline
+  of a *path* splice needs only ONE deficient outside neighbour, not every stretch vertex.
+  `SpliceLift.multiSplice` / `multiSplice_cycle_lift` / `multiSpliceObject` /
+  `multi_excision_dichotomy` (kernel-checked): the multi-boundary splice (several
+  vertex-disjoint compatible shortcut paths replaced by edges); every cycle of the result is a
+  cycle of G of the same length or lifts to a cycle of G of length `L + (sum of the shifts of
+  a subfamily)`; the excised object is strictly smaller.  This is the correct generalization of
+  "region excision with label identification": a refined state (recording outside incidences)
+  does not repair the deleted vertices' outside neighbours, since their degrees are lost
+  whatever the state at the two cuts; what repairs them is a degree-preserving shortcut
+  family, in which each pendant of a deleted vertex is re-attached through a shortcut whose
+  end is the pendant's outside endpoint.
+  Concrete case (all interior vertices pendant, an induced ladder-like stretch): deleting two
+  adjacent interior vertices `u_i, u_{i+1}` and adding the shortcut edges `u_{i-1} x_i` and
+  `x_{i+1} u_{i+2}` preserves every degree (when the new edges are not parallel) and removes 2
+  vertices; the lifts add 1, 1 or 2 to the cycle length, so the excision is a smaller
+  counterexample unless G has a cycle of length `2^k + 1`, `2^k + 2` or `2^k + 3` through the
+  suppressed pair.  That is the exact form of F08 for a pendant stretch; it is not
+  contradictory with the ledger (G may well have such cycles), so no closure follows.
+  A long stretch is not excluded: the stretch is not in the packing remainder `R` (the outside
+  component of the cold windows contains hot windows), so `remainderPathBounds` gives no
+  induced-`P13` bound on it; its length is bounded only by `M_cold`
+  (`coldMarkedGermUncompressed`).  The period `p` of the pendant pattern is not a G fact:
+  equal cut states record only the interfaces.
+- **Round 4: the concrete degree-preserving compression (kernel-checked).**
+  New module `Graph/DoubleSuppress.lean`: `Config` (an edge `u v` with `N(u) = {v, pl, x}`,
+  `N(v) = {u, y, q}`, the new edges `pl x` and `y q` non-edges of G and distinct),
+  `Config.family` (the shortcuts `pl u x`, `y v q`), `Config.adj_family` (adjacency of the
+  excised graph at kept vertices), `Config.repl` with `repl_injOn` (an explicit injection of
+  `N(w)` into the excised neighbourhood, hence **every kept degree is preserved**,
+  `degree_le_multiSpliceObject`), and `pair_suppression_dichotomy` (F08): for minimal
+  target-avoiding `G` with minimum degree `t`, G has a cycle of length `Lk + j` with `Lk`
+  accepted, `j ∈ {1, 2}`, `Lk + j` not accepted.  The excised object is smaller by 2.
+  New key 8403 `coldMarkedGermPairSuppression` (requires `coldAbsorbedNeutralConfiguration`,
+  `minDegreeBaseline`, `selection`): for every path spanning the marked germ's support and
+  EVERY pair of consecutive interior vertices `p_i, p_{i+1}` with `N(p_i) = {p_{i-1}, p_{i+1},
+  x}`, `N(p_{i+1}) = {p_i, y, p_{i+2}}` (`x`, `y` pendants or chords alike: the chord case is
+  covered), either a short-cycle obstruction holds (`p_{i-1} ~ x`: a triangle; `y ~ p_{i+2}`: a
+  triangle; or `s(p_{i-1}, x) = s(y, p_{i+2})`: a `C4` through `p_i p_{i+1}`), or G has a cycle
+  of length `Lk + j` (`Lk` accepted, `j ∈ {1,2}`, not accepted).  With `LengthOK` the dyadic
+  lengths `>= 4` the lengths are in `{5, 6, 9, 10, 17, 18, ...}`.
+- **Combination of consecutive pairs (analysis, not a theorem).**  The lifted cycle records only
+  its length, not its route: `multiSplice_cycle_lift` does not say which shortcut paths lie on
+  it.  So consecutive pairs `i`, `i+1` give two cycles of lengths `2^k + j`, `2^{k'} + j'` with
+  no forced overlap, hence no forced theta and no constraint on branch lengths; even with the
+  route recorded, a theta with branches `a, b, c` needs `a+b`, `a+c`, `b+c` non-dyadic and
+  only two of them are pinned to `2^k + j`, which is satisfiable.  `threeRouteFan`,
+  `threeRouteChain`, `windowAttachmentGap` and the no-`C4` fact constrain routes of length 3
+  and window attachments, not the routes of these lifts.  No explicit bound on the stretch
+  length follows; the bound remains `M_cold`.
+- **Exact surviving pattern.**  For every consecutive interior pair of the marked germ's
+  stretch: a cycle of G of length `2^k + 1` (through exactly one of `pl u x`, `y v q`) or
+  `2^k + 2` (through both), `k >= 2`, unless the pair sits in a triangle or `C4`.
+- **Round 5: routes, Mersenne paths, chords, and the consecutive-pair constraint
+  (kernel-checked).**
+  `Graph/SpliceRoute.lean`: `exists_cycle_snd_edges`, `cycle_lift_route`, `splice_cycle_route`,
+  `RouteCompatible`, `multiSplice_cycle_route`, `RouteLift`, `multi_excision_route`: the lifted
+  cycle keeps every non-shortcut edge of the excised cycle, contains the whole path of each used
+  shortcut, contains no other new edge, and has length `c.length` plus the shifts of the used
+  shortcuts.  `Graph/PairRoute.lean`: `path_around` (removing `u` and its two cycle edges leaves a
+  path), `routeCompatible_family`, `iso_u`, `iso_v`, `edge_avoids`, `pair_route`,
+  `chord_cycle`, `cycle_two_paths`, `mersenne_pair_distinct`.
+  New keys: 8404 `coldMarkedGermPairMersenne` and 8405 `coldMarkedGermChordSpan`.
+  **Correction:** the pair suppression does NOT give a Mersenne path around each vertex.  Its
+  outcome is one of: a path `pl ⇝ x` of length `Lk - 1` avoiding `u, v` (Mersenne when
+  `Lk = 2^k`), or a path `y ⇝ q` of length `Lk - 1` avoiding `u, v`, or a cycle of length
+  `Lk + 2` through all four edges `u pl`, `u x`, `v y`, `v q`.  A single vertex cannot be
+  suppressed (the third neighbour would lose degree).  Key 8405: for a path spanning the
+  support and vertices `w1` before `w2` with `w1 ~ w2` and subpath length `ℓ >= 2`, the chord
+  closes a cycle of length `ℓ + 1`, which is not accepted.
+  **Consecutive pairs.**  Pair `i` = `(u_i, u_{i+1})`, pair `i+1` = `(u_{i+1}, u_{i+2})`.  If
+  pair `i` yields `B_i : x_{i+1} ⇝ u_{i+2}` (length `2^b - 1`, avoiding `u_i, u_{i+1}`) and pair
+  `i+1` yields `A_{i+1} : u_i ⇝ x_{i+1}` (length `2^a - 1`, avoiding `u_{i+1}, u_{i+2}`), the two
+  share the endpoint `x_{i+1}` and the bridge `u_i u_{i+1} u_{i+2}`; if they are internally
+  disjoint they close a cycle of length `2^a + 2^b`, so `a ≠ b`
+  (`mersenne_pair_distinct`).  If they meet, take the first common vertex `w`: the two cycles
+  through `w` have lengths `ℓ'`, `ℓ''` with `ℓ' + ℓ'' = 2^a + 2^b`, both non-accepted, which is
+  satisfiable.  The other combinations (`A_i` with `A_{i+1}`, `B_i` with `B_{i+1}`, any with the
+  double cycle) do not close a walk from the data.  The constraint system along a stretch is
+  therefore: whenever outcome `B` is followed by outcome `A` with disjoint paths, the exponents
+  differ.  It is satisfiable for every stretch length (e.g. all outcomes `A`, no `B` followed by
+  `A`; or alternating exponents), so it gives no bound on the stretch length.
+  `threeRouteFan`, `threeRouteChain`, `windowAttachmentGap` and the no-`C4` fact constrain
+  routes of length `3` and window attachments; the Mersenne paths have length `2^k - 1 >= 3`
+  and lie anywhere in G, so they add nothing beyond disjointness.
+  **Closure test: negative.**  **Exact surviving pattern** along the stretch: for every
+  consecutive pair a Mersenne-length path around it (`2^k - 1`, `k >= 2`) or a double cycle of
+  length `2^k + 2`; no two consecutive Mersenne paths `B_i`, `A_{i+1}` of equal exponent that are
+  internally disjoint; every chord of the stretch has span `+ 1` non-accepted.
 - **Still open (exact proposition at G).** G's marked neutral equal-length germ `(Q, E)`,
   `E = Q`, of the positive extracted family on the realized package: a subcubic (F5)
   germ, not handed off, whose replacement has G's vertex and edge count, so `[157]`'s
@@ -6287,7 +6381,7 @@ order) are replaced by versions at the handoff's own objects; the global stateme
   `PairObstructionHandoff` results: it remains the open proposition (first separator `h ∈ U`,
   `deg h > δ`, two next vertices in `U`, non-absorbing at `P₀`, escaping envelope).
 
-## G audit: TypeBSublinearOutcome (keys 8300–8313, 2026-09-29)
+## G audit: TypeBSublinearOutcome (keys 8300–8316, 2026-09-29)
 
 Residual: `TypeBSublinearOutcome` (node `[187]`, thm:main (vi)), the negative arm of
 `typeBSublinearDichotomy`; it retains `¬ TypeBSublinearHypotheses data G`
@@ -6340,6 +6434,37 @@ Residual: `TypeBSublinearOutcome` (node `[187]`, thm:main (vi)), the negative ar
     per handoff piece, `#unpaid ≤ 2·#handoff pieces`, `unpaid = ∅ → cover`.
   - 8313 `pieceSizeProfile` (B01): pieces partition R(P₀), every piece has a receiver,
     `#pieces ≤ def⁺(R(P₀))`.
+- **Third pass (8314–8316; `Statements/TypeBSublinearLanding.lean`,
+  `Contracts/TypeB/SublinearLanding.lean`):**
+  - 8314 `bridgePieceMassDichotomy` (H05, corrected bound): a canonical piece has a
+    trace into a centre, or a saturated non-centre receiver, or
+    `|Y| ≤ s·def⁺(Y) + σ(Y)`. The exact constant is `c = 1` on `σ`: the piece is the
+    flat vertices, the non-centre receivers (both paid by 8311 against
+    `s·Σ missingPorts ≤ s·def⁺`) and the centres, and each centre carries at least one
+    unit of `σ`. There is no per-receiver bound `1+L ≤ 4q + cσ`: a saturated receiver
+    with a large basin is not excluded by any ledger fact (the Type A lemma is a test,
+    its failure being exits (4)–(7)); the aggregate form is what holds.
+    Tested against arm A: the third disjunct together with negative charge
+    (`s·def⁺ < |Y| + s·σ`) gives `−σ ≤ s·def⁺ − |Y| < s·σ`, consistent, so it does not
+    refute arm A; it bounds the negative part by `s·σ(Y)`.
+  - 8315 `traceIntoCentreStructure` (H04, arm A): a trace into a centre `c` means `c`
+    is a high receiver (internal degree below the baseline), the trace is a path of the
+    piece with baseline interior, and `c` has two distinct cubic neighbours in the
+    packed windows (`highCentreNormalForm`).
+  - 8316 `traceIntoAbsorbedStructure` (H04, arm B): a trace into the absorbed core
+    lands on a cubic vertex of the piece adjacent to a high grouped centre that lies
+    outside the piece, in the packed windows.
+  - Which landing occurs is fixed by G's vertex order (`traceReceiver?` is the first
+    traceable receiver in `orderedVertices`); it is not decided by any ledger fact.
+- **Key 8256** (`e(R,W)+exc(R)=σ(R)+def⁺(R)`, branch `g-audit-r8rate`) is not copied.
+  At merge it combines with: 8309 (`def⁺(piece) = Σ ports`, with
+  `Σ_pieces def⁺ = def⁺(R(P₀))` from `sum_positiveDeficiency_canonicalPieces`), 8313
+  (`#pieces ≤ def⁺(R(P₀))`), 8312 (`#unpaid ≤ 2·#handoff pieces`, hence
+  `≤ 2·def⁺(R(P₀))`), 8314 (summed over pieces: `|R| ≤ s·def⁺(R)+σ(R)` off the two
+  landing arms, with `def⁺(R) = e(R,W)+exc(R)−σ(R)`), and 8315/8316 (each landing
+  consumes window stubs counted in `e(R,W)`). The stub facts `windowPositionStubs`,
+  `windowAttachmentGap`, `inducedPathAttachment` count the same incidences at the
+  window side.
 - **Status: still open.** Remaining proposition at G: 8302's arms with the numerical
   form now fixed: (A) a flat vertex of a positive-surplus piece whose canonical trace
   lands on a centre, or a non-centre receiver with `s·q ≤ L` (basin of ≥ `s·q` full
@@ -6549,3 +6674,90 @@ Keys 8358-8360 (`pairHandoffFactsRow`, `pairHandoffBalanceRow`; contracts in
 - **Closure tests (all negative, none claimed by structure of G).**
   - Lower bound on `n`: the ledger of the three bounded subtypes carries only `windowOrder ≤ n` (`Node54Order.windowOrder_le_vertexCount`, from `K .maximalPacking`, `K .packingOrderBound`); `K .highSurplusOrder` lives on the strict arm of `[19]` and these arms are its at-or-below complement.  With `13 ≤ n < N₀` and the combined bound the interval `[13, N₀)` remains; numerically (Python) the combined bound holds for all sampled `n ≤ 6.3·10^55` (realized arm), so no closure follows from these inequalities.
   - Stub-deficit identity and cycle spectrum against the rate subtypes: the identity gives `e(R₀,W) = σ(R₀) + def⁺(R₀) − exc(R₀)`; with `13·e(R₀,W) + 3·slack < 3|R₀|` (rate), `e ≤ 15p + σ_W`, `4·def⁺ < |R₀|` up to `T(n)` (`unrealizedBothRates`), and `13·15p < 3|R₀|` (`realizedColdBelow`) the system stays consistent in the linear relaxation; no contradiction is derived.  `realizedColdBelow` and `unrealizedBothRates` remain unbounded-size residuals.
+
+### G audit: Node144aOutcome, second pass: the cubic cover by the canonical port paths (key 8105)
+
+`K .sameTokenSeedCover` (8105, `Graph/PortPathCover.lean`, `Graph/PathChords.lean`), published on the
+three handoff-fails subtypes.  **Lean improvement (not routed by the paper).**
+
+* **Seed = 2δ vertices + two canonical port paths.**  At G's canonical routing each pair seed is
+  `T ∪ P₁ ∪ P₂` with `|T| ≤ 2δ` (the two port supports `{x} ∪ N(x)∖{c}`) and `P_i` the support of
+  the canonical path of port `i`: a triangular port contributes its return `R_p`, a **shortest**
+  `x`–`c` path of `G − cx` (`FinitePathSelection.selectOfReachable_length_le`); an open port
+  contributes its suppression path `Q_p`, a simple `a_p`–`b_p` path of `G − x` with `|Q_p| + 1`
+  accepted.
+* **Chord facts of each path** (`PathChords`).  Every decomposition `w = p₁ ++ p₂ ++ p₃` with an
+  edge `uv` between the ends of `p₂` (`|p₂| ≥ 2`): the cycle `p₂ + uv` has length `|p₂| + 1`, which
+  is not accepted (G has no accepted cycle); a triangular `R_p` has no chord at all (`p₁ ++ uv ++ p₃`
+  is a shorter path in `G − cx`, so `R_p` is an induced path of `G − cx`); every interior vertex of
+  degree `3` has exactly one neighbour off the path's two edges at it (its stub).
+* **Cubic cover, whole-graph arm.**  If every degree-`3` vertex lies in both pair seeds
+  (`K .sameTokenU2FreeWhole`), the degree-`3` vertices of G lie in `T ∪ P₁ ∪ P₂` and in
+  `T' ∪ Q₁ ∪ Q₂`, and from `K .hubCountBound` (`5|H| + σ ≤ 2n`) each cover has
+  `3n ≤ 5(|T| + |P₁| + |P₂|)`: the two paths of one pair carry at least `3n/5 − 2δ` vertices.
+
+**Surviving chord pattern (nothing above closes the arm).**  Each interior cubic vertex of a port
+path has exactly one stub; the stub goes to (a) the other path of the pair, (b) a hub (a vertex of
+degree `≥ 4`; hubs are pairwise nonadjacent, so every neighbour of a hub is cubic and lies in the
+seeds), or (c) the same path, in which case it is a chord of unaccepted span, and never for a
+triangular `R_p`.  For an open `Q_p` (length `2^j − 1`, endpoints joined through the cubic `x`) a
+same-path chord of span `s` also has the shortcut `a_p`–`b_p` path of length `2^j − 1 − s + 1`,
+whose cycle through `x` must not be accepted; this second constraint is not in Lean (only the
+span-plus-one cycle is).  The pigeonhole on span lengths gives a chord of span `2^k − 1` only
+under an unbounded supply of same-path chords, and for a triangular pair there are none, so it
+does not fire; a contradiction would need the dyadic constraints between different paths (cross
+chords), which reduce to the open cubic case of the conjecture and are not derived here.
+
+### G audit: Node144aOutcome, third pass (WIP, stopped at the coordinator's request): rungs, hubs, closing vertices (key 8106)
+
+**Status: work in progress.  [144a]'s entry test is trivially true only because realizations
+were G's own readings; the g-pieces-constructed agent redefines realizations as pieces built from
+G, which may change [144a]'s entry.  The generic lemmas below stay valid; the key 8106 wiring
+depends on the port-path cover (key 8105) and may need to be re-read against the new entry.**
+
+`Graph/PathChords.lean` (vocabulary-free, generic in any graph `H`):
+* `ear_cycle`: two paths `p : u ⇝ v`, `q : v ⇝ u` meeting only at their ends, not both single
+  edges, close a cycle of length `|p| + |q|`.
+* `HubCycles` / `hubCycles_of_avoids`: a vertex `h` off a path adjacent to both ends of a segment
+  `p₂` (`|p₂| ≥ 1`) closes a cycle of length `|p₂| + 2`; not accepted.
+* `ClosedCycles` / `closedCycles_of_avoids`: a vertex `x` off the path adjacent to both ends `a`,
+  `b`: the whole path closes a cycle of length `|w| + 2` and every chord's shortcut path one of
+  length `|p₁| + |p₃| + 3` (the open-port second constraint); not accepted.
+* `RungCycles` / `rungCycles_of_avoids`: two vertex-disjoint segments `p₂` of `w₁` and `q₂` of `w₂`
+  joined by two edges, parallel (`v c`, `d u`) or crossed (`v d`, `c u`), close a cycle of length
+  `|p₂| + |q₂| + 2`; not accepted.  With positions `i, i'` on `w₁` and `j, j'` on `w₂` this is
+  `|i − i'| + |j − j'| + 2 ∉ {4, 8, 16, …}`; for monotone rungs the `L¹` distances add.
+* `ShareEdge` / `shareEdge_of_paths`: at a degree-`3` vertex interior to two paths the two path
+  edges of one and the two of the other share an edge (four distinct neighbours cannot fit in
+  three).
+
+`K .sameTokenPathInteractions` (8106, `PortWalk`, `SameTokenPathInteractionsStatement`): the four
+canonical port walks of the two pair seeds carry `PortWalk` (all the above per-walk facts), the six
+`RungCycles` pairs, the four `ShareEdge` pairs, and, if every degree-`3` vertex lies in both pair
+seeds, every neighbour of a hub lies in both seeds.
+
+**Computational probe (not a proof, not used in Lean).**  A search over "two paths of `N` vertices
+with a perfect matching of rungs between them, no cycle of length `2^k`, `k ≥ 2`" found no
+solution for any `N` from `2` to `14`.  This is evidence that the pure two-path rung pattern is
+already unsatisfiable, but hubs, same-path chords and the terminal vertices `T` are not in that
+model, and it does not derive a contradiction at G.
+
+**Not derived.**  A forced number of rungs: stubs go to rungs, hubs, same-path chords and `T`;
+hub edges number `3|H| + σ` with `|H| ≤ σ` and `σ` bounded above only by `2n − 5|H|`, so rungs
+are forced only when `σ` is small (roughly `σ < 3n/20`).  The arm stays open.
+
+### G audit: Route8RateFailsOutcome, sixth pass: windows joined through the remainder (keys 8266-8267); rebased on d85731a
+
+- **Rebase.** Merged `g-repair-base` (d85731a; `Route8JointBalanceOutcome` removed there, conflict resolved by taking that removal). `nearCubicResidualBKeys` now lists the sixteen keys this audit publishes on the failed-rate arm (the freshness hypotheses of the callers of `nearCubicRouteEightEntry`/`nearCubicRateFailedExit` were the missing piece). Checked against the refreshed validation build: `NearCubic/Spine.lean`, `NearCubic/ColdPass.lean`, `NearCubic/Survivor/Unrealized.lean`, `RouteEight/Residual.lean`, `RouteEight/Local.lean`, `Residuals.lean`, `Residuals/Route8RateFailsOutcome.lean` and every library, contract and row file of the audit pass.
+- **Built.** `LocalRigidity.self_cycle_path` (one placed path plus one outside path closes a cycle of length `dist + |r| + 2`); `K .route8WindowSelfRPathGap` (8266): a remainder path `r : a ~> b` with `p i - a`, `b - p i'` and `i != i' or a != b` has `dist(i,i') + |r| + 2` not a power of two (at `|r| = 0` the attachment rule; for longer paths new); `K .route8PieceBoundary` (8267): with a window present every canonical piece is a nonempty proper set, so `DensityExcess` gives `2 <= |dX|` for each piece and `2 * #pieces <= sum |dX| = |dR|`.
+- **Pairs of windows through R.** Menger (edge version) is not in the library and is not needed for the vertex-disjointness that `K .route8WindowRPathGap` (8264) asks for: two different canonical pieces of `G[R]` are vertex-disjoint, so for windows `P != Q` and pieces `X != Y` that both touch `P` and `Q`, paths inside `X` and `Y` between the stubs satisfy every hypothesis of 8264 and the cycle `P - X - Q - Y - P` has length `dist(i,i') + dist(j,j') + |r_X| + |r_Y| + 4`, not a power of two. If one piece meets a window twice, 8266 applies to it. Path surgery at first and last common vertex (`g-audit-182`, `Graph.PathUncrossing`) would be needed only for two paths in the same piece, which this route avoids; it is not imported.
+- **Counting.** Let `B` be the bipartite window-piece graph (`P ~ X` when a stub joins them). Every configuration `P - X - Q - Y` with two distinct windows and two distinct pieces is a 4-cycle of `B` and is constrained by 8264; a piece meeting one window twice is constrained by 8266. Thin arm: `p` windows, `15p + sigma_W` stubs (8262), all but `X < sigma_W + (F-1)T` windows send every stub to `R` (8261), `m` pieces with `2m <= |dR| <= 15p + sigma_W` (8267). The pigeonhole does not force a 4-cycle of `B`: a bipartite graph with `p` windows of degree `15` and `m >= 1` pieces of degree `>= 2` and no 4-cycle exists for large `p` (girth-6 incidence structures), and the ledger bounds no window-piece incidence multiplicity from below. So 8264 and 8266 alone give no contradiction; the constraints that remain are on cycles of `B` of length `2s`, `s >= 3` (`s` windows alternating with `s` pieces, length `sum of window gaps + sum of piece path lengths + 2s`), which the R-path bound `RemainderPathBounds` (bags of at most 6142 vertices, so each piece path has length below 6142 between non-hub vertices) makes a finite family of residues, not built as a Lean fact. Recorded as inventory: a feasible assignment of path lengths to these constraints is not a statement about G.
+- **Exact remaining thin-arm proposition.** Thin remainder; net cap; join; `X + T < sigma_W + F*T`; `n < N0'`; `K .route8WindowRPathGap` and `K .route8WindowSelfRPathGap` for every pair of windows and every window; and the `2s`-cycle constraints for `s >= 3`. Root type: `Route8RateFailsOutcome` has 111 common facts.
+
+### G audit: Route8RateFailsOutcome, seventh pass: the cycle rank of B, achievable lengths, collisions (keys 8268-8269)
+
+- **Cycle rank (`K .route8WindowPieceRank`, 8268).** `B` is the stub multigraph: `p` window vertices, `m` piece vertices, one edge per stub (`e(R,W)` of them). With a window present `2m <= e(R,W)` (8267) and the join gives `e(R,W) + X = beta*p + sigma_W` (with `beta = 15`). Lean: `beta*p + sigma_W <= 2*(e(R,W) - (p + m)) + 2p + X`, i.e. the cycle rank `e - (p+m)` (at least the number of independent cycles of `B`) is at least `(beta-2)p/2 + (sigma_W - X)/2 = 6.5p + (sigma_W - X)/2`, linear in `p` since `X < sigma_W + (F-1)T` (8261).
+- **Achievable lengths (`K .route8AchievableLengths`, 8269).** `pieceLengthSet X a b` = lengths of paths from `a` to `b` inside the piece `X`. Proved: nonempty for `a, b` in a canonical piece (the piece is connected), each element `< |X|`. Sumsets: for windows `P != Q`, pieces `X != Y` (vertex-disjoint components, no path surgery needed), stubs `p i - a1`, `b1 - q j`, `p i' - a2`, `b2 - q j'`, every `dist(i,i') + dist(j,j') + l1 + l2 + 4` with `l1` in the set of `X` and `l2` in the set of `Y` is not a power of two; for one window and one piece every `dist(i,i') + l + 2` is not a power of two. This is the full `s = 1, 2` cycle family of `B`.
+- **Collisions.** No collision is forced. (i) The `s <= 2` system is separable: each constraint involves the path lengths of at most two pieces and the stub gaps `dist(i,i') <= order - 1 = 12`, and excludes at most `~ 13` values (`4, 8, ..., 4096` are the powers of two below `2*6142 + 2*12 + 4`, the largest `s = 2` length; `RemainderPathBounds`: bags of at most 6142 non-hub vertices) out of a range of about 12000; a Lean-checked statement about G cannot be drawn from that (a feasible assignment is not G's shape), but the ledger contains no equality or lower bound tying the length sets of two pieces or the stub choices of two cycles, which is what a forced collision needs. (ii) Sumsets of length sets meet a power of two only if they contain a whole interval around it; the flexibility available is at most `12` per window (stub position, `windowPositionStubs`: 15 stubs at fixed positions, interior positions one stub, ends two) plus the difference of two path lengths in a piece (nonzero only when the piece contains a cycle), against gaps `2^{k+1} - 2^k` that exceed every such interval once `2^k > 12s + 6142s`. (iii) Two B-cycles sharing a window differ by stub-gap amounts `<= 12`, giving differences of controlled size but no residue forced modulo a power of two; the family closed under symmetric difference (theta graphs `a, b, c` with `a+b, a+c, b+c` all avoiding `2^k`) is the counterexample hypothesis itself restricted to the cycle space of `B`, and its satisfiability is the Erdos-Gyarfas question; no local step reduces it. The general cycle of `B` with `s >= 3` windows is not built in Lean (the `2s`-cycle lemma generalising `cross_cycle_paths`).
+- **Exact surviving pattern.** Every cycle of `B` (any `s`, any stub choice, any path in each piece) has length outside `{2^k : k >= 2}`; for `s <= 2` this is 8266/8264/8269. Together with the thin remainder, the net cap, the join, `X + T < sigma_W + F*T` and `n < N0'`. Root type: `Route8RateFailsOutcome` has 113 common facts. Checked: `NearCubic/Spine.lean`, `Residuals.lean`, `Residuals/Route8RateFailsOutcome.lean` and all new library, contract and row files.
+

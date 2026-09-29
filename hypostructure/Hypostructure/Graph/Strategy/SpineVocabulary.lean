@@ -11,6 +11,7 @@ import Hypostructure.Graph.Statements.TypeBLanes
 import Hypostructure.Graph.Statements.TypeBSublinearCanonical
 import Hypostructure.Graph.Statements.TypeBSublinearGaps
 import Hypostructure.Graph.Statements.TypeBSublinearFlow
+import Hypostructure.Graph.Statements.TypeBSublinearLanding
 import Hypostructure.Graph.Statements.SurplusPairRouting
 import Hypostructure.Graph.Statements.SurplusPairCode
 import Hypostructure.Graph.Statements.ColdGerm
@@ -23,6 +24,7 @@ import Hypostructure.Graph.Statements.Route8RateFailsFlow
 import Hypostructure.Graph.Statements.Route8RateFailsAccounting
 import Hypostructure.Graph.Statements.Route8RateFailsRoute
 import Hypostructure.Graph.Statements.Route8WindowRPath
+import Hypostructure.Graph.Statements.Route8WindowPieceLengths
 import Hypostructure.Graph.Statements.SparseExitResidual
 import Hypostructure.Graph.Statements.SparseExitReadings
 import Hypostructure.Graph.Statements.SwitchForcedPaths
@@ -1745,6 +1747,18 @@ inductive Key where
   switched graph is a counterexample of G's size (same vertices, same edge
   count, the baseline)**. -/
   | typeAExitSevenSwitch
+  /-- G audit of `TypeBSublinearOutcome` (gap H05, corrected bound): **a canonical
+  piece either has a trace into a centre, a saturated non-centre receiver, or
+  `|Y| ≤ s·def⁺(Y) + σ(Y)`** (the surplus costs `c = 1` per unit). -/
+  | bridgePieceMassDichotomy
+  /-- G audit of `TypeBSublinearOutcome` (gap H04, arm A): **what a trace into a
+  centre forces**: the centre is a high receiver with two cubic window
+  neighbours. -/
+  | traceIntoCentreStructure
+  /-- G audit of `TypeBSublinearOutcome` (gap H04, arm B): **what a trace into the
+  absorbed core forces**: a cubic vertex adjacent to a high grouped centre lying in
+  the packed windows. -/
+  | traceIntoAbsorbedStructure
   -- F5 keys
   /-- Node `[175]`, no arm: every selected corridor meets a high-degree
   vertex. -/
@@ -1841,6 +1855,14 @@ inductive Key where
   | route8WindowRPathGap
   /-- G audit `Route8RateFailsOutcome` (idx 8265): the incidences from the windows to vertices above the baseline number at most `(δ+1)·σ(G)`. -/
   | route8HubStubs
+  /-- G audit `Route8RateFailsOutcome` (idx 8266): a remainder path joining two stubs of one window closes a cycle of length `|i−i'|+|r|+2` that is not a power of two. -/
+  | route8WindowSelfRPathGap
+  /-- G audit `Route8RateFailsOutcome` (idx 8267): every canonical piece of the remainder has at least two boundary edges (bridgeless) and `2·#pieces ≤ |∂R|`. -/
+  | route8PieceBoundary
+  /-- G audit `Route8RateFailsOutcome` (idx 8268): cycle rank of the window-piece stub multigraph: `β·p + σ_W ≤ 2(e(R,W) − (p + #pieces)) + 2p + X`. -/
+  | route8WindowPieceRank
+  /-- G audit `Route8RateFailsOutcome` (idx 8269): the achievable path lengths of a piece between two stubs are nonempty and bounded by the piece size, and every element of the cycle-length sumsets of `B` (one window one piece, two windows two pieces) avoids the powers of two. -/
+  | route8AchievableLengths
   /-- Node `[24]` on `[146]` no, size test yes: `N₀ ≤ n` at the `[24]` cutoff. -/
   | boundedOrderLarge
   /-- Node `[24]` on `[146]` no, size test no: G has fewer than `N₀` vertices (exact complement). -/
@@ -1887,6 +1909,14 @@ inductive Key where
   | coldMarkedGermUncompressed
   /-- Node `[157]`, F08 at the marked germ: for every path of G of length at least 2 spanning the marked germ's support, the excised object (interior deleted, ends joined) misses the baseline or G has a cycle of length `L + q` with `L` accepted and `L + q` not (`q = |p| - 1`). -/
   | coldMarkedGermStretchExcision
+  /-- Node `[157]`, the incidence structure of the marked germ's stretch: for every path of G spanning its support, every interior vertex has degree exactly `t` and exactly `t - 2` neighbours besides its two path neighbours (a pendant or a chord). -/
+  | coldMarkedGermStretchIncidence
+  /-- Node `[157]`, F08 at every adjacent interior pair of the marked germ's stretch: suppressing the pair (delete `u v`, add `pl x` and `y q`) preserves every degree and is smaller by 2, so G has a cycle of length `Lk + j` with `Lk` accepted, `j` in `{1, 2}`, `Lk + j` not accepted; or a triangle/C4 obstruction holds. -/
+  | coldMarkedGermPairSuppression
+  /-- Node `[157]`, the Mersenne paths of every suppressed adjacent pair of the marked germ's stretch: an accepted `Lk` and a path `pl ⇝ x` (or `y ⇝ q`) of length `Lk - 1` avoiding the pair, or a double cycle of length `Lk + 2` through the four edges at the pair; or a triangle/C4 obstruction. -/
+  | coldMarkedGermPairMersenne
+  /-- Node `[157]`, the chords of the marked germ's stretch: a chord whose subpath has length at least 2 closes a cycle of length span + 1, which is not accepted. -/
+  | coldMarkedGermChordSpan
   -- [20a] enrichment keys (6606-)
   /-- Node `[20a]`: **Edge–surplus identity**: `2m = δ·n + σ`. -/
   | edgeSurplusIdentity
@@ -2106,6 +2136,10 @@ inductive Key where
   | stubDeficitIdentity
   /-- Terminal `[54]`: **the cycle spectrum of `R₀`**: `G[R₀]` and every induced subgraph of it carry no cycle of an accepted length. -/
   | remainderCycleSpectrum
+  /-- Node `[144a]` (G audit S144a, Lean improvement): **the pair seeds are covered by their canonical port paths**: each pair seed `T(p) ∪ Γ(p) ∪ T(p') ∪ Γ(p')` is at most `2δ` vertices and two canonical port paths (a triangular port's shortest return `R_p` in `G − cx`, an induced path; an open port's suppression path `Q_p`), each with its chord facts (every chord has an unaccepted span, every interior cubic vertex has exactly one off-path edge); if every degree-`3` vertex lies in both pair seeds, the degree-`3` vertices are covered by at most four such paths and `4δ` vertices, and `3n ≤ 5(|T| + |P₁| + |P₂|)` (from `5|H| + σ ≤ 2n`). -/
+  | sameTokenSeedCover
+  /-- Node `[144a]` (G audit S144a, Lean improvement): **the interactions of the canonical port paths**: the pair seeds are `T ∪ supp w₁ ∪ supp w₂` and `T' ∪ supp z₁ ∪ supp z₂` with canonical port walks (simple; every chord, hub and closing cycle length unaccepted; one stub per interior cubic vertex); two vertex-disjoint segments of two of the walks joined by two edges (a rung pair, parallel or crossed) close a cycle of length `|p₂| + |q₂| + 2`, which is not accepted (all six pairs of walks); at every cubic vertex interior to a `P`-walk and a `Q`-walk the two path edges of one and the two of the other share an edge; if every degree-`3` vertex lies in both pair seeds, every neighbour of a hub lies in both. -/
+  | sameTokenPathInteractions
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2910,6 +2944,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeAExitFourSwitchCycleStatement data.toParameters object
   | .typeAExitSevenSwitch, object =>
       TypeAExitSevenSwitchStatement data.toParameters object
+  | .bridgePieceMassDichotomy, object =>
+      BridgePieceMassDichotomyStatement data.toParameters object
+  | .traceIntoCentreStructure, object =>
+      TraceIntoCentreStructureStatement data.toParameters object
+  | .traceIntoAbsorbedStructure, object =>
+      TraceIntoAbsorbedStructureStatement data.toParameters object
   -- F5 keys
   | .coldNoPositiveGerm, object =>
       ColdNoPositiveGermStatement data.toParameters object
@@ -2998,6 +3038,14 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8WindowRPathGapStatement data.toParameters object
   | .route8HubStubs, object =>
       Route8HubStubsStatement data.toParameters object
+  | .route8WindowSelfRPathGap, object =>
+      Route8WindowSelfRPathGapStatement data.toParameters object
+  | .route8PieceBoundary, object =>
+      Route8PieceBoundaryStatement data.toParameters object
+  | .route8WindowPieceRank, object =>
+      Route8WindowPieceRankStatement data.toParameters object
+  | .route8AchievableLengths, object =>
+      Route8AchievableLengthsStatement data.toParameters object
   | .boundedOrderLarge, object =>
       BoundedOrderLargeStatement data.toParameters object
   | .boundedOrderSmall, object =>
@@ -3220,6 +3268,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       StubDeficitIdentityStatement data.toParameters object
   | .remainderCycleSpectrum, object =>
       RemainderCycleSpectrumStatement data.toParameters object
+  | .sameTokenSeedCover, object =>
+      SameTokenSeedCoverStatement data.toParameters object
+  | .sameTokenPathInteractions, object =>
+      SameTokenPathInteractionsStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3255,6 +3307,14 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       ColdMarkedGermUncompressedStatement data.toParameters object
   | .coldMarkedGermStretchExcision, object =>
       ColdMarkedGermStretchExcisionStatement data.toParameters object
+  | .coldMarkedGermStretchIncidence, object =>
+      ColdMarkedGermStretchIncidenceStatement data.toParameters object
+  | .coldMarkedGermPairSuppression, object =>
+      ColdMarkedGermPairSuppressionStatement data.toParameters object
+  | .coldMarkedGermPairMersenne, object =>
+      ColdMarkedGermPairMersenneStatement data.toParameters object
+  | .coldMarkedGermChordSpan, object =>
+      ColdMarkedGermChordSpanStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -3602,6 +3662,9 @@ def label : Key → String
   -- R3b keys
   | .typeAExitFourSwitchCycle => "typeAExitFourSwitchCycle"
   | .typeAExitSevenSwitch => "typeAExitSevenSwitch"
+  | .bridgePieceMassDichotomy => "bridgePieceMassDichotomy"
+  | .traceIntoCentreStructure => "traceIntoCentreStructure"
+  | .traceIntoAbsorbedStructure => "traceIntoAbsorbedStructure"
   -- F5 keys
   | .coldNoPositiveGerm => "coldNoPositiveGerm"
   -- SD keys (final pass)
@@ -3648,6 +3711,10 @@ def label : Key → String
   | .route8ThinSmall => "route8ThinSmall"
   | .route8WindowRPathGap => "route8WindowRPathGap"
   | .route8HubStubs => "route8HubStubs"
+  | .route8WindowSelfRPathGap => "route8WindowSelfRPathGap"
+  | .route8PieceBoundary => "route8PieceBoundary"
+  | .route8WindowPieceRank => "route8WindowPieceRank"
+  | .route8AchievableLengths => "route8AchievableLengths"
   | .boundedOrderLarge => "boundedOrderLarge"
   | .boundedOrderSmall => "boundedOrderSmall"
   -- [20a] enrichment keys
@@ -3760,6 +3827,8 @@ def label : Key → String
   | .pairHandoffFibreAtG => "pairHandoffFibreAtG"
   | .stubDeficitIdentity => "stubDeficitIdentity"
   | .remainderCycleSpectrum => "remainderCycleSpectrum"
+  | .sameTokenSeedCover => "sameTokenSeedCover"
+  | .sameTokenPathInteractions => "sameTokenPathInteractions"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3778,6 +3847,10 @@ def label : Key → String
   | .coldSelectedFamilyEmpty => "coldSelectedFamilyEmpty"
   | .coldMarkedGermUncompressed => "coldMarkedGermUncompressed"
   | .coldMarkedGermStretchExcision => "coldMarkedGermStretchExcision"
+  | .coldMarkedGermStretchIncidence => "coldMarkedGermStretchIncidence"
+  | .coldMarkedGermPairSuppression => "coldMarkedGermPairSuppression"
+  | .coldMarkedGermPairMersenne => "coldMarkedGermPairMersenne"
+  | .coldMarkedGermChordSpan => "coldMarkedGermChordSpan"
 
 /-! ### Label pins
 
@@ -4143,6 +4216,9 @@ example : label .coverFlowValue = "coverFlowValue" := rfl
 example : label .pieceSizeProfile = "pieceSizeProfile" := rfl
 example : label .typeAExitFourSwitchCycle = "typeAExitFourSwitchCycle" := rfl
 example : label .typeAExitSevenSwitch = "typeAExitSevenSwitch" := rfl
+example : label .bridgePieceMassDichotomy = "bridgePieceMassDichotomy" := rfl
+example : label .traceIntoCentreStructure = "traceIntoCentreStructure" := rfl
+example : label .traceIntoAbsorbedStructure = "traceIntoAbsorbedStructure" := rfl
 -- F5 keys
 example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
 -- SD keys (final pass)
@@ -4188,6 +4264,10 @@ example : label .route8WindowStub = "route8WindowStub" := rfl
 example : label .route8ThinSmall = "route8ThinSmall" := rfl
 example : label .route8WindowRPathGap = "route8WindowRPathGap" := rfl
 example : label .route8HubStubs = "route8HubStubs" := rfl
+example : label .route8WindowSelfRPathGap = "route8WindowSelfRPathGap" := rfl
+example : label .route8PieceBoundary = "route8PieceBoundary" := rfl
+example : label .route8WindowPieceRank = "route8WindowPieceRank" := rfl
+example : label .route8AchievableLengths = "route8AchievableLengths" := rfl
 example : label .boundedOrderLarge = "boundedOrderLarge" := rfl
 example : label .boundedOrderSmall = "boundedOrderSmall" := rfl
 example : label .edgeSurplusIdentity = "edgeSurplusIdentity" := rfl
@@ -4295,6 +4375,8 @@ example : label .pairHandoffHubBalance = "pairHandoffHubBalance" := rfl
 example : label .pairHandoffFibreAtG = "pairHandoffFibreAtG" := rfl
 example : label .stubDeficitIdentity = "stubDeficitIdentity" := rfl
 example : label .remainderCycleSpectrum = "remainderCycleSpectrum" := rfl
+example : label .sameTokenSeedCover = "sameTokenSeedCover" := rfl
+example : label .sameTokenPathInteractions = "sameTokenPathInteractions" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4313,6 +4395,10 @@ example : label .coldAbsorbedNeutralConfiguration =
 example : label .coldSelectedFamilyEmpty = "coldSelectedFamilyEmpty" := rfl
 example : label .coldMarkedGermUncompressed = "coldMarkedGermUncompressed" := rfl
 example : label .coldMarkedGermStretchExcision = "coldMarkedGermStretchExcision" := rfl
+example : label .coldMarkedGermStretchIncidence = "coldMarkedGermStretchIncidence" := rfl
+example : label .coldMarkedGermPairSuppression = "coldMarkedGermPairSuppression" := rfl
+example : label .coldMarkedGermPairMersenne = "coldMarkedGermPairMersenne" := rfl
+example : label .coldMarkedGermChordSpan = "coldMarkedGermChordSpan" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -4669,6 +4755,9 @@ def idx : Key → Nat
   -- R3b keys
   | .typeAExitFourSwitchCycle => 7960
   | .typeAExitSevenSwitch => 7961
+  | .bridgePieceMassDichotomy => 8314
+  | .traceIntoCentreStructure => 8315
+  | .traceIntoAbsorbedStructure => 8316
   -- F5 keys
   | .coldNoPositiveGerm => 1800
   -- SD keys (final pass)
@@ -4715,6 +4804,10 @@ def idx : Key → Nat
   | .route8ThinSmall => 8263
   | .route8WindowRPathGap => 8264
   | .route8HubStubs => 8265
+  | .route8WindowSelfRPathGap => 8266
+  | .route8PieceBoundary => 8267
+  | .route8WindowPieceRank => 8268
+  | .route8AchievableLengths => 8269
   | .boundedOrderLarge => 6604
   | .boundedOrderSmall => 6605
   -- [20a] enrichment keys
@@ -4827,6 +4920,8 @@ def idx : Key → Nat
   | .pairHandoffFibreAtG => 8360
   | .stubDeficitIdentity => 8550
   | .remainderCycleSpectrum => 8551
+  | .sameTokenSeedCover => 8105
+  | .sameTokenPathInteractions => 8106
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4845,6 +4940,10 @@ def idx : Key → Nat
   | .coldSelectedFamilyEmpty => 2701
   | .coldMarkedGermUncompressed => 8400
   | .coldMarkedGermStretchExcision => 8401
+  | .coldMarkedGermStretchIncidence => 8402
+  | .coldMarkedGermPairSuppression => 8403
+  | .coldMarkedGermPairMersenne => 8404
+  | .coldMarkedGermChordSpan => 8405
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -5190,6 +5289,9 @@ def ofIdx : Nat → Key
   -- R3b keys
   | 7960 => .typeAExitFourSwitchCycle
   | 7961 => .typeAExitSevenSwitch
+  | 8314 => .bridgePieceMassDichotomy
+  | 8315 => .traceIntoCentreStructure
+  | 8316 => .traceIntoAbsorbedStructure
   -- F5 keys
   | 1800 => .coldNoPositiveGerm
   -- SD keys (final pass)
@@ -5236,6 +5338,10 @@ def ofIdx : Nat → Key
   | 8263 => .route8ThinSmall
   | 8264 => .route8WindowRPathGap
   | 8265 => .route8HubStubs
+  | 8266 => .route8WindowSelfRPathGap
+  | 8267 => .route8PieceBoundary
+  | 8268 => .route8WindowPieceRank
+  | 8269 => .route8AchievableLengths
   | 6604 => .boundedOrderLarge
   | 6605 => .boundedOrderSmall
   -- [20a] enrichment keys
@@ -5348,6 +5454,8 @@ def ofIdx : Nat → Key
   | 8360 => .pairHandoffFibreAtG
   | 8550 => .stubDeficitIdentity
   | 8551 => .remainderCycleSpectrum
+  | 8105 => .sameTokenSeedCover
+  | 8106 => .sameTokenPathInteractions
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -5366,6 +5474,10 @@ def ofIdx : Nat → Key
   | 2701 => .coldSelectedFamilyEmpty
   | 8400 => .coldMarkedGermUncompressed
   | 8401 => .coldMarkedGermStretchExcision
+  | 8402 => .coldMarkedGermStretchIncidence
+  | 8403 => .coldMarkedGermPairSuppression
+  | 8404 => .coldMarkedGermPairMersenne
+  | 8405 => .coldMarkedGermChordSpan
   | _ => .selection
 
 set_option maxRecDepth 8192 in
@@ -6176,6 +6288,12 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFourSwitchCycle") 7960
   | .typeAExitSevenSwitch =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSevenSwitch") 7961
+  | .bridgePieceMassDichotomy =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "bridgePieceMassDichotomy") 8314
+  | .traceIntoCentreStructure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "traceIntoCentreStructure") 8315
+  | .traceIntoAbsorbedStructure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "traceIntoAbsorbedStructure") 8316
   -- F5 keys
   | .coldNoPositiveGerm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldNoPositiveGerm") 1800
@@ -6264,6 +6382,14 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowRPathGap") 8264
   | .route8HubStubs =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8HubStubs") 8265
+  | .route8WindowSelfRPathGap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowSelfRPathGap") 8266
+  | .route8PieceBoundary =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8PieceBoundary") 8267
+  | .route8WindowPieceRank =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowPieceRank") 8268
+  | .route8AchievableLengths =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8AchievableLengths") 8269
   | .boundedOrderLarge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "boundedOrderLarge") 6604
   | .boundedOrderSmall =>
@@ -6483,6 +6609,10 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "stubDeficitIdentity") 8550
   | .remainderCycleSpectrum =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "remainderCycleSpectrum") 8551
+  | .sameTokenSeedCover =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenSeedCover") 8105
+  | .sameTokenPathInteractions =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenPathInteractions") 8106
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000
@@ -6519,6 +6649,14 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermUncompressed") 8400
   | .coldMarkedGermStretchExcision =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermStretchExcision") 8401
+  | .coldMarkedGermStretchIncidence =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermStretchIncidence") 8402
+  | .coldMarkedGermPairSuppression =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermPairSuppression") 8403
+  | .coldMarkedGermPairMersenne =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermPairMersenne") 8404
+  | .coldMarkedGermChordSpan =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermChordSpan") 8405
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather
