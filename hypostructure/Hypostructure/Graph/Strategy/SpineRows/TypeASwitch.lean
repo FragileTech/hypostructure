@@ -57,6 +57,8 @@ counterexample of G's size. -/
           inputs.current.object
           (inputs.get (K .selection)).down.1
           inputs.current.baseline
+          (fun smaller lt base =>
+            (inputs.get (K .selection)).down.2.refinedMinimal smaller lt base)
           (inputs.get (K .typeAExitSevenEnvelope)).down⟩ .nil)
     0 0
 

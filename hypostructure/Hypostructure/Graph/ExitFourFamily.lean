@@ -468,6 +468,20 @@ theorem Q5TargetDefect.false_of_avoids {L : Nat → Prop}
 a Q4 datum's switched graph carries an accepted cycle, the switch is a proper
 double-edge switch, and the cycle runs through an exchanged edge
 (`Separation.switched_forced_cycle`). -/
+theorem Q4TargetDefect.forced_paths {L : Nat → Prop}
+    {support : Finset object.Vertex} {threshold : Nat}
+    {receiver load : object.Vertex}
+    (avoids : ¬ HasCycleWithLength L object)
+    (datum : Q4TargetDefect (HasCycleWithLength L) support threshold receiver
+      load) :
+    datum.separation.SwitchValid ∧ datum.separation.ForcedAtSwitch L := by
+  have accepted : HasCycleWithLength L datum.separation.switched := by
+    by_contra none
+    exact datum.targetDefect (iff_of_false none avoids)
+  exact datum.separation.switched_forced_paths avoids accepted
+
+/-- Q4 at G: the switched graph's accepted cycle runs through an exchanged
+edge (the unaccounted form of `Q4TargetDefect.forced_paths`). -/
 theorem Q4TargetDefect.forced_cycle {L : Nat → Prop}
     {support : Finset object.Vertex} {threshold : Nat}
     {receiver load : object.Vertex}

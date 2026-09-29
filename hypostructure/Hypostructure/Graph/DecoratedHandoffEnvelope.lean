@@ -629,6 +629,260 @@ theorem doubleSwitch_ncard_neighborSet {V : Type*} [Finite V] (G : SimpleGraph V
   simp only [va, va', vb, vb', false_and, and_false, or_false, false_or, not_false_eq_true,
     and_true, not_or]
 
+/-! ## The forced structure of an accepted cycle of a double-edge switch -/
+
+namespace DoubleSwitch
+
+open SimpleGraph
+
+variable {V : Type*} {G : SimpleGraph V}
+
+/-- A graph with no accepted cycle (the target-avoidance of G, read on its
+simple graph). -/
+def NoAcceptedCycle (G : SimpleGraph V) (L : ℕ → Prop) : Prop :=
+  ∀ (v : V) (c : G.Walk v v), c.IsCycle → ¬ L c.length
+
+/-- Split a walk at one of its edges. -/
+theorem split_at_edge {K : SimpleGraph V} {u v x y : V} (p : K.Walk u v) (h : K.Adj x y)
+    (mem : s(x, y) ∈ p.edges) :
+    (∃ (r₁ : K.Walk u x) (r₂ : K.Walk y v), p = r₁.append (Walk.cons h r₂)) ∨
+      (∃ (r₁ : K.Walk u y) (r₂ : K.Walk x v), p = r₁.append (Walk.cons h.symm r₂)) := by
+  rcases (Walk.isSubwalk_toWalk_iff_mem_edges h).mpr mem with ⟨r₁, r₂, eq⟩ | ⟨r₁, r₂, eq⟩
+  · exact Or.inl ⟨r₁, r₂, by rw [eq]; exact (Walk.append_assoc _ _ _).symm⟩
+  · exact Or.inr ⟨r₁, r₂, by rw [eq]; exact (Walk.append_assoc _ _ _).symm⟩
+
+/-- **Forced structure of a proper double-edge switch.**  -/
+theorem doubleSwitch_forced {L : ℕ → Prop} {a a' b b' : V}
+    (S : Set (Sym2 V)) (hS : S = {s(a, a'), s(b, b')})
+    (H : SimpleGraph V)
+    (hH : H = G.deleteEdges S ⊔ (SimpleGraph.edge a b' ⊔ SimpleGraph.edge b a'))
+    (hA : G.Adj a a') (hB : G.Adj b b') (hab : a ≠ b) (hab' : a ≠ b')
+    (ha'b : a' ≠ b) (ha'b' : a' ≠ b') (na : ¬ G.Adj a b') (nb : ¬ G.Adj b a')
+    (noG : NoAcceptedCycle G L)
+    {w : H.Walk a b'}
+    (wPath : w.IsPath) (fresh : s(a, b') ∉ w.edges) (accepted : L (w.length + 1)) :
+    (∃ P : (G.deleteEdges S).Walk a b', P.IsPath ∧ L (P.length + 1)) ∨
+      ∃ (P₁ : (G.deleteEdges S).Walk a a') (P₂ : (G.deleteEdges S).Walk b b'),
+        P₁.IsPath ∧ P₂.IsPath ∧ List.Disjoint P₁.support P₂.support ∧
+          L (P₁.length + P₂.length + 2) := by
+  classical
+  have old : ∀ e ∈ H.edgeSet, e ≠ s(a, b') → e ≠ s(b, a') →
+      e ∈ (G.deleteEdges S).edgeSet := by
+    intro e he n1 n2
+    rw [hH, SimpleGraph.edgeSet_sup, SimpleGraph.edgeSet_sup] at he
+    rcases he with he | he | he
+    · exact he
+    · rw [SimpleGraph.edgeSet_edge_of_ne hab'] at he
+      exact absurd (Set.mem_singleton_iff.mp he) n1
+    · rw [SimpleGraph.edgeSet_edge_of_ne ha'b.symm] at he
+      exact absurd (Set.mem_singleton_iff.mp he) n2
+  have gOf : ∀ e ∈ (G.deleteEdges S).edgeSet, e ∈ G.edgeSet :=
+    fun e he => SimpleGraph.edgeSet_mono (SimpleGraph.deleteEdges_le S) he
+  have notAA : s(a, a') ∉ (G.deleteEdges S).edgeSet := by
+    rw [SimpleGraph.edgeSet_deleteEdges]; exact fun h => h.2 (by simp [hS])
+  have notBB : s(b, b') ∉ (G.deleteEdges S).edgeSet := by
+    rw [SimpleGraph.edgeSet_deleteEdges]; exact fun h => h.2 (by simp [hS])
+  by_cases other : s(b, a') ∈ w.edges
+  · have hH' : H.Adj b a' := by
+      rw [hH]; refine Or.inr (Or.inr ?_)
+      simp [SimpleGraph.edge_adj, ha'b.symm]
+    have nodup := (Walk.isPath_def _).mp wPath
+    have edgesNodup := wPath.isTrail.edges_nodup
+    rcases split_at_edge w hH' other with ⟨r₁, r₂, eq⟩ | ⟨r₁, r₂, eq⟩
+    · -- crossed: a ⇝ b, b a', a' ⇝ b' closes a cycle of G
+      exfalso
+      subst eq
+      simp only [Walk.edges_append, Walk.edges_cons] at edgesNodup fresh
+      have e₁ : ∀ e ∈ r₁.edges, e ∈ (G.deleteEdges S).edgeSet := fun e he =>
+        old e (Walk.edges_subset_edgeSet r₁ he) (fun h => fresh (by simp [← h, he]))
+          (fun h => by
+            rw [h] at he
+            exact (List.nodup_append.mp edgesNodup).2.2 _ he _ (by simp) rfl)
+      have e₂ : ∀ e ∈ r₂.edges, e ∈ (G.deleteEdges S).edgeSet := fun e he =>
+        old e (Walk.edges_subset_edgeSet r₂ he) (fun h => fresh (by simp [← h, he]))
+          (fun h => by
+            rw [h] at he
+            exact (List.nodup_cons.mp (List.nodup_append.mp edgesNodup).2.1).1 he)
+      let q₁ := (r₁.transfer (G.deleteEdges S) e₁).transfer G
+        (fun e he => gOf e (by rw [Walk.edges_transfer] at he; exact e₁ e he))
+      let q₂ := (r₂.transfer (G.deleteEdges S) e₂).transfer G
+        (fun e he => gOf e (by rw [Walk.edges_transfer] at he; exact e₂ e he))
+      let Q : G.Walk a a' := q₁.append (Walk.cons hB q₂.reverse)
+      have supp : Q.support = r₁.support ++ r₂.support.reverse := by
+        simp [Q, q₁, q₂, Walk.support_append, Walk.support_transfer, Walk.support_reverse]
+      have wsupp : (r₁.append (Walk.cons hH' r₂)).support = r₁.support ++ r₂.support := by
+        rw [Walk.support_append, Walk.support_cons, List.tail_cons]
+      rw [wsupp] at nodup
+      have qPath : Q.IsPath := by
+        rw [Walk.isPath_def, supp]
+        refine List.nodup_append.mpr ⟨(List.nodup_append.mp nodup).1,
+          List.nodup_reverse.mpr (List.nodup_append.mp nodup).2.1, ?_⟩
+        intro x hx y hy
+        exact (List.nodup_append.mp nodup).2.2 x hx y (List.mem_reverse.mp hy)
+      have qEdges : s(a', a) ∉ Q.edges := by
+        simp only [Q, Walk.edges_append, Walk.edges_cons, Walk.edges_reverse, q₁, q₂,
+          Walk.edges_transfer, List.mem_append, List.mem_cons, List.mem_reverse, not_or]
+        refine ⟨fun h => notAA (by rw [Sym2.eq_swap]; exact e₁ _ h), ?_,
+          fun h => notAA (by rw [Sym2.eq_swap]; exact e₂ _ h)⟩
+        intro h
+        rcases Sym2.eq_iff.mp h with ⟨h1, h2⟩ | ⟨h1, h2⟩ <;>
+          first
+            | exact hab h1 | exact hab h1.symm | exact ha'b h1 | exact ha'b h1.symm
+            | exact hab h2 | exact hab h2.symm | exact ha'b h2 | exact ha'b h2.symm
+      have cyc := (Walk.cons_isCycle_iff Q hA.symm).mpr ⟨qPath, qEdges⟩
+      refine noG a' _ cyc ?_
+      convert accepted using 1
+      simp [Q, q₁, q₂, Walk.length_append, Walk.length_transfer]
+      try omega
+    · -- parallel: a ⇝ a', a' b, b ⇝ b'
+      right
+      subst eq
+      simp only [Walk.edges_append, Walk.edges_cons] at edgesNodup fresh
+      have e₁ : ∀ e ∈ r₁.edges, e ∈ (G.deleteEdges S).edgeSet := fun e he =>
+        old e (Walk.edges_subset_edgeSet r₁ he) (fun h => fresh (by simp [← h, he]))
+          (fun h => by
+            rw [h] at he
+            exact (List.nodup_append.mp edgesNodup).2.2 _ he _ (by simp [Sym2.eq_swap]) rfl)
+      have e₂ : ∀ e ∈ r₂.edges, e ∈ (G.deleteEdges S).edgeSet := fun e he =>
+        old e (Walk.edges_subset_edgeSet r₂ he) (fun h => fresh (by simp [← h, he]))
+          (fun h => by
+            rw [h] at he
+            exact (List.nodup_cons.mp (List.nodup_append.mp edgesNodup).2.1).1
+              (by rw [Sym2.eq_swap]; exact he))
+      have wsupp : (r₁.append (Walk.cons hH'.symm r₂)).support = r₁.support ++ r₂.support := by
+        rw [Walk.support_append, Walk.support_cons, List.tail_cons]
+      rw [wsupp] at nodup
+      refine ⟨r₁.transfer _ e₁, r₂.transfer _ e₂, ?_, ?_, ?_, ?_⟩
+      · rw [Walk.isPath_def, Walk.support_transfer]; exact (List.nodup_append.mp nodup).1
+      · rw [Walk.isPath_def, Walk.support_transfer]; exact (List.nodup_append.mp nodup).2.1
+      · rw [Walk.support_transfer, Walk.support_transfer]
+        intro x hx hy
+        exact (List.nodup_append.mp nodup).2.2 x hx x hy rfl
+      · convert accepted using 1
+        simp [Walk.length_append, Walk.length_transfer]
+        try omega
+  · left
+    have e : ∀ e ∈ w.edges, e ∈ (G.deleteEdges S).edgeSet := fun e he =>
+      old e (Walk.edges_subset_edgeSet w he) (fun h => fresh (h ▸ he))
+        (fun h => other (h ▸ he))
+    exact ⟨w.transfer _ e, wPath.transfer e, by rw [Walk.length_transfer]; exact accepted⟩
+
+
+/-- A closing edge absent from a path of G closes a cycle of G. -/
+theorem closing_edge_rejected {L : ℕ → Prop} (noG : NoAcceptedCycle G L) {u v : V}
+    (h : G.Adj u v) (P : G.Walk v u) (pPath : P.IsPath) (fresh : s(u, v) ∉ P.edges) :
+    ¬ L (P.length + 1) := by
+  have cyc := (Walk.cons_isCycle_iff P h).mpr ⟨pPath, fresh⟩
+  simpa using noG u _ cyc
+
+/-- **The apex cycle**: a path `a ⇝ b'` of G avoiding `x` and `b`, with the
+edges `x a`, `x b`, `b b'`, closes a cycle of length `|P| + 3`. -/
+theorem apex_cycle_rejected {L : ℕ → Prop} (noG : NoAcceptedCycle G L) {x a b b' : V}
+    (hxa : G.Adj x a) (hxb : G.Adj x b) (hbb' : G.Adj b b') (hab : a ≠ b)
+    (P : G.Walk a b') (pPath : P.IsPath) (xNot : x ∉ P.support) (bNot : b ∉ P.support) :
+    ¬ L (P.length + 3) := by
+  have hxb' : x ≠ b := hxb.ne
+  let Q : G.Walk a x := P.append (Walk.cons hbb'.symm (Walk.cons hxb.symm Walk.nil))
+  have qPath : Q.IsPath := by
+    rw [Walk.isPath_def]
+    simp only [Q, Walk.support_append, Walk.support_cons, Walk.support_nil, List.tail_cons]
+    refine List.nodup_append.mpr ⟨(Walk.isPath_def _).mp pPath, ?_, ?_⟩
+    · simp [hxb'.symm]
+    · intro y hy z hz
+      simp only [List.mem_cons, List.not_mem_nil, or_false] at hz
+      rcases hz with rfl | rfl
+      · exact fun e => bNot (e ▸ hy)
+      · exact fun e => xNot (e ▸ hy)
+  have qFresh : s(x, a) ∉ Q.edges := by
+    simp only [Q, Walk.edges_append, Walk.edges_cons, Walk.edges_nil, List.mem_append,
+      List.mem_cons, List.not_mem_nil, or_false, not_or]
+    refine ⟨fun h => xNot (P.fst_mem_support_of_mem_edges h), ?_, ?_⟩
+    · intro h
+      rcases Sym2.eq_iff.mp h with ⟨h1, _⟩ | ⟨h1, _⟩
+      · exact xNot (h1 ▸ P.end_mem_support)
+      · exact hxb' h1
+    · intro h
+      rcases Sym2.eq_iff.mp h with ⟨h1, _⟩ | ⟨_, h2⟩
+      · exact hxb' h1
+      · exact hab h2
+  have cyc := (Walk.cons_isCycle_iff Q hxa).mpr ⟨qPath, qFresh⟩
+  have len : (Walk.cons hxa Q).length = P.length + 3 := by
+    simp [Q, Walk.length_append]
+  exact fun accepted => noG x _ cyc (len ▸ accepted)
+
+/-- The least value of a measure on a nonempty class. -/
+theorem exists_min_of_exists {α : Sort*} (f : α → ℕ) {Q : α → Prop} (h : ∃ x, Q x) :
+    ∃ x, Q x ∧ ∀ y, Q y → f x ≤ f y := by
+  classical
+  have ex : ∃ n, ∃ x, Q x ∧ f x = n := by
+    obtain ⟨x, hx⟩ := h
+    exact ⟨f x, x, hx, rfl⟩
+  obtain ⟨x, hx, hxn⟩ := Nat.find_spec ex
+  refine ⟨x, hx, fun y hy => ?_⟩
+  rw [hxn]
+  exact Nat.find_min' ex ⟨y, hy, rfl⟩
+
+
+/-- **Forced structure of an accepted cycle of a proper double-edge switch**
+at a graph with no accepted cycle: one exchanged edge closes a forced path of
+`G − S`, or the cycle uses both exchanged edges in parallel orientation and
+`G − S` has disjoint paths `a ⇝ a'`, `b ⇝ b'`.  The crossed orientation closes
+an accepted cycle of G and is excluded. -/
+theorem doubleSwitch_cycle_forced {L : ℕ → Prop} {a a' b b' : V}
+    (hA : G.Adj a a') (hB : G.Adj b b') (hab : a ≠ b) (hab' : a ≠ b')
+    (ha'b : a' ≠ b) (ha'b' : a' ≠ b') (na : ¬ G.Adj a b') (nb : ¬ G.Adj b a')
+    (noG : NoAcceptedCycle G L) {v : V}
+    (c : (G.deleteEdges {s(a, a'), s(b, b')} ⊔
+      (SimpleGraph.edge a b' ⊔ SimpleGraph.edge b a')).Walk v v)
+    (cyc : c.IsCycle) (accepted : L c.length) :
+    (∃ P : (G.deleteEdges {s(a, a'), s(b, b')}).Walk a b', P.IsPath ∧ L (P.length + 1)) ∨
+    (∃ P : (G.deleteEdges {s(a, a'), s(b, b')}).Walk b a', P.IsPath ∧ L (P.length + 1)) ∨
+    ∃ (P₁ : (G.deleteEdges {s(a, a'), s(b, b')}).Walk a a')
+      (P₂ : (G.deleteEdges {s(a, a'), s(b, b')}).Walk b b'),
+      P₁.IsPath ∧ P₂.IsPath ∧ List.Disjoint P₁.support P₂.support ∧
+        L (P₁.length + P₂.length + 2) := by
+  classical
+  have uses : s(a, b') ∈ c.edges ∨ s(b, a') ∈ c.edges := by
+    by_contra none
+    push Not at none
+    have inG : ∀ e ∈ c.edges, e ∈ G.edgeSet := by
+      intro e he
+      have h := c.edges_subset_edgeSet he
+      rw [SimpleGraph.edgeSet_sup, SimpleGraph.edgeSet_sup] at h
+      rcases h with h | h | h
+      · exact SimpleGraph.edgeSet_mono (SimpleGraph.deleteEdges_le _) h
+      · rw [SimpleGraph.edgeSet_edge_of_ne hab'] at h
+        exact absurd (Set.mem_singleton_iff.mp h ▸ he) none.1
+      · rw [SimpleGraph.edgeSet_edge_of_ne ha'b.symm] at h
+        exact absurd (Set.mem_singleton_iff.mp h ▸ he) none.2
+    exact noG v (c.transfer G inG) (cyc.transfer inG)
+      (by rw [Walk.length_transfer]; exact accepted)
+  rcases uses with first | second
+  · obtain ⟨w, wPath, fresh, len⟩ :=
+      Hypostructure.Graph.ReadingSpectrum.EdgeContext.cycle_through_edge c cyc first
+    rcases doubleSwitch_forced _ rfl _ rfl hA hB hab hab' ha'b ha'b' na nb noG wPath fresh
+        (len ▸ accepted) with one | ⟨P₁, P₂, p₁, p₂, disj, acc⟩
+    · exact Or.inl one
+    · exact Or.inr (Or.inr ⟨P₁, P₂, p₁, p₂, disj, acc⟩)
+  · obtain ⟨w, wPath, fresh, len⟩ :=
+      Hypostructure.Graph.ReadingSpectrum.EdgeContext.cycle_through_edge c cyc second
+    have hS : ({s(a, a'), s(b, b')} : Set (Sym2 V)) = {s(b, b'), s(a, a')} :=
+      Set.pair_comm _ _
+    have hH : G.deleteEdges {s(a, a'), s(b, b')} ⊔
+        (SimpleGraph.edge a b' ⊔ SimpleGraph.edge b a') =
+      G.deleteEdges {s(a, a'), s(b, b')} ⊔
+        (SimpleGraph.edge b a' ⊔ SimpleGraph.edge a b') := by
+      rw [sup_comm (SimpleGraph.edge a b')]
+    rcases doubleSwitch_forced (a := b) (a' := b') (b := a) (b' := a')
+        _ hS _ hH hB hA hab.symm ha'b.symm hab'.symm ha'b'.symm nb na noG wPath fresh
+        (len ▸ accepted) with one | ⟨P₂, P₁, p₂, p₁, disj, acc⟩
+    · exact Or.inr (Or.inl one)
+    · refine Or.inr (Or.inr ⟨P₁, P₂, p₁, p₂, disj.symm, ?_⟩)
+      rw [Nat.add_comm P₁.length]
+      exact acc
+
+end DoubleSwitch
+
 /-! ## The switch at the separator, constructed from G, and absorption
 
 `def:typeA-continuation-classes`: `z` is *absorbed* when the response
@@ -831,6 +1085,160 @@ theorem switched_forced_cycle {L : Nat → Prop}
     c.isCycle.transfer hG, by
       convert c.length_ok using 1
       exact SimpleGraph.Walk.length_transfer _ _⟩⟩
+
+/-- The two exchanged edges `a a⁺`, `b b⁺` of the switch at `z`. -/
+noncomputable def exchangedEdges : Set (Sym2 object.Vertex) :=
+  {s(separation.nextLeft, separation.leftAfter),
+    s(separation.nextRight, separation.rightAfter)}
+
+/-- **The forced paths of the target-cycle arm, with their local length
+constraints at `z`** (all in `G − {a a⁺, b b⁺}`, each the shortest of its
+kind):
+
+* one exchanged edge `a b⁺`: a path `P : a ⇝ b⁺` with `|P| + 1` accepted; if it
+  avoids `z` and `b`, the apex cycle `z a P b⁺ b z` of G has length `|P| + 3`,
+  not accepted;
+* one exchanged edge `b a⁺`: a path `P : b ⇝ a⁺` with `|P| + 1` accepted; if it
+  avoids `z` and `a`, `|P| + 3` is not accepted;
+* both exchanged edges (parallel orientation): disjoint paths `P₁ : a ⇝ a⁺`,
+  `P₂ : b ⇝ b⁺` with `|P₁| + |P₂| + 2` accepted, and the two cycles
+  `P₁ + a⁺a`, `P₂ + b⁺b` of G give `|P₁| + 1`, `|P₂| + 1` not accepted.
+
+The crossed orientation of both exchanged edges is not listed: it closes an
+accepted cycle of G itself. -/
+def ForcedAtSwitch (L : Nat → Prop) : Prop :=
+  (∃ P : (object.graph.deleteEdges separation.exchangedEdges).Walk
+        separation.nextLeft separation.rightAfter,
+      P.IsPath ∧ L (P.length + 1) ∧
+      (∀ P' : (object.graph.deleteEdges separation.exchangedEdges).Walk
+          separation.nextLeft separation.rightAfter,
+        P'.IsPath → L (P'.length + 1) → P.length ≤ P'.length) ∧
+      (separation.separator ∉ P.support → separation.nextRight ∉ P.support →
+        ¬ L (P.length + 3))) ∨
+    (∃ P : (object.graph.deleteEdges separation.exchangedEdges).Walk
+          separation.nextRight separation.leftAfter,
+      P.IsPath ∧ L (P.length + 1) ∧
+      (∀ P' : (object.graph.deleteEdges separation.exchangedEdges).Walk
+          separation.nextRight separation.leftAfter,
+        P'.IsPath → L (P'.length + 1) → P.length ≤ P'.length) ∧
+      (separation.separator ∉ P.support → separation.nextLeft ∉ P.support →
+        ¬ L (P.length + 3))) ∨
+    ∃ (P₁ : (object.graph.deleteEdges separation.exchangedEdges).Walk
+          separation.nextLeft separation.leftAfter)
+      (P₂ : (object.graph.deleteEdges separation.exchangedEdges).Walk
+          separation.nextRight separation.rightAfter),
+      P₁.IsPath ∧ P₂.IsPath ∧ List.Disjoint P₁.support P₂.support ∧
+        L (P₁.length + P₂.length + 2) ∧
+        (∀ (Q₁ : (object.graph.deleteEdges separation.exchangedEdges).Walk
+              separation.nextLeft separation.leftAfter)
+            (Q₂ : (object.graph.deleteEdges separation.exchangedEdges).Walk
+              separation.nextRight separation.rightAfter),
+          Q₁.IsPath → Q₂.IsPath → List.Disjoint Q₁.support Q₂.support →
+          L (Q₁.length + Q₂.length + 2) →
+          P₁.length + P₂.length ≤ Q₁.length + Q₂.length) ∧
+        ¬ L (P₁.length + 1) ∧ ¬ L (P₂.length + 1)
+
+/-- **The target-cycle arm at G, accounted**: an accepted cycle of the switched
+graph at a target-avoiding G forces the canonical (shortest) forced paths of
+`ForcedAtSwitch` with their local length constraints; the crossed use of both
+exchanged edges would be an accepted cycle of G. -/
+theorem switched_forced_paths {L : Nat → Prop}
+    (avoids : ¬ HasCycleWithLength L object)
+    (accepted : HasCycleWithLength L separation.switched) :
+    separation.SwitchValid ∧ separation.ForcedAtSwitch L := by
+  classical
+  have valid := (separation.switched_forced_cycle avoids accepted).1
+  obtain ⟨tailL, tailR, adjL, adjR, hLR, hRL, hAfter, nL, nR⟩ := valid
+  have noG : DoubleSwitch.NoAcceptedCycle object.graph L :=
+    fun v c cyc acc => avoids ⟨⟨v, c, cyc, acc⟩⟩
+  have graphEq : separation.switchedGraph =
+      object.graph.deleteEdges separation.exchangedEdges ⊔
+        (SimpleGraph.edge separation.nextLeft separation.rightAfter ⊔
+          SimpleGraph.edge separation.nextRight separation.leftAfter) := by
+    unfold switchedGraph
+    rw [if_pos ⟨tailL, tailR, adjL, adjR, hLR, hRL, hAfter, nL, nR⟩]
+    rfl
+  obtain ⟨certificate⟩ := accepted
+  have inH : ∀ e ∈ certificate.walk.edges, e ∈
+      (object.graph.deleteEdges separation.exchangedEdges ⊔
+        (SimpleGraph.edge separation.nextLeft separation.rightAfter ⊔
+          SimpleGraph.edge separation.nextRight separation.leftAfter)).edgeSet := by
+    intro e he
+    rw [← graphEq]
+    exact certificate.walk.edges_subset_edgeSet he
+  have toG : ∀ {x y : object.Vertex}
+      (P : (object.graph.deleteEdges separation.exchangedEdges).Walk x y),
+      ∀ e ∈ P.edges, e ∈ object.graph.edgeSet := fun P e he =>
+    SimpleGraph.edgeSet_mono (SimpleGraph.deleteEdges_le _) (P.edges_subset_edgeSet he)
+  have deleted : ∀ {x y : object.Vertex}
+      (P : (object.graph.deleteEdges separation.exchangedEdges).Walk x y),
+      s(separation.nextLeft, separation.leftAfter) ∉ P.edges ∧
+        s(separation.nextRight, separation.rightAfter) ∉ P.edges := by
+    intro x y P
+    constructor
+    · intro he
+      have h := P.edges_subset_edgeSet he
+      rw [SimpleGraph.edgeSet_deleteEdges] at h
+      exact h.2 (Or.inl rfl)
+    · intro he
+      have h := P.edges_subset_edgeSet he
+      rw [SimpleGraph.edgeSet_deleteEdges] at h
+      exact h.2 (Or.inr rfl)
+  rcases DoubleSwitch.doubleSwitch_cycle_forced adjL adjR separation.distinct hLR
+      (Ne.symm hRL) hAfter nL nR noG (certificate.walk.transfer _ inH)
+      (certificate.isCycle.transfer inH)
+      (by
+        convert certificate.length_ok using 1
+        exact SimpleGraph.Walk.length_transfer _ _) with
+    one | one | both
+  · refine ⟨⟨tailL, tailR, adjL, adjR, hLR, hRL, hAfter, nL, nR⟩, Or.inl ?_⟩
+    obtain ⟨P, ⟨pPath, pAcc⟩, least⟩ := DoubleSwitch.exists_min_of_exists
+      (fun P : (object.graph.deleteEdges separation.exchangedEdges).Walk
+        separation.nextLeft separation.rightAfter => P.length) one
+    refine ⟨P, pPath, pAcc, fun P' p' a' => least P' ⟨p', a'⟩, fun zNot bNot => ?_⟩
+    have apex := DoubleSwitch.apex_cycle_rejected noG separation.nextLeft_adj
+      separation.nextRight_adj adjR separation.distinct (P.transfer _ (toG P))
+      (pPath.transfer (toG P)) (by rw [SimpleGraph.Walk.support_transfer]; exact zNot)
+      (by rw [SimpleGraph.Walk.support_transfer]; exact bNot)
+    rwa [SimpleGraph.Walk.length_transfer] at apex
+  · refine ⟨⟨tailL, tailR, adjL, adjR, hLR, hRL, hAfter, nL, nR⟩, Or.inr (Or.inl ?_)⟩
+    obtain ⟨P, ⟨pPath, pAcc⟩, least⟩ := DoubleSwitch.exists_min_of_exists
+      (fun P : (object.graph.deleteEdges separation.exchangedEdges).Walk
+        separation.nextRight separation.leftAfter => P.length) one
+    refine ⟨P, pPath, pAcc, fun P' p' a' => least P' ⟨p', a'⟩, fun zNot aNot => ?_⟩
+    have apex := DoubleSwitch.apex_cycle_rejected noG separation.nextRight_adj
+      separation.nextLeft_adj adjL (Ne.symm separation.distinct)
+      (P.transfer _ (toG P)) (pPath.transfer (toG P))
+      (by rw [SimpleGraph.Walk.support_transfer]; exact zNot)
+      (by rw [SimpleGraph.Walk.support_transfer]; exact aNot)
+    rwa [SimpleGraph.Walk.length_transfer] at apex
+  · refine ⟨⟨tailL, tailR, adjL, adjR, hLR, hRL, hAfter, nL, nR⟩, Or.inr (Or.inr ?_)⟩
+    obtain ⟨⟨P₁, P₂⟩, ⟨p₁, p₂, disj, acc⟩, least⟩ := DoubleSwitch.exists_min_of_exists
+      (fun pair : (object.graph.deleteEdges separation.exchangedEdges).Walk
+          separation.nextLeft separation.leftAfter ×
+        (object.graph.deleteEdges separation.exchangedEdges).Walk
+          separation.nextRight separation.rightAfter =>
+        pair.1.length + pair.2.length)
+      (Q := fun pair => pair.1.IsPath ∧ pair.2.IsPath ∧
+        List.Disjoint pair.1.support pair.2.support ∧
+        L (pair.1.length + pair.2.length + 2))
+      (by
+        obtain ⟨P₁, P₂, rest⟩ := both
+        exact ⟨⟨P₁, P₂⟩, rest⟩)
+    refine ⟨P₁, P₂, p₁, p₂, disj, acc,
+      fun Q₁ Q₂ q₁ q₂ d a => least ⟨Q₁, Q₂⟩ ⟨q₁, q₂, d, a⟩, ?_, ?_⟩
+    · have closed := DoubleSwitch.closing_edge_rejected noG adjL.symm
+        (P₁.transfer _ (toG P₁)) (p₁.transfer (toG P₁))
+        (by
+          rw [SimpleGraph.Walk.edges_transfer, Sym2.eq_swap]
+          exact (deleted P₁).1)
+      rwa [SimpleGraph.Walk.length_transfer] at closed
+    · have closed := DoubleSwitch.closing_edge_rejected noG adjR.symm
+        (P₂.transfer _ (toG P₂)) (p₂.transfer (toG P₂))
+        (by
+          rw [SimpleGraph.Walk.edges_transfer, Sym2.eq_swap]
+          exact (deleted P₂).2)
+      rwa [SimpleGraph.Walk.length_transfer] at closed
 
 /-- **The target-free arm: the switched graph is a counterexample of G's size.**
 At a target-avoiding G of minimum degree at least `k`, a switch at `z` without

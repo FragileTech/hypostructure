@@ -973,18 +973,16 @@ noncomputable abbrev TypeAExitFourSwitchCycleStatement (data : Parameters)
         some witness ∧
       ∃ datum, witness.member = Graph.ExitFour.CanonicalMember.q4 datum ∧
         datum.separation.SwitchValid ∧
-        ∃ c : Graph.CycleCertificate datum.separation.switched data.LengthOK,
-          ∃ e ∈ c.walk.edges,
-            e = s(datum.separation.nextLeft, datum.separation.rightAfter) ∨
-              e = s(datum.separation.nextRight, datum.separation.leftAfter)
+        datum.separation.ForcedAtSwitch data.LengthOK
 
 /-- **Node `[108]`, the surviving separator at G.**  At the canonical handoff
 separation of `X₀` the switch at `z`, constructed from G, has no accepted
 cycle, and the separator has an unused ambient incidence (it lies on the
 boundary of `S_z`).  The switched graph is therefore a counterexample of G's
-size: G's vertices, G's number of edges, the degree baseline and no accepted
-cycle; it is not lexicographically smaller than G, so minimality gives nothing
-more (a valid swap preserves size). -/
+size: G's vertices, G's number of edges, every degree of G, the baseline and no
+accepted cycle; it is not smaller than G in `(|V|, |E|)`, and by node `[4]`'s
+refined minimality G precedes it in the canonical decomposition code
+(`¬ WellOrderingRel (code H) (code G)`), a fact about G's canonical order. -/
 noncomputable abbrev TypeAExitSevenSwitchStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   AtTypeASupport data object fun piece =>
@@ -996,6 +994,11 @@ noncomputable abbrev TypeAExitSevenSwitchStatement (data : Parameters)
       Graph.MinimumDegreeAtLeast data.threshold separated.2.separation.switched ∧
       separated.2.separation.switched.vertexCount = object.vertexCount ∧
       separated.2.separation.switched.edgeCount = object.edgeCount ∧
-      ¬ separated.2.separation.switched.LexicographicallySmaller object
+      ¬ separated.2.separation.switched.LexicographicallySmaller object ∧
+      (∀ vertex, separated.2.separation.switched.degree vertex =
+        object.degree vertex) ∧
+      ¬ WellOrderingRel
+        (canonicalDecompositionCode separated.2.separation.switched)
+        (canonicalDecompositionCode object)
 
 end Hypostructure.Graph.Strategy.Spine

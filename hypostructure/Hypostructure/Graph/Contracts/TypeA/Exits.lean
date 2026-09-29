@@ -544,15 +544,20 @@ theorem typeAExitFourSwitchCycle
   obtain ⟨datum, memberEq⟩ :=
     Graph.ExitFour.CanonicalMember.exists_q4_of_avoids avoids witness.member
   exact ⟨piece, pinned, receiver, chosen, witness, found, datum, memberEq,
-    Graph.ExitFour.Q4TargetDefect.forced_cycle avoids datum⟩
+    Graph.ExitFour.Q4TargetDefect.forced_paths avoids datum⟩
 
 /-- **Node `[108]` at G**: the canonical handoff separation survives, so its
 switch at `z` (constructed from G) has no accepted cycle and its separator has
 an unused ambient incidence; the switch keeps every degree and the edge count,
-so the switched graph is a counterexample of G's size. -/
+so the switched graph is a counterexample of G's size, and node `[4]`'s refined
+minimality puts G before it in the canonical decomposition code. -/
 theorem typeAExitSevenSwitch
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+    (refined : ∀ smaller : Graph.FiniteObject.{u},
+      RefinedLexicographicallySmaller smaller object →
+      Graph.MinimumDegreeAtLeast data.threshold smaller →
+      Graph.HasCycleWithLength data.LengthOK smaller)
     (envelope : TypeAExitSevenEnvelopeStatement data object) :
     TypeAExitSevenSwitchStatement data object := by
   obtain ⟨piece, pinned, _receiver, _chosen, _zero,
@@ -561,7 +566,14 @@ theorem typeAExitSevenSwitch
     Graph.DecoratedHandoff.Surviving.of_avoids avoids separated.2.surviving
   obtain ⟨switchedBaseline, vertices, edges, _free, notSmaller⟩ :=
     separated.2.separation.switched_sameSize baseline targetFree
-  exact ⟨piece, pinned, separated, separatedEq, targetFree, onBoundary,
-    switchedBaseline, vertices, edges, notSmaller⟩
+  refine ⟨piece, pinned, separated, separatedEq, targetFree, onBoundary,
+    switchedBaseline, vertices, edges, notSmaller,
+    separated.2.separation.switched_degree, fun precedes => targetFree ?_⟩
+  refine refined _ ?_ switchedBaseline
+  refine (Prod.lex_def ..).mpr (Or.inr ⟨?_, precedes⟩)
+  change (separated.2.separation.switched.vertexCount,
+      separated.2.separation.switched.edgeCount) =
+    (object.vertexCount, object.edgeCount)
+  rw [vertices, edges]
 
 end Hypostructure.Graph.Contracts.TypeA

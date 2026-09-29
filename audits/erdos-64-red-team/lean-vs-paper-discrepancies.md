@@ -5263,3 +5263,40 @@ realization was an arbitrary piece that nothing built from G, and Q4 and exit
   handoff separation the switched graph is a target-free counterexample of G's
   size with `z` on `∂S_z`).  No arm closes: exit (4) through Q4 and exit (7)
   both remain live at G.
+
+### R3b accounting of the two open exits (2026-09-29)
+
+Exit (4), Q4 at G (key 7960 now publishes `Separation.ForcedAtSwitch`):
+- Generic (`DecoratedHandoff.DoubleSwitch`): an accepted cycle of a proper
+  double-edge switch `G − {a a⁺, b b⁺} + {a b⁺, b a⁺}` at a graph with no
+  accepted cycle uses an exchanged edge (`doubleSwitch_cycle_forced`); removing
+  it and splitting at the other one (`split_at_edge`) gives exactly three
+  forms in `G − {a a⁺, b b⁺}`.  **Lean improvement: the crossed use of both
+  exchanged edges (`a ⇝ b`, `b a⁺`, `a⁺ ⇝ b⁺`) closes the G-cycle
+  `a ⇝ b – b⁺ ⇝ a⁺ – a` of the same accepted length and is excluded.**
+- Published forms, each the shortest of its kind (`exists_min_of_exists`):
+  (i) `P : a ⇝ b⁺`, `L(|P| + 1)`, and if `P` avoids `z`, `b`: `¬ L(|P| + 3)`
+  (apex cycle `z a P b⁺ b z`, `apex_cycle_rejected`); (ii) the mirror
+  `P : b ⇝ a⁺`; (iii) disjoint `P₁ : a ⇝ a⁺`, `P₂ : b ⇝ b⁺` with
+  `L(|P₁| + |P₂| + 2)`, `¬ L(|P₁| + 1)`, `¬ L(|P₂| + 1)`
+  (`closing_edge_rejected`).
+- Closure test: at the dyadic target (i) is `|P| = 2^k − 1`, `k ≥ 2`
+  (`a ≁ b⁺`), and `|P| + 3 = 2^k + 2` is never a power of two — consistent;
+  (iii) is consistent (e.g. `2 + 4 + 2 = 8`, `3`, `5`).  The ledger switch facts
+  do not apply: `twoSwitchForcedPath` / `highEndpointSwitch` need
+  `deg ≥ δ + 1` at the switched endpoints, which nothing forces at `a⁺`, `b⁺`;
+  `threeRouteFan` / `threeRouteChain` need length-3 routes between neighbours
+  of one centre, and the forced paths end at `b⁺`, `a⁺`, which are not
+  neighbours of `z`.  Remaining at G: (i), (ii) or (iii) with those constraints.
+
+Exit (7) (key 7961 now also publishes every degree and the refined order):
+- The switched graph `H` keeps every degree (`switched_degree`), the edge count,
+  the baseline, and has no accepted cycle; `(|V|, |E|)` is equal, so the
+  size order says nothing.  Node `[4]`'s refined minimality (`refinedMinimal`,
+  third coordinate the canonical decomposition code) gives
+  `¬ WellOrderingRel (code H) (code G)`: G precedes H.  That is consistent — H
+  is a counterexample above G, not below it — and H's own separation is not a
+  separation of H (its germs use `a a⁺`, `b b⁺`, which H lacks), so the exit-7
+  analysis does not transfer to H.  Remaining at G: a same-size counterexample
+  `H` with G's degrees, `code G` before `code H`, and `z ∈ ∂S_z`
+  (`d_G(z) ≥ 4`).
