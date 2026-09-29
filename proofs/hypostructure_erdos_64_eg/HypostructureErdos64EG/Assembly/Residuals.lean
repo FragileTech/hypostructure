@@ -3266,12 +3266,13 @@ theorem route8QuotientReturn
 /-- **Node `[187] (private-carrier rate failure)`** (thm:main (vi), tex
 369-378): failure of the exact private-carrier rate at the entry of the
 route-8 continuation.  The explicit conjunction of every fact on its maximal
-ledger (109 common facts: the 92 earlier ones and the G-audit facts
+ledger (111 common facts: the 92 earlier ones and the G-audit facts
 `route8RateFailsJoin`, `route8RateFailsPiece`, `route8RateFailsCrossBound`,
 `route8RateFailsFlow`, `route8CarrierInjection`, `route8RateExactSlack`,
 `route8BasinBurden`, `route8StubDeficit`, `route8DeficitVsStubs`, `route8EntryLowerBound`, `route8CoreEmpty`,
 `route8StrongRate`, `route8ThinIsolation`, `route8WindowStub`, `route8ThinSmall`,
-`route8WindowRPathGap`, `route8HubStubs`). -/
+`route8WindowRPathGap`, `route8HubStubs`,
+`route8WindowSelfRPathGap`, `route8PieceBoundary`). -/
 abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -3490,7 +3491,11 @@ abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8WindowRPathGap selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8HubStubs selected.object
+      erdosReceiverLoadProfile spineData .route8HubStubs selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8WindowSelfRPathGap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8PieceBoundary selected.object
 
 /-- The return of `Route8RateFailsOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -3605,7 +3610,9 @@ theorem route8RateFailsReturn
     [FactKeys.Has (K .route8WindowStub) known]
     [FactKeys.Has (K .route8ThinSmall) known]
     [FactKeys.Has (K .route8WindowRPathGap) known]
-    [FactKeys.Has (K .route8HubStubs) known] :
+    [FactKeys.Has (K .route8HubStubs) known]
+    [FactKeys.Has (K .route8WindowSelfRPathGap) known]
+    [FactKeys.Has (K .route8PieceBoundary) known] :
     Route8RateFailsOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -3715,7 +3722,9 @@ theorem route8RateFailsReturn
     (history.get (K .route8WindowStub)).down,
     (history.get (K .route8ThinSmall)).down,
     (history.get (K .route8WindowRPathGap)).down,
-    (history.get (K .route8HubStubs)).down⟩
+    (history.get (K .route8HubStubs)).down,
+    (history.get (K .route8WindowSelfRPathGap)).down,
+    (history.get (K .route8PieceBoundary)).down⟩
 
 /-- **Node `[187] (local cold-terminal exclusion)`** (thm:main (vi), tex
 369-378): the local cold-terminal exclusion of thm:cold-branch-quantitative-

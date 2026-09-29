@@ -320,4 +320,39 @@ universe u v
           inputs.current.object inputs.current.baseline⟩ .nil)
     0 0
 
+/-- Cycles through one window via the remainder avoid every power of two. -/
+@[reducible] noncomputable def route8WindowSelfRPathGapRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8WindowSelfRPathGap
+    { Requires := [K .selection, K .cubicBaseline]
+      Produces := [K .route8WindowSelfRPathGap]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8WindowSelfRPathGap)
+        ⟨Graph.Contracts.RouteEight.route8WindowSelfRPathGap data.toParameters
+          inputs.current.object (inputs.get (K .selection)).down.1
+          (inputs.get (K .cubicBaseline)).down.2.1.2.1⟩ .nil)
+    0 0
+
+/-- The pieces of the remainder against the bridgeless cut. -/
+@[reducible] noncomputable def route8PieceBoundaryRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8PieceBoundary
+    { Requires := [K .densityExcess]
+      Produces := [K .route8PieceBoundary]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8PieceBoundary)
+        ⟨Graph.Contracts.RouteEight.route8PieceBoundary data.toParameters
+          inputs.current.object (inputs.get (K .densityExcess)).down⟩ .nil)
+    0 0
+
 end Hypostructure.Graph.Strategy.Spine

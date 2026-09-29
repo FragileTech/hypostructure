@@ -1735,6 +1735,10 @@ inductive Key where
   | route8WindowRPathGap
   /-- G audit `Route8RateFailsOutcome` (idx 8265): the incidences from the windows to vertices above the baseline number at most `(δ+1)·σ(G)`. -/
   | route8HubStubs
+  /-- G audit `Route8RateFailsOutcome` (idx 8266): a remainder path joining two stubs of one window closes a cycle of length `|i−i'|+|r|+2` that is not a power of two. -/
+  | route8WindowSelfRPathGap
+  /-- G audit `Route8RateFailsOutcome` (idx 8267): every canonical piece of the remainder has at least two boundary edges (bridgeless) and `2·#pieces ≤ |∂R|`. -/
+  | route8PieceBoundary
   /-- Node `[24]` on `[146]` no, size test yes: `N₀ ≤ n` at the `[24]` cutoff. -/
   | boundedOrderLarge
   /-- Node `[24]` on `[146]` no, size test no: G has fewer than `N₀` vertices (exact complement). -/
@@ -2791,6 +2795,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8WindowRPathGapStatement data.toParameters object
   | .route8HubStubs, object =>
       Route8HubStubsStatement data.toParameters object
+  | .route8WindowSelfRPathGap, object =>
+      Route8WindowSelfRPathGapStatement data.toParameters object
+  | .route8PieceBoundary, object =>
+      Route8PieceBoundaryStatement data.toParameters object
   | .boundedOrderLarge, object =>
       BoundedOrderLargeStatement data.toParameters object
   | .boundedOrderSmall, object =>
@@ -3362,6 +3370,8 @@ def label : Key → String
   | .route8ThinSmall => "route8ThinSmall"
   | .route8WindowRPathGap => "route8WindowRPathGap"
   | .route8HubStubs => "route8HubStubs"
+  | .route8WindowSelfRPathGap => "route8WindowSelfRPathGap"
+  | .route8PieceBoundary => "route8PieceBoundary"
   | .boundedOrderLarge => "boundedOrderLarge"
   | .boundedOrderSmall => "boundedOrderSmall"
   -- [20a] enrichment keys
@@ -3853,6 +3863,8 @@ example : label .route8WindowStub = "route8WindowStub" := rfl
 example : label .route8ThinSmall = "route8ThinSmall" := rfl
 example : label .route8WindowRPathGap = "route8WindowRPathGap" := rfl
 example : label .route8HubStubs = "route8HubStubs" := rfl
+example : label .route8WindowSelfRPathGap = "route8WindowSelfRPathGap" := rfl
+example : label .route8PieceBoundary = "route8PieceBoundary" := rfl
 example : label .boundedOrderLarge = "boundedOrderLarge" := rfl
 example : label .boundedOrderSmall = "boundedOrderSmall" := rfl
 example : label .edgeSurplusIdentity = "edgeSurplusIdentity" := rfl
@@ -4331,6 +4343,8 @@ def idx : Key → Nat
   | .route8ThinSmall => 8263
   | .route8WindowRPathGap => 8264
   | .route8HubStubs => 8265
+  | .route8WindowSelfRPathGap => 8266
+  | .route8PieceBoundary => 8267
   | .boundedOrderLarge => 6604
   | .boundedOrderSmall => 6605
   -- [20a] enrichment keys
@@ -4802,6 +4816,8 @@ def ofIdx : Nat → Key
   | 8263 => .route8ThinSmall
   | 8264 => .route8WindowRPathGap
   | 8265 => .route8HubStubs
+  | 8266 => .route8WindowSelfRPathGap
+  | 8267 => .route8PieceBoundary
   | 6604 => .boundedOrderLarge
   | 6605 => .boundedOrderSmall
   -- [20a] enrichment keys
@@ -5760,6 +5776,10 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowRPathGap") 8264
   | .route8HubStubs =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8HubStubs") 8265
+  | .route8WindowSelfRPathGap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowSelfRPathGap") 8266
+  | .route8PieceBoundary =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8PieceBoundary") 8267
   | .boundedOrderLarge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "boundedOrderLarge") 6604
   | .boundedOrderSmall =>
