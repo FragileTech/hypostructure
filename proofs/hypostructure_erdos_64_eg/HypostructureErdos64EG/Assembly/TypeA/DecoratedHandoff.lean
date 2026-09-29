@@ -104,6 +104,9 @@ noncomputable abbrev typeADecoratedHandoffKeys : FactKeys EGInput.{u} :=
     K .route8UnpaidTwoCarrier,
     K .route8UnpaidWitnessFree,
     K .route8QuotientEntriesAtG,
+    K .pieceDominanceIrreducible, K .twoExitNewLength,
+    K .canonicalPieceDominance, K .canonicalTwoExitNewLength,
+    K .twoExitSizeMonotone, K .canonicalTwoExitSizeMonotone,
     K .route8BasinBurden,
     K .route8CarrierCore,
     K .typeBAbsorbedCharge]

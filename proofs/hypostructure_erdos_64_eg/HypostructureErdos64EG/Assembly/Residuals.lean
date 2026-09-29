@@ -1584,7 +1584,10 @@ theorem pairConditionalFactorizationReturn
 /-- **Node `[186]`** (thm:main (v), tex 364-368): the visible-entry route-8
 residual after [181], [183]-[185], with the joint balances of lem:typeA-
 unified-joint-balance.  The explicit conjunction of every fact on its
-maximal ledger (107 common facts). -/
+maximal ledger (113 common facts, the last six the CT3 facts
+`pieceDominanceIrreducible`, `twoExitNewLength`, `canonicalPieceDominance`,
+`canonicalTwoExitNewLength`, `twoExitSizeMonotone`,
+`canonicalTwoExitSizeMonotone`). -/
 abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -1843,7 +1846,19 @@ abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8UnifiedVisibleOverload selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8JointBalance selected.object
+      erdosReceiverLoadProfile spineData .route8JointBalance selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pieceDominanceIrreducible selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoExitNewLength selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .canonicalPieceDominance selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .canonicalTwoExitNewLength selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoExitSizeMonotone selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .canonicalTwoExitSizeMonotone selected.object
 
 /-- The return of `Route8JointBalanceOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -1978,7 +1993,13 @@ theorem route8JointBalanceReturn
     [FactKeys.Has (K .route8UnpaidExitFourResidual) known]
     [FactKeys.Has (K .route8UnifiedVisibleResidual) known]
     [FactKeys.Has (K .route8UnifiedVisibleOverload) known]
-    [FactKeys.Has (K .route8JointBalance) known] :
+    [FactKeys.Has (K .route8JointBalance) known]
+    [FactKeys.Has (K .pieceDominanceIrreducible) known]
+    [FactKeys.Has (K .twoExitNewLength) known]
+    [FactKeys.Has (K .canonicalPieceDominance) known]
+    [FactKeys.Has (K .canonicalTwoExitNewLength) known]
+    [FactKeys.Has (K .twoExitSizeMonotone) known]
+    [FactKeys.Has (K .canonicalTwoExitSizeMonotone) known] :
     Route8JointBalanceOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -2108,7 +2129,13 @@ theorem route8JointBalanceReturn
     (history.get (K .route8UnpaidExitFourResidual)).down,
     (history.get (K .route8UnifiedVisibleResidual)).down,
     (history.get (K .route8UnifiedVisibleOverload)).down,
-    (history.get (K .route8JointBalance)).down⟩
+    (history.get (K .route8JointBalance)).down,
+    (history.get (K .pieceDominanceIrreducible)).down,
+    (history.get (K .twoExitNewLength)).down,
+    (history.get (K .canonicalPieceDominance)).down,
+    (history.get (K .canonicalTwoExitNewLength)).down,
+    (history.get (K .twoExitSizeMonotone)).down,
+    (history.get (K .canonicalTwoExitSizeMonotone)).down⟩
 
 /-- **Node `[187] ([179]/[180] Type B entry)`** (thm:main (vi), tex 369-378): a
 Type B entry produced by the [179] or [180] pair-system outcome, with its
@@ -3186,11 +3213,12 @@ theorem typeBSublinearReturn
 
 /-- **Node `[187] ([348], route-8 quotient failure)`** (thm:main (vi), tex
 369-378, 388-390): failure of route-8 quotient freeness of the unified
-census.  The explicit conjunction of every fact on its maximal ledger; the last
-one, `K .route8QuotientEntriesAtG`, decides the quotient test at G (the failure
+census.  The explicit conjunction of every fact on its maximal ledger;
+`K .route8QuotientEntriesAtG` decides the quotient test at G (the failure
 is the non-emptiness of the unified entry family, with the aggregate bound
 `|∂R| < δ·|\tilde\Xi|`) and the one before it, `K .route8PeelingDescent`, is the
-stage accounting that fact consumes. -/
+stage accounting that fact consumes.  The last six are the CT3 facts
+(dominance irreducibility of G's pieces, keys 9975--9980). -/
 abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -3423,7 +3451,19 @@ abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8PeelingDescent selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8QuotientEntriesAtG selected.object
+      erdosReceiverLoadProfile spineData .route8QuotientEntriesAtG selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pieceDominanceIrreducible selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoExitNewLength selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .canonicalPieceDominance selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .canonicalTwoExitNewLength selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoExitSizeMonotone selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .canonicalTwoExitSizeMonotone selected.object
 
 /-- The return of `Route8QuotientOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -3545,7 +3585,13 @@ theorem route8QuotientReturn
     [FactKeys.Has (K .route8FoldPeels) known]
     [FactKeys.Has (K .route8QuotientResidual) known]
     [FactKeys.Has (K .route8PeelingDescent) known]
-    [FactKeys.Has (K .route8QuotientEntriesAtG) known] :
+    [FactKeys.Has (K .route8QuotientEntriesAtG) known]
+    [FactKeys.Has (K .pieceDominanceIrreducible) known]
+    [FactKeys.Has (K .twoExitNewLength) known]
+    [FactKeys.Has (K .canonicalPieceDominance) known]
+    [FactKeys.Has (K .canonicalTwoExitNewLength) known]
+    [FactKeys.Has (K .twoExitSizeMonotone) known]
+    [FactKeys.Has (K .canonicalTwoExitSizeMonotone) known] :
     Route8QuotientOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -3662,7 +3708,13 @@ theorem route8QuotientReturn
     (history.get (K .route8FoldPeels)).down,
     (history.get (K .route8QuotientResidual)).down,
     (history.get (K .route8PeelingDescent)).down,
-    (history.get (K .route8QuotientEntriesAtG)).down⟩
+    (history.get (K .route8QuotientEntriesAtG)).down,
+    (history.get (K .pieceDominanceIrreducible)).down,
+    (history.get (K .twoExitNewLength)).down,
+    (history.get (K .canonicalPieceDominance)).down,
+    (history.get (K .canonicalTwoExitNewLength)).down,
+    (history.get (K .twoExitSizeMonotone)).down,
+    (history.get (K .canonicalTwoExitSizeMonotone)).down⟩
 
 /-- **Node `[187] (private-carrier rate failure)`** (thm:main (vi), tex
 369-378): failure of the exact private-carrier rate at the entry of the

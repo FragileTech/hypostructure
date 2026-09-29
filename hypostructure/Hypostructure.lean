@@ -213,5 +213,6 @@ import Hypostructure.Graph.LadderRun
 import Hypostructure.Graph.LadderCount
 import Hypostructure.Graph.LadderBridge
 import Hypostructure.Graph.TwoGeodesics
+import Hypostructure.Graph.DominatedReplacement
 import Hypostructure.Graph.TwoGeodesicsCount
 import Hypostructure.Graph.LadderG
