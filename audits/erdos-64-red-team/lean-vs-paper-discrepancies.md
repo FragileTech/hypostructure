@@ -6549,3 +6549,74 @@ Keys 8358-8360 (`pairHandoffFactsRow`, `pairHandoffBalanceRow`; contracts in
 - **Closure tests (all negative, none claimed by structure of G).**
   - Lower bound on `n`: the ledger of the three bounded subtypes carries only `windowOrder ≤ n` (`Node54Order.windowOrder_le_vertexCount`, from `K .maximalPacking`, `K .packingOrderBound`); `K .highSurplusOrder` lives on the strict arm of `[19]` and these arms are its at-or-below complement.  With `13 ≤ n < N₀` and the combined bound the interval `[13, N₀)` remains; numerically (Python) the combined bound holds for all sampled `n ≤ 6.3·10^55` (realized arm), so no closure follows from these inequalities.
   - Stub-deficit identity and cycle spectrum against the rate subtypes: the identity gives `e(R₀,W) = σ(R₀) + def⁺(R₀) − exc(R₀)`; with `13·e(R₀,W) + 3·slack < 3|R₀|` (rate), `e ≤ 15p + σ_W`, `4·def⁺ < |R₀|` up to `T(n)` (`unrealizedBothRates`), and `13·15p < 3|R₀|` (`realizedColdBelow`) the system stays consistent in the linear relaxation; no contradiction is derived.  `realizedColdBelow` and `unrealizedBothRates` remain unbounded-size residuals.
+
+### G audit: Node144aOutcome, second pass: the cubic cover by the canonical port paths (key 8105)
+
+`K .sameTokenSeedCover` (8105, `Graph/PortPathCover.lean`, `Graph/PathChords.lean`), published on the
+three handoff-fails subtypes.  **Lean improvement (not routed by the paper).**
+
+* **Seed = 2δ vertices + two canonical port paths.**  At G's canonical routing each pair seed is
+  `T ∪ P₁ ∪ P₂` with `|T| ≤ 2δ` (the two port supports `{x} ∪ N(x)∖{c}`) and `P_i` the support of
+  the canonical path of port `i`: a triangular port contributes its return `R_p`, a **shortest**
+  `x`–`c` path of `G − cx` (`FinitePathSelection.selectOfReachable_length_le`); an open port
+  contributes its suppression path `Q_p`, a simple `a_p`–`b_p` path of `G − x` with `|Q_p| + 1`
+  accepted.
+* **Chord facts of each path** (`PathChords`).  Every decomposition `w = p₁ ++ p₂ ++ p₃` with an
+  edge `uv` between the ends of `p₂` (`|p₂| ≥ 2`): the cycle `p₂ + uv` has length `|p₂| + 1`, which
+  is not accepted (G has no accepted cycle); a triangular `R_p` has no chord at all (`p₁ ++ uv ++ p₃`
+  is a shorter path in `G − cx`, so `R_p` is an induced path of `G − cx`); every interior vertex of
+  degree `3` has exactly one neighbour off the path's two edges at it (its stub).
+* **Cubic cover, whole-graph arm.**  If every degree-`3` vertex lies in both pair seeds
+  (`K .sameTokenU2FreeWhole`), the degree-`3` vertices of G lie in `T ∪ P₁ ∪ P₂` and in
+  `T' ∪ Q₁ ∪ Q₂`, and from `K .hubCountBound` (`5|H| + σ ≤ 2n`) each cover has
+  `3n ≤ 5(|T| + |P₁| + |P₂|)`: the two paths of one pair carry at least `3n/5 − 2δ` vertices.
+
+**Surviving chord pattern (nothing above closes the arm).**  Each interior cubic vertex of a port
+path has exactly one stub; the stub goes to (a) the other path of the pair, (b) a hub (a vertex of
+degree `≥ 4`; hubs are pairwise nonadjacent, so every neighbour of a hub is cubic and lies in the
+seeds), or (c) the same path, in which case it is a chord of unaccepted span, and never for a
+triangular `R_p`.  For an open `Q_p` (length `2^j − 1`, endpoints joined through the cubic `x`) a
+same-path chord of span `s` also has the shortcut `a_p`–`b_p` path of length `2^j − 1 − s + 1`,
+whose cycle through `x` must not be accepted; this second constraint is not in Lean (only the
+span-plus-one cycle is).  The pigeonhole on span lengths gives a chord of span `2^k − 1` only
+under an unbounded supply of same-path chords, and for a triangular pair there are none, so it
+does not fire; a contradiction would need the dyadic constraints between different paths (cross
+chords), which reduce to the open cubic case of the conjecture and are not derived here.
+
+### G audit: Node144aOutcome, third pass (WIP, stopped at the coordinator's request): rungs, hubs, closing vertices (key 8106)
+
+**Status: work in progress.  [144a]'s entry test is trivially true only because realizations
+were G's own readings; the g-pieces-constructed agent redefines realizations as pieces built from
+G, which may change [144a]'s entry.  The generic lemmas below stay valid; the key 8106 wiring
+depends on the port-path cover (key 8105) and may need to be re-read against the new entry.**
+
+`Graph/PathChords.lean` (vocabulary-free, generic in any graph `H`):
+* `ear_cycle`: two paths `p : u ⇝ v`, `q : v ⇝ u` meeting only at their ends, not both single
+  edges, close a cycle of length `|p| + |q|`.
+* `HubCycles` / `hubCycles_of_avoids`: a vertex `h` off a path adjacent to both ends of a segment
+  `p₂` (`|p₂| ≥ 1`) closes a cycle of length `|p₂| + 2`; not accepted.
+* `ClosedCycles` / `closedCycles_of_avoids`: a vertex `x` off the path adjacent to both ends `a`,
+  `b`: the whole path closes a cycle of length `|w| + 2` and every chord's shortcut path one of
+  length `|p₁| + |p₃| + 3` (the open-port second constraint); not accepted.
+* `RungCycles` / `rungCycles_of_avoids`: two vertex-disjoint segments `p₂` of `w₁` and `q₂` of `w₂`
+  joined by two edges, parallel (`v c`, `d u`) or crossed (`v d`, `c u`), close a cycle of length
+  `|p₂| + |q₂| + 2`; not accepted.  With positions `i, i'` on `w₁` and `j, j'` on `w₂` this is
+  `|i − i'| + |j − j'| + 2 ∉ {4, 8, 16, …}`; for monotone rungs the `L¹` distances add.
+* `ShareEdge` / `shareEdge_of_paths`: at a degree-`3` vertex interior to two paths the two path
+  edges of one and the two of the other share an edge (four distinct neighbours cannot fit in
+  three).
+
+`K .sameTokenPathInteractions` (8106, `PortWalk`, `SameTokenPathInteractionsStatement`): the four
+canonical port walks of the two pair seeds carry `PortWalk` (all the above per-walk facts), the six
+`RungCycles` pairs, the four `ShareEdge` pairs, and, if every degree-`3` vertex lies in both pair
+seeds, every neighbour of a hub lies in both seeds.
+
+**Computational probe (not a proof, not used in Lean).**  A search over "two paths of `N` vertices
+with a perfect matching of rungs between them, no cycle of length `2^k`, `k ≥ 2`" found no
+solution for any `N` from `2` to `14`.  This is evidence that the pure two-path rung pattern is
+already unsatisfiable, but hubs, same-path chords and the terminal vertices `T` are not in that
+model, and it does not derive a contradiction at G.
+
+**Not derived.**  A forced number of rungs: stubs go to rungs, hubs, same-path chords and `T`;
+hub edges number `3|H| + σ` with `|H| ≤ σ` and `σ` bounded above only by `2n − 5|H|`, so rungs
+are forced only when `σ` is small (roughly `σ < 3n/20`).  The arm stays open.
