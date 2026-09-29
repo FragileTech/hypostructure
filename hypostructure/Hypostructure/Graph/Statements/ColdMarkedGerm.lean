@@ -61,4 +61,19 @@ noncomputable def ColdMarkedGermStretchExcisionStatement (data : Parameters)
           data.LengthOK L ∧ ¬ data.LengthOK (L + (p.length - 1)) ∧ d.IsCycle ∧
             d.length = L + (p.length - 1)
 
+/-- **The incidence structure of the marked germ's stretch.**  For every path `p` of G spanning
+the marked germ's support, every interior vertex `u` has degree exactly `t` (subcubic support
+and the baseline), and exactly `t - 2` neighbours besides its two path neighbours: for the
+registered `t = 3`, exactly one extra neighbour, a pendant (outside the support) or a chord
+(inside it). -/
+noncomputable def ColdMarkedGermStretchIncidenceStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ marked, markedNeutralGerm? data object = some marked ∧
+    ∀ (a b : object.Vertex) (p : object.graph.Walk a b), p.IsPath →
+      (∀ v, v ∈ p.support ↔ v ∈ marked.1.support) →
+      ∀ i, 0 < i → i < p.length →
+        object.degree (p.getVert i) = data.threshold ∧
+          (object.graph.neighborSet (p.getVert i) \
+            {p.getVert (i - 1), p.getVert (i + 1)}).ncard = data.threshold - 2
+
 end Hypostructure.Graph.Strategy.Spine

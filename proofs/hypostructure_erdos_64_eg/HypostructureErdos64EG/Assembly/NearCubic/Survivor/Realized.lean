@@ -182,8 +182,13 @@ noncomputable def Assembly.Internal.nearCubicRealized
                               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                               (presentation := erdosReceiverLoadProfile)
                               (data := spineData)).run uncompressed (by key_fresh)
+                          let incident : ExactLedger EGInput.{u} selected _ :=
+                            (coldMarkedGermStretchIncidenceRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run excised (by key_fresh)
                           exact Or.inr (Or.inr (Or.inr (Or.inl
-                            (coldBranchClosed_linearRealizedSilentReturn excised))))
+                            (coldBranchClosed_linearRealizedSilentReturn incident))))
                       | .right genuineHistory =>
                           let survivor :=
                             (twoStrandSurvivorRow (BranchState := BranchState)

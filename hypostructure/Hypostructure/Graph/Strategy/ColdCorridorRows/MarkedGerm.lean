@@ -62,4 +62,25 @@ so the selection's minimality gives either a baseline failure or a cycle of G of
           (fun X small base => (inputs.get (K .selection)).down.2 X small base)⟩
         .nil)
 
+/-! ## Node `[157]`: the incidence structure of the marked germ's stretch
+
+The stretch is subcubic (candidate germs) and G meets the baseline, so each interior vertex of
+a spanning path has degree exactly `t`: its two path neighbours and `t - 2` extra neighbours,
+each a pendant or a chord. -/
+@[reducible] noncomputable def coldMarkedGermStretchIncidenceRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldMarkedGermStretchIncidence
+    { Requires := [K .coldAbsorbedNeutralConfiguration, K .minDegreeBaseline]
+      Produces := [K .coldMarkedGermStretchIncidence]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .coldMarkedGermStretchIncidence)
+        ⟨Contracts.Spine.coldMarkedGermStretchIncidence_of_neutral data.toParameters
+          inputs.current.object
+          (inputs.get (K .coldAbsorbedNeutralConfiguration)).down
+          (inputs.get (K .minDegreeBaseline)).down⟩
+        .nil)
+
 end Hypostructure.Graph.Strategy.Spine

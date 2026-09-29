@@ -5333,6 +5333,35 @@ Report: `audits/structural-accounting/ColdBranchClosedOutcome_linearRealizedSile
   representative") and what equal cut states record.  Identifying the two heads (rather than
   adding the edge `s(a,b)`) changes the head degree to `deg a + deg b - 2`, still
   `>= t`, but does not repair the deleted vertices' outside neighbours.
+- **Complement arm: what the negation forces (round 3).**
+  New key 8402 `coldMarkedGermStretchIncidence` (requires `coldAbsorbedNeutralConfiguration`,
+  `minDegreeBaseline`): for every path `p` of G spanning the marked germ's support, every
+  interior vertex has degree exactly `t` (subcubic support, baseline) and exactly `t - 2`
+  neighbours besides its two path neighbours (`t = 3`: one extra neighbour, a pendant outside
+  the support or a chord inside it).  Note the correction to the negation: a failed baseline
+  of a *path* splice needs only ONE deficient outside neighbour, not every stretch vertex.
+  `SpliceLift.multiSplice` / `multiSplice_cycle_lift` / `multiSpliceObject` /
+  `multi_excision_dichotomy` (kernel-checked): the multi-boundary splice (several
+  vertex-disjoint compatible shortcut paths replaced by edges); every cycle of the result is a
+  cycle of G of the same length or lifts to a cycle of G of length `L + (sum of the shifts of
+  a subfamily)`; the excised object is strictly smaller.  This is the correct generalization of
+  "region excision with label identification": a refined state (recording outside incidences)
+  does not repair the deleted vertices' outside neighbours, since their degrees are lost
+  whatever the state at the two cuts; what repairs them is a degree-preserving shortcut
+  family, in which each pendant of a deleted vertex is re-attached through a shortcut whose
+  end is the pendant's outside endpoint.
+  Concrete case (all interior vertices pendant, an induced ladder-like stretch): deleting two
+  adjacent interior vertices `u_i, u_{i+1}` and adding the shortcut edges `u_{i-1} x_i` and
+  `x_{i+1} u_{i+2}` preserves every degree (when the new edges are not parallel) and removes 2
+  vertices; the lifts add 1, 1 or 2 to the cycle length, so the excision is a smaller
+  counterexample unless G has a cycle of length `2^k + 1`, `2^k + 2` or `2^k + 3` through the
+  suppressed pair.  That is the exact form of F08 for a pendant stretch; it is not
+  contradictory with the ledger (G may well have such cycles), so no closure follows.
+  A long stretch is not excluded: the stretch is not in the packing remainder `R` (the outside
+  component of the cold windows contains hot windows), so `remainderPathBounds` gives no
+  induced-`P13` bound on it; its length is bounded only by `M_cold`
+  (`coldMarkedGermUncompressed`).  The period `p` of the pendant pattern is not a G fact:
+  equal cut states record only the interfaces.
 - **Still open (exact proposition at G).** G's marked neutral equal-length germ `(Q, E)`,
   `E = Q`, of the positive extracted family on the realized package: a subcubic (F5)
   germ, not handed off, whose replacement has G's vertex and edge count, so `[157]`'s
