@@ -39,4 +39,27 @@ The compression clause has no witness at the marked germ. -/
           (inputs.get (K .coldCanonicalReplacementTrivial)).down⟩
         .nil)
 
+/-! ## Node `[157]`, F08: the excision of the marked germ's stretch
+
+For every path of G spanning the marked germ's support (the corridor stretch of an (F5)
+repeat is one), `Graph.SpliceLift.excision_dichotomy`: the excised object is strictly smaller,
+so the selection's minimality gives either a baseline failure or a cycle of G of length
+`L + q` with `L` accepted and `L + q` not. -/
+@[reducible] noncomputable def coldMarkedGermStretchExcisionRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldMarkedGermStretchExcision
+    { Requires := [K .coldAbsorbedNeutralConfiguration, K .selection]
+      Produces := [K .coldMarkedGermStretchExcision]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .coldMarkedGermStretchExcision)
+        ⟨Contracts.Spine.coldMarkedGermStretchExcision_of_neutral data.toParameters
+          inputs.current.object
+          (inputs.get (K .coldAbsorbedNeutralConfiguration)).down
+          (inputs.get (K .selection)).down.1
+          (fun X small base => (inputs.get (K .selection)).down.2 X small base)⟩
+        .nil)
+
 end Hypostructure.Graph.Strategy.Spine

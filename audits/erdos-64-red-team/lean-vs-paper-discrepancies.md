@@ -5309,6 +5309,30 @@ Report: `audits/structural-accounting/ColdBranchClosedOutcome_linearRealizedSile
   and `9 |cubic| = |selected|` are conjuncts of `K .coldGermCandidates` /
   `K .coldSelectedBranchExcess`; combined with `K .coldMassLinear` they bound `|F|` from
   below, with no partner inequality on this arm.  Neither was published as a new key.
+- **New key 8401 `coldMarkedGermStretchExcision`** (F08 at the marked germ; requires
+  `coldAbsorbedNeutralConfiguration`, `selection`): for every path `p : a ⇝ b` of G of length
+  >= 2 whose vertex set is the marked germ's support (the `intervalSupport left right` of an
+  (F5) repeat is one), the excised object `spliceObject G a b (interior p)` (strictly smaller)
+  either misses `MinimumDegreeAtLeast t`, or G has a cycle of length `L + q` with `LengthOK L`,
+  `¬ LengthOK (L + q)`, `q = |p| - 1`.  Also `SpliceLift.degree_spliceObject_lt` /
+  `not_baseline_of_external`: a kept vertex `w ∉ {a,b}` of degree `<= t` with a neighbour in
+  the deleted interior makes the baseline fail exactly.
+- **Region excision with label identification: why it was not built as stated.**  The
+  Lean cut state (`Presentation.state`) is the degrees, half-edges, offsets and the declared
+  coordinate values on the two active interfaces (`coldActiveInterface`: entry foot, window
+  vertex, head).  It records nothing about the incidences of the vertices strictly between two
+  equal states, so equality of states does not give a label bijection of the stretch's
+  outside edges, and does not give "kept vertices keep their degree".  A deleted stretch
+  vertex `u` of a subcubic corridor has its third neighbour outside the stretch; if that
+  neighbour is subcubic it loses degree (`not_baseline_of_external`), so a stretch with an
+  outside neighbour of degree `<= t` has no baseline-preserving excision, and the boundary
+  vertices of the germ's piece cannot be removed by any same-interface `E`.  For (F5) repeat
+  germs whose stretch vertices all have outside neighbours of degree `t`, `E` cannot be
+  smaller: this is the exact reason the residual is the trivial germ `E = Q`, and it is a
+  gap between the manuscript's claim ("equal states give a shorter same-interface
+  representative") and what equal cut states record.  Identifying the two heads (rather than
+  adding the edge `s(a,b)`) changes the head degree to `deg a + deg b - 2`, still
+  `>= t`, but does not repair the deleted vertices' outside neighbours.
 - **Still open (exact proposition at G).** G's marked neutral equal-length germ `(Q, E)`,
   `E = Q`, of the positive extracted family on the realized package: a subcubic (F5)
   germ, not handed off, whose replacement has G's vertex and edge count, so `[157]`'s
