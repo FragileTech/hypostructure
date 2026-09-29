@@ -5,6 +5,7 @@ import Hypostructure.Graph.Contracts.RouteEight.RateFailsFlow
 import Hypostructure.Graph.Contracts.RouteEight.RateFailsAccounting
 import Hypostructure.Graph.Contracts.RouteEight.RateFailsRoute
 import Hypostructure.Graph.Contracts.RouteEight.WindowRPath
+import Hypostructure.Graph.Contracts.RouteEight.WindowPieceLengths
 
 /-!
 # The failed private-carrier rate against the exact window join at G
@@ -318,6 +319,80 @@ universe u v
       .cons (key := K .route8HubStubs)
         ⟨Graph.Contracts.RouteEight.route8HubStubs data.toParameters
           inputs.current.object inputs.current.baseline⟩ .nil)
+    0 0
+
+/-- Cycles through one window via the remainder avoid every power of two. -/
+@[reducible] noncomputable def route8WindowSelfRPathGapRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8WindowSelfRPathGap
+    { Requires := [K .selection, K .cubicBaseline]
+      Produces := [K .route8WindowSelfRPathGap]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8WindowSelfRPathGap)
+        ⟨Graph.Contracts.RouteEight.route8WindowSelfRPathGap data.toParameters
+          inputs.current.object (inputs.get (K .selection)).down.1
+          (inputs.get (K .cubicBaseline)).down.2.1.2.1⟩ .nil)
+    0 0
+
+/-- The pieces of the remainder against the bridgeless cut. -/
+@[reducible] noncomputable def route8PieceBoundaryRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8PieceBoundary
+    { Requires := [K .densityExcess]
+      Produces := [K .route8PieceBoundary]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8PieceBoundary)
+        ⟨Graph.Contracts.RouteEight.route8PieceBoundary data.toParameters
+          inputs.current.object (inputs.get (K .densityExcess)).down⟩ .nil)
+    0 0
+
+/-- The cycle rank of the window-piece multigraph. -/
+@[reducible] noncomputable def route8WindowPieceRankRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8WindowPieceRank
+    { Requires := [K .route8RateFailsJoin, K .route8PieceBoundary, K .cubicBaseline]
+      Produces := [K .route8WindowPieceRank]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8WindowPieceRank)
+        ⟨Graph.Contracts.RouteEight.route8WindowPieceRank data.toParameters
+          inputs.current.object
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
+          (inputs.get (K .route8RateFailsJoin)).down
+          (inputs.get (K .route8PieceBoundary)).down⟩ .nil)
+    0 0
+
+/-- The achievable cycle lengths of the window-piece multigraph. -/
+@[reducible] noncomputable def route8AchievableLengthsRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8AchievableLengths
+    { Requires := [K .route8WindowRPathGap, K .route8WindowSelfRPathGap]
+      Produces := [K .route8AchievableLengths]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8AchievableLengths)
+        ⟨Graph.Contracts.RouteEight.route8AchievableLengths data.toParameters
+          inputs.current.object
+          (inputs.get (K .route8WindowRPathGap)).down
+          (inputs.get (K .route8WindowSelfRPathGap)).down⟩ .nil)
     0 0
 
 end Hypostructure.Graph.Strategy.Spine

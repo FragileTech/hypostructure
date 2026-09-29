@@ -415,3 +415,11 @@ Counts unchanged: x 49, ~ 29, gap 6 (C07, D07, E07, E08, G04, H10), n/a 4, nonG 
 
 The defining failure changes: `K .route8Rate` is now `Route8Census.StrongRate` (`s*|dR| + F*s*T(n) < |R|`, implied by the manuscript's `3/13` rate) and `K .route8RateFails` is its complement, the thin remainder `|R| <= s*|dR| + F*s*T(n)`. Facts #1-#107 that were derived from the old failed rate are derived from the thin remainder through `route8RateFails_oldLe` (thin implies old failed). New generic facts: #108 `route8WindowRPathGap` (cycles through two windows joined by two vertex-disjoint remainder paths at fixed stub positions have length `|i-i'| + |j-j'| + |r1| + |r2| + 4`, never a power of two; C01 C05 D03; obstruction), #109 `route8HubStubs` (incidences from the windows to vertices above the baseline are at most `(delta+1)*sigma(G)`; A06 A14; bound). Counts: x 49, ~ 29, gap 6, n/a 4, nonG 0 (the first of the two new facts adds C05 evidence; no status changes).
 
+## Sixth pass (keys 8266-8267): windows joined through R
+
+New generic facts: #110 `route8WindowSelfRPathGap` (a remainder path joining two stubs of one window closes a cycle of length |i-i'| + |r| + 2 that is not a power of two; C01 C05 D03; obstruction), #111 `route8PieceBoundary` (every canonical piece of G[R] has at least two boundary edges, and 2*#pieces <= |dR|; B01 B02 B05; bound). Counts: x 49, ~ 29, gap 6, n/a 4, nonG 0 (B01 stays `~`: the pieces are counted and bounded below, still no per-piece upper bound).
+
+## Seventh pass (keys 8268-8269): cycle rank of the window-piece graph, achievable lengths
+
+New generic facts: #112 `route8WindowPieceRank` (cycle rank of the stub multigraph B of windows and pieces: beta*p + sigma_W <= 2*(e(R,W) - (p + #pieces)) + 2p + X; B01 B05 A10; bound), #113 `route8AchievableLengths` (the path-length set of a piece between two stubs is nonempty and below the piece size; the cycle-length sumsets of B, one window one piece and two windows two pieces, avoid the powers of two; C01 C05 B01; witness + obstruction). Counts: x 49, ~ 29, gap 6, n/a 4, nonG 0.
+

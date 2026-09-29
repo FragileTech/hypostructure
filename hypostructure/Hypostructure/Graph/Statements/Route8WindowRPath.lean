@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Statements.Route8RateFailsRoute
 import Hypostructure.Graph.Statements.LocalRigidity
+import Hypostructure.Graph.Statements.JointHubs
 import Hypostructure.Graph.WindowRPathCycle
 
 /-!
@@ -60,5 +61,34 @@ noncomputable def Route8HubStubsStatement (data : Parameters)
   ∑ vertex ∈ object.windowSupport (canonicalWindowPacking data object),
       (hubNeighbours object data.threshold vertex).card ≤
     (data.threshold + 1) * object.degreeSurplus data.threshold
+
+/-- **Cycles through one window via `R`.**  A path of the remainder joining two stubs of one
+window `P` (positions `i`, `i'`, with `i ≠ i'` or distinct end vertices) closes a cycle of
+length `|i−i'| + |r| + 2` with the window path; it is not a power of two.  At `|r| = 0`
+(one remainder vertex) this is the attachment rule; for a longer path it is new. -/
+def Route8WindowSelfRPathGapStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ P ∈ canonicalWindowPacking data object,
+    ∀ p : Fin data.windowOrder → object.Vertex,
+      Graph.LocalRigidity.IsWindowPlacement object P p →
+      ∀ (i i' : Fin data.windowOrder) (a b : object.Vertex)
+        (r : object.graph.Walk a b), r.IsPath →
+        (∀ v ∈ r.support, v ∈ object.remainderSupport (canonicalWindowPacking data object)) →
+        object.graph.Adj (p i) a → object.graph.Adj b (p i') → (i ≠ i' ∨ a ≠ b) →
+        ¬ Core.DyadicLength.PowerOfTwoLength (Nat.dist i.1 i'.1 + r.length + 2)
+
+/-- **The pieces of the remainder against the bridgeless cut.**  With a window present every
+canonical piece `X` of `G[R]` is a nonempty proper set, so at least two edges leave it
+(`DensityExcess`), and the pieces partition the cut: `2·#pieces ≤ |∂R|`. -/
+noncomputable def Route8PieceBoundaryStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  (canonicalWindowPacking data object).Nonempty →
+    (∀ piece ∈ object.canonicalPieces
+        (object.remainderSupport (canonicalWindowPacking data object)),
+      2 ≤ object.boundaryIncidence (object.pieceSupport
+        (object.remainderSupport (canonicalWindowPacking data object)) piece)) ∧
+    2 * (object.canonicalPieces
+        (object.remainderSupport (canonicalWindowPacking data object))).card ≤
+      object.boundaryIncidence (object.remainderSupport (canonicalWindowPacking data object))
 
 end Hypostructure.Graph.Strategy.Spine

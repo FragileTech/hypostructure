@@ -105,3 +105,54 @@ theorem cross_cycle_paths {m n : ℕ} {p : Fin m → V} {q : Fin n → V}
     omega
 
 end Hypostructure.Graph.LocalRigidity
+
+namespace Hypostructure.Graph.LocalRigidity
+
+open SimpleGraph
+
+variable {V : Type*} {G : SimpleGraph V}
+
+/-- **Self cycle through one placed path and one outside path.**  A placed path `p` and a
+path `r : a ⇝ b` inside a set `S` disjoint from `p`, with edges `p i – a`, `b – p i'` and
+`i ≠ i' ∨ a ≠ b`, close a cycle of length `dist(i,i') + |r| + 2`. -/
+theorem self_cycle_path {m : ℕ} {p : Fin m → V} (hp : IsPlacedPath G p)
+    {S : Set V} (hSp : ∀ a, p a ∉ S) {i i' : Fin m} {a b : V}
+    (r : G.Walk a b) (rp : r.IsPath) (rS : ∀ v ∈ r.support, v ∈ S)
+    (e₁ : G.Adj (p i) a) (e₂ : G.Adj b (p i')) (ne : i ≠ i' ∨ a ≠ b) :
+    ∃ (v : V) (c : G.Walk v v), c.IsCycle ∧
+      c.length = Nat.dist i.1 i'.1 + r.length + 2 := by
+  obtain ⟨wP, wPp, wPl, wPs⟩ := exists_segment hp i i'
+  let tail : G.Walk b (p i') := r.reverse.append (Walk.cons e₁.symm wP)
+  have tailSupport : tail.support = r.support.reverse ++ wP.support := by
+    simp [tail, Walk.support_append, Walk.support_cons, Walk.support_reverse]
+  have tailPath : tail.IsPath := by
+    rw [Walk.isPath_def, tailSupport, List.nodup_append]
+    refine ⟨List.nodup_reverse.mpr rp.support_nodup, wPp.support_nodup, ?_⟩
+    intro x hx y hy exy
+    subst exy
+    obtain ⟨z, hz⟩ := wPs x hy
+    exact hSp z (hz ▸ rS x (List.mem_reverse.mp hx))
+  refine ⟨p i', Walk.cons e₂.symm tail, ?_, ?_⟩
+  · rw [Walk.cons_isCycle_iff]
+    refine ⟨tailPath, ?_⟩
+    intro mem
+    have edgesEq : tail.edges = r.reverse.edges ++ (s(a, p i) :: wP.edges) := by
+      simp [tail, Walk.edges_append, Walk.edges_cons, Walk.edges_reverse]
+    rw [edgesEq] at mem
+    simp only [List.mem_append, List.mem_cons] at mem
+    rcases mem with mem | mem | mem
+    · have : p i' ∈ r.reverse.support := Walk.fst_mem_support_of_mem_edges _ mem
+      rw [Walk.support_reverse, List.mem_reverse] at this
+      exact hSp i' (rS _ this)
+    · rcases Sym2.eq_iff.mp mem with ⟨h1, h2⟩ | ⟨h1, h2⟩
+      · exact hSp i' (h1 ▸ rS a (Walk.start_mem_support r))
+      · have ii : i' = i := hp.1 h1
+        rcases ne with n1 | n2
+        · exact n1 ii.symm
+        · exact n2 h2.symm
+    · obtain ⟨z, hz⟩ := wPs _ (Walk.snd_mem_support_of_mem_edges _ mem)
+      exact hSp z (hz ▸ rS b (Walk.end_mem_support r))
+  · simp only [tail, Walk.length_cons, Walk.length_append, Walk.length_reverse, wPl]
+    omega
+
+end Hypostructure.Graph.LocalRigidity

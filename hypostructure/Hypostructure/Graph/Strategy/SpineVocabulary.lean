@@ -23,6 +23,7 @@ import Hypostructure.Graph.Statements.Route8RateFailsFlow
 import Hypostructure.Graph.Statements.Route8RateFailsAccounting
 import Hypostructure.Graph.Statements.Route8RateFailsRoute
 import Hypostructure.Graph.Statements.Route8WindowRPath
+import Hypostructure.Graph.Statements.Route8WindowPieceLengths
 import Hypostructure.Graph.Statements.SparseExitResidual
 import Hypostructure.Graph.Statements.SparseExitReadings
 import Hypostructure.Graph.Statements.SwitchForcedPaths
@@ -1841,6 +1842,14 @@ inductive Key where
   | route8WindowRPathGap
   /-- G audit `Route8RateFailsOutcome` (idx 8265): the incidences from the windows to vertices above the baseline number at most `(δ+1)·σ(G)`. -/
   | route8HubStubs
+  /-- G audit `Route8RateFailsOutcome` (idx 8266): a remainder path joining two stubs of one window closes a cycle of length `|i−i'|+|r|+2` that is not a power of two. -/
+  | route8WindowSelfRPathGap
+  /-- G audit `Route8RateFailsOutcome` (idx 8267): every canonical piece of the remainder has at least two boundary edges (bridgeless) and `2·#pieces ≤ |∂R|`. -/
+  | route8PieceBoundary
+  /-- G audit `Route8RateFailsOutcome` (idx 8268): cycle rank of the window-piece stub multigraph: `β·p + σ_W ≤ 2(e(R,W) − (p + #pieces)) + 2p + X`. -/
+  | route8WindowPieceRank
+  /-- G audit `Route8RateFailsOutcome` (idx 8269): the achievable path lengths of a piece between two stubs are nonempty and bounded by the piece size, and every element of the cycle-length sumsets of `B` (one window one piece, two windows two pieces) avoids the powers of two. -/
+  | route8AchievableLengths
   /-- Node `[24]` on `[146]` no, size test yes: `N₀ ≤ n` at the `[24]` cutoff. -/
   | boundedOrderLarge
   /-- Node `[24]` on `[146]` no, size test no: G has fewer than `N₀` vertices (exact complement). -/
@@ -3002,6 +3011,14 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8WindowRPathGapStatement data.toParameters object
   | .route8HubStubs, object =>
       Route8HubStubsStatement data.toParameters object
+  | .route8WindowSelfRPathGap, object =>
+      Route8WindowSelfRPathGapStatement data.toParameters object
+  | .route8PieceBoundary, object =>
+      Route8PieceBoundaryStatement data.toParameters object
+  | .route8WindowPieceRank, object =>
+      Route8WindowPieceRankStatement data.toParameters object
+  | .route8AchievableLengths, object =>
+      Route8AchievableLengthsStatement data.toParameters object
   | .boundedOrderLarge, object =>
       BoundedOrderLargeStatement data.toParameters object
   | .boundedOrderSmall, object =>
@@ -3656,6 +3673,10 @@ def label : Key → String
   | .route8ThinSmall => "route8ThinSmall"
   | .route8WindowRPathGap => "route8WindowRPathGap"
   | .route8HubStubs => "route8HubStubs"
+  | .route8WindowSelfRPathGap => "route8WindowSelfRPathGap"
+  | .route8PieceBoundary => "route8PieceBoundary"
+  | .route8WindowPieceRank => "route8WindowPieceRank"
+  | .route8AchievableLengths => "route8AchievableLengths"
   | .boundedOrderLarge => "boundedOrderLarge"
   | .boundedOrderSmall => "boundedOrderSmall"
   -- [20a] enrichment keys
@@ -4198,6 +4219,10 @@ example : label .route8WindowStub = "route8WindowStub" := rfl
 example : label .route8ThinSmall = "route8ThinSmall" := rfl
 example : label .route8WindowRPathGap = "route8WindowRPathGap" := rfl
 example : label .route8HubStubs = "route8HubStubs" := rfl
+example : label .route8WindowSelfRPathGap = "route8WindowSelfRPathGap" := rfl
+example : label .route8PieceBoundary = "route8PieceBoundary" := rfl
+example : label .route8WindowPieceRank = "route8WindowPieceRank" := rfl
+example : label .route8AchievableLengths = "route8AchievableLengths" := rfl
 example : label .boundedOrderLarge = "boundedOrderLarge" := rfl
 example : label .boundedOrderSmall = "boundedOrderSmall" := rfl
 example : label .edgeSurplusIdentity = "edgeSurplusIdentity" := rfl
@@ -4727,6 +4752,10 @@ def idx : Key → Nat
   | .route8ThinSmall => 8263
   | .route8WindowRPathGap => 8264
   | .route8HubStubs => 8265
+  | .route8WindowSelfRPathGap => 8266
+  | .route8PieceBoundary => 8267
+  | .route8WindowPieceRank => 8268
+  | .route8AchievableLengths => 8269
   | .boundedOrderLarge => 6604
   | .boundedOrderSmall => 6605
   -- [20a] enrichment keys
@@ -5250,6 +5279,10 @@ def ofIdx : Nat → Key
   | 8263 => .route8ThinSmall
   | 8264 => .route8WindowRPathGap
   | 8265 => .route8HubStubs
+  | 8266 => .route8WindowSelfRPathGap
+  | 8267 => .route8PieceBoundary
+  | 8268 => .route8WindowPieceRank
+  | 8269 => .route8AchievableLengths
   | 6604 => .boundedOrderLarge
   | 6605 => .boundedOrderSmall
   -- [20a] enrichment keys
@@ -6280,6 +6313,14 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowRPathGap") 8264
   | .route8HubStubs =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8HubStubs") 8265
+  | .route8WindowSelfRPathGap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowSelfRPathGap") 8266
+  | .route8PieceBoundary =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8PieceBoundary") 8267
+  | .route8WindowPieceRank =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowPieceRank") 8268
+  | .route8AchievableLengths =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8AchievableLengths") 8269
   | .boundedOrderLarge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "boundedOrderLarge") 6604
   | .boundedOrderSmall =>
