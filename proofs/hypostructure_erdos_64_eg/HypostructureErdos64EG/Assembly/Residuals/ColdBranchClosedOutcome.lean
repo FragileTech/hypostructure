@@ -33,7 +33,7 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **`[187]` (local cold-terminal exclusion), singleton `linearRealizedSilent`**
-(94 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing; [157]/[163] G's silent family has a neutral equal-length configuration (`coldAbsorbedNeutralConfiguration`) whose genuine second strand is closed at [167]--[168], so the canonical-replacement arm holds (`coldCanonicalNeutralConfiguration`), and [165]--[166] force `Q = E` (`coldCanonicalReplacementSwap`, `coldCanonicalReplacementTrivial`); [157] the marked germ is not handed off and its replacement is not strictly smaller (`coldMarkedGermUncompressed`); [169] G lies in the blocked class (`blockedClassMember`). -/
+(93 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing; [157]/[163] G's silent family has a neutral equal-length configuration (`coldAbsorbedNeutralConfiguration`) whose genuine second strand is closed at [167]--[168], so the canonical-replacement arm holds (`coldCanonicalNeutralConfiguration`), and [165]--[166] force `Q = E` (`coldCanonicalReplacementSwap`, `coldCanonicalReplacementTrivial`); [157] the marked germ is not handed off and its replacement is not strictly smaller (`coldMarkedGermUncompressed`); [169] `blockedClassMember` is a fact of G here too but is not carried (see `blockedCompressionCap_iff_windowPackageRealized`). -/
 abbrev ColdBranchClosedOutcome_linearRealizedSilent (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -61,9 +61,7 @@ abbrev ColdBranchClosedOutcome_linearRealizedSilent (selected : EGInput.{u}) : P
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldCanonicalReplacementTrivial selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldMarkedGermUncompressed selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .blockedClassMember selected.object
+      erdosReceiverLoadProfile spineData .coldMarkedGermUncompressed selected.object
 
 /-- On the realized arm `[158]` yes, the terminal consequence of `[171]`
 (`K .blockedCompressionCap`) is the realization fact `K .windowPackageRealized`
@@ -204,7 +202,6 @@ theorem coldBranchClosed_linearRealizedSilentReturn
     [FactKeys.Has (K .coldCanonicalReplacementSwap) known]
     [FactKeys.Has (K .coldCanonicalReplacementTrivial) known]
     [FactKeys.Has (K .coldMarkedGermUncompressed) known]
-    [FactKeys.Has (K .blockedClassMember) known]
     : ColdBranchClosedOutcome_linearRealizedSilent selected :=
   ⟨coldBranchClosedReturn history,
     (history.get (K .coldGermFamilyPositive)).down,
@@ -219,7 +216,6 @@ theorem coldBranchClosed_linearRealizedSilentReturn
     (history.get (K .coldCanonicalNeutralConfiguration)).down,
     (history.get (K .coldCanonicalReplacementSwap)).down,
     (history.get (K .coldCanonicalReplacementTrivial)).down,
-    (history.get (K .coldMarkedGermUncompressed)).down,
-    (history.get (K .blockedClassMember)).down⟩
+    (history.get (K .coldMarkedGermUncompressed)).down⟩
 
 end HypostructureErdos64EG

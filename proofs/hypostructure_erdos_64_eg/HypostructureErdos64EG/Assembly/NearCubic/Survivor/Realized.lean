@@ -27,6 +27,8 @@ open Hypostructure.Graph.Strategy.Spine
 universe u w
 
 set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxSize 200000 in
+set_option synthInstance.maxHeartbeats 4000000 in
 /-- **The realized-package arm of `[158]`.**  `[22]`--`[23]`, then `[146]`
 (`θ < 1/78`).  Its yes arm `[147]`: the route-8 private-carrier inequality
 `τ(θ) < 3/13` is `K .coldRoute8Below` read through `|∂R| ≤ 15p + σ_W`
@@ -145,17 +147,23 @@ noncomputable def Assembly.Internal.nearCubicRealized
                       -- canonical-replacement arm `[165]`--`[166]` forces `Q = E`
                       -- and is retained.
                       let neutral :=
-                        (absorbedNeutralConfigurationRow (data := spineData)).run
+                        (absorbedNeutralConfigurationRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                           silentHistory (by key_fresh)
                       let closed := nearCubicColdTable neutral
                       match absorbedNeutralSymmetryDichotomy (data := spineData) closed
                           (by key_fresh) (by key_fresh) with
                       | .left canonicalHistory =>
                           let swapped :=
-                            (canonicalReplacementSwapRow (data := spineData)).run
+                            (canonicalReplacementSwapRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                               canonicalHistory (by key_fresh)
                           let trivial :=
-                            (canonicalReplacementTrivialRow (data := spineData)).run
+                            (canonicalReplacementTrivialRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                               swapped (by key_fresh)
                           -- `[169]`, `def:blocked-class`: on the trivial neutral
                           -- residual G lies in the blocked class `B(P)` of the fixed
@@ -164,26 +172,27 @@ noncomputable def Assembly.Internal.nearCubicRealized
                           -- `blockedCompressionCap_iff_windowPackageRealized`.)
                           -- `[157]`: the marked germ against the table's compression
                           -- clause: not handed off, replacement not strictly smaller.
-                          let uncompressed :=
-                            (coldMarkedGermUncompressedRow (data := spineData)).run
-                              trivial (by key_fresh)
-                          let blocked :=
-                            (blockedClassRow (BranchState := BranchState)
+                          let uncompressed : ExactLedger EGInput.{u} selected _ :=
+                            (coldMarkedGermUncompressedRow (BranchState := BranchState)
                               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                              (presentation := erdosReceiverLoadProfile)
-                              (data := spineData)).run uncompressed (by key_fresh)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                              trivial (by key_fresh)
                           exact Or.inr (Or.inr (Or.inr (Or.inl
-                            (Or.inr (Or.inr (Or.inr
-                              (coldBranchClosed_linearRealizedSilentReturn blocked)))))))
+                            (coldBranchClosed_linearRealizedSilentReturn uncompressed))))
                       | .right genuineHistory =>
                           let survivor :=
-                            (twoStrandSurvivorRow (data := spineData)).run genuineHistory
+                            (twoStrandSurvivorRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run genuineHistory
                               (by key_fresh)
                           let stubbed :=
-                            (coldWindowStubStructureRow (data := spineData)).run survivor
+                            (coldWindowStubStructureRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run survivor
                               (by key_fresh)
-                          exact ((symmetricPairEndpointExclusionRow
-                            (data := spineData)).runAndCloseIncompatible stubbed
+                          exact ((symmetricPairEndpointExclusionRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).runAndCloseIncompatible stubbed
                               (K .coldTwoStrandSurvivor) (K .coldSymmetricPairExcluded)
                               (by key_fresh) (by key_fresh)).elimClosed
                                 (by infer_instance) |>.elim
