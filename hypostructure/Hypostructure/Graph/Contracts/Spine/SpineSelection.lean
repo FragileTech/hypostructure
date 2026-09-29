@@ -133,8 +133,9 @@ label, so condition (a) holds by construction. -/
 theorem degreeProfileFibres_holds (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     DegreeProfileFibresStatement data object :=
-  fun _support _left _right different identified =>
-    different (congrArg Prod.fst identified)
+  fun _support _left _right different identified => by
+    unfold canonicalReadingLabel at identified
+    exact different (Prod.mk.inj identified).1
 
 /-- **Node `[12]`, `lem:context-universality`** (tex 6106), stated about G,
 reading node `[11]` and the selection.  Two readings G's canonical quotient

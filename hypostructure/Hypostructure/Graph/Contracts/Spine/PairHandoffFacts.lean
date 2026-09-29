@@ -418,11 +418,12 @@ theorem fibreAtG_bounds
   constructor
   · apply Nat.card_pos_iff.mpr
     refine ⟨⟨⟨⟨_, member, rfl⟩, ?_⟩⟩, inferInstance⟩
-    apply Prod.ext rfl
+    dsimp only
+    refine Prod.ext rfl ?_
     funext index
     by_cases h : index < level
     · simp only [Graph.SparsePairSkeletonModel.signature, if_pos h,
-        if_pos (Nat.lt_succ_of_lt h)]
+        if_pos (Nat.lt_succ_of_lt h)] <;> rfl
     · simp only [Graph.SparsePairSkeletonModel.signature, if_neg h]
   · have prop : Nat.card Prop = 2 := by
       rw [Nat.card_eq_fintype_card]; exact Fintype.card_prop
@@ -433,9 +434,10 @@ theorem fibreAtG_bounds
     have both := e₁.trans e₂.symm
     apply Subtype.ext
     apply Subtype.ext
-    refine Prod.ext (congrArg Prod.fst both) ?_
+    dsimp only at both ⊢
+    refine Prod.ext (Prod.mk.inj both).1 ?_
     funext index
-    have restAt := congrFun (congrArg Prod.snd both) index
+    have restAt := congrFun (Prod.mk.inj both).2 index
     simp only [Graph.SparsePairSkeletonModel.signature] at restAt same ⊢
     by_cases h : index < level
     · simpa [h, Nat.lt_succ_of_lt h] using restAt
