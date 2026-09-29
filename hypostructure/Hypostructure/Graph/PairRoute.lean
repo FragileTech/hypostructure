@@ -264,4 +264,72 @@ theorem chord_cycle {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.IsPat
   have : q.length = q'.length + 1 := by rw [hq']; simp
   omega
 
+/-- **Two internally disjoint paths and a two-edge bridge close a cycle.**  `M1 : x ⇝ s` and
+`M2 : t ⇝ x` are paths meeting only at `x`, both of positive length, `s — m — t` an
+external two-edge path avoiding both: the closed walk is a cycle of length
+`|M1| + |M2| + 2`. -/
+theorem cycle_two_paths {G : SimpleGraph V} {x s t m : V} (M1 : G.Walk x s) (M2 : G.Walk t x)
+    (h1 : M1.IsPath) (h2 : M2.IsPath) (hm1 : m ∉ M1.support) (hm2 : m ∉ M2.support)
+    (hdisj : ∀ v, v ∈ M1.support → v ∈ M2.support → v = x) (hpos : 1 ≤ M1.length)
+    (e1 : G.Adj s m) (e2 : G.Adj m t) :
+    ∃ W : G.Walk s s, W.IsCycle ∧ W.length = M1.length + M2.length + 2 := by
+  have hx : x ∉ M1.support.tail := by
+    have := h1.support_nodup
+    rw [Walk.support_eq_cons] at this
+    exact (List.nodup_cons.1 this).1
+  have hpath : (M2.append M1).IsPath := by
+    rw [Walk.isPath_def, Walk.support_append]
+    refine List.nodup_append.2 ⟨h2.support_nodup, ?_, ?_⟩
+    · have := h1.support_nodup
+      rw [Walk.support_eq_cons] at this
+      exact (List.nodup_cons.1 this).2
+    · intro v hv2 w hw1 hvw
+      subst hvw
+      have hw1' : v ∈ M1.support := List.mem_of_mem_tail hw1
+      exact hx (hdisj v hw1' hv2 ▸ hw1)
+  have hrest : (Walk.cons e2 (M2.append M1)).IsPath := by
+    rw [Walk.cons_isPath_iff]
+    refine ⟨hpath, ?_⟩
+    rw [Walk.support_append]
+    intro hmem
+    rcases List.mem_append.1 hmem with h | h
+    · exact hm2 h
+    · exact hm1 (List.mem_of_mem_tail h)
+  refine ⟨Walk.cons e1 (Walk.cons e2 (M2.append M1)), ?_, ?_⟩
+  · rw [Walk.cons_isCycle_iff]
+    refine ⟨hrest, fun hmem => ?_⟩
+    rw [Walk.edges_cons, Walk.edges_append, List.mem_cons, List.mem_append] at hmem
+    rcases hmem with h | h | h
+    · -- s(s,m) = s(m,t): s = t
+      have hst : s = t := by
+        rcases Sym2.eq_iff.1 h with ⟨e, _⟩ | ⟨e, _⟩
+        · exact absurd e (G.ne_of_adj e1)
+        · exact e
+      have hsx : s = x := hdisj s (M1.end_mem_support) (hst ▸ M2.start_mem_support)
+      subst hsx
+      have := Walk.isPath_iff_nil.1 h1
+      have := Walk.length_eq_zero_iff.2 this
+      omega
+    · exact hm2 (M2.snd_mem_support_of_mem_edges h)
+    · exact hm1 (M1.snd_mem_support_of_mem_edges h)
+  · simp [Walk.length_append]; omega
+
+/-- **Consecutive Mersenne paths with distinct exponents.**  If `G` has no accepted cycle, every
+`2^k` with `k >= 2` is accepted, and `M1, M2` are internally disjoint paths of lengths
+`2^a - 1`, `2^b - 1` closed by a two-edge bridge, then `a ≠ b`. -/
+theorem mersenne_pair_distinct {G : SimpleGraph V} {x s t m : V} (LengthOK : Nat → Prop)
+    (hLen : ∀ k, 2 ≤ k → LengthOK (2 ^ k))
+    (avoids : ∀ (z : V) (W : G.Walk z z), W.IsCycle → ¬ LengthOK W.length)
+    (M1 : G.Walk x s) (M2 : G.Walk t x)
+    (h1 : M1.IsPath) (h2 : M2.IsPath) (hm1 : m ∉ M1.support) (hm2 : m ∉ M2.support)
+    (hdisj : ∀ v, v ∈ M1.support → v ∈ M2.support → v = x) (hpos : 1 ≤ M1.length)
+    (e1 : G.Adj s m) (e2 : G.Adj m t) (a b : Nat) (ha : 2 ≤ a) (hb : 2 ≤ b)
+    (la : M1.length + 1 = 2 ^ a) (lb : M2.length + 1 = 2 ^ b) : a ≠ b := by
+  rintro rfl
+  obtain ⟨W, hW, hl⟩ := cycle_two_paths M1 M2 h1 h2 hm1 hm2 hdisj hpos e1 e2
+  apply avoids s W hW
+  have : W.length = 2 ^ (a + 1) := by rw [hl, pow_succ]; omega
+  rw [this]
+  exact hLen (a + 1) (by omega)
+
 end Hypostructure.Graph.PairRoute

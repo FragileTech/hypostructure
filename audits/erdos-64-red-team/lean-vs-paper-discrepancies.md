@@ -5391,6 +5391,42 @@ Report: `audits/structural-accounting/ColdBranchClosedOutcome_linearRealizedSile
 - **Exact surviving pattern.**  For every consecutive interior pair of the marked germ's
   stretch: a cycle of G of length `2^k + 1` (through exactly one of `pl u x`, `y v q`) or
   `2^k + 2` (through both), `k >= 2`, unless the pair sits in a triangle or `C4`.
+- **Round 5: routes, Mersenne paths, chords, and the consecutive-pair constraint
+  (kernel-checked).**
+  `Graph/SpliceRoute.lean`: `exists_cycle_snd_edges`, `cycle_lift_route`, `splice_cycle_route`,
+  `RouteCompatible`, `multiSplice_cycle_route`, `RouteLift`, `multi_excision_route`: the lifted
+  cycle keeps every non-shortcut edge of the excised cycle, contains the whole path of each used
+  shortcut, contains no other new edge, and has length `c.length` plus the shifts of the used
+  shortcuts.  `Graph/PairRoute.lean`: `path_around` (removing `u` and its two cycle edges leaves a
+  path), `routeCompatible_family`, `iso_u`, `iso_v`, `edge_avoids`, `pair_route`,
+  `chord_cycle`, `cycle_two_paths`, `mersenne_pair_distinct`.
+  New keys: 8404 `coldMarkedGermPairMersenne` and 8405 `coldMarkedGermChordSpan`.
+  **Correction:** the pair suppression does NOT give a Mersenne path around each vertex.  Its
+  outcome is one of: a path `pl ⇝ x` of length `Lk - 1` avoiding `u, v` (Mersenne when
+  `Lk = 2^k`), or a path `y ⇝ q` of length `Lk - 1` avoiding `u, v`, or a cycle of length
+  `Lk + 2` through all four edges `u pl`, `u x`, `v y`, `v q`.  A single vertex cannot be
+  suppressed (the third neighbour would lose degree).  Key 8405: for a path spanning the
+  support and vertices `w1` before `w2` with `w1 ~ w2` and subpath length `ℓ >= 2`, the chord
+  closes a cycle of length `ℓ + 1`, which is not accepted.
+  **Consecutive pairs.**  Pair `i` = `(u_i, u_{i+1})`, pair `i+1` = `(u_{i+1}, u_{i+2})`.  If
+  pair `i` yields `B_i : x_{i+1} ⇝ u_{i+2}` (length `2^b - 1`, avoiding `u_i, u_{i+1}`) and pair
+  `i+1` yields `A_{i+1} : u_i ⇝ x_{i+1}` (length `2^a - 1`, avoiding `u_{i+1}, u_{i+2}`), the two
+  share the endpoint `x_{i+1}` and the bridge `u_i u_{i+1} u_{i+2}`; if they are internally
+  disjoint they close a cycle of length `2^a + 2^b`, so `a ≠ b`
+  (`mersenne_pair_distinct`).  If they meet, take the first common vertex `w`: the two cycles
+  through `w` have lengths `ℓ'`, `ℓ''` with `ℓ' + ℓ'' = 2^a + 2^b`, both non-accepted, which is
+  satisfiable.  The other combinations (`A_i` with `A_{i+1}`, `B_i` with `B_{i+1}`, any with the
+  double cycle) do not close a walk from the data.  The constraint system along a stretch is
+  therefore: whenever outcome `B` is followed by outcome `A` with disjoint paths, the exponents
+  differ.  It is satisfiable for every stretch length (e.g. all outcomes `A`, no `B` followed by
+  `A`; or alternating exponents), so it gives no bound on the stretch length.
+  `threeRouteFan`, `threeRouteChain`, `windowAttachmentGap` and the no-`C4` fact constrain
+  routes of length `3` and window attachments; the Mersenne paths have length `2^k - 1 >= 3`
+  and lie anywhere in G, so they add nothing beyond disjointness.
+  **Closure test: negative.**  **Exact surviving pattern** along the stretch: for every
+  consecutive pair a Mersenne-length path around it (`2^k - 1`, `k >= 2`) or a double cycle of
+  length `2^k + 2`; no two consecutive Mersenne paths `B_i`, `A_{i+1}` of equal exponent that are
+  internally disjoint; every chord of the stretch has span `+ 1` non-accepted.
 - **Still open (exact proposition at G).** G's marked neutral equal-length germ `(Q, E)`,
   `E = Q`, of the positive extracted family on the realized package: a subcubic (F5)
   germ, not handed off, whose replacement has G's vertex and edge count, so `[157]`'s
