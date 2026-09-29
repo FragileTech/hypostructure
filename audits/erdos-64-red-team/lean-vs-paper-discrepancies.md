@@ -5223,7 +5223,7 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
   have no consumer.
 - `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.
 
-## G audit: TypeBSublinearOutcome (keys 8300–8308, 2026-09-29)
+## G audit: TypeBSublinearOutcome (keys 8300–8313, 2026-09-29)
 
 Residual: `TypeBSublinearOutcome` (node `[187]`, thm:main (vi)), the negative arm of
 `typeBSublinearDichotomy`; it retains `¬ TypeBSublinearHypotheses data G`
@@ -5260,11 +5260,29 @@ Residual: `TypeBSublinearOutcome` (node `[187]`, thm:main (vi)), the negative ar
     traces into the absorbed core or with an over-capacity receiver, (C) an unpaid
     absorbed vertex.
 - **Root type:** `TypeBSublinearOutcome` gains nine conjuncts (8300–8308).
-- **Status: still open.** Remaining proposition at G: (A) a negative positive-surplus
-  piece with a flat vertex tracing into a centre, or a saturated non-centre receiver;
-  (B) a handoff piece with a flat vertex tracing into the absorbed core (≤ its
-  separator's first neighbours), or a saturated receiver outside it; (C) an
-  absorbed vertex with a window port. H07 flow-cut for the two networks is the
-  published Hall violator (8306/8308 and 8307); none of these contradicts the ledger:
-  the receiver-load bound is the Type A unsaturation that the paper leaves to the
-  route-8 continuation. H04 and B01 (component-size profile) are not built.
+- **Gap facts (second pass, 8309–8313; statements `Statements/TypeBSublinearFlow.lean`,
+  proofs `Contracts/TypeB/SublinearFlow.lean`):**
+  - 8309 `receiverPortsAreWindowStubs` (H05): at a baseline receiver of a canonical
+    piece, `missingPorts = degree − internalDegree R(P₀)` (its incidences leaving the
+    remainder, i.e. window stubs); `def⁺(piece) = Σ_receivers missingPorts`. The
+    stub-deficit identity `e(R,W)+exc(R)=σ(R)+def⁺(R)` (branch g-audit-r8rate, key 8256)
+    is to be combined with this at merge; it is not copied here.
+  - 8310 `saturatedReceiverBasin` (H05): a saturated receiver has a trace basin of
+    ≥ `s·missingPorts` full vertices, each in the piece, at the baseline, tracing to it.
+  - 8311 `loadFlowValue` (H07, H04): with routing landing outside the excluded set,
+    #flat + #receivers ≤ `s·Σ missingPorts` if every receiver is unsaturated. This is
+    the max-flow ≤ min-cut transfer to unsaturated receivers.
+  - 8312 `coverFlowValue` (H07): `Σ|absorbed| ≤ Σ closedCount + #unpaid`, `|absorbed| ≤ 2`
+    per handoff piece, `#unpaid ≤ 2·#handoff pieces`, `unpaid = ∅ → cover`.
+  - 8313 `pieceSizeProfile` (B01): pieces partition R(P₀), every piece has a receiver,
+    `#pieces ≤ def⁺(R(P₀))`.
+- **Status: still open.** Remaining proposition at G: 8302's arms with the numerical
+  form now fixed: (A) a flat vertex of a positive-surplus piece whose canonical trace
+  lands on a centre, or a non-centre receiver with `s·q ≤ L` (basin of ≥ `s·q` full
+  vertices; `q` = its window stubs); (B) the same for handoff pieces against the
+  absorbed core; (C) an absorbed vertex with a window port, at most `2·#handoff pieces
+  ≤ 2·def⁺(R(P₀))` of them. None contradicts the ledger: the receiver-load bound is
+  the Type A unsaturation lemma, which the paper proves only for zero-surplus
+  supports; on a positive-surplus piece the trace-into-centre outcome and a
+  saturated receiver remain as the residual, and the ledger carries no window-stub
+  count at the granularity of one receiver or one absorbed vertex.

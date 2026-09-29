@@ -10,6 +10,7 @@ import Hypostructure.Graph.Statements.SurplusPair
 import Hypostructure.Graph.Statements.TypeBLanes
 import Hypostructure.Graph.Statements.TypeBSublinearCanonical
 import Hypostructure.Graph.Statements.TypeBSublinearGaps
+import Hypostructure.Graph.Statements.TypeBSublinearFlow
 import Hypostructure.Graph.Statements.SurplusPairRouting
 import Hypostructure.Graph.Statements.SurplusPairCode
 import Hypostructure.Graph.Statements.ColdGerm
@@ -1673,6 +1674,26 @@ inductive Key where
   the cover network is a window port**: an unpaid absorbed vertex is adjacent to
   its grouped centre and has another neighbour in the packed windows. -/
   | unpaidAbsorbedWindowPort
+  /-- G audit of `TypeBSublinearOutcome` (gap H05): **the ports of a receiver are
+  window stubs**: `missingPorts` is the number of incidences leaving the remainder,
+  and `def⁺` of a piece is the sum of its receivers' ports. -/
+  | receiverPortsAreWindowStubs
+  /-- G audit of `TypeBSublinearOutcome` (gap H05): **the structure of a saturated
+  receiver**: a trace basin of at least `s · missingPorts` full vertices of the
+  piece. -/
+  | saturatedReceiverBasin
+  /-- G audit of `TypeBSublinearOutcome` (gap H07): **the value of the load
+  network**: flat vertices plus receivers are at most `s · Σ missingPorts` when
+  every receiver is unsaturated and routing lands outside the excluded set. -/
+  | loadFlowValue
+  /-- G audit of `TypeBSublinearOutcome` (gap H07): **the value of the cover
+  network**: absorbed cardinalities are at most the closed counts plus the unpaid
+  count, absorbed cores have at most two vertices. -/
+  | coverFlowValue
+  /-- G audit of `TypeBSublinearOutcome` (gap B01): **the component size profile
+  of the remainder**: pieces partition `R(P₀)`, each has a receiver, and their
+  number is at most `def⁺(R(P₀))`. -/
+  | pieceSizeProfile
   -- F5 keys
   /-- Node `[175]`, no arm: every selected corridor meets a high-degree
   vertex. -/
@@ -2723,6 +2744,16 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       LoadFailureSaturatedStatement data.toParameters object
   | .unpaidAbsorbedWindowPort, object =>
       UnpaidAbsorbedWindowPortStatement data.toParameters object
+  | .receiverPortsAreWindowStubs, object =>
+      ReceiverPortsAreWindowStubsStatement data.toParameters object
+  | .saturatedReceiverBasin, object =>
+      SaturatedReceiverBasinStatement data.toParameters object
+  | .loadFlowValue, object =>
+      LoadFlowValueStatement data.toParameters object
+  | .coverFlowValue, object =>
+      CoverFlowValueStatement data.toParameters object
+  | .pieceSizeProfile, object =>
+      PieceSizeProfileStatement data.toParameters object
   -- F5 keys
   | .coldNoPositiveGerm, object =>
       ColdNoPositiveGermStatement data.toParameters object
@@ -3314,6 +3345,11 @@ def label : Key → String
   | .coverPayment => "coverPayment"
   | .loadFailureSaturated => "loadFailureSaturated"
   | .unpaidAbsorbedWindowPort => "unpaidAbsorbedWindowPort"
+  | .receiverPortsAreWindowStubs => "receiverPortsAreWindowStubs"
+  | .saturatedReceiverBasin => "saturatedReceiverBasin"
+  | .loadFlowValue => "loadFlowValue"
+  | .coverFlowValue => "coverFlowValue"
+  | .pieceSizeProfile => "pieceSizeProfile"
   -- F5 keys
   | .coldNoPositiveGerm => "coldNoPositiveGerm"
   -- SD keys (final pass)
@@ -3799,6 +3835,11 @@ example : label .pieceRoutingTotal = "pieceRoutingTotal" := rfl
 example : label .coverPayment = "coverPayment" := rfl
 example : label .loadFailureSaturated = "loadFailureSaturated" := rfl
 example : label .unpaidAbsorbedWindowPort = "unpaidAbsorbedWindowPort" := rfl
+example : label .receiverPortsAreWindowStubs = "receiverPortsAreWindowStubs" := rfl
+example : label .saturatedReceiverBasin = "saturatedReceiverBasin" := rfl
+example : label .loadFlowValue = "loadFlowValue" := rfl
+example : label .coverFlowValue = "coverFlowValue" := rfl
+example : label .pieceSizeProfile = "pieceSizeProfile" := rfl
 -- F5 keys
 example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
 -- SD keys (final pass)
@@ -4269,6 +4310,11 @@ def idx : Key → Nat
   | .coverPayment => 8306
   | .loadFailureSaturated => 8307
   | .unpaidAbsorbedWindowPort => 8308
+  | .receiverPortsAreWindowStubs => 8309
+  | .saturatedReceiverBasin => 8310
+  | .loadFlowValue => 8311
+  | .coverFlowValue => 8312
+  | .pieceSizeProfile => 8313
   -- F5 keys
   | .coldNoPositiveGerm => 1800
   -- SD keys (final pass)
@@ -4733,6 +4779,11 @@ def ofIdx : Nat → Key
   | 8306 => .coverPayment
   | 8307 => .loadFailureSaturated
   | 8308 => .unpaidAbsorbedWindowPort
+  | 8309 => .receiverPortsAreWindowStubs
+  | 8310 => .saturatedReceiverBasin
+  | 8311 => .loadFlowValue
+  | 8312 => .coverFlowValue
+  | 8313 => .pieceSizeProfile
   -- F5 keys
   | 1800 => .coldNoPositiveGerm
   -- SD keys (final pass)
@@ -5650,6 +5701,16 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "loadFailureSaturated") 8307
   | .unpaidAbsorbedWindowPort =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "unpaidAbsorbedWindowPort") 8308
+  | .receiverPortsAreWindowStubs =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "receiverPortsAreWindowStubs") 8309
+  | .saturatedReceiverBasin =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "saturatedReceiverBasin") 8310
+  | .loadFlowValue =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "loadFlowValue") 8311
+  | .coverFlowValue =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coverFlowValue") 8312
+  | .pieceSizeProfile =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pieceSizeProfile") 8313
   -- F5 keys
   | .coldNoPositiveGerm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldNoPositiveGerm") 1800

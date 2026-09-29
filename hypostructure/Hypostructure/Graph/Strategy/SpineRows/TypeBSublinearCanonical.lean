@@ -1,6 +1,7 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Contracts.TypeB.SublinearCanonical
 import Hypostructure.Graph.Contracts.TypeB.SublinearGaps
+import Hypostructure.Graph.Contracts.TypeB.SublinearFlow
 
 /-! G audit of `TypeBSublinearOutcome`: the failed sublinear hypotheses in G's
 canonical form (keys 8300--8302), published on the negative arm of node `[187]`. -/
@@ -132,6 +133,78 @@ port. -/
           (inputs.get (K .cubicBaseline)).down.1.1
           (fun vertex => le_trans inputs.current.baseline
             (inputs.current.object.minDegree_le_degree vertex))⟩ .nil)
+
+/-- G audit: receiverPortsAreWindowStubs. -/
+@[reducible] noncomputable def receiverPortsAreWindowStubsRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.receiverPortsAreWindowStubs
+    { Requires := [K .typeBSublinearResidual]
+      Produces := [K .receiverPortsAreWindowStubs]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .receiverPortsAreWindowStubs)
+        ⟨Contracts.TypeB.receiverPortsAreWindowStubs
+          (data := data.toParameters) (object := inputs.current.object)⟩ .nil)
+
+/-- G audit: saturatedReceiverBasin. -/
+@[reducible] noncomputable def saturatedReceiverBasinRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.saturatedReceiverBasin
+    { Requires := [K .typeBSublinearResidual]
+      Produces := [K .saturatedReceiverBasin]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .saturatedReceiverBasin)
+        ⟨Contracts.TypeB.saturatedReceiverBasin
+          (data := data.toParameters) (object := inputs.current.object)⟩ .nil)
+
+/-- G audit: loadFlowValue. -/
+@[reducible] noncomputable def loadFlowValueRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.loadFlowValue
+    { Requires := [K .typeBSublinearResidual]
+      Produces := [K .loadFlowValue]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .loadFlowValue)
+        ⟨Contracts.TypeB.loadFlowValue
+          (data := data.toParameters) (object := inputs.current.object)⟩ .nil)
+
+/-- G audit: coverFlowValue. -/
+@[reducible] noncomputable def coverFlowValueRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coverFlowValue
+    { Requires := [K .typeBSublinearResidual, K .cubicBaseline]
+      Produces := [K .coverFlowValue]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .coverFlowValue)
+        ⟨Contracts.TypeB.coverFlowValue
+          (data := data.toParameters) (object := inputs.current.object)
+          (inputs.get (K .cubicBaseline)).down.1.1⟩ .nil)
+
+/-- G audit: pieceSizeProfile. -/
+@[reducible] noncomputable def pieceSizeProfileRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pieceSizeProfile
+    { Requires := [K .typeBSublinearResidual, K .remainderNormalized]
+      Produces := [K .pieceSizeProfile]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pieceSizeProfile)
+        ⟨Contracts.TypeB.pieceSizeProfile
+          (data := data.toParameters) (object := inputs.current.object)
+          (inputs.get (K .remainderNormalized)).down⟩ .nil)
 
 /-- G audit: the exact decomposition of the failed hypotheses. -/
 @[reducible] noncomputable def typeBSublinearFailureArmsRow :

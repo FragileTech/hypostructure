@@ -280,6 +280,11 @@ noncomputable def selectedRouteEightResidual
     (coverPaymentFresh : K .coverPayment ∉ known := by key_fresh)
     (loadFailureSaturatedFresh : K .loadFailureSaturated ∉ known := by key_fresh)
     (unpaidAbsorbedWindowPortFresh : K .unpaidAbsorbedWindowPort ∉ known := by key_fresh)
+    (receiverPortsAreWindowStubsFresh : K .receiverPortsAreWindowStubs ∉ known := by key_fresh)
+    (saturatedReceiverBasinFresh : K .saturatedReceiverBasin ∉ known := by key_fresh)
+    (loadFlowValueFresh : K .loadFlowValue ∉ known := by key_fresh)
+    (coverFlowValueFresh : K .coverFlowValue ∉ known := by key_fresh)
+    (pieceSizeProfileFresh : K .pieceSizeProfile ∉ known := by key_fresh)
     (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
       key_fresh)
