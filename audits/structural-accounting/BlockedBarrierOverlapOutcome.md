@@ -384,19 +384,17 @@ Checked and kept as G-only: 1 (minimality is G's extremal property; the quantifi
 
 - The encoding order `blockedEncodingRank` (scale major, window, barrier row minor) and the dyadic scale family `separatedScaleCount = floor(log2 n)` are used by the failing coordinate but fit no separate coordinate; they are the index set of the G03/G05/G06 accounting above. No structure was forced into a row.
 - Fact-count discrepancy (bookkeeping, not structure): the code has 120 common facts; the docstrings state 94 / 99 and 95 / 96. The counts 121 / 122 here are for the worktree HEAD `7e90da3`.
-## After the G audit (keys 8600-8603)
+## After the G audit (revised: aggregate test; keys 8600-8602)
 
-New facts 124-128 (`blockedOwnRecord`, `blockedFailureSlack`, `blockedPrefixCompression`,
-`blockedRecordTransfer`, `blockedDominantState`), all G facts (G's own skeleton `objectSkeletonMember` in `𝓑(𝒫)`, or
-counts over the class built from G's packing).
+Fact 120 is now the numerical aggregate failure of G's class (`F_c·A_k < W_c·A_{k+1}`; no
+member witness), so it is no longer `nonG`.  New facts 124-126 (`blockedOwnRecord`,
+`blockedFailureSlack`, `blockedPrefixCompression`), all about G.
 
-| Coordinate | Before | After | Accounting facts | Certificate |
-|---|---|---|---|---|
-| G03 conditional information of local tests | ~ | x | 124, 125, 126, 127 (+67, 71, 73) | bound (`1 ≤ |S| ≤ |A|` at G at every coordinate; `F < W` and `0 < |S| ≤ |A|` at the failure; prefix `|B|·∏W ≤ |G|·∏F`) |
-| G05 additivity versus correlation | ~ | x | 126, 127 (+67, 69) | bound (prefix compression from the earlier successful bounds) and transfer identity (fibres at agreeing records equal G's) |
-| D06 minimal connected overlap obstruction | nonG | nonG (fact 120 stays class-quantified; its G-form is the transfer fact 127 plus the own-record fact 124) | 124, 127 | none: the connected overlap support is not constructed (paper: open obligation) |
-| G04 dominant local type | gap | x | 128 | bound (`|S| ≤ (F+1)|A_s|`; `F|A| < W(F+1)|A_s|`) via the carrier bound `blockedSurvivingStateCard` |
-| G06, D05, H04 | gap / ~ | unchanged (G06 not needed for the compression chain; D05/D06 open; H04 belongs to the `[160]` branch) | | |
+| Coordinate | Before | After | Accounting facts |
+|---|---|---|---|
+| D06 minimal connected overlap obstruction | nonG | gap (the overlap support is not constructed; the failure is now a class count) | 120 |
+| G03 conditional information of local tests | ~ | x | 120, 124, 125, 126 |
+| G05 additivity versus correlation | ~ | x | 120, 125, 126 |
+| G04, G06, D05, H04 | gap / ~ | unchanged | |
 
-Counts after (of the 88 coordinates): x = 65, ~ = 17, gap = 3, n/a = 2, nonG = 1.
-Table 2: the four rows above are appended (all `G`, none `nonG`); row 120 stays `nonG`.
+Counts after: x = 64, ~ = 17, gap = 5, n/a = 2, nonG = 0.
