@@ -220,12 +220,11 @@ def Rate (packing : Finset (Finset object.Vertex)) (threshold discharge slack : 
   (threshold * discharge + 1) * (supply object packing).card + threshold * slack <
     threshold * (object.remainderSupport packing).card
 
-/-- **The strong rate** (G's exact private-carrier rate): `s·|∂R| + slack < |R|`.
-At a target-avoiding G every route-`8` core is empty (`α(ξ) = 0`), so an entry is a
-two-carrier entry as soon as it exists, and the census needs only a nonempty
-collection: by `|R| ≤ N + s·|∂R| + slack` this holds as soon as the remainder exceeds
-`s·|∂R| + slack`.  This replaces the manuscript's `τ < 3/13` (`Rate`), which is the
-stronger requirement `(δs+1)|∂R| + δ·slack < δ|R|`. -/
+/-- **The strong rate** `s·|∂R| + slack < |R|`: with the census deficit
+`|R| ≤ N + s·|∂R| + slack` it makes the route-`8` collection nonempty.  It is weaker than
+the manuscript's `τ < 3/13` (`Rate`, `(δs+1)|∂R| + δ·slack < δ|R|`), which the
+no-two-carrier arm of the census needs (g-pieces-constructed: the cores are not empty in
+general once the realizations are the pieces constructed from G). -/
 def StrongRate (packing : Finset (Finset object.Vertex)) (discharge slack : Nat) : Prop :=
   discharge * (supply object packing).card + slack <
     (object.remainderSupport packing).card

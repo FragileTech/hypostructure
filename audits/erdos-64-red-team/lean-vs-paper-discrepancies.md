@@ -6636,13 +6636,58 @@ G between the folded vertices.
   definition.
 - **"cold G2 empty"** (`BoundedGerm.not_distinguishing`): its second
   representative `E` is the `Precedes`-least piece *with G's response in
-  `G − Z`* (`CutStateReadingAt`), so G2 is empty by the choice of `E`, the
-  readings-only pattern.  Under the decision `E` must be the constructed
-  excision of the repeated segment (`GConstructedPiece.splice`), and G2 is the
-  live test `¬ (Q.response ↔ (splice a b D).response)` in `G − Z`.  Not
-  re-derived on this branch (it rebuilds `[154]`, the G3 compression and the
-  table rows; the excision dichotomy is g-audit-coldSilent's SpliceLift);
-  the three cold singletons are not restored here.
+  `G − Z`* (`CutStateReadingAt`, carried as the field `BoundedGerm.sameResponse`),
+  so G2 is empty by the choice of `E`, the readings-only pattern.  **Invalid under
+  the decision.**  Read on the constructed pieces at the germ's support
+  (`Graph/ColdGermConstructed.lean`): `DistinguishingAt germ P` is exactly
+  `P.response` in `G − Z` (`distinguishingAt_iff_response`), and at a minimal G
+  every fold of two interior vertices of the support with no common neighbour
+  distinguishes (`distinguishingAt_fold`) — G2 is inhabited at every germ whose
+  support has such a pair.  For the excision `E = splice a b D`, G2 is the
+  excised glue's accepted cycle, which g-audit-coldSilent's `excision_dichotomy`
+  turns into a cycle of G of length `L + q` (`L` accepted, `L + q` not).
+  **Residual not restored on this branch:** restoring it re-types
+  `BoundedGerm.canonical` as a constructed piece, removes the `[154]` G2
+  `Incompatible` closure (three assembly sites: `NearCubic/DensePass` ×2,
+  `NearCubic/Survivor/Realized`), rebuilds the G3 compression from the neutral
+  hypothesis instead of `sameResponse`, and returns a new cold G2 residual at the
+  root — a root-type change in modules g-audit-coldSilent is still changing.
+  Flagged for the coordinator.
+
+### Integration with g-repair-base 20bd04f (g-audit-int)
+
+- **`K .route8Rate` is the manuscript rate again** (`Route8Census.Rate`,
+  `τ < 3/13`).  g-audit-r8rate re-routed it to the strong rate
+  `s·|∂R| + F·s·T(n) < |R|`, justified by "every route-8 core is empty at G";
+  with constructed realizations the cores are not empty in general, and the
+  strong rate no longer closes the no-two-carrier arm `[119]`–`[122]`.  Restored:
+  `Route8CensusStatement`, `Route8RateStatement`, `Route8RateFailsStatement`,
+  `route8RateFromColdBelow`, `exactCollisionFails_route8Rate_false`,
+  `route8Census_privateCarrierBudget_false` (budget `δ·|Ξ| ≤ |∂R|` against the
+  census and the rate), the budget row and its incompatibility.  Removed:
+  `Route8CollectionEmpty`, `route8CollectionEmpty_of_noTwoCarrier`,
+  `route8Census_collectionEmpty_false`, `route8Thin_of_fails`.
+  **Root-type change:** `Route8RateFailsOutcome` (and its realized/dense
+  subtypes) now carries the manuscript failed rate
+  `δ|R| ≤ (δs+1)|∂R| + δ·F·s·T(n)` under `K .route8RateFails` (the thin
+  remainder is a sub-case, the second disjunct of `K .route8StrongRate`), and
+  the `K .route8Rate` conjunct of every residual that has it is the manuscript
+  rate.
+- **r8rate keys 8259/8260 restated in G-form** (key names kept):
+  `route8CoreEmpty` — every census core is empty *or its entry is determined*
+  (`Entry.alpha_eq_zero_of_not_determined`); `route8StrongRate` — the strong rate
+  with `[113]` gives a nonempty route-8 collection (no longer a two-carrier
+  entry), or the thin remainder.
+- **r8q key 8150 `route8QuotientEntriesAtG` restated:** withdrawn — "quotient-free
+  iff no entry" and "`α(ξ) = 0` at every entry"; kept — an empty family is
+  quotient-free, `0 < |Ξ̃|`, and (now unconditional, `K .route8Rate` being the
+  manuscript rate) `|∂R| < δ|Ξ̃|` with a two-support entry; per entry: the
+  selected basin, the size-preserving representative, readings not smaller,
+  folds carrying cycles and paths, carriers in `∂R`, short inside paths, no
+  exit-(5) datum; and **at `α(ξ) = 0`** the (b) quotient and the undeclared
+  constructed realizations.
+- `[11]`/`[12]` read `canonicalPieceLabel` (profile and `G − Z` response of every
+  constructed piece), replacing g-audit-182's `canonicalReadingLabel`.
 
 ### New fact (Type A, idx 8700): `K .route8FoldPeels`
 

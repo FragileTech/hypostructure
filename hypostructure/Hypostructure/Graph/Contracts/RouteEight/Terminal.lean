@@ -432,45 +432,29 @@ theorem route8PrivateCarrierBudget_of_noTwoCarrier (data : Parameters)
   dsimp only [Route8PrivateCarrierBudget]
   simpa [Nat.sub_add_cancel thresholdPos] using budget
 
-/-- **The no-two-carrier arm of `[117]` is the empty collection at G.**  At a
-target-avoiding G every route-`8` core is empty (`α(ξ) = 0`), so every indexed entry has
-zero private carriers and is a two-carrier entry: the only way no entry is two-carrier
-is that there is no entry. -/
-theorem route8CollectionEmpty_of_noTwoCarrier (data : Parameters)
+/-- **Nodes `[119]`--`[122]`** (`rem:route8-carrier-margin`): the
+private-support budget `δ·|Ξ(𝒳_A)| ≤ |∂R|` contradicts the census deficit and
+rate readings, since `τ_win < 3/13`. -/
+theorem route8Census_privateCarrierBudget_false (data : Parameters)
     (object : FiniteObject.{u})
-    (avoids : ¬ HasCycleWithLength data.LengthOK object)
-    (noTwo : Route8NoTwoCarrierEntryStatement data object) :
-    Route8CollectionEmpty data object := by
+    (thresholdPos : 1 ≤ data.threshold)
+    (census : Route8CensusStatement data object)
+    (budget : Route8PrivateCarrierBudget data object) : False := by
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  unfold Route8CollectionEmpty
-  dsimp only
-  apply Finset.eq_empty_of_forall_notMem
-  intro index member
-  refine noTwo index member ?_
-  have coreEmpty : Route8Census.core object data.threshold data.LengthOK index = ∅ :=
-    Finset.card_eq_zero.mp (Route8.PresentedEntry.ofTraceBasin_alpha_eq_zero
-      (support := index.1) (basin := Route8Census.basin object data.threshold index)
-      (threshold := data.threshold) (receiver := index.2.1) (load := index.2.2) avoids)
-  unfold Route8Census.CollectionTwoCarrierEntry Route8.IndexedTwoCarrierCore
-    Route8.indexedPrivateCoreCount Route8.indexedPrivateCoreCarriers
-  rw [coreEmpty]
-  simp
-
-/-- **Nodes `[119]`--`[122]`** at G: the empty collection contradicts the census deficit
-`|R| ≤ |Ξ(𝒳_A)| + s·|∂R| + slack` against the rate `s·|∂R| + slack < |R|`. -/
-theorem route8Census_collectionEmpty_false (data : Parameters)
-    (object : FiniteObject.{u})
-    (census : Route8CensusStatement data object)
-    (empty : Route8CollectionEmpty data object) : False := by
-  classical
-  obtain ⟨deficit, rate⟩ := census
-  unfold Route8CollectionEmpty at empty
-  dsimp only at empty deficit rate
-  unfold Route8Census.CollectionDeficit at deficit
-  unfold Route8Census.StrongRate at rate
-  rw [empty] at deficit
-  simp only [Finset.card_empty] at deficit
-  omega
+  let packing := canonicalWindowPacking data object
+  let support := object.remainderSupport packing
+  let routeEight :=
+    (object.canonicalPieces support).filter (Route8Survives data object packing)
+  let entries := Route8Census.entriesOfComponents object packing routeEight
+    data.threshold data.dischargeScale
+  let supply := Route8Census.supply object packing
+  obtain ⟨deficit, rate⟩ := Route8Census.ambient_of_readings thresholdPos
+    census.1 census.2
+  have budget' : (data.threshold - 1 + 1) * entries.card ≤ supply.card := by
+    change Route8PrivateCarrierBudget data object at budget
+    dsimp only [Route8PrivateCarrierBudget] at budget
+    simpa [Nat.sub_add_cancel thresholdPos] using budget
+  exact Route8.privateCarrierCensus_contradiction deficit budget' rate
 
 end Hypostructure.Graph.Contracts.RouteEight

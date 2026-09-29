@@ -1662,12 +1662,12 @@ inductive Key where
   exit-`(4)` witness. -/
   | route8UnpaidWitnessFree
   -- R8Q keys (8150–8199): the route-8 quotient test stated about G
-  /-- Node `[348]`, stated about G (Lean improvement): **the quotient test is
-  decided at G** — alternative (b) is present at every routed load, so
-  quotient freeness fails exactly when the unified entry family is nonempty;
-  at every unified entry `α(ξ) = 0`, the quotient is present, the canonical
-  representative of G's piece at `B_u` has the size of the piece (a valid
-  replacement is not smaller), and the exit-`(5)` datum is absent. -/
+  /-- Node `[348]`, stated about G (Lean improvement): the unified entry family
+  is nonempty and has a two-support entry under the rate; at every unified entry
+  the canonical representative of G's piece at `B_u` has the size of the piece (a
+  valid replacement is not smaller), the folds carry accepted cycles and paths,
+  and the exit-`(5)` datum is absent; at `α(ξ) = 0` the quotient of (b) is
+  present (g-pieces-constructed: realizations are constructed from G). -/
   | route8QuotientEntriesAtG
   -- Type B sublinear audit keys (8300–8349)
   /-- G audit of `TypeBSublinearOutcome`, `prop:typeB-bridge-sublinear`: **the
@@ -1821,9 +1821,9 @@ inductive Key where
   | route8DeficitVsStubs
   /-- G audit `Route8RateFailsOutcome` (idx 8258): the route-8 entries against the large-budget deficit test: `N_basin ≥ D_A`, and either the test holds with `|R| + s(X + 2(order−1)p) ≤ N_basin + s(δ·order·p + σ_W) + slack` or `D_A + s|∂R| + slack < |R|`. -/
   | route8EntryLowerBound
-  /-- G audit `Route8RateFailsOutcome` (idx 8259): every route-8 census core is empty at G (`α(ξ) = 0`), so an entry is a two-carrier entry as soon as it exists. -/
+  /-- G audit `Route8RateFailsOutcome` (idx 8259): every route-8 census core is empty or its entry is determined on the realizations constructed from G. -/
   | route8CoreEmpty
-  /-- G audit `Route8RateFailsOutcome` (idx 8260): the strong rate `s|∂R| + F·s·T < |R|` (then `[113]` yes gives a two-carrier entry without the `3/13` rate) or the thin remainder `|R| ≤ s|∂R| + F·s·T`. -/
+  /-- G audit `Route8RateFailsOutcome` (idx 8260): the strong rate `s|∂R| + F·s·T < |R|` (then `[113]` yes gives a nonempty route-8 collection) or the thin remainder `|R| ≤ s|∂R| + F·s·T`. -/
   | route8StrongRate
   /-- G audit `Route8RateFailsOutcome` (idx 8261): under the net cap the thin remainder forces `X + T < σ_W + F·T` (windows isolated). -/
   | route8ThinIsolation

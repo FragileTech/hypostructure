@@ -3,7 +3,7 @@ import Hypostructure.Graph.Contracts.RouteEight.Collection
 import Hypostructure.Graph.Statements.Route8RateFailsRoute
 
 /-!
-# Contracts: cores empty at G, the strong rate, the thin remainder
+# Contracts: empty or determined cores, the strong rate, the thin remainder
 -/
 
 namespace Hypostructure.Graph.Contracts.RouteEight
@@ -15,15 +15,16 @@ open scoped BigOperators
 
 universe u
 
-/-- **Every route-`8` core is empty at a target-avoiding G.** -/
-theorem route8CoreEmpty (data : Parameters) (object : FiniteObject.{u})
-    (avoids : ¬ HasCycleWithLength data.LengthOK object) :
+/-- **Every route-`8` core is empty or determined at G.** -/
+theorem route8CoreEmpty (data : Parameters) (object : FiniteObject.{u}) :
     Route8CoreEmptyStatement data object := by
+  letI : DecidableEq object.Vertex := Graph.Route8.vertexDecEq object
   intro index
-  have zero := Route8.PresentedEntry.ofTraceBasin_alpha_eq_zero
-    (support := index.1) (basin := Route8Census.basin object data.threshold index)
-    (threshold := data.threshold) (receiver := index.2.1) (load := index.2.2) avoids
-  exact Finset.card_eq_zero.mp zero
+  by_cases determined : ((Route8Census.presented object data.threshold data.LengthOK
+      index).toEntry (HasCycleWithLength data.LengthOK)).Determined
+  · exact Or.inr determined
+  · exact Or.inl (Finset.card_eq_zero.mp
+      (Route8.Entry.alpha_eq_zero_of_not_determined _ determined))
 
 open Classical in
 /-- The indexed entries of the route-`8` collection number `N_basin`. -/
@@ -113,12 +114,10 @@ theorem entriesOfComponents_card_eq_basin (data : Parameters) (object : FiniteOb
 theorem route8StrongRate (data : Parameters) (object : FiniteObject.{u})
     (baseline : data.threshold ≤ object.minDegree)
     (scalePos : 0 < data.dischargeScale)
-    (avoids : ¬ HasCycleWithLength data.LengthOK object)
     (burden : Route8BasinBurden data object) :
     Route8StrongRateStatement data object := by
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  have coreEmpty := route8CoreEmpty data object avoids
   have count := entriesOfComponents_card_eq_basin data object baseline scalePos
   obtain ⟨basinCount, hcount, scaled, hscaled, hle⟩ := burden
   unfold Route8StrongRateStatement
@@ -144,12 +143,7 @@ theorem route8StrongRate (data : Parameters) (object : FiniteObject.{u})
           (Route8Survives data object (canonicalWindowPacking data object)))
         data.threshold data.dischargeScale).card := by
       rw [count, ← hcount]; exact basinPos
-    obtain ⟨index, member⟩ := Finset.card_pos.mp cardPos
-    refine ⟨index, member, ?_⟩
-    unfold Graph.Route8Census.CollectionTwoCarrierEntry Graph.Route8.IndexedTwoCarrierCore
-      Graph.Route8.indexedPrivateCoreCount Graph.Route8.indexedPrivateCoreCarriers
-    rw [coreEmpty index]
-    simp
+    exact cardPos
   · right
     exact Nat.le_of_not_lt strong
 

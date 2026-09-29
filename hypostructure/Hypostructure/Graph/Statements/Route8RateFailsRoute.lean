@@ -2,13 +2,17 @@ import Hypostructure.Graph.Statements.Route8RateFailsAccounting
 import Hypostructure.Graph.NetCharge
 
 /-!
-# Statements: cores empty at G, the strong rate, the thin remainder
+# Statements: empty or determined cores, the strong rate, the thin remainder
 
-G audit of `Route8RateFailsOutcome`.  At a target-avoiding G every route-`8` entry has an
-empty essential core (`PresentedEntry.ofTraceBasin_alpha_eq_zero`), so an entry is a
-two-carrier entry as soon as it exists.  The census therefore needs no rate of `3/13`: it
-needs `|R| > s·|∂R| + F·s·T(n)` (the strong rate), and its complement is the exact thin
-remainder `|R| ≤ s·|∂R| + F·s·T(n)`.
+G audit of `Route8RateFailsOutcome`, re-read over the realizations constructed from G
+(`GConstructedPiece`, g-pieces-constructed).  A route-`8` core is empty unless the entry's
+declared family determines the target on every constructed realization
+(`Route8.Entry.alpha_eq_zero_of_not_determined`).  The strong rate
+`|R| > s·|∂R| + F·s·T(n)` together with the large-budget deficit `[113]` makes the
+route-`8` collection nonempty; its complement is the exact thin remainder
+`|R| ≤ s·|∂R| + F·s·T(n)`.  (The earlier reading "every core is empty at G, so an entry
+is two-carrier as soon as it exists" rested on the readings-only realizations and is
+withdrawn.)
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -17,16 +21,20 @@ open Hypostructure
 
 universe u
 
-/-- **Every route-`8` core is empty at G**: each graph-owned entry of the census has
-`𝓒_ess(ξ) = ∅` (`α(ξ) = 0`, completeness read in `G − B_u`). -/
+/-- **Every route-`8` core is empty or determined at G**: each graph-owned entry of the
+census has `𝓒_ess(ξ) = ∅`, or its declared carrier family determines the target on every
+realization constructed from G (`Route8.Entry.Determined`, completeness read in
+`G − B_u`).  (Key name kept from g-audit-r8rate; the statement is the G-form.) -/
 noncomputable def Route8CoreEmptyStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
+  letI : DecidableEq object.Vertex := Graph.Route8.vertexDecEq object
   ∀ index : Graph.Route8Census.Index object,
-    Graph.Route8Census.core object data.threshold data.LengthOK index = ∅
+    Graph.Route8Census.core object data.threshold data.LengthOK index = ∅ ∨
+      ((Graph.Route8Census.presented object data.threshold data.LengthOK index).toEntry
+        (Graph.HasCycleWithLength data.LengthOK)).Determined
 
-/-- **The strong rate, or the thin remainder.**  With empty cores the private-carrier
-census needs only `s·|∂R| + F·s·T(n) < |R|`: then, if the large-budget deficit test `[113]`
-holds, the route-`8` collection has a two-carrier entry with no use of `3/13`; the
+/-- **The strong rate, or the thin remainder.**  If `s·|∂R| + F·s·T(n) < |R|` and the
+large-budget deficit test `[113]` holds, the route-`8` collection has an entry; the
 complement is `|R| ≤ s·|∂R| + F·s·T(n)`. -/
 noncomputable def Route8StrongRateStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
@@ -34,7 +42,15 @@ noncomputable def Route8StrongRateStatement (data : Parameters)
   (data.dischargeScale * object.boundaryIncidence support +
         data.bridgeMassFactor * data.dischargeScale *
           data.surplusThreshold object.vertexCount < support.card ∧
-      (Route8LargeBudgetDeficit data object → Route8TwoCarrierEntryStatement data object)) ∨
+      (Route8LargeBudgetDeficit data object →
+        letI : DecidableEq object.Vertex := object.vertices.decEq
+        0 < (Graph.Route8Census.entriesOfComponents object
+          (canonicalWindowPacking data object)
+          (by
+            classical
+            exact (object.canonicalPieces support).filter
+              (Route8Survives data object (canonicalWindowPacking data object)))
+          data.threshold data.dischargeScale).card)) ∨
     support.card ≤ data.dischargeScale * object.boundaryIncidence support +
       data.bridgeMassFactor * data.dischargeScale *
         data.surplusThreshold object.vertexCount

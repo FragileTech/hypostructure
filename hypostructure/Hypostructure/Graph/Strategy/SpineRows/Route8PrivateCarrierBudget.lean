@@ -25,7 +25,7 @@ arm of node `[117]`. -/
     {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.route8PrivateCarrierBudget
-    { Requires := [K .route8NoTwoCarrierEntry, K .selection, K .cubicBaseline]
+    { Requires := [K .route8NoTwoCarrierEntry, K .cubicBaseline]
       Produces := [K .route8PrivateCarrierBudget]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -36,10 +36,6 @@ arm of node `[117]`. -/
           Graph.Contracts.RouteEight.route8PrivateCarrierBudget_of_noTwoCarrier
           data.toParameters inputs.current.object
           (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
-          (inputs.get (K .route8NoTwoCarrierEntry)).down,
-          Graph.Contracts.RouteEight.route8CollectionEmpty_of_noTwoCarrier
-          data.toParameters inputs.current.object
-          (inputs.get (K .selection)).down.1
           (inputs.get (K .route8NoTwoCarrierEntry)).down⟩ .nil)
     0 0
 
@@ -53,7 +49,7 @@ noncomputable instance instIncompatibleRoute8CensusPrivateCarrierBudget :
     Incompatible (Input BranchState Presentation presentation data)
       (K .route8Census) (K .route8PrivateCarrierBudget) where
   contradiction := fun input census budget =>
-    Graph.Contracts.RouteEight.route8Census_collectionEmpty_false
-      data.toParameters input.object census.down budget.down.2.2
+    Graph.Contracts.RouteEight.route8Census_privateCarrierBudget_false
+      data.toParameters input.object budget.down.1 census.down budget.down.2
 
 end Hypostructure.Graph.Strategy.Spine

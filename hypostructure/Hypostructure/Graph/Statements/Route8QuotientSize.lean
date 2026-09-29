@@ -13,12 +13,15 @@ census), stated about G only.
   replacement of a piece of a minimal counterexample cannot be smaller, so the
   "strictly smaller representative" that the manuscript's step "(b) implies
   exit `(5)`" needs does not exist at G.
-* `Route8QuotientEntriesAtGStatement`: the test is decided at G -- the quotient
-  is trivially present at every entry, so the failure of quotient freeness is
-  exactly the non-emptiness of the unified entry family; and at every unified
-  entry the essential core is empty, the quotient is present, the
-  representative is size-preserving, and the exit-`(5)` datum
-  (`TraceTargetCompleteCompression`) is absent.
+* `Route8QuotientEntriesAtGStatement`: what G decides about the test -- the
+  unified entry family is nonempty and carries the rate (a two-support entry);
+  at every unified entry the selected basin exists, the representative is
+  size-preserving, the folds carry accepted cycles and paths, and the exit-`(5)`
+  datum (`TraceTargetCompleteCompression`) is absent; at an entry with
+  `α(ξ) = 0` the quotient of alternative (b) is present.  (g-pieces-constructed:
+  over the realizations constructed from G, `α(ξ) = 0` and the presence of (b)
+  at every entry are no longer decided; they rested on readings-only
+  realizations.)
 
 This module imports no strategy, row, or vocabulary module.
 -/
@@ -80,11 +83,8 @@ abbrev Route8QuotientReadingsNotSmaller (data : Parameters)
 neither the canonical representative of G's piece at the basin, nor any of G's
 quotient readings of the basin, nor any fold of two of its interior vertices,
 satisfies the declared `u`-supported target algebra
-(`def:typeA-trace-basin`) in `G − basin`.  The declared algebra is empty at
-`α(ξ) = 0`, so the accepted cycles that minimality forces on the folds
-(`Route8BasinFoldsCarryCycles`) are never declared events: this is the exact gap
-between the declared-algebra completeness of alternative (b) and the raw target
-completeness of the exit-`(5)` compression. -/
+(`def:typeA-trace-basin`) in `G − basin`.  It is stated at `α(ξ) = 0`, where the
+declared algebra is empty (`not_declaredAlgebra_of_alpha_zero`). -/
 abbrev Route8ConstructedRealizationsUndeclared (data : Parameters)
     (object : Graph.FiniteObject.{u}) (support basin : Finset object.Vertex)
     (receiver load : object.Vertex) : Prop :=
@@ -207,7 +207,7 @@ abbrev Route8InsidePathBound (object : Graph.FiniteObject.{u})
 
 /-- **The baseline-essential carriers of an indexed entry** (`def:typeA-route8-carriers`
 at G): the edges of the cut of the entry's piece that meet its selected basin.
-At G the piece is cubic and the target-essential core is empty, so these are the
+At G the piece is cubic, so these are the
 incidences of the basin that cannot be dropped without breaking the degree
 baseline; all lie in `∂R`. -/
 noncomputable def route8EntryCarrierSet (data : Parameters)
@@ -237,55 +237,54 @@ abbrev Route8TwoSupportEntryExists (data : Parameters)
   ∃ index ∈ route8UnifiedEntries data object,
     (route8EntryPrivateCarriers data object index).card + 1 ≤ data.threshold
 
-/-- **Node `[348]`, stated about G** (Lean improvement: the quotient test is
-decided at G).
+/-- **Node `[348]`, stated about G** (Lean improvement).
 
-1. `Route8QuotientFreeStatement` holds exactly when the unified entry family
-   is empty: alternative (b) is present at every routed load of G.
-2. The unified entry family is nonempty (G's strong rate `K .route8Rate`,
-   the unified deficit `lem:typeA-unified-deficit`, and the stage accounting
-   `s·\tilde D_A ≤ |\tilde\Xi|`).  Under the manuscript's rate `τ < 3/13`
-   (`Route8Census.Rate`) it carries the rate: the boundary incidence supply
-   `|∂R|` is below `δ·|\tilde\Xi|`, and a two-support entry exists.
-   (Integration g-audit-int: `K .route8Rate` is now G's strong rate
-   (g-audit-r8rate), which does not give `|∂R| < δ·|\tilde\Xi|`; that clause
-   and the two-support entry are stated under the manuscript rate.)
-3. At every unified entry `ξ = (X, w, u)`: `α(ξ) = 0`; the selected basin `B_u`
-   exists; its trace-response quotient (alternative (b), G-form) is present;
-   the canonical representative of G's piece at `B_u` is a valid replacement
-   of the size of the piece, not smaller; no quotient reading is a smaller
-   valid replacement; and the exit-`(5)` compression datum at `B_u` is
-   absent. -/
+1. An empty unified entry family is quotient-free (`Route8QuotientFreeStatement`
+   holds vacuously).
+2. The unified entry family is nonempty and carries the rate (`K .route8Rate`,
+   the manuscript rate `τ < 3/13`, the unified deficit `lem:typeA-unified-deficit`
+   and the stage accounting `s·\tilde D_A ≤ |\tilde\Xi|`): the boundary incidence
+   supply `|∂R|` is below `δ·|\tilde\Xi|`, and a two-support entry exists.
+3. At every unified entry `ξ = (X, w, u)`: the selected basin `B_u` exists; at
+   `α(ξ) = 0` its trace-response quotient (alternative (b), G-form) is present and
+   the constructed realizations do not hold the declared algebra; the canonical
+   representative of G's piece at `B_u` is a valid replacement of the size of the
+   piece, not smaller; no quotient reading is a smaller valid replacement; the
+   folds of `B_u` carry accepted cycles and paths; the carriers lie in `∂R`; paths
+   inside the piece are short; and the exit-`(5)` compression datum at `B_u` is
+   absent.
+
+(g-pieces-constructed: the realizations of alternative (b) are the pieces
+constructed from G (`GConstructedPiece`), so neither `α(ξ) = 0` nor the presence of
+(b) at every entry is decided; the earlier clauses "quotient-free iff no entry" and
+"`α(ξ) = 0` at every entry" are withdrawn.  `K .route8Rate` is the manuscript rate
+again, so the rate clause is unconditional.) -/
 noncomputable abbrev Route8QuotientEntriesAtGStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  (Route8QuotientFreeStatement data object ↔
-      route8UnifiedEntries data object = ∅) ∧
+  (route8UnifiedEntries data object = ∅ →
+      Route8QuotientFreeStatement data object) ∧
     0 < (route8UnifiedEntries data object).card ∧
-    (Graph.Route8Census.Rate object (canonicalWindowPacking data object)
-        data.threshold data.dischargeScale
-        (data.bridgeMassFactor * data.dischargeScale *
-          data.surplusThreshold object.vertexCount) →
-      (Graph.Route8Census.supply object (canonicalWindowPacking data object)).card <
+    ((Graph.Route8Census.supply object (canonicalWindowPacking data object)).card <
           data.threshold * (route8UnifiedEntries data object).card ∧
         Route8TwoSupportEntryExists data object) ∧
     ∀ index ∈ route8UnifiedEntries data object,
-      ((Graph.Route8Census.presented object data.threshold data.LengthOK
-        index).toEntry (Graph.HasCycleWithLength data.LengthOK)).alpha = 0 ∧
       ∃ basin : Finset object.Vertex,
         Graph.Route8.TraceBasin.select? object index.1 data.threshold
             index.2.1 index.2.2 = some basin ∧
-          (∃ retained, Graph.Route8.TraceBasin.TraceResponseQuotient object
-            index.1 data.threshold data.LengthOK index.2.1 index.2.2 basin
-            retained) ∧
+          (((Graph.Route8Census.presented object data.threshold data.LengthOK
+              index).toEntry (Graph.HasCycleWithLength data.LengthOK)).alpha = 0 →
+            (∃ retained, Graph.Route8.TraceBasin.TraceResponseQuotient object
+              index.1 data.threshold data.LengthOK index.2.1 index.2.2 basin
+              retained) ∧
+            Route8ConstructedRealizationsUndeclared data object index.1 basin
+              index.2.1 index.2.2) ∧
           Route8BasinRepresentative data object basin ∧
           Route8QuotientReadingsNotSmaller data object index.1 basin ∧
           Route8BasinFoldsCarryCycles data object basin ∧
           Route8BasinFoldPaths data object index.1 basin ∧
           Route8EntryCarriers data object index.1 basin ∧
           Route8InsidePathBound object index.1 ∧
-          Route8ConstructedRealizationsUndeclared data object index.1 basin
-            index.2.1 index.2.2 ∧
           ¬ Graph.Route8.TraceBasin.TraceTargetCompleteCompression object
             index.1 data.threshold data.LengthOK index.2.1 index.2.2 basin
 

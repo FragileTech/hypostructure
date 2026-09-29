@@ -18,10 +18,10 @@ Node `[348]` / `[113]` stated about G.
   quotient reading of the basin.
 * `not_traceTargetCompleteCompression`: the exit-`(5)` datum is absent at every
   basin (`cor:uncompressible`, `CompressibleSupport`).
-* `route8QuotientEntriesAtG`: the quotient test is decided at G; the failure
-  of quotient freeness is exactly the non-emptiness of the unified entry family,
-  and every unified entry has `α(ξ) = 0`, its quotient, a size-preserving
-  representative, and no exit-`(5)` datum.
+* `route8QuotientEntriesAtG`: what G decides about the quotient test: the
+  unified entry family is nonempty and has a two-support entry; every unified
+  entry has a size-preserving representative, folds carrying accepted cycles and
+  paths, and no exit-`(5)` datum; at `α(ξ) = 0` it has its quotient.
 
 This module imports no vocabulary, row, or strategy module.
 -/
@@ -338,21 +338,22 @@ theorem route8RemainderLeEntries (data : Parameters) (object : FiniteObject.{u})
   have := deficit
   omega
 
-/-- **The unified entry family is nonempty** under G's strong rate
-`s·|∂R| + F·s·T(n) < |R|` (`K .route8Rate`). -/
+/-- **The unified entry family is nonempty** under the rate `K .route8Rate`
+(`τ < 3/13`), through the strong rate `s·|∂R| + F·s·T(n) < |R|` it implies. -/
 theorem route8EntriesPos (data : Parameters) (object : FiniteObject.{u})
     (descent : Route8PeelingDescentStatement data object)
     (deficit : Route8UnifiedDeficitFact data object)
     (rate : Route8RateStatement data object) :
     0 < (route8UnifiedEntries data object).card := by
   have bound := route8RemainderLeEntries data object descent deficit
-  unfold Route8RateStatement Route8Census.StrongRate at rate
+  have strong := Route8Census.strongRate_of_rate object
+    (canonicalWindowPacking data object) data.threshold data.dischargeScale _ rate
+  unfold Route8Census.StrongRate at strong
   omega
 
 /-- **The unified entry family carries the manuscript rate**: under
 `(δs+1)·|∂R| + δ·F·s·T(n) < δ·|R|` (`Route8Census.Rate`, `τ < 3/13`) the unified
-deficit bound leaves `|∂R| < δ·|\tilde\Xi|`.  (Integration g-audit-int: stated
-under the manuscript rate; `K .route8Rate` is G's strong rate.) -/
+deficit bound leaves `|∂R| < δ·|\tilde\Xi|` (`K .route8Rate` is this rate). -/
 theorem route8SupplyLtEntries (data : Parameters) (object : FiniteObject.{u})
     (descent : Route8PeelingDescentStatement data object)
     (deficit : Route8UnifiedDeficitFact data object)
@@ -443,9 +444,14 @@ theorem route8QuotientEntriesAtG (data : Parameters)
       ∃ basin : Finset object.Vertex,
         Graph.Route8.TraceBasin.select? object index.1 data.threshold
             index.2.1 index.2.2 = some basin ∧
-          (∃ retained, Graph.Route8.TraceBasin.TraceResponseQuotient object
-            index.1 data.threshold data.LengthOK index.2.1 index.2.2 basin
-            retained) ∧ Route8EntryCarriers data object index.1 basin ∧
+          (((Graph.Route8Census.presented object data.threshold data.LengthOK
+              index).toEntry (HasCycleWithLength data.LengthOK)).alpha = 0 →
+            (∃ retained, Graph.Route8.TraceBasin.TraceResponseQuotient object
+              index.1 data.threshold data.LengthOK index.2.1 index.2.2 basin
+              retained) ∧
+            Route8ConstructedRealizationsUndeclared data object index.1 basin
+              index.2.1 index.2.2) ∧
+          Route8EntryCarriers data object index.1 basin ∧
             Route8InsidePathBound object index.1 := by
     intro index indexMem
     obtain ⟨component, componentMem, pieceEq, receiverMem, loadMem⟩ :=
@@ -462,7 +468,7 @@ theorem route8QuotientEntriesAtG (data : Parameters)
       Graph.Route8.TraceBasin.exists_select?_eq_some_of_mem_routedLoads
         object index.1 data.threshold connected loadRouted
     have complete := Graph.Route8.TraceBasin.select?_traceComplete selectedEq
-    obtain ⟨trace, _traceSel, traceInside⟩ := complete.2.1
+    obtain ⟨trace, traceSel, traceInside⟩ := complete.2.1
     have receiverInBasin : index.2.1 ∈ basin :=
       traceInside (List.mem_toFinset.mpr trace.1.end_mem_support)
     have zero : object.ambientSurplus index.1 data.threshold = 0 := by
@@ -472,11 +478,48 @@ theorem route8QuotientEntriesAtG (data : Parameters)
       rw [pieceEq]
       exact Graph.Route8Census.cutEdges_piece_subset object
         (canonicalWindowPacking data object) component
-    exact ⟨basin, selectedEq,
-      Graph.Route8.TraceBasin.exists_traceResponseQuotient_of_avoids avoids
-        (Graph.FiniteObject.mem_receivers.mpr
-          (Graph.FiniteObject.mem_receivers.mp receiverIn))
-        loadRouted complete,
+    have selectedBasin : Graph.Route8Census.basin object data.threshold
+        index = basin := by
+      rw [Graph.Route8Census.basin, selectedEq]; rfl
+    have quotientAtZero :
+        ((Graph.Route8Census.presented object data.threshold data.LengthOK
+            index).toEntry (HasCycleWithLength data.LengthOK)).alpha = 0 →
+          (∃ retained, Graph.Route8.TraceBasin.TraceResponseQuotient object
+            index.1 data.threshold data.LengthOK index.2.1 index.2.2 basin
+            retained) ∧
+          Route8ConstructedRealizationsUndeclared data object index.1 basin
+            index.2.1 index.2.2 := by
+      intro small
+      unfold Graph.Route8Census.presented at small
+      rw [selectedBasin] at small
+      have loadDegree : object.internalDegree index.1 index.2.2 = data.threshold :=
+        (object.mem_routedLoads.mp loadRouted).2.1
+      have receiverDegree : object.internalDegree index.1 index.2.1 < data.threshold :=
+        (object.mem_receivers.mp receiverIn).2
+      have loadNeReceiver : index.2.2 ≠ index.2.1 := by
+        intro same
+        rw [same] at loadDegree
+        omega
+      have tracePositive : 0 < trace.1.length := by
+        apply Nat.pos_of_ne_zero
+        intro zero
+        exact loadNeReceiver (trace.1.eq_of_length_eq_zero zero)
+      refine ⟨⟨Graph.Route8.TraceBasin.ResponseQuotient.forgetting ∅,
+        Finset.empty_subset _, ⟨Graph.Route8.PresentedEntry.TraceCoordinate.traceIncidence,
+          ?_, Finset.notMem_empty _, Or.inl ⟨rfl, trace, traceSel, tracePositive,
+            traceInside⟩⟩,
+        fun piece _realizes => iff_of_false
+          (not_declaredAlgebra_of_alpha_zero data object index.1 basin index.2.1
+            index.2.2 small _ _)
+          (not_declaredAlgebra_of_alpha_zero data object index.1 basin index.2.1
+            index.2.2 small _ _)⟩,
+        route8ConstructedRealizationsUndeclared data object index.1 basin
+          index.2.1 index.2.2 small⟩
+      change Graph.Route8.PresentedEntry.TraceCoordinate.traceIncidence ∈
+        Graph.Route8.PresentedEntry.traceCoordinates object index.1 data.threshold
+          index.2.1 index.2.2
+      exact Finset.mem_insert_self _ _
+    exact ⟨basin, selectedEq, quotientAtZero,
       route8EntryCarriers data object baseline index.1 basin index.2.1 zero
         cutSubset complete.1 receiverIn receiverInBasin,
       route8InsidePathBound data object three baseline pathBounds index.1
@@ -490,40 +533,22 @@ theorem route8QuotientEntriesAtG (data : Parameters)
     rw [pieceEq]
     exact Graph.Route8Census.cutEdges_piece_subset object
       (canonicalWindowPacking data object) component
+  have supplyLt := route8SupplyLtEntries data object descent deficit rate
   refine ⟨?_, route8EntriesPos data object descent deficit rate,
-    fun manuscript =>
-      have supplyLt := route8SupplyLtEntries data object descent deficit manuscript
-      ⟨supplyLt, route8TwoSupportEntryExists data object entryCut supplyLt⟩, ?_⟩
-  · constructor
-    · intro free
-      apply Finset.eq_empty_of_forall_notMem
-      intro index indexMem
-      obtain ⟨basin, selectedEq, quotient, _, _⟩ := perEntry index indexMem
-      exact free index indexMem basin selectedEq quotient
-    · intro empty index indexMem basin _selectedEq _quotient
-      rw [empty] at indexMem
-      exact absurd indexMem (Finset.notMem_empty _)
+    ⟨supplyLt, route8TwoSupportEntryExists data object entryCut supplyLt⟩, ?_⟩
+  · intro empty index indexMem basin _selectedEq _quotient
+    rw [empty] at indexMem
+    exact absurd indexMem (Finset.notMem_empty _)
   · intro index indexMem
-    obtain ⟨basin, selectedEq, quotient, carriers, inside⟩ := perEntry index indexMem
-    have alphaZero := Graph.Route8.PresentedEntry.ofTraceBasin_alpha_eq_zero
-      (support := index.1) (basin := Graph.Route8Census.basin object
-        data.threshold index) (threshold := data.threshold)
-      (receiver := index.2.1) (load := index.2.2) avoids
-    exact ⟨alphaZero, basin,
-      selectedEq, quotient,
+    obtain ⟨basin, selectedEq, quotientAtZero, carriers, inside⟩ :=
+      perEntry index indexMem
+    exact ⟨basin, selectedEq, quotientAtZero,
       route8BasinRepresentative data object baseline avoids minimality basin,
       route8QuotientReadingsNotSmaller data object avoids minimality index.1 basin,
       route8BasinFoldsCarryCycles data object two baseline minimality basin,
       route8BasinFoldPaths data object two baseline avoids minimality index.1
         basin,
       carriers, inside,
-      route8ConstructedRealizationsUndeclared data object index.1 basin
-        index.2.1 index.2.2 (by
-          have selectedBasin : Graph.Route8Census.basin object data.threshold
-              index = basin := by
-            rw [Graph.Route8Census.basin, selectedEq]; rfl
-          rw [selectedBasin] at alphaZero
-          exact alphaZero),
       not_traceTargetCompleteCompression data object uncompressible _ _ _ _⟩
 
 end Hypostructure.Graph.Contracts.RouteEight

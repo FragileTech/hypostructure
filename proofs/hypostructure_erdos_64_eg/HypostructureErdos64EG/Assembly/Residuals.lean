@@ -3660,7 +3660,8 @@ ledger (109 common facts: the 92 earlier ones and the G-audit facts
 `route8RateFailsFlow`, `route8CarrierInjection`, `route8RateExactSlack`,
 `route8BasinBurden`, `route8StubDeficit`, `route8DeficitVsStubs`, `route8EntryLowerBound`, `route8CoreEmpty`,
 `route8StrongRate`, `route8ThinIsolation`, `route8WindowStub`, `route8ThinSmall`,
-`route8WindowRPathGap`, `route8HubStubs`). -/
+`route8WindowRPathGap`, `route8HubStubs`).  `K .route8RateFails` is the failed
+manuscript rate `δ|R| ≤ (δs+1)|∂R| + δ·F·s·T(n)` (g-pieces-constructed). -/
 abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
