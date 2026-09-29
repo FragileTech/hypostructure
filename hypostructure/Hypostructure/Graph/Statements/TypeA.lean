@@ -959,9 +959,11 @@ noncomputable abbrev TypeAExitSevenEnvelopeStatement (data : Parameters)
 
 /-! ## The switch at the separator, stated about G (G repair, R3b) -/
 
-/-- **Node `[102]`, the exit-(4) peel at G is a switch peel** (Lean improvement:
-Q1–Q3 and Q5 are empty at G).  The canonical exit-(4) witness of the entry
-state is a Q4 member: its separation's switch — the two connector
+/-- **Node `[102]`, the exit-(4) peel at G** (Lean improvement: Q1 is empty at
+G).  Integration g-audit-int: on the pieces constructed from G
+(g-pieces-constructed) Q2, Q3 and Q5 are no longer empty at G, so the canonical
+exit-(4) witness of the entry state is split exactly by its member: a Q2, Q3 or
+Q5 member, or a Q4 member whose separation's switch — the two connector
 configurations exchange their continuations at the separator, constructed from
 G — is a
 proper double-edge switch, and the switched graph carries an accepted cycle
@@ -971,9 +973,12 @@ noncomputable abbrev TypeAExitFourSwitchCycleStatement (data : Parameters)
   AtExitReceiver data object fun piece receiver =>
     ∃ witness, canonicalExitFourWitnessAt data object piece receiver ∅ =
         some witness ∧
-      ∃ datum, witness.member = Graph.ExitFour.CanonicalMember.q4 datum ∧
-        datum.separation.SwitchValid ∧
-        datum.separation.ForcedAtSwitch data.LengthOK
+      ((∃ datum, witness.member = Graph.ExitFour.CanonicalMember.q4 datum ∧
+          datum.separation.SwitchValid ∧
+          datum.separation.ForcedAtSwitch data.LengthOK) ∨
+        (∃ datum, witness.member = Graph.ExitFour.CanonicalMember.q2 datum) ∨
+        (∃ datum, witness.member = Graph.ExitFour.CanonicalMember.q3 datum) ∨
+        (∃ datum, witness.member = Graph.ExitFour.CanonicalMember.q5 datum))
 
 /-- **Node `[108]`, the surviving separator at G.**  At the canonical handoff
 separation of `X₀` the switch at `z`, constructed from G, has no accepted

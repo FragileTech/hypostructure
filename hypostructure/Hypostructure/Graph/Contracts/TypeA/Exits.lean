@@ -531,9 +531,11 @@ theorem typeAExitSevenEnvelope
 /-! ## The switch at the separator, stated about G -/
 
 /-- **Node `[102]` at G** (Lean improvement): the canonical exit-(4) witness is
-a Q4 member (Q1–Q3 and Q5 are empty at a target-avoiding G), and its switch is
-the target-cycle arm: a proper double-edge switch whose switched graph carries
-an accepted cycle through an exchanged edge. -/
+split exactly by its member (Q1 is empty at a target-avoiding G): a Q2, Q3 or Q5
+member, or a Q4 member whose switch is the target-cycle arm -- a proper
+double-edge switch whose switched graph carries an accepted cycle through an
+exchanged edge.  (Integration g-audit-int: Q2, Q3, Q5 are read on the pieces
+constructed from G and are no longer empty.) -/
 theorem typeAExitFourSwitchCycle
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (exitFour : TypeASaturatedHandoffExitFourStatement data object) :
@@ -541,10 +543,14 @@ theorem typeAExitFourSwitchCycle
   obtain ⟨piece, pinned, receiver, chosen, occurs⟩ := exitFour
   obtain ⟨witness, found, _spec⟩ := canonicalExitFourWitnessAt_spec
     ((exitFourAt_iff_exists_witnessSpec data object piece receiver ∅).mp occurs)
-  obtain ⟨datum, memberEq⟩ :=
-    Graph.ExitFour.CanonicalMember.exists_q4_of_avoids avoids witness.member
-  exact ⟨piece, pinned, receiver, chosen, witness, found, datum, memberEq,
-    Graph.ExitFour.Q4TargetDefect.forced_paths avoids datum⟩
+  refine ⟨piece, pinned, receiver, chosen, witness, found, ?_⟩
+  cases hmember : witness.member with
+  | q1 datum => exact (datum.false_of_avoids avoids).elim
+  | q2 datum => exact Or.inr (Or.inl ⟨datum, rfl⟩)
+  | q3 datum => exact Or.inr (Or.inr (Or.inl ⟨datum, rfl⟩))
+  | q4 datum =>
+      exact Or.inl ⟨datum, rfl, Graph.ExitFour.Q4TargetDefect.forced_paths avoids datum⟩
+  | q5 datum => exact Or.inr (Or.inr (Or.inr ⟨datum, rfl⟩))
 
 /-- **Node `[108]` at G**: the canonical handoff separation survives, so its
 switch at `z` (constructed from G) has no accepted cycle and its separator has
