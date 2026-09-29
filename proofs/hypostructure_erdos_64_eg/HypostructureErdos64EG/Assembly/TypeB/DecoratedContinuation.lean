@@ -94,6 +94,9 @@ noncomputable def selectedTypeBDecoratedContinuation
     (jointBalanceFresh : K .route8JointBalance ∉ known := by
       key_fresh)
     (entriesAtGFresh : K .route8QuotientEntriesAtG ∉ known := by key_fresh)
+    (pieceWindowAttachmentFresh : K .route8PieceWindowAttachment ∉ known := by key_fresh)
+    (pieceChainCycleFresh : K .route8PieceChainCycle ∉ known := by key_fresh)
+    (piecewiseRateFresh : K .route8PiecewiseRate ∉ known := by key_fresh)
     (typeBSublinearCanonicalFormFresh : K .typeBSublinearCanonicalForm ∉ known := by key_fresh)
     (groupedAbsorbedCoreSubsetFresh : K .groupedAbsorbedCoreSubset ∉ known := by key_fresh)
     (typeBSublinearFailureArmsFresh : K .typeBSublinearFailureArms ∉ known := by key_fresh)

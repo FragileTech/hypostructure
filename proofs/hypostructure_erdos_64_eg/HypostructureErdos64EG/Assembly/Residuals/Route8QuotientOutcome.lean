@@ -172,6 +172,9 @@ theorem route8QuotientProductReturn
     [FactKeys.Has (K .route8QuotientResidual) known]
     [FactKeys.Has (K .route8PeelingDescent) known]
     [FactKeys.Has (K .route8QuotientEntriesAtG) known]
+    [FactKeys.Has (K .route8PieceWindowAttachment) known]
+    [FactKeys.Has (K .route8PieceChainCycle) known]
+    [FactKeys.Has (K .route8PiecewiseRate) known]
     (entry : Route8LaneEntry selected)
     (continuation : NetChargeContinuation selected) :
     Route8QuotientOutcome_product selected :=

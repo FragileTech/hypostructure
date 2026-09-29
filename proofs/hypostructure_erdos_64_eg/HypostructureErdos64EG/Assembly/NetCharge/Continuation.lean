@@ -111,6 +111,7 @@ noncomputable abbrev netChargeContinuationKeys : FactKeys EGInput.{u} :=
     K .route8JointBalance, K .route8TwoCarrierExit,
     K .route8UnifiedTwoCarrierExit, K .route8StageRate,
     K .route8UnpaidTwoCarrier, K .route8UnpaidWitnessFree, K .route8QuotientEntriesAtG,
+    K .route8PieceWindowAttachment, K .route8PieceChainCycle, K .route8PiecewiseRate,
     K .typeAExitFourSwitchCycle, K .typeAExitSevenSwitch,
     K .typeBGlobalLocalBridge, K .compatiblePairFanClosure,
     K .fanClosedPortTypeBRouting, K .compatiblePairTypeBRouting,

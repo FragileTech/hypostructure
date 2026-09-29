@@ -188,6 +188,9 @@ theorem route8JointBalanceProductReturn
     [FactKeys.Has (K .route8UnifiedVisibleResidual) known]
     [FactKeys.Has (K .route8UnifiedVisibleOverload) known]
     [FactKeys.Has (K .route8JointBalance) known]
+    [FactKeys.Has (K .route8PieceWindowAttachment) known]
+    [FactKeys.Has (K .route8PieceChainCycle) known]
+    [FactKeys.Has (K .route8PiecewiseRate) known]
     (entry : Route8LaneEntry selected)
     (continuation : NetChargeContinuation selected) :
     Route8JointBalanceOutcome_product selected :=

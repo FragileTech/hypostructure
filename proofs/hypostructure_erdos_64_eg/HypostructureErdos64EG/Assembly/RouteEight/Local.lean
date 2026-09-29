@@ -7,6 +7,7 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8JointBalance
 import Hypostructure.Graph.Strategy.SpineRows.Route8PeelingDescent
 import Hypostructure.Graph.Strategy.SpineRows.Route8QuotientDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8QuotientEntriesAtG
+import Hypostructure.Graph.Strategy.SpineRows.Route8BlobStructure
 import Hypostructure.Graph.Strategy.SpineRows.Route8StageOutcomeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8TwoCarrierExit
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedDeficit
@@ -258,6 +259,9 @@ noncomputable def selectedRouteEightUnifiedResidual
       key_fresh)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh)
     (entriesAtGFresh : K .route8QuotientEntriesAtG ∉ known := by key_fresh)
+    (pieceWindowAttachmentFresh : K .route8PieceWindowAttachment ∉ known := by key_fresh)
+    (pieceChainCycleFresh : K .route8PieceChainCycle ∉ known := by key_fresh)
+    (piecewiseRateFresh : K .route8PiecewiseRate ∉ known := by key_fresh)
     (canonicalFormFresh : K .typeBSublinearCanonicalForm ∉ known := by
       key_fresh)
     (absorbedSubsetFresh : K .groupedAbsorbedCoreSubset ∉ known := by
@@ -473,11 +477,29 @@ noncomputable def selectedRouteEightUnifiedResidual
           g_traceIntoAbsorbedStructure (by key_fresh)
       exact Or.inl (typeBSublinearProductReturn arms arm.1 arm.2)
   | .left sublinearHistory =>
+      -- Blob structure on the rate arm (keys 9900--9902), on the common prefix of
+      -- `Route8QuotientOutcome` and `Route8JointBalanceOutcome`: the pieces of `R`
+      -- against the windows of `P₀`, and the rate `K .route8Rate` over the pieces.
+      let pieceWindowAttachment :=
+        (route8PieceWindowAttachmentRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          sublinearHistory (by key_fresh)
+      let pieceChainCycle :=
+        (route8PieceChainCycleRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          pieceWindowAttachment (by key_fresh)
+      let piecewiseRate :=
+        (route8PiecewiseRateRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          pieceChainCycle (by key_fresh)
       let unifiedDeficit :=
         (route8UnifiedDeficitRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          sublinearHistory (by key_fresh)
+          piecewiseRate (by key_fresh)
       -- Route 8 read on the pieces constructed from G: fold pairs of the
       -- selected basins are exit-(4) peels, and complete carrier sets hold
       -- every fold pair (idx 8700).

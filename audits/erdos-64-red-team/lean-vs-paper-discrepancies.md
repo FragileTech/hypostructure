@@ -7053,3 +7053,127 @@ run at G: a two-support entry with a nonempty core is an exit-`(4)` peel (Q5,
 `[124]` now closes non-vacuously (the Q5 witness is a constructed realization).
 `[123]`'s failed-rate arm returns the `[186]` joint balance (open in the
 manuscript) and `[348]` returns the quotient residual.
+
+## Blob structure (route 8)
+
+Branch `g-blob-structure` (base `g-repair-base` 53135b04), keys 9900–9902, 2026-09-29.
+Scope: the rate arm, where `K .route8Rate` holds,
+`(δs+1)·|∂R| + δ·slack < δ·|R|` (`Route8Census.Rate` at `P₀`, `δ = 3`, `s = 4`, i.e.
+`13|∂R| + 3·slack < 3|R|`); target residuals `Route8QuotientOutcome` (`[187]`/`[348]`) and
+`Route8JointBalanceOutcome` (`[186]`).  The uncontrolled term is `R`; every fact below names
+the canonical pieces `X` of `G[R]` (`canonicalPieces (remainderSupport P₀)`), their exits
+into windows of `P₀` (placements `LocalRigidity.IsWindowPlacement`), or the rate term.
+
+### Generic module `Graph/BlobCycles.lean` (vocabulary-free, new)
+
+Reuses `PathChords.ear_cycle` (closing a chain), `Core.DyadicLength`; imports
+`ThetaCycles` (nothing restated from `ThetaCycles`, `DisjointRoutes`, `PathChords`,
+`TwoGeodesics`).
+
+- (a) `triangles_disjoint`: `FourCycleFree G`, `IsTriangle G s`, `IsTriangle G t`, `s ≠ t`,
+  `∀ v ∈ s, v ∈ t → G.degree v ≤ 3` ⊢ `Disjoint s t` (shared edge ⇒ 4-cycle `x w v w'`;
+  one shared vertex ⇒ degree ≥ 4).
+- (b) `toggle_one` (a path through an edge `e` whose ends are adjacent to `z ∉ q` has a path
+  with the same ends, length `+1`, vertices `q ∪ {z}`, keeping every other edge),
+  `toggle_subset`, `toggle_interval`: toggles `z ∈ Z` on distinct edges
+  (`Set.InjOn edge Z`), `edge z ∈ p.edges`, `∀ v ∈ edge z, Adj v z`, `z ∉ p.support` ⊢
+  `∀ m ≤ |Z|, ∃ q : a ⇝ b` path with `|q| = |p| + m` inside `p ∪ Z`.
+- (c) `exists_pow_two_mem` (`1 ≤ a ⊢ ∃ k, a ≤ 2^k < 2a`), `powerOfTwo_of_interval`
+  (`4 ≤ b`, `2a ≤ b + 1` ⊢ a power of two `≥ 4` in `[a, b]`; small `a ≤ 2` handled by `4`),
+  `powerOfTwo_mem_of_interval_subset` (`a ≥ 3`, `b ≥ 2a − 1`), and the run bound
+  `interval_bound_of_no_pow_two`: no power of two `≥ 4` in `[a, b]` ⊢ `b < 4 ∨ b + 1 < 2a`.
+- (d) `append_cons_isPath`, `open_chain`, `chain_cycle`, `blob_chain_cycle`: `k = n+1` blocks
+  `r i : a i ⇝ b i`, `w i : c i ⇝ d i`, all pairwise vertex-disjoint, edges `b i c i`,
+  `d i a (i+1)`, `d k a 0`, total `≥ 3` ⊢ a cycle of length `Σ (|r i| + |w i|) + 2k`
+  (the length set contains the Minkowski sum of the internal length sets `+ Σ|w i| + 2k`).
+
+### Facts at G (Type A rows `Strategy/SpineRows/Route8BlobStructure.lean`)
+
+Placed at the start of the `.left sublinearHistory` arm of
+`selectedRouteEightUnifiedResidual` (`Assembly/RouteEight/Local.lean`), before
+`route8UnifiedDeficitRow`: the earliest point of the common prefix of exactly the two target
+residuals (all inputs — `K .selection`, `K .cubicBaseline`, `K .route8Rate`, the canonical
+packing and pieces — are available there).
+
+- **9900 `route8PieceWindowAttachment`** (`Route8PieceWindowAttachmentStatement`, contract
+  `Contracts.RouteEight.route8PieceWindowAttachment`, Requires `selection`,
+  `cubicBaseline`): for every canonical piece `X`, window `P ∈ P₀` with placement `p`, exits
+  `p i — a`, `b — p i'` (`a, b ∈ X`, `i ≠ i' ∨ a ≠ b`): every internal path length
+  `ℓ ∈ L_X(a,b)` has `¬ pow2(|i−i'| + ℓ + 2)`, and every run `[lo, hi] ⊆ L_X(a,b)` has
+  `hi + |i−i'| + 2 < 4 ∨ hi + |i−i'| + 3 < 2(lo + |i−i'| + 2)`.  Exclusion reuses
+  `route8WindowSelfRPathGap`; the run bound is (c).
+- **9901 `route8PieceChainCycle`** (`Route8PieceChainCycleStatement`, contract
+  `route8PieceChainCycle`): for `k = n+1` distinct pieces `X i`, distinct windows
+  `P i ∈ P₀` with placements `p i`, exits `b i — p i (j i)`, `p i (j' i) — a (i+1)`,
+  `p k (j' k) — a 0`, and any `ℓ i ∈ L_{X i}(a i, b i)` with total `≥ 3`:
+  `¬ pow2(Σ (ℓ i + |j i − j' i|) + 2k)`.  Pairs of pieces / pairs of windows are `k = 2`.
+  Proof: (d) with window segments `LocalRigidity.exists_segment`.
+- **9902 `route8PiecewiseRate`** (`Route8PiecewiseRateStatement`, contract
+  `route8PiecewiseRate`, Requires `route8Rate`): `|R| = Σ_X |X|`,
+  `|∂R| = Σ_X E(X)` (`E(X) = |cutEdges X|`, via `sum_canonicalPieces`,
+  `sum_boundaryIncidence_canonicalPieces`, `card_cutEdges_eq_boundaryIncidence`),
+  `δ·slack < Σ_X (δ|X| − (δs+1)E(X))` in `ℤ`, and the heavy pieces
+  `{X : (δs+1)E(X) < δ|X|}` are nonempty.  At `δ = 3, s = 4`:
+  `Σ_X (3|X| − 13E(X)) > 3·slack`; this is the hook for a per-piece bound.
+
+### Paper check: which rate term each fact changes
+
+- Fact 80 (2-degeneracy of the pieces) adds nothing here: a connected piece `X` with an
+  exit, all of whose vertices have degree 3 in G, is automatically 2-degenerate (a proper
+  subgraph has a vertex with a neighbour of `X` outside it; `X` itself has the exit vertex).
+  Not built on.  Degree sums and cycle rank of the pieces are likewise already implied.
+- (a), (b) change no rate term on their own: a toggle run `[ℓ₀, ℓ₀ + t]` with the dyadic run
+  bound gives `t ≤ ℓ₀ + |i−i'|`, already implied by `t ≤ ℓ₀` (distinct toggle edges); the
+  triangle count `≤ |X|/3` is implied by disjointness.  They are generic tools only and are
+  not instantiated at G.
+- 9900 constrains how exits of a piece land: two exits of `X` on one window at distance `d`
+  force every run `[lo, hi]` of `L_X(a,b)` to satisfy `hi ≤ 2lo + d` (or `hi + d < 2`).
+  It is a constraint on the pieces' exits, not on `3|X| − 13E(X)`.
+- 9901 is the same constraint for cyclic chains of distinct pieces and windows.
+- 9902 is the rate itself, written exactly over the pieces.
+
+### Joint test (9900–9902 with the full inventory of both residuals)
+
+No contradiction derived.  Reason: the per-piece bound `3|X| ≤ 13E(X)` is what would
+contradict 9902, and 9900/9901 do not force it: the computational search
+(scratchpad `blobsearch/`, off-G, a tool check only) finds the admissible piece X15
+(`n = 15`, `E = 3`, `ρ = 5 > 13/3`, internal exit-pair length runs `[3,14]`, `[3,14]`,
+`[5,14]`), whose 9900 constraints at window order 13 require only that a same-window exit pair
+be at distance `d ≥ 8` (resp. `d ≥ 4`) — satisfiable.  This is not a statement about G's shape.
+
+**Exact remaining proposition at G.**
+- `Route8QuotientOutcome`: with the full ledger (incl. 9900–9902),
+  `3·slack < Σ_X (3|X| − 13E(X))` over the canonical pieces of `R`, the heavy pieces
+  `H = {X : 13E(X) < 3|X|}` nonempty, each `X ∈ H` subject to 9900 (every same-window exit
+  pair `(i, i')` with internal run `[lo, hi]`: `hi + d + 3 < 2(lo + d + 2)` or `hi + d + 2 < 4`,
+  `d = |i−i'|`) and 9901 (cyclic chains).
+- `Route8JointBalanceOutcome`: the same, and with `K .route8JointBalance`
+  (`3|R| ≤ 13|∂R| + 3h + O`, `O` the open demand units) the rate over the pieces is pinned:
+  `3h < Σ_X (3|X| − 13E(X)) ≤ 3h + O` (one-line combination of 9902 with the joint balance;
+  `h = slack`), so `O > 0`.
+
+**What a per-piece bound still needs.**  Only the heavy pieces matter (`ρ(X) = |X|/E(X) > 13/3`).
+For each, the constraint must use the *outside routes between its exits in `G − X`*, not
+only window segments: for exit edges `a a'`, `b b'` (`a, b ∈ X`, `a', b' ∉ X`) and every
+`a'`–`b'` path of `G − X` of length `m`, the sumset `L_X(a,b) + m + 2` avoids powers of two.
+9900/9901 record this only for `m` = a window segment or a chain through other pieces and
+windows.  The needed statement is: for every heavy piece, the outside-route length sets
+`M_{G−X}(a', b')` of all exit pairs, combined with the run structure of `L_X(a,b)`, force
+`3|X| ≤ 13E(X) + c(X)` with `Σ_{X ∈ H} c(X) ≤ 3·slack + Σ_{X ∉ H} (13E(X) − 3|X|)`.
+
+### Shared-file edits and root type
+
+- `SpineVocabulary.lean`: 3 keys × 6 entries (idx 9900–9902), import
+  `Statements.Route8BlobStructure`.
+- `Assembly/Residuals.lean`: `Route8JointBalanceOutcome` and `Route8QuotientOutcome` gain
+  3 trailing conjuncts (9900, 9901, 9902); `route8JointBalanceReturn`,
+  `route8QuotientReturn` gain 3 `Has` + 3 `get`.  `Residuals/Route8JointBalanceOutcome.lean`,
+  `Residuals/Route8QuotientOutcome.lean`: 3 `Has` each on the product returns.
+- `Assembly/RouteEight/Local.lean`: import and the three rows; freshness parameters
+  `pieceWindowAttachmentFresh`, `pieceChainCycleFresh`, `piecewiseRateFresh` next to every
+  `entriesAtGFresh` (RouteEight/Local, Residual, TypeBContinuation ×2; TypeB/Continuation,
+  DecoratedContinuation, HighSurplusContinuation, Internal/Certificate), and the three keys
+  next to `K .route8QuotientEntriesAtG` in the downstream key lists (NetCharge/Continuation;
+  TypeA/VisibleExitChain, ExitFourChain, ExitFiveToSeven, ExitFourDischargedRetest,
+  LowSurplusContinuation, DecoratedHandoff).
+- Root type: no outcome appears or disappears; the two residuals' conjunctions grow by 3.

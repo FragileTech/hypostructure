@@ -39,6 +39,7 @@ import Hypostructure.Graph.Statements.BlockedFailureG
 import Hypostructure.Graph.Statements.BlockedOverlapG
 import Hypostructure.Graph.Statements.PairCorrelation
 import Hypostructure.Graph.Statements.Route8QuotientSize
+import Hypostructure.Graph.Statements.Route8BlobStructure
 import Hypostructure.Graph.Statements.PairHandoffSupport
 import Hypostructure.Graph.Statements.PairHandoffFacts
 import Hypostructure.Graph.Statements.StubDeficit
@@ -1671,6 +1672,19 @@ inductive Key where
   and the exit-`(5)` datum is absent; at `α(ξ) = 0` the quotient of (b) is
   present (g-pieces-constructed: realizations are constructed from G). -/
   | route8QuotientEntriesAtG
+  /-- Key `9900` (blob structure, rate arm): two exits of one canonical piece `X` of `R` landing
+  on one window of `P₀` at positions `i`, `i'` close, with every internal path of `X` of
+  length `ℓ` between the exit vertices, a cycle of length `ℓ + |i−i'| + 2` (not a power of
+  two); every run of internal path lengths obeys the dyadic run bound. -/
+  | route8PieceWindowAttachment
+  /-- Key `9901` (blob structure, rate arm): `k` distinct pieces and `k` distinct windows of
+  `P₀` joined cyclically by exits close a cycle of length `Σ ℓᵢ + Σ |jᵢ − j'ᵢ| + 2k` for every
+  choice of internal path lengths; it is not a power of two. -/
+  | route8PieceChainCycle
+  /-- Key `9902` (blob structure, rate arm): `|R| = Σ_X |X|`, `|∂R| = Σ_X E(X)`, the rate
+  `δ·slack < Σ_X (δ|X| − (δs+1)E(X))` over the canonical pieces, and the heavy pieces
+  (`(δs+1)E(X) < δ|X|`) are nonempty. -/
+  | route8PiecewiseRate
   -- Type B sublinear audit keys (8300–8349)
   /-- G audit of `TypeBSublinearOutcome`, `prop:typeB-bridge-sublinear`: **the
   tested hypotheses in G's canonical form** -- every existential is pinned to a
@@ -2907,6 +2921,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   -- R8Q keys
   | .route8QuotientEntriesAtG, object =>
       Route8QuotientEntriesAtGStatement data.toParameters object
+  | .route8PieceWindowAttachment, object =>
+      Route8PieceWindowAttachmentStatement data.toParameters object
+  | .route8PieceChainCycle, object =>
+      Route8PieceChainCycleStatement data.toParameters object
+  | .route8PiecewiseRate, object =>
+      Route8PiecewiseRateStatement data.toParameters object
   | .typeBSublinearCanonicalForm, object =>
       TypeBSublinearCanonicalFormStatement data.toParameters object
   | .groupedAbsorbedCoreSubset, object =>
@@ -3644,6 +3664,9 @@ def label : Key → String
   | .route8UnpaidWitnessFree => "route8UnpaidWitnessFree"
   -- R8Q keys
   | .route8QuotientEntriesAtG => "route8QuotientEntriesAtG"
+  | .route8PieceWindowAttachment => "route8PieceWindowAttachment"
+  | .route8PieceChainCycle => "route8PieceChainCycle"
+  | .route8PiecewiseRate => "route8PiecewiseRate"
   | .typeBSublinearCanonicalForm => "typeBSublinearCanonicalForm"
   | .groupedAbsorbedCoreSubset => "groupedAbsorbedCoreSubset"
   | .typeBSublinearFailureArms => "typeBSublinearFailureArms"
@@ -4200,6 +4223,9 @@ example : label .route8UnpaidTwoCarrier = "route8UnpaidTwoCarrier" := rfl
 example : label .route8UnpaidWitnessFree = "route8UnpaidWitnessFree" := rfl
 -- R8Q keys
 example : label .route8QuotientEntriesAtG = "route8QuotientEntriesAtG" := rfl
+example : label .route8PieceWindowAttachment = "route8PieceWindowAttachment" := rfl
+example : label .route8PieceChainCycle = "route8PieceChainCycle" := rfl
+example : label .route8PiecewiseRate = "route8PiecewiseRate" := rfl
 example : label .typeBSublinearCanonicalForm = "typeBSublinearCanonicalForm" := rfl
 example : label .groupedAbsorbedCoreSubset = "groupedAbsorbedCoreSubset" := rfl
 example : label .typeBSublinearFailureArms = "typeBSublinearFailureArms" := rfl
@@ -4738,6 +4764,9 @@ def idx : Key → Nat
   | .route8UnpaidWitnessFree => 1404
   -- R8Q keys
   | .route8QuotientEntriesAtG => 8150
+  | .route8PieceWindowAttachment => 9900
+  | .route8PieceChainCycle => 9901
+  | .route8PiecewiseRate => 9902
   | .typeBSublinearCanonicalForm => 8300
   | .groupedAbsorbedCoreSubset => 8301
   | .typeBSublinearFailureArms => 8302
@@ -5272,6 +5301,9 @@ def ofIdx : Nat → Key
   | 1404 => .route8UnpaidWitnessFree
   -- R8Q keys
   | 8150 => .route8QuotientEntriesAtG
+  | 9900 => .route8PieceWindowAttachment
+  | 9901 => .route8PieceChainCycle
+  | 9902 => .route8PiecewiseRate
   | 8300 => .typeBSublinearCanonicalForm
   | 8301 => .groupedAbsorbedCoreSubset
   | 8302 => .typeBSublinearFailureArms
@@ -6254,6 +6286,12 @@ def name : Key → Lean.Name
   -- R8Q keys
   | .route8QuotientEntriesAtG =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8QuotientEntriesAtG") 8150
+  | .route8PieceWindowAttachment =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8PieceWindowAttachment") 9900
+  | .route8PieceChainCycle =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8PieceChainCycle") 9901
+  | .route8PiecewiseRate =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8PiecewiseRate") 9902
   | .typeBSublinearCanonicalForm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBSublinearCanonicalForm") 8300
   | .groupedAbsorbedCoreSubset =>
