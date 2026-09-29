@@ -126,4 +126,72 @@ theorem exists_uncrossing {a b c d : V} (P : G.Walk a b) (Q : G.Walk c d)
 theorem length_reroute {a x d : V} (P₁ : G.Walk a x) (Q₂ : G.Walk x d) :
     (P₁.append Q₂).length = P₁.length + Q₂.length := Walk.length_append _ _
 
+/-- **The first ear.**  Two distinct paths `P, Q : x → y` of a simple graph: `Q` leaves
+`P` at a first divergence `u` and first returns to `P` at `v`.  The segment `R : u → v`
+of `Q` is a path, internally disjoint from `P`, different from the segment `Pm` of `P`
+between `u` and `v`; so `Pm` and `R` are two internally disjoint `u`--`v` corridors,
+the two pieces of one cell of a serial system. -/
+theorem exists_ear : ∀ {x y : V} (P Q : G.Walk x y), P.IsPath → Q.IsPath → Q ≠ P →
+    ∃ (u v : V) (P₁ : G.Walk x u) (Pm : G.Walk u v) (P₂ : G.Walk v y) (R : G.Walk u v),
+      P = (P₁.append Pm).append P₂ ∧ R.IsPath ∧ R ≠ Pm ∧ u ≠ v ∧
+      (∀ z ∈ R.support, z ∈ P.support → z = u ∨ z = v) ∧ (∀ z ∈ R.support, z ∈ Q.support) := by
+  classical
+  intro x y P
+  induction P with
+  | nil =>
+      intro Q _ hQ hne
+      exact absurd (Walk.isPath_iff_eq_nil.mp hQ) hne
+  | @cons x x' y h P' ih =>
+      intro Q hP hQ hne
+      cases Q with
+      | nil => exact absurd hP (by simp [Walk.isPath_def, Walk.support_cons])
+      | @cons _ x'' _ h' Q' =>
+          rw [Walk.cons_isPath_iff] at hP hQ
+          by_cases hx : x'' = x'
+          · subst hx
+            have hne' : Q' ≠ P' := fun e => hne (by rw [e])
+            obtain ⟨u, v, P₁, Pm, P₂, R, hPe, hR, hRne, huv, hint, hsub⟩ :=
+              ih Q' hP.1 hQ.1 hne'
+            refine ⟨u, v, .cons h P₁, Pm, P₂, R, by rw [hPe]; rfl, hR, hRne, huv, ?_, ?_⟩
+            · intro z hz hzP
+              rcases List.mem_cons.mp (by simpa using hzP) with rfl | hz'
+              · exact absurd (hsub _ hz) hQ.2
+              · exact hint z hz hz'
+            · intro z hz
+              exact List.mem_cons_of_mem _ (hsub z hz) |> fun t => by simpa using t
+          · have hitex : ∃ z ∈ Q'.support, z ∈ {w | w ∈ (Walk.cons h P').support} :=
+              ⟨y, Walk.end_mem_support _, by simp⟩
+            obtain ⟨v, R', Q'', hQe, hvS, hfirst⟩ :=
+              exists_first_hit (G := G) {w | w ∈ (Walk.cons h P').support} Q' hitex
+            have hvP : v ∈ (Walk.cons h P').support := hvS
+            have hvQ : v ∈ Q'.support := by rw [hQe]; simp
+            have hvx : v ≠ x := fun e => hQ.2 (e ▸ hvQ)
+            have hvP' : v ∈ P'.support := by
+              rcases List.mem_cons.mp (by simpa using hvP) with e | e
+              · exact absurd e hvx
+              · exact e
+            have hR'path : R'.IsPath := by
+              have : Q'.IsPath := hQ.1
+              rw [hQe] at this; exact this.of_append_left
+            have hxR' : x ∉ R'.support := fun m => hQ.2 (by rw [hQe]; simp [m])
+            refine ⟨x, v, .nil, .cons h (P'.takeUntil v hvP'), P'.dropUntil v hvP',
+              .cons h' R', ?_, ?_, ?_, hvx.symm, ?_, ?_⟩
+            · have := P'.take_spec hvP'
+              simp only [Walk.nil_append]
+              rw [Walk.cons_append, this]
+            · rw [Walk.cons_isPath_iff]; exact ⟨hR'path, hxR'⟩
+            · intro e
+              have := congrArg (fun w => w.getVert 1) e
+              simp at this
+              exact hx this
+            · intro z hz hzP
+              rcases List.mem_cons.mp (by simpa using hz) with rfl | hz'
+              · exact Or.inl rfl
+              · exact Or.inr (hfirst z hz' hzP)
+            · intro z hz
+              rcases List.mem_cons.mp (by simpa using hz) with rfl | hz'
+              · simp
+              · have : z ∈ Q'.support := by rw [hQe]; simp [Walk.support_append, hz']
+                simp [this]
+
 end Hypostructure.Graph.PathUncrossing

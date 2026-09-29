@@ -5479,3 +5479,33 @@ at G's canonical `returns`; (`[180]`) at G's canonical serial system,
     coordinate `π_{k*+1}`, and the number of correlated steps (`Σ` of positive
     deficiencies, total mass `2^{b+t} − P_t`) is not related to a number of compressible
     coordinates.
+
+### G audit: PairConditionalFactorizationOutcome, follow-up 3 (strands, `GConstructedPiece`)
+
+- `GConstructedPiece` (branch `g-pieces-constructed`, `/home/guillem/hs-wt-GPC`) has not
+  landed (no definition in that worktree at d85731a).  The `[178]` restatement at G's own
+  signature (responses read on canonical G-constructed pieces, the first repetition at G,
+  the swap/transplant compression) is therefore NOT done here; it needs that definition,
+  and the aggregate `pairCorrelation` fact stays as the class-level shadow of it.
+- **Strand building block built:** `PathUncrossing.exists_ear` (Menger-type first
+  step).  Two distinct paths `P, Q : x → y` of a simple graph: `Q` leaves `P` at a first
+  divergence `u` and first returns to `P` at `v`; the segment `R : u → v` of `Q` is a path,
+  internally disjoint from `P` (`R.support ∩ P.support ⊆ {u, v}`), `R ≠ Pm` (the segment
+  of `P` between `u` and `v`), `u ≠ v`, `R.support ⊆ Q.support`.  `Pm` and `R` are the two
+  internally disjoint corridors of one serial cell, with lengths `|Pm|`, `|R|`.  Together
+  with `exists_uncrossing` this gives the dichotomy for two `x`--`y` paths inside a
+  connected support: equal, or an ear (a cell with increment `|R| − |Pm|`).
+- **Not built, exact steps needed for the serial system** (`PairSerialDemandSystem`):
+  1. *Replacement lemma*: for a path `W = W₁ ++ Pm ++ W₂` and an ear `R` of `Pm`, the
+     walk `W₁ ++ R ++ W₂` is a path of length `|W| − |Pm| + |R|` (list-nodup bookkeeping;
+     it makes every cell piece a cycle of G through the two demand edges, hence the
+     non-accepted lengths `realized_route` asks for).
+  2. *Ordered cells with disjoint interiors*: repeated ear extraction gives ears of `P`
+     that may overlap or nest; the manuscript cuts the intersection graph "at its common
+     subpaths" using secondary minimality and node `[166]` (equal-length neutral strands
+     are identified).  That identification is a minimality argument about G, not path
+     surgery.
+  3. *The cell bound `|R| − |Pm| ≤ D_sp = 2 M_cold + 2 ℓ_ret`*: the cold-corridor exchange
+     closure `(F1)`--`(F5)` of node `[166]` applied to an ear longer than `D_sp`
+     (read from both ends by cold cut-states; two repeating states give a first-failure
+     exchange).  Required: the splice/excision lemma of `g-audit-coldSilent`.
