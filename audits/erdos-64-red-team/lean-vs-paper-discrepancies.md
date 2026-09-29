@@ -6027,3 +6027,169 @@ at G's canonical `returns`; (`[180]`) at G's canonical serial system,
   (`densityOrderLogFloor`, `densityOrderScale`, `densityOrderCutoff A D r S C δ`; `three_mul_lt_margin_mul_log2`; `densityOrderBound_false_of_large` re-proved).  Every consumer (the `[146]`-no closures of the large arms, keys 6600-6605) is unchanged: they only use the theorem.  Realized arm (`S = 0`, `A = 234`, `D = 109`, `r = 118`, `δ = 3`): `N₀ = max(2^176, (13096·C_sp + 2)²) ≈ 7.8·10^55` (`C_sp = spineScale`, register value `6.7·10²³`), instead of `2^235 ≈ 5.5·10^70`.  Every "`N₀ = 2^235`" above is superseded by this cutoff; the sqrt half is now the larger one.
 - **What remains at G for the bounded subtypes** (`realizedBounded`, `unrealizedTauHighBounded`, `unrealizedRateFailsBounded`).  `Assembly/Residuals/Node54Order.lean` (new module): `realizedOrderSmall_lt_cutoff`, `boundedOrderSmall_lt_cutoff` read `K .realizedOrderSmall` / `K .boundedOrderSmall` (published as `¬ SufficientlyLargeForDensityOrder`, a three-way disjunction whose first two members are registered constants) as `n < densityOrderCutoff 234 109 118 S C_sp 3` at `spineData` (`densityOrderPackingCoeff = 234`, `densityOrderSurplusCoeff = 109`, `windowRate = 118`).  Together with the combined bound `2rL·δn ≤ A(L+1)(δn+T) + L·T·(A·S + 2rD)` (`K .realizedDensityOrder` / `K .boundedDensityOrder`), `δn ≤ A·p + D·T` and the generic ledger, G is a counterexample with `13 ≤ n < N₀`.  Exact numeric check (Python, not Lean; realized arm, register `C_sp`): the combined bound holds for every sampled `n` up to `6.3·10^55` and fails for every sampled `n` above it, so the new cutoff is within a factor 1.2 of the true crossover; no smaller cutoff can come from this pair of inequalities.  Nothing on the ledger bounds `n` from below (the strict-arm `K .highSurplusOrder` `n > 4.55·10^47` is not on these ledgers).  The residual therefore stays open, at the exact proposition: the ledger of the subtype, with `13 ≤ n < N₀`.
 - **Not done / cross-cluster.**  The hot family behind `K .hotColdPartition`, `K .coldMass` etc. is `Classical.choose` of a maximal `WindowFamilyRealized` family, i.e. not fixed by G's vertex order; a lexicographic-least maximal family would be canonical.  It sits on the shared cold chain (`[22]`, `[148]`--`[153]`), not on `[54]`'s own test, and is left to that lane.
+
+## G audit: Route8QuotientOutcome (`[187]` = `[348]`, branch g-audit-r8q, idx 8150)
+
+**Defining failure.**  `route8QuotientDichotomy` asks
+`Route8QuotientFreeStatement` (no unified entry has a `TraceResponseQuotient`
+at its selected basin); its negation is the residual.  The test is decided at
+G: `exists_traceResponseQuotient_of_avoids` shows alternative (b) is present at
+every routed load of G (forget every declared coordinate; completeness is
+trivially true because `α(ξ) = 0`, so the declared `u`-supported algebra is
+empty).  The residual is therefore reached through a trivially true disjunct:
+it is exactly `route8UnifiedEntries ≠ ∅`.
+
+**The paper's step `(b) → exit (5)`.**  The manuscript never constructs the
+smaller representative.  Built from G:
+
+- The canonical representative of the (b)-quotient class of G's own piece at
+  `B_u` (`CanonicalPiece.cutStateRepresentativeAt`, read in `G − B_u`) is a
+  valid replacement (profile, degree baseline, no target cycle) of exactly the
+  size of the piece and its gluing is not lexicographically smaller than G
+  (`route8BasinRepresentative`).  A valid replacement cannot be smaller.
+- No trace-response quotient reading of the basin is a smaller valid
+  replacement (`route8QuotientReadingsNotSmaller`): a smaller reading is below
+  the degree baseline.
+- Every smaller degree-valid realization of the basin (folds and contractions
+  included) has an accepted cycle by minimality, and the declared algebra does
+  not hold at it (`route8ConstructedRealizationsUndeclared`): the gap between the
+  declared-algebra completeness of (b) and the raw target completeness of exit
+  (5) is exactly that the cycle of a smaller valid realization is never a
+  declared event.
+- The exit-`(5)` datum (`TraceTargetCompleteCompression`) is absent at every
+  basin (`not_traceTargetCompleteCompression`, from `K .uncompressible`).
+
+So `(b) → exit (5)` cannot be constructed: the smaller representative it needs
+would be a valid replacement smaller than G.
+
+**New fact (idx 8150) `K .route8QuotientEntriesAtG`**
+(`Route8QuotientEntriesAtGStatement`, row `route8QuotientEntriesAtGRow`,
+requires selection, uncompressible, `route8PeelingDescent`,
+`route8UnifiedDeficit`, `route8Rate`): (1) `Route8QuotientFreeStatement ↔
+route8UnifiedEntries = ∅`; (2) `|∂R| < δ·|\tilde\Xi|` (rate + unified deficit +
+stage accounting; so `\tilde\Xi ≠ ∅`); (3) at every unified entry `α(ξ) = 0`,
+the selected basin and its quotient, the size-preserving representative, the
+non-smaller readings, the undeclared smaller realizations, and the absent
+exit-(5) datum.  The row is run on the residual arm in
+`selectedRouteEightUnifiedResidual` after the descent row
+(`route8PeelingDescent`, added to `Route8QuotientOutcome`, now 94 facts).
+
+**Gap builds and closure tests against `|∂R| < δ·|Ξ̃|` (second pass).**
+
+1. *Entry-charge map / baseline-essential carriers* (`Route8BasinFoldPaths`,
+   `FoldCycleLift`).  Built: `cycle_lift` (an accepted cycle of a
+   fold of two internal vertices lifts to an accepted cycle of the source or an
+   accepted-length path between the folded vertices), `foldGlue_path_of_cycle`
+   (the fold's cycle, forced by minimality, gives an accepted path of G between
+   any two foldable interior vertices of the basin), and `two_crossing` (a path
+   with both ends in `X` that leaves `X` uses two distinct edges of the cut of
+   `X`, i.e. two edges of `∂R`).  Result: for every foldable pair, either an
+   accepted path inside `X`, or two distinct `∂R` edges on the path.  Not
+   closing: (a) nothing excludes the accepted path inside `X` (the window-free
+   geometry only bounds induced paths, not paths of length `2^k`); (b) the
+   `∂R` edges are not private: paths of different entries may reuse the same
+   edges without bound, so no injective attribution and no `δ|Ξ̃| ≤ |∂R|`.
+2. *Per-receiver load against capacity.*  At a saturated receiver
+   `|E(w)| = L(w) + 1 − s·q(w)` (payable set of size `s·q(w) − 1`), so
+   `|Ξ̃| = Σ_sat (L(w) + 1 − s·q(w))`, and `Σ q ≤ |∂R|`.  A bound
+   `δ|Ξ̃| ≤ |∂R|` is then exactly a bound of the total routed load by
+   `(s + 1/δ)|∂R|`, which is the negation of the rate; this is the content of
+   `lem:typeA-unified-deficit` already on the ledger.  Not closing: it is the
+   same inequality, not independent information.
+3. *Trace-path ear structure.*  `T_u` is a path in `B_u` from the load to the
+   receiver; routings of distinct loads share suffixes (a routing forest), so
+   the number of trace paths is not bounded by the number of receivers' ports.
+   Not closing.
+4. *Basin overlap.*  Distinct entries have distinct loads (a load determines its
+   piece and its receiver), so `Ξ̃` injects into the full-degree vertices of
+   `R`; overlap of basins is unconstrained.  Not closing.
+
+**Third pass: the two closure requirements, derived as far as G allows.**
+
+- *Inside case, `Route8InsidePathBound`.*  A path of G inside the entry's piece
+  `X` (which is in `R`, hub-free because its ambient surplus is `0`) has at most
+  `6142` vertices (`K .remainderPathBounds`, third clause with zero hubs).  So
+  the negation of "the fold path leaves `X`" forces: an accepted length
+  `2^k` with `4 ≤ 2^k ≤ 6141`, i.e. `k ≤ 12`, on a path of a hub-free cubic part
+  of `R` with no induced `P13`.  The inside case is empty for `k ≥ 13`; for
+  `k ≤ 12` nothing on the ledger excludes it: the length of the cycle that
+  minimality forces on the fold is not controlled from below, and two paths
+  between the same two vertices give a cycle only when they are internally
+  disjoint, which the ledger does not supply.
+- *Carriers, `Route8EntryCarriers`.*  G is cubic at the piece, so no incidence
+  of a basin vertex is spare: the baseline-essential carriers of an entry are
+  exactly the cut edges of the piece meeting the basin.  They are nonempty (the
+  receiver lies in the basin and has a port, since `internalDegree < δ = degree`)
+  and lie in `∂R`.  This is the canonical charge map `ξ ↦ carriers(ξ) ⊆ ∂R`.
+- *Multiplicity.*  All entries with the same receiver `w` share its ports, and
+  `|E(w)| = L(w) + 1 − s·q(w) ≥ 1` at a saturated receiver.  A fold path of one
+  entry combines into a closed walk with the fold path of another only if the
+  two share endpoints; distinct entries have distinct loads, so no cycle is
+  produced, and the multiplicity of a port edge is unbounded on the ledger.
+  Consequence used against the arm: `|∂R| < δ·|Ξ̃|` says the port-charge has
+  average multiplicity above `1/δ` per unit of `∂R`, which is the arm itself,
+  not a contradiction.
+- *Retry.*  `δ|Ξ̃| ≤ |∂R|` is not obtained: (i) the inside case survives for
+  `k ≤ 12`; (ii) the carriers give one charge per entry into the receiver's
+  ports, with unbounded multiplicity.
+
+**Fourth pass: the paper's carrier-privacy chain, formalized at G.**  The paper's
+route is `def:typeA-route8-carriers` (essential incidences `𝒞_ess(ξ)`, private
+incidences `π(ξ)`), `lem:typeA-carrier-cut-parity` (a mixed event crosses `∂X`
+twice), `lem:typeA-one-terminal-collapse` (`α ≥ 2`),
+`prop:typeA-route8-carrier-reduction` (no two-support entry gives
+`3N ≤ Σ|∂_E X|`), then `lem:typeA-essential-deletion-witness`,
+`lem:typeA-deletion-witness-declared`, `lem:typeA-two-carrier-deletion-canonical`,
+`lem:typeA-carrier-deletion-exit`, `thm:typeA-two-carrier-nogo` (a two-support
+entry has an exit-(4) deletion quotient).
+
+- *Cut parity at G* is `FoldCycleLift.two_crossing` (a path with both ends in
+  `X` that leaves `X` crosses its cut twice), applied to the fold path
+  (`Route8BasinFoldPaths`); the paper's "inside `X` is a power-of-two cycle of
+  the target-safe `X`" (`lem:typeA-internal-quotient-mixed`) has no G-form: the
+  inside event is a cycle of the fold of `X`, an accepted-length path of G
+  (`Route8InsidePathBound`: `k ≤ 12`), not a cycle of G.
+- *Carrier reduction at G* is built: `route8EntryCarrierSet` (cut edges of the
+  piece meeting the selected basin: the baseline-essential carriers, all in
+  `∂R`), `route8EntryPrivateCarriers` (carriers of no other entry), and
+  `Route8TwoSupportEntryExists` / `route8TwoSupportEntryExists`: the private
+  carrier sets of distinct entries are disjoint subsets of `∂R`, so if every
+  entry had `≥ δ` private carriers then `δ|Ξ̃| ≤ |∂R|`; with
+  `|∂R| < δ|Ξ̃|` some unified entry has fewer than `δ` private carriers.  This
+  is a conjunct of key 8150.  (Per-vertex caps bound the incidences per
+  vertex, not the number of entries whose basin contains a vertex; the privacy
+  count above is the multiplicity control the paper uses, and it is what
+  produces the two-support entry.)
+- *No G-form: the deletion chain.*  `lem:typeA-essential-deletion-witness` needs
+  the target-essential core `𝒞_ess(ξ)` (inclusion-minimal set whose restriction
+  is target-complete against realizations in an outside context).  At G with
+  realizations restricted to G's readings the core is empty
+  (`α = 0`); the baseline-essential carriers are not target-essential and give
+  no distinguishing realization.  `lem:typeA-carrier-deletion-exit` (each
+  deletion quotient of a two-support entry is target-defective, i.e. exit
+  (4)) is therefore vacuous at G, where `TraceLocalTargetDefect` is decided
+  false.  The exact step returned open: **the G-form of target-completeness /
+  exit (4) must quantify over G-constructed valid realizations (folds and
+  contractions of G's piece), not only over G's readings.  With folds included,
+  every quotient that a smaller valid fold realizes is distinguished from G's
+  piece in `G − B_u` (minimality gives the fold an accepted cycle), so each
+  such entry is an exit-(4) entry and is peeled; the core becomes nonempty
+  through the fold paths and cut parity applies.**  That change of the
+  definitions of `QuotientRealization` / `TraceLocalTargetDefect` re-routes
+  the whole route-8 ledger and belongs to the exit-(4) family, not to this
+  residual.
+
+**Still open (exact proposition at G).**  A two-support entry `ξ₀` exists
+(`Route8TwoSupportEntryExists`), with `|∂R| < δ·|route8UnifiedEntries data G|`,
+`α(ξ₀) = 0` and no exit-(4) witness at `ξ₀` in the readings-only sense.  Its
+exclusion is `thm:typeA-two-carrier-nogo`, whose only missing ingredient is the
+fold-inclusive G-form of exit (4) stated above.
+
+**Shared edits.**  `SpineVocabulary.lean` (key 8150 and one import);
+`Residuals.lean` / `Route8QuotientOutcome.lean` (two facts added to the
+residual: `route8PeelingDescent`, `route8QuotientEntriesAtG`); `RouteEight/
+Local.lean`; freshness parameter or key-list entry for
+`K .route8QuotientEntriesAtG` in `RouteEight/Residual.lean`,
+`RouteEight/TypeBContinuation.lean`, `TypeB/{Continuation,HighSurplus,
+Decorated}Continuation.lean`, `TypeB/Internal/Certificate.lean`, the six
+`TypeA` chain files and `NetCharge/Continuation.lean`.  No root-type change.

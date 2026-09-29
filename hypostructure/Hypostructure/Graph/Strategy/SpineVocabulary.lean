@@ -33,6 +33,7 @@ import Hypostructure.Graph.Statements.PairArms
 import Hypostructure.Graph.Statements.BlockedFailureG
 import Hypostructure.Graph.Statements.BlockedOverlapG
 import Hypostructure.Graph.Statements.PairCorrelation
+import Hypostructure.Graph.Statements.Route8QuotientSize
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1656,6 +1657,14 @@ inductive Key where
   (`α(ξ) = 0`), so the census's `2 ≤ α(ξ)` leaves no unified entry, the stage
   accounting clears `s·D̃_A`, and `|R| ≤ s·|∂R| + F·s·T(n)`. -/
   | route8UnifiedEmptyAtG
+  -- R8Q keys (8150–8199): the route-8 quotient test stated about G
+  /-- Node `[348]`, stated about G (Lean improvement): **the quotient test is
+  decided at G** — alternative (b) is present at every routed load, so
+  quotient freeness fails exactly when the unified entry family is nonempty;
+  at every unified entry `α(ξ) = 0`, the quotient is present, the canonical
+  representative of G's piece at `B_u` has the size of the piece (a valid
+  replacement is not smaller), and the exit-`(5)` datum is absent. -/
+  | route8QuotientEntriesAtG
   -- F5 keys
   /-- Node `[175]`, no arm: every selected corridor meets a high-degree
   vertex. -/
@@ -2756,6 +2765,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   -- R3 keys
   | .route8UnifiedEmptyAtG, object =>
       Route8UnifiedEmptyAtGStatement data.toParameters object
+  -- R8Q keys
+  | .route8QuotientEntriesAtG, object =>
+      Route8QuotientEntriesAtGStatement data.toParameters object
   -- F5 keys
   | .coldNoPositiveGerm, object =>
       ColdNoPositiveGermStatement data.toParameters object
@@ -3402,6 +3414,8 @@ def label : Key → String
   | .route8UnpaidWitnessFree => "route8UnpaidWitnessFree"
   -- R3 keys
   | .route8UnifiedEmptyAtG => "route8UnifiedEmptyAtG"
+  -- R8Q keys
+  | .route8QuotientEntriesAtG => "route8QuotientEntriesAtG"
   -- F5 keys
   | .coldNoPositiveGerm => "coldNoPositiveGerm"
   -- SD keys (final pass)
@@ -3911,6 +3925,8 @@ example : label .route8StageRate = "route8StageRate" := rfl
 example : label .route8UnpaidTwoCarrier = "route8UnpaidTwoCarrier" := rfl
 example : label .route8UnpaidWitnessFree = "route8UnpaidWitnessFree" := rfl
 example : label .route8UnifiedEmptyAtG = "route8UnifiedEmptyAtG" := rfl
+-- R8Q keys
+example : label .route8QuotientEntriesAtG = "route8QuotientEntriesAtG" := rfl
 -- F5 keys
 example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
 -- SD keys (final pass)
@@ -4404,6 +4420,8 @@ def idx : Key → Nat
   | .route8UnpaidWitnessFree => 1404
   -- R3 keys
   | .route8UnifiedEmptyAtG => 7900
+  -- R8Q keys
+  | .route8QuotientEntriesAtG => 8150
   -- F5 keys
   | .coldNoPositiveGerm => 1800
   -- SD keys (final pass)
@@ -4892,6 +4910,8 @@ def ofIdx : Nat → Key
   | 1404 => .route8UnpaidWitnessFree
   -- R3 keys
   | 7900 => .route8UnifiedEmptyAtG
+  -- R8Q keys
+  | 8150 => .route8QuotientEntriesAtG
   -- F5 keys
   | 1800 => .coldNoPositiveGerm
   -- SD keys (final pass)
@@ -5827,6 +5847,9 @@ def name : Key → Lean.Name
   -- R3 keys
   | .route8UnifiedEmptyAtG =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnifiedEmptyAtG") 7900
+  -- R8Q keys
+  | .route8QuotientEntriesAtG =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8QuotientEntriesAtG") 8150
   -- F5 keys
   | .coldNoPositiveGerm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldNoPositiveGerm") 1800

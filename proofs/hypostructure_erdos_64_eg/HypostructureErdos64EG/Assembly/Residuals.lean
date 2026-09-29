@@ -2824,8 +2824,11 @@ theorem typeBSublinearReturn
 
 /-- **Node `[187] ([348], route-8 quotient failure)`** (thm:main (vi), tex
 369-378, 388-390): failure of route-8 quotient freeness of the unified
-census.  The explicit conjunction of every fact on its maximal ledger (92
-common facts). -/
+census.  The explicit conjunction of every fact on its maximal ledger; the last
+one, `K .route8QuotientEntriesAtG`, decides the quotient test at G (the failure
+is the non-emptiness of the unified entry family, with the aggregate bound
+`|∂R| < δ·|\tilde\Xi|`) and the one before it, `K .route8PeelingDescent`, is the
+stage accounting that fact consumes. -/
 abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -3052,7 +3055,11 @@ abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8UnifiedDeficit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8QuotientResidual selected.object
+      erdosReceiverLoadProfile spineData .route8QuotientResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8PeelingDescent selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8QuotientEntriesAtG selected.object
 
 /-- The return of `Route8QuotientOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -3171,7 +3178,9 @@ theorem route8QuotientReturn
     [FactKeys.Has (K .route8ExtractedEntryCensus) known]
     [FactKeys.Has (K .typeBSublinearLedger) known]
     [FactKeys.Has (K .route8UnifiedDeficit) known]
-    [FactKeys.Has (K .route8QuotientResidual) known] :
+    [FactKeys.Has (K .route8QuotientResidual) known]
+    [FactKeys.Has (K .route8PeelingDescent) known]
+    [FactKeys.Has (K .route8QuotientEntriesAtG) known] :
     Route8QuotientOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -3285,7 +3294,9 @@ theorem route8QuotientReturn
     (history.get (K .route8ExtractedEntryCensus)).down,
     (history.get (K .typeBSublinearLedger)).down,
     (history.get (K .route8UnifiedDeficit)).down,
-    (history.get (K .route8QuotientResidual)).down⟩
+    (history.get (K .route8QuotientResidual)).down,
+    (history.get (K .route8PeelingDescent)).down,
+    (history.get (K .route8QuotientEntriesAtG)).down⟩
 
 /-- **Node `[187] (private-carrier rate failure)`** (thm:main (vi), tex
 369-378): failure of the exact private-carrier rate at the entry of the
