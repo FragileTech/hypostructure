@@ -439,3 +439,10 @@ Also removed from this residual: facts `pairArmAPattern`, `pairArmARoleAlphabet`
 
 Row 132 `pairHandoffHubCharge` (8353): each pair of the obstruction family is charged to the port token of one of its own ports (high centre); `h` has `d(h) - delta` port tokens; the pairs of the family charged at `h` are at most `sum over h's ports of newLoadBound`. Coordinates: H07~ (flow-cut restricted to h's tokens; the Hall-violator token of the global version is dropped), H03~.
 Row 134 `pairHandoffCriticalCoordinate` (8355): every coordinate of the obstruction is critical (deficit exactly at it in the order exposing it last); canonical members with `h`, `nextFirst`, `nextSecond` in their supports exist. Coordinates: G03~ (fibre-size count at the coordinate h decides), H10~.
+
+
+### Fourth pass: rows 137-139
+
+Row 137 `pairHandoffDemandEnds` (8358): endpoints of the ports of 𝒰's pairs lie in their response supports and in U; cubic; centres high. Coordinates: B06~ D07~.
+Row 138 `pairHandoffHubBalance` (8359): conjunction of rows 129-131 (8352), 132 (8353), 136 (8357) with the combined bound (negative charge, or d(h) < 3 delta, fewer than 2 delta tokens, load at most (2 delta - 1)((|H|-1)+sigma)). Coordinates: H03~ H07~ A05.
+Row 139 `pairHandoffFibreAtG` (8360): G's own member of the class has all responses negative; for the canonical member pi_h whose support contains h, in the order exposing it last, G's fibre has 1 or 2 extensions. Coordinates: G03~ E06~ (repetition at G).

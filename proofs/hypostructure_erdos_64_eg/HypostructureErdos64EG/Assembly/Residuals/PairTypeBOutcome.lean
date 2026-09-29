@@ -177,6 +177,9 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .pairHandoffCriticalCoordinate) known]
     [FactKeys.Has (K .pairObstructionDescent) known]
     [FactKeys.Has (K .pairHandoffHubForces) known]
+    [FactKeys.Has (K .pairHandoffDemandEnds) known]
+    [FactKeys.Has (K .pairHandoffHubBalance) known]
+    [FactKeys.Has (K .pairHandoffFibreAtG) known]
     [FactKeys.Has (K .independentPairFamily) known]
     [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .freePairCodeUnrealized) known]
@@ -312,6 +315,9 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .pairHandoffCriticalCoordinate)).down,
       (history.get (K .pairObstructionDescent)).down,
       (history.get (K .pairHandoffHubForces)).down,
+      (history.get (K .pairHandoffDemandEnds)).down,
+      (history.get (K .pairHandoffHubBalance)).down,
+      (history.get (K .pairHandoffFibreAtG)).down,
       pairSystemEarlyOutcome⟩,
     (history.get (K .independentPairFamily)).down,
     (history.get (K .freePairCodeUnrealized)).down⟩
@@ -485,6 +491,9 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .pairHandoffCriticalCoordinate) known]
     [FactKeys.Has (K .pairObstructionDescent) known]
     [FactKeys.Has (K .pairHandoffHubForces) known]
+    [FactKeys.Has (K .pairHandoffDemandEnds) known]
+    [FactKeys.Has (K .pairHandoffHubBalance) known]
+    [FactKeys.Has (K .pairHandoffFibreAtG) known]
     [FactKeys.Has (K .dependentPairFamily) known]
     [FactKeys.Has (K .pairDegreeProfileFibres) known]
     [FactKeys.Has (K .pairNoProfileObstruction) known]
@@ -628,6 +637,9 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .pairHandoffCriticalCoordinate)).down,
       (history.get (K .pairObstructionDescent)).down,
       (history.get (K .pairHandoffHubForces)).down,
+      (history.get (K .pairHandoffDemandEnds)).down,
+      (history.get (K .pairHandoffHubBalance)).down,
+      (history.get (K .pairHandoffFibreAtG)).down,
       pairSystemEarlyOutcome⟩,
     (history.get (K .dependentPairFamily)).down,
     (history.get (K .pairDegreeProfileFibres)).down,

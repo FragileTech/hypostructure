@@ -6510,3 +6510,32 @@ Exit (7) (key 7961 now also publishes every degree and the refined order):
      closure `(F1)`--`(F5)` of node `[166]` applied to an ear longer than `D_sp`
      (read from both ends by cold cut-states; two repeating states give a first-failure
      exchange).  Required: the splice/excision lemma of `g-audit-coldSilent`.
+
+### G audit: PairTypeBOutcome, fourth pass (the circuit, G's own fibre, the hub balance)
+
+Keys 8358-8360 (`pairHandoffFactsRow`, `pairHandoffBalanceRow`; contracts in
+`Contracts/Spine/PairHandoffFacts.lean`).
+
+- **Compression of the circuit.**  The obstruction 𝒰 is a circuit: every member is critical.  All
+  members of the response class have the same size `(n, m)`, so the repetition is not realized as a
+  smaller piece: a swap `P ↦ Q` with `|int Z ∩ Q| < |int Z ∩ P|` needs a reading of `π_h`'s support
+  determined by the other members inside G, and the circuit property supplies only class counts
+  (`N_{m+1} < 2 N_m`), not a reading.  What is built instead is the repetition at G itself.
+  G is a member of its own class (`objectSkeletonMember`) and all its responses are negative
+  (`response_object_false`: reading G's piece and gluing it into `G − Z` gives G back).
+  `pairHandoffFibreAtG` (8360): for the canonical member `π_h` whose support contains `h`, in the
+  order exposing it last, the fibre of G's own level signature has one or two realized extensions.
+  One: G's response at `π_h` is determined by G's baseline word and its other responses (a
+  repetition, so G is compressible at `π_h`); two: G's signature is not one of the deficient ones and
+  the deficit is carried by other signatures.  Exact remaining proposition: which of the two holds,
+  i.e. whether some labelled `(n, m)` graph with G's baseline word and G's negative responses at the
+  first `m` supports has a target cycle at `X_{π_h}` (only a class count, no witness, decides it).
+- **Demand ends** (`pairHandoffDemandEnds`, 8358): the endpoint of every port of every pair of 𝒰 is in
+  the pair's response support and so in `U`; it is a cubic port end; the centre is high.  The centre
+  itself is in the seed only for a triangular port (through its return path) or if it is a shoulder;
+  it is not claimed in `U`.
+- **Hub balance** (`pairHandoffHubBalance`, 8359): the conjunction of 8352, 8353, 8357 with the
+  combined bound: at the canonical envelope either the net charge is negative, or `d(h) < 3δ`,
+  `h` has fewer than `2δ` tokens and at most `(2δ − 1)((|H| − 1) + σ)` pairs of 𝒰 are charged at
+  `h`.  In the negative-charge branch nothing bounds `d(h)`, and the token capacity `(d(h) − δ)·B`
+  grows with it, so all of 𝒰 can be charged at `h`: that case is not contradicted.
