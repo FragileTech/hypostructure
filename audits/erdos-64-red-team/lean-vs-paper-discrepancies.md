@@ -5362,6 +5362,35 @@ Report: `audits/structural-accounting/ColdBranchClosedOutcome_linearRealizedSile
   induced-`P13` bound on it; its length is bounded only by `M_cold`
   (`coldMarkedGermUncompressed`).  The period `p` of the pendant pattern is not a G fact:
   equal cut states record only the interfaces.
+- **Round 4: the concrete degree-preserving compression (kernel-checked).**
+  New module `Graph/DoubleSuppress.lean`: `Config` (an edge `u v` with `N(u) = {v, pl, x}`,
+  `N(v) = {u, y, q}`, the new edges `pl x` and `y q` non-edges of G and distinct),
+  `Config.family` (the shortcuts `pl u x`, `y v q`), `Config.adj_family` (adjacency of the
+  excised graph at kept vertices), `Config.repl` with `repl_injOn` (an explicit injection of
+  `N(w)` into the excised neighbourhood, hence **every kept degree is preserved**,
+  `degree_le_multiSpliceObject`), and `pair_suppression_dichotomy` (F08): for minimal
+  target-avoiding `G` with minimum degree `t`, G has a cycle of length `Lk + j` with `Lk`
+  accepted, `j ∈ {1, 2}`, `Lk + j` not accepted.  The excised object is smaller by 2.
+  New key 8403 `coldMarkedGermPairSuppression` (requires `coldAbsorbedNeutralConfiguration`,
+  `minDegreeBaseline`, `selection`): for every path spanning the marked germ's support and
+  EVERY pair of consecutive interior vertices `p_i, p_{i+1}` with `N(p_i) = {p_{i-1}, p_{i+1},
+  x}`, `N(p_{i+1}) = {p_i, y, p_{i+2}}` (`x`, `y` pendants or chords alike: the chord case is
+  covered), either a short-cycle obstruction holds (`p_{i-1} ~ x`: a triangle; `y ~ p_{i+2}`: a
+  triangle; or `s(p_{i-1}, x) = s(y, p_{i+2})`: a `C4` through `p_i p_{i+1}`), or G has a cycle
+  of length `Lk + j` (`Lk` accepted, `j ∈ {1,2}`, not accepted).  With `LengthOK` the dyadic
+  lengths `>= 4` the lengths are in `{5, 6, 9, 10, 17, 18, ...}`.
+- **Combination of consecutive pairs (analysis, not a theorem).**  The lifted cycle records only
+  its length, not its route: `multiSplice_cycle_lift` does not say which shortcut paths lie on
+  it.  So consecutive pairs `i`, `i+1` give two cycles of lengths `2^k + j`, `2^{k'} + j'` with
+  no forced overlap, hence no forced theta and no constraint on branch lengths; even with the
+  route recorded, a theta with branches `a, b, c` needs `a+b`, `a+c`, `b+c` non-dyadic and
+  only two of them are pinned to `2^k + j`, which is satisfiable.  `threeRouteFan`,
+  `threeRouteChain`, `windowAttachmentGap` and the no-`C4` fact constrain routes of length 3
+  and window attachments, not the routes of these lifts.  No explicit bound on the stretch
+  length follows; the bound remains `M_cold`.
+- **Exact surviving pattern.**  For every consecutive interior pair of the marked germ's
+  stretch: a cycle of G of length `2^k + 1` (through exactly one of `pl u x`, `y v q`) or
+  `2^k + 2` (through both), `k >= 2`, unless the pair sits in a triangle or `C4`.
 - **Still open (exact proposition at G).** G's marked neutral equal-length germ `(Q, E)`,
   `E = Q`, of the positive extracted family on the realized package: a subcubic (F5)
   germ, not handed off, whose replacement has G's vertex and edge count, so `[157]`'s

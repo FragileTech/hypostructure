@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Statements.ColdGerm
 import Hypostructure.Graph.SpliceLift
+import Hypostructure.Graph.DoubleSuppress
 
 /-!
 # Statements: the marked neutral germ measured at G, node `[157]`
@@ -75,5 +76,30 @@ noncomputable def ColdMarkedGermStretchIncidenceStatement (data : Parameters)
         object.degree (p.getVert i) = data.threshold ∧
           (object.graph.neighborSet (p.getVert i) \
             {p.getVert (i - 1), p.getVert (i + 1)}).ncard = data.threshold - 2
+
+/-- **F08 at every adjacent interior pair of the marked germ's stretch.**  For every path `p` of G
+spanning the marked germ's support and every pair of consecutive interior vertices
+`u = p_i`, `v = p_{i+1}` with `N(u) = {pl, v, x}` and `N(v) = {u, y, q}` (`pl = p_{i-1}`,
+`q = p_{i+2}`; `x` and `y` are the extra neighbours, pendants or chords): either a short-cycle
+obstruction to the suppression holds (`pl x` or `y q` already an edge -- a triangle at `u` or at
+`v` -- or the two new edges coincide, a `C4` through `u v`), or G has a cycle of length
+`Lk + j` with `Lk` accepted, `j ∈ {1, 2}`, and `Lk + j` not accepted. -/
+noncomputable def ColdMarkedGermPairSuppressionStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ marked, markedNeutralGerm? data object = some marked ∧
+    ∀ (a b : object.Vertex) (p : object.graph.Walk a b), p.IsPath →
+      (∀ v, v ∈ p.support ↔ v ∈ marked.1.support) →
+      ∀ i, 0 < i → i + 1 < p.length → ∀ x y : object.Vertex,
+        (∀ z, object.graph.Adj (p.getVert i) z ↔
+          z = p.getVert (i + 1) ∨ z = p.getVert (i - 1) ∨ z = x) →
+        (∀ z, object.graph.Adj (p.getVert (i + 1)) z ↔
+          z = p.getVert i ∨ z = y ∨ z = p.getVert (i + 2)) →
+        x ≠ p.getVert (i - 1) → x ≠ p.getVert (i + 1) →
+        y ≠ p.getVert (i + 2) → y ≠ p.getVert i →
+        ((object.graph.Adj (p.getVert (i - 1)) x ∨ object.graph.Adj y (p.getVert (i + 2)) ∨
+            s(p.getVert (i - 1), x) = s(y, p.getVert (i + 2))) ∨
+          ∃ (Lk j : Nat) (w : object.Vertex) (d : object.graph.Walk w w),
+            data.LengthOK Lk ∧ (j = 1 ∨ j = 2) ∧ ¬ data.LengthOK (Lk + j) ∧ d.IsCycle ∧
+              d.length = Lk + j)
 
 end Hypostructure.Graph.Strategy.Spine

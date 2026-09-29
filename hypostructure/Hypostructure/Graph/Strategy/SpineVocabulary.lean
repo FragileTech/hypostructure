@@ -1747,6 +1747,8 @@ inductive Key where
   | coldMarkedGermStretchExcision
   /-- Node `[157]`, the incidence structure of the marked germ's stretch: for every path of G spanning its support, every interior vertex has degree exactly `t` and exactly `t - 2` neighbours besides its two path neighbours (a pendant or a chord). -/
   | coldMarkedGermStretchIncidence
+  /-- Node `[157]`, F08 at every adjacent interior pair of the marked germ's stretch: suppressing the pair (delete `u v`, add `pl x` and `y q`) preserves every degree and is smaller by 2, so G has a cycle of length `Lk + j` with `Lk` accepted, `j` in `{1, 2}`, `Lk + j` not accepted; or a triangle/C4 obstruction holds. -/
+  | coldMarkedGermPairSuppression
   -- [20a] enrichment keys (6606-)
   /-- Node `[20a]`: **Edge–surplus identity**: `2m = δ·n + σ`. -/
   | edgeSurplusIdentity
@@ -2935,6 +2937,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       ColdMarkedGermStretchExcisionStatement data.toParameters object
   | .coldMarkedGermStretchIncidence, object =>
       ColdMarkedGermStretchIncidenceStatement data.toParameters object
+  | .coldMarkedGermPairSuppression, object =>
+      ColdMarkedGermPairSuppressionStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -3395,6 +3399,7 @@ def label : Key → String
   | .coldMarkedGermUncompressed => "coldMarkedGermUncompressed"
   | .coldMarkedGermStretchExcision => "coldMarkedGermStretchExcision"
   | .coldMarkedGermStretchIncidence => "coldMarkedGermStretchIncidence"
+  | .coldMarkedGermPairSuppression => "coldMarkedGermPairSuppression"
 
 /-! ### Label pins
 
@@ -3869,6 +3874,7 @@ example : label .coldSelectedFamilyEmpty = "coldSelectedFamilyEmpty" := rfl
 example : label .coldMarkedGermUncompressed = "coldMarkedGermUncompressed" := rfl
 example : label .coldMarkedGermStretchExcision = "coldMarkedGermStretchExcision" := rfl
 example : label .coldMarkedGermStretchIncidence = "coldMarkedGermStretchIncidence" := rfl
+example : label .coldMarkedGermPairSuppression = "coldMarkedGermPairSuppression" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -4338,6 +4344,7 @@ def idx : Key → Nat
   | .coldMarkedGermUncompressed => 8400
   | .coldMarkedGermStretchExcision => 8401
   | .coldMarkedGermStretchIncidence => 8402
+  | .coldMarkedGermPairSuppression => 8403
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -4796,6 +4803,7 @@ def ofIdx : Nat → Key
   | 8400 => .coldMarkedGermUncompressed
   | 8401 => .coldMarkedGermStretchExcision
   | 8402 => .coldMarkedGermStretchIncidence
+  | 8403 => .coldMarkedGermPairSuppression
   | _ => .selection
 
 set_option maxRecDepth 8192 in
@@ -5826,6 +5834,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermStretchExcision") 8401
   | .coldMarkedGermStretchIncidence =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermStretchIncidence") 8402
+  | .coldMarkedGermPairSuppression =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermPairSuppression") 8403
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather
