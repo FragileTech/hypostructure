@@ -6864,6 +6864,80 @@ port's walk is not geodesic).  (b) In the `EndEdgesFree` both-triangular whole-g
 with `σ ≤ 11|H|` and every hub of degree `≤ |T| + 8 ≤ 14`: the cycles through hubs (the hub-pair pattern)
 are not constrained by any fact here.
 
+### [144a] generic deployment (branch `g-144a-generic`, keys 9990-9991)
+
+Attachment/chain/dyadic machinery of `Graph/BlobCycles.lean` and the 9900/9901 forms deployed at the
+canonical port walks of `[144a]`.  Paper derivation:
+`scratchpad/144g/NOTES.md` (with an independent verification pass).
+
+**Sub-arms, exact (not mixed).**  W = the antecedent of 8104 (both supports avoid `∂Z`, both glued
+transplants keep the baseline); D2 = every degree-3 vertex in both seeds (W ⇒ D2); H1 = every hub
+neighbour in both seeds (D2 ⇒ H1, 8106; also D2 + `slackIndependent`); D1(k) = degree-3 vertices in
+`seed_k` (what 8107's ladder count uses); Tri(k) = both ports of pair `k` triangular.  8105/8106/8107
+each carry their own walk witness; only the seed is shared; the new keys re-derive their walk facts
+from `pairSeedWalks` at one witness.  **Failing term:** in W ∧ Tri ∧ EndEdgesFree, the hub population
+and the cycles through hubs (`hub → w₁-segment → hub′ → w₂-segment → hub`); ledger: `n ≤ 769|H| + 4952`,
+`|H| ≤ σ ≤ 11|H|`, `5|H| + σ ≤ 2n`, `σ > C_sp⌈√n⌉`, `n ≥ C_sp(C_sp + 1) + 9`.
+
+**Lean (no sorry; axioms `propext`, `Classical.choice`, `Quot.sound`).**
+* `Graph/WalkAttachment.lean` (generic, new): `seg_path` (a segment `w[i..j]` of a path is a path of
+  length `|i − j|` on the vertices between), `walk_attach_cycle` / `AttachCycles` (a route `r : x ⇝ y`
+  avoiding the segment, `w(i) ~ x`, `y ~ w(j)`: cycle `|r| + |i − j| + 2`; `blob_chain_cycle`, `n = 0`),
+  `walk_pair_cycle` / `ChainCycles` (routes `r, r′` between two walks with disjoint segments: cycle
+  `|r| + |r′| + |i − i′| + |j − j′| + 4`; trivial routes = hub pairs; `n = 1`), `cut_separates`
+  (a cut vertex whose neighbours lie in two sets each connected avoiding it has neighbours in both and
+  separates them), `interior_nbr_off`, `card_le_of_cubic_cover`.
+* **`K .sameTokenWalkAttachment` (9990)**: for both pair seeds, `AttachCycles` on both walks and
+  `ChainCycles` for the pair: every such length is not accepted.
+* **`K .sameTokenSeparatorExcluded` (9991), Lean improvement: the separated configuration is empty at
+  G.**  In W ∧ Tri(k): every vertex outside `seed_k` has a cubic neighbour in `T_k`;
+  `|V ∖ seed_k| ≤ 3|T_k|`; `n ≤ 4|T_k| + |w₁| + |w₂| + 2`.  Proof: an off-seed vertex is a hub (8104),
+  its neighbours are cubic (`slackIndependent`), in the seed; with no `T`-neighbour it separates the
+  walks (`cut_separates`, G connected from `ConnectedOn Z`, `Z = V`); then no rung, every other off-seed
+  vertex has a cubic `T`-neighbour, every interior walk vertex has a neighbour in `Y = V ∖ (W₁ ∪ W₂)`,
+  `|Y| ≤ 25`, degrees `≤ |T| + 8` (`hubDegrees_of`), so `n ≤ 729`, against
+  `n ≥ C_sp(C_sp + 1) + 9 ≥ 730` (`K .orderAboveScaleSquare`, `C_sp ≥ 102` from
+  `quadraticSafetyScale_le_twiceAdditive`).
+* Row `sameTokenSwapRow`: produces the two keys; **Requires now also `K .orderAboveScaleSquare`**
+  (already on the `[144a]` ledger; instance present in `selectedBottleneckDischarge`).  Residual: the
+  three `Node144aOutcome_*Fails` subtypes each gain two conjuncts (104/105/106 facts).  Root type:
+  no outcome appears or disappears.
+* chkI (overlay, emits in order): BlobCycles ok; WalkAttachment ok; Statements/SameTokenSwap ok;
+  Contracts/Spine/SameTokenWalkCycles ok; SpineVocabulary ok (pre-existing `factSystem` warning);
+  SpineRows/SameTokenSwap ok.  Assembly files (mechanical edits) not checked; the coordinator's build
+  covers them.
+
+**Derived on paper (not in Lean).**
+* (a) Tri: a walk is induced except its port edge; shortcut bound `|i − j| ≤ |r| + 2` (hub: `= 1`).
+* (b) Hub types in D2 ∧ Tri: `T′`; off-seed (O0 double-triangle rung or `T′`-attached); walk hubs W0
+  (degree 4, a triangle onto the other walk) or `T′`-attached; common vertices.  Second-seed
+  extension: in W ∧ Tri(1) a vertex of `(W₁ ∪ W₂) ∖ seed_2` with all neighbours on `W₁ ∪ W₂` gives
+  `n ≤ 730`, contradiction.  **(N1)** every cut vertex of G has degree 4 and two components (delete a
+  component otherwise; `noProperBaseline`).  **(N2)** in W ∧ Tri(1): `V = seed_1 = seed_2` (the walks
+  meet or are joined by an edge by the 9991 count; a second component `K` of `G − v` has `≤ 6` cubic
+  vertices and `≤ 1` hub, `|K ∪ v| ≤ 8`, and too many edges for a `C₄`-free graph:
+  `ex(m, C₄) = 4, 6, 7, 9, 11`, `m = 4..8`, brute force).  So 8104's cut-vertex clauses are vacuous
+  there.  **(N3)** all but `≤ 18` hubs have degree exactly 4; `σ ≤ |H| + 180`.
+* (c) Hub-pair runs (computed): O0–O0 width 5, O0–W0 4, W0–W0 3, W0–rung 2, plus one per toggleable
+  triangle (distinct apexes off the cycle).  Dyadic lemma: a run `[L₀, L₀ + t + c − 1]` contains a power
+  of two once `t + c ≥ L₀`.  The width grows with the triangles on the segments, not with the distance;
+  "far-apart hubs give wide runs" is false as stated.  Hub offset `||i − t_c| − |j − p_c|| ≤ 2` (needs
+  EndEdgesFree).
+* (d) Windows: 13 consecutive vertices of a triangular walk (not both ends) induce a `P₁₃`, so
+  `W(P₀)` meets every 13 consecutive walk positions (maximal packing); on stretches of cubic walk
+  vertices a window is walk segments joined by rungs.  No inequality links this to `|H|`.
+
+**Joint test.**  Added one at a time: the separated configuration closes (9991); N1–N3, the runs and the
+window density are jointly compatible with `σ > C_sp⌈√n⌉`, `σ ≤ |H| + 180`, `5|H| + σ ≤ 2n`,
+`n ≤ 769|H| + 4952`.  No contradiction derived.
+
+**Exact remaining proposition (W ∧ Tri(1) ∧ EndEdgesFree, one fixed witness).**
+`V = T₁ ∪ W₁ ∪ W₂ = T₂ ∪ Z₁ ∪ Z₂` (N2; in Lean: `|V ∖ seed| ≤ 3|T|`); all but `≤ 18` hubs are degree-4
+W0 hubs or common crossings; every rung, attachment, chain, hub-pair and bubble cycle has length not a
+power of two (8106, 9990); `|H| ≥ (n − 4952)/769`.  Open: a lower bound on the toggleable triangles
+along some cycle's segments (`t + c ≥ L₀` closes by the dyadic lemma); the ledger bounds triangles
+only through `|H|`.  Outside W ∧ Tri (open ports, or `EndEdgesFree` failing) nothing here applies.
+
 ### G audit: Route8RateFailsOutcome, sixth pass: windows joined through the remainder (keys 8266-8267); rebased on d85731a
 
 - **Rebase.** Merged `g-repair-base` (d85731a; `Route8JointBalanceOutcome` removed there, conflict resolved by taking that removal). `nearCubicResidualBKeys` now lists the sixteen keys this audit publishes on the failed-rate arm (the freshness hypotheses of the callers of `nearCubicRouteEightEntry`/`nearCubicRateFailedExit` were the missing piece). Checked against the refreshed validation build: `NearCubic/Spine.lean`, `NearCubic/ColdPass.lean`, `NearCubic/Survivor/Unrealized.lean`, `RouteEight/Residual.lean`, `RouteEight/Local.lean`, `Residuals.lean`, `Residuals/Route8RateFailsOutcome.lean` and every library, contract and row file of the audit pass.

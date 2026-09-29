@@ -806,6 +806,8 @@ noncomputable def selectedBottleneckDischarge
     (seedCoverFresh : K .sameTokenSeedCover ∉ known := by key_fresh)
     (pathInteractionsFresh : K .sameTokenPathInteractions ∉ known := by key_fresh)
     (ladderCountFresh : K .sameTokenLadderCount ∉ known := by key_fresh)
+    (walkAttachmentFresh : K .sameTokenWalkAttachment ∉ known := by key_fresh)
+    (separatorExcludedFresh : K .sameTokenSeparatorExcluded ∉ known := by key_fresh)
     (closedFresh : closed ∉ known := by key_fresh)
     [FactKeys.Has (K .activeSurplusFamily) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
@@ -894,6 +896,7 @@ noncomputable def selectedBottleneckDischarge
         (K .sameTokenUnresolvedDecided :: K .sameTokenReadingsExact :: K .sameTokenSwap ::
           K .sameTokenSwapExact :: K .sameTokenU2FreeWhole :: K .sameTokenSeedCover ::
           K .sameTokenPathInteractions :: K .sameTokenLadderCount ::
+          K .sameTokenWalkAttachment :: K .sameTokenSeparatorExcluded ::
           K .sameTokenTransplantSize :: K .sameTokenTransplantDeficit ::
           K .sameTokenPairPartition :: K .sameTokenReadingsNotReplacement ::
           K .sameTokenPatternUnresolved :: K .typeBHandoffFails ::
