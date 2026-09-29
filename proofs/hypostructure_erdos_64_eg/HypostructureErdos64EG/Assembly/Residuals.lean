@@ -2389,7 +2389,13 @@ abbrev TypeBSublinearOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coverFlowValue selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pieceSizeProfile selected.object
+      erdosReceiverLoadProfile spineData .pieceSizeProfile selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .bridgePieceMassDichotomy selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .traceIntoCentreStructure selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .traceIntoAbsorbedStructure selected.object
 
 /-- The return of `TypeBSublinearOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -2520,7 +2526,10 @@ theorem typeBSublinearReturn
     [FactKeys.Has (K .saturatedReceiverBasin) known]
     [FactKeys.Has (K .loadFlowValue) known]
     [FactKeys.Has (K .coverFlowValue) known]
-    [FactKeys.Has (K .pieceSizeProfile) known] :
+    [FactKeys.Has (K .pieceSizeProfile) known]
+    [FactKeys.Has (K .bridgePieceMassDichotomy) known]
+    [FactKeys.Has (K .traceIntoCentreStructure) known]
+    [FactKeys.Has (K .traceIntoAbsorbedStructure) known] :
     TypeBSublinearOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -2646,7 +2655,10 @@ theorem typeBSublinearReturn
     (history.get (K .saturatedReceiverBasin)).down,
     (history.get (K .loadFlowValue)).down,
     (history.get (K .coverFlowValue)).down,
-    (history.get (K .pieceSizeProfile)).down⟩
+    (history.get (K .pieceSizeProfile)).down,
+    (history.get (K .bridgePieceMassDichotomy)).down,
+    (history.get (K .traceIntoCentreStructure)).down,
+    (history.get (K .traceIntoAbsorbedStructure)).down⟩
 
 /-- **Node `[187] ([348], route-8 quotient failure)`** (thm:main (vi), tex
 369-378, 388-390): failure of route-8 quotient freeness of the unified

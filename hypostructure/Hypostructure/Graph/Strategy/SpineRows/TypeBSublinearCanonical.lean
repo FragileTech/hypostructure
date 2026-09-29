@@ -2,6 +2,7 @@ import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Contracts.TypeB.SublinearCanonical
 import Hypostructure.Graph.Contracts.TypeB.SublinearGaps
 import Hypostructure.Graph.Contracts.TypeB.SublinearFlow
+import Hypostructure.Graph.Contracts.TypeB.SublinearLanding
 
 /-! G audit of `TypeBSublinearOutcome`: the failed sublinear hypotheses in G's
 canonical form (keys 8300--8302), published on the negative arm of node `[187]`. -/
@@ -205,6 +206,53 @@ port. -/
         ⟨Contracts.TypeB.pieceSizeProfile
           (data := data.toParameters) (object := inputs.current.object)
           (inputs.get (K .remainderNormalized)).down⟩ .nil)
+
+/-- G audit: bridgePieceMassDichotomy. -/
+@[reducible] noncomputable def bridgePieceMassDichotomyRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.bridgePieceMassDichotomy
+    { Requires := [K .typeBSublinearResidual, K .remainderNormalized]
+      Produces := [K .bridgePieceMassDichotomy]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .bridgePieceMassDichotomy)
+        ⟨Contracts.TypeB.bridgePieceMassDichotomy
+          (data := data.toParameters) (object := inputs.current.object)
+          (inputs.get (K .remainderNormalized)).down⟩ .nil)
+
+/-- G audit: traceIntoCentreStructure. -/
+@[reducible] noncomputable def traceIntoCentreStructureRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.traceIntoCentreStructure
+    { Requires := [K .typeBSublinearResidual, K .highCentreNormalForm]
+      Produces := [K .traceIntoCentreStructure]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .traceIntoCentreStructure)
+        ⟨Contracts.TypeB.traceIntoCentreStructure
+          (data := data.toParameters) (object := inputs.current.object)
+          (inputs.get (K .highCentreNormalForm)).down⟩ .nil)
+
+/-- G audit: traceIntoAbsorbedStructure. -/
+@[reducible] noncomputable def traceIntoAbsorbedStructureRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.traceIntoAbsorbedStructure
+    { Requires := [K .typeBSublinearResidual, K .cubicBaseline]
+      Produces := [K .traceIntoAbsorbedStructure]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .traceIntoAbsorbedStructure)
+        ⟨Contracts.TypeB.traceIntoAbsorbedStructure
+          (data := data.toParameters) (object := inputs.current.object)
+          (inputs.get (K .cubicBaseline)).down.1.1
+          (fun vertex => le_trans inputs.current.baseline
+            (inputs.current.object.minDegree_le_degree vertex))⟩ .nil)
 
 /-- G audit: the exact decomposition of the failed hypotheses. -/
 @[reducible] noncomputable def typeBSublinearFailureArmsRow :
