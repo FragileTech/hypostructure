@@ -58,8 +58,12 @@ theorem correlationProfile_of_system (system : PairOverlapSystem data object) :
     rw [zero, ← pow_add, add_comm]
     exact lt_of_le_of_lt top small
   refine ⟨⟨system.failedFamily_card, zero, fun k _ => step k, top, mass,
-    Graph.SparsePairSkeletonModel.exists_first_nonbranching P
-      system.failedFamily.card (fun k _ => (step k).2) failure⟩, ?_, ?_⟩
+    ?_⟩, ?_, ?_⟩
+  · obtain ⟨k, hk, hfree, hcorr⟩ := Graph.SparsePairSkeletonModel.exists_first_nonbranching P
+      system.failedFamily.card (fun k _ => (step k).2) failure
+    exact ⟨k, hk, hfree, hcorr,
+      Graph.SparsePairSkeletonModel.exists_forbidden_extension (LengthOK := data.LengthOK)
+        system.toSkeletonModel system.failedFamily system.failedOrder k hcorr⟩
   · have real := system.first.firstFailure.realizedThrough
       system.first.firstFailure.index le_rfl
     have cardEq := system.failedFamily_card

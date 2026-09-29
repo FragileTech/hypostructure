@@ -6406,3 +6406,83 @@ Exit (7) (key 7961 now also publishes every degree and the refined order):
   analysis does not transfer to H.  Remaining at G: a same-size counterexample
   `H` with G's degrees, `code G` before `code H`, and `z ∈ ∂S_z`
   (`d_G(z) ≥ 4`).
+
+### G audit: PairConditionalFactorizationOutcome, follow-up 2 (uncrossing, repetition)
+
+- **Path surgery** (`Graph/PathUncrossing.lean`, generic, own proofs; no dependency on
+  the other branches' `two_crossing` / `split_at_edge`): `exists_first_hit`,
+  `exists_last_hit` (a walk meeting a set splits at its first / last vertex in it, the
+  outer segment meeting the set only at the junction), `isPath_append_of_inter`,
+  and `exists_uncrossing`: two paths `P : a → b`, `Q : c → d` sharing a vertex split as
+  `P = P₁ ++ P₂ = P₃ ++ P₄`, `Q = Q₁ ++ Q₂ = Q₃ ++ Q₄` at the first (`x`) and last (`y`)
+  vertex of `P` on `Q`, and `P₁ ++ Q₂ : a → d`, `Q₃ ++ P₄ : c → b` are paths, of
+  lengths `|P₁| + |Q₂|` and `|Q₃| + |P₄|` (`length_append`).
+- **Applied at G** (`Contracts/SurplusPair/PairUncrossing.lean`) to the two canonical
+  oriented connector routes of the retained obstruction, `forward : left.2 → right.1`
+  and `backward : right.2 → left.1` (`PairDemandReturns.connectorRoutes`), closed by the
+  demand edges: `not_accepted_of_path` (a path of length `≥ 2` closed by an edge is a
+  cycle, so its length `+ 1` is not accepted), `disjoint_closing_not_accepted`
+  (disjoint routes: `|forward| + |backward| + 1 = 1` or `|forward| + |backward| + 2` not
+  accepted), `crossing_lengths_not_accepted` (crossing routes: rerouted paths
+  `left.2 → left.1`, `right.2 → right.1` of lengths `l₁, l₂ ≤ |forward| + |backward|`,
+  each `= 1` or with `l + 1` not accepted).  Published as **`K .pairUncrossing`
+  (idx 8203)**, row `pairUncrossingRow`, on the realizability and increment
+  subtypes.  The exact length bookkeeping is the partition of the closing cycle at the
+  first and last common vertex; the port-cycle lengths of the two demands are
+  `|R_p| + 1`-type lengths that enter only through `forward`, `backward` lengths, and
+  are excluded the same way.
+- **What is not built:** the serial system from the uncrossed pair.  It needs (i) two
+  internally disjoint strands between `x` and `y` inside the overlap support with the
+  ordered interfaces and the cell decomposition of the overlap graph (the `overlapWitness`
+  supports `X_l`, `X_r` are connected *sets*, not paths through the shared vertex, so the
+  strands must be chosen inside them), and (ii) the cell bound `D_sp`, which is the
+  cold-corridor exchange closure `(F1)`--`(F5)` of node `[166]`: the splice/excision
+  step (`g-audit-coldSilent`) is required and has not landed.
+- **`[178]` repetition, aggregate.**  `exists_forbidden_extension` (`Graph/PairCorrelation.lean`):
+  if `P_{k+1} < 2 P_k` then some realized `k`-signature `(w, r₁..r_k)` -- a point of the
+  code space, not a class member -- has a forbidden extension `extendSignature k p v` not
+  realized: the `(k+1)`-th response is forced by that prefix over the whole labelled class.
+  Published in `K .pairCorrelation` at the least such `k*` (with `P_{j+1} = 2 P_j` for
+  `j < k*`).
+  - *Not derivable at G:* that the forced prefix is G's own signature
+    `(w_G, False, …, False)`.  The count gives a forbidden pattern somewhere in the code
+    space; G's signature always has its `False` extension realized (G is a member), so
+    G's own prefix could only be forced to `False`, and whether the forbidden pattern
+    sits at G's prefix is a statement about which class members exist, which the
+    aggregate count does not determine.  Consequently the compression (transplant of
+    `π_{k*+1}`'s support with the determining pairs' structure) has no G object to act
+    on: the swap needs G's own dependence, and the count supplies a dependence only at
+    some prefix.  The size equalities of minimality therefore cannot be applied to the
+    coordinate `π_{k*+1}`, and the number of correlated steps (`Σ` of positive
+    deficiencies, total mass `2^{b+t} − P_t`) is not related to a number of compressible
+    coordinates.
+
+### G audit: PairConditionalFactorizationOutcome, follow-up 3 (strands, `GConstructedPiece`)
+
+- `GConstructedPiece` (branch `g-pieces-constructed`, `/home/guillem/hs-wt-GPC`) has not
+  landed (no definition in that worktree at d85731a).  The `[178]` restatement at G's own
+  signature (responses read on canonical G-constructed pieces, the first repetition at G,
+  the swap/transplant compression) is therefore NOT done here; it needs that definition,
+  and the aggregate `pairCorrelation` fact stays as the class-level shadow of it.
+- **Strand building block built:** `PathUncrossing.exists_ear` (Menger-type first
+  step).  Two distinct paths `P, Q : x → y` of a simple graph: `Q` leaves `P` at a first
+  divergence `u` and first returns to `P` at `v`; the segment `R : u → v` of `Q` is a path,
+  internally disjoint from `P` (`R.support ∩ P.support ⊆ {u, v}`), `R ≠ Pm` (the segment
+  of `P` between `u` and `v`), `u ≠ v`, `R.support ⊆ Q.support`.  `Pm` and `R` are the two
+  internally disjoint corridors of one serial cell, with lengths `|Pm|`, `|R|`.  Together
+  with `exists_uncrossing` this gives the dichotomy for two `x`--`y` paths inside a
+  connected support: equal, or an ear (a cell with increment `|R| − |Pm|`).
+- **Not built, exact steps needed for the serial system** (`PairSerialDemandSystem`):
+  1. *Replacement lemma*: for a path `W = W₁ ++ Pm ++ W₂` and an ear `R` of `Pm`, the
+     walk `W₁ ++ R ++ W₂` is a path of length `|W| − |Pm| + |R|` (list-nodup bookkeeping;
+     it makes every cell piece a cycle of G through the two demand edges, hence the
+     non-accepted lengths `realized_route` asks for).
+  2. *Ordered cells with disjoint interiors*: repeated ear extraction gives ears of `P`
+     that may overlap or nest; the manuscript cuts the intersection graph "at its common
+     subpaths" using secondary minimality and node `[166]` (equal-length neutral strands
+     are identified).  That identification is a minimality argument about G, not path
+     surgery.
+  3. *The cell bound `|R| − |Pm| ≤ D_sp = 2 M_cold + 2 ℓ_ret`*: the cold-corridor exchange
+     closure `(F1)`--`(F5)` of node `[166]` applied to an ear longer than `D_sp`
+     (read from both ends by cold cut-states; two repeating states give a first-failure
+     exchange).  Required: the splice/excision lemma of `g-audit-coldSilent`.

@@ -51,7 +51,10 @@ the failed prefix and `b` the size of the baseline code:
 * the count failure puts a first non-branching index `k* < t`: the first `k*`
   responses are jointly free with the baseline word
   (`P_j+1 = 2 P_j` for `j < k*`) and the next is correlated with them
-  (`P_{k*+1} < 2 P_{k*}`);
+  (`P_{k*+1} < 2 P_{k*}`), and the repetition is explicit: some realized
+  `k*`-signature (baseline word and first `k*` responses, a point of the code space)
+  has a forbidden extension, so the `(k*+1)`-th response is forced by that prefix
+  over the whole class;
 * the failure gap is at most one maximal step: `2^{b+t-1} ≤ |class|` (the last
   successful level) and every single weighted deficiency
   `2^{t-1-k} (2 P_k − P_{k+1}) ≤ 2^{b+t-1}`, so no coordinate is forced to be
@@ -68,7 +71,12 @@ def CorrelationProfile {data : Parameters} {object : Graph.FiniteObject.{u}}
     Graph.skeletonBudget object +
       Graph.SparsePairSkeletonModel.mass P system.failedFamily.card ∧
   ∃ k < system.failedFamily.card, (∀ j < k, P (j + 1) = 2 * P j) ∧
-    P (k + 1) < 2 * P k) ∧
+    P (k + 1) < 2 * P k ∧
+    ∃ p ∈ Set.range (Graph.SparsePairSkeletonModel.signature (LengthOK := data.LengthOK)
+        system.toSkeletonModel system.failedFamily system.failedOrder k),
+      ∃ v : Prop, Graph.SparsePairSkeletonModel.extendSignature k p v ∉
+        Set.range (Graph.SparsePairSkeletonModel.signature (LengthOK := data.LengthOK)
+          system.toSkeletonModel system.failedFamily system.failedOrder (k + 1))) ∧
   2 ^ (system.first.baselineFamily.card + system.failedFamily.card - 1) ≤
     Graph.skeletonBudget object ∧
   ∀ k < system.failedFamily.card,
@@ -119,5 +127,28 @@ def PairFullModulusStatement (data : Parameters)
   ∃ serial, canonicalPairSerialSystem data object = some serial ∧
     ¬ serial.toSystem.FullModulusArithmetic serial.lengths_nonempty
       (PairDemandReturns.systemBound serial.returns)
+
+/-- **Node `[179]`, the uncrossing of G's canonical connector routes.**  For G's
+canonical return system and its canonical routes `forward : left.2 → right.1`,
+`backward : right.2 → left.1`: if the routes are disjoint, the closed walk through
+the two demand edges has length one or a non-accepted `|forward| + |backward| + 2`;
+if they share a vertex, their uncrossing at the first and last common vertex
+(`PathUncrossing.exists_uncrossing`) gives two paths of G, `left.2 → left.1` and
+`right.2 → right.1`, of lengths `l₁, l₂ ≤ |forward| + |backward|`, each of which
+has length one or a non-accepted `l + 1` (it closes with its demand edge). -/
+def PairUncrossingStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ returns, canonicalPairDemandReturns data object = some returns ∧
+    ((∀ v ∈ returns.connectorRoutes.forward.support,
+        v ∉ returns.connectorRoutes.backward.support) →
+      returns.connectorRoutes.forward.length + returns.connectorRoutes.backward.length + 1 = 1 ∨
+        ¬ data.LengthOK (returns.connectorRoutes.forward.length +
+          returns.connectorRoutes.backward.length + 2)) ∧
+    ((∃ v ∈ returns.connectorRoutes.forward.support,
+        v ∈ returns.connectorRoutes.backward.support) →
+      ∃ l₁ l₂ : ℕ,
+        l₁ ≤ returns.connectorRoutes.forward.length + returns.connectorRoutes.backward.length ∧
+        l₂ ≤ returns.connectorRoutes.forward.length + returns.connectorRoutes.backward.length ∧
+        (l₁ = 1 ∨ ¬ data.LengthOK (l₁ + 1)) ∧ (l₂ = 1 ∨ ¬ data.LengthOK (l₂ + 1)))
 
 end Hypostructure.Graph.Strategy.Spine

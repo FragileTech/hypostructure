@@ -420,4 +420,56 @@ theorem weighted_deficiency_le (P : Nat → Nat) (t : Nat)
         congr 2
         omega
 
+/-- Extend a signature at depth `k` by the value `v` of the `(k+1)`-th response. -/
+def extendSignature {α β : Type*} (k : Nat) (p : α × (Nat → β)) (v : β) : α × (Nat → β) :=
+  (p.1, fun index => if index = k then v else p.2 index)
+
+/-- **The repetition at a correlated step, in aggregate form.**  If the count of
+realized signatures at depth `k+1` is below twice that at depth `k`, then some
+realized `k`-signature (a baseline word with its first `k` responses, a point of
+the code space and not a class member) has a forbidden extension: the value of the
+`(k+1)`-th response is forced by that prefix, over the whole labelled `(n,m)`
+class. -/
+theorem exists_forbidden_extension (k : Nat)
+    (correlated : signatureCount (LengthOK := LengthOK) model family order (k + 1) <
+      2 * signatureCount (LengthOK := LengthOK) model family order k) :
+    ∃ p ∈ Set.range (signature (LengthOK := LengthOK) model family order k), ∃ v : Prop,
+      extendSignature k p v ∉
+        Set.range (signature (LengthOK := LengthOK) model family order (k + 1)) := by
+  classical
+  by_contra none
+  push Not at none
+  let extend : (model.BaselineWord × (Nat → Prop)) × Prop →
+      model.BaselineWord × (Nat → Prop) := fun q => extendSignature k q.1 q.2
+  have inj : Set.InjOn extend
+      (Set.range (signature (LengthOK := LengthOK) model family order k) ×ˢ
+        (Set.univ : Set Prop)) := by
+    rintro ⟨p, v⟩ ⟨⟨m, rfl⟩, -⟩ ⟨p', v'⟩ ⟨⟨m', rfl⟩, -⟩ same
+    have h1 := congrArg Prod.fst same
+    have h2 := congrArg Prod.snd same
+    simp only [extend, extendSignature] at h1 h2
+    have hk : v = v' := by
+      have := congrFun h2 k
+      simpa using this
+    have hs : signature (LengthOK := LengthOK) model family order k m =
+        signature (LengthOK := LengthOK) model family order k m' := by
+      refine Prod.ext h1 ?_
+      funext index
+      by_cases hi : index = k
+      · subst hi
+        simp [signature]
+      · have := congrFun h2 index
+        simpa [hi] using this
+    simp [hs, hk]
+  have subset : extend '' (Set.range (signature (LengthOK := LengthOK) model family order k) ×ˢ
+      (Set.univ : Set Prop)) ⊆
+      Set.range (signature (LengthOK := LengthOK) model family order (k + 1)) := by
+    rintro _ ⟨⟨p, v⟩, ⟨hp, -⟩, rfl⟩
+    exact none p hp v
+  have le := Set.ncard_le_ncard subset (Set.toFinite _)
+  rw [inj.ncard_image, Set.ncard_prod, Set.ncard_univ] at le
+  unfold signatureCount at correlated
+  simp at le
+  omega
+
 end Hypostructure.Graph.SparsePairSkeletonModel

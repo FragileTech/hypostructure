@@ -2,6 +2,7 @@ import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.Basic
 import Hypostructure.Graph.Contracts.SurplusPair.PairCorrelation
 import Hypostructure.Graph.Contracts.SurplusPair.PairCoverage
+import Hypostructure.Graph.Contracts.SurplusPair.PairUncrossing
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -79,6 +80,28 @@ arithmetic test at G: it would realize a power of two, an accepted cycle. -/
           (inputs.get (K .pairSerialDemandSystem)).down
           (inputs.get (K .selection)).down.1
           (inputs.get (K .cubicBaseline)).down.2.1.2.1⟩
+        .nil)
+
+/-- **Node `[179]`, the uncrossing of G's canonical connector routes.**
+
+Reads G's canonical return system and the selection.  The two oriented routes of the
+obstruction's connector are paths of G; disjoint routes close with the two demand
+edges into a cycle, and crossing routes are rerouted at their first and last common
+vertex into two paths that close with the demand edges.  Every closing length is one
+or not accepted. -/
+@[reducible] noncomputable def pairUncrossingRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairUncrossing
+    { Requires := [K .pairDemandReturns, K .selection]
+      Produces := [K .pairUncrossing]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairUncrossing)
+        ⟨Graph.Contracts.SurplusPair.pairUncrossing_of_demandReturns
+          (inputs.get (K .pairDemandReturns)).down
+          (inputs.get (K .selection)).down.1⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

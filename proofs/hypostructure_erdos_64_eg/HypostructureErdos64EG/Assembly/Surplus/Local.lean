@@ -193,6 +193,7 @@ noncomputable def selectedPairCodeChainIndependent
     (correlationFresh : K .pairCorrelation ∉ known := by key_fresh)
     (coverageFresh : K .pairCoverage ∉ known := by key_fresh)
     (fullModulusFresh : K .pairFullModulus ∉ known := by key_fresh)
+    (uncrossingFresh : K .pairUncrossing ∉ known := by key_fresh)
     (factorizationFresh : K .pairConditionalFactorization ∉ known := by key_fresh)
     (factorizationFailsFresh : K .pairFactorizationFails ∉ known := by key_fresh)
     (residualFresh : K .pairConditionalFactorizationResidual ∉ known := by key_fresh)
@@ -333,8 +334,13 @@ noncomputable def selectedPairCodeChainIndependent
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           demandReturns (by key_fresh)
+      let uncrossing :=
+        (pairUncrossingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          coverage (by key_fresh)
       match pairSystemRealizabilityDichotomy (data := spineData)
-          coverage (by key_fresh) (by key_fresh) with
+          uncrossing (by key_fresh) (by key_fresh) with
       | .right failsHistory =>
           let residualHistory :=
             (pairRealizabilityResidualRow (BranchState := BranchState)
@@ -466,6 +472,7 @@ noncomputable def selectedPairCodeChainDependent
     (correlationFresh : K .pairCorrelation ∉ known := by key_fresh)
     (coverageFresh : K .pairCoverage ∉ known := by key_fresh)
     (fullModulusFresh : K .pairFullModulus ∉ known := by key_fresh)
+    (uncrossingFresh : K .pairUncrossing ∉ known := by key_fresh)
     (factorizationFresh : K .pairConditionalFactorization ∉ known := by key_fresh)
     (factorizationFailsFresh : K .pairFactorizationFails ∉ known := by key_fresh)
     (residualFresh : K .pairConditionalFactorizationResidual ∉ known := by key_fresh)
@@ -616,8 +623,13 @@ noncomputable def selectedPairCodeChainDependent
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           demandReturns (by key_fresh)
+      let uncrossing :=
+        (pairUncrossingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          coverage (by key_fresh)
       match pairSystemRealizabilityDichotomy (data := spineData)
-          coverage (by key_fresh) (by key_fresh) with
+          uncrossing (by key_fresh) (by key_fresh) with
       | .right failsHistory =>
           let residualHistory :=
             (pairRealizabilityResidualRow (BranchState := BranchState)
