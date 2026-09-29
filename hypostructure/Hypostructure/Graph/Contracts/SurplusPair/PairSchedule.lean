@@ -35,14 +35,14 @@ target-testable then G has a sparse surplus exit of its declared family or a
 scheduled pair has a blocker of type (d) or (e).
 
 The proof follows the paper's case order.  The rank-reducing quotient is an
-admissible declared quotient, so it preserves the boundary-degree profile and is
-context-universal (`DeclaredQuotient.fibrewise`, `contextUniversal`): the
-paper's first two cases (a profile-crossing or a target-defective
-determination) do not arise.  It is therefore target-complete, and
+admissible declared quotient of G, so it preserves the boundary-degree profile
+(`DeclaredQuotient.fibrewise`) and no context of G separates the readings it
+identifies (decided at G, `readings_agree_in_rest`): the paper's first two
+cases (a profile-crossing or a target-defective determination) do not arise.  It is therefore target-complete, and
 `DeclaredQuotient.localize` gives the remaining two: a proper determination
-support admits a target-complete replacement (exit (c)), and the whole-graph
-support has a strictly smaller closed representative (the whole-graph
-support-dependence exit (d)).  In both cases the exit disjunct of the paper's
+support admits a replacement (exit (c)), and the whole-graph support has a
+strictly smaller closed baseline representative with no power-of-two cycle (the
+whole-graph support-dependence exit (d)).  In both cases the exit disjunct of the paper's
 conclusion holds; for a pair coordinate the paper additionally reads the same
 event as a blocker of type (e), which is not needed for the disjunction. -/
 theorem mixedSparseSpineDependence_of_baseline
@@ -56,9 +56,10 @@ theorem mixedSparseSpineDependence_of_baseline
   intro declared selected
   obtain ⟨_functional, reducing⟩ := canonicalChoice_spec_of_eq_some selected
   rcases declared.localize reducing with replacement |
-      ⟨representative, smaller, baseline, transfer⟩
+      ⟨representative, smaller, baseline, noTarget⟩
   · exact Or.inl (.compression declared.support replacement)
-  · exact Or.inl (.delocalization representative smaller baseline transfer)
+  · exact Or.inl (.delocalization representative smaller baseline
+      (fun target => (noTarget target).elim))
 
 /-- Node `[130]`, `lem:degree-profile-fibres` at G's pair family: at G's
 canonical activation (read from the blocked arm's pinned activation), every

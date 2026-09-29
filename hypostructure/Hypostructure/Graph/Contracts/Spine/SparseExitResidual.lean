@@ -584,9 +584,10 @@ theorem baselineSpineDemand_of_noCD
     · intro declared _functional
       by_contra reducing
       rcases declared.localize reducing with replacement |
-        ⟨representative, smaller, baseline, transfer⟩
+        ⟨representative, smaller, baseline, noTarget⟩
       · exact noCompression declared.support replacement
-      · exact noDelocalization representative smaller baseline transfer
+      · exact noDelocalization representative smaller baseline
+          (fun target => (noTarget target).elim)
     · rw [familyCard]
       exact
         Graph.cubicBaselineBudget_le_two_pow_add_spineDeficit

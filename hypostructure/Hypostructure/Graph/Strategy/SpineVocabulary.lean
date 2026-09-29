@@ -391,9 +391,10 @@ inductive Key where
   `β(G) = m - n + 1` satisfies `2β(G) ≥ n + 2`.  This is the manuscript's
   division-free form of `β(G) ≥ n/2 + 1`. -/
   | cycleRankConstraint
-  /-- Node `[13]`, `lem:replacement`: no proper atom admits a strictly smaller
-  boundary-signature-preserving replacement with one-way obstruction
-  inclusion. -/
+  /-- Node `[13]`, `lem:replacement`, stated about G: no proper support `Z`
+  admits a replacement `X'` with G's boundary-degree profile such that
+  `glue X' (G − Z)` meets the baseline, is strictly smaller and has no
+  power-of-two cycle. -/
   | replacementExclusion
   /-- Node `[14]`: no proper atom admits a nontrivial target-complete
   compression (`cor:uncompressible`). -/
@@ -469,13 +470,15 @@ inductive Key where
   node `[19]`'s test), is the one object nodes `[36]`--`[45]` route. -/
   | branchDependence
   /-- Node `[36]`, yes arm: the determination the certificate of `G` makes is
-  valid against every outside context (`lem:context-universality`).  This is
-  the residual node `[38]` consumes. -/
+  valid in every context of G (`lem:context-universality` stated about G: the
+  readings it identifies agree in `G − Z`).  Decided at G; this is the residual
+  node `[38]` consumes. -/
   | contextUniversal
-  /-- Node `[36]`, no arm — the terminal `[37]`: some pair of states the
-  certificate identifies is separated by a concrete outside context.  This is
-  case (i) of `lem:curvature-dependence-routing`, a target-defective quotient.
-  Boundary-profile preservation is already part of quotient admissibility. -/
+  /-- Node `[36]`, no arm — the terminal `[37]`: some pair of readings of G the
+  certificate identifies is separated by `G − Z`.  This is case (i) of
+  `lem:curvature-dependence-routing`, a target-defective quotient; empty at G
+  (it closes against node `[12]`).  Boundary-profile preservation is already
+  part of quotient admissibility. -/
   | contextDefect
   /-- Node `[38]`, yes arm — the terminal `[39]`: the context-universal
   determination is already certified inside the proper atom `C`, so the

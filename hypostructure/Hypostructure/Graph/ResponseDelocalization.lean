@@ -14,9 +14,11 @@ case."*
 
 The two exclusions are not restated here.  `lem:proper-smearing` regards `Z` as a
 boundaried graph and concludes that a target-complete dependence on a proper
-`Z ⊊ G` is a replacement of that support; `lem:no-silent-global-smearing`
+`Z ⊊ G` is a replacement of that support (`ReplacementSupport`: a piece `X'`
+with G's boundary-degree profile, the baseline and no target cycle in
+`glue X' (G − Z)`, strictly smaller); `lem:no-silent-global-smearing`
 concludes that a target-complete whole-graph dependence has a strictly smaller
-admissible closed representative.  Both conclusions are already the two clauses
+admissible closed representative (a baseline graph with no target cycle).  Both conclusions are already the two clauses
 of `def:admissible-rank-quotient` that `DeclaredQuotient` carries, and
 `DeclaredQuotient.localize` is already the scope split between them.  So the
 only thing this module has to supply is the manuscript's *datum*: the enlarging
@@ -54,8 +56,9 @@ target-complete only after adjoining the larger connected support `Z ⊋ B_u`.
 
 The admissibility of the identification at `Z` is `DeclaredQuotient`: its
 `connected` field is the clause's *connected* support, its `carries` field is
-that `Z` carries the declared coordinate family, its `fibrewise` and
-`contextUniversal` fields are target-completeness at `Z`, and its two
+that `Z` carries the declared coordinate family, its `fibrewise` field is
+target-completeness (a) at `Z` (condition (b) is decided at G,
+`readings_agree_in_rest`), and its two
 representative fields are `def:admissible-rank-quotient`'s proper and closed
 clauses.  Nothing here re-derives them. -/
 structure Delocalization (Baseline Target : FiniteObject.{u} → Prop)
@@ -119,7 +122,7 @@ theorem localize :
         delocalization.quotient.support ∨
       ∃ representative : FiniteObject.{u},
         representative.LexicographicallySmaller object ∧
-          Baseline representative ∧ (Target representative → Target object) :=
+          Baseline representative ∧ ¬ Target representative :=
   delocalization.quotient.localize delocalization.reducing
 
 /-- **`lem:proper-smearing`.**  At a proper enlarging support the dependence is
@@ -130,13 +133,24 @@ theorem properReplacement (proper : ∃ vertex, vertex ∉ delocalization.quotie
   delocalization.quotient.properRepresentative proper delocalization.reducing
 
 /-- **`lem:no-silent-global-smearing`.**  At `Z = G` the dependence supplies a
-strictly smaller admissible closed representative. -/
+strictly smaller admissible closed representative: a baseline graph with no
+target cycle. -/
 theorem closedRepresentative
     (covers : ∀ vertex, vertex ∈ delocalization.quotient.support) :
     ∃ representative : FiniteObject.{u},
       representative.LexicographicallySmaller object ∧
-        Baseline representative ∧ (Target representative → Target object) :=
+        Baseline representative ∧ ¬ Target representative :=
   delocalization.quotient.closedRepresentative covers delocalization.reducing
+
+include delocalization in
+/-- **Exit (6) is empty at a minimal G** (`lem:typeA-exits-discharged`: "Exit
+(6) is excluded by `lem:proper-smearing` in the proper-support case and by
+`lem:no-silent-global-smearing` in the whole-graph case"): both representatives
+carry the target by minimality. -/
+theorem false_of_minimal
+    (minimal : ∀ H : FiniteObject.{u}, H.LexicographicallySmaller object →
+      Baseline H → Target H) : False :=
+  delocalization.reducing (delocalization.quotient.labelInjective_of_minimal minimal)
 
 end Delocalization
 

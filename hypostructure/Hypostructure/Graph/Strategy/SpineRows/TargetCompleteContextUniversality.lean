@@ -19,13 +19,14 @@ variable [FactSystem (Input BranchState Presentation presentation data)]
 
 /-! ## Node `[12]`: context-universality for target-complete identifications
 
-`lem:context-universality` (tex 6106), at G's own boundaried pieces.  The row
-reads node `[11]` (`K .degreeProfileFibres`, the diagram's edge `[11] → [12]`):
-an identification made by an admissible quotient of G's declared coordinates
-stays in one boundary-degree fibre and has the same target response against
-every boundaried context, so it is target-complete; and an identification valid
-only at G's own outside context is target-defective.  Branch D's terminal
-`[37]` closes against this fact. -/
+`lem:context-universality` (tex 6106), stated about G.  The row reads node
+`[11]` (`K .degreeProfileFibres`, the diagram's edge `[11] → [12]`) and the
+selection (`K .selection`): two readings an admissible quotient of G's declared
+coordinates identifies stay in one boundary-degree fibre and agree in G's own
+rest `G − Z`; and no reading of G closes a power-of-two cycle in `G − Z` (a
+subgraph of G), so no context of G separates two readings.  This decided fact
+routes G at `[36]`: Branch D's terminal `[37]` closes against it (Lean
+improvement: `[36]`'s defect arm is empty at G). -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def targetCompleteContextUniversalityRow :
     @AtomicStrategy (Input BranchState Presentation presentation data) _
@@ -40,7 +41,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.targetCompleteContextUniversality
-    { Requires := [K .degreeProfileFibres]
+    { Requires := [K .degreeProfileFibres, K .selection]
       Produces := [K .targetCompleteContextUniversality]
       requiresUnique := by simp
       producesUnique := by simp
@@ -49,7 +50,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       .cons (key := K .targetCompleteContextUniversality)
         ⟨Contracts.Spine.targetCompleteContextUniversality_of_degreeProfileFibres
           data.toParameters inputs.current.object
-          (inputs.get (K .degreeProfileFibres)).down⟩
+          (inputs.get (K .degreeProfileFibres)).down
+          (inputs.get (K .selection)).down⟩
         .nil)
     0 0
 

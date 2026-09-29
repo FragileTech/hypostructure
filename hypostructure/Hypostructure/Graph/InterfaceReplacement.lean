@@ -390,9 +390,29 @@ open Hypostructure.Graph
 
 universe u v
 
-/-- Exact proper-support replacement hypothesis of the paper.  The final
-clause is the one-way inclusion of obstruction profiles: every outside context
-obstructed by the replacement is also obstructed by the source atom. -/
+/-- **The hypotheses of `lem:replacement` at G** (tex 6121), stated about G
+only.
+
+`X` is G's own piece at the proper connected support `Z` and `Y = G − Z` is
+G's own surroundings (`atom.decomposition.outside`, which is
+`SupportAtom.outside object support`).  The replacement `X'` is an arbitrary
+`∂Z`-boundaried piece — it is **not** a reading of G — and it is required to
+have
+
+* (ii) the boundary-degree profile of `X`;
+* (iv) together with (ii): `G' = glue X' (G − Z)` meets the baseline, so every
+  vertex of `G'`, the interior vertices of `X'` included, has degree at least
+  the threshold;
+* (v) `G'` is strictly smaller than `G` in the lexicographic order;
+* (i)+(iii) `G'` has no target cycle.
+
+The last clause is what `lem:replacement`'s proof derives from (i) and (iii)
+("We claim that `G'` has no power-of-two cycle"): a target cycle of `G'` lies in
+`Y`, or in `X'`, or crosses `∂Z`; the paper reads each case in `G' = X' ⊕ Y`.
+The only context of that argument is `Y = G − Z`, so the hypothesis is stated
+there.  (G-only restatement: the former clause, the inclusion of obstruction
+profiles against every `∂Z`-boundaried context, quantified over contexts that
+are not part of G.) -/
 def ReplacementSupport
     (Baseline Target : FiniteObject.{u} → Prop)
     (object : FiniteObject.{u}) (support : Finset object.Vertex) : Prop :=
@@ -405,13 +425,16 @@ def ReplacementSupport
         Baseline (glue replacement atom.decomposition.outside) ∧
         (glue replacement atom.decomposition.outside).LexicographicallySmaller
           object ∧
-        ∀ outside : OutsideContext atom.decomposition.interface,
-          Target (glue replacement outside) →
-            Target (glue atom.decomposition.piece outside)
+        ¬ Target (glue replacement atom.decomposition.outside)
 
-/-- Exact mathematical content of a target-complete proper-support
-compression.  It mentions only the retained support and the existing Graph
-replacement notions; no route, outcome, or target proof is stored. -/
+/-- **A nontrivial target-complete compression of G's piece at `Z`**
+(`def:target-complete-compression`, tex 6135: "a smaller `T`-boundaried
+representative `X'` satisfying the hypotheses of `lem:replacement`"), stated
+about G only: exactly the clauses of `ReplacementSupport` — the boundary-degree
+profile of G's piece, the baseline and no target cycle in
+`glue X' (G − Z)`, and strictly smaller size.  (G-only restatement: the former
+last clause compared the two target responses against every `∂Z`-boundaried
+context.) -/
 def CompressibleSupport
     (Baseline Target : FiniteObject.{u} → Prop)
     (object : FiniteObject.{u}) (support : Finset object.Vertex) : Prop :=
@@ -424,70 +447,65 @@ def CompressibleSupport
         Baseline (glue replacement atom.decomposition.outside) ∧
         (glue replacement atom.decomposition.outside).LexicographicallySmaller
           object ∧
-        ∀ outside : OutsideContext atom.decomposition.interface,
-          (Target (glue replacement outside) ↔
-            Target (glue atom.decomposition.piece outside))
+        ¬ Target (glue replacement atom.decomposition.outside)
 
-/-- A target-complete compression satisfies the weaker, one-way replacement
-hypothesis used by the paper's replacement lemma. -/
+/-- A target-complete compression is a replacement in the sense of
+`lem:replacement` (`def:target-complete-compression`). -/
 theorem replacementSupportOfCompressibleSupport
     (Baseline Target : FiniteObject.{u} → Prop)
     (object : FiniteObject.{u}) (support : Finset object.Vertex)
     (compressible : CompressibleSupport Baseline Target object support) :
-    ReplacementSupport Baseline Target object support := by
-  rcases compressible with
-    ⟨connected, proper, replacement, signatureEq, baseline, smaller,
-      contextUniversal⟩
-  exact ⟨connected, proper, replacement, signatureEq, baseline, smaller,
-    fun outside replacementTarget =>
-      (contextUniversal outside).mp replacementTarget⟩
+    ReplacementSupport Baseline Target object support :=
+  compressible
 
-/-- Presentation-carrying analogue of
-`strictReplacementOfReplacementSupport`. -/
-theorem strictReplacementOfReplacementSupportWithPresentation
-    (Baseline : FiniteObject.{u} → Prop)
-    (BranchState : FiniteObject.{u} → Type v)
-    (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
-    (Presentation : Type) (presentation : Presentation)
-    (T : Core.Target
-      (problemWithPresentation Baseline BranchState Presentation presentation))
-    (targetInvariant : Core.TargetInvariant
-      (isomorphismEquivalenceWithPresentation Baseline BranchState
-        Presentation presentation baselineInvariant) T.Predicate)
-    (ctx : Core.MinimalCounterexampleContext
-      (problemWithPresentation Baseline BranchState Presentation presentation)
-      T.Predicate
-      (CanonicalProgress.progress
-        (P := problemWithPresentation
-          Baseline BranchState Presentation presentation)))
-    (support : Finset ctx.G.Vertex)
-    (replacementSupport : ReplacementSupport Baseline T.Predicate ctx.G support) :
-    Nonempty (Σ site :
-        (profileWithPresentation Baseline BranchState baselineInvariant
-          Presentation presentation targetInvariant).assembly.Site ctx.G,
-      (profileWithPresentation Baseline BranchState baselineInvariant
-        Presentation presentation targetInvariant).StrictReplacement ctx site) := by
-  rcases replacementSupport with
-    ⟨connected, proper, replacement, signatureEq, baseline, smaller,
-      obstructionLE⟩
-  let site := SupportAtom.properAtom ctx.G support connected proper
-  let replacement' :
-      (profileWithPresentation Baseline BranchState baselineInvariant
-        Presentation presentation targetInvariant).assembly.Replacement ctx.G site :=
-    { atom := replacement
-      compatible := trivial }
-  exact ⟨⟨site,
-    { replacement := replacement'
-      signature_eq := congrArg ULift.up signatureEq
-      obstruction_le := by
-        intro outside _ _ replacementTarget
-        exact obstructionLE outside replacementTarget
-      baseline := baseline
-      smaller := smaller }⟩⟩
+/-- At G, compression and replacement are the same hypotheses. -/
+theorem compressibleSupport_iff_replacementSupport
+    {Baseline Target : FiniteObject.{u} → Prop}
+    {object : FiniteObject.{u}} {support : Finset object.Vertex} :
+    CompressibleSupport Baseline Target object support ↔
+      ReplacementSupport Baseline Target object support :=
+  Iff.rfl
+
+/-- **G's own piece at `Z`, glued back into `G − Z`, is `G`**: it carries no
+target cycle that `G` avoids. -/
+theorem not_target_glue_piece_outside {L : Nat → Prop} {object : FiniteObject.{u}}
+    (avoids : ¬ HasCycleWithLength L object) (support : Finset object.Vertex) :
+    ¬ HasCycleWithLength L
+      (glue (SupportAtom.piece object support) (SupportAtom.outside object support)) :=
+  fun cycle => avoids
+    ((hasCycleWithLength_iff_of_iso
+      (SupportAtom.decomposition object support).reconstructionIso L).mp cycle)
+
+/-- **Target transfer at `G − Z` gives the last replacement clause.**  If a
+target cycle of `glue X' (G − Z)` would put one in `glue X (G − Z) ≅ G`, then
+`glue X' (G − Z)` has none. -/
+theorem not_target_of_transfer {L : Nat → Prop} {object : FiniteObject.{u}}
+    (avoids : ¬ HasCycleWithLength L object) {support : Finset object.Vertex}
+    {replacement : BoundaryPiece (SupportAtom.boundary object support)}
+    (transfer :
+      HasCycleWithLength L (glue replacement (SupportAtom.outside object support)) →
+        HasCycleWithLength L
+          (glue (SupportAtom.piece object support) (SupportAtom.outside object support))) :
+    ¬ HasCycleWithLength L (glue replacement (SupportAtom.outside object support)) :=
+  fun cycle => not_target_glue_piece_outside avoids support (transfer cycle)
+
+/-- **`lem:replacement`, minimality form.**  `G' = glue X' (G − Z)` is strictly
+smaller and meets the baseline, so minimality gives it the target, against the
+replacement's last clause. -/
+theorem not_replacementSupport_of_minimal {Baseline Target : FiniteObject.{u} → Prop}
+    {object : FiniteObject.{u}}
+    (minimal : ∀ H : FiniteObject.{u}, H.LexicographicallySmaller object →
+      Baseline H → Target H)
+    (support : Finset object.Vertex) :
+    ¬ ReplacementSupport Baseline Target object support := by
+  rintro ⟨_connected, _proper, _replacement, _signatureEq, baseline, smaller,
+    noTarget⟩
+  exact noTarget (minimal _ smaller baseline)
 
 /-- **`lem:replacement`.**  A selected minimal counterexample admits no
-proper-support replacement satisfying the paper's one-way obstruction
-inclusion. -/
+proper-support replacement `G' = glue X' (G − Z)`: `G'` is a strictly smaller
+baseline object, so the selection's minimality gives it the target, which the
+replacement excludes. -/
 theorem not_replacementSupport
     (Baseline : FiniteObject.{u} → Prop)
     (BranchState : FiniteObject.{u} → Type v)
@@ -495,7 +513,7 @@ theorem not_replacementSupport
     (Presentation : Type) (presentation : Presentation)
     (T : Core.Target
       (problemWithPresentation Baseline BranchState Presentation presentation))
-    (targetInvariant : Core.TargetInvariant
+    (_targetInvariant : Core.TargetInvariant
       (isomorphismEquivalenceWithPresentation Baseline BranchState
         Presentation presentation baselineInvariant) T.Predicate)
     (ctx : Core.MinimalCounterexampleContext
@@ -507,11 +525,9 @@ theorem not_replacementSupport
     (support : Finset ctx.G.Vertex) :
     ¬ ReplacementSupport Baseline T.Predicate ctx.G support := by
   intro replacementSupport
-  rcases strictReplacementOfReplacementSupportWithPresentation Baseline
-      BranchState baselineInvariant Presentation presentation T targetInvariant
-      ctx support replacementSupport with ⟨⟨site, replacement⟩⟩
-  exact Core.Strategy.InterfaceReplacement.Profile.strictReplacementImpossible
-    (profileWithPresentation Baseline BranchState baselineInvariant
-      Presentation presentation targetInvariant) ctx site ⟨replacement⟩
+  rcases replacementSupport with
+    ⟨_connected, _proper, replacement, _signatureEq, baseline, smaller, noTarget⟩
+  exact noTarget (ctx.target_of_smaller
+    (H := glue replacement (SupportAtom.outside ctx.G support)) smaller baseline)
 
 end Hypostructure.Graph.Strategy.InterfaceReplacement

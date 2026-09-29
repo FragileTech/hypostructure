@@ -32,36 +32,50 @@ noncomputable abbrev BranchDependenceStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ certificate, BranchCertificateSpec data object certificate
 
-/-- The determination a certificate makes is valid against every outside
-context (`lem:context-universality`, tex 6106): no outside context separates two
-states it identifies. -/
+/-- The determination a certificate makes is valid in every context of G
+(`lem:context-universality`, tex 6106, stated about G): every two readings of G
+at the certificate's support `Z` that it identifies have the same
+power-of-two-cycle response in G's own rest `G − Z`
+(`ActualContext.actualGlue`). -/
 def CertificateContextUniversal (data : Parameters)
     {object : Graph.FiniteObject.{u}}
     (certificate : BranchCertificateData data object) : Prop :=
-  ∀ left right, Identified certificate.quotient left right →
-    Graph.Response.ContextEquivalent
-      (Graph.HasCycleWithLength data.LengthOK) left right
+  ∀ left right : Finset object.Vertex,
+    Identified certificate.quotient left right →
+      (Graph.HasCycleWithLength data.LengthOK
+          (Graph.ActualContext.actualGlue object certificate.quotient.support left) ↔
+        Graph.HasCycleWithLength data.LengthOK
+          (Graph.ActualContext.actualGlue object certificate.quotient.support right))
 
-/-- Node `[36]`, yes arm: the certificate of `G` is valid against every outside
-context. -/
+/-- Node `[36]`, yes arm: the certificate of `G` is valid in every context of
+G.  This is the arm G takes: the test is decided at G (node `[12]`). -/
 noncomputable abbrev ContextUniversalStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ certificate, branchCertificate? data object = some certificate ∧
     CertificateContextUniversal data certificate
 
 /-- Node `[36]`, no arm — the terminal `[37]` (case (i) of
-`lem:curvature-dependence-routing`, tex 9220): some pair of states the
-certificate of `G` identifies is separated by a concrete outside context. -/
+`lem:curvature-dependence-routing`, tex 9220), stated about G: the exact
+complement at the same certificate — some two readings of G at its support `Z`
+that it identifies are separated by G's own rest `G − Z`.  **Empty at G**
+(Lean improvement: `[36]`'s defect arm is empty at G): no reading of G closes a
+power-of-two cycle in `G − Z` (node `[12]`), so the terminal `[37]` closes
+against node `[12]`. -/
 noncomputable abbrev ContextDefectStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ certificate, branchCertificate? data object = some certificate ∧
-    ∃ left right, Identified certificate.quotient left right ∧
-      Graph.Response.TargetDefect
-        (Graph.HasCycleWithLength data.LengthOK) left right
+    ∃ left right : Finset object.Vertex,
+      Identified certificate.quotient left right ∧
+        ¬ (Graph.HasCycleWithLength data.LengthOK
+            (Graph.ActualContext.actualGlue object certificate.quotient.support left) ↔
+          Graph.HasCycleWithLength data.LengthOK
+            (Graph.ActualContext.actualGlue object certificate.quotient.support right))
 
 /-- Node `[38]`, yes arm — the terminal `[39]` (case (ii), tex 9224): the
 certificate's support lies in the proper atom `C = R(P₀)`, so its rank-reducing
-target-complete quotient has a strictly smaller proper representative. -/
+target-complete quotient has a strictly smaller proper representative: a
+replacement `X'` of the support (G's boundary-degree profile, the baseline and
+no power-of-two cycle in `glue X' (G − Z)`, strictly smaller). -/
 noncomputable abbrev AtomCompressionStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ certificate, branchCertificate? data object = some certificate ∧
@@ -84,7 +98,9 @@ noncomputable abbrev DelocalizedSupportStatement (data : Parameters)
 
 /-- Node `[41]`, yes arm — the terminal `[42]` (`lem:proper-smearing`,
 tex 9264): the certificate's support `Z` is proper in `G`, so its rank
-reduction yields a strictly smaller proper representative of `Z`. -/
+reduction yields a strictly smaller proper representative of `Z`: a
+replacement `X'` with G's boundary-degree profile at `Z`, the baseline and no
+power-of-two cycle in `glue X' (G − Z)`. -/
 noncomputable abbrev ProperDelocalizationStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ certificate, branchCertificate? data object = some certificate ∧
@@ -139,7 +155,9 @@ noncomputable abbrev RepairIdentityStatement (data : Parameters)
 quotient `q` is a whole-graph (`Z = G`) quotient that is not label-injective on
 `𝒲₂(R₀)`, and the strictly smaller admissible closed representative of that
 `q` -- the closed clause of `def:admissible-rank-quotient` (tex 6035-6040) read
-at this certificate's support and rank reduction -- exists. -/
+at this certificate's support and rank reduction -- exists: a strictly smaller
+baseline graph `H` with `profile_∅(H) ⊆ profile_∅(G) = ∅`, i.e. with no
+power-of-two cycle. -/
 noncomputable abbrev GlobalBarrierStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ certificate, branchCertificate? data object = some certificate ∧
@@ -149,7 +167,6 @@ noncomputable abbrev GlobalBarrierStatement (data : Parameters)
     ∃ representative : Graph.FiniteObject.{u},
       representative.LexicographicallySmaller object ∧
         Graph.MinimumDegreeAtLeast data.threshold representative ∧
-          (Graph.HasCycleWithLength data.LengthOK representative →
-            Graph.HasCycleWithLength data.LengthOK object)
+          ¬ Graph.HasCycleWithLength data.LengthOK representative
 
 end Hypostructure.Graph.Strategy.Spine

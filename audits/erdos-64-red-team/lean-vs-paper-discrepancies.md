@@ -4907,3 +4907,77 @@ the K=0 / hot-only reading, which the approved exact [50]/[53] supersedes.
 - **Where recorded.** The current `[54]` residual entry
   ([#residual-54](#residual-54), "Returned residuals") lists the facts carried
   at the `[53]`-active sites of these arms (tex 7843-7850).
+
+## G-repair restatement (R2: quotient, replacement, uncompressibility, Branch D) (2026-09-29)
+
+Every notion below is stated about G only. A reading of G at a support `Z` is
+`SupportAtom.retainedPiece G Z X` (indexed by `X ⊆ V(G)`); the only context is
+G's own rest `G − Z` (`SupportAtom.outside G Z`). A reading glued into `G − Z`
+is a subgraph of G (`ActualContext.not_target_actualGlue`), so
+`def:target-complete-quotient` (b) / `lem:context-universality` is **decided**
+at G (`Graph.readings_agree_in_rest`).
+
+### Replacement and compression (`lem:replacement`, `def:target-complete-compression`, `cor:uncompressible`; tex 6121-6150)
+
+- `ReplacementSupport` / `CompressibleSupport` (`Graph/InterfaceReplacement.lean`):
+  a proper connected support `Z` of G and a `∂Z`-boundaried piece `X'` (not a
+  reading of G) with (ii) `d_∂(X') = d_∂(G[Z])`, (iv) `glue X' (G − Z)` meets
+  the baseline (every vertex, interior ones included), (v) `glue X' (G − Z)`
+  strictly smaller than G, and (i)+(iii) no power-of-two cycle in
+  `glue X' (G − Z)` (the paper's own claim "G' has no power-of-two cycle",
+  derived there from (i),(iii); its only context is `Y = G − Z`). Former last
+  clause (obstruction-profile inclusion / equality against every
+  `∂Z`-boundaried context) removed: it quantified over contexts that are not
+  part of G. The two definitions have the same body, as in the paper ("a
+  smaller representative satisfying the hypotheses of `lem:replacement`").
+- `not_replacementSupport` (same signature) and the new
+  `not_replacementSupport_of_minimal`: minimality gives `glue X' (G − Z)` a
+  power-of-two cycle. Node `[13]` (`replacementExclusion_of_selection`) is this
+  lemma at the selection's minimality; node `[14]` is unchanged in shape.
+- Removed `strictReplacementOfReplacementSupportWithPresentation` (built a Core
+  `StrictReplacement` whose `obstruction_le` ranges over every outside context;
+  no other user).
+
+### Admissible and attempted quotients (`def:admissible-rank-quotient`, tex 6018-6050)
+
+- `DeclaredQuotient` / `AttemptedQuotient` (`Graph/DeclaredRankQuotient.lean`):
+  values are read on G's readings (`value : Finset V(G) → Label → Value`).
+  Field `contextUniversal` (∀ `OutsideContext`) removed — its G-form is the
+  decided `readings_agree_in_rest`; it is not a definition feeding any test.
+  `fibrewise` (condition (a)) is kept. Closed clause: a strictly smaller
+  baseline `H` with no power-of-two cycle (`profile_∅(H) ⊆ profile_∅(G) = ∅`).
+  An attempt's representative clauses are guarded by condition (a) only.
+- `AttemptedQuotient.route`: three arms, in the paper's order — (d) a profile
+  blocker between identified readings, (c) a replacement of a proper support,
+  the smaller closed representative at `Z = G`. **Lean improvement: the
+  context-separation (target-defect) arm is empty at G**; it is not an arm.
+- `DeclaredQuotient.labelInjective_of_minimal`: every admissible quotient of a
+  minimal G is label-injective (both representatives carry the target by
+  minimality). `AttemptedQuotient.fibre_of_minimal`: at a minimal G a
+  rank-reducing attempt always has a type-(d) profile blocker.
+- `Route8.Delocalization.false_of_minimal` (exit (6)): empty at a minimal G.
+- `[129]` (`BaselineSpineFamilySpec`) and `[131]` (`canonicalMixedDependenceQuotient`):
+  only the closed arm of their admissibility clause changed shape (no target
+  cycle in the representative); the proofs are adjusted in place.
+
+### Nodes `[11]`, `[12]` (tex 6088, 6106)
+
+- `[11]` `DegreeProfileFibresStatement`: realizations are G's readings at the
+  quotient support; profiles `Graph.readingProfile`.
+- `[12]` `TargetCompleteContextUniversalityStatement`: (1) identified readings
+  lie in one fibre and agree in `G − Z`; (2) no reading of G at any support
+  closes a power-of-two cycle in `G − Z` — the decided G-form of "an
+  identification valid only at `G − X` but not at every context is
+  target-defective" (no such identification exists at G). Row now reads
+  `K .selection` besides `K .degreeProfileFibres`.
+
+### Branch D `[36]`-`[46]` (tex 9204-9368)
+
+- `[36]` still runs as a test on the certificate of G, stated about G
+  (`CertificateContextUniversal`: identified readings agree in `G − Z`). It is
+  decided at G (`Contracts.Spine.contextUniversal_of_selection`). **Lean
+  improvement: `[36]`'s defect arm is empty at G**: `[37]` closes against
+  `[12]` through the existing `Incompatible` instance.
+- `[39]`, `[42]` close against `[13]` as before, with the G-form replacement.
+- `[45]` `GlobalBarrierStatement`: the closed representative has no
+  power-of-two cycle; `[46]` closes against the selection's minimality.

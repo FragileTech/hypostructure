@@ -22,11 +22,15 @@ variable [FactSystem (Input BranchState Presentation presentation data)]
 The literal post-`[35]` ledger retains node `[21]`'s fact, whose one
 inclusion-minimal determination certificate is `branchCertificate? data G`.
 Node `[36]` reads that fact and asks the paper's exact question of that
-certificate, and of no other: does its
-determination remain valid against every outside context?  The no arm exhibits
-an identified pair and a distinguishing context; the yes arm records context
-universality for that same certificate.  Boundary-fibre preservation is already
-part of the admissible quotient and is not a second test here. -/
+certificate, and of no other, stated about G: does its determination remain
+valid in every context of G, i.e. do the readings of G it identifies agree in
+G's own rest `G − Z`?  The no arm exhibits an identified pair of readings that
+`G − Z` separates; the yes arm records context universality for that same
+certificate.  At G the test is decided: the yes arm holds
+(`Contracts.Spine.contextUniversal_of_selection`), and the no arm is empty —
+its terminal `[37]` closes against node `[12]` (Lean improvement: `[36]`'s
+defect arm is empty at G).  Boundary-fibre preservation is already part of the
+admissible quotient and is not a second test here. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def contextValidityDichotomy
     {current : Input BranchState Presentation presentation data}
