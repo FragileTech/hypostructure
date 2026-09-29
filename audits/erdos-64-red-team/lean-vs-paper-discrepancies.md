@@ -5230,7 +5230,7 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
 ## G audit: ColdBranchClosedOutcome_linearRealizedSilent
 
 Report: `audits/structural-accounting/ColdBranchClosedOutcome_linearRealizedSilent.md`
-(structural accounting before x=7 ~=55 gap=25 n/a=1 nonG=0; after x=12 ~=56 gap=19 n/a=1 nonG=0).
+(structural accounting before x=7 ~=55 gap=25 n/a=1 nonG=0; after x=12 ~=56 gap=19 n/a=1 nonG=0; the report still lists blockedClassMember as carried, it is not).
 
 - **Defining failure.** `[154]` on the realized arm (`[158]` yes, `[146]` no, `[153]`
   linear).  G1 (`Q` realizing) is a cycle in `glue Q (G-Z) = G`, closed against
@@ -5265,16 +5265,31 @@ Report: `audits/structural-accounting/ColdBranchClosedOutcome_linearRealizedSile
   of the marked germ against the `admissible` clause of a table row
   (`TableRow.admissible`, `def:admissible-rank-quotient`): the clause requires a strictly
   smaller proper representative, and at the marked germ there is none.
-- **`K .blockedClassMember` hoisted** to this arm (`[169]`, `blockedClassRow`; needs only
-  `selection`, `hotColdPartition`).  Theorem `blockedCompressionCap_iff_windowPackageRealized`
-  (`Iff.rfl`): on `[158]` yes the compression cap of `[171]` is `windowPackageRealized`
-  itself, so the additive arm of `[170]` cannot contradict; the dense closure uses the
-  strict reverse `windowPackageUnrealized`, absent here.
-- **Verified.** `Statements/ColdMarkedGerm.lean`, `Contracts/Spine/ColdMarkedGerm.lean`
-  (chkG, no errors); `ColdBranchClosedOutcome.lean` (chkG emit, no errors).  Not
-  kernel-checked in this worktree (validation build was being rebuilt): `SpineVocabulary.lean`
-  (7 mechanical entries for 8400), `Strategy/ColdCorridorRows/MarkedGerm.lean`,
-  `NearCubic/Survivor/Realized.lean` (the final wiring).
+- **`K .blockedClassMember`** is a fact of G on this arm (`blockedClassRow`) but is not
+  carried: the row does not resolve in the concrete ledger of `nearCubicRealized`
+  (instance search on the deep known list).  Theorem
+  `blockedCompressionCap_iff_windowPackageRealized` (`Iff.rfl`) records that on `[158]`
+  yes the compression cap of `[171]` is `windowPackageRealized` itself, so the additive arm
+  of `[170]` cannot contradict; the dense closure uses the strict reverse
+  `windowPackageUnrealized`, absent here.
+- **Verified (chkG, no errors, after rebasing onto g-repair-val 5897292):**
+  `Statements/ColdMarkedGerm.lean`, `Contracts/Spine/ColdMarkedGerm.lean`,
+  `SpineVocabulary.lean`, `Strategy/ColdCorridorRows/MarkedGerm.lean`,
+  `Residuals/ColdBranchClosedOutcome.lean`, `NearCubic/Survivor/Realized.lean`
+  (needed `synthInstance.maxSize/maxHeartbeats` options, explicit row arguments and a
+  `ExactLedger EGInput selected _` ascription).
+- **Excision (pumping) attempt, not built.**  The paper's `E` at an (F5) repeat is the
+  corridor with the loop between the two equal cut states removed.  Lean's `E` is the
+  `Precedes`-least piece with the germ's cut-state reading (`rowRepresentative`); the
+  excised piece would be a valid replacement only if it keeps the baseline and the target
+  response.  It is not a `Transplant` (R5): excision deletes `v_{l+1..r}` and adds the edge
+  `v_l v_{r+1}`, which is not an edge of G, so `cycle_transfer` does not apply; a cycle
+  through the new edge lifts to a cycle of G of length `L + p`, `p = r - l` the period.
+  Whether `L + p` can be a power of two is the arithmetic of `lem:cold-increment-arithmetic`
+  (case (a)/(b)) and needs a graph-level lifting lemma for spliced edges plus the profile
+  and degree bookkeeping for identified states; neither exists.  Consequently F08 (the
+  period as a G fact), C11 (increments; `E = Q` gives increment `0` only for the marked
+  germ) and H09 (germ count against `coldMassLinear`) were not built.
 - **Still open (exact proposition at G).** G's marked neutral equal-length germ `(Q, E)`,
   `E = Q`, of the positive extracted family on the realized package: a subcubic (F5)
   germ, not handed off, whose replacement has G's vertex and edge count, so `[157]`'s
@@ -5287,4 +5302,4 @@ Report: `audits/structural-accounting/ColdBranchClosedOutcome_linearRealizedSile
   accounting gaps at the marked germ (F08 period of the repeated state, C11 family
   increments, H09 germ count against `coldMassLinear`) have no partner inequality on
   this arm.
-- **Root type.** Unchanged (the subtype keeps its name; it carries 4 + 2 more facts).
+- **Root type.** Unchanged (the subtype keeps its name; it carries 5 more facts).
