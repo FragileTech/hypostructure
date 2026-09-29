@@ -1,3 +1,4 @@
+import Hypostructure.Graph.Strategy.SpineRows.TypeASwitch
 import Hypostructure.Graph.Strategy.SpineRows.HighCentreNormalForm
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitFiveDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitSevenDichotomy
@@ -65,6 +66,20 @@ noncomputable abbrev typeAExitFiveToEightKeys : FactKeys EGInput.{u} :=
     K .route8PiecesClassified,
     K .typeBSublinearLedger,
     K .typeBSublinearResidual,
+    K .typeBSublinearCanonicalForm,
+    K .groupedAbsorbedCoreSubset,
+    K .typeBSublinearFailureArms,
+    K .groupedCentresHigh,
+    K .handoffDegreeClauseEmpty,
+    K .pieceRoutingTotal,
+    K .coverPayment,
+    K .loadFailureSaturated,
+    K .unpaidAbsorbedWindowPort,
+    K .receiverPortsAreWindowStubs,
+    K .saturatedReceiverBasin,
+    K .loadFlowValue,
+    K .coverFlowValue,
+    K .pieceSizeProfile,
     K .route8UnifiedDeficit,
     K .route8FoldPeels,
     K .route8QuotientFree,
@@ -121,6 +136,8 @@ noncomputable abbrev typeAExitFiveToEightKeys : FactKeys EGInput.{u} :=
     K .route8StageRate,
     K .route8UnpaidTwoCarrier,
     K .route8UnpaidWitnessFree,
+    K .route8QuotientEntriesAtG,
+    K .typeAExitSevenSwitch,
     K .typeAExitSevenEnvelope,
     K .typeBAbsorbedCharge]
 
@@ -295,7 +312,14 @@ noncomputable def selectedTypeAExitFiveToEight
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run handoffHistory (by key_fresh)
-              exact selectedTypeADecoratedHandoff envelope arm
+              -- `[108]` at G: the surviving separator's switch, constructed
+              -- from G, is target-free and keeps G's size under the baseline.
+              let switched :=
+                (typeAExitSevenSwitchRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run envelope (by key_fresh)
+              exact selectedTypeADecoratedHandoff switched arm
           | .right residual =>
               -- `[109]`: the route-`8` residual, continued in Part IX.
               let normal :=

@@ -218,8 +218,7 @@ theorem sparseUpperEnvelope_of_packing
   -- `𝒫` is the maximal packing fixed at node `[19]`.
   have valid : object.IsWindowPacking data.windowOrder
       (canonicalWindowPacking data object) :=
-    (Classical.choose_spec
-      (object.exists_windowPacking_card_eq data.windowOrder)).1
+    (canonicalWindowPacking_spec data object).1
   exact ⟨envelope, object.exact_window_join_identity valid baseline⟩
 
 /-- Node `[136]`, `def:capacity-token-ledger` with `lem:capacity-token-supply`,
@@ -244,11 +243,9 @@ theorem capacityTokenLedger_of_pairLedger
   -- `𝒫` is the maximal packing fixed at node `[19]`.
   let packing := canonicalWindowPacking data object
   have valid : object.IsWindowPacking data.windowOrder packing :=
-    (Classical.choose_spec
-      (object.exists_windowPacking_card_eq data.windowOrder)).1
+    (canonicalWindowPacking_spec data object).1
   have maximal : packing.card = object.windowPackingNumber data.windowOrder :=
-    (Classical.choose_spec
-      (object.exists_windowPacking_card_eq data.windowOrder)).2
+    (canonicalWindowPacking_spec data object).2.1
   let activation := Graph.recordSparsePairDEBlockers
     (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
     (LengthOK := data.LengthOK)

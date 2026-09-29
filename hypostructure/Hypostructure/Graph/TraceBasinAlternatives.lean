@@ -84,8 +84,11 @@ def TraceDelocalization (object : FiniteObject.{u})
 connector configurations of `ρ_u(B_u)` through the receiver's completion port —
 two routed loads of the finite connector family, one of them the indexed load —
 separate at a first separator `z`, and the identification on the switch support
-`S_z` is neither target-defective, nor target-complete, nor valid only after
-enlarging: `z` is surviving. -/
+`S_z` — the switch constructed from G at the separation
+(`Separation.switched`) — is neither target-defective, nor target-complete,
+nor valid only after enlarging: `z` is surviving.  At a target-avoiding G this
+is: the switched graph has no accepted cycle and `z` has an unused ambient
+incidence (`DecoratedHandoff.Surviving.of_avoids`). -/
 def TraceSurvivingSeparator (object : FiniteObject.{u})
     (support : Finset object.Vertex) (threshold : Nat)
     (LengthOK : Nat → Prop) (receiver load : object.Vertex)
@@ -99,8 +102,8 @@ def TraceSurvivingSeparator (object : FiniteObject.{u})
                 family.outside,
               separation.left.path = (family.germ leftLoad leftMem).path ∧
                 separation.right.path = (family.germ rightLoad rightMem).path ∧
-                ∃ reading : DecoratedHandoff.SwitchReading separation,
-                  DecoratedHandoff.Surviving (HasCycleWithLength LengthOK) reading
+                  DecoratedHandoff.Surviving (HasCycleWithLength LengthOK)
+                    separation
                     (∃ representative : FiniteObject.{u},
                       representative.LexicographicallySmaller object ∧
                         MinimumDegreeAtLeast threshold representative ∧
@@ -458,7 +461,7 @@ theorem exists_envelope_of_traceSurvivingSeparator
     ∃ envelope : DecoratedHandoff.Envelope object LengthOK HighDegree Absorbing,
       envelope.core = support ∧ envelope.decorations.Nonempty := by
   obtain ⟨family, _loadMember, leftLoad, rightLoad, leftMember, rightMember,
-    _distinct, separation, _leftPath, _rightPath, reading, surviving⟩ :=
+    _distinct, separation, _leftPath, _rightPath, surviving⟩ :=
     separated
   have leftChain :
       (separation.nextLeft :: separation.tailLeft).IsChain object.graph.Adj := by

@@ -183,6 +183,11 @@ theorem blockedBarrierOverlapReturn_DeficiencyAtOrAbove
     [FactKeys.Has (K .coldCanonicalReplacementTrivial) known]
     [FactKeys.Has (K .blockedClassMember) known]
     [FactKeys.Has (K .blockedBarrierOverlap) known]
+    [FactKeys.Has (K .blockedOwnRecord) known]
+    [FactKeys.Has (K .blockedFailureSlack) known]
+    [FactKeys.Has (K .blockedPrefixCompression) known]
+    [FactKeys.Has (K .blockedFailingSetCarries) known]
+    [FactKeys.Has (K .blockedOverlapSupport) known]
     (tau : DenseTauBlock_atOrAbove selected) :
     BlockedBarrierOverlapOutcome_DeficiencyAtOrAbove selected :=
   ⟨blockedBarrierOverlapReturn history,
@@ -315,6 +320,11 @@ theorem blockedBarrierOverlapReturn_DeficiencyBelowRateFails
     [FactKeys.Has (K .coldCanonicalReplacementTrivial) known]
     [FactKeys.Has (K .blockedClassMember) known]
     [FactKeys.Has (K .blockedBarrierOverlap) known]
+    [FactKeys.Has (K .blockedOwnRecord) known]
+    [FactKeys.Has (K .blockedFailureSlack) known]
+    [FactKeys.Has (K .blockedPrefixCompression) known]
+    [FactKeys.Has (K .blockedFailingSetCarries) known]
+    [FactKeys.Has (K .blockedOverlapSupport) known]
     (tau : DenseTauBlock_belowRateFails selected) :
     BlockedBarrierOverlapOutcome_DeficiencyBelowRateFails selected :=
   ⟨blockedBarrierOverlapReturn history,
@@ -450,6 +460,11 @@ theorem blockedBarrierOverlapSubtypesReturn
     [FactKeys.Has (K .coldCanonicalReplacementTrivial) known]
     [FactKeys.Has (K .blockedClassMember) known]
     [FactKeys.Has (K .blockedBarrierOverlap) known]
+    [FactKeys.Has (K .blockedOwnRecord) known]
+    [FactKeys.Has (K .blockedFailureSlack) known]
+    [FactKeys.Has (K .blockedPrefixCompression) known]
+    [FactKeys.Has (K .blockedFailingSetCarries) known]
+    [FactKeys.Has (K .blockedOverlapSupport) known]
     (tau : DenseTauArm selected) :
     BlockedBarrierOverlapSubtypes selected := by
   rcases tau with t | t

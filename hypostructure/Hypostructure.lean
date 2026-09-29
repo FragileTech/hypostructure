@@ -159,6 +159,11 @@ import Hypostructure.Graph.VisibleReceiverEntry
 import Hypostructure.Graph.CommonPortReturnCycle
 import Hypostructure.Graph.DecoratedHandoffEnvelope
 import Hypostructure.Graph.ActualContext
+import Hypostructure.Graph.Transplant
+import Hypostructure.Graph.ReadingExactness
+import Hypostructure.Graph.RerouteSwap
+import Hypostructure.Graph.U2FreeWhole
+import Hypostructure.Graph.WholeBlocks
 import Hypostructure.Graph.GConstructedPiece
 import Hypostructure.Graph.AnchoredReturnCompletion
 import Hypostructure.Graph.WindowCurvatureAlgebra
@@ -188,6 +193,7 @@ import Hypostructure.Core.Contract
 -- Finite path selection and the canonical interface-replacement machinery.
 import Hypostructure.Graph.FinitePathSelection
 import Hypostructure.Graph.InterfaceReplacement
+import Hypostructure.Graph.SpliceLift
 
 -- Core routing modules included in the root build closure.
 import Hypostructure.Core.DependentOwnerGlueCapacity

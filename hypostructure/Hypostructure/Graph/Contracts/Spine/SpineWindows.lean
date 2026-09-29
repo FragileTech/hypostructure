@@ -210,48 +210,49 @@ theorem windowPackageSeparated_of_maximalPacking
     · exact noReplacement declared.support replacement
     · exact noTarget (selected.2 representative smaller baselineObject)
 
-/-- **Node `[22]`, `def:cold-window-ledger`.**  The canonical maximal packing
-splits into the canonical hot family (a maximal realized subfamily, or empty)
-and its cold complement. -/
-theorem hotColdPartition_canonical (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    HotColdWindowStatement data object := by
-  classical
-  let packing := canonicalWindowPacking data object
-  have packingFacts :
-      object.IsWindowPacking data.windowOrder packing ∧
-        packing.card = object.windowPackingNumber data.windowOrder :=
-    ⟨(canonicalWindowPacking_spec data object).1,
-      (canonicalWindowPacking_spec data object).2.1⟩
-  let hot := canonicalHotWindows data object
-  let cold := canonicalColdWindows data object
-  have hotFacts :
-      hot ⊆ packing ∧
-        (WindowFamilyRealized data object hot ∨
-          (hot = ∅ ∧ ¬ WindowFamilyRealized data object ∅)) ∧
-        ∀ other : Finset (Finset object.Vertex), other ⊆ packing →
-          WindowFamilyRealized data object other →
-            other.card ≤ hot.card :=
-    Classical.choose_spec (exists_maximal_windowFamilyRealized data object)
-  show IsHotColdWindowPartition data object packing hot cold
-  refine ⟨packingFacts.1, packingFacts.2, ?_, hotFacts, ?_, ?_, ?_⟩
+/-- A hot/cold partition from its pieces, over opaque families. -/
+theorem isHotColdWindowPartition_of (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (packing hot cold : Finset (Finset object.Vertex))
+    (packingFacts : object.IsWindowPacking data.windowOrder packing ∧
+      packing.card = object.windowPackingNumber data.windowOrder)
+    (hotFacts : hot ⊆ packing ∧
+      (WindowFamilyRealized data object hot ∨
+        (hot = ∅ ∧ ¬ WindowFamilyRealized data object ∅)) ∧
+      ∀ other : Finset (Finset object.Vertex), other ⊆ packing →
+        WindowFamilyRealized data object other → other.card ≤ hot.card)
+    (coldMem : ∀ window, window ∈ cold ↔ window ∈ packing ∧ window ∉ hot) :
+    IsHotColdWindowPartition data object packing hot cold := by
+  refine ⟨packingFacts.1, packingFacts.2, ?_, hotFacts, coldMem, ?_, ?_⟩
   · intro support window
     exact object.exists_mem_not_disjoint_of_card_eq
       data.windowOrder_pos packingFacts.1 packingFacts.2 window
-  · intro window
-    simp [cold, packing, hot, canonicalColdWindows]
-  · exact Finset.disjoint_sdiff
+  · exact Finset.disjoint_left.2 fun window inHot inCold => ((coldMem window).1 inCold).2 inHot
   · intro window
     constructor
     · intro member
       by_cases inHot : window ∈ hot
       · exact Or.inl inHot
-      · exact Or.inr (by
-          simp [cold, packing, hot, canonicalColdWindows, member, inHot])
+      · exact Or.inr ((coldMem window).2 ⟨member, inHot⟩)
     · intro member
       rcases member with member | member
       · exact hotFacts.1 member
-      · exact (Finset.mem_sdiff.mp member).1
+      · exact ((coldMem window).1 member).1
+
+/-- **Node `[22]`, `def:cold-window-ledger`.**  The canonical maximal packing
+splits into the canonical hot family (a maximal realized subfamily, or empty)
+and its cold complement. -/
+theorem hotColdPartition_canonical (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    HotColdWindowStatement data object :=
+  isHotColdWindowPartition_of data object _ _ _
+    ⟨(canonicalWindowPacking_spec data object).1,
+      (canonicalWindowPacking_spec data object).2.1⟩
+    (canonicalHotWindows_spec data object)
+    (fun _ => by
+      classical
+      unfold canonicalColdWindows
+      exact Finset.mem_sdiff)
 
 /-- **Node `[23]`, the live-hot entropy comparison.**  The canonical hot family
 either has its package realized by labelled skeletons, whose state count the

@@ -62,12 +62,13 @@ noncomputable def selectedNearCubicBranch
       exact selectedNearCubicSurvivorBranch survivorHistory
 
 /-- Node `[187]` collects only the other literal selected-root outcomes, each
-with every fact of its ledger at its return (`Assembly/Residuals/`): the four
-pair Type B subtypes, the Type B sublinear failure and the route-`8` quotient
+with every fact of its ledger at its return (`Assembly/Residuals/`): the two
+pair Type B subtypes (system arm; the increment arm is empty at G), the Type B sublinear failure and the route-`8` quotient
 failure `[348]` as products of their arm blocks, the eleven private-carrier
 rate failure subtypes, and the local cold-terminal exclusion as its one
-reachable linear-arm singleton `linearRealizedSilent` (its absorbed-germ
-product is not entered: `[173]`'s no-arm is closed against `K .route8Rate`).
+reachable linear-arm singleton `linearRealizedSilent` and the two subtypes
+reached through `[153]`'s repeat on the dense arms (its absorbed-germ product
+is not entered: `[173]`'s no-arm is closed against `K .route8Rate`).
 The pair-system entry retains its own source key and is not `[144a]`.  (G-only
 restatement: the near-cubic target defect of `[187]` is closed at G -- exit
 (b), stated about G, is empty.  The cold-terminal singletons
@@ -76,9 +77,7 @@ restatement: the near-cubic target defect of `[187]` is closed at G -- exit
 G; they are unreachable at G after the G-only repair and are removed.) -/
 abbrev OtherReturnedOutcome (selected : EGInput.{u}) :=
   (PairTypeBOutcome_independentSystem selected ∨
-    PairTypeBOutcome_independentIncrement selected ∨
-    PairTypeBOutcome_dependentSystem selected ∨
-    PairTypeBOutcome_dependentIncrement selected) ∨
+    PairTypeBOutcome_dependentSystem selected) ∨
   TypeBSublinearOutcome_product selected ∨
   Route8QuotientOutcome_product selected ∨
   (Route8RateFailsOutcome_realized_highEntropy selected ∨
@@ -92,7 +91,9 @@ abbrev OtherReturnedOutcome (selected : EGInput.{u}) :=
     Route8RateFailsOutcome_denseBelow_lowNonrepetitive selected ∨
     Route8RateFailsOutcome_denseBelow_lowWedgeFree selected ∨
     Route8RateFailsOutcome_denseBelow_lowWedge selected) ∨
-  ColdBranchClosedOutcome_linearRealizedSilent selected
+  (ColdBranchClosedOutcome_linearRealizedSilent selected ∨
+    ColdBranchClosedOutcome_linearDenseAtOrAbove_repeated selected ∨
+    ColdBranchClosedOutcome_linearDenseRateFailed_repeated selected)
 
 /-- Exact selected-root reduction.  Every returned residual carries every fact
 of the single ledger at its return, one `get` per fact; paths with different
@@ -100,8 +101,10 @@ fact sets are different residuals, stated as subtypes of the generic residual
 or, where the paths form a full product, as the product of their arm blocks:
 the six `[144a]` subtypes; the two `[172a]` subtypes; the six `[182]`
 subtypes; the `[186]` joint balance product; the remaining `[187]` outcomes;
-and the structural exhaustion
-residuals `[153]` (3 subtypes), `[162]` (2 subtypes) and `[54]` (5 subtypes).
+and the structural exhaustion residual `[54]` (5 subtypes).  `[153]`'s equal-state pair is no longer a
+residual: it is the repeat subcase of (F5) and continues into the germ routing
+(`[187]`).  (`[162]` is no longer returned: the dense pass needs no terminality
+of a heavy-entry corridor.)
 (G-only restatement: `[20a]` and the near-cubic target defect of `[187]` are
 closed at G -- exit (b) of `[125]`, stated about G, is empty -- and return no
 residual.  The three cold-terminal singletons on `[154]`'s G2 yes-arm are
@@ -117,8 +120,8 @@ decided exactly on G's order (`realizedOrderDichotomy`,
 `boundedOrderDichotomy`); the arm `N₀ ≤ n` is closed and every residual below
 the other arm carries the combined bound and `n < N₀` (`K .realizedOrderSmall`
 or `K .boundedOrderSmall`): all eleven private-carrier rate failure subtypes,
-the three bounded `[54]` subtypes, the `[153]` subtype `realized_linear`, the
-realized cold-terminal singleton `linearRealizedSilent`, and the product
+the three bounded `[54]` subtypes, the realized cold-terminal singleton
+`linearRealizedSilent`, and the product
 paths through the prefix blocks `Route8LanePrefixBlock_realizedColdAtOrAbove` /
 `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove`. -/
 abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
@@ -137,11 +140,6 @@ abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
     PairConditionalFactorizationOutcome_blockedIncrementFails selected) ∨
   Route8JointBalanceOutcome_product selected ∨
   OtherReturnedOutcome selected ∨
-  (Node153ResidualOutcome_denseAtOrAbove_linear selected ∨
-    Node153ResidualOutcome_denseRateFails_linear selected ∨
-    Node153ResidualOutcome_realized_linear selected) ∨
-  (Node162ResidualOutcome_tauAtOrAbove selected ∨
-    Node162ResidualOutcome_tauBelowRateFails selected) ∨
   (Node54ResidualOutcome_realizedColdBelow selected ∨
     Node54ResidualOutcome_realizedBounded selected ∨
     Node54ResidualOutcome_unrealizedTauHighBounded selected ∨
@@ -319,10 +317,6 @@ noncomputable def selectedLedgerBoundary
             exact other (Or.inr (Or.inr (Or.inl quotient)))
         | .inr (.inr joint) =>
             exact Or.inr (Or.inr (Or.inr (Or.inl joint)))
-      have repeatedOut : Node153ResidualSubtypes selected →
-          SelectedLedgerBoundaryResult selected :=
-        fun repeated => Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-          (Or.inl repeated)))))
       match survivor with
       | .inl route => exact liftRoute route
       | .inr (.inl rate) =>
@@ -331,13 +325,8 @@ noncomputable def selectedLedgerBoundary
           exact Or.inr (Or.inl blocked)
       | .inr (.inr (.inr (.inl cold))) =>
           exact other (Or.inr (Or.inr (Or.inr (Or.inr cold))))
-      | .inr (.inr (.inr (.inr (.inl repeated)))) => exact repeatedOut repeated
-      | .inr (.inr (.inr (.inr (.inr (.inl heavy))))) =>
-          exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-            (Or.inl heavy))))))
-      | .inr (.inr (.inr (.inr (.inr (.inr entropy))))) =>
-          exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-            (Or.inr entropy))))))
+      | .inr (.inr (.inr (.inr entropy))) =>
+          exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr entropy))))
 
 /-- The selected minimal counterexample has one of the exact boundary
 outcomes, each with every fact of the single ledger at its return. -/

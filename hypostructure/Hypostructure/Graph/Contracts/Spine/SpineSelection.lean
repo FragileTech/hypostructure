@@ -127,23 +127,22 @@ theorem replacementExclusion_of_selection
 constructed from G.  The paper's proof: "condition (a) in the definition of a
 target-complete quotient requires the quotient to preserve the boundary degree
 profile ... an identification of `X₁` with `X₂` would identify two different
-boundary-degree profiles, so it violates condition (a)".  Every admissible
-quotient of G's declared coordinates carries condition (a) as its `fibrewise`
-clause (`def:admissible-rank-quotient`, which requires target-completeness). -/
+boundary-degree profiles, so it violates condition (a)".  G's canonical quotient
+(`canonicalPieceLabel`) carries the boundary-degree profile of a constructed
+piece in its label, so condition (a) holds by construction. -/
 theorem degreeProfileFibres_holds (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     DegreeProfileFibresStatement data object :=
-  fun _region quotient left right different identified =>
-    different (quotient.fibrewise left right identified)
+  fun _support _left _right different identified => by
+    unfold canonicalPieceLabel at identified
+    exact different (Prod.mk.inj identified).1
 
 /-- **Node `[12]`, `lem:context-universality`** (tex 6106), stated about G,
-reading node `[11]` and the selection.  Two constructed pieces an admissible
-quotient of G's declared coordinates identifies lie in one boundary-degree
-fibre (node `[11]`, contrapositive) and have the same response in G's own rest
-`G − Z` (condition (b) of the admissible quotient,
-`DeclaredQuotient.contextUniversal`).  No reading of G at any support closes a
-power-of-two cycle in `G − Z`: such a gluing is a subgraph of G, which avoids
-the target. -/
+reading node `[11]` and the selection.  Two constructed pieces G's canonical
+quotient identifies lie in one boundary-degree fibre (node `[11]`,
+contrapositive) and have the same response in G's own rest `G − Z` (the label
+carries it); no reading of G at any support closes a power-of-two cycle in
+`G − Z`, because such a gluing is a subgraph of G. -/
 theorem targetCompleteContextUniversality_of_degreeProfileFibres
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation}
@@ -152,11 +151,11 @@ theorem targetCompleteContextUniversality_of_degreeProfileFibres
     (fibres : DegreeProfileFibresStatement data object)
     (selection : SelectionStatement BranchState Presentation presentation data object) :
     TargetCompleteContextUniversalityStatement data object := by
-  refine ⟨fun region quotient left right identified => ⟨?_, ?_⟩,
+  refine ⟨fun support left right identified => ⟨?_, ?_⟩,
     fun support reading => Graph.ActualContext.not_target_actualGlue selection.1
       support reading⟩
   · by_contra different
-    exact fibres region quotient left right different identified
-  · exact quotient.contextUniversal left right identified
+    exact fibres support left right different identified
+  · exact Iff.of_eq (Prod.mk.inj identified).2
 
 end Hypostructure.Graph.Contracts.Spine

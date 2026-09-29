@@ -339,39 +339,32 @@ theorem coldGermFamilyPositive_of_linear (data : Parameters)
     disjointPositive⟩
 
 /-- **Node `[162]`, `lem:dense-cold-pass`** (tex 7692-7694), on the
-distinct-states arm of `[153]` and the heavy-entry arm of `[162]`'s test: every
-retained cold return corridor of G is terminal in the sense of the (F5)
-terminal subcase.
+distinct-states arm: every retained cold return corridor of G is terminal in
+the sense of the (F5) terminal subcase, or its first failure is a heavy handoff
+centre.
 
-The paper's reason ("the boundaried pieces of `R` are induced-`P₁₃`-free and
-subcubic, [so] they have bounded diameter") does not reach corridors of
-`G − X_cold`; the proof here is by G's first failures.  Each retained corridor
-of G has a first failure (`K .coldFirstFailureOccurrence`).  (F1) is excluded
-by target avoidance and (F3) by uncompressibility; (F2) and the repeat subcase
-of (F5) carry two equal states up to the first failure, excluded by (★)
-(`ColdCutStatesDistinctStatement`); the terminal subcase of (F5) is terminal;
-an (F4) heavy centre at the terminal segment is terminal because the distinct
-states force it within `Q_cold` states (`ColdEqualStates.first_lt_stateBound`);
-an (F4) heavy centre strictly before the terminal segment is terminal by the
-decided heavy-entry test (`ColdHeavyEntryTerminalStatement`). -/
+The paper's reason for terminality ("the boundaried pieces of `R` are
+induced-`P₁₃`-free and subcubic, [so] they have bounded diameter") does not reach
+corridors of `G − X_cold`; the proof here is by G's first failures.  Each
+retained corridor of G has a first failure (`K .coldFirstFailureOccurrence`).
+(F1) is excluded by target avoidance and (F3) by uncompressibility, (F2) by
+(★); the repeat subcase of (F5) carries two equal states up to the first
+failure, excluded by (★) (`ColdCutStatesDistinctStatement`); the terminal
+subcase of (F5) is terminal; an (F4) heavy centre is the disjunct
+`ColdFirstFailureHandoffOccurrence`.  No terminality is asserted for a corridor
+whose first failure is a heavy centre: nothing downstream reads it. -/
 theorem denseColdCorridorsTerminal_of_distinct (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (occurrence : ColdFirstFailureOccurrenceStatement data object)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (uncompressible : UncompressibleStatement data object)
-    (distinct : ColdCutStatesDistinctStatement data object)
-    (heavy : ColdHeavyEntryTerminalStatement data object) :
+    (distinct : ColdCutStatesDistinctStatement data object) :
     DenseColdCorridorsTerminalStatement data object := by
   classical
   let occurrenceData := Classical.choice occurrence
-  refine ⟨occurrenceData.state, ?_⟩
-  intro _ _ _ _ epsilon
-  change (coldOccurrenceCorridorAt data object occurrenceData epsilon).TerminalCorridor
-    data.coldSignature
+  refine ⟨occurrenceData, ?_⟩
+  intro epsilon
   obtain ⟨first, event, minimal⟩ := occurrenceData.occurs epsilon
-  have short : first.1 < Graph.ColdCorridor.stateBound data.coldSignature :=
-    Graph.ColdEqualStates.first_lt_stateBound _ _ _ first
-      (distinct occurrenceData epsilon first minimal)
   cases event with
   | cycle cycle =>
       exact (coldFailureCycle_of_avoids data object avoids occurrenceData epsilon
@@ -383,61 +376,25 @@ theorem denseColdCorridorsTerminal_of_distinct (data : Parameters)
       exact (coldFailureCompression_of_uncompressible data object avoids
         uncompressible occurrenceData epsilon first compression).elim
   | handoff handoff =>
-      by_cases before : first.1 <
-          (coldOccurrenceCorridorAt data object occurrenceData epsilon).inside.1.length
-      · exact heavy occurrenceData epsilon first minimal handoff before
-      · have atEnd := first.2
-        unfold Graph.ColdCorridor.Corridor.TerminalCorridor
-          Graph.ColdCorridor.Corridor.statesRead
-        omega
+      exact Or.inr ⟨first, handoff, minimal⟩
   | germ germ =>
       rcases germ with ⟨terminal, _⟩ |
           ⟨left, right, _, lt, same, _, _, _, _, _, rightEq⟩
-      · exact terminal
+      · exact Or.inl terminal
       · subst rightEq
         exact (distinct occurrenceData epsilon first minimal left first lt le_rfl
           same).elim
 
-/-- **The residual of `[162]`, constructed at G.**  If the heavy-entry test
-fails, some retained corridor of G has its first failure at an (F4) heavy
-centre `z = head first` of G (`d_G(z) > δ`) strictly before its terminal
-segment, and is not terminal.  On the distinct-states arm its states up to
-`first` are pairwise distinct, so `first < Q_cold ≤ |C_ε|`.  The residual is
-read at G's canonical witness `coldHeavyEntryWitness?`. -/
-theorem coldDenseHeavyEntryResidual_of_not_terminal (data : Parameters)
+/-- **Node `[162]`, the heavy entry is read within `Q_cold` states.**  On the
+distinct-states arm the states up to the first failure are pairwise distinct, so
+the first failure lies below `Q_cold` (`ColdEqualStates.first_lt_stateBound`). -/
+theorem coldHeavyEntryTerminal_of_distinct (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (distinct : ColdCutStatesDistinctStatement data object)
-    (notTerminal : ¬ ColdHeavyEntryTerminalStatement data object) :
-    ColdDenseHeavyEntryResidualStatement data object := by
-  classical
-  unfold ColdHeavyEntryTerminalStatement at notTerminal
-  push Not at notTerminal
-  obtain ⟨occurrence, epsilon, first, minimal, handoff, before, long⟩ := notTerminal
-  obtain ⟨support, ⟨centre, supportEq, heavyCentre⟩, member⟩ := handoff.1
-  rw [supportEq, Finset.mem_singleton] at member
-  have states := distinct occurrence epsilon first minimal
-  have short : first.1 < Graph.ColdCorridor.stateBound data.coldSignature :=
-    Graph.ColdEqualStates.first_lt_stateBound _ _ _ first states
-  have spec : ColdDenseHeavyEntrySpecAt data object occurrence epsilon first centre := by
-    refine ⟨member, heavyCentre, handoff, minimal, states, short, before, ?_, long⟩
-    unfold Graph.ColdCorridor.Corridor.TerminalCorridor
-      Graph.ColdCorridor.Corridor.statesRead at long
-    omega
-  obtain ⟨witness, pinned⟩ := coldHeavyEntryWitness?_eq_some
-    ⟨⟨occurrence, epsilon, first, centre⟩, spec⟩
-  exact ⟨witness, pinned, coldHeavyEntryWitness?_spec pinned⟩
-
-/-- **The `[162]` residual refutes the heavy-entry test.**  Its witness is a
-non-terminal corridor whose first failure is a heavy centre before its terminal
-segment. -/
-theorem not_heavyEntryTerminal_of_residual (data : Parameters)
-    (object : Graph.FiniteObject.{u})
-    (residual : ColdDenseHeavyEntryResidualStatement data object) :
-    ¬ ColdHeavyEntryTerminalStatement data object := by
-  intro terminal
-  obtain ⟨witness, _, _, _, handoff, minimal, _, _, before, _, long⟩ := residual
-  exact long (terminal witness.occurrence witness.epsilon witness.first minimal handoff
-    before)
+    (distinct : ColdCutStatesDistinctStatement data object) :
+    ColdHeavyEntryTerminalStatement data object := by
+  intro occurrence epsilon first minimal _handoff
+  exact Graph.ColdEqualStates.first_lt_stateBound _ _ _ first
+    (distinct occurrence epsilon first minimal)
 
 /-- **`thm:cold-branch-quantitative-closure`: no terminal cold residual.**
 With the germs extracted and routed and the same-interface table closed, no
@@ -566,15 +523,7 @@ theorem densityCap_of_coldMassBounded (data : Parameters)
     (cubic : ColdAmbientCubicStatement data object)
     (split : HotColdWindowStatement data object) :
     DensityCapStatement data object := by
-  refine ⟨densityCapLinear_of_coldMassBounded data object fiveLeOrder mass bounded
-    cubic split, ?_⟩
-  intro State stateOf joint
-  refine joint.trans (Nat.pow_le_pow_left ?_ _)
-  have count : Nat.card (Graph.PackedWindowRealization.Skeleton
-      object.vertexCount object.edgeCount) = Graph.skeletonBudget object := by
-    simpa [Graph.skeletonBudget, Graph.edgeStratumCount] using
-      Graph.PackedWindowRealization.card_skeleton
-        object.vertexCount object.edgeCount
-  exact (Core.FiniteEntropy.card_range_le_card_ambient stateOf).trans_eq count
+  exact densityCapLinear_of_coldMassBounded data object fiveLeOrder mass bounded
+    cubic split
 
 end Hypostructure.Graph.Contracts.Spine

@@ -217,6 +217,15 @@ theorem splice_cycle_lift {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p
       · exact hva e
       · exact hvb e
 
+theorem splice_cycle_lift' {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.IsPath)
+    (hlen : 2 ≤ p.length) (D : Set V) (hD : ∀ v, v ∈ D ↔ v ∈ interior p) {x : V}
+    (c : (splice G a b D).Walk x x) (hc : c.IsCycle) :
+    (∃ (y : V) (d : G.Walk y y), d.IsCycle ∧ d.length = c.length) ∨
+    (∃ (y : V) (d : G.Walk y y), d.IsCycle ∧ d.length + 1 = c.length + p.length) := by
+  have : D = interior p := Set.ext hD
+  subst this
+  exact splice_cycle_lift p hp hlen c hc
+
 /-- **F08 at graph level: what a target cycle of the excision costs.**  If the spliced graph
 has a cycle whose length satisfies `LengthOK`, then `G` has an accepted cycle, or `G` has a
 cycle of length `L + q` with `LengthOK L`, where `q = |p| - 1` is the number of deleted
@@ -232,6 +241,89 @@ theorem splice_target {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.IsP
   rcases splice_cycle_lift p hp hlen c hc with ⟨y, d, hd, hl⟩ | ⟨y, d, hd, hl⟩
   · exact Or.inl ⟨y, d, hd, hl ▸ hok⟩
   · exact Or.inr ⟨c.length, y, d, hok, hd, by omega⟩
+
+/-! ## Several shortcuts at once (the multi-boundary splice) -/
+
+/-- A shortcut of `G`: a path of length at least `2` to be replaced by one edge. -/
+structure Shortcut (G : SimpleGraph V) where
+  a : V
+  b : V
+  p : G.Walk a b
+  isPath : p.IsPath
+  two_le : 2 ≤ p.length
+
+/-- The shift of a shortcut: the number of vertices its interior deletes. -/
+def Shortcut.shift {G : SimpleGraph V} (s : Shortcut G) : Nat := s.p.length - 1
+
+/-- `G` with the interiors of the given shortcut paths deleted and each shortcut edge added. -/
+def multiSplice (G : SimpleGraph V) : List (Shortcut G) → SimpleGraph V
+  | [] => G
+  | s :: L => splice (multiSplice G L) s.a s.b (interior s.p)
+
+/-- The vertices deleted by the shortcut paths. -/
+def delSet {G : SimpleGraph V} : List (Shortcut G) → Set V
+  | [] => ∅
+  | s :: L => interior s.p ∪ delSet L
+
+/-- The shortcut paths are pairwise compatible: the interior of each avoids the support of
+the others. -/
+def Compatible {G : SimpleGraph V} (L : List (Shortcut G)) : Prop :=
+  L.Pairwise fun s t => Disjoint (interior s.p) {v | v ∈ t.p.support} ∧
+    Disjoint (interior t.p) {v | v ∈ s.p.support}
+
+theorem adj_multiSplice {G : SimpleGraph V} (L : List (Shortcut G)) {x y : V}
+    (h : G.Adj x y) (hx : x ∉ delSet L) (hy : y ∉ delSet L) : (multiSplice G L).Adj x y := by
+  induction L with
+  | nil => exact h
+  | cons s L ih =>
+    simp only [delSet, Set.mem_union, not_or] at hx hy
+    exact Or.inl ⟨ih hx.2 hy.2, hx.1, hy.1⟩
+
+theorem not_mem_delSet_of_support {G : SimpleGraph V} (s : Shortcut G) :
+    ∀ (L : List (Shortcut G)),
+      (∀ t ∈ L, Disjoint (interior t.p) {v | v ∈ s.p.support}) →
+      ∀ v ∈ s.p.support, v ∉ delSet L
+  | [], _, v, _ => by simp [delSet]
+  | t :: L, h, v, hv => by
+    simp only [delSet, Set.mem_union, not_or]
+    refine ⟨fun hvt => ?_, not_mem_delSet_of_support s L (fun u hu => h u (List.mem_cons_of_mem _ hu)) v hv⟩
+    exact Set.disjoint_left.1 (h t (List.mem_cons_self)) hvt hv
+
+/-- **Lifting through several shortcuts.**  Every cycle of the multiply spliced graph lifts to
+a cycle of `G` whose length is the cycle's length plus the shifts of some of the shortcuts
+(those whose new edge the cycle uses). -/
+theorem multiSplice_cycle_lift {G : SimpleGraph V} :
+    ∀ (L : List (Shortcut G)), Compatible L → ∀ {x : V} (c : (multiSplice G L).Walk x x),
+      c.IsCycle →
+      ∃ (S : List (Shortcut G)) (y : V) (d : G.Walk y y), S.Sublist L ∧ d.IsCycle ∧
+        d.length = c.length + (S.map Shortcut.shift).sum
+  | [], _, x, c, hc => ⟨[], x, c, List.Sublist.slnil, hc, by simp; rfl⟩
+  | s :: L, hcomp, x, c, hc => by
+    have hpair := List.pairwise_cons.1 hcomp
+    have hsupp : ∀ v ∈ s.p.support, v ∉ delSet L :=
+      not_mem_delSet_of_support s L (fun t ht => (hpair.1 t ht).2)
+    have hedges : ∀ e ∈ s.p.edges, e ∈ (multiSplice G L).edgeSet := by
+      intro e he
+      induction e using Sym2.ind with
+      | h u v =>
+        have hadj := s.p.adj_of_mem_edges he
+        exact adj_multiSplice L hadj (hsupp u (s.p.fst_mem_support_of_mem_edges he))
+          (hsupp v (s.p.snd_mem_support_of_mem_edges he))
+    let p' : (multiSplice G L).Walk s.a s.b := s.p.transfer _ hedges
+    have hp' : p'.IsPath := s.isPath.transfer hedges
+    have hlen' : 2 ≤ p'.length := by simpa [p'] using s.two_le
+    have hlp : p'.length = s.p.length := by simp [p']
+    rcases splice_cycle_lift' p' hp' hlen' (interior s.p)
+        (by intro v; simp [interior, p']) c hc with ⟨y, d, hd, hl⟩ | ⟨y, d, hd, hl⟩
+    · obtain ⟨S, y', d', hS, hd', hl'⟩ := multiSplice_cycle_lift L hpair.2 d hd
+      have hl2 : d.length = c.length := hl
+      exact ⟨S, y', d', hS.cons s, hd', by rw [hl', hl2]⟩
+    · obtain ⟨S, y', d', hS, hd', hl'⟩ := multiSplice_cycle_lift L hpair.2 d hd
+      refine ⟨s :: S, y', d', hS.cons_cons s, hd', ?_⟩
+      have := s.two_le
+      have hl2 : d.length + 1 = c.length + s.p.length := by rw [← hlp]; exact hl
+      simp only [List.map_cons, List.sum_cons, Shortcut.shift]
+      omega
 
 /-! ## The excised object -/
 
@@ -391,5 +483,126 @@ theorem excision_deficient (G : FiniteObject.{u}) {a b : G.Vertex}
   obtain ⟨va, vb, hno⟩ := hcon v hv
   rw [degree_spliceObject_of_no_deleted_neighbour G a b D v hv va vb hno]
   exact hG.trans (FiniteObject.minDegree_le_degree G v)
+
+open Classical in
+open Hypostructure.Graph in
+/-- A kept vertex other than `a`, `b` with a neighbour in `D` strictly loses degree. -/
+theorem degree_spliceObject_lt (G : FiniteObject.{u}) (a b : G.Vertex)
+    (D : Finset G.Vertex) (w : G.Vertex) (hw : w ∈ G.vertexFinset.filter (fun v => v ∉ D))
+    (wa : w ≠ a) (wb : w ≠ b) (hD : ∃ x ∈ D, G.graph.Adj w x) :
+    (spliceObject G a b D).degree ⟨w, hw⟩ < G.degree w := by
+  unfold spliceObject
+  rw [FiniteObject.degree_eq_ncard_neighborSet, FiniteObject.degree_eq_ncard_neighborSet]
+  have hwD : w ∉ D := (Finset.mem_filter.1 hw).2
+  have hset : ((FiniteObject.of (splice G.graph a b (D : Set G.Vertex)) G.vertices
+      (fun _ _ => Classical.propDecidable _)).induce
+      (G.vertexFinset.filter (fun v => v ∉ D))).graph.neighborSet ⟨w, hw⟩ =
+      (fun x : {x // x ∈ G.vertexFinset.filter (fun v => v ∉ D)} => x.1) ⁻¹'
+        (G.graph.neighborSet w \ (D : Set G.Vertex)) := by
+    ext x
+    simp only [SimpleGraph.mem_neighborSet, Set.mem_preimage, Set.mem_diff]
+    change (splice G.graph a b (D : Set G.Vertex)).Adj w x.1 ↔
+      G.graph.Adj w x.1 ∧ x.1 ∉ (D : Set G.Vertex)
+    constructor
+    · rintro (⟨h, _, hx⟩ | ⟨h, _⟩)
+      · exact ⟨h, hx⟩
+      · rcases Sym2.eq_iff.1 h with ⟨e, _⟩ | ⟨e, _⟩
+        · exact absurd e wa
+        · exact absurd e wb
+    · rintro ⟨h, hx⟩
+      exact Or.inl ⟨h, hwD, hx⟩
+  rw [hset]
+  have hsub : G.graph.neighborSet w \ (D : Set G.Vertex) ⊆ Set.range
+      (fun x : {x // x ∈ G.vertexFinset.filter (fun v => v ∉ D)} => x.1) := by
+    intro x hx
+    exact ⟨⟨x, Finset.mem_filter.2 ⟨by simp [FiniteObject.vertexFinset], hx.2⟩⟩, rfl⟩
+  refine lt_of_eq_of_lt
+    (Set.ncard_preimage_of_injective_subset_range Subtype.val_injective hsub) ?_
+  obtain ⟨x, hxD, hx⟩ := hD
+  apply Set.ncard_lt_ncard
+  · refine ⟨Set.diff_subset, fun h => ?_⟩
+    have := h hx
+    exact this.2 hxD
+  · letI : FinEnum G.Vertex := G.vertices
+    exact Set.toFinite _
+
+open Classical in
+open Hypostructure.Graph in
+/-- **The degree side of the excision, exactly.**  If a kept vertex `w ∉ {a, b}` of degree at
+most `t` in `G` has a neighbour in the deleted set `D`, the excised object misses the
+baseline `t`. -/
+theorem not_baseline_of_external (G : FiniteObject.{u}) (a b : G.Vertex)
+    (D : Finset G.Vertex) (t : Nat) (w : G.Vertex)
+    (hw : w ∈ G.vertexFinset.filter (fun v => v ∉ D))
+    (wa : w ≠ a) (wb : w ≠ b) (hD : ∃ x ∈ D, G.graph.Adj w x) (deg : G.degree w ≤ t) :
+    ¬ MinimumDegreeAtLeast t (spliceObject G a b D) := by
+  intro h
+  have h1 := degree_spliceObject_lt G a b D w hw wa wb hD
+  have h2 := FiniteObject.minDegree_le_degree (spliceObject G a b D) ⟨w, hw⟩
+  unfold MinimumDegreeAtLeast at h
+  omega
+
+open Classical in
+open Hypostructure.Graph in
+/-- **The multiply excised object**: `G` with the interiors of the shortcut paths deleted and
+the shortcut edges added. -/
+noncomputable def multiSpliceObject (G : FiniteObject.{u}) (L : List (Shortcut G.graph)) :
+    FiniteObject.{u} :=
+  (FiniteObject.of (multiSplice G.graph L) G.vertices
+      (fun _ _ => Classical.propDecidable _)).induce
+    (G.vertexFinset.filter (fun v => v ∉ delSet L))
+
+open Classical in
+open Hypostructure.Graph in
+theorem vertexCount_multiSpliceObject_lt (G : FiniteObject.{u}) (L : List (Shortcut G.graph))
+    (v : G.Vertex) (hv : v ∈ delSet L) :
+    (multiSpliceObject G L).vertexCount < G.vertexCount := by
+  unfold multiSpliceObject
+  rw [FiniteObject.vertexCount_induce, ← FiniteObject.card_vertexFinset]
+  apply Finset.card_lt_card
+  refine Finset.ssubset_iff_subset_ne.2 ⟨Finset.filter_subset _ _, ?_⟩
+  intro h
+  have hdm : v ∈ G.vertexFinset := by simp [FiniteObject.vertexFinset]
+  have := (Finset.ext_iff.1 h v).2 hdm
+  exact (Finset.mem_filter.1 this).2 hv
+
+open Classical in
+open Hypostructure.Graph in
+theorem cycle_of_multiSpliceObject (G : FiniteObject.{u}) (L : List (Shortcut G.graph))
+    (LengthOK : Nat → Prop) (h : HasCycleWithLength LengthOK (multiSpliceObject G L)) :
+    ∃ (x : G.Vertex) (c : (multiSplice G.graph L).Walk x x), c.IsCycle ∧ LengthOK c.length := by
+  unfold multiSpliceObject at h
+  obtain ⟨cert⟩ := hasCycleWithLength_of_hom
+    (right := FiniteObject.of (multiSplice G.graph L) G.vertices
+      (fun _ _ => Classical.propDecidable _))
+    (FiniteObject.induceEmbedding _ _).toHom (FiniteObject.induceEmbedding _ _).injective h
+  exact ⟨cert.vertex, cert.walk, cert.isCycle, cert.length_ok⟩
+
+open Classical in
+open Hypostructure.Graph in
+/-- **F08 for a family of shortcuts (multi-boundary excision).**  `G` is a minimal
+target-avoiding object for `Baseline`; `L` is a compatible family of shortcut paths with a
+nonempty deleted set.  Either the multiply excised object misses the baseline, or `G` has a
+cycle whose length is an accepted length plus the shifts of a subfamily of `L`, and is not
+accepted. -/
+theorem multi_excision_dichotomy (G : FiniteObject.{u}) (L : List (Shortcut G.graph))
+    (hL : Compatible L) (v : G.Vertex) (hv : v ∈ delSet L)
+    (LengthOK : Nat → Prop) (avoids : ¬ HasCycleWithLength LengthOK G)
+    (Baseline : FiniteObject.{u} → Prop)
+    (minimal : ∀ X : FiniteObject.{u}, Baseline X → X.LexicographicallySmaller G →
+      HasCycleWithLength LengthOK X) :
+    ¬ Baseline (multiSpliceObject G L) ∨
+    ∃ (S : List (Shortcut G.graph)) (Lk : Nat) (y : G.Vertex) (d : G.graph.Walk y y),
+      S.Sublist L ∧ LengthOK Lk ∧ ¬ LengthOK (Lk + (S.map Shortcut.shift).sum) ∧
+        d.IsCycle ∧ d.length = Lk + (S.map Shortcut.shift).sum := by
+  by_cases hb : Baseline (multiSpliceObject G L)
+  · right
+    have small : (multiSpliceObject G L).LexicographicallySmaller G :=
+      FiniteObject.lexicographicallySmaller_of_vertexCount_lt
+        (vertexCount_multiSpliceObject_lt G L v hv)
+    obtain ⟨x, c, hc, hok⟩ := cycle_of_multiSpliceObject G L LengthOK (minimal _ hb small)
+    obtain ⟨S, y, d, hS, hd, hl⟩ := multiSplice_cycle_lift L hL c hc
+    refine ⟨S, c.length, y, d, hS, hok, fun hok' => avoids ⟨⟨y, d, hd, hl ▸ hok'⟩⟩, hd, hl⟩
+  · exact Or.inl hb
 
 end Hypostructure.Graph.SpliceLift

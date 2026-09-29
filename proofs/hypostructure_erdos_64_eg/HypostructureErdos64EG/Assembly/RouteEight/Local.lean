@@ -6,6 +6,7 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8DemandPartition
 import Hypostructure.Graph.Strategy.SpineRows.Route8JointBalance
 import Hypostructure.Graph.Strategy.SpineRows.Route8PeelingDescent
 import Hypostructure.Graph.Strategy.SpineRows.Route8QuotientDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.Route8QuotientEntriesAtG
 import Hypostructure.Graph.Strategy.SpineRows.Route8StageOutcomeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8TwoCarrierExit
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedDeficit
@@ -16,6 +17,7 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedVisibleResidual
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnpaidExitFourDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8WindowBlockers
 import Hypostructure.Graph.Strategy.SpineRows.TypeBSublinearDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.TypeBSublinearCanonical
 import Hypostructure.Graph.Strategy.TypeAExitRun
 import HypostructureErdos64EG.Assembly.RouteEight.Boundary
 
@@ -255,6 +257,26 @@ noncomputable def selectedRouteEightUnifiedResidual
     (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
       key_fresh)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh)
+    (entriesAtGFresh : K .route8QuotientEntriesAtG ∉ known := by key_fresh)
+    (canonicalFormFresh : K .typeBSublinearCanonicalForm ∉ known := by
+      key_fresh)
+    (absorbedSubsetFresh : K .groupedAbsorbedCoreSubset ∉ known := by
+      key_fresh)
+    (failureArmsFresh : K .typeBSublinearFailureArms ∉ known := by key_fresh)
+    (groupedCentresHighFresh : K .groupedCentresHigh ∉ known := by key_fresh)
+    (handoffDegreeClauseEmptyFresh : K .handoffDegreeClauseEmpty ∉ known := by key_fresh)
+    (pieceRoutingTotalFresh : K .pieceRoutingTotal ∉ known := by key_fresh)
+    (coverPaymentFresh : K .coverPayment ∉ known := by key_fresh)
+    (loadFailureSaturatedFresh : K .loadFailureSaturated ∉ known := by key_fresh)
+    (unpaidAbsorbedWindowPortFresh : K .unpaidAbsorbedWindowPort ∉ known := by key_fresh)
+    (receiverPortsAreWindowStubsFresh : K .receiverPortsAreWindowStubs ∉ known := by key_fresh)
+    (saturatedReceiverBasinFresh : K .saturatedReceiverBasin ∉ known := by key_fresh)
+    (loadFlowValueFresh : K .loadFlowValue ∉ known := by key_fresh)
+    (coverFlowValueFresh : K .coverFlowValue ∉ known := by key_fresh)
+    (pieceSizeProfileFresh : K .pieceSizeProfile ∉ known := by key_fresh)
+    (bridgePieceMassDichotomyFresh : K .bridgePieceMassDichotomy ∉ known := by key_fresh)
+    (traceIntoCentreStructureFresh : K .traceIntoCentreStructure ∉ known := by key_fresh)
+    (traceIntoAbsorbedStructureFresh : K .traceIntoAbsorbedStructure ∉ known := by key_fresh)
     [FactKeys.Has (K .barrierCap) known]
     [FactKeys.Has (K .barrierEnumeration) known]
     [FactKeys.Has (K .boundaryDemand) known]
@@ -362,7 +384,94 @@ noncomputable def selectedRouteEightUnifiedResidual
   match typeBSublinearDichotomy (data := spineData) history
       (by key_fresh) (by key_fresh) with
   | .right residualHistory =>
-      exact Or.inl (typeBSublinearProductReturn residualHistory arm.1 arm.2)
+      -- G audit: the failed hypotheses are published in G's canonical form
+      -- (keys 8300--8316) before the residual is returned.
+      let canonical :=
+        (typeBSublinearCanonicalFormRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          residualHistory (by key_fresh)
+      let subset :=
+        (groupedAbsorbedCoreSubsetRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          canonical (by key_fresh)
+      let highC :=
+        (groupedCentresHighRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          subset (by key_fresh)
+      let degC :=
+        (handoffDegreeClauseEmptyRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          highC (by key_fresh)
+      let routeT :=
+        (pieceRoutingTotalRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          degC (by key_fresh)
+      let coverP :=
+        (coverPaymentRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          routeT (by key_fresh)
+      let loadS :=
+        (loadFailureSaturatedRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          coverP (by key_fresh)
+      let windowP :=
+        (unpaidAbsorbedWindowPortRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          loadS (by key_fresh)
+      let g_receiverPortsAreWindowStubs :=
+        (receiverPortsAreWindowStubsRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          windowP (by key_fresh)
+      let g_saturatedReceiverBasin :=
+        (saturatedReceiverBasinRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          g_receiverPortsAreWindowStubs (by key_fresh)
+      let g_loadFlowValue :=
+        (loadFlowValueRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          g_saturatedReceiverBasin (by key_fresh)
+      let g_coverFlowValue :=
+        (coverFlowValueRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          g_loadFlowValue (by key_fresh)
+      let g_pieceSizeProfile :=
+        (pieceSizeProfileRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          g_coverFlowValue (by key_fresh)
+      let g_bridgePieceMassDichotomy :=
+        (bridgePieceMassDichotomyRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          g_pieceSizeProfile (by key_fresh)
+      let g_traceIntoCentreStructure :=
+        (traceIntoCentreStructureRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          g_bridgePieceMassDichotomy (by key_fresh)
+      let g_traceIntoAbsorbedStructure :=
+        (traceIntoAbsorbedStructureRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          g_traceIntoCentreStructure (by key_fresh)
+      let arms :=
+        (typeBSublinearFailureArmsRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          g_traceIntoAbsorbedStructure (by key_fresh)
+      exact Or.inl (typeBSublinearProductReturn arms arm.1 arm.2)
   | .left sublinearHistory =>
       let unifiedDeficit :=
         (route8UnifiedDeficitRow (BranchState := BranchState)
@@ -382,8 +491,21 @@ noncomputable def selectedRouteEightUnifiedResidual
       | .right residualHistory =>
           -- `[348]` → `[187]`: `thm:main` returns the failure of route-8
           -- quotient freeness as an open outcome (tex 369-372, 388-390).
+          -- G audit: the failure of quotient freeness is published at G's
+          -- unified entries (`K .route8QuotientEntriesAtG`) after the
+          -- descent.
+          let descended :=
+            (route8PeelingDescentRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              residualHistory (by key_fresh)
+          let entriesAtG :=
+            (route8QuotientEntriesAtGRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run descended (by key_fresh)
           exact Or.inr (Or.inl
-            (route8QuotientProductReturn residualHistory arm.1 arm.2))
+            (route8QuotientProductReturn entriesAtG arm.1 arm.2))
       | .left quotientFreeHistory =>
           let census :=
             (route8UnifiedEntryCensusRow (BranchState := BranchState)

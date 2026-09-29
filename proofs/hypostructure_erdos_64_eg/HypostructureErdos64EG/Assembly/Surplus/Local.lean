@@ -4,11 +4,13 @@ import Hypostructure.Graph.Strategy.SpineRows.SingleOpenPortSuppressionWitness
 import Hypostructure.Graph.Strategy.SpineRows.SuppressedFamilyCriticalCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SameTokenBottleneckRouting
 import Hypostructure.Graph.Strategy.SpineRows.SameTokenPair
+import Hypostructure.Graph.Strategy.SpineRows.SameTokenSwap
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SameTokenTypeBFanEntry
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.HomogeneousCapsClose
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.FibrePressure
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairFailureOverlap
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairOverlapSystem
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairCorrelation
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairPowerOfTwoCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairSystemOutcome
 import Hypostructure.Graph.Strategy.SurplusRows
@@ -132,6 +134,8 @@ noncomputable def selectedSparseSurplusActivation
         key_fresh)
 
 set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+set_option synthInstance.maxSize 2048 in
 /-- Nodes `[178]`--`[180]`, the pair-code chain entered from the free side of `[131]` (node `[130]`'s independent arm): on
 any ledger that carries the node-`[178]` first failure
 `K .pairOverlapFirstFailure` and every key of that entry arm.  Each paper test is a `Decision`; each
@@ -188,6 +192,10 @@ noncomputable def selectedPairCodeChainIndependent
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .minDegreeBaseline) known]
     (systemFresh : K .pairOverlapSystem ∉ known := by key_fresh)
+    (correlationFresh : K .pairCorrelation ∉ known := by key_fresh)
+    (coverageFresh : K .pairCoverage ∉ known := by key_fresh)
+    (fullModulusFresh : K .pairFullModulus ∉ known := by key_fresh)
+    (uncrossingFresh : K .pairUncrossing ∉ known := by key_fresh)
     (factorizationFresh : K .pairConditionalFactorization ∉ known := by key_fresh)
     (factorizationFailsFresh : K .pairFactorizationFails ∉ known := by key_fresh)
     (residualFresh : K .pairConditionalFactorizationResidual ∉ known := by key_fresh)
@@ -199,6 +207,17 @@ noncomputable def selectedPairCodeChainIndependent
     (systemNoEarlyFresh : K .pairSystemNoEarlyOutcome ∉ known := by key_fresh)
     (serialFresh : K .pairSerialDemandSystem ∉ known := by key_fresh)
     (fanEntryFresh : K .typeBFanEntry ∉ known := by key_fresh)
+    (handoffSupportFresh : K .pairHandoffSupport ∉ known := by key_fresh)
+    (handoffChargeFresh : K .pairHandoffCharge ∉ known := by key_fresh)
+    (handoffNetChargeFresh : K .pairHandoffNetCharge ∉ known := by key_fresh)
+    (pairHandoffHubChargeFresh : K .pairHandoffHubCharge ∉ known := by key_fresh)
+    (pairHandoffBoundaryTypeFresh : K .pairHandoffBoundaryType ∉ known := by key_fresh)
+    (pairHandoffCriticalCoordinateFresh : K .pairHandoffCriticalCoordinate ∉ known := by key_fresh)
+    (pairObstructionDescentFresh : K .pairObstructionDescent ∉ known := by key_fresh)
+    (pairHandoffHubForcesFresh : K .pairHandoffHubForces ∉ known := by key_fresh)
+    (pairHandoffDemandEndsFresh : K .pairHandoffDemandEnds ∉ known := by key_fresh)
+    (pairHandoffHubBalanceFresh : K .pairHandoffHubBalance ∉ known := by key_fresh)
+    (pairHandoffFibreAtGFresh : K .pairHandoffFibreAtG ∉ known := by key_fresh)
     (incrementFresh : K .pairIncrementCovered ∉ known := by key_fresh)
     (incrementFailsFresh : K .pairIncrementFails ∉ known := by key_fresh)
     (incrementEarlyFresh : K .pairIncrementEarlyOutcome ∉ known := by key_fresh)
@@ -289,8 +308,13 @@ noncomputable def selectedPairCodeChainIndependent
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
+  let correlated :=
+    (pairCorrelationRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      overlapSystem (by key_fresh)
   match pairConditionalFactorizationDichotomy (data := spineData)
-      overlapSystem (by key_fresh) (by key_fresh) with
+      correlated (by key_fresh) (by key_fresh) with
   | .right failsHistory =>
       let residualHistory :=
         (pairFactorizationResidualRow (BranchState := BranchState)
@@ -310,8 +334,18 @@ noncomputable def selectedPairCodeChainIndependent
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run overlapFailure (by key_fresh)
+      let coverage :=
+        (pairCoverageRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          demandReturns (by key_fresh)
+      let uncrossing :=
+        (pairUncrossingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          coverage (by key_fresh)
       match pairSystemRealizabilityDichotomy (data := spineData)
-          demandReturns (by key_fresh) (by key_fresh) with
+          uncrossing (by key_fresh) (by key_fresh) with
       | .right failsHistory =>
           let residualHistory :=
             (pairRealizabilityResidualRow (BranchState := BranchState)
@@ -330,16 +364,30 @@ noncomputable def selectedPairCodeChainIndependent
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run earlyHistory (by key_fresh)
+              let factsHistory :=
+                (pairHandoffFactsRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run typeBHistory (by key_fresh)
               exact Or.inr (Or.inl (Or.inl
-                (pairTypeBIndependentSystemReturn typeBHistory)))
+                (pairTypeBIndependentSystemReturn
+                  ((pairHandoffBalanceRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile)
+                    (data := spineData)).run factsHistory (by key_fresh)))))
           | .right noEarlyHistory =>
               let serialHistory :=
                 (pairSerialDemandSystemRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run noEarlyHistory (by key_fresh)
+              let fullModulus :=
+                (pairFullModulusRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  serialHistory (by key_fresh)
               match pairIncrementCoveredDichotomy (data := spineData)
-                  serialHistory (by key_fresh) (by key_fresh) with
+                  fullModulus (by key_fresh) (by key_fresh) with
               | .right failsHistory =>
                   let residualHistory :=
                     (pairIncrementResidualRow (BranchState := BranchState)
@@ -353,14 +401,11 @@ noncomputable def selectedPairCodeChainIndependent
                   match pairIncrementOutcomeDichotomy (data := spineData)
                       incrementHistory (by key_fresh) (by key_fresh) with
                   | .left earlyHistory =>
-                      let typeBHistory :=
-                        (pairIncrementEarlyTypeBEntryRow
-                          (BranchState := BranchState)
-                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                          (presentation := erdosReceiverLoadProfile)
-                          (data := spineData)).run earlyHistory (by key_fresh)
-                      exact Or.inr (Or.inl (Or.inr (Or.inl
-                        (pairTypeBIndependentIncrementReturn typeBHistory))))
+                      -- Lean improvement: `[180]`'s periodic alternatives are `[179]`'s
+                      -- early alternatives at the same returns; empty after `[179]` no-early.
+                      exact (closeIncompatible earlyHistory (K .pairSystemNoEarlyOutcome)
+                        (K .pairIncrementEarlyOutcome) (by key_fresh)).elimClosed
+                        (by infer_instance) |>.elim
                   | .right noEarlyHistory =>
                       let arithmeticHistory :=
                         (pairSerialArithmeticRow (BranchState := BranchState)
@@ -378,6 +423,8 @@ noncomputable def selectedPairCodeChainIndependent
                       exact (closedHistory.elimClosed (by infer_instance)).elim
 
 set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+set_option synthInstance.maxSize 2048 in
 /-- Nodes `[178]`--`[180]`, the pair-code chain entered from the free side of `[137]` (node `[130]`'s dependent arm): on
 any ledger that carries the node-`[178]` first failure
 `K .pairOverlapFirstFailure` and every key of that entry arm.  Each paper test is a `Decision`; each
@@ -434,6 +481,10 @@ noncomputable def selectedPairCodeChainDependent
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .minDegreeBaseline) known]
     (systemFresh : K .pairOverlapSystem ∉ known := by key_fresh)
+    (correlationFresh : K .pairCorrelation ∉ known := by key_fresh)
+    (coverageFresh : K .pairCoverage ∉ known := by key_fresh)
+    (fullModulusFresh : K .pairFullModulus ∉ known := by key_fresh)
+    (uncrossingFresh : K .pairUncrossing ∉ known := by key_fresh)
     (factorizationFresh : K .pairConditionalFactorization ∉ known := by key_fresh)
     (factorizationFailsFresh : K .pairFactorizationFails ∉ known := by key_fresh)
     (residualFresh : K .pairConditionalFactorizationResidual ∉ known := by key_fresh)
@@ -445,6 +496,17 @@ noncomputable def selectedPairCodeChainDependent
     (systemNoEarlyFresh : K .pairSystemNoEarlyOutcome ∉ known := by key_fresh)
     (serialFresh : K .pairSerialDemandSystem ∉ known := by key_fresh)
     (fanEntryFresh : K .typeBFanEntry ∉ known := by key_fresh)
+    (handoffSupportFresh : K .pairHandoffSupport ∉ known := by key_fresh)
+    (handoffChargeFresh : K .pairHandoffCharge ∉ known := by key_fresh)
+    (handoffNetChargeFresh : K .pairHandoffNetCharge ∉ known := by key_fresh)
+    (pairHandoffHubChargeFresh : K .pairHandoffHubCharge ∉ known := by key_fresh)
+    (pairHandoffBoundaryTypeFresh : K .pairHandoffBoundaryType ∉ known := by key_fresh)
+    (pairHandoffCriticalCoordinateFresh : K .pairHandoffCriticalCoordinate ∉ known := by key_fresh)
+    (pairObstructionDescentFresh : K .pairObstructionDescent ∉ known := by key_fresh)
+    (pairHandoffHubForcesFresh : K .pairHandoffHubForces ∉ known := by key_fresh)
+    (pairHandoffDemandEndsFresh : K .pairHandoffDemandEnds ∉ known := by key_fresh)
+    (pairHandoffHubBalanceFresh : K .pairHandoffHubBalance ∉ known := by key_fresh)
+    (pairHandoffFibreAtGFresh : K .pairHandoffFibreAtG ∉ known := by key_fresh)
     (incrementFresh : K .pairIncrementCovered ∉ known := by key_fresh)
     (incrementFailsFresh : K .pairIncrementFails ∉ known := by key_fresh)
     (incrementEarlyFresh : K .pairIncrementEarlyOutcome ∉ known := by key_fresh)
@@ -544,8 +606,13 @@ noncomputable def selectedPairCodeChainDependent
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
+  let correlated :=
+    (pairCorrelationRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      overlapSystem (by key_fresh)
   match pairConditionalFactorizationDichotomy (data := spineData)
-      overlapSystem (by key_fresh) (by key_fresh) with
+      correlated (by key_fresh) (by key_fresh) with
   | .right failsHistory =>
       let residualHistory :=
         (pairFactorizationResidualRow (BranchState := BranchState)
@@ -566,8 +633,18 @@ noncomputable def selectedPairCodeChainDependent
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run overlapFailure (by key_fresh)
+      let coverage :=
+        (pairCoverageRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          demandReturns (by key_fresh)
+      let uncrossing :=
+        (pairUncrossingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          coverage (by key_fresh)
       match pairSystemRealizabilityDichotomy (data := spineData)
-          demandReturns (by key_fresh) (by key_fresh) with
+          uncrossing (by key_fresh) (by key_fresh) with
       | .right failsHistory =>
           let residualHistory :=
             (pairRealizabilityResidualRow (BranchState := BranchState)
@@ -586,16 +663,30 @@ noncomputable def selectedPairCodeChainDependent
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run earlyHistory (by key_fresh)
-              exact Or.inr (Or.inl (Or.inr (Or.inr (Or.inl
-                (pairTypeBDependentSystemReturn typeBHistory)))))
+              let factsHistory :=
+                (pairHandoffFactsRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run typeBHistory (by key_fresh)
+              exact Or.inr (Or.inl (Or.inr
+                (pairTypeBDependentSystemReturn
+                  ((pairHandoffBalanceRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile)
+                    (data := spineData)).run factsHistory (by key_fresh)))))
           | .right noEarlyHistory =>
               let serialHistory :=
                 (pairSerialDemandSystemRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run noEarlyHistory (by key_fresh)
+              let fullModulus :=
+                (pairFullModulusRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  serialHistory (by key_fresh)
               match pairIncrementCoveredDichotomy (data := spineData)
-                  serialHistory (by key_fresh) (by key_fresh) with
+                  fullModulus (by key_fresh) (by key_fresh) with
               | .right failsHistory =>
                   let residualHistory :=
                     (pairIncrementResidualRow (BranchState := BranchState)
@@ -609,14 +700,11 @@ noncomputable def selectedPairCodeChainDependent
                   match pairIncrementOutcomeDichotomy (data := spineData)
                       incrementHistory (by key_fresh) (by key_fresh) with
                   | .left earlyHistory =>
-                      let typeBHistory :=
-                        (pairIncrementEarlyTypeBEntryRow
-                          (BranchState := BranchState)
-                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                          (presentation := erdosReceiverLoadProfile)
-                          (data := spineData)).run earlyHistory (by key_fresh)
-                      exact Or.inr (Or.inl (Or.inr (Or.inr (Or.inr
-                        (pairTypeBDependentIncrementReturn typeBHistory)))))
+                      -- Lean improvement: `[180]`'s periodic alternatives are `[179]`'s
+                      -- early alternatives at the same returns; empty after `[179]` no-early.
+                      exact (closeIncompatible earlyHistory (K .pairSystemNoEarlyOutcome)
+                        (K .pairIncrementEarlyOutcome) (by key_fresh)).elimClosed
+                        (by infer_instance) |>.elim
                   | .right noEarlyHistory =>
                       let arithmeticHistory :=
                         (pairSerialArithmeticRow (BranchState := BranchState)
@@ -708,6 +796,13 @@ noncomputable def selectedBottleneckDischarge
     (supportsFresh : K .sameTokenPatternSupports ∉ known := by key_fresh)
     (swapFresh : K .sameTokenPatternSwap ∉ known := by key_fresh)
     (partitionFresh : K .sameTokenPairPartition ∉ known := by key_fresh)
+    (transplantSizeFresh : K .sameTokenTransplantSize ∉ known := by key_fresh)
+    (transplantDeficitFresh : K .sameTokenTransplantDeficit ∉ known := by key_fresh)
+    (decidedFresh : K .sameTokenUnresolvedDecided ∉ known := by key_fresh)
+    (readingsExactFresh : K .sameTokenReadingsExact ∉ known := by key_fresh)
+    (swapFreshKey : K .sameTokenSwap ∉ known := by key_fresh)
+    (swapExactFresh : K .sameTokenSwapExact ∉ known := by key_fresh)
+    (wholeFresh : K .sameTokenU2FreeWhole ∉ known := by key_fresh)
     (closedFresh : closed ∉ known := by key_fresh)
     [FactKeys.Has (K .activeSurplusFamily) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
@@ -793,7 +888,10 @@ noncomputable def selectedBottleneckDischarge
           K .sameTokenPatternSwap :: K .bottleneckRouting ::
           K .homogeneousCapsFail :: known) ⊕
       ExactLedger EGInput.{u} selected
-        (K .sameTokenPairPartition :: K .sameTokenReadingsNotReplacement ::
+        (K .sameTokenUnresolvedDecided :: K .sameTokenReadingsExact :: K .sameTokenSwap ::
+          K .sameTokenSwapExact :: K .sameTokenU2FreeWhole ::
+          K .sameTokenTransplantSize :: K .sameTokenTransplantDeficit ::
+          K .sameTokenPairPartition :: K .sameTokenReadingsNotReplacement ::
           K .sameTokenPatternUnresolved :: K .typeBHandoffFails ::
           K .sameTokenPatternSupports :: K .sameTokenPatternSwap :: K .bottleneckRouting ::
           K .homogeneousCapsFail :: known) := by
@@ -841,7 +939,25 @@ noncomputable def selectedBottleneckDischarge
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run unresolved (by key_fresh)
-          exact .inr partitioned
+          -- `[144a]` (G repair R5, Lean improvement): the transplants of the
+          -- two pattern supports into `Z`, their conditions (i)--(iv), the size
+          -- equality minimality gives, and their exact failure.  No decision:
+          -- the arm "both transplants valid" does not close at G.
+          let transplanted :=
+            (sameTokenTransplantRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run partitioned (by key_fresh)
+          -- `[144a]` (G audit S144a, Lean improvement): the entry test decided at
+          -- G, the exact readings, the rerouted swaps of the two supports in both
+          -- directions with their exact failure, and the boundary-free
+          -- configuration.  No decision: no arm closes at G.
+          let tested :=
+            (sameTokenSwapRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run transplanted (by key_fresh)
+          exact .inr tested
   | .right capsHistory =>
       -- The caps arm, closed at G: the audited pattern at G's overloading
       -- token refutes the caps at the same ledger.

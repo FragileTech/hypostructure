@@ -207,277 +207,17 @@ theorem exists_pairOverlapSystem (first : PairOverlapFirstFailure data object)
   have failedFamilyNonempty : failedFamily.Nonempty := by
     have horizonPositive : 0 < horizon := by simp [horizon]
     exact Finset.card_pos.mp (by simpa [failedFamilyCard])
-  let Skeleton := model.Skeleton
-  let Baseline :=
-    {coordinate // coordinate ∈ first.baselineFamily} → Bool
-  let baselineState : Skeleton → Baseline :=
-    fun member => first.baselineRealization.response member.1
-
+  have skeletonCard : Nat.card model.Skeleton = Graph.skeletonBudget object := by
+    dsimp [Graph.SparsePairSkeletonModel.Skeleton]
+    simpa [Graph.skeletonBudget, Graph.edgeStratumCount] using
+      Graph.PackedWindowRealization.card_skeleton
+        object.vertexCount object.edgeCount
   have failedFamilyObstruction : failedFamily.Nonempty ∧
-      ¬ model.RealizingOrder (LengthOK := data.LengthOK)
-        failedFamily := by
+      ¬ model.CountRealizing data.LengthOK failedFamily := by
     refine ⟨failedFamilyNonempty, ?_⟩
-    rintro ⟨order, realizes⟩
-    let coordinateResponse : Skeleton →
-        Fin failedFamily.card → PairResponseState data :=
-      fun member index =>
-        model.response (LengthOK := data.LengthOK) member (order index).1
-    have branching : ∀ (index : Fin failedFamily.card)
-        (member : Skeleton),
-        2 ≤ Nat.card {state // ∃ candidate : Skeleton,
-          baselineState candidate = baselineState member ∧
-            (∀ earlier : Fin failedFamily.card,
-              earlier.1 < index.1 →
-                coordinateResponse candidate earlier =
-                  coordinateResponse member earlier) ∧
-            coordinateResponse candidate index = state} := by
-      intro index member
-      let Narrow := model.conditionalValues (LengthOK := data.LengthOK)
-        failedFamily order member index
-      let Broad := {state // ∃ candidate : Skeleton,
-        baselineState candidate = baselineState member ∧
-          (∀ earlier : Fin failedFamily.card,
-            earlier.1 < index.1 →
-              coordinateResponse candidate earlier =
-                coordinateResponse member earlier) ∧
-          coordinateResponse candidate index = state}
-      let Candidate := {candidate : Skeleton //
-        baselineState candidate = baselineState member ∧
-          ∀ earlier : Fin failedFamily.card,
-            earlier.1 < index.1 →
-              coordinateResponse candidate earlier =
-                coordinateResponse member earlier}
-      let toBroad : Candidate → Broad := fun candidate =>
-        ⟨coordinateResponse candidate.1 index,
-          ⟨candidate.1, candidate.2.1, candidate.2.2, rfl⟩⟩
-      have toBroadSurjective : Function.Surjective toBroad := by
-        intro state
-        obtain ⟨candidate, baseEq, earlierEq, responseEq⟩ := state.2
-        refine ⟨⟨candidate, baseEq, earlierEq⟩, ?_⟩
-        apply Subtype.ext
-        exact responseEq
-      letI : Finite Candidate := inferInstance
-      letI : Finite Broad :=
-        Finite.of_surjective toBroad toBroadSurjective
-      let narrowToBroad : Narrow → Broad := fun state =>
-        ⟨state.1, by
-          obtain ⟨candidate, baseEq, earlierEq, responseEq⟩ := state.2
-          exact ⟨candidate, baseEq, earlierEq, responseEq⟩⟩
-      have narrowToBroadInjective : Function.Injective narrowToBroad := by
-        intro left right equal
-        apply Subtype.ext
-        exact congrArg (fun value : Broad => value.1) equal
-      exact (realizes member index).trans
-        (Nat.card_le_card_of_injective narrowToBroad
-          narrowToBroadInjective)
-    have lower : Nat.card Baseline * 2 ^ failedFamily.card ≤
-        Nat.card Skeleton := by
-      letI : Fintype Skeleton := Fintype.ofFinite Skeleton
-      letI : Fintype Baseline := Fintype.ofFinite Baseline
-      let signature (length : Nat) (bound : length ≤ failedFamily.card)
-          (member : Skeleton) :
-          Baseline × (Fin length → PairResponseState data) :=
-        (baselineState member, fun index =>
-          coordinateResponse member (Fin.castLE bound index))
-      let prefixes (length : Nat) (bound : length ≤ failedFamily.card) :
-          Finset (Baseline × (Fin length → PairResponseState data)) :=
-        Finset.univ.image (signature length bound)
-      have baselineSurjective : Function.Surjective baselineState := by
-        intro assignment
-        obtain ⟨member, realizesAssignment⟩ :=
-          first.baselineRealization.realized assignment
-        exact ⟨member, realizesAssignment⟩
-      have baseCard : Nat.card Baseline ≤
-          (prefixes 0 (Nat.zero_le failedFamily.card)).card := by
-        have onto : Function.Surjective
-            (signature 0 (Nat.zero_le failedFamily.card)) := by
-          rintro ⟨value, empty⟩
-          obtain ⟨member, memberEq⟩ := baselineSurjective value
-          refine ⟨member, ?_⟩
-          apply Prod.ext memberEq
-          funext index
-          exact Fin.elim0 index
-        have imageEq : prefixes 0 (Nat.zero_le failedFamily.card) =
-            Finset.univ := by
-          ext value
-          simp only [prefixes, Finset.mem_image, Finset.mem_univ,
-            true_and]
-          constructor
-          · intro _
-            trivial
-          · intro _
-            exact onto value
-        rw [imageEq, Finset.card_univ, Nat.card_eq_fintype_card]
-        simp
-      have step : ∀ length
-          (successorBound : length + 1 ≤ failedFamily.card),
-          2 * (prefixes length
-            (Nat.le_trans (Nat.le_add_right length 1)
-              successorBound)).card ≤
-            (prefixes (length + 1) successorBound).card := by
-        intro length successorBound
-        let lengthBound : length ≤ failedFamily.card :=
-          Nat.le_trans (Nat.le_add_right length 1) successorBound
-        let currentPrefixes := prefixes length lengthBound
-        let nextPrefixes := prefixes (length + 1) successorBound
-        let project :
-            Baseline × (Fin (length + 1) → PairResponseState data) →
-              Baseline × (Fin length → PairResponseState data) :=
-          fun state => (state.1, fun index => state.2 index.castSucc)
-        have mapsTo : Set.MapsTo project ↑nextPrefixes
-            ↑currentPrefixes := by
-          intro next nextMem
-          obtain ⟨member, _, memberEq⟩ := Finset.mem_image.mp nextMem
-          subst next
-          apply Finset.mem_image.mpr
-          refine ⟨member, Finset.mem_univ _, ?_⟩
-          apply Prod.ext rfl
-          funext index
-          rfl
-        have fibreTwo : ∀ pref ∈ currentPrefixes,
-            2 ≤ {next ∈ nextPrefixes | project next = pref}.card := by
-          intro pref prefMem
-          obtain ⟨member, _, memberEq⟩ := Finset.mem_image.mp prefMem
-          subst pref
-          let coordinate : Fin failedFamily.card := ⟨length, by omega⟩
-          let Values := {state // ∃ candidate : Skeleton,
-            baselineState candidate = baselineState member ∧
-              (∀ earlier : Fin failedFamily.card,
-                earlier.1 < coordinate.1 →
-                  coordinateResponse candidate earlier =
-                    coordinateResponse member earlier) ∧
-              coordinateResponse candidate coordinate = state}
-          have twoValues : 2 ≤ Nat.card Values :=
-            branching coordinate member
-          have positive : 0 < Nat.card Values :=
-            lt_of_lt_of_le (by omega) twoValues
-          letI : Finite Values := (Nat.card_pos_iff.mp positive).2
-          have notSubsingleton : ¬ Subsingleton Values := by
-            intro subsingleton
-            have atMostOne : Nat.card Values ≤ 1 :=
-              Finite.card_le_one_iff_subsingleton.mpr subsingleton
-            omega
-          have distinctValues : ∃ left right : Values, left ≠ right := by
-            by_contra absent
-            push Not at absent
-            exact notSubsingleton ⟨absent⟩
-          obtain ⟨leftValue, rightValue, valuesDifferent⟩ :=
-            distinctValues
-          obtain ⟨left, leftBase, leftEarlier, leftResponse⟩ :=
-            leftValue.2
-          obtain ⟨right, rightBase, rightEarlier, rightResponse⟩ :=
-            rightValue.2
-          let leftSignature :=
-            signature (length + 1) successorBound left
-          let rightSignature :=
-            signature (length + 1) successorBound right
-          have leftMem : leftSignature ∈ nextPrefixes := by
-            simp [leftSignature, nextPrefixes, prefixes]
-          have rightMem : rightSignature ∈ nextPrefixes := by
-            simp [rightSignature, nextPrefixes, prefixes]
-          have leftProject : project leftSignature =
-              signature length lengthBound member := by
-            apply Prod.ext leftBase
-            funext index
-            apply leftEarlier
-            change index.1 < length
-            exact index.2
-          have rightProject : project rightSignature =
-              signature length lengthBound member := by
-            apply Prod.ext rightBase
-            funext index
-            apply rightEarlier
-            change index.1 < length
-            exact index.2
-          have signaturesDifferent : leftSignature ≠ rightSignature := by
-            intro equal
-            have lastEqual := congrFun (congrArg Prod.snd equal)
-              (Fin.last length)
-            have lastCoordinate :
-                Fin.castLE successorBound (Fin.last length) = coordinate := by
-              apply Fin.ext
-              rfl
-            have responseEqual : coordinateResponse left coordinate =
-                coordinateResponse right coordinate := by
-              simpa [leftSignature, rightSignature, signature,
-                lastCoordinate] using lastEqual
-            apply valuesDifferent
-            apply Subtype.ext
-            exact leftResponse.symm.trans
-              (responseEqual.trans rightResponse)
-          let chosen : Finset
-              (Baseline × (Fin (length + 1) → PairResponseState data)) :=
-            {leftSignature, rightSignature}
-          have chosenSubset : chosen ⊆
-              {next ∈ nextPrefixes |
-                project next = signature length lengthBound member} := by
-            intro next nextMem
-            simp only [chosen, Finset.mem_insert,
-              Finset.mem_singleton] at nextMem
-            rcases nextMem with rfl | rfl
-            · simp [leftMem, leftProject]
-            · simp [rightMem, rightProject]
-          have chosenCard : chosen.card = 2 := by
-            simp [chosen, signaturesDifferent]
-          rw [← chosenCard]
-          exact Finset.card_le_card chosenSubset
-        rw [Finset.card_eq_sum_card_fiberwise mapsTo]
-        calc
-          2 * currentPrefixes.card =
-              ∑ pref ∈ currentPrefixes, 2 := by simp [Nat.mul_comm]
-          _ ≤ ∑ pref ∈ currentPrefixes,
-              {next ∈ nextPrefixes | project next = pref}.card := by
-            gcongr with pref prefMem
-            exact fibreTwo pref prefMem
-      have prefixGrowth : ∀ length
-          (bound : length ≤ failedFamily.card),
-          Nat.card Baseline * 2 ^ length ≤
-            (prefixes length bound).card := by
-        intro length bound
-        induction length with
-        | zero => simpa using baseCard
-        | succ length ih =>
-            have previousBound : length ≤ failedFamily.card := by omega
-            have doubled := Nat.mul_le_mul_left 2 (ih previousBound)
-            have next := step length
-              (by simpa [Nat.add_comm] using bound)
-            calc
-              Nat.card Baseline * 2 ^ (length + 1) =
-                  2 * (Nat.card Baseline * 2 ^ length) := by
-                rw [pow_succ]
-                ac_rfl
-              _ ≤ 2 * (prefixes length previousBound).card := doubled
-              _ ≤ (prefixes (length + 1) bound).card := by
-                simpa [previousBound] using next
-      have rangeBound :
-          (prefixes failedFamily.card le_rfl).card ≤ Nat.card Skeleton := by
-        calc
-          (prefixes failedFamily.card le_rfl).card ≤
-              (Finset.univ : Finset Skeleton).card :=
-            Finset.card_image_le
-          _ = Nat.card Skeleton := by
-            rw [Finset.card_univ, Nat.card_eq_fintype_card]
-      exact (prefixGrowth failedFamily.card le_rfl).trans rangeBound
-    have baselineCard : Nat.card Baseline =
-        2 ^ first.baselineFamily.card := by
-      dsimp [Baseline]
-      rw [Nat.card_fun]
-      simp [Nat.card_congr first.baselineFamily.equivFin]
-    have skeletonCard : Nat.card Skeleton = Graph.skeletonBudget object := by
-      dsimp [Skeleton, Graph.SparsePairSkeletonModel.Skeleton]
-      simpa [Graph.skeletonBudget, Graph.edgeStratumCount] using
-        Graph.PackedWindowRealization.card_skeleton
-          object.vertexCount object.edgeCount
-    apply first.firstFailure.failedNext
-    calc
-      2 ^ (first.baselineFamily.card +
-            (first.firstFailure.index + 1)) =
-          2 ^ first.baselineFamily.card * 2 ^ horizon := by
-        rw [pow_add]
-      _ = Nat.card Baseline * 2 ^ failedFamily.card := by
-        rw [baselineCard, failedFamilyCard]
-      _ ≤ Nat.card Skeleton := lower
-      _ = Graph.skeletonBudget object := skeletonCard
+    apply Graph.SparsePairSkeletonModel.not_countRealizing_of_class_lt
+    rw [skeletonCard, failedFamilyCard]
+    exact Nat.lt_of_not_ge first.firstFailure.failedNext
   let system : PairOverlapSystem data object :=
     { first := first
       responseSupport := responseSupport
@@ -488,6 +228,7 @@ theorem exists_pairOverlapSystem (first : PairOverlapFirstFailure data object)
       failedFamily := failedFamily
       failedFamily_eq := rfl
       failedFamily_nonempty := failedFamilyNonempty
+      failedFamily_card := failedFamilyCard
       failedFamily_obstruction := by
         simpa [model] using failedFamilyObstruction }
   exact ⟨system, rfl, fun _ => rfl⟩
@@ -512,32 +253,9 @@ theorem exists_pairFailureOverlap (system : PairOverlapSystem data object)
     (factorization : system.ConditionalFactorization) :
     ∃ overlap : PairFailureOverlap data object, overlap.system = system := by
   classical
-  let candidates := system.failedFamily.powerset.filter system.obstruction
-  have candidatesNonempty : candidates.Nonempty := by
-    refine ⟨system.failedFamily, ?_⟩
-    simp [candidates, PairOverlapSystem.obstruction,
-      PairOverlapSystem.realizingOrder,
-      PairOverlapSystem.toSkeletonModel,
-      system.failedFamily_nonempty, system.failedFamily_obstruction]
-  let selected := candidates.exists_minimal candidatesNonempty
-  let family := Classical.choose selected
-  have selectedFacts : family ∈ candidates ∧
-      ∀ candidate ∈ candidates, candidate ⊆ family →
-        family ⊆ candidate := by
-    exact Classical.choose_spec selected
-  have familyFacts : family ⊆ system.failedFamily ∧
-      system.obstruction family := by
-    simpa [candidates] using selectedFacts.1
-  have minimal : system.minimalObstruction family := by
-    refine ⟨familyFacts.2, ?_⟩
-    intro proper properSubset properNonempty
-    by_contra notRealizing
-    have properMem : proper ∈ candidates := by
-      simp only [candidates, Finset.mem_filter, Finset.mem_powerset]
-      exact ⟨properSubset.subset.trans familyFacts.1,
-        ⟨properNonempty, notRealizing⟩⟩
-    exact properSubset.2
-      (selectedFacts.2 proper properMem properSubset.subset)
+  let family := system.obstructionFamily
+  have minimal : system.minimalObstruction family :=
+    system.obstructionFamily_minimal
   have overlapWitness : ∃ left ∈ family, ∃ right ∈ family,
       left ≠ right ∧ system.toSkeletonModel.Overlaps left right := by
     by_contra absent
@@ -545,17 +263,17 @@ theorem exists_pairFailureOverlap (system : PairOverlapSystem data object)
     have separated : system.toSkeletonModel.PairwiseSeparated family := by
       intro left leftMem right rightMem different overlap
       exact absent left leftMem right rightMem different overlap
-    exact minimal.1.2 (factorization.separated family separated)
+    exact minimal.1.2 (factorization.separated separated)
   have connected :
       Graph.SupportComponents.Connected.ConnectedOn object
         (system.overlapSupport family) := by
     let model := system.toSkeletonModel
     have familyNonempty : family.Nonempty := minimal.1.1
     have notRealizing :
-        ¬ model.RealizingOrder (LengthOK := data.LengthOK) family := by
+        ¬ model.CountRealizing data.LengthOK family := by
       simpa [model, PairOverlapSystem.realizingOrder] using minimal.1.2
     have properRealizing : ∀ proper, proper ⊂ family → proper.Nonempty →
-        model.RealizingOrder (LengthOK := data.LengthOK) proper := by
+        model.CountRealizing data.LengthOK proper := by
       intro proper properSubset properNonempty
       simpa [model, PairOverlapSystem.realizingOrder] using
         minimal.2 proper properSubset properNonempty
@@ -754,14 +472,14 @@ theorem exists_pairFailureOverlap (system : PairOverlapSystem data object)
       rw [Finset.union_comm]
       exact Finset.sdiff_union_of_subset leftSubset
     apply notRealizing
+    have familyUnionEq : system.familyUnion left right = family := by
+      unfold PairOverlapSystem.familyUnion
+        Graph.SparsePairSkeletonModel.familyUnion
+      exact unionEq
     have joined := factorization.concatenate left right
-      leftNonempty rightNonempty disjoint noCross
+      leftNonempty rightNonempty disjoint familyUnionEq noCross
       (properRealizing left leftProper leftNonempty)
       (properRealizing right rightProper rightNonempty)
-    have familyUnionEq : model.familyUnion left right = family := by
-      unfold Graph.SparsePairSkeletonModel.familyUnion
-      exact unionEq
-    rw [familyUnionEq] at joined
     exact joined
   exact ⟨
     { system := system

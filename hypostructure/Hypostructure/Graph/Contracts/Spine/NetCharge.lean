@@ -49,7 +49,7 @@ theorem netDeficiencyCap_of_densityCap (data : Parameters)
       data.densitySlack * (data.windowRate *
         data.separatedScaleCount object.vertexCount) *
         data.surplusThreshold object.vertexCount :=
-    densityCap.1
+    densityCap
   have density' :
       2 * (data.windowRate * Nat.log2 object.vertexCount *
         packing.card) ≤

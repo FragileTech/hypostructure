@@ -19,17 +19,18 @@ variable {data : Data.{u}}
 /-! ## Node `[162]`, `lem:dense-cold-pass`: terminality of the return corridors
 
 The row reads G's retained first-failure occurrence, (★) (`[153]`'s
-distinct-states arm), `[162]`'s decided heavy-entry test, target avoidance and
-uncompressibility, and proves that every retained return corridor of G is
-terminal (`Contracts.Spine.denseColdCorridorsTerminal_of_distinct`).  The
-paper's reason -- the pieces of `R` have bounded diameter -- is not used: it
-does not reach corridors of `G − X_cold` that cross hot or non-ambient-cubic
-cold windows. -/
+distinct-states arm), target avoidance and uncompressibility, and proves that
+every retained return corridor of G is terminal or has a heavy handoff centre as
+its first failure (`Contracts.Spine.denseColdCorridorsTerminal_of_distinct`).
+The paper's reason for terminality -- the pieces of `R` have bounded diameter --
+is not used: it does not reach corridors of `G − X_cold` that cross hot or
+non-ambient-cubic cold windows, and no terminality of a heavy-entry corridor is
+needed. -/
 @[reducible] noncomputable def denseColdCorridorsTerminalRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.denseColdCorridorsTerminal
     { Requires := [K .coldFirstFailureOccurrence, K .coldCutStatesDistinct,
-        K .coldHeavyEntryTerminal, K .selection, K .uncompressible]
+        K .selection, K .uncompressible]
       Produces := [K .denseColdCorridorsTerminal]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -41,8 +42,7 @@ cold windows. -/
           (inputs.get (K .coldFirstFailureOccurrence)).down
           (inputs.get (K .selection)).down.1
           (inputs.get (K .uncompressible)).down
-          (inputs.get (K .coldCutStatesDistinct)).down
-          (inputs.get (K .coldHeavyEntryTerminal)).down⟩
+          (inputs.get (K .coldCutStatesDistinct)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

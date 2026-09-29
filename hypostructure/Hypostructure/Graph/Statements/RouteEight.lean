@@ -767,12 +767,27 @@ abbrev Route8PrivateCarrierBudget (data : Parameters)
   data.threshold * entries.card ≤
     (Graph.Route8Census.supply object packing).card
 
+/-- The route-`8` collection `Ξ(𝒳_A)` has no indexed entry.  At a target-avoiding G every
+core is empty, so this is what the no-two-carrier arm of `[117]` says. -/
+abbrev Route8CollectionEmpty (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  let packing := canonicalWindowPacking data object
+  let support := object.remainderSupport packing
+  let routeEight : Finset
+      (Graph.SupportComponents.Connected.Component object support) := by
+    classical
+    exact (object.canonicalPieces support).filter
+      (Route8Survives data object packing)
+  Graph.Route8Census.entriesOfComponents object packing routeEight
+    data.threshold data.dischargeScale = ∅
+
 /-- Nodes `[119]`--`[120]` as published: the private-support budget, carried with
 the positive baseline `1 ≤ δ` read from G's entry fact `K .cubicBaseline`, so
 that the `[121]`--`[122]` closure combines ledger facts only. -/
 abbrev Route8PrivateCarrierBudgetStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  1 ≤ data.threshold ∧ Route8PrivateCarrierBudget data object
+  1 ≤ data.threshold ∧ Route8PrivateCarrierBudget data object ∧
+    Route8CollectionEmpty data object
 
 /-! ## Key statements
 
@@ -824,32 +839,32 @@ noncomputable abbrev Route8CensusStatement
       data.threshold data.dischargeScale
       (data.bridgeMassFactor * data.dischargeScale *
         data.surplusThreshold object.vertexCount) ∧
-    Graph.Route8Census.Rate object packing data.threshold data.dischargeScale
+    Graph.Route8Census.StrongRate object packing data.dischargeScale
       (data.bridgeMassFactor * data.dischargeScale *
         data.surplusThreshold object.vertexCount)
 
-/-- Node `[120]`: the private-carrier rate reading of the census alone,
-`((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13` with the
-`o(|R|)` allowance, `rem:route8-carrier-margin`), read from the arm's density
-fact. -/
+/-- Node `[120]`: the private-carrier rate reading of the census alone, in G's exact
+form `s·|∂R| + F·s·T(n) < |R|` (`Route8Census.StrongRate`): at G every route-`8` core is
+empty, so the census needs only a nonempty collection, and the manuscript's
+`τ < 3/13` (`(δs+1)|∂R| + δ·F·s·T(n) < δ|R|`, which implies this) is not needed. -/
 noncomputable abbrev Route8RateStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  Graph.Route8Census.Rate object (canonicalWindowPacking data object)
-    data.threshold data.dischargeScale
+  Graph.Route8Census.StrongRate object (canonicalWindowPacking data object)
+    data.dischargeScale
     (data.bridgeMassFactor * data.dischargeScale *
       data.surplusThreshold object.vertexCount)
 
 /-- The complement of the rate reading on an arm whose density fact does
-not decide it (`3/13 ≤ τ`): the manuscript's delicate density interval
-(row 2 of the cold-branch ledger), carried as its own branch. -/
+not decide it: the thin remainder `|R| ≤ s·|∂R| + F·s·T(n)` (`τ ≥ 1/4`), carried as
+its own branch. -/
 noncomputable abbrev Route8RateFailsStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  ¬ Graph.Route8Census.Rate object (canonicalWindowPacking data object)
-    data.threshold data.dischargeScale
+  ¬ Graph.Route8Census.StrongRate object (canonicalWindowPacking data object)
+    data.dischargeScale
     (data.bridgeMassFactor * data.dischargeScale *
       data.surplusThreshold object.vertexCount)
 

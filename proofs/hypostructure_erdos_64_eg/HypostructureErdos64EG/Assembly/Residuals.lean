@@ -819,7 +819,17 @@ abbrev BlockedBarrierOverlapOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .blockedClassMember selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .blockedBarrierOverlap selected.object
+      erdosReceiverLoadProfile spineData .blockedBarrierOverlap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .blockedOwnRecord selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .blockedFailureSlack selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .blockedPrefixCompression selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .blockedFailingSetCarries selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .blockedOverlapSupport selected.object
 
 /-- The return of `BlockedBarrierOverlapOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -945,7 +955,12 @@ theorem blockedBarrierOverlapReturn
     [FactKeys.Has (K .coldCanonicalReplacementSwap) known]
     [FactKeys.Has (K .coldCanonicalReplacementTrivial) known]
     [FactKeys.Has (K .blockedClassMember) known]
-    [FactKeys.Has (K .blockedBarrierOverlap) known] :
+    [FactKeys.Has (K .blockedBarrierOverlap) known]
+    [FactKeys.Has (K .blockedOwnRecord) known]
+    [FactKeys.Has (K .blockedFailureSlack) known]
+    [FactKeys.Has (K .blockedPrefixCompression) known]
+    [FactKeys.Has (K .blockedFailingSetCarries) known]
+    [FactKeys.Has (K .blockedOverlapSupport) known] :
     BlockedBarrierOverlapOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -1066,7 +1081,12 @@ theorem blockedBarrierOverlapReturn
     (history.get (K .coldCanonicalReplacementSwap)).down,
     (history.get (K .coldCanonicalReplacementTrivial)).down,
     (history.get (K .blockedClassMember)).down,
-    (history.get (K .blockedBarrierOverlap)).down⟩
+    (history.get (K .blockedBarrierOverlap)).down,
+    (history.get (K .blockedOwnRecord)).down,
+    (history.get (K .blockedFailureSlack)).down,
+    (history.get (K .blockedPrefixCompression)).down,
+    (history.get (K .blockedFailingSetCarries)).down,
+    (history.get (K .blockedOverlapSupport)).down⟩
 
 /-- **Node `[182]`** (thm:main (iv), tex 359-363): the first failed coverage
 implication of [178], [179] or [180] on the strict-surplus pair-code chain.
@@ -1310,7 +1330,9 @@ abbrev PairConditionalFactorizationOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairOverlapSystem selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairConditionalFactorizationResidual selected.object
+      erdosReceiverLoadProfile spineData .pairConditionalFactorizationResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairCorrelation selected.object
 
 /-- The return of `PairConditionalFactorizationOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -1435,7 +1457,8 @@ theorem pairConditionalFactorizationReturn
     [FactKeys.Has (K .incrementalSkeletonRoom) known]
     [FactKeys.Has (K .skeletonDominates) known]
     [FactKeys.Has (K .pairOverlapSystem) known]
-    [FactKeys.Has (K .pairConditionalFactorizationResidual) known] :
+    [FactKeys.Has (K .pairConditionalFactorizationResidual) known]
+    [FactKeys.Has (K .pairCorrelation) known] :
     PairConditionalFactorizationOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -1555,7 +1578,8 @@ theorem pairConditionalFactorizationReturn
     (history.get (K .incrementalSkeletonRoom)).down,
     (history.get (K .skeletonDominates)).down,
     (history.get (K .pairOverlapSystem)).down,
-    (history.get (K .pairConditionalFactorizationResidual)).down⟩
+    (history.get (K .pairConditionalFactorizationResidual)).down,
+    (history.get (K .pairCorrelation)).down⟩
 
 /-- **Node `[186]`** (thm:main (v), tex 364-368): the visible-entry route-8
 residual after [181], [183]-[185], with the joint balances of lem:typeA-
@@ -2089,8 +2113,11 @@ theorem route8JointBalanceReturn
 /-- **Node `[187] ([179]/[180] Type B entry)`** (thm:main (vi), tex 369-378): a
 Type B entry produced by the [179] or [180] pair-system outcome, with its
 strict-surplus and sparse-survivor ancestry.  The explicit conjunction of
-every fact on its maximal ledger (91 common facts, then the arms of the
-residual's own decision: system 1; increment 4). -/
+every fact on its maximal ledger (the common facts, then the `[179]` early outcome).
+(G audit, `[187]`: the `[180]` increment arm is empty at G and closed -- `[180]`'s periodic
+alternatives are alternatives of `[179]`'s early outcome at the same returns, so
+`K .pairIncrementEarlyOutcome` is incompatible with `K .pairSystemNoEarlyOutcome`; the
+increment arm's keys are no longer part of this residual.) -/
 abbrev PairTypeBOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -2225,10 +2252,6 @@ abbrev PairTypeBOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .highSurplusConfiguration selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairArmAPattern selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairArmARoleAlphabet selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairArmB selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .extFreeEmpty selected.object ∧
@@ -2338,16 +2361,30 @@ abbrev PairTypeBOutcome (selected : EGInput.{u}) : Prop :=
       erdosReceiverLoadProfile spineData .pairSystemRealizability selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .typeBFanEntry selected.object ∧
-  (Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairSystemEarlyOutcome selected.object ∨
-    (Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairSystemNoEarlyOutcome selected.object ∧
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairSerialDemandSystem selected.object ∧
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairIncrementCovered selected.object ∧
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairIncrementEarlyOutcome selected.object))
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffSupport selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffCharge selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffNetCharge selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffHubCharge selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffBoundaryType selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffCriticalCoordinate selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairObstructionDescent selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffHubForces selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffDemandEnds selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffHubBalance selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffFibreAtG selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairSystemEarlyOutcome selected.object
 
 /-- The return of `PairTypeBOutcome` (arm `system`): one `get` per fact of
 its maximal ledger. -/
@@ -2420,8 +2457,6 @@ theorem pairTypeBSystemReturn
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
-    [FactKeys.Has (K .pairArmAPattern) known]
-    [FactKeys.Has (K .pairArmARoleAlphabet) known]
     [FactKeys.Has (K .pairArmB) known]
     [FactKeys.Has (K .extFreeEmpty) known]
     [FactKeys.Has (K .extLoadSum) known]
@@ -2477,6 +2512,17 @@ theorem pairTypeBSystemReturn
     [FactKeys.Has (K .pairDemandReturns) known]
     [FactKeys.Has (K .pairSystemRealizability) known]
     [FactKeys.Has (K .typeBFanEntry) known]
+    [FactKeys.Has (K .pairHandoffSupport) known]
+    [FactKeys.Has (K .pairHandoffCharge) known]
+    [FactKeys.Has (K .pairHandoffNetCharge) known]
+    [FactKeys.Has (K .pairHandoffHubCharge) known]
+    [FactKeys.Has (K .pairHandoffBoundaryType) known]
+    [FactKeys.Has (K .pairHandoffCriticalCoordinate) known]
+    [FactKeys.Has (K .pairObstructionDescent) known]
+    [FactKeys.Has (K .pairHandoffHubForces) known]
+    [FactKeys.Has (K .pairHandoffDemandEnds) known]
+    [FactKeys.Has (K .pairHandoffHubBalance) known]
+    [FactKeys.Has (K .pairHandoffFibreAtG) known]
     [FactKeys.Has (K .pairSystemEarlyOutcome) known] :
     PairTypeBOutcome selected :=
   ⟨(history.get (K .selection)).down,
@@ -2545,8 +2591,6 @@ theorem pairTypeBSystemReturn
     (history.get (K .admissibleQuotientsLabelInjective)).down,
     (history.get (K .surplusAbove)).down,
     (history.get (K .highSurplusConfiguration)).down,
-    (history.get (K .pairArmAPattern)).down,
-    (history.get (K .pairArmARoleAlphabet)).down,
     (history.get (K .pairArmB)).down,
     (history.get (K .extFreeEmpty)).down,
     (history.get (K .extLoadSum)).down,
@@ -2602,268 +2646,18 @@ theorem pairTypeBSystemReturn
     (history.get (K .pairDemandReturns)).down,
     (history.get (K .pairSystemRealizability)).down,
     (history.get (K .typeBFanEntry)).down,
-    Or.inl ((history.get (K .pairSystemEarlyOutcome)).down)⟩
-
-/-- The return of `PairTypeBOutcome` (arm `increment`): one `get` per fact of
-its maximal ledger. -/
-theorem pairTypeBIncrementReturn
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .cubicBaseline) known]
-    [FactKeys.Has (K .minDegreeBaseline) known]
-    [FactKeys.Has (K .returnAvoidance) known]
-    [FactKeys.Has (K .noProperBaseline) known]
-    [FactKeys.Has (K .slackIndependent) known]
-    [FactKeys.Has (K .tightEndpoint) known]
-    [FactKeys.Has (K .cycleRankConstraint) known]
-    [FactKeys.Has (K .degreeProfileFibres) known]
-    [FactKeys.Has (K .targetCompleteContextUniversality) known]
-    [FactKeys.Has (K .replacementExclusion) known]
-    [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .windowPresent) known]
-    [FactKeys.Has (K .maximalPacking) known]
-    [FactKeys.Has (K .localAlgebra) known]
-    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
-    [FactKeys.Has (K .packingOrderBound) known]
-    [FactKeys.Has (K .noSuppressionChordViolation) known]
-    [FactKeys.Has (K .twoSwitchForcedPath) known]
-    [FactKeys.Has (K .crossSwitchFamily) known]
-    [FactKeys.Has (K .highCentreSplitForced) known]
-    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
-    [FactKeys.Has (K .specWitnessStructure) known]
-    [FactKeys.Has (K .bridgeless) known]
-    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
-    [FactKeys.Has (K .windowCutCapacity) known]
-    [FactKeys.Has (K .primitiveCarrierCount) known]
-    [FactKeys.Has (K .singleBoundaryShape) known]
-    [FactKeys.Has (K .neighbourhoodPairCount) known]
-    [FactKeys.Has (K .starCycleConstraint) known]
-    [FactKeys.Has (K .meetingCycleConstraint) known]
-    [FactKeys.Has (K .highDegreePairSum) known]
-    [FactKeys.Has (K .vertexDeletionComponents) known]
-    [FactKeys.Has (K .cyclesThroughVertex) known]
-    [FactKeys.Has (K .cutVertexBlockPaths) known]
-    [FactKeys.Has (K .cycleDoubleCount) known]
-    [FactKeys.Has (K .threeRouteFan) known]
-    [FactKeys.Has (K .threeRouteChain) known]
-    [FactKeys.Has (K .windowPositionStubs) known]
-    [FactKeys.Has (K .windowAttachmentGap) known]
-    [FactKeys.Has (K .portEndDegree) known]
-    [FactKeys.Has (K .hubLinkStructure) known]
-    [FactKeys.Has (K .hubClassCounts) known]
-    [FactKeys.Has (K .slotRelation) known]
-    [FactKeys.Has (K .closedClasses) known]
-    [FactKeys.Has (K .hubTwoHopLinks) known]
-    [FactKeys.Has (K .slotLinear) known]
-    [FactKeys.Has (K .remainderPathBounds) known]
-    [FactKeys.Has (K .windowFreeGeometry) known]
-    [FactKeys.Has (K .inducedPathAttachment) known]
-    [FactKeys.Has (K .densityExcess) known]
-    [FactKeys.Has (K .remainderSlack) known]
-    [FactKeys.Has (K .hubWindowBudget) known]
-    [FactKeys.Has (K .windowHubBounds) known]
-    [FactKeys.Has (K .cubicNeighbourSupply) known]
-    [FactKeys.Has (K .hubCountBound) known]
-    [FactKeys.Has (K .lowEdgeParity) known]
-    [FactKeys.Has (K .bigHubBound) known]
-    [FactKeys.Has (K .bigHubVShapes) known]
-    [FactKeys.Has (K .highSurplusBound) known]
-    [FactKeys.Has (K .hubLengthThreePairs) known]
-    [FactKeys.Has (K .surplusDartIdentity) known]
-    [FactKeys.Has (K .highDegreeCountBound) known]
-    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
-    [FactKeys.Has (K .surplusAbove) known]
-    [FactKeys.Has (K .highSurplusConfiguration) known]
-    [FactKeys.Has (K .pairArmAPattern) known]
-    [FactKeys.Has (K .pairArmARoleAlphabet) known]
-    [FactKeys.Has (K .pairArmB) known]
-    [FactKeys.Has (K .extFreeEmpty) known]
-    [FactKeys.Has (K .extLoadSum) known]
-    [FactKeys.Has (K .extOverload) known]
-    [FactKeys.Has (K .extOverloadedToken) known]
-    [FactKeys.Has (K .newLoadBound) known]
-    [FactKeys.Has (K .freeSideHubs) known]
-    [FactKeys.Has (K .separatedPairs) known]
-    [FactKeys.Has (K .scalePressure) known]
-    [FactKeys.Has (K .freeSideStructure) known]
-    [FactKeys.Has (K .freeSideCount) known]
-    [FactKeys.Has (K .highSurplusOrder) known]
-    [FactKeys.Has (K .windowChargeKinds) known]
-    [FactKeys.Has (K .responseObstructionTargetDefect) known]
-    [FactKeys.Has (K .highEndpointSwitch) known]
-    [FactKeys.Has (K .edgeSurplusIdentity) known]
-    [FactKeys.Has (K .ceilSqrtAboveScale) known]
-    [FactKeys.Has (K .orderAboveScaleSquare) known]
-    [FactKeys.Has (K .sixVertexExtremalEnvelope) known]
-    [FactKeys.Has (K .highDegreePositive) known]
-    [FactKeys.Has (K .highDegreeSurplusCapacity) known]
-    [FactKeys.Has (K .canonicalCapacityExplicit) known]
-    [FactKeys.Has (K .canonicalTokenCount) known]
-    [FactKeys.Has (K .canonicalBlockedFreePartition) known]
-    [FactKeys.Has (K .canonicalLedgerDeficit) known]
-    [FactKeys.Has (K .pairCountDeficit) known]
-    [FactKeys.Has (K .canonicalCertificationCriterion) known]
-    [FactKeys.Has (K .canonicalOverloadOfFits) known]
-    [FactKeys.Has (K .canonicalFreeExcessOfCapped) known]
-    [FactKeys.Has (K .paperBudgetBound) known]
-    [FactKeys.Has (K .paperBudgetCertifies) known]
-    [FactKeys.Has (K .pairCodeConfiguration) known]
-    [FactKeys.Has (K .sparseSurplusSurvivor) known]
-    [FactKeys.Has (K .openPortSuppression) known]
-    [FactKeys.Has (K .openPortSuppressionSafe) known]
-    [FactKeys.Has (K .singleOpenPortSuppressionWitness) known]
-    [FactKeys.Has (K .suppressedFamilyCriticalCycle) known]
-    [FactKeys.Has (K .sparseSlackSurplus) known]
-    [FactKeys.Has (K .activeSurplusFamily) known]
-    [FactKeys.Has (K .sparsePortActivation) known]
-    [FactKeys.Has (K .activeSurplusDemands) known]
-    [FactKeys.Has (K .baselineSpineDemand) known]
-    [FactKeys.Has (K .freePairCountFails) known]
-    [FactKeys.Has (K .sparseUpperEnvelope) known]
-    [FactKeys.Has (K .pairOverlapFirstFailure) known]
-    [FactKeys.Has (K .mixedSparseSpineDependence) known]
-    [FactKeys.Has (K .exactCubicBaselineBudget) known]
-    [FactKeys.Has (K .incrementalSkeletonRoom) known]
-    [FactKeys.Has (K .skeletonDominates) known]
-    [FactKeys.Has (K .pairOverlapSystem) known]
-    [FactKeys.Has (K .pairConditionalFactorization) known]
-    [FactKeys.Has (K .pairFailureOverlap) known]
-    [FactKeys.Has (K .pairDemandReturns) known]
-    [FactKeys.Has (K .pairSystemRealizability) known]
-    [FactKeys.Has (K .typeBFanEntry) known]
-    [FactKeys.Has (K .pairSystemNoEarlyOutcome) known]
-    [FactKeys.Has (K .pairSerialDemandSystem) known]
-    [FactKeys.Has (K .pairIncrementCovered) known]
-    [FactKeys.Has (K .pairIncrementEarlyOutcome) known] :
-    PairTypeBOutcome selected :=
-  ⟨(history.get (K .selection)).down,
-    (history.get (K .cubicBaseline)).down,
-    (history.get (K .minDegreeBaseline)).down,
-    (history.get (K .returnAvoidance)).down,
-    (history.get (K .noProperBaseline)).down,
-    (history.get (K .slackIndependent)).down,
-    (history.get (K .tightEndpoint)).down,
-    (history.get (K .cycleRankConstraint)).down,
-    (history.get (K .degreeProfileFibres)).down,
-    (history.get (K .targetCompleteContextUniversality)).down,
-    (history.get (K .replacementExclusion)).down,
-    (history.get (K .uncompressible)).down,
-    (history.get (K .windowPresent)).down,
-    (history.get (K .maximalPacking)).down,
-    (history.get (K .localAlgebra)).down,
-    (history.get (K .everyWitnessSpectrumSplit)).down,
-    (history.get (K .packingOrderBound)).down,
-    (history.get (K .noSuppressionChordViolation)).down,
-    (history.get (K .twoSwitchForcedPath)).down,
-    (history.get (K .crossSwitchFamily)).down,
-    (history.get (K .highCentreSplitForced)).down,
-    (history.get (K .sameVertexSwitchForcedPath)).down,
-    (history.get (K .specWitnessStructure)).down,
-    (history.get (K .bridgeless)).down,
-    (history.get (K .remainderDeficiencyBelowCut)).down,
-    (history.get (K .windowCutCapacity)).down,
-    (history.get (K .primitiveCarrierCount)).down,
-    (history.get (K .singleBoundaryShape)).down,
-    (history.get (K .neighbourhoodPairCount)).down,
-    (history.get (K .starCycleConstraint)).down,
-    (history.get (K .meetingCycleConstraint)).down,
-    (history.get (K .highDegreePairSum)).down,
-    (history.get (K .vertexDeletionComponents)).down,
-    (history.get (K .cyclesThroughVertex)).down,
-    (history.get (K .cutVertexBlockPaths)).down,
-    (history.get (K .cycleDoubleCount)).down,
-    (history.get (K .threeRouteFan)).down,
-    (history.get (K .threeRouteChain)).down,
-    (history.get (K .windowPositionStubs)).down,
-    (history.get (K .windowAttachmentGap)).down,
-    (history.get (K .portEndDegree)).down,
-    (history.get (K .hubLinkStructure)).down,
-    (history.get (K .hubClassCounts)).down,
-    (history.get (K .slotRelation)).down,
-    (history.get (K .closedClasses)).down,
-    (history.get (K .hubTwoHopLinks)).down,
-    (history.get (K .slotLinear)).down,
-    (history.get (K .remainderPathBounds)).down,
-    (history.get (K .windowFreeGeometry)).down,
-    (history.get (K .inducedPathAttachment)).down,
-    (history.get (K .densityExcess)).down,
-    (history.get (K .remainderSlack)).down,
-    (history.get (K .hubWindowBudget)).down,
-    (history.get (K .windowHubBounds)).down,
-    (history.get (K .cubicNeighbourSupply)).down,
-    (history.get (K .hubCountBound)).down,
-    (history.get (K .lowEdgeParity)).down,
-    (history.get (K .bigHubBound)).down,
-    (history.get (K .bigHubVShapes)).down,
-    (history.get (K .highSurplusBound)).down,
-    (history.get (K .hubLengthThreePairs)).down,
-    (history.get (K .surplusDartIdentity)).down,
-    (history.get (K .highDegreeCountBound)).down,
-    (history.get (K .admissibleQuotientsLabelInjective)).down,
-    (history.get (K .surplusAbove)).down,
-    (history.get (K .highSurplusConfiguration)).down,
-    (history.get (K .pairArmAPattern)).down,
-    (history.get (K .pairArmARoleAlphabet)).down,
-    (history.get (K .pairArmB)).down,
-    (history.get (K .extFreeEmpty)).down,
-    (history.get (K .extLoadSum)).down,
-    (history.get (K .extOverload)).down,
-    (history.get (K .extOverloadedToken)).down,
-    (history.get (K .newLoadBound)).down,
-    (history.get (K .freeSideHubs)).down,
-    (history.get (K .separatedPairs)).down,
-    (history.get (K .scalePressure)).down,
-    (history.get (K .freeSideStructure)).down,
-    (history.get (K .freeSideCount)).down,
-    (history.get (K .highSurplusOrder)).down,
-    (history.get (K .windowChargeKinds)).down,
-    (history.get (K .responseObstructionTargetDefect)).down,
-    (history.get (K .highEndpointSwitch)).down,
-    (history.get (K .edgeSurplusIdentity)).down,
-    (history.get (K .ceilSqrtAboveScale)).down,
-    (history.get (K .orderAboveScaleSquare)).down,
-    (history.get (K .sixVertexExtremalEnvelope)).down,
-    (history.get (K .highDegreePositive)).down,
-    (history.get (K .highDegreeSurplusCapacity)).down,
-    (history.get (K .canonicalCapacityExplicit)).down,
-    (history.get (K .canonicalTokenCount)).down,
-    (history.get (K .canonicalBlockedFreePartition)).down,
-    (history.get (K .canonicalLedgerDeficit)).down,
-    (history.get (K .pairCountDeficit)).down,
-    (history.get (K .canonicalCertificationCriterion)).down,
-    (history.get (K .canonicalOverloadOfFits)).down,
-    (history.get (K .canonicalFreeExcessOfCapped)).down,
-    (history.get (K .paperBudgetBound)).down,
-    (history.get (K .paperBudgetCertifies)).down,
-    (history.get (K .pairCodeConfiguration)).down,
-    (history.get (K .sparseSurplusSurvivor)).down,
-    (history.get (K .openPortSuppression)).down,
-    (history.get (K .openPortSuppressionSafe)).down,
-    (history.get (K .singleOpenPortSuppressionWitness)).down,
-    (history.get (K .suppressedFamilyCriticalCycle)).down,
-    (history.get (K .sparseSlackSurplus)).down,
-    (history.get (K .activeSurplusFamily)).down,
-    (history.get (K .sparsePortActivation)).down,
-    (history.get (K .activeSurplusDemands)).down,
-    (history.get (K .baselineSpineDemand)).down,
-    (history.get (K .freePairCountFails)).down,
-    (history.get (K .sparseUpperEnvelope)).down,
-    (history.get (K .pairOverlapFirstFailure)).down,
-    (history.get (K .mixedSparseSpineDependence)).down,
-    (history.get (K .exactCubicBaselineBudget)).down,
-    (history.get (K .incrementalSkeletonRoom)).down,
-    (history.get (K .skeletonDominates)).down,
-    (history.get (K .pairOverlapSystem)).down,
-    (history.get (K .pairConditionalFactorization)).down,
-    (history.get (K .pairFailureOverlap)).down,
-    (history.get (K .pairDemandReturns)).down,
-    (history.get (K .pairSystemRealizability)).down,
-    (history.get (K .typeBFanEntry)).down,
-    Or.inr ⟨(history.get (K .pairSystemNoEarlyOutcome)).down,
-    (history.get (K .pairSerialDemandSystem)).down,
-    (history.get (K .pairIncrementCovered)).down,
-    (history.get (K .pairIncrementEarlyOutcome)).down⟩⟩
+    (history.get (K .pairHandoffSupport)).down,
+    (history.get (K .pairHandoffCharge)).down,
+    (history.get (K .pairHandoffNetCharge)).down,
+    (history.get (K .pairHandoffHubCharge)).down,
+    (history.get (K .pairHandoffBoundaryType)).down,
+    (history.get (K .pairHandoffCriticalCoordinate)).down,
+    (history.get (K .pairObstructionDescent)).down,
+    (history.get (K .pairHandoffHubForces)).down,
+    (history.get (K .pairHandoffDemandEnds)).down,
+    (history.get (K .pairHandoffHubBalance)).down,
+    (history.get (K .pairHandoffFibreAtG)).down,
+    (history.get (K .pairSystemEarlyOutcome)).down⟩
 
 /-- **Node `[187] (Type B sublinear failure)`** (thm:main (vi), tex 369-378):
 failure of the Type B sublinear hypothesis package on the unified route-8
@@ -3091,7 +2885,35 @@ abbrev TypeBSublinearOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8ExtractedEntryCensus selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBSublinearResidual selected.object
+      erdosReceiverLoadProfile spineData .typeBSublinearResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .typeBSublinearCanonicalForm selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .groupedAbsorbedCoreSubset selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .typeBSublinearFailureArms selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .groupedCentresHigh selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .handoffDegreeClauseEmpty selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pieceRoutingTotal selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coverPayment selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .loadFailureSaturated selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .unpaidAbsorbedWindowPort selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .receiverPortsAreWindowStubs selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .saturatedReceiverBasin selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .loadFlowValue selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coverFlowValue selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pieceSizeProfile selected.object
 
 /-- The return of `TypeBSublinearOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -3208,7 +3030,21 @@ theorem typeBSublinearReturn
     [FactKeys.Has (K .typeBBridgeReduction) known]
     [FactKeys.Has (K .route8PiecesClassified) known]
     [FactKeys.Has (K .route8ExtractedEntryCensus) known]
-    [FactKeys.Has (K .typeBSublinearResidual) known] :
+    [FactKeys.Has (K .typeBSublinearResidual) known]
+    [FactKeys.Has (K .typeBSublinearCanonicalForm) known]
+    [FactKeys.Has (K .groupedAbsorbedCoreSubset) known]
+    [FactKeys.Has (K .typeBSublinearFailureArms) known]
+    [FactKeys.Has (K .groupedCentresHigh) known]
+    [FactKeys.Has (K .handoffDegreeClauseEmpty) known]
+    [FactKeys.Has (K .pieceRoutingTotal) known]
+    [FactKeys.Has (K .coverPayment) known]
+    [FactKeys.Has (K .loadFailureSaturated) known]
+    [FactKeys.Has (K .unpaidAbsorbedWindowPort) known]
+    [FactKeys.Has (K .receiverPortsAreWindowStubs) known]
+    [FactKeys.Has (K .saturatedReceiverBasin) known]
+    [FactKeys.Has (K .loadFlowValue) known]
+    [FactKeys.Has (K .coverFlowValue) known]
+    [FactKeys.Has (K .pieceSizeProfile) known] :
     TypeBSublinearOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -3320,12 +3156,29 @@ theorem typeBSublinearReturn
     (history.get (K .typeBBridgeReduction)).down,
     (history.get (K .route8PiecesClassified)).down,
     (history.get (K .route8ExtractedEntryCensus)).down,
-    (history.get (K .typeBSublinearResidual)).down⟩
+    (history.get (K .typeBSublinearResidual)).down,
+    (history.get (K .typeBSublinearCanonicalForm)).down,
+    (history.get (K .groupedAbsorbedCoreSubset)).down,
+    (history.get (K .typeBSublinearFailureArms)).down,
+    (history.get (K .groupedCentresHigh)).down,
+    (history.get (K .handoffDegreeClauseEmpty)).down,
+    (history.get (K .pieceRoutingTotal)).down,
+    (history.get (K .coverPayment)).down,
+    (history.get (K .loadFailureSaturated)).down,
+    (history.get (K .unpaidAbsorbedWindowPort)).down,
+    (history.get (K .receiverPortsAreWindowStubs)).down,
+    (history.get (K .saturatedReceiverBasin)).down,
+    (history.get (K .loadFlowValue)).down,
+    (history.get (K .coverFlowValue)).down,
+    (history.get (K .pieceSizeProfile)).down⟩
 
 /-- **Node `[187] ([348], route-8 quotient failure)`** (thm:main (vi), tex
 369-378, 388-390): failure of route-8 quotient freeness of the unified
-census.  The explicit conjunction of every fact on its maximal ledger (92
-common facts). -/
+census.  The explicit conjunction of every fact on its maximal ledger; the last
+one, `K .route8QuotientEntriesAtG`, decides the quotient test at G (the failure
+is the non-emptiness of the unified entry family, with the aggregate bound
+`|∂R| < δ·|\tilde\Xi|`) and the one before it, `K .route8PeelingDescent`, is the
+stage accounting that fact consumes. -/
 abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -3554,7 +3407,11 @@ abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8FoldPeels selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8QuotientResidual selected.object
+      erdosReceiverLoadProfile spineData .route8QuotientResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8PeelingDescent selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8QuotientEntriesAtG selected.object
 
 /-- The return of `Route8QuotientOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -3674,7 +3531,9 @@ theorem route8QuotientReturn
     [FactKeys.Has (K .typeBSublinearLedger) known]
     [FactKeys.Has (K .route8UnifiedDeficit) known]
     [FactKeys.Has (K .route8FoldPeels) known]
-    [FactKeys.Has (K .route8QuotientResidual) known] :
+    [FactKeys.Has (K .route8QuotientResidual) known]
+    [FactKeys.Has (K .route8PeelingDescent) known]
+    [FactKeys.Has (K .route8QuotientEntriesAtG) known] :
     Route8QuotientOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -3789,12 +3648,19 @@ theorem route8QuotientReturn
     (history.get (K .typeBSublinearLedger)).down,
     (history.get (K .route8UnifiedDeficit)).down,
     (history.get (K .route8FoldPeels)).down,
-    (history.get (K .route8QuotientResidual)).down⟩
+    (history.get (K .route8QuotientResidual)).down,
+    (history.get (K .route8PeelingDescent)).down,
+    (history.get (K .route8QuotientEntriesAtG)).down⟩
 
 /-- **Node `[187] (private-carrier rate failure)`** (thm:main (vi), tex
 369-378): failure of the exact private-carrier rate at the entry of the
 route-8 continuation.  The explicit conjunction of every fact on its maximal
-ledger (71 common facts). -/
+ledger (109 common facts: the 92 earlier ones and the G-audit facts
+`route8RateFailsJoin`, `route8RateFailsPiece`, `route8RateFailsCrossBound`,
+`route8RateFailsFlow`, `route8CarrierInjection`, `route8RateExactSlack`,
+`route8BasinBurden`, `route8StubDeficit`, `route8DeficitVsStubs`, `route8EntryLowerBound`, `route8CoreEmpty`,
+`route8StrongRate`, `route8ThinIsolation`, `route8WindowStub`, `route8ThinSmall`,
+`route8WindowRPathGap`, `route8HubStubs`). -/
 abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -3979,7 +3845,41 @@ abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .netDeficiencyCap selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8RateFails selected.object
+      erdosReceiverLoadProfile spineData .route8RateFails selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8RateFailsJoin selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8RateFailsPiece selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8RateFailsCrossBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8RateFailsFlow selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8CarrierInjection selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8RateExactSlack selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8BasinBurden selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8StubDeficit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8DeficitVsStubs selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8EntryLowerBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8CoreEmpty selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8StrongRate selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8ThinIsolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8WindowStub selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8ThinSmall selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8WindowRPathGap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8HubStubs selected.object
 
 /-- The return of `Route8RateFailsOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -4077,7 +3977,24 @@ theorem route8RateFailsReturn
     [FactKeys.Has (K .forcedCurvatureCost) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
-    [FactKeys.Has (K .route8RateFails) known] :
+    [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known]
+    [FactKeys.Has (K .route8RateFailsFlow) known]
+    [FactKeys.Has (K .route8CarrierInjection) known]
+    [FactKeys.Has (K .route8RateExactSlack) known]
+    [FactKeys.Has (K .route8BasinBurden) known]
+    [FactKeys.Has (K .route8StubDeficit) known]
+    [FactKeys.Has (K .route8DeficitVsStubs) known]
+    [FactKeys.Has (K .route8EntryLowerBound) known]
+    [FactKeys.Has (K .route8CoreEmpty) known]
+    [FactKeys.Has (K .route8StrongRate) known]
+    [FactKeys.Has (K .route8ThinIsolation) known]
+    [FactKeys.Has (K .route8WindowStub) known]
+    [FactKeys.Has (K .route8ThinSmall) known]
+    [FactKeys.Has (K .route8WindowRPathGap) known]
+    [FactKeys.Has (K .route8HubStubs) known] :
     Route8RateFailsOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -4170,12 +4087,29 @@ theorem route8RateFailsReturn
     (history.get (K .forcedCurvatureCost)).down,
     (history.get (K .largeBudgetResidual)).down,
     (history.get (K .netDeficiencyCap)).down,
-    (history.get (K .route8RateFails)).down⟩
+    (history.get (K .route8RateFails)).down,
+    (history.get (K .route8RateFailsJoin)).down,
+    (history.get (K .route8RateFailsPiece)).down,
+    (history.get (K .route8RateFailsCrossBound)).down,
+    (history.get (K .route8RateFailsFlow)).down,
+    (history.get (K .route8CarrierInjection)).down,
+    (history.get (K .route8RateExactSlack)).down,
+    (history.get (K .route8BasinBurden)).down,
+    (history.get (K .route8StubDeficit)).down,
+    (history.get (K .route8DeficitVsStubs)).down,
+    (history.get (K .route8EntryLowerBound)).down,
+    (history.get (K .route8CoreEmpty)).down,
+    (history.get (K .route8StrongRate)).down,
+    (history.get (K .route8ThinIsolation)).down,
+    (history.get (K .route8WindowStub)).down,
+    (history.get (K .route8ThinSmall)).down,
+    (history.get (K .route8WindowRPathGap)).down,
+    (history.get (K .route8HubStubs)).down⟩
 
 /-- **Node `[187] (local cold-terminal exclusion)`** (thm:main (vi), tex
 369-378): the local cold-terminal exclusion of thm:cold-branch-quantitative-
 closure without a global terminal contradiction.  The explicit conjunction
-of every fact on its maximal ledger (85 common facts). -/
+of every fact on its maximal ledger (84 common facts). -/
 abbrev ColdBranchClosedOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -4358,8 +4292,6 @@ abbrev ColdBranchClosedOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldFirstFailureOccurrence selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldCutStatesDistinct selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldFailureCycle selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldFailureDefectRoute selected.object ∧
@@ -4485,7 +4417,6 @@ theorem coldBranchClosedReturn
     [FactKeys.Has (K .coldReturnCorridors) known]
     [FactKeys.Has (K .coldCorridorState) known]
     [FactKeys.Has (K .coldFirstFailureOccurrence) known]
-    [FactKeys.Has (K .coldCutStatesDistinct) known]
     [FactKeys.Has (K .coldFailureCycle) known]
     [FactKeys.Has (K .coldFailureDefectRoute) known]
     [FactKeys.Has (K .coldFailureCompression) known]
@@ -4592,7 +4523,6 @@ theorem coldBranchClosedReturn
     (history.get (K .coldReturnCorridors)).down,
     (history.get (K .coldCorridorState)).down,
     (history.get (K .coldFirstFailureOccurrence)).down,
-    (history.get (K .coldCutStatesDistinct)).down,
     (history.get (K .coldFailureCycle)).down,
     (history.get (K .coldFailureDefectRoute)).down,
     (history.get (K .coldFailureCompression)).down,
@@ -4608,776 +4538,6 @@ theorem coldBranchClosedReturn
     (history.get (K .coldSameInterfaceTable)).down,
     (history.get (K .coldBranchClosed)).down,
     (history.get (K .absorbedGermFanData)).down⟩
-
-/-- **Node `[153]`** (lem:cold-corridor-first-failure (ii), tex 7265-7270): G's
-first equal-state pair on a retained cold corridor, with its separating path
-context and profile separation.  The explicit conjunction of every fact on
-its maximal ledger (70 common facts). -/
-abbrev Node153ResidualOutcome (selected : EGInput.{u}) : Prop :=
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .selection selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .noProperBaseline selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .slackIndependent selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .tightEndpoint selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .cycleRankConstraint selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .degreeProfileFibres selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .targetCompleteContextUniversality selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .replacementExclusion selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .uncompressible selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPresent selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .remainderDeficiencyBelowCut selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowCutCapacity selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .primitiveCarrierCount selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .threeRouteFan selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .threeRouteChain selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPositionStubs selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowAttachmentGap selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .portEndDegree selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .hubLinkStructure selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .hubClassCounts selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .slotRelation selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .closedClasses selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .hubTwoHopLinks selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .slotLinear selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .remainderPathBounds selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowFreeGeometry selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .inducedPathAttachment selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .densityExcess selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .remainderSlack selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .hubWindowBudget selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowHubBounds selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .cubicNeighbourSupply selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .hubCountBound selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .lowEdgeParity selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .bigHubBound selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .bigHubVShapes selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .highSurplusBound selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .hubLengthThreePairs selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .highDegreeCountBound selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .admissibleQuotientsLabelInjective selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .surplusAtOrBelow selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sparseSurplusSurvivor selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .barrierEnumeration selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageSeparated selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .skeletonDominates selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .hotColdPartition selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .barrierCap selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldHotEntropyCap selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldMass selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldAmbientCubic selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldStubExcess selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldAmbientCubicStubExcess selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldSelectedBranchExcess selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .remainderNormalized selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .boundaryDemand selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .stubSupply selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .wedgeSupply selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .curvatureTargetRank selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .exactResponseProfile selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .targetRankCircuit selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .curvatureFullRank selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .forcedCurvatureCost selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .bridgeless selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .netChargeLocalization selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldReturnCorridors selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldCorridorState selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldFirstFailureOccurrence selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldRepeatedStateResidual selected.object
-
-/-- The return of `Node153ResidualOutcome`: one `get` per fact of
-its maximal ledger. -/
-theorem node153Return
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .cubicBaseline) known]
-    [FactKeys.Has (K .minDegreeBaseline) known]
-    [FactKeys.Has (K .returnAvoidance) known]
-    [FactKeys.Has (K .noProperBaseline) known]
-    [FactKeys.Has (K .slackIndependent) known]
-    [FactKeys.Has (K .tightEndpoint) known]
-    [FactKeys.Has (K .cycleRankConstraint) known]
-    [FactKeys.Has (K .degreeProfileFibres) known]
-    [FactKeys.Has (K .targetCompleteContextUniversality) known]
-    [FactKeys.Has (K .replacementExclusion) known]
-    [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .windowPresent) known]
-    [FactKeys.Has (K .maximalPacking) known]
-    [FactKeys.Has (K .localAlgebra) known]
-    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
-    [FactKeys.Has (K .packingOrderBound) known]
-    [FactKeys.Has (K .noSuppressionChordViolation) known]
-    [FactKeys.Has (K .twoSwitchForcedPath) known]
-    [FactKeys.Has (K .crossSwitchFamily) known]
-    [FactKeys.Has (K .highCentreSplitForced) known]
-    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
-    [FactKeys.Has (K .specWitnessStructure) known]
-    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
-    [FactKeys.Has (K .windowCutCapacity) known]
-    [FactKeys.Has (K .primitiveCarrierCount) known]
-    [FactKeys.Has (K .singleBoundaryShape) known]
-    [FactKeys.Has (K .neighbourhoodPairCount) known]
-    [FactKeys.Has (K .starCycleConstraint) known]
-    [FactKeys.Has (K .meetingCycleConstraint) known]
-    [FactKeys.Has (K .highDegreePairSum) known]
-    [FactKeys.Has (K .vertexDeletionComponents) known]
-    [FactKeys.Has (K .cyclesThroughVertex) known]
-    [FactKeys.Has (K .cutVertexBlockPaths) known]
-    [FactKeys.Has (K .cycleDoubleCount) known]
-    [FactKeys.Has (K .threeRouteFan) known]
-    [FactKeys.Has (K .threeRouteChain) known]
-    [FactKeys.Has (K .windowPositionStubs) known]
-    [FactKeys.Has (K .windowAttachmentGap) known]
-    [FactKeys.Has (K .portEndDegree) known]
-    [FactKeys.Has (K .hubLinkStructure) known]
-    [FactKeys.Has (K .hubClassCounts) known]
-    [FactKeys.Has (K .slotRelation) known]
-    [FactKeys.Has (K .closedClasses) known]
-    [FactKeys.Has (K .hubTwoHopLinks) known]
-    [FactKeys.Has (K .slotLinear) known]
-    [FactKeys.Has (K .remainderPathBounds) known]
-    [FactKeys.Has (K .windowFreeGeometry) known]
-    [FactKeys.Has (K .inducedPathAttachment) known]
-    [FactKeys.Has (K .densityExcess) known]
-    [FactKeys.Has (K .remainderSlack) known]
-    [FactKeys.Has (K .hubWindowBudget) known]
-    [FactKeys.Has (K .windowHubBounds) known]
-    [FactKeys.Has (K .cubicNeighbourSupply) known]
-    [FactKeys.Has (K .hubCountBound) known]
-    [FactKeys.Has (K .lowEdgeParity) known]
-    [FactKeys.Has (K .bigHubBound) known]
-    [FactKeys.Has (K .bigHubVShapes) known]
-    [FactKeys.Has (K .highSurplusBound) known]
-    [FactKeys.Has (K .hubLengthThreePairs) known]
-    [FactKeys.Has (K .surplusDartIdentity) known]
-    [FactKeys.Has (K .highDegreeCountBound) known]
-    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
-    [FactKeys.Has (K .surplusAtOrBelow) known]
-    [FactKeys.Has (K .sparseSurplusSurvivor) known]
-    [FactKeys.Has (K .barrierEnumeration) known]
-    [FactKeys.Has (K .windowPackageSeparated) known]
-    [FactKeys.Has (K .skeletonDominates) known]
-    [FactKeys.Has (K .hotColdPartition) known]
-    [FactKeys.Has (K .barrierCap) known]
-    [FactKeys.Has (K .coldHotEntropyCap) known]
-    [FactKeys.Has (K .coldMass) known]
-    [FactKeys.Has (K .coldAmbientCubic) known]
-    [FactKeys.Has (K .coldStubExcess) known]
-    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
-    [FactKeys.Has (K .coldSelectedBranchExcess) known]
-    [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .boundaryDemand) known]
-    [FactKeys.Has (K .stubSupply) known]
-    [FactKeys.Has (K .wedgeSupply) known]
-    [FactKeys.Has (K .curvatureTargetRank) known]
-    [FactKeys.Has (K .exactResponseProfile) known]
-    [FactKeys.Has (K .targetRankCircuit) known]
-    [FactKeys.Has (K .curvatureFullRank) known]
-    [FactKeys.Has (K .forcedCurvatureCost) known]
-    [FactKeys.Has (K .bridgeless) known]
-    [FactKeys.Has (K .netChargeLocalization) known]
-    [FactKeys.Has (K .coldReturnCorridors) known]
-    [FactKeys.Has (K .coldCorridorState) known]
-    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
-    [FactKeys.Has (K .coldRepeatedStateResidual) known] :
-    Node153ResidualOutcome selected :=
-  ⟨(history.get (K .selection)).down,
-    (history.get (K .cubicBaseline)).down,
-    (history.get (K .minDegreeBaseline)).down,
-    (history.get (K .returnAvoidance)).down,
-    (history.get (K .noProperBaseline)).down,
-    (history.get (K .slackIndependent)).down,
-    (history.get (K .tightEndpoint)).down,
-    (history.get (K .cycleRankConstraint)).down,
-    (history.get (K .degreeProfileFibres)).down,
-    (history.get (K .targetCompleteContextUniversality)).down,
-    (history.get (K .replacementExclusion)).down,
-    (history.get (K .uncompressible)).down,
-    (history.get (K .windowPresent)).down,
-    (history.get (K .maximalPacking)).down,
-    (history.get (K .localAlgebra)).down,
-    (history.get (K .everyWitnessSpectrumSplit)).down,
-    (history.get (K .packingOrderBound)).down,
-    (history.get (K .noSuppressionChordViolation)).down,
-    (history.get (K .twoSwitchForcedPath)).down,
-    (history.get (K .crossSwitchFamily)).down,
-    (history.get (K .highCentreSplitForced)).down,
-    (history.get (K .sameVertexSwitchForcedPath)).down,
-    (history.get (K .specWitnessStructure)).down,
-    (history.get (K .remainderDeficiencyBelowCut)).down,
-    (history.get (K .windowCutCapacity)).down,
-    (history.get (K .primitiveCarrierCount)).down,
-    (history.get (K .singleBoundaryShape)).down,
-    (history.get (K .neighbourhoodPairCount)).down,
-    (history.get (K .starCycleConstraint)).down,
-    (history.get (K .meetingCycleConstraint)).down,
-    (history.get (K .highDegreePairSum)).down,
-    (history.get (K .vertexDeletionComponents)).down,
-    (history.get (K .cyclesThroughVertex)).down,
-    (history.get (K .cutVertexBlockPaths)).down,
-    (history.get (K .cycleDoubleCount)).down,
-    (history.get (K .threeRouteFan)).down,
-    (history.get (K .threeRouteChain)).down,
-    (history.get (K .windowPositionStubs)).down,
-    (history.get (K .windowAttachmentGap)).down,
-    (history.get (K .portEndDegree)).down,
-    (history.get (K .hubLinkStructure)).down,
-    (history.get (K .hubClassCounts)).down,
-    (history.get (K .slotRelation)).down,
-    (history.get (K .closedClasses)).down,
-    (history.get (K .hubTwoHopLinks)).down,
-    (history.get (K .slotLinear)).down,
-    (history.get (K .remainderPathBounds)).down,
-    (history.get (K .windowFreeGeometry)).down,
-    (history.get (K .inducedPathAttachment)).down,
-    (history.get (K .densityExcess)).down,
-    (history.get (K .remainderSlack)).down,
-    (history.get (K .hubWindowBudget)).down,
-    (history.get (K .windowHubBounds)).down,
-    (history.get (K .cubicNeighbourSupply)).down,
-    (history.get (K .hubCountBound)).down,
-    (history.get (K .lowEdgeParity)).down,
-    (history.get (K .bigHubBound)).down,
-    (history.get (K .bigHubVShapes)).down,
-    (history.get (K .highSurplusBound)).down,
-    (history.get (K .hubLengthThreePairs)).down,
-    (history.get (K .surplusDartIdentity)).down,
-    (history.get (K .highDegreeCountBound)).down,
-    (history.get (K .admissibleQuotientsLabelInjective)).down,
-    (history.get (K .surplusAtOrBelow)).down,
-    (history.get (K .sparseSurplusSurvivor)).down,
-    (history.get (K .barrierEnumeration)).down,
-    (history.get (K .windowPackageSeparated)).down,
-    (history.get (K .skeletonDominates)).down,
-    (history.get (K .hotColdPartition)).down,
-    (history.get (K .barrierCap)).down,
-    (history.get (K .coldHotEntropyCap)).down,
-    (history.get (K .coldMass)).down,
-    (history.get (K .coldAmbientCubic)).down,
-    (history.get (K .coldStubExcess)).down,
-    (history.get (K .coldAmbientCubicStubExcess)).down,
-    (history.get (K .coldSelectedBranchExcess)).down,
-    (history.get (K .remainderNormalized)).down,
-    (history.get (K .boundaryDemand)).down,
-    (history.get (K .stubSupply)).down,
-    (history.get (K .wedgeSupply)).down,
-    (history.get (K .curvatureTargetRank)).down,
-    (history.get (K .exactResponseProfile)).down,
-    (history.get (K .targetRankCircuit)).down,
-    (history.get (K .curvatureFullRank)).down,
-    (history.get (K .forcedCurvatureCost)).down,
-    (history.get (K .bridgeless)).down,
-    (history.get (K .netChargeLocalization)).down,
-    (history.get (K .coldReturnCorridors)).down,
-    (history.get (K .coldCorridorState)).down,
-    (history.get (K .coldFirstFailureOccurrence)).down,
-    (history.get (K .coldRepeatedStateResidual)).down⟩
-
-/-- **Node `[162]`** (lem:dense-cold-pass, tex 7692-7694): a retained cold
-corridor of G whose first failure is a heavy centre strictly before its
-terminal segment and which reads more than Q_cold states.  The explicit
-conjunction of every fact on its maximal ledger (74 common facts). -/
-abbrev Node162ResidualOutcome (selected : EGInput.{u}) : Prop :=
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .selection selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .noProperBaseline selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .slackIndependent selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .tightEndpoint selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .cycleRankConstraint selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .degreeProfileFibres selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .targetCompleteContextUniversality selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .replacementExclusion selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .uncompressible selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPresent selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .remainderDeficiencyBelowCut selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowCutCapacity selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .primitiveCarrierCount selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .threeRouteFan selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .threeRouteChain selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPositionStubs selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowAttachmentGap selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .portEndDegree selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .hubLinkStructure selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .hubClassCounts selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .slotRelation selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .closedClasses selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .hubTwoHopLinks selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .slotLinear selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .remainderPathBounds selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowFreeGeometry selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .inducedPathAttachment selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .densityExcess selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .remainderSlack selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .hubWindowBudget selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowHubBounds selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .cubicNeighbourSupply selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .hubCountBound selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .lowEdgeParity selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .bigHubBound selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .bigHubVShapes selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .highSurplusBound selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .hubLengthThreePairs selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .highDegreeCountBound selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .admissibleQuotientsLabelInjective selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .surplusAtOrBelow selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sparseSurplusSurvivor selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .barrierEnumeration selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageSeparated selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .skeletonDominates selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageUnrealized selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .hotColdPartition selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .barrierCap selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldRoute8AtOrAbove selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldHotEntropyCap selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldMass selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldAmbientCubic selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldStubExcess selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldAmbientCubicStubExcess selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldSelectedBranchExcess selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldMassLinear selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .remainderNormalized selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .boundaryDemand selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .stubSupply selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .wedgeSupply selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .curvatureTargetRank selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .exactResponseProfile selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .targetRankCircuit selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .curvatureFullRank selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .forcedCurvatureCost selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .netChargeLocalization selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .bridgeless selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldReturnCorridors selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldCorridorState selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldFirstFailureOccurrence selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldCutStatesDistinct selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldDenseHeavyEntryResidual selected.object
-
-/-- The return of `Node162ResidualOutcome`: one `get` per fact of
-its maximal ledger. -/
-theorem node162Return
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .cubicBaseline) known]
-    [FactKeys.Has (K .minDegreeBaseline) known]
-    [FactKeys.Has (K .returnAvoidance) known]
-    [FactKeys.Has (K .noProperBaseline) known]
-    [FactKeys.Has (K .slackIndependent) known]
-    [FactKeys.Has (K .tightEndpoint) known]
-    [FactKeys.Has (K .cycleRankConstraint) known]
-    [FactKeys.Has (K .degreeProfileFibres) known]
-    [FactKeys.Has (K .targetCompleteContextUniversality) known]
-    [FactKeys.Has (K .replacementExclusion) known]
-    [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .windowPresent) known]
-    [FactKeys.Has (K .maximalPacking) known]
-    [FactKeys.Has (K .localAlgebra) known]
-    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
-    [FactKeys.Has (K .packingOrderBound) known]
-    [FactKeys.Has (K .noSuppressionChordViolation) known]
-    [FactKeys.Has (K .twoSwitchForcedPath) known]
-    [FactKeys.Has (K .crossSwitchFamily) known]
-    [FactKeys.Has (K .highCentreSplitForced) known]
-    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
-    [FactKeys.Has (K .specWitnessStructure) known]
-    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
-    [FactKeys.Has (K .windowCutCapacity) known]
-    [FactKeys.Has (K .primitiveCarrierCount) known]
-    [FactKeys.Has (K .singleBoundaryShape) known]
-    [FactKeys.Has (K .neighbourhoodPairCount) known]
-    [FactKeys.Has (K .starCycleConstraint) known]
-    [FactKeys.Has (K .meetingCycleConstraint) known]
-    [FactKeys.Has (K .highDegreePairSum) known]
-    [FactKeys.Has (K .vertexDeletionComponents) known]
-    [FactKeys.Has (K .cyclesThroughVertex) known]
-    [FactKeys.Has (K .cutVertexBlockPaths) known]
-    [FactKeys.Has (K .cycleDoubleCount) known]
-    [FactKeys.Has (K .threeRouteFan) known]
-    [FactKeys.Has (K .threeRouteChain) known]
-    [FactKeys.Has (K .windowPositionStubs) known]
-    [FactKeys.Has (K .windowAttachmentGap) known]
-    [FactKeys.Has (K .portEndDegree) known]
-    [FactKeys.Has (K .hubLinkStructure) known]
-    [FactKeys.Has (K .hubClassCounts) known]
-    [FactKeys.Has (K .slotRelation) known]
-    [FactKeys.Has (K .closedClasses) known]
-    [FactKeys.Has (K .hubTwoHopLinks) known]
-    [FactKeys.Has (K .slotLinear) known]
-    [FactKeys.Has (K .remainderPathBounds) known]
-    [FactKeys.Has (K .windowFreeGeometry) known]
-    [FactKeys.Has (K .inducedPathAttachment) known]
-    [FactKeys.Has (K .densityExcess) known]
-    [FactKeys.Has (K .remainderSlack) known]
-    [FactKeys.Has (K .hubWindowBudget) known]
-    [FactKeys.Has (K .windowHubBounds) known]
-    [FactKeys.Has (K .cubicNeighbourSupply) known]
-    [FactKeys.Has (K .hubCountBound) known]
-    [FactKeys.Has (K .lowEdgeParity) known]
-    [FactKeys.Has (K .bigHubBound) known]
-    [FactKeys.Has (K .bigHubVShapes) known]
-    [FactKeys.Has (K .highSurplusBound) known]
-    [FactKeys.Has (K .hubLengthThreePairs) known]
-    [FactKeys.Has (K .surplusDartIdentity) known]
-    [FactKeys.Has (K .highDegreeCountBound) known]
-    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
-    [FactKeys.Has (K .surplusAtOrBelow) known]
-    [FactKeys.Has (K .sparseSurplusSurvivor) known]
-    [FactKeys.Has (K .barrierEnumeration) known]
-    [FactKeys.Has (K .windowPackageSeparated) known]
-    [FactKeys.Has (K .skeletonDominates) known]
-    [FactKeys.Has (K .windowPackageUnrealized) known]
-    [FactKeys.Has (K .hotColdPartition) known]
-    [FactKeys.Has (K .barrierCap) known]
-    [FactKeys.Has (K .coldRoute8AtOrAbove) known]
-    [FactKeys.Has (K .coldHotEntropyCap) known]
-    [FactKeys.Has (K .coldMass) known]
-    [FactKeys.Has (K .coldAmbientCubic) known]
-    [FactKeys.Has (K .coldStubExcess) known]
-    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
-    [FactKeys.Has (K .coldSelectedBranchExcess) known]
-    [FactKeys.Has (K .coldMassLinear) known]
-    [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .boundaryDemand) known]
-    [FactKeys.Has (K .stubSupply) known]
-    [FactKeys.Has (K .wedgeSupply) known]
-    [FactKeys.Has (K .curvatureTargetRank) known]
-    [FactKeys.Has (K .exactResponseProfile) known]
-    [FactKeys.Has (K .targetRankCircuit) known]
-    [FactKeys.Has (K .curvatureFullRank) known]
-    [FactKeys.Has (K .forcedCurvatureCost) known]
-    [FactKeys.Has (K .netChargeLocalization) known]
-    [FactKeys.Has (K .bridgeless) known]
-    [FactKeys.Has (K .coldReturnCorridors) known]
-    [FactKeys.Has (K .coldCorridorState) known]
-    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
-    [FactKeys.Has (K .coldCutStatesDistinct) known]
-    [FactKeys.Has (K .coldDenseHeavyEntryResidual) known] :
-    Node162ResidualOutcome selected :=
-  ⟨(history.get (K .selection)).down,
-    (history.get (K .cubicBaseline)).down,
-    (history.get (K .minDegreeBaseline)).down,
-    (history.get (K .returnAvoidance)).down,
-    (history.get (K .noProperBaseline)).down,
-    (history.get (K .slackIndependent)).down,
-    (history.get (K .tightEndpoint)).down,
-    (history.get (K .cycleRankConstraint)).down,
-    (history.get (K .degreeProfileFibres)).down,
-    (history.get (K .targetCompleteContextUniversality)).down,
-    (history.get (K .replacementExclusion)).down,
-    (history.get (K .uncompressible)).down,
-    (history.get (K .windowPresent)).down,
-    (history.get (K .maximalPacking)).down,
-    (history.get (K .localAlgebra)).down,
-    (history.get (K .everyWitnessSpectrumSplit)).down,
-    (history.get (K .packingOrderBound)).down,
-    (history.get (K .noSuppressionChordViolation)).down,
-    (history.get (K .twoSwitchForcedPath)).down,
-    (history.get (K .crossSwitchFamily)).down,
-    (history.get (K .highCentreSplitForced)).down,
-    (history.get (K .sameVertexSwitchForcedPath)).down,
-    (history.get (K .specWitnessStructure)).down,
-    (history.get (K .remainderDeficiencyBelowCut)).down,
-    (history.get (K .windowCutCapacity)).down,
-    (history.get (K .primitiveCarrierCount)).down,
-    (history.get (K .singleBoundaryShape)).down,
-    (history.get (K .neighbourhoodPairCount)).down,
-    (history.get (K .starCycleConstraint)).down,
-    (history.get (K .meetingCycleConstraint)).down,
-    (history.get (K .highDegreePairSum)).down,
-    (history.get (K .vertexDeletionComponents)).down,
-    (history.get (K .cyclesThroughVertex)).down,
-    (history.get (K .cutVertexBlockPaths)).down,
-    (history.get (K .cycleDoubleCount)).down,
-    (history.get (K .threeRouteFan)).down,
-    (history.get (K .threeRouteChain)).down,
-    (history.get (K .windowPositionStubs)).down,
-    (history.get (K .windowAttachmentGap)).down,
-    (history.get (K .portEndDegree)).down,
-    (history.get (K .hubLinkStructure)).down,
-    (history.get (K .hubClassCounts)).down,
-    (history.get (K .slotRelation)).down,
-    (history.get (K .closedClasses)).down,
-    (history.get (K .hubTwoHopLinks)).down,
-    (history.get (K .slotLinear)).down,
-    (history.get (K .remainderPathBounds)).down,
-    (history.get (K .windowFreeGeometry)).down,
-    (history.get (K .inducedPathAttachment)).down,
-    (history.get (K .densityExcess)).down,
-    (history.get (K .remainderSlack)).down,
-    (history.get (K .hubWindowBudget)).down,
-    (history.get (K .windowHubBounds)).down,
-    (history.get (K .cubicNeighbourSupply)).down,
-    (history.get (K .hubCountBound)).down,
-    (history.get (K .lowEdgeParity)).down,
-    (history.get (K .bigHubBound)).down,
-    (history.get (K .bigHubVShapes)).down,
-    (history.get (K .highSurplusBound)).down,
-    (history.get (K .hubLengthThreePairs)).down,
-    (history.get (K .surplusDartIdentity)).down,
-    (history.get (K .highDegreeCountBound)).down,
-    (history.get (K .admissibleQuotientsLabelInjective)).down,
-    (history.get (K .surplusAtOrBelow)).down,
-    (history.get (K .sparseSurplusSurvivor)).down,
-    (history.get (K .barrierEnumeration)).down,
-    (history.get (K .windowPackageSeparated)).down,
-    (history.get (K .skeletonDominates)).down,
-    (history.get (K .windowPackageUnrealized)).down,
-    (history.get (K .hotColdPartition)).down,
-    (history.get (K .barrierCap)).down,
-    (history.get (K .coldRoute8AtOrAbove)).down,
-    (history.get (K .coldHotEntropyCap)).down,
-    (history.get (K .coldMass)).down,
-    (history.get (K .coldAmbientCubic)).down,
-    (history.get (K .coldStubExcess)).down,
-    (history.get (K .coldAmbientCubicStubExcess)).down,
-    (history.get (K .coldSelectedBranchExcess)).down,
-    (history.get (K .coldMassLinear)).down,
-    (history.get (K .remainderNormalized)).down,
-    (history.get (K .boundaryDemand)).down,
-    (history.get (K .stubSupply)).down,
-    (history.get (K .wedgeSupply)).down,
-    (history.get (K .curvatureTargetRank)).down,
-    (history.get (K .exactResponseProfile)).down,
-    (history.get (K .targetRankCircuit)).down,
-    (history.get (K .curvatureFullRank)).down,
-    (history.get (K .forcedCurvatureCost)).down,
-    (history.get (K .netChargeLocalization)).down,
-    (history.get (K .bridgeless)).down,
-    (history.get (K .coldReturnCorridors)).down,
-    (history.get (K .coldCorridorState)).down,
-    (history.get (K .coldFirstFailureOccurrence)).down,
-    (history.get (K .coldCutStatesDistinct)).down,
-    (history.get (K .coldDenseHeavyEntryResidual)).down⟩
 
 /-- **Node `[54]`** (prop:entropy-high-theta, tex 9921): the configuration at G
 where the joint realization inequality RS(R0)*2^(rate*s*p13)*2^F <= B fails.
@@ -5563,7 +4723,11 @@ abbrev Node54ResidualOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .entropyCapActive selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .allColdEntropyResidual selected.object
+      erdosReceiverLoadProfile spineData .allColdEntropyResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .stubDeficitIdentity selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .remainderCycleSpectrum selected.object
 
 /-- The return of `Node54ResidualOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -5659,7 +4823,9 @@ theorem node54Return
     [FactKeys.Has (K .remainderEntropyHigh) known]
     [FactKeys.Has (K .entropyPackageDemand) known]
     [FactKeys.Has (K .entropyCapActive) known]
-    [FactKeys.Has (K .allColdEntropyResidual) known] :
+    [FactKeys.Has (K .allColdEntropyResidual) known]
+    [FactKeys.Has (K .stubDeficitIdentity) known]
+    [FactKeys.Has (K .remainderCycleSpectrum) known] :
     Node54ResidualOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -5750,6 +4916,8 @@ theorem node54Return
     (history.get (K .remainderEntropyHigh)).down,
     (history.get (K .entropyPackageDemand)).down,
     (history.get (K .entropyCapActive)).down,
-    (history.get (K .allColdEntropyResidual)).down⟩
+    (history.get (K .allColdEntropyResidual)).down,
+    (history.get (K .stubDeficitIdentity)).down,
+    (history.get (K .remainderCycleSpectrum)).down⟩
 
 end HypostructureErdos64EG

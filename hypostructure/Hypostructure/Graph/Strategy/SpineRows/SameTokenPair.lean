@@ -68,4 +68,31 @@ routing and the exact swaps of its two readings. -/
           (inputs.get (K .cubicBaseline)).down.2.1.2.1⟩
       .nil)
 
+/-- Node `[144a]` (G repair R5): the transplants of G's pattern supports into
+`Z`, with the size equality, and their exact failure. -/
+@[reducible] noncomputable def sameTokenTransplantRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.sameTokenTransplant
+    { Requires := [K .sameTokenPairPartition, K .noProperBaseline, K .selection,
+        K .minDegreeBaseline]
+      Produces := [K .sameTokenTransplantSize, K .sameTokenTransplantDeficit]
+      requiresUnique := by key_fresh
+      producesUnique := by key_fresh
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .sameTokenTransplantSize)
+        ⟨Contracts.Spine.SameTokenPair.sameTokenTransplantSize_holds
+          (inputs.get (K .sameTokenPairPartition)).down
+          (inputs.get (K .noProperBaseline)).down
+          (inputs.get (K .selection)).down.1
+          (fun H smaller base => (inputs.get (K .selection)).down.2.sizeMinimal H smaller base)⟩
+      (.cons (key := K .sameTokenTransplantDeficit)
+        ⟨Contracts.Spine.SameTokenPair.sameTokenTransplantDeficit_holds
+          (inputs.get (K .sameTokenPairPartition)).down
+          (inputs.get (K .noProperBaseline)).down
+          (inputs.get (K .selection)).down.1
+          (fun H smaller base => (inputs.get (K .selection)).down.2.sizeMinimal H smaller base)
+          (inputs.get (K .minDegreeBaseline)).down⟩
+      .nil))
+
 end Hypostructure.Graph.Strategy.Spine

@@ -196,14 +196,16 @@ theorem contextDefect_or_contextUniversal (data : Parameters)
 /-- **The terminal `[37]` closes against node `[12]`** (`lem:context-universality`;
 `lem:full-rank`, tex 9388: "the first is excluded by the definition of
 target-completeness").  The certificate's quotient is an admissible rank
-quotient of G's declared coordinates at `R₀`, so node `[12]` makes every two
-constructed pieces it identifies agree in `G − Z`. -/
+quotient of G's declared coordinates at `R₀`: its condition (b) of
+`def:target-complete-quotient` (node `[12]`'s content,
+`DeclaredQuotient.contextUniversal`) makes every two constructed pieces it
+identifies agree in `G − Z`. -/
 theorem contextDefect_false_of_contextUniversality (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (universality : TargetCompleteContextUniversalityStatement data object)
+    (_universality : TargetCompleteContextUniversalityStatement data object)
     (defect : ContextDefectStatement data object) : False := by
   obtain ⟨certificate, _eq, left, right, identified, separated⟩ := defect
-  exact separated (universality.1 _ certificate.quotient left right identified).2
+  exact separated (certificate.quotient.contextUniversal left right identified)
 
 /-- **Node `[36]` is decided at G**: the certificate of `G` is valid in every
 context of G.  Its quotient is admissible, so condition (b) of
