@@ -56,6 +56,7 @@ noncomputable abbrev denseLinearKeys : FactKeys EGInput.{u} :=
     K .blockedClassMember, K .blockedScaleAdditive, K .blockedBarrierOverlap,
     K .blockedCompressionBound, K .blockedCompressionCap,
     K .blockedOwnRecord, K .blockedFailureSlack, K .blockedPrefixCompression,
+    K .blockedFailingSetCarries, K .blockedOverlapSupport,
     K .coldTwoStrandSurvivor, K .coldWindowStubStructure,
     K .coldSymmetricPairExcluded, closed]
 

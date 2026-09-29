@@ -81,7 +81,7 @@ noncomputable def selectedCanonicalReplacementContinuation
         K .blockedScaleAdditive, K .blockedBarrierOverlap,
         K .blockedCompressionBound, K .blockedCompressionCap,
         K .blockedOwnRecord, K .blockedFailureSlack, K .blockedPrefixCompression,
-        closed] known := by
+        K .blockedFailingSetCarries, K .blockedOverlapSupport, closed] known := by
         key_fresh)
     [FactKeys.Has (K .absorbedGermFanData) known]
     [FactKeys.Has (K .absorbedGermSplit) known]

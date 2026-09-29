@@ -27,6 +27,60 @@ open Hypostructure
 
 universe u
 
+/-- The product of the registered a-priori `W_{a,b}` carriers over the coordinates. -/
+noncomputable def blockedAllAprioriCount (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Nat := by
+  classical
+  letI := data.windowBarrier.indexFintype
+  exact ∏ coordinate : blockedCoordinate data object, blockedAprioriCountAt data coordinate.2
+
+/-- The product of the registered surviving `F_{a,b}` carriers over the coordinates. -/
+noncomputable def blockedAllSurvivingCount (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Nat := by
+  classical
+  letI := data.windowBarrier.indexFintype
+  exact ∏ coordinate : blockedCoordinate data object, blockedSurvivingCountAt data coordinate.2
+
+/-- The product of the registered a-priori `W_{a,b}` carriers over the coordinates whose aggregate test holds. -/
+noncomputable def blockedPassingAprioriCount (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Nat := by
+  classical
+  letI := data.windowBarrier.indexFintype
+  exact ∏ coordinate ∈ Finset.univ.filter
+      (fun coordinate : blockedCoordinate data object =>
+        BlockedAggregateBoundAt data object coordinate),
+    blockedAprioriCountAt data coordinate.2
+
+/-- The product of the registered surviving `F_{a,b}` carriers over the coordinates whose aggregate test holds. -/
+noncomputable def blockedPassingSurvivingCount (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Nat := by
+  classical
+  letI := data.windowBarrier.indexFintype
+  exact ∏ coordinate ∈ Finset.univ.filter
+      (fun coordinate : blockedCoordinate data object =>
+        BlockedAggregateBoundAt data object coordinate),
+    blockedSurvivingCountAt data coordinate.2
+
+/-- The product of the registered a-priori `W_{a,b}` carriers over the coordinates whose aggregate test fails. -/
+noncomputable def blockedFailingAprioriCount (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Nat := by
+  classical
+  letI := data.windowBarrier.indexFintype
+  exact ∏ coordinate ∈ Finset.univ.filter
+      (fun coordinate : blockedCoordinate data object =>
+        ¬ BlockedAggregateBoundAt data object coordinate),
+    blockedAprioriCountAt data coordinate.2
+
+/-- The product of the registered surviving `F_{a,b}` carriers over the coordinates whose aggregate test fails. -/
+noncomputable def blockedFailingSurvivingCount (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Nat := by
+  classical
+  letI := data.windowBarrier.indexFintype
+  exact ∏ coordinate ∈ Finset.univ.filter
+      (fun coordinate : blockedCoordinate data object =>
+        ¬ BlockedAggregateBoundAt data object coordinate),
+    blockedSurvivingCountAt data coordinate.2
+
 /-- **G's own record at the barrier states.**  G's own skeleton is the member `own` of `𝓑(𝒫)`;
 its barrier state is surviving at every coordinate, and G lies in its own a-priori and
 surviving conditional fibres, so at every coordinate `1 ≤ |S| ≤ |A|` at G's own outside record
@@ -81,5 +135,18 @@ def BlockedPrefixCompressionStatement (data : Parameters)
       Nat.card (blockedAprioriClassAt data object) *
         blockedPrefixSurvivingCount data object
           (blockedEncodingRank data object coordinate)
+
+/-- **The failing set carries the overflow.**  Let `Φ` be the set of coordinates whose aggregate
+test fails.  The exposure counting with the failing coordinates removed (a failing step is
+only `A_{k+1} ≤ A_k`) and the certified package rate `2^{bits·p}·∏F ≤ ∏W` give
+`|𝓑(𝒫)|·2^{bits·p}·∏_Φ F ≤ |𝒢_{n,m}|·∏_Φ W`: the whole package saving over the class
+bound is carried by the coordinates of `Φ`. -/
+def BlockedFailingSetCarriesStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Nat.card (blockedClassAt data object) *
+      2 ^ (windowPackageBits data object * (canonicalWindowPacking data object).card) *
+      blockedFailingSurvivingCount data object ≤
+    Nat.card (blockedAprioriClassAt data object) *
+      blockedFailingAprioriCount data object
 
 end Hypostructure.Graph.Strategy.Spine

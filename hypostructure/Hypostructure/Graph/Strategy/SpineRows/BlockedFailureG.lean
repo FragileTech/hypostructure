@@ -1,5 +1,7 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Contracts.Spine.BlockedFailureG
+import Hypostructure.Graph.Contracts.Spine.BlockedPassing
+import Hypostructure.Graph.Contracts.Spine.BlockedOverlapG
 
 /-!
 # Node `[172a]`: G's own record at the failure of `lem:scale-additivity`
@@ -29,7 +31,8 @@ quantified, and the prefix compression of `𝓑(𝒫)`. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.blockedFailureG
     { Requires := [K .blockedClassMember, K .blockedBarrierOverlap, K .cubicBaseline]
-      Produces := [K .blockedOwnRecord, K .blockedFailureSlack, K .blockedPrefixCompression]
+      Produces := [K .blockedOwnRecord, K .blockedFailureSlack, K .blockedPrefixCompression,
+        K .blockedFailingSetCarries, K .blockedOverlapSupport]
       requiresUnique := by key_fresh
       producesUnique := by key_fresh
       producesNonempty := by simp }
@@ -46,6 +49,13 @@ quantified, and the prefix compression of `𝓑(𝒫)`. -/
       (.cons (key := K .blockedPrefixCompression)
         ⟨Contracts.Spine.blockedPrefixCompression_holds data.toParameters
           inputs.current.object⟩
-      .nil)))
+      (.cons (key := K .blockedFailingSetCarries)
+        ⟨Contracts.Spine.blockedFailingSetCarries_holds data.toParameters
+          inputs.current.object⟩
+      (.cons (key := K .blockedOverlapSupport)
+        ⟨Contracts.Spine.blockedOverlapSupport_holds data.toParameters inputs.current.object
+          (inputs.get (K .cubicBaseline)).down.2.1.2.1
+          (inputs.get (K .blockedClassMember)).down⟩
+      .nil)))))
 
 end Hypostructure.Graph.Strategy.Spine

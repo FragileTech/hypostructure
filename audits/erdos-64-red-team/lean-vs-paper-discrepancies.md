@@ -5223,7 +5223,7 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
   have no consumer.
 - `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.
 
-## G audit: BlockedBarrierOverlapOutcome (`[172a]`, keys 8600-8602; revised)
+## G audit: BlockedBarrierOverlapOutcome (`[172a]`, keys 8600-8604; revised)
 
 **Correction applied.**  The first version of node `[170]` tested `F·|A| ≥ W·|S|` at every
 record of a blocked member, and its no-arm retained `∃ member₀ : blockedClassAt` failing it:
@@ -5261,21 +5261,48 @@ with all earlier aggregate tests holding and `F_c·A_k < W_c·A_{k+1}`.
 - 8602 `blockedPrefixCompression`: at every coordinate whose predecessors all pass, the prefix
   inequality above (from `blockedExposureUpTo`, no survival hypothesis).
 
-**Closure test against the ledger.**  At the failing coordinate (rank `k`): 8602 gives
-`|𝓑|·∏_{<k}W ≤ |A|·∏_{<k}F`.  The skeleton budget `|A| ≤ skeletonBudget`, and the window
-package `2^{bits·p} ≤ ∏_{all}W/∏_{all}F` (`oneWindow`) with the overflow
-`skeletonBudget < 2^{bits·p}` give `∏_{<k}(W/F) ≤ skeletonBudget/|𝓑| < ∏_{all}(W/F)`: the
-prefix inequality is weaker than the overflow by exactly the tail factor `∏_{rank≥k} W/F > 1`
-(each `F_c < W_c` by 8601 at the failing row; the table improves). No contradiction is
-derived.  What is missing is an aggregate bound (or a substitute) for the coordinates of rank
-`≥ k`, where `A_{j+1} ≤ A_j` (8601) is the only fact.
+- 8603 `blockedFailingSetCarries` (the tail, built): the exposure counting with the failing
+  coordinates removed (a failing step is only `A_{k+1} ≤ A_k`) needs no hypothesis:
+  `|𝓑|·∏_{passing}W ≤ |𝒢|·∏_{passing}F` (`blockedExposurePassing`).  With the certified
+  package rate `2^{bits·p}·∏F ≤ ∏W` (`blockedWindowPackageRate`) and the split
+  `∏ = ∏_{passing}·∏_Φ` this gives, for the set `Φ` of coordinates whose aggregate test
+  fails, `|𝓑|·2^{bits·p}·∏_Φ F ≤ |𝒢|·∏_Φ W`.
+- 8604 `blockedOverlapSupport` (D06, built at G): G's own skeleton; the canonical completion
+  support of each coordinate (the one `barrierState` reads); overlap of two windows of the same
+  scale and row = supports meet outside the two root interiors; overlap support = union over the
+  overlap component.  Forced: every support has `≤ 2^j+1` vertices; a present support is the
+  support of a closed walk of length `2^j` through a vertex of the root window which is **not a
+  cycle** (an accepted cycle through a window would contradict `IsBlocked`), so the completion
+  retraces or self-overlaps; the overlap support of every coordinate is connected in G.  The
+  proof holds for every completion support, so the choice `support.some` is immaterial to the
+  statement (a lexicographically least choice would give the same facts).
 
-**Exact proposition at G left open.**  `BlockedBarrierFailureStatement ∧ 8600 ∧ 8601 ∧ 8602`:
-a first coordinate `c` with `F_c·A_k < W_c·A_{k+1}` (numbers `A_j` of G's class), all earlier
-aggregate tests holding, and nothing on the aggregates of rank `> k`.
+**Closure test against the ledger (explicit).**
+- With 8603 and the ledger: `|A| ≤ skeletonBudget < 2^{bits·p}` (`windowPackageUnrealized`) and
+  `|𝓑| ≥ 1` give `2^{bits·p}∏_Φ F ≤ |𝒢|∏_Φ W < 2^{bits·p}∏_Φ W`, i.e. only `∏_Φ F < ∏_Φ W`,
+  already known row by row (8601).  Quantitatively, the failing set must carry the ratio
+  `∏_Φ W/F ≥ 2^{bits·p}|𝓑|/|A| > 1`; each failing row has `W/F ≤` the table ratio, so
+  `|Φ|` is bounded below, never above.  Nothing on the ledger bounds `∏_Φ W/F` from above, or
+  says which coordinates lie in `Φ`, so the chain closes only if `Φ = ∅`, which is the yes-arm.
+- Local counts do not force the tail: the unconditional local facts (state fibre `≤ F+1`,
+  monotonicity `S ⊆ A`) bound how many states a record has, not how many graphs of the fibre
+  carry a realized state; `A_{j+1} ≤ A_j` is all that follows for `j ≥ k`.
+- D06: nothing links the count `F_c·A_k < W_c·A_{k+1}` to the overlap components of G. The
+  facts of 8604 hold at every coordinate whether or not the aggregate fails there, and the
+  overlap system of the paper is defined through the conditional fibre (a class count), not
+  through G's own supports.  The count-to-overlap inference is exactly the open lemma
+  `lem:barrier-failure-overlap`; the objects it would be applied to are now built at G.
 
-**Root type.**  `BlockedBarrierOverlapOutcome` gains three `Holds`
-(`blockedOwnRecord`, `blockedFailureSlack`, `blockedPrefixCompression`).  Shared statements
+**Exact proposition at G left open.**  `BlockedBarrierFailureStatement ∧ 8600-8604`: a first
+coordinate `c` with `F_c·A_k < W_c·A_{k+1}` (numbers of G's class), all earlier aggregate tests
+holding, the set `Φ` of failing coordinates nonempty with `|𝓑|2^{bits·p}∏_Φ F ≤ |𝒢|∏_Φ W`, and
+G's overlap supports connected non-cycle closed walks; missing: an upper bound on
+`∏_Φ W/F` (or emptiness of `Φ`), or a derivation of an overlap-component obstruction from a
+failed aggregate.
+
+**Root type.**  `BlockedBarrierOverlapOutcome` gains five `Holds`
+(`blockedOwnRecord`, `blockedFailureSlack`, `blockedPrefixCompression`,
+`blockedFailingSetCarries`, `blockedOverlapSupport`).  Shared statements
 changed: `Statements/Spine.lean` (`BlockedRelativeFibreBoundAt` removed; `blockedReachedCount`,
 `BlockedAggregateBoundAt`, prefix products added; `BlockedScaleAdditivityStatement` and
 `BlockedBarrierFailureStatement` restated), `Contracts/Spine/BlockedCompression.lean`,

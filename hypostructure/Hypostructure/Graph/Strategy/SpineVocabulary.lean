@@ -24,6 +24,7 @@ import Hypostructure.Graph.Statements.JointHubs
 import Hypostructure.Graph.Statements.HubLinks
 import Hypostructure.Graph.Statements.PairArms
 import Hypostructure.Graph.Statements.BlockedFailureG
+import Hypostructure.Graph.Statements.BlockedOverlapG
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1913,6 +1914,10 @@ inductive Key where
   | blockedFailureSlack
   /-- Node `[172a]`, the exposure counting of `lem:blocked-graphs-compress` run on a prefix: **at every coordinate whose predecessors all satisfy the aggregate test, `|𝓑(𝒫)|·∏W ≤ |𝒢|·∏F` over the predecessors**. -/
   | blockedPrefixCompression
+  /-- Node `[172a]`, the failing set carries the overflow: **with the failing coordinates removed the exposure counting and the certified package rate give `|𝓑(𝒫)|·2^{bits·p}·∏_Φ F ≤ |𝒢_{n,m}|·∏_Φ W`** over the set `Φ` of coordinates whose aggregate test fails. -/
+  | blockedFailingSetCarries
+  /-- Node `[172a]`, G's overlap support (`def:barrier-overlap-system`): **for G's own skeleton, every completion support has at most `2^j+1` vertices; a present one is a closed walk of length `2^j` through a vertex of the root window which is not a cycle; and the overlap support of every coordinate is connected in G**. -/
+  | blockedOverlapSupport
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2906,6 +2911,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       BlockedFailureSlackStatement data.toParameters object
   | .blockedPrefixCompression, object =>
       BlockedPrefixCompressionStatement data.toParameters object
+  | .blockedFailingSetCarries, object =>
+      BlockedFailingSetCarriesStatement data.toParameters object
+  | .blockedOverlapSupport, object =>
+      BlockedOverlapSupportStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3382,6 +3391,8 @@ def label : Key → String
   | .blockedOwnRecord => "blockedOwnRecord"
   | .blockedFailureSlack => "blockedFailureSlack"
   | .blockedPrefixCompression => "blockedPrefixCompression"
+  | .blockedFailingSetCarries => "blockedFailingSetCarries"
+  | .blockedOverlapSupport => "blockedOverlapSupport"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3856,6 +3867,8 @@ example : label .sparseTargetDefectEmpty = "sparseTargetDefectEmpty" := rfl
 example : label .blockedOwnRecord = "blockedOwnRecord" := rfl
 example : label .blockedFailureSlack = "blockedFailureSlack" := rfl
 example : label .blockedPrefixCompression = "blockedPrefixCompression" := rfl
+example : label .blockedFailingSetCarries = "blockedFailingSetCarries" := rfl
+example : label .blockedOverlapSupport = "blockedOverlapSupport" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4326,6 +4339,8 @@ def idx : Key → Nat
   | .blockedOwnRecord => 8600
   | .blockedFailureSlack => 8601
   | .blockedPrefixCompression => 8602
+  | .blockedFailingSetCarries => 8603
+  | .blockedOverlapSupport => 8604
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4785,6 +4800,8 @@ def ofIdx : Nat → Key
   | 8600 => .blockedOwnRecord
   | 8601 => .blockedFailureSlack
   | 8602 => .blockedPrefixCompression
+  | 8603 => .blockedFailingSetCarries
+  | 8604 => .blockedOverlapSupport
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -5800,6 +5817,10 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "blockedFailureSlack") 8601
   | .blockedPrefixCompression =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "blockedPrefixCompression") 8602
+  | .blockedFailingSetCarries =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedFailingSetCarries") 8603
+  | .blockedOverlapSupport =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedOverlapSupport") 8604
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

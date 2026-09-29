@@ -825,7 +825,11 @@ abbrev BlockedBarrierOverlapOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .blockedFailureSlack selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .blockedPrefixCompression selected.object
+      erdosReceiverLoadProfile spineData .blockedPrefixCompression selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .blockedFailingSetCarries selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .blockedOverlapSupport selected.object
 
 /-- The return of `BlockedBarrierOverlapOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -954,7 +958,9 @@ theorem blockedBarrierOverlapReturn
     [FactKeys.Has (K .blockedBarrierOverlap) known]
     [FactKeys.Has (K .blockedOwnRecord) known]
     [FactKeys.Has (K .blockedFailureSlack) known]
-    [FactKeys.Has (K .blockedPrefixCompression) known] :
+    [FactKeys.Has (K .blockedPrefixCompression) known]
+    [FactKeys.Has (K .blockedFailingSetCarries) known]
+    [FactKeys.Has (K .blockedOverlapSupport) known] :
     BlockedBarrierOverlapOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -1078,7 +1084,9 @@ theorem blockedBarrierOverlapReturn
     (history.get (K .blockedBarrierOverlap)).down,
     (history.get (K .blockedOwnRecord)).down,
     (history.get (K .blockedFailureSlack)).down,
-    (history.get (K .blockedPrefixCompression)).down⟩
+    (history.get (K .blockedPrefixCompression)).down,
+    (history.get (K .blockedFailingSetCarries)).down,
+    (history.get (K .blockedOverlapSupport)).down⟩
 
 /-- **Node `[182]`** (thm:main (iv), tex 359-363): the first failed coverage
 implication of [178], [179] or [180] on the strict-surplus pair-code chain.
