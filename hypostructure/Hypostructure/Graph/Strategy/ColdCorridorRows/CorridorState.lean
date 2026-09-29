@@ -28,11 +28,15 @@ labelled-degree data are all read from the current graph.  In particular, the
 former `(support.card, head ∈ support)` surrogate is absent: equal retained
 values mean equal labelled embedded data for the declared coordinate.
 
-The second representative is selected only from the retained finite-state
-class: it preserves the inherited boundary-degree profile and baseline, while
-the target response is left to the manuscript's (F2)/G2 test.  In particular
-the executor does not call `CanonicalPiece.cutStateRepresentative`, whose
-all-context `ContextEquivalent` field would circularly erase that alternative.
+The second representative is G's canonical representative of the retained
+cut-state, read in G's own surroundings `G − Z` (`rowRepresentative`,
+`CanonicalPiece.CutStateReadingAt`): the inherited boundary-degree profile, the
+baseline of the completion, and the target response there.  The response clause
+is the paper's "after excluding (F2), equality of cold corridor states is
+equality for every target-response coordinate used by the local replacement",
+read at G, where (F2) is decided (`Corridor.not_firstFailureDefect`).  No
+context other than `G − Z` is read, so no all-context identification is
+imported.
 
 The separately named (F1)--(F4) consequences are committed in the same atomic
 row.  Candidate overlap and mass accounting belong to

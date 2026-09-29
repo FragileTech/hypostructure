@@ -119,13 +119,13 @@ theorem canonicalReplacementSwap_at (data : Parameters)
   have swappedBaseline :
       Graph.MinimumDegreeAtLeast data.threshold
         (Graph.glue representative.toPiece germ.atom.outside) :=
-    representativeReading.1.2.2 germ.atom.outside sourceBaseline
+    representativeReading.1.2.2 sourceBaseline
   have swappedAvoids :
       ¬ Graph.HasCycleWithLength data.LengthOK
         (Graph.glue representative.toPiece germ.atom.outside) := by
     intro hit
     exact sourceAvoids
-      ((representativeReading.1.2.1 germ.atom.outside).mp hit)
+      (representativeReading.1.2.1.mp hit)
   have vertexCountEq :
       (Graph.glue representative.toPiece germ.atom.outside).vertexCount =
         object.vertexCount := by

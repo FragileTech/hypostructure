@@ -64,12 +64,13 @@ set_option maxHeartbeats 8000000 in
 normalization) because every return corridor of the dense residual is terminal:
 the boundaried pieces of `R` are induced-`P₁₃`-free and subcubic, hence of
 bounded diameter.  The first failures, the extracted family and `[154]` run as
-on the spine; G1 closes at `[155]`.  G2 is the `[156]` outcome.  On the silent
-arm `[157]` the only outcome not refuted by a ledger fact is the neutral
-equal-length terminal configuration `[163]`, a symmetry
-(`lem:neutral-germ-symmetry`): its canonical-replacement arm `[165]`--`[166]`
-enters the blocked class `[169]`, and its genuine symmetric strand pair
-`[167]`/`[168]` closes against the window stub structure.
+on the spine; G1 closes at `[155]`.  G2 is empty at G (`[156]`, closed
+against the selection).  On the silent arm `[157]` the only outcome not
+refuted by a ledger fact is the neutral equal-length terminal configuration
+`[163]`, a symmetry (`lem:neutral-germ-symmetry`): its canonical-replacement
+arm `[165]`--`[166]` enters the blocked class `[169]`, and its genuine
+symmetric strand pair `[167]`/`[168]` closes against the window stub
+structure.
 
 `tau` names the `[160]` arm the pass runs on; the `[153]`, `[162]`, `[172a]`
 and `[187]` returns state the subtype of that arm. -/
@@ -207,12 +208,14 @@ noncomputable def nearCubicDenseLinear
             (absorbedGermFanDataRow (data := spineData)).run split
               (by key_fresh)
           let unhit := nearCubicColdNoHit family
+          -- `[154]` second test (G2) is decided at G: its yes-arm is empty
+          -- (Lean improvement), closed against the selection.
           match coldGermDistinctionDichotomy (data := spineData) unhit
               (by key_fresh) (by key_fresh) with
           | .left distinguishedHistory =>
-              exact Or.inr (Or.inr (Or.inr (Or.inl
-                (coldBranchClosedLinearDenseReturn
-                  (nearCubicColdTable distinguishedHistory) tau))))
+              exact ((closeIncompatible distinguishedHistory
+                (K .coldGermSomeDistinguishing) (K .selection)
+                (by key_fresh)).elimClosed (by infer_instance)).elim
           | .right silentHistory =>
               let neutralConfiguration :=
                 (neutralEqualLengthTerminalRow (data := spineData)).run silentHistory

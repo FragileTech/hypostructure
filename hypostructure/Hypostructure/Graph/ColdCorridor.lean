@@ -648,60 +648,15 @@ theorem reading_eq_of_state_eq
       intro inside
       exact congrArg (Reading.image label) (baseIH inside)
 
-/-! ### Excluding (F2)
+/-! ### Excluding (F2), read at G
 
 `def:cold-corridor-first-failure` continues: "If two prefixes have the same
 finite cut-state but differ in exact target response against some compatible
-context, that discrepancy is recorded as a first failure of type (F2) below.
-Thus, after excluding (F2), equality of cold corridor states is equality for
-every target-response coordinate used by the local replacement."
-
-The discrepancy is named and the conclusion is drawn.  A prefix's response is
-read at whatever boundary piece carries it -- the carrier is a parameter, so
-the statement holds for every reading of the corridor, not for one chosen
-one. -/
-
-/-- **(F2) at two segments**: they have the same finite cut-state but differ in
-exact target response against some compatible context. -/
-def FirstFailureResponse {boundary : Boundary.{u}}
-    (Target : FiniteObject.{u} → Prop)
-    (carrier : presentation.Segment → BoundaryPiece boundary)
-    (left right : presentation.Segment) : Prop :=
-  presentation.state left = presentation.state right ∧
-    Response.TargetDefect Target (carrier left) (carrier right)
-
-/-- **"After excluding (F2), equality of cold corridor states is equality for
-every target-response coordinate used by the local replacement."**
-
-With the discrepancy excluded, two segments carrying the same cut-state have
-the same target response against *every* compatible context -- which is
-precisely what the local replacement of `lem:cold-same-interface-table` needs
-in order to identify them. -/
-theorem contextEquivalent_of_state_eq {boundary : Boundary.{u}}
-    {Target : FiniteObject.{u} → Prop}
-    {carrier : presentation.Segment → BoundaryPiece boundary}
-    {left right : presentation.Segment}
-    (excluded : ¬ presentation.FirstFailureResponse Target carrier left right)
-    (same : presentation.state left = presentation.state right) :
-    Response.ContextEquivalent Target (carrier left) (carrier right) := by
-  classical
-  intro outside
-  by_contra distinguishes
-  exact excluded ⟨same, ⟨outside, distinguishes⟩⟩
-
-/-- The converse reading: a genuine response discrepancy between two segments
-with the same cut-state *is* a first failure of type (F2).  Together with the
-theorem above this is the manuscript's dichotomy at a repeated state -- either
-the responses agree, or (F2) has occurred. -/
-theorem firstFailureResponse_of_not_contextEquivalent {boundary : Boundary.{u}}
-    {Target : FiniteObject.{u} → Prop}
-    {carrier : presentation.Segment → BoundaryPiece boundary}
-    {left right : presentation.Segment}
-    (same : presentation.state left = presentation.state right)
-    (separated :
-      ¬ Response.ContextEquivalent Target (carrier left) (carrier right)) :
-    presentation.FirstFailureResponse Target carrier left right :=
-  ⟨same, Response.targetDefect_of_not_contextEquivalent separated⟩
+context, that discrepancy is recorded as a first failure of type (F2) below."
+At G the only compatible context of a prefix is G's own surroundings, so the
+discrepancy is the corridor clause `Corridor.FirstFailureDefect`, read on G's
+two prefix readings in `G − J`, and it is decided at G
+(`Corridor.not_firstFailureDefect`). -/
 
 /-- **The cold corridor states of one object number at most `Q_cold`.**
 
@@ -1443,10 +1398,13 @@ interfaces `x, y` and two same-interface `x`-`y` representatives `Q[x,y]` and
 
 The first three fields are the support, whose own boundary piece is `Q[x,y]`;
 `canonical` is the second representative `E`; `sameProfile` is the inherited
-boundary-degree profile; and `record` is the finite same-interface table record
-containing the window labels and target-response profile.  The increment
-`δ := |E| − |Q[x,y]|` is derived below rather than stored, so no germ may
-declare a length change it does not have.
+boundary-degree profile; `baseline` and `sameResponse` are the retained
+cut-state of `E` read in G's own surroundings `G − Z` (the support atom's
+outside, the only context of the support in G): the completion keeps the
+baseline and has the target response of `Q[x,y]` there; and `record` is the
+finite same-interface table record containing the window labels and
+target-response profile.  The increment `δ := |E| − |Q[x,y]|` is derived below
+rather than stored, so no germ may declare a length change it does not have.
 
 The germ says nothing about `δ`: `def:cold-bounded-germ` is the common
 definition of the equal-length rows of the table and the length-changing germs
@@ -1470,23 +1428,23 @@ structure BoundedGerm (S : DeclaredSignature)
   sameProfile :
     canonical.boundaryDegreeProfile =
       (rowAtom object support connected proper).piece.boundaryDegreeProfile
-  /-- The replacement meets the standing baseline. -/
+  /-- The replacement, glued into G's surroundings `G − Z`, meets the standing
+  baseline. -/
   baseline :
     Baseline (glue canonical (rowAtom object support connected proper).outside)
+  /-- **The retained target response, read in G.**  `E` carries the target
+  response of `Q[x,y]` in G's own surroundings `G − Z`: the cut-state of
+  `def:cold-corridor-first-failure` retains "the same exact target-response
+  coordinates", and at G they are read in `G − Z`. -/
+  sameResponse :
+    Target (glue canonical (rowAtom object support connected proper).outside) ↔
+      Target (glue (rowAtom object support connected proper).piece
+        (rowAtom object support connected proper).outside)
   /-- **(T1)--(T4), carried.**  `def:cold-bounded-germ`: the germ "also carries
   the inherited boundary degree profile, `P₁₃`-window labels, and target-response
   profile".  Carried, and nothing more: `Record` is exactly that tuple, and
   `Fintype (Record S)` is what the definition uses it for -- *"there are only
-  finitely many bounded configuration types"*.
-
-  The definition states no invariant tying `record.truth` back to `Target`.  An
-  earlier reading asserted one, in the form `∀ outside, record.truth = true ↔
-  Target (glue canonical outside)`; that is constancy of the canonical
-  representative's target truth across *every* completion, which no germ of a
-  cycle target satisfies, and it left this structure uninhabited -- which is why
-  nothing in the tree ever built a germ.  The semantic content of (T4) belongs
-  where the branch actually reads it, `.coldCorridorState`, not to a field
-  here. -/
+  finitely many bounded configuration types"*. -/
   record : Record S
 
 namespace BoundedGerm
@@ -1506,18 +1464,29 @@ variable (germ : BoundedGerm S Baseline Target object)
 /-- **G1, hit-realized**: the germ's own compatible completion realizes the
 target.  `lem:cold-bounded-germ-trichotomy`'s first case is that "Some
 compatible live completion and window offset close a power-of-two cycle", and the
-corridor representative's own completion *is* `G`, up to the decomposition's
-reconstruction. -/
+corridor representative's own completion in `G − Z` *is* `G`, up to the
+decomposition's reconstruction. -/
 def Realizing : Prop :=
   Target (glue germ.piece germ.atom.outside)
 
-/-- **G2, hit-distinguished**: some compatible outside context distinguishes
-the two representatives by target truth value. -/
+/-- **G2, hit-distinguished, read at G**: "some compatible outside context
+distinguishes the two representatives by target truth value".  At G the
+support's only compatible context is G's own surroundings `G − Z`
+(`germ.atom.outside`), so the test is whether `Q[x,y]` and `E` have different
+target truth there. -/
 def Distinguishing : Prop :=
-  Response.TargetDefect Target germ.piece germ.canonical
+  ¬ (Target (glue germ.piece germ.atom.outside) ↔
+    Target (glue germ.canonical germ.atom.outside))
 
 /-- **G3, silent**: neither realizing nor distinguishing. -/
 def Neutral : Prop := ¬ germ.Realizing ∧ ¬ germ.Distinguishing
+
+/-- **G2 is empty at G.**  The two representatives have the same target
+response in `G − Z`: `E` carries G's retained response there
+(`sameResponse`).  Lean improvement: the G2 arm of
+`lem:cold-bounded-germ-trichotomy` is empty at G. -/
+theorem not_distinguishing : ¬ germ.Distinguishing :=
+  fun distinguishing => distinguishing germ.sameResponse.symm
 
 /-- **`def:cold-bounded-germ`'s increment `δ := |E| − |Q[x,y]|`.**
 
@@ -1556,9 +1525,7 @@ theorem not_lengthChanging_iff :
 own reading: the split is "by whether a compatible completion realizes a power-of-two
 hit, distinguishes power-of-two truth without realization in `G`, or never
 distinguishes the two representatives", so G3 is the negation of the first two
-and nothing falls outside.  This is also what
-`lem:cold-increment-arithmetic` (c) appeals to when it routes a periodic
-carrier to G2 when target-visible and to G3 when not. -/
+and nothing falls outside. -/
 theorem trichotomy : germ.Realizing ∨ germ.Distinguishing ∨ germ.Neutral := by
   classical
   by_cases realizing : germ.Realizing
@@ -1576,25 +1543,13 @@ theorem target_of_realizing
     (realizing : germ.Realizing) : Target object :=
   (targetInvariant.iff_of_iso ⟨germ.atom.reconstructionIso⟩).mp realizing
 
-/-- **G2, through `lem:context-universality`: a distinguishing germ's
-identification is not target-complete.**
-
-*"The two local responses agree in the actual quotient but disagree in a
-compatible context.  By `lem:context-universality`, such an identification is
-not target-complete; equivalently it is a target-defective quotient."*
-
-The conclusion holds in *every* immutable profile fibre, which is what makes it
-a statement about the quotient rather than about one chosen profile: the
-distinguishing context already denies the all-context clause of
-`def:target-complete-quotient`, so no fibre can repair it. -/
-theorem not_targetComplete_of_distinguishing
-    {Profile : Type uProfile}
-    (profile : BoundaryPiece germ.atom.interface → Profile)
-    (distinguishing : germ.Distinguishing) :
-    ¬ Response.TargetComplete profile Target germ.piece germ.canonical := by
-  rintro complete
-  obtain ⟨outside, distinguishes⟩ := distinguishing
-  exact distinguishes (complete.contextEquivalent outside)
+/-- **At G every germ is silent (G3).**  G1 would give G the target it avoids,
+and G2 is empty at G (`not_distinguishing`). -/
+theorem neutral_of_avoids
+    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
+    (avoids : ¬ Target object) : germ.Neutral :=
+  ⟨fun realizing => avoids (germ.target_of_realizing targetInvariant realizing),
+    germ.not_distinguishing⟩
 
 /-- The shorter representative, glued back into the germ's own outside context,
 is strictly smaller than the ambient object.
@@ -1618,34 +1573,39 @@ theorem lexicographicallySmaller_of_increment_neg
   simp only [atom, glue_vertexCount] at internal ⊢
   omega
 
-/-- **G3: a silent length-changing germ is a target-complete compression of its
-own proper support.**
+/-- **G3 at G: a silent length-changing germ is a target-complete compression of
+its own proper support.**
 
 *"Then replacing the longer representative by the shorter one preserves the
-boundary degree profile and the target response against every context, creates
-no power-of-two cycle, and strictly decreases the support.  This is a nontrivial
-target-complete compression of a proper support."*
-
-Every clause of `CompressibleSupport` is present: the shared boundary-degree
-profile and the baseline are fields of the germ, the strict decrease is the
-increment's own sign, and the target response against every context is exactly
-the failure of `Distinguishing`.  Unlike the equal-length rows of
-`def:cold-same-interface-table`, no appeal to `def:admissible-rank-quotient` is
-made or needed here -- the manuscript descends on the length change itself. -/
-theorem compressibleSupport_of_not_distinguishing
-    (shorter : germ.increment < 0)
-    (notDistinguishing : ¬ germ.Distinguishing) :
+boundary degree profile and the target response against every context,
+creates no power-of-two cycle, and strictly decreases the support.  This is a
+nontrivial target-complete compression of a proper support."*  At G the
+replacement is `X' = E` glued into G's own surroundings `G − Z`
+(`def:target-complete-compression`, the hypotheses of `lem:replacement`): it
+keeps the boundary-degree profile (`sameProfile`), its completion keeps the
+baseline (`baseline`, internal degrees included), it has G's target response in
+`G − Z` (`sameResponse`), so no target cycle when G avoids the target, and it
+is strictly smaller (the increment's sign). -/
+theorem compressibleSupport_of_increment_neg
+    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
+    (avoids : ¬ Target object) (shorter : germ.increment < 0) :
     Strategy.InterfaceReplacement.CompressibleSupport Baseline Target object
-      germ.support := by
-  classical
-  have equivalent :
-      Response.ContextEquivalent Target germ.piece germ.canonical := by
-    intro outside
-    by_contra distinguishes
-    exact notDistinguishing ⟨outside, distinguishes⟩
-  exact ⟨germ.connected, germ.proper, germ.canonical, germ.sameProfile,
-    germ.baseline, germ.lexicographicallySmaller_of_increment_neg shorter,
-    fun outside => (equivalent outside).symm⟩
+      germ.support :=
+  ⟨germ.connected, germ.proper, germ.canonical, germ.sameProfile, germ.baseline,
+    germ.lexicographicallySmaller_of_increment_neg shorter,
+    fun hit => avoids (germ.target_of_realizing targetInvariant
+      (germ.sameResponse.mp hit))⟩
+
+/-- **G3 is refuted at G** by `cor:uncompressible`: no proper support of G
+admits a target-complete compression. -/
+theorem false_of_increment_neg
+    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
+    (avoids : ¬ Target object)
+    (uncompressible : ∀ support : Finset object.Vertex,
+      ¬ Strategy.InterfaceReplacement.CompressibleSupport Baseline Target object support)
+    (shorter : germ.increment < 0) : False :=
+  uncompressible germ.support
+    (germ.compressibleSupport_of_increment_neg targetInvariant avoids shorter)
 
 end BoundedGerm
 
@@ -1659,13 +1619,11 @@ length-changing ones are `lem:cold-bounded-germ-trichotomy`'s business, not the
 table's.
 
 `admissible` is `def:admissible-rank-quotient`, spent exactly where
-`lem:cold-same-interface-table` spends it: a row that is not handed off and
-whose two representatives *are* target-completely identified is admissible only
-when the identification has a strictly smaller proper representative in the
-sense of `def:proper-quotient-representative`.  Without that clause the
-equal-length switch has nothing to descend on, which is why the manuscript
-cites the definition at exactly this point -- and why the length-changing germs,
-which descend on their own increment, do not need it. -/
+`lem:cold-same-interface-table` spends it, read at G: a row that is not handed
+off and whose two representatives are identified at G (the same target
+response in G's surroundings `G − Z`, the only context of the support in G) is
+admissible only when the identification has a strictly smaller proper
+representative in the sense of `def:proper-quotient-representative`. -/
 structure TableRow (S : DeclaredSignature)
     (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
     (Handoff : Finset object.Vertex → Prop)
@@ -1674,10 +1632,12 @@ structure TableRow (S : DeclaredSignature)
   equalLength :
     canonical.internalVertexCount =
       (rowAtom object support connected proper).piece.internalVertexCount
-  /-- `def:admissible-rank-quotient` at a row that was not handed off. -/
+  /-- `def:admissible-rank-quotient` at a row that was not handed off, read at
+  G. -/
   admissible : ¬ Handoff support →
-    Response.ContextEquivalent Target
-      (rowAtom object support connected proper).piece canonical →
+    (Target (glue (rowAtom object support connected proper).piece
+        (rowAtom object support connected proper).outside) ↔
+      Target (glue canonical (rowAtom object support connected proper).outside)) →
     (glue canonical (rowAtom object support connected proper).outside).LexicographicallySmaller
       object
 
@@ -1691,31 +1651,22 @@ variable (row : TableRow S Baseline Target object Handoff)
 theorem increment_eq_zero : row.increment = 0 :=
   row.toBoundedGerm.increment_eq_zero_iff.mpr row.equalLength
 
-/-- A row that is neither handed off nor distinguishing is a target-complete
-compression of its own proper support.  Every clause of
-`CompressibleSupport` is a field of the row: the shared boundary-degree
-profile, the baseline of the replacement, the strictly smaller representative
-`def:admissible-rank-quotient` supplies, and the context-universality that
-failure of `Distinguishing` is.
-
-This is the equal-length descent.  The germ's own
-`BoundedGerm.compressibleSupport_of_not_distinguishing` is the length-changing
-one, and it descends on the increment instead. -/
-theorem compressibleSupport_of_not_distinguishing
-    (notHandoff : ¬ Handoff row.support)
-    (notDistinguishing : ¬ row.Distinguishing) :
+/-- **A row that is not handed off is a target-complete compression of its own
+proper support at G.**  Its two representatives are identified at G
+(`sameResponse`), so `def:admissible-rank-quotient` supplies the strictly
+smaller proper representative `glue E (G − Z)`; it keeps the boundary-degree
+profile and the baseline and has G's target response in `G − Z`.  This is the
+equal-length descent. -/
+theorem compressibleSupport_of_not_handoff
+    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
+    (avoids : ¬ Target object)
+    (notHandoff : ¬ Handoff row.support) :
     Strategy.InterfaceReplacement.CompressibleSupport Baseline Target object
-      row.support := by
-  classical
-  have equivalent :
-      Response.ContextEquivalent Target
-        (rowAtom object row.support row.connected row.proper).piece
-        row.canonical := by
-    intro outside
-    by_contra distinguishes
-    exact notDistinguishing ⟨outside, distinguishes⟩
-  exact ⟨row.connected, row.proper, row.canonical, row.sameProfile, row.baseline,
-    row.admissible notHandoff equivalent, fun outside => (equivalent outside).symm⟩
+      row.support :=
+  ⟨row.connected, row.proper, row.canonical, row.sameProfile, row.baseline,
+    row.admissible notHandoff row.sameResponse.symm,
+    fun hit => avoids (row.toBoundedGerm.target_of_realizing targetInvariant
+      (row.sameResponse.mp hit))⟩
 
 end TableRow
 
@@ -1787,7 +1738,7 @@ theorem target_of_not_surviving
 
 end SelfReturn
 
-/-- **`lem:cold-same-interface-table`.**
+/-- **`lem:cold-same-interface-table`**, read at G.
 
 *"Every row of the same-interface cold table is routed to one of the already
 closed outcomes: a power-of-two cycle, a target-defective quotient, an existing Type
@@ -1795,12 +1746,13 @@ B or route-8 handoff, or a target-complete proper-support compression.  In
 particular, an equal-length cold bounded configuration and a short exceptional
 self-return cannot be a terminal cold residual."*
 
-The two hypotheses are the two facts the selected minimal counterexample
-already carries and nothing else: it avoids the target, and no proper support
-of it admits a target-complete compression.  A realizing row would hand the
-object the target it avoids; a row that is neither handed off nor
-distinguishing is a compression of its own support.  What is left is exactly
-the manuscript's routing, so no row is terminal. -/
+The hypotheses are the facts the selected minimal counterexample already
+carries and nothing else: it avoids the target, and no proper support of it
+admits a target-complete compression (`cor:uncompressible`, read at G).  A
+realizing row would hand the object the target it avoids; a row that is not
+handed off is a compression of its own support by `glue E (G − Z)`
+(`TableRow.compressibleSupport_of_not_handoff`).  The distinguishing arm is
+empty at G (`BoundedGerm.not_distinguishing`), so every row is handed off. -/
 theorem row_closed {S : DeclaredSignature} {Baseline Target : FiniteObject.{u} → Prop}
     {Handoff : Finset object.Vertex → Prop}
     (targetInvariant : FiniteObject.IsomorphismInvariant Target)
@@ -1813,10 +1765,10 @@ theorem row_closed {S : DeclaredSignature} {Baseline Target : FiniteObject.{u} �
   classical
   refine ⟨fun realizing => avoids (row.target_of_realizing targetInvariant realizing),
     ?_⟩
-  by_contra unrouted
-  push Not at unrouted
-  exact uncompressible row.support
-    (row.compressibleSupport_of_not_distinguishing unrouted.1 unrouted.2)
+  by_cases handoff : Handoff row.support
+  · exact Or.inl handoff
+  · exact (uncompressible row.support
+      (row.compressibleSupport_of_not_handoff targetInvariant avoids handoff)).elim
 
 /-- **`lem:cold-same-interface-table`, at a short exceptional self-return.**
 
@@ -1987,12 +1939,7 @@ theorem noTerminalColdResidual_of_routing {S : DeclaredSignature}
     {Baseline Target : FiniteObject.{u} → Prop} {object : FiniteObject.{u}}
     {Handoff : Finset object.Vertex → Prop}
     (routed :
-      ∀ germ : BoundedGerm S Baseline Target object,
-        germ.increment < 0 →
-          germ.Distinguishing ∧
-            ∀ (Profile : Type)
-              (profile : BoundaryPiece germ.atom.interface → Profile),
-              ¬ Response.TargetComplete profile Target germ.piece germ.canonical)
+      ∀ germ : BoundedGerm S Baseline Target object, ¬ germ.increment < 0)
     (table :
       ∀ row : TableRow S Baseline Target object Handoff,
         ¬ row.Realizing ∧ (Handoff row.support ∨ row.Distinguishing))
@@ -2007,8 +1954,7 @@ theorem noTerminalColdResidual_of_routing {S : DeclaredSignature}
   rcases terminal with terminalFamily | terminalTable | terminalSelf
   · rcases terminalFamily with ⟨candidates, candidateFamily, terminal⟩
     obtain ⟨germ, memberCandidates⟩ := Finset.card_pos.mp candidateFamily.1
-    exact (terminal germ memberCandidates).2
-      (routed germ (terminal germ memberCandidates).1).1
+    exact routed germ (terminal germ memberCandidates).1
   · rcases terminalTable with ⟨row, noHandoff, noDistinguishing⟩
     rcases (table row).2 with handoff | distinguishing
     · exact noHandoff handoff

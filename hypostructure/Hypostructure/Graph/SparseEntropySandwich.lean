@@ -442,12 +442,37 @@ The rank quotient detects a dependence, but the overlap argument at node
 `[178]` uses the stronger graph statement in the manuscript: after fixing the
 baseline word and the edges outside the port returns, separated pair supports
 realize their response product in the actual fixed-edge skeleton class.  The
-following model records exactly that class and no abstract state carrier. -/
+following model records exactly that class and no abstract state carrier.
 
-/-- One graph-derived value of a sparse pair-response coordinate. -/
-structure SparsePairSkeletonResponse (LengthOK : Nat → Prop) where
-  boundary : Boundary.{u}
-  response : OutsideContext boundary → Prop
+Two ingredients are kept apart.  **The class count** ranges over the labelled
+graphs with G's canonical data (`n = |V(G)|`, `m = |E(G)|`, G's labelling, G's
+baseline word): it is an encoding bound whose published conclusion is an
+inequality about G's own quantities, and it is kept exactly.  **The response**
+of a member at `X_π` is read inside G: the member's reading of `X_π`, on G's
+boundary `∂X_π`, glued into G's own surroundings `G − X_π` (`memberPiece`) -- no
+boundaried context other than `G − X_π` is quantified. -/
+
+/-- One graph-derived value of a sparse pair-response coordinate: whether a
+member's reading of `X_π`, glued into G's surroundings `G − X_π`, carries a
+target cycle. -/
+abbrev SparsePairSkeletonResponse (_LengthOK : Nat → Prop) : Type := Prop
+
+/-- A member's reading of G's support `Z`, on G's own boundary `∂Z`: the
+vertices of G's piece at `Z` with the adjacency of `graph` (a labelled member of
+the skeleton class, pulled back to `V(G)`).  Glued into `G − Z` it is
+`glue X' (G − Z)` with `X'` the member's reading. -/
+noncomputable def memberPiece (object : FiniteObject.{u})
+    (graph : SimpleGraph object.Vertex) (support : Finset object.Vertex) :
+    BoundaryPiece (Strategy.InterfaceReplacement.SupportAtom.boundary object support) where
+  Internal := Strategy.InterfaceReplacement.SupportAtom.PieceInternal object support
+  internalVertices := by
+    letI : FinEnum object.Vertex := object.vertices
+    exact FinEnum.Subtype.finEnum fun vertex =>
+      vertex ∈ support ∧
+        vertex ∉ Strategy.InterfaceReplacement.SupportAtom.cutBoundary object support
+  graph := SimpleGraph.comap
+    (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object support) graph
+  decideAdj := Classical.decRel _
 
 /-- The exact skeleton response model for a nonempty subfamily of a declared
 pair schedule.  Every support is the canonical `X_π`; every state is read from
@@ -488,7 +513,8 @@ noncomputable def portReturns
   classical
   exact model.pairSet.biUnion activation.pairSeed
 
-/-- The exact all-context target response of `X_π` in a labelled skeleton. -/
+/-- The target response of `X_π` in a labelled skeleton, read in G's own
+surroundings: the member's reading of `X_π` glued into `G − X_π`. -/
 noncomputable def response
     {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
     {Coordinate Chord : Type u}
@@ -497,19 +523,12 @@ noncomputable def response
     (model : SparsePairSkeletonModel activation schedule)
     (member : model.Skeleton) (pair : {pair // pair ∈ model.pairSet}) :
     SparsePairSkeletonResponse LengthOK :=
-  let candidate : FiniteObject.{u} :=
-    { Vertex := object.Vertex
-      graph := member.1.graph.comap object.vertices.equiv
-      vertices := object.vertices
-      decideAdj := Classical.decRel _ }
-  let support := model.responseSupport pair
-  { boundary := Strategy.InterfaceReplacement.SupportAtom.boundary
-      candidate support
-    response := fun outside =>
-      HasCycleWithLength LengthOK
-        (glue
-          (Strategy.InterfaceReplacement.SupportAtom.piece candidate support)
-          outside) }
+  HasCycleWithLength LengthOK
+    (glue
+      (memberPiece object (member.1.graph.comap object.vertices.equiv)
+        (model.responseSupport pair))
+      (Strategy.InterfaceReplacement.SupportAtom.outside object
+        (model.responseSupport pair)))
 
 /-- The paper's conditioning datum: outside edges and the already realized
 baseline word.  Earlier pair responses are conditioned by `conditionalValues`,

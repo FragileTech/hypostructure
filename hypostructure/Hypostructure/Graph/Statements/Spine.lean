@@ -1310,8 +1310,9 @@ reading, and the complete record read at both equal-state endpoints.
 The second representative `E` of every exchange germ -- outside corridors and
 immediate cross-window exchanges alike -- is pinned to G's canonical
 representative of the germ's own support (`BoundedGerm.HasCanonicalSecond`,
-`Graph.ColdCorridor.rowRepresentative`): it is a function of G, not an object
-the existential chooses.
+`Graph.ColdCorridor.rowRepresentative`): the `Precedes`-least canonical piece
+with the support piece's retained cut-state read in G's own surroundings
+`G − Z`.  It is a function of G, not an object the existential chooses.
 
 Graph realization of the second representative is deliberately not required
 here.  The manuscript first separates canonical replacement pieces from
@@ -1368,9 +1369,11 @@ noncomputable def ColdCorridorStateStatement (data : Parameters)
       ∀ epsilon : ColdCrossWindowHalfEdge data object,
         (crossIncidence epsilon).support = {epsilon.1.1, epsilon.1.2} ∧
           (crossIncidence epsilon).HasCanonicalSecond
-            (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)) ∧
+            (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+            (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant) ∧
     ∀ epsilon : Eligible, (incidence epsilon).HasCanonicalSecond
       (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+      (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
 
 /-- **A piece of G produces a decorated Type B handoff** (exit `(7)` of
 `def:typeA-saturated-exits`, tex 10811; `lem:typeA-visible-entry`, tex
@@ -2137,41 +2140,30 @@ noncomputable def ColdFailureCycleStatement (data : Parameters)
       (coldOccurrenceCorridorAt data object occurrence epsilon) segment
 
 /-- Node `[153]`, `lem:cold-corridor-first-failure` (ii) (tex 7240,
-7265-7270), at G's retained occurrence: "case (F2) is a target-defective
-quotient, hence belongs to the sparse exit".  If the first failure of a selected
-half-edge `ε` of G -- read on the corridor, cut-state presentation and segment
-index that G's retained occurrence carries for `ε` (`coldOccurrenceCorridorAt` /
-`coldOccurrencePresentationAt` / `coldOccurrenceIndexAt`), with no earlier
-(F1)--(F5) event -- is (F2), then G has a named sparse surplus exit of its
-declared sparse family (`DeclaredSparseSurplusExit`, `def:named-surplus-exits`).
-At G this holds on the distinct-states arm of node `[153]`'s exact decision
-(`ColdCutStatesDistinctStatement`); the other arm is the returned residual
-`ColdRepeatedStateResidualStatement` (`lean-vs-paper-discrepancies.md`,
-"Returned residuals"). -/
+7265-7270), read at G: the test (F2) -- "two prefixes with the same displayed
+boundary data have different target response against some compatible outside
+context" -- is decided at G.  The only compatible context of a prefix `J` in G
+is G's own surroundings `G − J`, where G's two readings of `J` are subgraphs of
+G; so no segment of G's retained corridor of any selected half-edge `ε`, read
+on the corridor, cut-state presentation and segment index that G's retained
+occurrence carries for `ε`, carries (F2).  Lean improvement: the (F2) arm is
+empty at G (`Graph.ColdCorridor.Corridor.not_firstFailureDefect`), so no
+sparse-exit routing of it is needed. -/
 noncomputable def ColdFailureDefectRoutesStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ (occurrence : ColdFirstFailureOccurrenceData data object)
     (epsilon : ColdEligibleHalfEdge data object)
-    (first : (coldOccurrenceCorridorAt data object occurrence epsilon).Segment),
-    (∀ earlier :
-        (coldOccurrenceCorridorAt data object occurrence epsilon).Segment,
-      earlier.1 < first.1 →
-        ¬ ColdFirstFailureEvent data object
-          (coldOccurrenceCorridorAt data object occurrence epsilon)
-          (coldOccurrencePresentationAt data object occurrence epsilon)
-          (coldOccurrenceIndexAt data object occurrence epsilon)
-          (coldOccurrenceIncidence data object occurrence epsilon)
-          (ColdDeclaredHandoffSupport data object) earlier) →
-    ColdFirstFailureDefectAt data object
-        (coldOccurrenceCorridorAt data object occurrence epsilon)
-        (coldOccurrencePresentationAt data object occurrence epsilon)
-        (coldOccurrenceIndexAt data object occurrence epsilon) first →
-      DeclaredSparseSurplusExit data object
+    (segment : (coldOccurrenceCorridorAt data object occurrence epsilon).Segment),
+    ¬ ColdFirstFailureDefectAt data object
+      (coldOccurrenceCorridorAt data object occurrence epsilon)
+      (coldOccurrencePresentationAt data object occurrence epsilon)
+      (coldOccurrenceIndexAt data object occurrence epsilon) segment
 
-/-- Node `[153]`, clause (F3) excluded by uncompressibility
-(`lem:cold-corridor-first-failure` (iii)): no segment of G's retained cold
-corridor, read with its retained presentation and index, carries a
-target-complete compression of a proper prefix support. -/
+/-- Node `[153]`, clause (F3) excluded at G (`lem:cold-corridor-first-failure`
+(iii)): no segment of G's retained cold corridor, read with its retained
+presentation and index, carries a strictly smaller proper representative of a
+prefix support with G's target response in `G − J` -- it would be a smaller
+counterexample (`lem:replacement`, read at G). -/
 noncomputable def ColdFailureCompressionStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ (occurrence : ColdFirstFailureOccurrenceData data object)
@@ -2330,9 +2322,10 @@ theorem freeSide_nonempty_of_baseline_realized
   apply failure
   simpa [freeEmpty] using realization.two_pow_le_skeletonBudget
 
-/-- One exact graph-derived value of a sparse pair-response coordinate.  The
-graph layer owns this state because both the dependence lemma and node `[178]`
-read the same all-context response; Strategy does not duplicate it. -/
+/-- One exact graph-derived value of a sparse pair-response coordinate: whether a
+member's reading of `X_π`, glued into G's own surroundings `G − X_π`, carries a
+target cycle (`Graph.SparsePairSkeletonModel.response`).  The graph layer owns
+this state; Strategy does not duplicate it. -/
 abbrev PairResponseState (data : Parameters) :=
   Graph.SparsePairSkeletonResponse data.LengthOK
 
@@ -2340,17 +2333,19 @@ abbrev PairResponseState (data : Parameters) :=
 (`def:cold-corridor-first-failure`: "the canonical representative determined by
 the repeated cold corridor state"; `def:proper-quotient-representative`): the
 `Precedes`-least canonical piece with the corridor piece's boundary-degree
-profile, its target response against every outside context, and its
-completions' baseline (`Graph/CanonicalRealization`). -/
+profile, its target response in G's own surroundings `G − Z`, and the baseline
+of its completion there (`Graph/CanonicalRealization`,
+`CutStateReadingAt`). -/
 noncomputable def germCanonicalRepresentative (data : Parameters)
     {object : Graph.FiniteObject.{u}}
     (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
       (Graph.MinimumDegreeAtLeast data.threshold)
       (Graph.HasCycleWithLength data.LengthOK) object) :
     Graph.CanonicalPiece germ.atom.interface :=
-  Graph.CanonicalPiece.cutStateRepresentative
+  Graph.CanonicalPiece.cutStateRepresentativeAt
     (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
     (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant germ.piece
+    germ.atom.outside
 
 /-- The pointwise content of the paper's neutral equal-length terminal
 configuration at node `[163]`.  The marked representative is canonical among
@@ -2365,9 +2360,10 @@ noncomputable def NeutralEqualLengthTerminalConfigurationAt (data : Parameters)
     (representative : Graph.CanonicalPiece germ.atom.interface) : Prop := by
   let Reading : Graph.CanonicalPiece germ.atom.interface → Prop :=
     fun candidate =>
-      Graph.CanonicalPiece.CutStateReading
+      Graph.CanonicalPiece.CutStateReadingAt
           (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) germ.piece candidate ∧
+          (Graph.HasCycleWithLength data.LengthOK) germ.piece germ.atom.outside
+          candidate ∧
         (Graph.glue candidate.toPiece germ.atom.outside).edgeCount =
           (Graph.glue germ.piece germ.atom.outside).edgeCount
   exact CanonicalActiveColdGerm data object germ ∧
@@ -3168,10 +3164,12 @@ noncomputable abbrev ColdSameInterfaceTableStatement
   -- The first clause closes every row of `def:cold-same-interface-table`:
   -- no row is realizing, and every row either enters a support of G's
   -- declared (F4) registry (`ColdEntersHandoffRegistry`, tex 7234 "enters a
-  -- declared Type B handoff envelope") or is distinguishing;
-  -- a row that is not handed off and not distinguishing is a
-  -- target-complete compression of its own proper support, which node
-  -- `[14]` has already excluded.
+  -- declared Type B handoff envelope") or is distinguishing.  Read at G the
+  -- distinguishing arm is empty (the row's two representatives have the same
+  -- response in `G − Z`), and a row that is not handed off supplies, by
+  -- `def:admissible-rank-quotient`, the strictly smaller representative
+  -- `glue E (G − Z)`, a smaller counterexample refuted by the size
+  -- minimality of G.
   --
   -- The second is the short self-return filter: a cold-window outside
   -- self-return whose smear interval `[ℓ, ℓ+order−1]` meets an accepted
@@ -3250,32 +3248,18 @@ noncomputable abbrev ColdGermDistinguishedStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- `lem:cold-bounded-germ-trichotomy`, G2, through
-  -- `lem:context-universality`: "the two local responses agree in the actual
-  -- quotient but disagree in a compatible context.  By
-  -- `lem:context-universality`, such an identification is not
-  -- target-complete; equivalently it is a target-defective quotient."
-  --
-  -- The conclusion is drawn in *every* immutable profile fibre, which is
-  -- what makes it a statement about the quotient rather than about one
-  -- chosen profile, and it is the same shape node `[156]` already commits
-  -- for the (F2) discrepancy.  No cycle is claimed: the manuscript is
-  -- explicit that G2 distinguishes "without already realizing the cycle in
-  -- the current graph", and what the germ is routed to is the defect exit.
-  --
-  -- FAITHFUL-TRIVIAL: `Distinguishing` is a distinguishing context, so the
-  -- conclusion is `lem:context-universality` read at the germ; the paper's
-  -- G2 sentence is exactly this implication.  Stated at node `[153]`'s
-  -- extracted family.
+  -- `lem:cold-bounded-germ-trichotomy`, G2, read at G: "some compatible
+  -- outside context distinguishes the two representatives by power-of-two
+  -- truth value".  At G the support's only compatible context is G's own
+  -- surroundings `G − Z`, and the second representative `E` carries G's
+  -- retained cut-state there (`BoundedGerm.sameResponse`), so the two
+  -- representatives never separate: the G2 test is decided at G and no
+  -- configuration of node `[153]`'s extracted family is hit-distinguished.
+  -- Lean improvement: the G2 arm is empty at G.
   ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
       (Graph.MinimumDegreeAtLeast data.threshold)
       (Graph.HasCycleWithLength data.LengthOK) object,
-    CanonicalActiveColdGerm data object germ →
-      ∀ (Profile : Type)
-        (profile : Graph.BoundaryPiece germ.atom.interface → Profile),
-        germ.Distinguishing →
-          ¬ Graph.Response.TargetComplete profile
-            (Graph.HasCycleWithLength data.LengthOK) germ.piece germ.canonical
+    CanonicalActiveColdGerm data object germ → ¬ germ.Distinguishing
 
 /-- The statement published under the `coldGermSilent` key. -/
 noncomputable abbrev ColdGermSilentStatement
@@ -3288,8 +3272,11 @@ noncomputable abbrev ColdGermSilentStatement
   -- First clause, G3: "replacing the longer representative by the shorter
   -- one preserves the boundary degree profile and the target response
   -- against every context, creates no dyadic cycle, and strictly decreases
-  -- the support.  This is a nontrivial target-complete compression of a
-  -- proper support", forbidden by `cor:uncompressible`.  The germ is
+  -- the support", forbidden by `lem:replacement`.  Read at G, the
+  -- replacement is `X' = E` glued into G's own surroundings `G − Z`: same
+  -- boundary-degree profile, the baseline (internal degrees included), G's
+  -- target response in `G − Z`, and strictly smaller -- a smaller
+  -- counterexample, refuted by the size minimality of G.  The germ is
   -- oriented as the manuscript orients it: its support carries the longer
   -- representative, so `δ < 0` and the replacement is the shorter one.  No
   -- silent length-changing germ survives.
@@ -3526,24 +3513,15 @@ noncomputable abbrev ColdGermRoutedStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- The length-changing germ conclusion obtained by eliminating G1 and G3
-  -- and then reading the G2 route from the ledger.  The fact therefore
-  -- carries the actual target-defect route, not just the intermediate
-  -- `Distinguishing` predicate.  Stated at node `[153]`'s extracted family
-  -- (`CanonicalActiveColdGerm`).
+  -- `lem:cold-bounded-germ-trichotomy`'s conclusion at G: "no length-changing
+  -- cold bounded configuration survives".  G1 is refuted by target avoidance,
+  -- G2 is empty at G, and G3 is a smaller counterexample `glue E (G − Z)`
+  -- refuted by the size minimality of G; so no configuration of node
+  -- `[153]`'s extracted family (`CanonicalActiveColdGerm`) is shortening.
   ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object,
-      CanonicalActiveColdGerm data object germ →
-      germ.increment < 0 →
-        germ.Distinguishing ∧
-          (∀ (Profile : Type)
-            (profile : Graph.BoundaryPiece germ.atom.interface → Profile),
-            ¬ Graph.Response.TargetComplete profile
-              (Graph.HasCycleWithLength data.LengthOK)
-              germ.piece germ.canonical) ∧
-          (germ.Distinguishing ∨
-            SeparatorHandoffAt data object germ.support)
+      CanonicalActiveColdGerm data object germ → ¬ germ.increment < 0
 
 /-- Node `[154]`, first binary test of `lem:cold-bounded-germ-trichotomy`
 (G1): some configuration of the extracted active family is hit-realized. -/

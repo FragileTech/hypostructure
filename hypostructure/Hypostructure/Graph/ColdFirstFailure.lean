@@ -1,6 +1,7 @@
 import Hypostructure.Graph.ColdCorridor
 import Hypostructure.Graph.WindowPacking
 import Hypostructure.Graph.BoundaryDemand
+import Hypostructure.Graph.ActualContext
 
 /-!
 # The first failure of a cold return corridor
@@ -179,16 +180,20 @@ only for the current outside context and fails for another compatible context.
 By `lem:context-universality`, this is not target-complete, so it is a
 target-defective quotient."*
 
-The distinguishing context is quantified, not collapsed to one ambient
-evaluation: `Response.TargetDefect` is `∃ outside, ¬(Target (glue left outside)
-↔ Target (glue right outside))` over *all* outside contexts of the shared
-interface.  The shared interface is the later prefix's canonical cut boundary;
-the earlier prefix is read as the retained subpiece on that same boundary. -/
+Read at G.  The shared interface is the later prefix's canonical cut boundary
+`∂J_right`, the earlier prefix is read as G's retained subpiece on that same
+boundary, and the only compatible context of `J_right` in G is G's own
+surroundings `G − J_right` (`SupportAtom.outside`).  Both readings, glued there,
+are subgraphs of G: the later one is G itself up to reconstruction, the earlier
+one is `ActualContext.actualGlue`.  So the clause is decided at G: on an object
+avoiding the target, no (F2) occurs (`not_firstFailureDefect`).  Lean
+improvement: the (F2) arm of `lem:cold-corridor-first-failure` is empty at G. -/
 
 /-- **Clause (F2)** at two initial segments, read on their actual prefix
-supports.  The later support fixes the shared cut boundary and the earlier
-support is retained inside it, so the discrepancy cannot be witnessed by an
-unrelated caller-supplied boundary piece. -/
+supports in G's own surroundings: the two prefixes have the same cut-state, and
+G's two readings of `J_right` (the later prefix's piece, and the retained
+earlier prefix on the same boundary) have different target truth in
+`G − J_right`. -/
 noncomputable def FirstFailureDefect {S : DeclaredSignature}
     (corridor : Corridor object windows component)
     (presentation : Presentation.{u} S object)
@@ -197,60 +202,39 @@ noncomputable def FirstFailureDefect {S : DeclaredSignature}
     (support : corridor.Segment → Finset object.Vertex)
     (left right : corridor.Segment) : Prop :=
   presentation.state (index left) = presentation.state (index right) ∧
-    Graph.Response.TargetDefect Target
-      (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
-        (support right) (support left))
-      (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object (support right))
+    ¬ (Target (Graph.glue
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+            (support right) (support left))
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object
+            (support right))) ↔
+        Target (Graph.glue
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object (support right))
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object
+            (support right))))
 
-/-- **`lem:cold-corridor-first-failure` (ii), through `lem:context-universality`:
-"case (F2) is a target-defective quotient".**
-
-*"If some context `Y₀` distinguished `r₁` and `r₂`, then one of the two gluings
-would contain a power-of-two cycle and the other would not.  The quotient would
-fail to preserve the target predicate for `Y₀` and therefore would not be
-target-complete."*  So an identification of the two prefixes is not
-target-complete in *any* immutable profile fibre. -/
-theorem not_targetComplete_of_firstFailureDefect {S : DeclaredSignature}
-    {corridor : Corridor object windows component}
-    {presentation : Presentation.{u} S object}
-    {index : corridor.Segment → presentation.Segment}
-    {Target : Graph.FiniteObject.{u} → Prop}
-    {support : corridor.Segment → Finset object.Vertex}
-    {left right : corridor.Segment} {Profile : Type}
-    {profile : Graph.BoundaryPiece
-      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object
-        (support right)) → Profile}
-    (failure : FirstFailureDefect corridor presentation index Target support
-      left right) :
-    ¬ Graph.Response.TargetComplete profile Target
-      (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
-        (support right) (support left))
-      (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object (support right)) :=
-  Graph.Response.notTargetComplete_of_targetDefect failure.2
-
-/-- **The (F2)-free reading is context-equivalent.**  This is the other half of
-`lem:context-universality` and the step `lem:cold-same-interface-table`'s neutral
-row consumes: with the discrepancy excluded, two prefixes carrying the same cold
-corridor state have the same target response against every compatible
-context. -/
-theorem contextEquivalent_of_not_firstFailureDefect {S : DeclaredSignature}
-    {corridor : Corridor object windows component}
-    {presentation : Presentation.{u} S object}
-    {index : corridor.Segment → presentation.Segment}
-    {Target : Graph.FiniteObject.{u} → Prop}
-    {support : corridor.Segment → Finset object.Vertex}
-    {left right : corridor.Segment}
-    (excluded : ¬ FirstFailureDefect corridor presentation index Target support
-      left right)
-    (same : presentation.state (index left) = presentation.state (index right)) :
-    Graph.Response.ContextEquivalent Target
-      (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
-        (support right) (support left))
-      (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object (support right)) := by
-  classical
-  intro outside
-  by_contra distinguishes
-  exact excluded ⟨same, ⟨outside, distinguishes⟩⟩
+/-- **(F2) is empty at G.**  On an object avoiding the target, both readings of
+`J_right` glued into `G − J_right` avoid it: the earlier prefix's reading is
+`ActualContext.actualGlue`, a subgraph of G (`not_target_actualGlue`), and the
+later prefix's piece reconstructs G.  So they never differ. -/
+theorem not_firstFailureDefect {S : DeclaredSignature} {LengthOK : Nat → Prop}
+    (avoids : ¬ Graph.HasCycleWithLength LengthOK object)
+    (corridor : Corridor object windows component)
+    (presentation : Presentation.{u} S object)
+    (index : corridor.Segment → presentation.Segment)
+    (support : corridor.Segment → Finset object.Vertex)
+    (left right : corridor.Segment) :
+    ¬ FirstFailureDefect corridor presentation index
+      (Graph.HasCycleWithLength LengthOK) support left right := by
+  rintro ⟨_same, separated⟩
+  apply separated
+  constructor
+  · intro hit
+    exact (ActualContext.not_target_actualGlue avoids (support right) (support left)
+      hit).elim
+  · intro hit
+    exact (avoids ((Graph.hasCycleWithLength_iff_of_iso
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.decomposition object
+        (support right)).reconstructionIso LengthOK).mp hit)).elim
 
 /-! ## (F3): a strictly smaller proper representative
 
@@ -266,7 +250,11 @@ The structure below carries the *pair*.  The earlier prefix is not an unrelated
 existential: it is named, it is earlier along the corridor, it carries the same
 cold corridor state -- which is what makes the two same-interface -- and its own
 boundary piece is the replacement.  Every remaining field is a clause of
-`def:proper-quotient-representative`. -/
+`def:proper-quotient-representative`, read at G: the exact target response is
+compared in G's own surroundings `G − J` (the support atom's outside), the only
+context of the prefix in G.  So (F3) is a target-complete compression of a
+proper support read at G (`glue X' (G − J)` satisfies the hypotheses of
+`lem:replacement`) and is refuted by `cor:uncompressible` (`not_occurs`). -/
 
 /-- **Clause (F3)** at a corridor: a named earlier prefix whose own piece is a
 strictly smaller proper representative of a later one. -/
@@ -306,10 +294,12 @@ structure FirstFailureCompression {S : DeclaredSignature}
     (glue replacement
       (rowAtom object (support stage) connected proper).outside).LexicographicallySmaller
       object
-  /-- "The same exact target response against every outside context." -/
-  contextUniversal :
-    ∀ outside, Target (glue replacement outside) ↔
-      Target (glue (rowAtom object (support stage) connected proper).piece outside)
+  /-- "The same exact target response", read at G: in G's own surroundings
+  `G − J`, the only context of the prefix in G. -/
+  sameResponse :
+    Target (glue replacement (rowAtom object (support stage) connected proper).outside) ↔
+      Target (glue (rowAtom object (support stage) connected proper).piece
+        (rowAtom object (support stage) connected proper).outside)
 
 /-- **Clause (F3) occurs** at a corridor: some such pair exists.  The structure
 carries data, so the proposition the branch denies is its inhabitation. -/
@@ -331,38 +321,49 @@ variable {index : corridor.Segment → presentation.Segment}
 variable {Baseline Target : Graph.FiniteObject.{u} → Prop}
 variable {support : corridor.Segment → Finset object.Vertex}
 
-/-- **`lem:cold-corridor-first-failure` (iii): "case (F3) is a target-complete
-compression of a proper support".**
-
-Every clause of `CompressibleSupport` is a field of the pair, and the conversion
-projects those fields directly. -/
+/-- **`lem:cold-corridor-first-failure` (iii), read at G: "case (F3) is a
+target-complete compression of a proper support".**  The replacement glued into
+G's surroundings `G − J` keeps the boundary-degree profile and the baseline, is
+strictly smaller, and has G's target response there, so it has no target cycle
+when G avoids the target: every clause of `CompressibleSupport` (the hypotheses
+of `lem:replacement`, read at G). -/
 theorem compressibleSupport
+    (targetInvariant : Graph.FiniteObject.IsomorphismInvariant Target)
+    (avoids : ¬ Target object)
     (failure : FirstFailureCompression corridor presentation index Baseline Target
       support) :
     Graph.Strategy.InterfaceReplacement.CompressibleSupport Baseline Target object
       (support failure.stage) :=
   ⟨failure.connected, failure.proper, failure.replacement, failure.sameProfile,
-    failure.baseline, failure.smaller, failure.contextUniversal⟩
+    failure.baseline, failure.smaller,
+    fun hit => avoids ((targetInvariant.iff_of_iso
+      ⟨(rowAtom object (support failure.stage) failure.connected
+        failure.proper).reconstructionIso⟩).mp (failure.sameResponse.mp hit))⟩
 
 /-- **And `cor:uncompressible` forbids it.**  On a selected minimal
 counterexample no proper support admits a target-complete compression, so (F3)
 cannot occur -- which is what makes the corridor continue past it. -/
 theorem elim
+    (targetInvariant : Graph.FiniteObject.IsomorphismInvariant Target)
+    (avoids : ¬ Target object)
     (uncompressible : ∀ region : Finset object.Vertex,
       ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport Baseline Target
         object region)
     (failure : FirstFailureCompression corridor presentation index Baseline Target
       support) : False :=
-  uncompressible (support failure.stage) failure.compressibleSupport
+  uncompressible (support failure.stage)
+    (failure.compressibleSupport targetInvariant avoids)
 
-/-- **(F3) does not occur** when no proper support of the object is
-compressible. -/
+/-- **(F3) does not occur at G**: G avoids the target and no proper support of
+G is compressible. -/
 theorem not_occurs
+    (targetInvariant : Graph.FiniteObject.IsomorphismInvariant Target)
+    (avoids : ¬ Target object)
     (uncompressible : ∀ region : Finset object.Vertex,
       ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport Baseline Target
         object region) :
     ¬ Occurs corridor presentation index Baseline Target support :=
-  fun ⟨failure⟩ => failure.elim uncompressible
+  fun ⟨failure⟩ => failure.elim targetInvariant avoids uncompressible
 
 end FirstFailureCompression
 
@@ -680,23 +681,6 @@ theorem mem_coldWindows_iff {Window Coordinate : Type} [DecidableEq Window]
       (window ∈ packing ∧
         ¬ ((retained window).length = packageLength ∧ (retained window).Nodup)) := by
   simp [coldWindows, ← isHot_iff retained packageLength window]
-
-/-- The length-changing part of `lem:cold-bounded-germ-trichotomy` after the
-two ledger-closed arms have been read back by key. -/
-theorem boundedGerm_not_survives
-    {S : DeclaredSignature} {Baseline Target : Graph.FiniteObject.{u} → Prop}
-    {object : Graph.FiniteObject.{u}}
-    (notRealizing : ∀ germ : BoundedGerm S Baseline Target object,
-      ¬ germ.Realizing)
-    (notSilent : ∀ germ : BoundedGerm S Baseline Target object,
-      germ.increment < 0 → ¬ germ.Neutral)
-    (germ : BoundedGerm S Baseline Target object)
-    (shorter : germ.increment < 0) :
-    germ.Distinguishing := by
-  rcases germ.trichotomy with realizing | distinguishing | neutral
-  · exact absurd realizing (notRealizing germ)
-  · exact distinguishing
-  · exact absurd neutral (notSilent germ shorter)
 
 /-! ## Greedy independence and cold mass -/
 

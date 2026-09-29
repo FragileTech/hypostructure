@@ -22,12 +22,17 @@ on `Fin k` internal vertices (`CanonicalPiece`), a well-order on canonical
 pieces refining internal size (`Precedes`), the transport of an arbitrary piece
 to its canonical carrier (`ofPiece`, isomorphic over the interface), and the
 operator `canonicalRepresentative` = the `Precedes`-least canonical piece
-satisfying a reading.  For the cut-state reading of a piece
-(`CutStateReading`) the piece's own transport is a realizer, so the canonical
-representative exists, realizes the reading, and precedes every other
-realizer; exchanging a piece for its canonical representative inside a gluing
-preserves the target response (`glue_swap_target_iff`) and the vertex count
-exactly when the internal sizes agree.
+satisfying a reading.
+
+At a piece of `G` the cut-state is read in G's own surroundings `G − Z` and
+nowhere else (`CutStateReadingAt`: the same boundary-degree profile, the same
+target response there, the baseline of the completion there).  The piece's own
+transport is a realizer, so the canonical representative
+`cutStateRepresentativeAt` exists, realizes the reading, and precedes every
+other realizer; when it is strictly smaller it is a strictly smaller
+counterexample (`swap_smaller_counterexample_at`).  The all-context
+`CutStateReading` is kept only for one cross-cluster consumer pending its
+migration.
 
 Nothing here is specialized to a manuscript: the target and the baseline are
 parameters, and no numeral occurs.
@@ -290,10 +295,13 @@ namespace CanonicalPiece
 
 variable {boundary : Boundary.{u}}
 
-/-- **The retained cut-state of a piece**, as the manuscript's canonical
-representative must realize it: the same boundary-degree profile, the same
-target response against every outside context, and — `def:proper-quotient-representative` (d) read at the
-gluing — the baseline of every completion is inherited. -/
+/-- **The retained cut-state of a piece against every outside context.**
+
+Not a G-form: it quantifies over every boundaried context.  The cold corridor
+and the neutral germ read the G-form `CutStateReadingAt` (G's own surroundings
+only).  This all-context form and `cutStateRepresentative` are retained only for
+the cross-cluster consumer `Route8Residual.retainedReading`, pending its
+migration to `cutStateRepresentativeAt`. -/
 def CutStateReading (Baseline Target : FiniteObject.{u} → Prop)
     (piece : BoundaryPiece boundary) (canonical : CanonicalPiece boundary) : Prop :=
   canonical.toPiece.boundaryDegreeProfile = piece.boundaryDegreeProfile ∧
@@ -340,18 +348,9 @@ theorem cutStateRepresentative_reading {Baseline Target : FiniteObject.{u} → P
       (cutStateRepresentative baselineInvariant targetInvariant piece) :=
   canonicalRepresentative_reading _ _
 
-/-- The representative is at most as large as the piece itself. -/
-theorem cutStateRepresentative_size_le {Baseline Target : FiniteObject.{u} → Prop}
-    (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
-    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
-    (piece : BoundaryPiece boundary) :
-    (cutStateRepresentative baselineInvariant targetInvariant piece).size ≤
-      piece.internalVertexCount :=
-  canonicalRepresentative_size_le _ _
-    (cutStateReading_toCanonical baselineInvariant targetInvariant piece)
-
 /-- **The swap is neutral for the target**: gluing the representative into any
-context has the same target status as gluing the piece. -/
+context has the same target status as gluing the piece.  (All-context form;
+kept for its cross-cluster consumers pending migration.) -/
 theorem glue_swap_target_iff {Baseline Target : FiniteObject.{u} → Prop}
     (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
     (targetInvariant : FiniteObject.IsomorphismInvariant Target)
@@ -360,62 +359,105 @@ theorem glue_swap_target_iff {Baseline Target : FiniteObject.{u} → Prop}
       Target (glue piece outside) :=
   (cutStateRepresentative_reading baselineInvariant targetInvariant piece).2.1 outside
 
-/-- The swap inherits the baseline of the completion. -/
-theorem glue_swap_baseline {Baseline Target : FiniteObject.{u} → Prop}
-    (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
-    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
-    (piece : BoundaryPiece boundary) (outside : OutsideContext boundary)
-    (baseline : Baseline (glue piece outside)) :
-    Baseline (glue (cutStateRepresentative baselineInvariant targetInvariant piece).toPiece outside) :=
-  (cutStateRepresentative_reading baselineInvariant targetInvariant piece).2.2 outside baseline
+end CanonicalPiece
 
-/-- The swap never increases the vertex count, and strictly decreases it when
-the representative is smaller. -/
-theorem glue_swap_vertexCount {Baseline Target : FiniteObject.{u} → Prop}
+namespace CanonicalPiece
+
+variable {boundary : Boundary.{u}}
+
+/-! ## The cut-state reading at G's own surroundings
+
+The manuscript's canonical representative is read on a piece of `G` whose only
+surroundings are `G − Z`.  `CutStateReadingAt piece outside` is the retained
+cut-state read there and nowhere else: the same boundary-degree profile, the
+same target response in `outside`, and the baseline of `outside`'s completion
+inherited.  `cutStateRepresentativeAt` is the `Precedes`-least canonical piece
+with that reading; the piece's own transport realizes it, so it exists without
+any hypothesis.  No boundaried context other than `outside` is read. -/
+
+/-- **The retained cut-state of a piece, read in one outside context**: the
+same boundary-degree profile, the same target response in `outside`, and the
+baseline of `outside`'s completion inherited. -/
+def CutStateReadingAt (Baseline Target : FiniteObject.{u} → Prop)
+    (piece : BoundaryPiece boundary) (outside : OutsideContext boundary)
+    (canonical : CanonicalPiece boundary) : Prop :=
+  canonical.toPiece.boundaryDegreeProfile = piece.boundaryDegreeProfile ∧
+    (Target (glue canonical.toPiece outside) ↔ Target (glue piece outside)) ∧
+    (Baseline (glue piece outside) → Baseline (glue canonical.toPiece outside))
+
+/-- A piece's own canonical transport realizes its cut-state in `outside`. -/
+theorem cutStateReadingAt_toCanonical {Baseline Target : FiniteObject.{u} → Prop}
     (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
     (targetInvariant : FiniteObject.IsomorphismInvariant Target)
     (piece : BoundaryPiece boundary) (outside : OutsideContext boundary) :
-    (glue (cutStateRepresentative baselineInvariant targetInvariant piece).toPiece outside).vertexCount =
-      boundary.vertexCount + (cutStateRepresentative baselineInvariant targetInvariant piece).size +
-        outside.internalVertexCount := by
-  rw [glue_vertexCount, toPiece_internalVertexCount]
+    CutStateReadingAt Baseline Target piece outside piece.toCanonical := by
+  refine ⟨?_, ?_, ?_⟩
+  · rw [BoundaryPiece.toCanonical_toPiece]
+    exact piece.transport_boundaryDegreeProfile _
+  · exact targetInvariant.iff_of_iso (piece.toCanonical_glue_isomorphic outside)
+  · intro baseline
+    exact (baselineInvariant.iff_of_iso (piece.toCanonical_glue_isomorphic outside)).2 baseline
 
-/-- **The canonical-replacement dichotomy of the neutral germ**
-(`lem:neutral-germ-symmetry`, nodes `[165]`/`[166]`): either the piece already
-is its canonical representative (on the canonical carrier), or the
-representative strictly precedes it in the fixed canonical order. -/
-theorem toCanonical_eq_or_precedes {Baseline Target : FiniteObject.{u} → Prop}
+theorem cutStateReadingAt_realizable {Baseline Target : FiniteObject.{u} → Prop}
     (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
     (targetInvariant : FiniteObject.IsomorphismInvariant Target)
-    (piece : BoundaryPiece boundary) :
-    piece.toCanonical = cutStateRepresentative baselineInvariant targetInvariant piece ∨
-      Precedes (cutStateRepresentative baselineInvariant targetInvariant piece) piece.toCanonical := by
-  by_cases same : piece.toCanonical = cutStateRepresentative baselineInvariant targetInvariant piece
-  · exact Or.inl same
-  · exact Or.inr (canonicalRepresentative_precedes _ _
-      (cutStateReading_toCanonical baselineInvariant targetInvariant piece) same)
+    (piece : BoundaryPiece boundary) (outside : OutsideContext boundary) :
+    ∃ canonical, CutStateReadingAt Baseline Target piece outside canonical :=
+  ⟨piece.toCanonical,
+    cutStateReadingAt_toCanonical baselineInvariant targetInvariant piece outside⟩
 
-/-- **`lem:refined-minimality-swap`, the size-reducing case.**  If the canonical
-representative of a piece is strictly smaller than the piece, then for every
-completion the swapped graph has strictly fewer vertices, the same target
-status, and the inherited baseline: a strictly smaller counterexample whenever
-the completion was one. -/
-theorem swap_smaller_counterexample {Baseline Target : FiniteObject.{u} → Prop}
+/-- **The canonical representative of a piece's cut-state in `outside`**
+(`def:cold-corridor-first-failure`, `def:proper-quotient-representative`, read at
+G's own surroundings). -/
+noncomputable def cutStateRepresentativeAt {Baseline Target : FiniteObject.{u} → Prop}
+    (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
+    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
+    (piece : BoundaryPiece boundary) (outside : OutsideContext boundary) :
+    CanonicalPiece boundary :=
+  canonicalRepresentative (CutStateReadingAt Baseline Target piece outside)
+    (cutStateReadingAt_realizable baselineInvariant targetInvariant piece outside)
+
+theorem cutStateRepresentativeAt_reading {Baseline Target : FiniteObject.{u} → Prop}
+    (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
+    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
+    (piece : BoundaryPiece boundary) (outside : OutsideContext boundary) :
+    CutStateReadingAt Baseline Target piece outside
+      (cutStateRepresentativeAt baselineInvariant targetInvariant piece outside) :=
+  canonicalRepresentative_reading _ _
+
+/-- The representative is at most as large as the piece itself. -/
+theorem cutStateRepresentativeAt_size_le {Baseline Target : FiniteObject.{u} → Prop}
+    (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
+    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
+    (piece : BoundaryPiece boundary) (outside : OutsideContext boundary) :
+    (cutStateRepresentativeAt baselineInvariant targetInvariant piece outside).size ≤
+      piece.internalVertexCount :=
+  canonicalRepresentative_size_le _ _
+    (cutStateReadingAt_toCanonical baselineInvariant targetInvariant piece outside)
+
+/-- **`lem:replacement` at G's own surroundings, the size-reducing case.**  If
+the representative is strictly smaller than the piece, its gluing into
+`outside` has strictly fewer vertices, the baseline, and no target, whenever
+the piece's own gluing is a baseline target-avoiding object. -/
+theorem swap_smaller_counterexample_at {Baseline Target : FiniteObject.{u} → Prop}
     (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
     (targetInvariant : FiniteObject.IsomorphismInvariant Target)
     (piece : BoundaryPiece boundary) (outside : OutsideContext boundary)
-    (smaller : (cutStateRepresentative baselineInvariant targetInvariant piece).size <
+    (smaller : (cutStateRepresentativeAt baselineInvariant targetInvariant piece outside).size <
       piece.internalVertexCount)
     (baseline : Baseline (glue piece outside)) (avoids : ¬ Target (glue piece outside)) :
-    (glue (cutStateRepresentative baselineInvariant targetInvariant piece).toPiece outside).vertexCount <
+    (glue (cutStateRepresentativeAt baselineInvariant targetInvariant piece outside).toPiece
+          outside).vertexCount <
         (glue piece outside).vertexCount ∧
-      Baseline (glue (cutStateRepresentative baselineInvariant targetInvariant piece).toPiece outside) ∧
-      ¬ Target (glue (cutStateRepresentative baselineInvariant targetInvariant piece).toPiece outside) := by
-  refine ⟨?_, glue_swap_baseline baselineInvariant targetInvariant piece outside baseline, ?_⟩
-  · rw [glue_swap_vertexCount, glue_vertexCount]
-    omega
-  · intro hit
-    exact avoids ((glue_swap_target_iff baselineInvariant targetInvariant piece outside).1 hit)
+      Baseline (glue (cutStateRepresentativeAt baselineInvariant targetInvariant piece
+        outside).toPiece outside) ∧
+      ¬ Target (glue (cutStateRepresentativeAt baselineInvariant targetInvariant piece
+        outside).toPiece outside) := by
+  have reading := cutStateRepresentativeAt_reading baselineInvariant targetInvariant piece
+    outside
+  refine ⟨?_, reading.2.2 baseline, fun hit => avoids (reading.2.1.mp hit)⟩
+  simp only [glue_vertexCount, toPiece_internalVertexCount]
+  omega
 
 end CanonicalPiece
 
