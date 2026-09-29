@@ -40,6 +40,51 @@ universe u
 
 namespace LocalCycleRank
 
+/-- **Rank nonnegativity for any finite graph**: `|V(H)| ≤ e(H) + c(H)`.
+Each component `C` is connected, so `|C| ≤ e(C) + 1`
+(`Connected.card_vert_le_card_edgeSet_add_one`); components partition the
+vertices, and by the degree sum they partition the edges. -/
+theorem card_le_card_edgeSet_add_components {W : Type*} [Finite W] (H : SimpleGraph W) :
+    Nat.card W ≤ Nat.card H.edgeSet + Nat.card H.ConnectedComponent := by
+  classical
+  letI : Fintype W := Fintype.ofFinite W
+  letI : Fintype H.ConnectedComponent := Fintype.ofFinite _
+  have per : ∀ C : H.ConnectedComponent,
+      Nat.card C.supp ≤ Nat.card (H.induce C.supp).edgeSet + 1 :=
+    fun C => C.connected_toSimpleGraph.card_vert_le_card_edgeSet_add_one
+  have vertices : Nat.card W = ∑ C : H.ConnectedComponent, Nat.card C.supp := by
+    rw [Nat.card_eq_fintype_card, ← card_univ,
+      card_eq_sum_card_fiberwise (f := H.connectedComponentMk) (t := univ)
+        (fun _ _ => mem_univ _)]
+    refine sum_congr rfl fun C _ => ?_
+    rw [Nat.card_eq_fintype_card, Fintype.card_subtype]
+    simp [SimpleGraph.ConnectedComponent.mem_supp_iff]
+  have edges : 2 * Nat.card H.edgeSet =
+      ∑ C : H.ConnectedComponent, 2 * Nat.card (H.induce C.supp).edgeSet := by
+    rw [Nat.card_eq_fintype_card, SimpleGraph.card_edgeSet,
+      ← H.sum_degrees_eq_twice_card_edges,
+      ← sum_fiberwise univ H.connectedComponentMk (fun v => H.degree v)]
+    refine sum_congr rfl fun C _ => ?_
+    rw [Nat.card_eq_fintype_card, SimpleGraph.card_edgeSet,
+      ← SimpleGraph.sum_degrees_eq_twice_card_edges,
+      sum_subtype (p := (· ∈ C.supp)) _ (fun v => by
+        simp [SimpleGraph.ConnectedComponent.mem_supp_iff])]
+    refine sum_congr rfl fun v _ => ?_
+    refine (SimpleGraph.degree_induce_of_neighborSet_subset ?_).symm
+    intro w adjacent
+    have hv := v.2
+    rw [SimpleGraph.ConnectedComponent.mem_supp_iff] at hv ⊢
+    rw [← hv]
+    exact (SimpleGraph.ConnectedComponent.connectedComponentMk_eq_of_adj adjacent).symm
+  have components : Nat.card H.ConnectedComponent =
+      ∑ _C : H.ConnectedComponent, 1 := by
+    rw [sum_const, card_univ, smul_eq_mul, mul_one, Nat.card_eq_fintype_card]
+  rw [← mul_sum] at edges
+  have edges' : Nat.card H.edgeSet = ∑ C : H.ConnectedComponent,
+      Nat.card (H.induce C.supp).edgeSet := by omega
+  rw [vertices, edges', components, ← sum_add_distrib]
+  exact sum_le_sum fun C _ => per C
+
 variable {V : Type u} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
 
@@ -255,6 +300,71 @@ theorem crossRank_eq_of_connected (S : Finset V) (connected : G.Connected) :
   push_cast
   ring
 
+/-! ### Nonnegativity -/
+
+omit [DecidableEq V] in
+/-- `β(G[S]) ≥ 0` for every region `S`. -/
+theorem regionCycleRank_nonneg (S : Finset V) : 0 ≤ regionCycleRank G S := by
+  have h := card_le_card_edgeSet_add_components (G.induce (S : Set V))
+  have edges : Nat.card (G.induce (S : Set V)).edgeSet = regionEdgeCount G S := by
+    rw [Nat.card_eq_fintype_card, SimpleGraph.card_edgeSet]
+    rfl
+  have vertices : Nat.card (S : Set V) = #S := by simp
+  rw [edges, vertices] at h
+  unfold regionCycleRank regionComponents
+  have hZ : (#S : ℤ) ≤ regionEdgeCount G S +
+      Nat.card (G.induce (S : Set V)).ConnectedComponent := by exact_mod_cast h
+  linarith
+
+omit [DecidableEq V] in
+/-- `β(G) ≥ 0`. -/
+theorem cycleRank_nonneg : 0 ≤ cycleRank G := by
+  have h := card_le_card_edgeSet_add_components G
+  rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card (α := G.edgeSet),
+    SimpleGraph.card_edgeSet] at h
+  unfold cycleRank
+  have hZ : (Fintype.card V : ℤ) ≤ #G.edgeFinset + Nat.card G.ConnectedComponent := by
+    exact_mod_cast h
+  linarith
+
+/-- The cross rank is at most `β(G)`: `crossRank S ≤ β(G)`. -/
+theorem crossRank_le_cycleRank (S : Finset V) : crossRank G S ≤ cycleRank G := by
+  unfold crossRank
+  linarith [regionCycleRank_nonneg G S, regionCycleRank_nonneg G Sᶜ]
+
+/-- **Boundary bound of a near-cubic region** (from `β(G[S]) ≥ 0`):
+`|∂S| ≤ |S| + σ_S + 2 c(S)`. -/
+theorem boundary_le (S : Finset V) (degreeThree : ∀ v ∈ S, 3 ≤ G.degree v) :
+    (#(boundaryDarts G S) : ℤ) ≤ #S + regionExcess G S + 2 * regionComponents G S := by
+  have h := two_mul_regionCycleRank G S degreeThree
+  linarith [regionCycleRank_nonneg G S]
+
+omit [DecidableEq V] in
+/-- **Near-cubic global rank**: for connected `G` with minimum degree three,
+`2 β(G) = n + σ_V + 2`, with `σ_V = Σ_v (deg v − 3)`. -/
+theorem two_mul_cycleRank_of_connected (connected : G.Connected)
+    (degreeThree : ∀ v, 3 ≤ G.degree v) :
+    2 * cycleRank G = (Fintype.card V : ℤ) + regionExcess G univ + 2 := by
+  have total := G.sum_degrees_eq_twice_card_edges
+  rw [sum_degree_eq_three_mul_add_excess G univ (fun v _ => degreeThree v),
+    card_univ] at total
+  haveI := connected.preconnected.subsingleton_connectedComponent
+  haveI : Nonempty G.ConnectedComponent :=
+    ⟨G.connectedComponentMk connected.nonempty.some⟩
+  have one : Nat.card G.ConnectedComponent = 1 := Nat.card_unique
+  unfold cycleRank
+  rw [one]
+  have hZ : (3 * Fintype.card V + regionExcess G univ : ℤ) = 2 * #G.edgeFinset := by
+    exact_mod_cast total
+  push_cast
+  linarith
+
+/-- `σ_V = σ_S + σ_{Sᶜ}`. -/
+theorem regionExcess_add_compl (S : Finset V) :
+    regionExcess G S + regionExcess G Sᶜ = regionExcess G univ := by
+  unfold regionExcess
+  exact sum_add_sum_compl S _
+
 /-! ### Thin pieces -/
 
 /-- The darts of `∂S` whose tail lies in the component `K` of `G[S]`. -/
@@ -340,6 +450,34 @@ theorem vertexCount_add_two_le_of_partition (S : Finset V)
     exact this
   unfold cycleRank at split
   push_cast at split
+  linarith
+
+/-- **A thin region forces rank onto its complement and the boundary**: for
+connected near-cubic `G` and `S` thin,
+`2 (β(G[Sᶜ]) + crossRank S) ≥ |Sᶜ| + σ_{Sᶜ} + 2`. -/
+theorem compl_add_crossRank_ge_of_thin (S : Finset V) (connected : G.Connected)
+    (degreeThree : ∀ v, 3 ≤ G.degree v)
+    (thin : ∀ K, 2 ≤ #(componentBoundaryDarts G S K)) :
+    (#Sᶜ : ℤ) + regionExcess G Sᶜ + 2 ≤
+      2 * (regionCycleRank G Sᶜ + crossRank G S) := by
+  have global := two_mul_cycleRank_of_connected G connected degreeThree
+  have local_ := two_mul_regionCycleRank_le_of_thin G S (fun v _ => degreeThree v) thin
+  have excess := regionExcess_add_compl G S
+  have count : (#S : ℤ) + #Sᶜ = Fintype.card V := by exact_mod_cast card_add_card_compl S
+  have excessZ : (regionExcess G S : ℤ) + regionExcess G Sᶜ = regionExcess G univ := by
+    exact_mod_cast excess
+  unfold crossRank
+  linarith
+
+/-- **Both sides thin**: for connected near-cubic `G` with `S` and `Sᶜ` both
+thin, `crossRank S ≥ 1`, i.e. `|∂S| ≥ c(S) + c(Sᶜ)`. -/
+theorem one_le_crossRank_of_thin_both (S : Finset V) (connected : G.Connected)
+    (degreeThree : ∀ v, 3 ≤ G.degree v)
+    (thin : ∀ K, 2 ≤ #(componentBoundaryDarts G S K))
+    (thinCompl : ∀ K, 2 ≤ #(componentBoundaryDarts G Sᶜ K)) :
+    1 ≤ crossRank G S := by
+  have h := compl_add_crossRank_ge_of_thin G S connected degreeThree thin
+  have c := two_mul_regionCycleRank_le_of_thin G Sᶜ (fun v _ => degreeThree v) thinCompl
   linarith
 
 end LocalCycleRank
@@ -504,6 +642,63 @@ theorem vertexCount_add_two_le_of_partition (S : Finset object.Vertex)
   rw [vertexCount_eq_card] at ledger ⊢
   exact LocalCycleRank.vertexCount_add_two_le_of_partition object.graph S
     connected ledger
+
+/-- `β(G[S]) ≥ 0` on a region of the object. -/
+theorem regionCycleRank_nonneg (S : Finset object.Vertex) :
+    0 ≤ object.regionCycleRank S := by
+  letI := object.vertices; letI := object.decideAdj
+  exact LocalCycleRank.regionCycleRank_nonneg object.graph S
+
+/-- `β(G) ≥ 0` for the object. -/
+theorem cycleRankInt_nonneg : 0 ≤ object.cycleRankInt := by
+  letI := object.vertices; letI := object.decideAdj
+  rw [cycleRankInt_eq]
+  exact LocalCycleRank.cycleRank_nonneg object.graph
+
+/-- `crossRank S ≤ β(G)`. -/
+theorem crossRank_le_cycleRankInt (S : Finset object.Vertex) :
+    object.crossRank S ≤ object.cycleRankInt := by
+  unfold crossRank
+  linarith [object.regionCycleRank_nonneg S,
+    object.regionCycleRank_nonneg (object.regionCompl S)]
+
+/-- **Boundary bound of a near-cubic region of the object**:
+`|∂S| ≤ |S| + σ_S + 2 c(S)`. -/
+theorem boundaryCount_le (S : Finset object.Vertex)
+    (degreeThree : ∀ v ∈ S, 3 ≤ object.degree v) :
+    (object.boundaryCount S : ℤ) ≤
+      #S + object.regionExcess S + 2 * object.regionComponents S := by
+  letI := object.vertices; letI := object.decideAdj
+  exact LocalCycleRank.boundary_le object.graph S degreeThree
+
+/-- **A thin region of the object forces rank onto its complement and the
+boundary**: `2 (β(G[V∖S]) + crossRank S) ≥ |V∖S| + σ_{V∖S} + 2`. -/
+theorem compl_add_crossRank_ge_of_thin (S : Finset object.Vertex)
+    (connected : object.graph.Connected)
+    (degreeThree : ∀ v, 3 ≤ object.degree v)
+    (thin : ∀ K, 2 ≤ #(object.componentBoundaryDarts S K)) :
+    (#(object.regionCompl S) : ℤ) + object.regionExcess (object.regionCompl S) + 2 ≤
+      2 * (object.regionCycleRank (object.regionCompl S) + object.crossRank S) := by
+  letI := object.vertices; letI := object.decideAdj
+  have h := LocalCycleRank.compl_add_crossRank_ge_of_thin object.graph S connected
+    degreeThree thin
+  unfold crossRank
+  rw [cycleRankInt_eq]
+  exact h
+
+/-- **Both sides thin**: `crossRank S ≥ 1`. -/
+theorem one_le_crossRank_of_thin_both (S : Finset object.Vertex)
+    (connected : object.graph.Connected)
+    (degreeThree : ∀ v, 3 ≤ object.degree v)
+    (thin : ∀ K, 2 ≤ #(object.componentBoundaryDarts S K))
+    (thinCompl : ∀ K, 2 ≤ #(object.componentBoundaryDarts (object.regionCompl S) K)) :
+    1 ≤ object.crossRank S := by
+  letI := object.vertices; letI := object.decideAdj
+  have h := LocalCycleRank.one_le_crossRank_of_thin_both object.graph S connected
+    degreeThree thin thinCompl
+  unfold crossRank
+  rw [cycleRankInt_eq]
+  exact h
 
 /-! ### Windows `W` and remainder `R` -/
 
