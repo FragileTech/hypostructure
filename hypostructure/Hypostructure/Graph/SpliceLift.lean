@@ -217,6 +217,15 @@ theorem splice_cycle_lift {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p
       · exact hva e
       · exact hvb e
 
+theorem splice_cycle_lift' {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.IsPath)
+    (hlen : 2 ≤ p.length) (D : Set V) (hD : ∀ v, v ∈ D ↔ v ∈ interior p) {x : V}
+    (c : (splice G a b D).Walk x x) (hc : c.IsCycle) :
+    (∃ (y : V) (d : G.Walk y y), d.IsCycle ∧ d.length = c.length) ∨
+    (∃ (y : V) (d : G.Walk y y), d.IsCycle ∧ d.length + 1 = c.length + p.length) := by
+  have : D = interior p := Set.ext hD
+  subst this
+  exact splice_cycle_lift p hp hlen c hc
+
 /-- **F08 at graph level: what a target cycle of the excision costs.**  If the spliced graph
 has a cycle whose length satisfies `LengthOK`, then `G` has an accepted cycle, or `G` has a
 cycle of length `L + q` with `LengthOK L`, where `q = |p| - 1` is the number of deleted
@@ -232,6 +241,89 @@ theorem splice_target {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.IsP
   rcases splice_cycle_lift p hp hlen c hc with ⟨y, d, hd, hl⟩ | ⟨y, d, hd, hl⟩
   · exact Or.inl ⟨y, d, hd, hl ▸ hok⟩
   · exact Or.inr ⟨c.length, y, d, hok, hd, by omega⟩
+
+/-! ## Several shortcuts at once (the multi-boundary splice) -/
+
+/-- A shortcut of `G`: a path of length at least `2` to be replaced by one edge. -/
+structure Shortcut (G : SimpleGraph V) where
+  a : V
+  b : V
+  p : G.Walk a b
+  isPath : p.IsPath
+  two_le : 2 ≤ p.length
+
+/-- The shift of a shortcut: the number of vertices its interior deletes. -/
+def Shortcut.shift {G : SimpleGraph V} (s : Shortcut G) : Nat := s.p.length - 1
+
+/-- `G` with the interiors of the given shortcut paths deleted and each shortcut edge added. -/
+def multiSplice (G : SimpleGraph V) : List (Shortcut G) → SimpleGraph V
+  | [] => G
+  | s :: L => splice (multiSplice G L) s.a s.b (interior s.p)
+
+/-- The vertices deleted by the shortcut paths. -/
+def delSet {G : SimpleGraph V} : List (Shortcut G) → Set V
+  | [] => ∅
+  | s :: L => interior s.p ∪ delSet L
+
+/-- The shortcut paths are pairwise compatible: the interior of each avoids the support of
+the others. -/
+def Compatible {G : SimpleGraph V} (L : List (Shortcut G)) : Prop :=
+  L.Pairwise fun s t => Disjoint (interior s.p) {v | v ∈ t.p.support} ∧
+    Disjoint (interior t.p) {v | v ∈ s.p.support}
+
+theorem adj_multiSplice {G : SimpleGraph V} (L : List (Shortcut G)) {x y : V}
+    (h : G.Adj x y) (hx : x ∉ delSet L) (hy : y ∉ delSet L) : (multiSplice G L).Adj x y := by
+  induction L with
+  | nil => exact h
+  | cons s L ih =>
+    simp only [delSet, Set.mem_union, not_or] at hx hy
+    exact Or.inl ⟨ih hx.2 hy.2, hx.1, hy.1⟩
+
+theorem not_mem_delSet_of_support {G : SimpleGraph V} (s : Shortcut G) :
+    ∀ (L : List (Shortcut G)),
+      (∀ t ∈ L, Disjoint (interior t.p) {v | v ∈ s.p.support}) →
+      ∀ v ∈ s.p.support, v ∉ delSet L
+  | [], _, v, _ => by simp [delSet]
+  | t :: L, h, v, hv => by
+    simp only [delSet, Set.mem_union, not_or]
+    refine ⟨fun hvt => ?_, not_mem_delSet_of_support s L (fun u hu => h u (List.mem_cons_of_mem _ hu)) v hv⟩
+    exact Set.disjoint_left.1 (h t (List.mem_cons_self)) hvt hv
+
+/-- **Lifting through several shortcuts.**  Every cycle of the multiply spliced graph lifts to
+a cycle of `G` whose length is the cycle's length plus the shifts of some of the shortcuts
+(those whose new edge the cycle uses). -/
+theorem multiSplice_cycle_lift {G : SimpleGraph V} :
+    ∀ (L : List (Shortcut G)), Compatible L → ∀ {x : V} (c : (multiSplice G L).Walk x x),
+      c.IsCycle →
+      ∃ (S : List (Shortcut G)) (y : V) (d : G.Walk y y), S.Sublist L ∧ d.IsCycle ∧
+        d.length = c.length + (S.map Shortcut.shift).sum
+  | [], _, x, c, hc => ⟨[], x, c, List.Sublist.slnil, hc, by simp; rfl⟩
+  | s :: L, hcomp, x, c, hc => by
+    have hpair := List.pairwise_cons.1 hcomp
+    have hsupp : ∀ v ∈ s.p.support, v ∉ delSet L :=
+      not_mem_delSet_of_support s L (fun t ht => (hpair.1 t ht).2)
+    have hedges : ∀ e ∈ s.p.edges, e ∈ (multiSplice G L).edgeSet := by
+      intro e he
+      induction e using Sym2.ind with
+      | h u v =>
+        have hadj := s.p.adj_of_mem_edges he
+        exact adj_multiSplice L hadj (hsupp u (s.p.fst_mem_support_of_mem_edges he))
+          (hsupp v (s.p.snd_mem_support_of_mem_edges he))
+    let p' : (multiSplice G L).Walk s.a s.b := s.p.transfer _ hedges
+    have hp' : p'.IsPath := s.isPath.transfer hedges
+    have hlen' : 2 ≤ p'.length := by simpa [p'] using s.two_le
+    have hlp : p'.length = s.p.length := by simp [p']
+    rcases splice_cycle_lift' p' hp' hlen' (interior s.p)
+        (by intro v; simp [interior, p']) c hc with ⟨y, d, hd, hl⟩ | ⟨y, d, hd, hl⟩
+    · obtain ⟨S, y', d', hS, hd', hl'⟩ := multiSplice_cycle_lift L hpair.2 d hd
+      have hl2 : d.length = c.length := hl
+      exact ⟨S, y', d', hS.cons s, hd', by rw [hl', hl2]⟩
+    · obtain ⟨S, y', d', hS, hd', hl'⟩ := multiSplice_cycle_lift L hpair.2 d hd
+      refine ⟨s :: S, y', d', hS.cons_cons s, hd', ?_⟩
+      have := s.two_le
+      have hl2 : d.length + 1 = c.length + s.p.length := by rw [← hlp]; exact hl
+      simp only [List.map_cons, List.sum_cons, Shortcut.shift]
+      omega
 
 /-! ## The excised object -/
 
