@@ -957,4 +957,45 @@ noncomputable abbrev TypeAExitSevenEnvelopeStatement (data : Parameters)
         (handoffAbsorbing data object (canonicalWindowPacking data object)) =
       some envelope
 
+/-! ## The switch at the separator, stated about G (G repair, R3b) -/
+
+/-- **Node `[102]`, the exit-(4) peel at G is a switch peel** (Lean improvement:
+Q1–Q3 and Q5 are empty at G).  The canonical exit-(4) witness of the entry
+state is a Q4 member: its separation's switch — the two connector
+configurations exchange their continuations at the separator, constructed from
+G — is a
+proper double-edge switch, and the switched graph carries an accepted cycle
+through an exchanged edge. -/
+noncomputable abbrev TypeAExitFourSwitchCycleStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  AtExitReceiver data object fun piece receiver =>
+    ∃ witness, canonicalExitFourWitnessAt data object piece receiver ∅ =
+        some witness ∧
+      ∃ datum, witness.member = Graph.ExitFour.CanonicalMember.q4 datum ∧
+        datum.separation.SwitchValid ∧
+        ∃ c : Graph.CycleCertificate datum.separation.switched data.LengthOK,
+          ∃ e ∈ c.walk.edges,
+            e = s(datum.separation.nextLeft, datum.separation.rightAfter) ∨
+              e = s(datum.separation.nextRight, datum.separation.leftAfter)
+
+/-- **Node `[108]`, the surviving separator at G.**  At the canonical handoff
+separation of `X₀` the switch at `z`, constructed from G, has no accepted
+cycle, and the separator has an unused ambient incidence (it lies on the
+boundary of `S_z`).  The switched graph is therefore a counterexample of G's
+size: G's vertices, G's number of edges, the degree baseline and no accepted
+cycle; it is not lexicographically smaller than G, so minimality gives nothing
+more (a valid swap preserves size). -/
+noncomputable abbrev TypeAExitSevenSwitchStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  AtTypeASupport data object fun piece =>
+    ∃ separated, canonicalHandoffSeparationAt data object piece = some separated ∧
+      ¬ Graph.HasCycleWithLength data.LengthOK separated.2.separation.switched ∧
+      separated.2.separation.separator ∈
+        Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
+          separated.2.separation.switchSupport ∧
+      Graph.MinimumDegreeAtLeast data.threshold separated.2.separation.switched ∧
+      separated.2.separation.switched.vertexCount = object.vertexCount ∧
+      separated.2.separation.switched.edgeCount = object.edgeCount ∧
+      ¬ separated.2.separation.switched.LexicographicallySmaller object
+
 end Hypostructure.Graph.Strategy.Spine

@@ -528,4 +528,40 @@ theorem typeAExitSevenEnvelope
   exact ⟨piece, pinned, receiver, chosen, zero,
     ⟨separation, separationEq, sameReceiver, eligibleAt⟩, built, builtEq⟩
 
+/-! ## The switch at the separator, stated about G -/
+
+/-- **Node `[102]` at G** (Lean improvement): the canonical exit-(4) witness is
+a Q4 member (Q1–Q3 and Q5 are empty at a target-avoiding G), and its switch is
+the target-cycle arm: a proper double-edge switch whose switched graph carries
+an accepted cycle through an exchanged edge. -/
+theorem typeAExitFourSwitchCycle
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (exitFour : TypeASaturatedHandoffExitFourStatement data object) :
+    TypeAExitFourSwitchCycleStatement data object := by
+  obtain ⟨piece, pinned, receiver, chosen, occurs⟩ := exitFour
+  obtain ⟨witness, found, _spec⟩ := canonicalExitFourWitnessAt_spec
+    ((exitFourAt_iff_exists_witnessSpec data object piece receiver ∅).mp occurs)
+  obtain ⟨datum, memberEq⟩ :=
+    Graph.ExitFour.CanonicalMember.exists_q4_of_avoids avoids witness.member
+  exact ⟨piece, pinned, receiver, chosen, witness, found, datum, memberEq,
+    Graph.ExitFour.Q4TargetDefect.forced_cycle avoids datum⟩
+
+/-- **Node `[108]` at G**: the canonical handoff separation survives, so its
+switch at `z` (constructed from G) has no accepted cycle and its separator has
+an unused ambient incidence; the switch keeps every degree and the edge count,
+so the switched graph is a counterexample of G's size. -/
+theorem typeAExitSevenSwitch
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+    (envelope : TypeAExitSevenEnvelopeStatement data object) :
+    TypeAExitSevenSwitchStatement data object := by
+  obtain ⟨piece, pinned, _receiver, _chosen, _zero,
+    ⟨separated, separatedEq, _sameReceiver, _eligible⟩, _built⟩ := envelope
+  obtain ⟨targetFree, onBoundary, _notEnlarging⟩ :=
+    Graph.DecoratedHandoff.Surviving.of_avoids avoids separated.2.surviving
+  obtain ⟨switchedBaseline, vertices, edges, _free, notSmaller⟩ :=
+    separated.2.separation.switched_sameSize baseline targetFree
+  exact ⟨piece, pinned, separated, separatedEq, targetFree, onBoundary,
+    switchedBaseline, vertices, edges, notSmaller⟩
+
 end Hypostructure.Graph.Contracts.TypeA

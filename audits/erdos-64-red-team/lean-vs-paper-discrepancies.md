@@ -5222,3 +5222,44 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
   all-context hypotheses (now also `avoids`, for R2's replacement form); they
   have no consumer.
 - `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.
+
+## G-repair R3b: the switch at the separator constructed from G (2026-09-29)
+
+`DecoratedHandoff.SwitchReading` had free data fields (`Coordinate`, `state`,
+`base`, `reduced`, `registered`, `baseIsPiece`, `descends`): its `quotient`
+realization was an arbitrary piece that nothing built from G, and Q4 and exit
+(7) depended on it.  `Separation` likewise carried free `leftReading` /
+`rightReading` pieces.  Both are removed.
+
+- **The switch at `z`** (`Separation.switchedGraph`, `switched`,
+  `switchedPiece`): the two configurations leave `z` through `a = nextLeft`,
+  `b = nextRight` and continue to `a⁺`, `b⁺` (heads of the two tails, fixed by
+  G's germs).  The switch exchanges the continuations,
+  `G − {a a⁺, b b⁺} + {a b⁺, b a⁺}`, when this is a proper double-edge switch
+  (`SwitchValid`), and is G otherwise.  All four vertices lie in `S_z`.
+  Proved: it keeps every degree (`switched_degree`, generic
+  `doubleSwitch_ncard_neighborSet`), the edge count (`switched_edgeCount`) and
+  the baseline (`switched_baseline`).
+- **Absorbed / Surviving** (`def:typeA-continuation-classes`, stated about G):
+  target-defective = the switched graph and G differ in target truth;
+  target-complete = they agree and `z ∉ ∂S_z` (the manuscript derives the
+  common fibre exactly from "no unused ambient incidence at `z`"); or enlarges.
+  `lem:typeA-cubic-switch-absorption` (`four_le_degree_of_surviving`) is proved
+  unchanged.  At G: surviving ⟺ the switched graph has no accepted cycle, `z`
+  has an unused incidence, and it does not enlarge (`Surviving.of_avoids`).
+- **Q4**: the switched graph and G differ in target truth.  At G this is the
+  target-cycle arm: the switch is proper and an accepted cycle of the switched
+  graph runs through `a b⁺` or `b a⁺` (`Q4TargetDefect.forced_cycle`,
+  `Separation.switched_forced_cycle`): the forced-path pattern of
+  `SwitchForcedPaths` (a path of `G − {a a⁺, b b⁺}` with accepted closing
+  length).
+- **The no-cycle arm** (`switched_sameSize`): the switched graph is a
+  counterexample of G's size — G's vertices, G's edge count, the baseline, no
+  accepted cycle — and is not lexicographically smaller, so minimality gives
+  nothing further.  Not a contradiction; recorded as a fact.
+- Keys 7960 `typeAExitFourSwitchCycle` (node `[102]`, Lean improvement: at G
+  the canonical exit-(4) witness is Q4 and its switch carries a forced accepted
+  cycle) and 7961 `typeAExitSevenSwitch` (node `[108]`: at the canonical
+  handoff separation the switched graph is a target-free counterexample of G's
+  size with `z` on `∂S_z`).  No arm closes: exit (4) through Q4 and exit (7)
+  both remain live at G.

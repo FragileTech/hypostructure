@@ -1632,6 +1632,17 @@ inductive Key where
   (`α(ξ) = 0`), so the census's `2 ≤ α(ξ)` leaves no unified entry, the stage
   accounting clears `s·D̃_A`, and `|R| ≤ s·|∂R| + F·s·T(n)`. -/
   | route8UnifiedEmptyAtG
+  -- R3b keys (7960–7979): the switch at the separator, constructed from G
+  /-- Node `[102]` at G (Lean improvement): **the exit-(4) peel is a switch
+  peel** — the canonical witness is a Q4 member whose switch at the separator
+  (the two configurations exchange their continuations after `z`) is a proper double-edge
+  switch with an accepted cycle through an exchanged edge. -/
+  | typeAExitFourSwitchCycle
+  /-- Node `[108]` at G: **at the canonical handoff separation the switch at `z`
+  has no accepted cycle and the separator has an unused ambient incidence; the
+  switched graph is a counterexample of G's size (same vertices, same edge
+  count, the baseline)**. -/
+  | typeAExitSevenSwitch
   -- F5 keys
   /-- Node `[175]`, no arm: every selected corridor meets a high-degree
   vertex. -/
@@ -2664,6 +2675,11 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   -- R3 keys
   | .route8UnifiedEmptyAtG, object =>
       Route8UnifiedEmptyAtGStatement data.toParameters object
+  -- R3b keys
+  | .typeAExitFourSwitchCycle, object =>
+      TypeAExitFourSwitchCycleStatement data.toParameters object
+  | .typeAExitSevenSwitch, object =>
+      TypeAExitSevenSwitchStatement data.toParameters object
   -- F5 keys
   | .coldNoPositiveGerm, object =>
       ColdNoPositiveGermStatement data.toParameters object
@@ -3246,6 +3262,9 @@ def label : Key → String
   | .route8UnpaidWitnessFree => "route8UnpaidWitnessFree"
   -- R3 keys
   | .route8UnifiedEmptyAtG => "route8UnifiedEmptyAtG"
+  -- R3b keys
+  | .typeAExitFourSwitchCycle => "typeAExitFourSwitchCycle"
+  | .typeAExitSevenSwitch => "typeAExitSevenSwitch"
   -- F5 keys
   | .coldNoPositiveGerm => "coldNoPositiveGerm"
   -- SD keys (final pass)
@@ -3722,6 +3741,8 @@ example : label .route8StageRate = "route8StageRate" := rfl
 example : label .route8UnpaidTwoCarrier = "route8UnpaidTwoCarrier" := rfl
 example : label .route8UnpaidWitnessFree = "route8UnpaidWitnessFree" := rfl
 example : label .route8UnifiedEmptyAtG = "route8UnifiedEmptyAtG" := rfl
+example : label .typeAExitFourSwitchCycle = "typeAExitFourSwitchCycle" := rfl
+example : label .typeAExitSevenSwitch = "typeAExitSevenSwitch" := rfl
 -- F5 keys
 example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
 -- SD keys (final pass)
@@ -4183,6 +4204,9 @@ def idx : Key → Nat
   | .route8UnpaidWitnessFree => 1404
   -- R3 keys
   | .route8UnifiedEmptyAtG => 7900
+  -- R3b keys
+  | .typeAExitFourSwitchCycle => 7960
+  | .typeAExitSevenSwitch => 7961
   -- F5 keys
   | .coldNoPositiveGerm => 1800
   -- SD keys (final pass)
@@ -4638,6 +4662,9 @@ def ofIdx : Nat → Key
   | 1404 => .route8UnpaidWitnessFree
   -- R3 keys
   | 7900 => .route8UnifiedEmptyAtG
+  -- R3b keys
+  | 7960 => .typeAExitFourSwitchCycle
+  | 7961 => .typeAExitSevenSwitch
   -- F5 keys
   | 1800 => .coldNoPositiveGerm
   -- SD keys (final pass)
@@ -5537,6 +5564,11 @@ def name : Key → Lean.Name
   -- R3 keys
   | .route8UnifiedEmptyAtG =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnifiedEmptyAtG") 7900
+  -- R3b keys
+  | .typeAExitFourSwitchCycle =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFourSwitchCycle") 7960
+  | .typeAExitSevenSwitch =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSevenSwitch") 7961
   -- F5 keys
   | .coldNoPositiveGerm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldNoPositiveGerm") 1800

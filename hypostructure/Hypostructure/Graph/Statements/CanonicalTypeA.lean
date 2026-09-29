@@ -742,7 +742,7 @@ def ExitSevenAt (data : Parameters) (object : Graph.FiniteObject.{u})
 /-- The data of `Route8.TraceBasin.TraceSurvivingSeparator` at one saturated
 receiver and load, as one structure: a continuation family through one
 completion port, two distinct routed loads of it, their first separation, and
-its surviving switch reading (`def:typeA-continuation-classes`, tex 10611;
+its surviving switch (constructed from G) (`def:typeA-continuation-classes`, tex 10611;
 `lem:typeA-high-degree-handoff`, tex 11110). -/
 structure ExitSevenSeparation (data : Parameters) (object : Graph.FiniteObject.{u})
     (piece : Finset object.Vertex) (receiver load : object.Vertex) where
@@ -756,9 +756,8 @@ structure ExitSevenSeparation (data : Parameters) (object : Graph.FiniteObject.{
   separation : Graph.DecoratedHandoff.Separation object piece receiver family.outside
   leftPath : separation.left.path = (family.germ leftLoad leftMem).path
   rightPath : separation.right.path = (family.germ rightLoad rightMem).path
-  reading : Graph.DecoratedHandoff.SwitchReading separation
   surviving : Graph.DecoratedHandoff.Surviving
-    (Graph.HasCycleWithLength data.LengthOK) reading
+    (Graph.HasCycleWithLength data.LengthOK) separation
     (∃ representative : Graph.FiniteObject.{u},
       representative.LexicographicallySmaller object ∧
         Graph.MinimumDegreeAtLeast data.threshold representative ∧
@@ -773,12 +772,12 @@ theorem traceSurvivingSeparator_iff_nonempty (data : Parameters)
       Nonempty (ExitSevenSeparation data object piece receiver load) := by
   constructor
   · rintro ⟨family, loadMem, leftLoad, rightLoad, leftMem, rightMem, distinct,
-      separation, leftPath, rightPath, reading, surviving⟩
+      separation, leftPath, rightPath, surviving⟩
     exact ⟨⟨family, loadMem, leftLoad, rightLoad, leftMem, rightMem, distinct,
-      separation, leftPath, rightPath, reading, surviving⟩⟩
+      separation, leftPath, rightPath, surviving⟩⟩
   · rintro ⟨s⟩
     exact ⟨s.family, s.loadMem, s.leftLoad, s.rightLoad, s.leftMem, s.rightMem,
-      s.distinct, s.separation, s.leftPath, s.rightPath, s.reading, s.surviving⟩
+      s.distinct, s.separation, s.leftPath, s.rightPath, s.surviving⟩
 
 /-- The `∃`-body of `SeparatorHandoffAt data G X` (Statements/Spine.lean; exit `(7)` of `def:typeA-saturated-exits`, tex 10811,
 `lem:typeA-visible-entry` tex 11240-11250, `def:typeA-unified-negative`

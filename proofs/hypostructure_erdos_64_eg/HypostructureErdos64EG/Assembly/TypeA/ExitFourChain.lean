@@ -125,6 +125,8 @@ noncomputable abbrev typeAExitSegmentKeys : FactKeys EGInput.{u} :=
     K .route8UnpaidTwoCarrier,
     K .route8UnpaidWitnessFree,
     K .route8UnifiedEmptyAtG,
+    K .typeAExitFourSwitchCycle,
+    K .typeAExitSevenSwitch,
     K .typeAExitSevenEnvelope,
     K .typeAPeeledSaturatedReceiver,
     K .typeAPeeledUnsaturatedDischarge,
@@ -298,11 +300,18 @@ noncomputable def selectedTypeAExitSegment
         ⟨lane, Or.inl (TypeAExitFourBlock_absent.ret exitFree)⟩
   | .left exitFourHistory =>
       -- `[102]`
+      -- `[102]` at G (Lean improvement): the peel is a switch peel — the
+      -- canonical witness is Q4 and its switch has an accepted cycle.
+      let switchPeel :=
+        (typeAExitFourSwitchCycleRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          exitFourHistory (by key_fresh)
       let peeled :=
         (typeAExitFourPeelingStepRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          exitFourHistory (by key_fresh)
+          switchPeel (by key_fresh)
       -- `[102]` → `[89]`: recompute `L₄`.
       match typeAExitFourRetestDichotomy (data := spineData) peeled
           (by key_fresh) (by key_fresh) with

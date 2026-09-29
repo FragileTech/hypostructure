@@ -1,6 +1,7 @@
 import Hypostructure.Graph.CommonPortReturnCycle
 import Hypostructure.Graph.Response
 import Hypostructure.Graph.InterfaceReplacement
+import Hypostructure.Graph.SwitchForcedPaths
 
 /-!
 # Connector germs, surviving separators, and the decorated handoff fan envelope
@@ -9,7 +10,8 @@ This module owns the objects Type A exit `(7)` is made of, and nothing else:
 
 * `def:typeA-continuation-classes` — outside connector germs through a
   completion port, the vertex two germs *separate at*, the switch support's
-  declared reading, and the absorbed/surviving classification of a separator;
+  switch constructed from G, and the absorbed/surviving classification of a
+  separator;
 * `lem:typeA-cubic-switch-absorption` — a surviving first separator has ambient
   degree at least `4`;
 * `lem:typeA-continuation-routing` — a family of declared coordinates through
@@ -36,18 +38,20 @@ Simplicity of the two germs then makes the root incidence and the two next
 incidences three distinct neighbours of `z`, which is `d_G(z) ≥ 3`; the
 separator being surviving rules out equality, which is `d_G(z) ≥ 4`.
 
-The absorbed classification is derived from `lem:context-universality`, and so
-is the fibre.  `def:typeA-continuation-classes` puts *"the two coordinates have
-the same image in the relevant boundary-degree fibre"* into what *separating at
-`z`* means, so `Separation` carries `S_z` — through the framework's own
-support-to-atom construction — and registers the two coordinates' declared
-readings in the certificate the framework *computes* for that atom.  Both
-`Separation.sameFibre` and `SwitchReading.fibre` are then read off that
-registration: they are node `[11]`'s `lem:degree-profile-fibres`, and this
-module restates neither.  What the switch support supplies is the manuscript's
-own registration step — *"the two separated responses therefore form a finite
-declared boundaried response state"* at an exhausted separator — which is the
-`registered` field of `SwitchReading`.
+The switch is constructed from G (G repair).  The identification of the two
+separated response coordinates is realized on G itself, at the separator `z`:
+the two configurations leave `z` through `a` (`nextLeft`) and `b`
+(`nextRight`) and continue to `a⁺`, `b⁺`; the switch at `z` exchanges the two
+continuations, `G − {a a⁺, b b⁺} + {a b⁺, b a⁺}` (`Separation.switchedGraph`,
+all four vertices on the germs, hence in `S_z`; `G` itself when the exchange is
+not a proper double-edge switch).  Its switched piece on `S_z` is `Separation.switchedPiece`, and
+the switched graph `Separation.switched` has G's vertices.  No reading, state
+or coordinate universe is supplied by a caller.  Stated about G, the switch is
+target-defective when the switched graph and G differ in target truth, and
+target-complete when they agree and `z` has no unused ambient incidence (the
+manuscript's *"Assume `d_G(z)=3` ... Consequently `S_z` has no unused ambient
+incidence at `z`.  The two separated responses therefore form a finite declared
+boundaried response state with the same boundary-degree profile"*).
 
 Nothing here knows a manuscript, a baseline, a scale, a window order, or a
 proof.  The accepted-length predicate, the target, the boundary-degree profile,
@@ -233,18 +237,18 @@ are carried here — `z` occurs in both germs and they have the same ordered
 prefix from `h` to `z`, which the two decompositions below exhibit (and exhibit
 as maximal, so `z` is the pair's first separator), **and the two coordinates
 have the same image in the relevant boundary-degree fibre**, which is the last
-group of fields.
+carried by G itself.
 
-That third conjunct is not a copied boundary profile.  `S_z` is the
-manuscript's own *"finite connected support consisting of the common prefix
-from `h` to `z`, the two connector tails from `z` to their first-entry
-receivers, the two receiver-entry channels in `X`, the completion port boundary
-datum, and the declared supports of the two response coordinates"*, presented
-through the framework's existing support-to-atom construction; the two
-coordinates' declared readings are then registered in that atom's *generated*
-profile certificate, whose constructor is private to the framework so that no
-caller registers a guessed profile.  `sameFibre` below reads the manuscript's
-conjunct off that registration. -/
+Stated about G, that third conjunct is decided: the two coordinates' readings
+on `S_z` are G's readings of `S_z`, which keep every labelled incidence and so
+lie in one boundary-degree fibre.  The former free `leftReading` /
+`rightReading` fields (arbitrary pieces that nothing built from G) are removed.
+`S_z` is the manuscript's own *"finite connected support consisting of the
+common prefix from `h` to `z`, the two connector tails from `z` to their
+first-entry receivers, the two receiver-entry channels in `X`, the completion
+port boundary datum, and the declared supports of the two response
+coordinates"*, presented through the framework's existing support-to-atom
+construction. -/
 structure Separation (object : FiniteObject.{u}) (support : Finset object.Vertex)
     (receiver outside : object.Vertex) where
   /-- The first of the two declared coordinates' germs. -/
@@ -282,24 +286,6 @@ structure Separation (object : FiniteObject.{u}) (support : Finset object.Vertex
   /-- `S_z` is proper: the manuscript's `Z = G` case is exit `(6)`, never `S_z`
   itself. -/
   switchProper : ∃ vertex, vertex ∉ switchSupport
-  /-- The first coordinate's declared reading on `S_z`'s interface. -/
-  leftReading : Graph.BoundaryPiece
-    (Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom object
-      switchSupport switchConnected switchProper).decomposition.interface
-  /-- and the second's. -/
-  rightReading : Graph.BoundaryPiece
-    (Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom object
-      switchSupport switchConnected switchProper).decomposition.interface
-  /-- The first coordinate lies in `S_z`'s registered boundary-degree fibre. -/
-  leftRegistered : leftReading.boundaryDegreeProfile =
-    (Graph.deriveBoundariedAtomProfile
-      (Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom object
-        switchSupport switchConnected switchProper)).boundaryDegreeProfile
-  /-- and so does the second. -/
-  rightRegistered : rightReading.boundaryDegreeProfile =
-    (Graph.deriveBoundariedAtomProfile
-      (Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom object
-        switchSupport switchConnected switchProper)).boundaryDegreeProfile
 
 namespace Separation
 
@@ -322,18 +308,6 @@ noncomputable def certificate :
 /-- The labelled interface `S_z` presents its declared readings on. -/
 noncomputable def interface : Graph.Boundary.{u} :=
   separation.atom.decomposition.interface
-
-/-- **`def:typeA-continuation-classes`' third conjunct, read off the
-registration.**
-
-*"...and the two coordinates have the same image in the relevant boundary-degree
-fibre."*  Both readings were registered in `S_z`'s one generated certificate,
-so this is `lem:degree-profile-fibres` at node `[11]`; it is not restated
-here. -/
-theorem sameFibre :
-    separation.leftReading.boundaryDegreeProfile =
-      separation.rightReading.boundaryDegreeProfile :=
-  separation.leftRegistered.trans separation.rightRegistered.symm
 
 /-- **The common prefix is never empty.**  Both germs are rooted at `w` and
 step first to `h`, so an empty common prefix would make the two next incidences
@@ -561,186 +535,401 @@ theorem four_le_degree_of_mem_cutBoundary
 
 end Separation
 
-/-! ## The switch support's declared reading, and absorption
+/-! ## The double-edge switch keeps every degree -/
 
-`def:typeA-continuation-classes`: the switch support `S_z` is the finite
-connected support consisting of the common prefix, the two connector tails, the
-two receiver-entry channels, the completion-port boundary datum and the declared
-supports of the two response coordinates; and `z` is *absorbed* when the
-response identification on it is target-defective, target-complete on a
-nontrivial response quotient, or target-complete only after adjoining a larger
-connected support.
+theorem ncard_insert_sdiff {V : Type*} [Finite V] {s : Set V} {p q : V} (hp : p ∈ s) (hq : q ∉ s) :
+    (insert q (s \ {p})).ncard = s.ncard := by
+  rw [Set.ncard_insert_of_notMem (fun h => hq h.1), Set.ncard_sdiff_singleton_of_mem hp]
+  have : 0 < s.ncard := (Set.ncard_pos (Set.toFinite s)).mpr ⟨p, hp⟩
+  omega
 
-The reading is presented the way every declared reading in this framework is:
-one labelled boundary, and the retained coordinate sets read on it, so the two
-realizations of the identification are `state (base \ identified)` and
-`state base`.  The `fibre` clause is `def:boundaried-gluing`'s bookkeeping for
-that presentation: with no unused ambient incidence at `z` the boundary records
-exactly the root incidence, the two connector tails and the two receiver-entry
-channels, so the two realizations lie in one boundary-degree fibre. -/
+/-- **A proper double-edge switch keeps every degree**:
+`G − {a a', b b'} + {a b', b a'}` with `a a'`, `b b'` edges of G, the four ends
+distinct and neither new edge already present. -/
+theorem doubleSwitch_ncard_neighborSet {V : Type*} [Finite V] (G : SimpleGraph V) {a a' b b' : V}
+    (hA : G.Adj a a') (hB : G.Adj b b') (hab : a ≠ b) (hab' : a ≠ b')
+    (ha'b : a' ≠ b) (ha'b' : a' ≠ b') (na : ¬ G.Adj a b') (nb : ¬ G.Adj b a')
+    (v : V) :
+    ((G.deleteEdges {s(a, a'), s(b, b')} ⊔
+        (SimpleGraph.edge a b' ⊔ SimpleGraph.edge b a')).neighborSet v).ncard =
+      (G.neighborSet v).ncard := by
+  have haa' : a ≠ a' := hA.ne
+  have hbb' : b ≠ b' := hB.ne
+  set H := G.deleteEdges {s(a, a'), s(b, b')} ⊔
+    (SimpleGraph.edge a b' ⊔ SimpleGraph.edge b a') with hH
+  have adj : ∀ x y, H.Adj x y ↔ (G.Adj x y ∧ ¬ (s(x, y) = s(a, a') ∨ s(x, y) = s(b, b'))) ∨
+      ((x = a ∧ y = b' ∨ x = b' ∧ y = a) ∨ (x = b ∧ y = a' ∨ x = a' ∧ y = b)) := by
+    intro x y
+    simp only [hH, SimpleGraph.sup_adj, SimpleGraph.deleteEdges_adj, SimpleGraph.edge_adj,
+      Set.mem_insert_iff, Set.mem_singleton_iff]
+    constructor
+    · rintro (h | (h | h))
+      · exact Or.inl h
+      · exact Or.inr (Or.inl h.1)
+      · exact Or.inr (Or.inr h.1)
+    · rintro (h | (h | h))
+      · exact Or.inl h
+      · refine Or.inr (Or.inl ⟨h, ?_⟩)
+        rcases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
+        · exact hab'
+        · exact hab'.symm
+      · refine Or.inr (Or.inr ⟨h, ?_⟩)
+        rcases h with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
+        · exact ha'b.symm
+        · exact ha'b
+  have swap : ∀ {p q : V}, G.Adj v p → ¬ G.Adj v q →
+      H.neighborSet v = insert q (G.neighborSet v \ {p}) →
+      (H.neighborSet v).ncard = (G.neighborSet v).ncard := by
+    intro p q hp hq eq
+    rw [eq]
+    exact ncard_insert_sdiff hp hq
+  by_cases va : v = a
+  · subst va
+    refine swap hA na ?_
+    ext w
+    simp only [SimpleGraph.mem_neighborSet, adj, Set.mem_insert_iff, Set.mem_diff,
+      Set.mem_singleton_iff, Sym2.eq_iff]
+    simp only [ne_eq, haa', haa'.symm, hab, hab.symm, hab', hab'.symm, ha'b, ha'b.symm,
+      ha'b', ha'b'.symm, hbb', hbb'.symm, true_and, false_and, and_false, false_or,
+      or_false, and_true, not_false_eq_true, not_or]
+    tauto
+  by_cases va' : v = a'
+  · subst va'
+    refine swap hA.symm (fun h => nb h.symm) ?_
+    ext w
+    simp only [SimpleGraph.mem_neighborSet, adj, Set.mem_insert_iff, Set.mem_diff,
+      Set.mem_singleton_iff, Sym2.eq_iff]
+    simp only [ne_eq, haa', haa'.symm, hab, hab.symm, hab', hab'.symm, ha'b, ha'b.symm,
+      ha'b', ha'b'.symm, hbb', hbb'.symm, true_and, false_and, and_false, false_or,
+      or_false, and_true, not_false_eq_true, not_or]
+    tauto
+  by_cases vb : v = b
+  · subst vb
+    refine swap hB nb ?_
+    ext w
+    simp only [SimpleGraph.mem_neighborSet, adj, Set.mem_insert_iff, Set.mem_diff,
+      Set.mem_singleton_iff, Sym2.eq_iff]
+    simp only [ne_eq, haa', haa'.symm, hab, hab.symm, hab', hab'.symm, ha'b, ha'b.symm,
+      ha'b', ha'b'.symm, hbb', hbb'.symm, true_and, false_and, and_false, false_or,
+      or_false, and_true, not_false_eq_true, not_or]
+    tauto
+  by_cases vb' : v = b'
+  · subst vb'
+    refine swap hB.symm (fun h => na h.symm) ?_
+    ext w
+    simp only [SimpleGraph.mem_neighborSet, adj, Set.mem_insert_iff, Set.mem_diff,
+      Set.mem_singleton_iff, Sym2.eq_iff]
+    simp only [ne_eq, haa', haa'.symm, hab, hab.symm, hab', hab'.symm, ha'b, ha'b.symm,
+      ha'b', ha'b'.symm, hbb', hbb'.symm, true_and, false_and, and_false, false_or,
+      or_false, and_true, not_false_eq_true, not_or]
+    tauto
+  congr 1
+  ext w
+  simp only [SimpleGraph.mem_neighborSet, adj, Sym2.eq_iff]
+  simp only [va, va', vb, vb', false_and, and_false, or_false, false_or, not_false_eq_true,
+    and_true, not_or]
 
-/-- **The declared reading the switch support carries.**
+/-! ## The switch at the separator, constructed from G, and absorption
 
-The reading is presented on `S_z`'s own interface, and its realizations are
-registered in `S_z`'s own generated profile certificate exactly where the
-manuscript registers them: *"Assume `d_G(z)=3`. ... Consequently the switch
-support `S_z` has no unused ambient incidence at `z`.  The two separated
-responses **therefore** form a finite declared boundaried response state with
-the same boundary-degree profile: the boundary records the root incidence, the
-two connector tails to their first entries in `X`, and the two receiver-entry
-channels."*  That sentence is the `registered` field, in the framework's own
-registration vocabulary and against the framework's own computed certificate;
-the *"same boundary-degree profile"* half is then derived below rather than
-declared. -/
-structure SwitchReading {support : Finset object.Vertex}
-    {receiver outside : object.Vertex}
-    (separation : Separation object support receiver outside) where
-  /-- The declared coordinate universe of `S_z`. -/
-  Coordinate : Type u
-  /-- The reading: a retained coordinate set presented on `S_z`'s interface. -/
-  state : Finset Coordinate → Graph.BoundaryPiece separation.interface
-  /-- The coordinate set before the identification. -/
-  base : Finset Coordinate
-  /-- The coordinate set the identification leaves: the two separated response
-  coordinates have been identified, so at least one is forgotten. -/
-  reduced : Finset Coordinate
-  /-- The identification forgets coordinates of the base, and it forgets
-  something -- the two separated response coordinates are distinct, which is
-  what makes the quotient nontrivial. -/
-  reduced_ssubset : reduced ⊂ base
-  /-- **The manuscript's step where `z` is internal to `S_z`.**  Off the
-  interface of `S_z` the identification of two declared coordinates cannot move
-  an interface label, so every realization of the reading is a finite declared
-  boundaried state in `S_z`'s own registered fibre.  The premise is a decidable
-  property of the residual's own `cutBoundary`, discharged on the branch by
-  `Separation.separator_notMem_cutBoundary`; it is not an assumption a caller
-  chooses. -/
-  registered :
-    separation.separator ∉
-      Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
-        separation.switchSupport →
-    ∀ retained : Finset Coordinate, retained ⊆ base →
-      (state retained).boundaryDegreeProfile =
-        separation.certificate.boundaryDegreeProfile
-  /-- **The realization before the identification is `S_z` itself.**  A reading
-  *of* the switch support reads that support: with no coordinate yet forgotten,
-  the declared boundaried state is the atom's own piece.  This is what makes the
-  identification a compression *of `S_z`* rather than of an unrelated piece. -/
-  baseIsPiece : state base = separation.atom.decomposition.piece
-  /-- **The identification descends.**  Forgetting a coordinate strictly shrinks
-  the glued realization, exactly as `Graph/ColdCorridor.lean`'s bounded germ
-  descends on the sign of its own increment; `lem:replacement`'s compression is
-  nontrivial for this reason and not by declaration. -/
-  descends :
-    (Graph.glue (state reduced)
-      separation.atom.decomposition.outside).vertexCount < object.vertexCount
+`def:typeA-continuation-classes`: `z` is *absorbed* when the response
+identification on the switch support `S_z` is target-defective,
+target-complete on a nontrivial response quotient, or target-complete only
+after adjoining a larger connected support.
 
-namespace SwitchReading
+The identification of the two separated response coordinates is realized on G
+(G repair), at the separator itself.  The two configurations share the prefix
+up to `z` and leave it through distinct next incidences `a = nextLeft`,
+`b = nextRight`; each continues along its germ to `a⁺`, `b⁺` (the heads of the
+two tails).  **The switch at `z`** exchanges the two continuations:
+`G − {a a⁺, b b⁺} + {a b⁺, b a⁺}`.  After it, the configuration through `a`
+continues as the one through `b` did and conversely — the two continuation
+classes at `z` are identified.  All four vertices lie on the germs, hence in
+`S_z`, so the switch changes only `S_z`'s own incidences and keeps every degree
+of G.  Every choice is fixed by G's germs.  When the exchange is not a proper
+double-edge switch (a next incidence is itself the first entry, coinciding
+ends, or an exchanged edge already present) the identification is trivial and
+the switched graph is G.  Nothing here is supplied by a caller. -/
+
+namespace Separation
 
 variable {support : Finset object.Vertex} {receiver outside : object.Vertex}
-variable {separation : Separation object support receiver outside}
-variable (reading : SwitchReading separation)
+variable (separation : Separation object support receiver outside)
 
-/-- The realization after the identification. -/
-def quotient : Graph.BoundaryPiece separation.interface :=
-  reading.state reading.reduced
+/-- `a⁺`: the vertex after `a = nextLeft` on the first germ (the head of its
+tail; `a` itself when `a` is already the first entry). -/
+noncomputable def leftAfter : object.Vertex :=
+  separation.tailLeft.headD separation.nextLeft
 
-/-- The realization before it. -/
-def full : Graph.BoundaryPiece separation.interface :=
-  reading.state reading.base
+/-- `b⁺`: the vertex after `b = nextRight` on the second germ. -/
+noncomputable def rightAfter : object.Vertex :=
+  separation.tailRight.headD separation.nextRight
 
-/-- **The two realizations lie in one boundary-degree fibre, derived.**
+/-- The switch at `z` is a proper double-edge switch: both configurations
+continue past their next incidence, `a a⁺` and `b b⁺` are edges of G, the
+exchanged ends are distinct, and neither exchanged edge `a b⁺`, `b a⁺` is
+already an edge of G. -/
+def SwitchValid : Prop :=
+  separation.tailLeft ≠ [] ∧ separation.tailRight ≠ [] ∧
+    object.graph.Adj separation.nextLeft separation.leftAfter ∧
+    object.graph.Adj separation.nextRight separation.rightAfter ∧
+    separation.nextLeft ≠ separation.rightAfter ∧
+    separation.nextRight ≠ separation.leftAfter ∧
+    separation.leftAfter ≠ separation.rightAfter ∧
+    ¬ object.graph.Adj separation.nextLeft separation.rightAfter ∧
+    ¬ object.graph.Adj separation.nextRight separation.leftAfter
 
-*"The two separated responses therefore form a finite declared boundaried
-response state **with the same boundary-degree profile**."*  Both realizations
-are registered in `S_z`'s one generated certificate, so the equality is read
-off the registration; it is `lem:degree-profile-fibres` at node `[11]`, the same
-fact `Separation.sameFibre` reads for the two coordinates, and it is not
-restated. -/
-theorem fibre
-    (internal : separation.separator ∉
-      Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
-        separation.switchSupport) :
-    reading.quotient.boundaryDegreeProfile =
-      reading.full.boundaryDegreeProfile :=
-  (reading.registered internal reading.reduced
-      reading.reduced_ssubset.subset).trans
-    (reading.registered internal reading.base (subset_refl _)).symm
+/-- **The switched graph at `z`** on G's vertices: the two configurations
+exchange their continuations after `a`, `b`. -/
+noncomputable def switchedGraph : SimpleGraph object.Vertex := by
+  classical
+  exact if separation.SwitchValid then
+    object.graph.deleteEdges
+        {s(separation.nextLeft, separation.leftAfter),
+          s(separation.nextRight, separation.rightAfter)} ⊔
+      (SimpleGraph.edge separation.nextLeft separation.rightAfter ⊔
+        SimpleGraph.edge separation.nextRight separation.leftAfter)
+  else object.graph
 
-end SwitchReading
+/-- The switched graph as an object on G's vertices. -/
+noncomputable def switched : FiniteObject.{u} :=
+  SwitchForcedPaths.spanning object separation.switchedGraph
 
-/-- **The compressed realization is lexicographically smaller**, derived from
-the reading's own descent by the framework's vertex-count comparison -- the same
-step `ColdCorridor.BoundedGerm.lexicographicallySmaller_of_increment_neg`
-makes. -/
-theorem SwitchReading.lexicographicallySmaller
-    {support : Finset object.Vertex} {receiver outside : object.Vertex}
-    {separation : Separation object support receiver outside}
-    (reading : SwitchReading separation) :
-    (Graph.glue reading.quotient
-        separation.atom.decomposition.outside).LexicographicallySmaller object :=
-  FiniteObject.lexicographicallySmaller_of_vertexCount_lt reading.descends
+/-- **The switched piece on `S_z`'s interface**: G's piece at `S_z` with the
+switched incidences.  Glued into `G − S_z` it carries the switched graph (all
+four switched vertices lie in `S_z`). -/
+noncomputable def switchedPiece : Graph.BoundaryPiece
+    (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object
+      separation.switchSupport) where
+  Internal := Graph.Strategy.InterfaceReplacement.SupportAtom.PieceInternal object
+    separation.switchSupport
+  internalVertices :=
+    (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object
+      separation.switchSupport).internalVertices
+  graph := SimpleGraph.comap
+    (Graph.Strategy.InterfaceReplacement.SupportAtom.pieceDecode object
+      separation.switchSupport) separation.switchedGraph
+  decideAdj := Classical.decRel _
 
-/-- **`def:typeA-continuation-classes`: the separator is absorbed.**
+theorem switched_vertexCount :
+    separation.switched.vertexCount = object.vertexCount := rfl
 
-The response identification on the switch support is target-defective — which
-is exit `(4)` — or target-complete on a nontrivial response quotient — exit
-`(5)` — or target-complete only after adjoining a larger connected support —
-exit `(6)`.  The third alternative is carried as a declared property of the
-switch, because it is a statement about supports strictly larger than `S_z`. -/
+/-- **The switch at `z` keeps every degree of G** (a proper double-edge switch,
+or G itself). -/
+theorem switched_degree (vertex : object.Vertex) :
+    separation.switched.degree vertex = object.degree vertex := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  change (SwitchForcedPaths.spanning object separation.switchedGraph).degree
+    vertex = object.degree vertex
+  rw [SwitchForcedPaths.spanning_degree, FiniteObject.degree_eq_ncard_neighborSet]
+  unfold switchedGraph
+  split_ifs with valid
+  · obtain ⟨_tailL, _tailR, adjL, adjR, hLR, hRL, hAfter, nL, nR⟩ := valid
+    exact doubleSwitch_ncard_neighborSet object.graph adjL adjR
+      separation.distinct hLR (Ne.symm hRL) hAfter nL nR vertex
+  · rfl
+
+/-- **The switch at `z` keeps G's number of edges** (handshake). -/
+theorem switched_edgeCount :
+    separation.switched.edgeCount = object.edgeCount := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  rw [SwitchForcedPaths.edgeCount_eq_ncard, SwitchForcedPaths.edgeCount_eq_ncard]
+  have switchedSum :=
+    SwitchForcedPaths.SwapAccounting.sum_dg separation.switchedGraph
+  have ownSum := SwitchForcedPaths.SwapAccounting.sum_dg object.graph
+  have same : ∑ vertex, SwitchForcedPaths.SwapAccounting.dg
+        separation.switchedGraph vertex =
+      ∑ vertex, SwitchForcedPaths.SwapAccounting.dg object.graph vertex := by
+    refine Finset.sum_congr rfl fun vertex _ => ?_
+    have degree := separation.switched_degree vertex
+    change (SwitchForcedPaths.spanning object separation.switchedGraph).degree
+      vertex = object.degree vertex at degree
+    rw [SwitchForcedPaths.spanning_degree,
+      FiniteObject.degree_eq_ncard_neighborSet] at degree
+    exact degree
+  change separation.switchedGraph.edgeSet.ncard = object.graph.edgeSet.ncard
+  omega
+
+/-- **The switch at `z` keeps the degree baseline of G.** -/
+theorem switched_baseline {k : Nat} (baseline : MinimumDegreeAtLeast k object) :
+    MinimumDegreeAtLeast k separation.switched := by
+  haveI : Nonempty separation.switched.Vertex := ⟨separation.separator⟩
+  show k ≤ separation.switched.minDegree
+  refine FiniteObject.le_minDegree_of_forall_le_degree _ k fun vertex => ?_
+  rw [separation.switched_degree vertex]
+  exact le_trans baseline (object.minDegree_le_degree vertex)
+
+/-- Every edge of the switched graph is an edge of G or one of the two
+exchanged edges `a b⁺`, `b a⁺`. -/
+theorem switched_edge {e : Sym2 object.Vertex}
+    (member : e ∈ separation.switchedGraph.edgeSet) :
+    e ∈ object.graph.edgeSet ∨
+      e = s(separation.nextLeft, separation.rightAfter) ∨
+      e = s(separation.nextRight, separation.leftAfter) := by
+  classical
+  unfold switchedGraph at member
+  split_ifs at member with valid
+  · rw [SimpleGraph.edgeSet_sup, SimpleGraph.edgeSet_sup] at member
+    rcases member with deleted | fresh | fresh
+    · exact Or.inl (SimpleGraph.edgeSet_mono (SimpleGraph.deleteEdges_le _) deleted)
+    · right; left
+      rw [SimpleGraph.edgeSet_edge_of_ne (fun same => valid.2.2.2.2.1 same)] at fresh
+      exact fresh
+    · right; right
+      rw [SimpleGraph.edgeSet_edge_of_ne (fun same => valid.2.2.2.2.2.1 same)] at fresh
+      exact fresh
+  · exact Or.inl member
+
+/-- **The target-cycle arm: the cycle is forced through an exchanged edge.**
+At a target-avoiding G, an accepted cycle of the switched graph uses one of the
+two exchanged edges `a b⁺`, `b a⁺`, and the switch at `z` is a proper
+double-edge switch: deleting that edge leaves a path of G minus `{a a⁺, b b⁺}`
+whose length plus one is accepted (`SwitchForcedPaths`' forced-path
+pattern, the `2^j − 1` path at the dyadic target). -/
+theorem switched_forced_cycle {L : Nat → Prop}
+    (avoids : ¬ HasCycleWithLength L object)
+    (accepted : HasCycleWithLength L separation.switched) :
+    separation.SwitchValid ∧
+      ∃ c : CycleCertificate separation.switched L,
+        ∃ e ∈ c.walk.edges,
+          e = s(separation.nextLeft, separation.rightAfter) ∨
+            e = s(separation.nextRight, separation.leftAfter) := by
+  classical
+  obtain ⟨c⟩ := accepted
+  have uses : ∃ e ∈ c.walk.edges,
+      e = s(separation.nextLeft, separation.rightAfter) ∨
+        e = s(separation.nextRight, separation.leftAfter) := by
+    by_contra none
+    push Not at none
+    have hG : ∀ e ∈ c.walk.edges, e ∈ object.graph.edgeSet := by
+      intro e he
+      rcases separation.switched_edge (c.walk.edges_subset_edgeSet he) with
+        old | fresh | fresh
+      · exact old
+      · exact absurd fresh (none e he).1
+      · exact absurd fresh (none e he).2
+    exact avoids ⟨⟨c.vertex, c.walk.transfer object.graph hG,
+      c.isCycle.transfer hG, by
+        convert c.length_ok using 1
+        exact SimpleGraph.Walk.length_transfer _ _⟩⟩
+  refine ⟨?_, c, uses⟩
+  by_contra invalid
+  obtain ⟨e, he, fresh⟩ := uses
+  have edge := c.walk.edges_subset_edgeSet he
+  change e ∈ separation.switchedGraph.edgeSet at edge
+  unfold switchedGraph at edge
+  rw [if_neg invalid] at edge
+  have hG : ∀ e ∈ c.walk.edges, e ∈ object.graph.edgeSet := by
+    intro e he
+    have edge := c.walk.edges_subset_edgeSet he
+    change e ∈ separation.switchedGraph.edgeSet at edge
+    unfold switchedGraph at edge
+    rw [if_neg invalid] at edge
+    exact edge
+  exact avoids ⟨⟨c.vertex, c.walk.transfer object.graph hG,
+    c.isCycle.transfer hG, by
+      convert c.length_ok using 1
+      exact SimpleGraph.Walk.length_transfer _ _⟩⟩
+
+/-- **The target-free arm: the switched graph is a counterexample of G's size.**
+At a target-avoiding G of minimum degree at least `k`, a switch at `z` without
+an accepted cycle is a graph with G's vertices, G's number of edges, minimum
+degree at least `k` and no accepted cycle.  It is not lexicographically
+smaller than G, so minimality says nothing more: a valid swap preserves size,
+and no smaller counterexample arises. -/
+theorem switched_sameSize {L : Nat → Prop} {k : Nat}
+    (baseline : MinimumDegreeAtLeast k object)
+    (targetFree : ¬ HasCycleWithLength L separation.switched) :
+    MinimumDegreeAtLeast k separation.switched ∧
+      separation.switched.vertexCount = object.vertexCount ∧
+      separation.switched.edgeCount = object.edgeCount ∧
+      ¬ HasCycleWithLength L separation.switched ∧
+      ¬ separation.switched.LexicographicallySmaller object :=
+  ⟨separation.switched_baseline baseline, separation.switched_vertexCount,
+    separation.switched_edgeCount, targetFree, fun smaller => by
+      rcases FiniteObject.lexicographicallySmaller_iff.mp smaller with
+        fewer | ⟨_, fewerEdges⟩
+      · rw [separation.switched_vertexCount] at fewer
+        exact lt_irrefl _ fewer
+      · rw [separation.switched_edgeCount] at fewerEdges
+        exact lt_irrefl _ fewerEdges⟩
+
+end Separation
+
+/-- **`def:typeA-continuation-classes`: the separator is absorbed**, stated
+about G with the switch constructed from G.
+
+The identification is target-defective when the switched graph and G differ in
+target truth — which is exit `(4)` — or target-complete when they agree and the
+two separated responses lie in one boundary-degree fibre, which the manuscript
+derives exactly from *"`S_z` has no unused ambient incidence at `z`"* (`z` off
+the boundary of `S_z`) — exit `(5)` — or target-complete only after adjoining a
+larger connected support — exit `(6)`, carried as a declared property because
+it is a statement about supports strictly larger than `S_z`. -/
 def Absorbed {support : Finset object.Vertex} {receiver outside : object.Vertex}
-    {separation : Separation object support receiver outside}
     (Target : FiniteObject.{u} → Prop)
-    (reading : SwitchReading separation)
+    (separation : Separation object support receiver outside)
     (Enlarges : Prop) : Prop :=
-  -- Stated about G: target-defective or target-complete in G's own
-  -- surroundings `G − S_z` (the atom's outside), the only outside context that
-  -- is part of G.
-  ¬ (Target (Graph.glue reading.quotient
-        separation.atom.decomposition.outside) ↔
-      Target (Graph.glue reading.full separation.atom.decomposition.outside)) ∨
-    (reading.quotient.boundaryDegreeProfile =
-        reading.full.boundaryDegreeProfile ∧
-      (Target (Graph.glue reading.quotient
-          separation.atom.decomposition.outside) ↔
-        Target (Graph.glue reading.full
-          separation.atom.decomposition.outside))) ∨
+  ¬ (Target separation.switched ↔ Target object) ∨
+    (separation.separator ∉
+        Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
+          separation.switchSupport ∧
+      (Target separation.switched ↔ Target object)) ∨
       Enlarges
 
 /-- **`z` is surviving**: it is not absorbed. -/
 def Surviving {support : Finset object.Vertex} {receiver outside : object.Vertex}
-    {separation : Separation object support receiver outside}
     (Target : FiniteObject.{u} → Prop)
-    (reading : SwitchReading separation)
+    (separation : Separation object support receiver outside)
     (Enlarges : Prop) : Prop :=
-  ¬ Absorbed Target reading Enlarges
+  ¬ Absorbed Target separation Enlarges
 
 /-- **A separator with no unused ambient incidence is absorbed.**
 
 *"Consider the quotient that identifies the two separated response coordinates
 on this finite state.  If some compatible outside context distinguishes the two
 responses, the quotient is target-defective ..., which is exit (4).  Otherwise
-the identification is target-complete."*
-
-Stated about G the only outside context is `G − S_z`, so the split is excluded
-middle on the agreement there; the boundary-degree half of target-completeness
-is the reading's `fibre` clause at the exhausted separator. -/
+the identification is target-complete."*  Stated about G the comparison is the
+switched graph against G itself; the split is excluded middle on their target
+truth. -/
 theorem absorbed_of_internal {support : Finset object.Vertex}
     {receiver outside : object.Vertex}
-    {separation : Separation object support receiver outside}
     (Target : FiniteObject.{u} → Prop)
-    (reading : SwitchReading separation)
+    (separation : Separation object support receiver outside)
     (Enlarges : Prop)
     (internal : separation.separator ∉
       Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
         separation.switchSupport) :
-    Absorbed Target reading Enlarges := by
+    Absorbed Target separation Enlarges := by
   classical
-  by_cases agree : Target (Graph.glue reading.quotient
-        separation.atom.decomposition.outside) ↔
-      Target (Graph.glue reading.full separation.atom.decomposition.outside)
-  · exact Or.inr (Or.inl ⟨reading.fibre internal, agree⟩)
+  by_cases agree : Target separation.switched ↔ Target object
+  · exact Or.inr (Or.inl ⟨internal, agree⟩)
   · exact Or.inl agree
+
+/-- **A surviving separator at a target-avoiding G**: the switched graph has no
+accepted cycle, `z` has an unused ambient incidence (it is on the boundary of
+`S_z`), and the separator does not enlarge. -/
+theorem Surviving.of_avoids {support : Finset object.Vertex}
+    {receiver outside : object.Vertex} {L : Nat → Prop}
+    {separation : Separation object support receiver outside}
+    {Enlarges : Prop}
+    (avoids : ¬ HasCycleWithLength L object)
+    (surviving : Surviving (HasCycleWithLength L) separation Enlarges) :
+    ¬ HasCycleWithLength L separation.switched ∧
+      separation.separator ∈
+        Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
+          separation.switchSupport ∧
+      ¬ Enlarges := by
+  classical
+  have agree : HasCycleWithLength L separation.switched ↔
+      HasCycleWithLength L object := by
+    by_contra differ
+    exact surviving (Or.inl differ)
+  refine ⟨fun accepted => avoids (agree.mp accepted), ?_,
+    fun enlarges => surviving (Or.inr (Or.inr enlarges))⟩
+  by_contra internal
+  exact surviving (Or.inr (Or.inl ⟨internal, agree⟩))
 
 /-- **`lem:typeA-cubic-switch-absorption`.**  A surviving first separator for
 two declared response coordinates through one completion port has
@@ -755,14 +944,13 @@ theorem four_le_degree_of_surviving {support : Finset object.Vertex}
     {receiver outside : object.Vertex}
     {separation : Separation object support receiver outside}
     {Target : FiniteObject.{u} → Prop}
-    {reading : SwitchReading separation}
-    {Enlarges : Prop} (surviving : Surviving Target reading Enlarges) :
+    {Enlarges : Prop} (surviving : Surviving Target separation Enlarges) :
     3 < object.degree separation.separator := by
   classical
   by_cases internal : separation.separator ∉
       Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
         separation.switchSupport
-  · exact absurd (absorbed_of_internal Target reading Enlarges internal)
+  · exact absurd (absorbed_of_internal Target separation Enlarges internal)
       surviving
   · exact separation.four_le_degree_of_mem_cutBoundary (not_not.1 internal)
 
@@ -779,9 +967,9 @@ theorem absorbed_or_surviving {support : Finset object.Vertex}
     {receiver outside : object.Vertex}
     {separation : Separation object support receiver outside}
     (Target : FiniteObject.{u} → Prop)
-    (reading : SwitchReading separation)
     (Enlarges : Prop) :
-    Absorbed Target reading Enlarges ∨ Surviving Target reading Enlarges := by
+    Absorbed Target separation Enlarges ∨
+      Surviving Target separation Enlarges := by
   classical
   exact em _
 

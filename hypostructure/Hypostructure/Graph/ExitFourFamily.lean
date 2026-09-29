@@ -242,7 +242,8 @@ structure ContinuationFamily (object : FiniteObject.{u})
     DecoratedHandoff.RootedGerm object support receiver outside
 
 /-- Q4, with an actual separating pair in the finite connector family and the
-switch reading produced from that separation. -/
+switch at the separator constructed from G (`Separation.switched`: the two
+configurations exchange their continuations after `z`'s next incidences). -/
 structure Q4TargetDefect (Target : FiniteObject.{u} → Prop)
     (support : Finset object.Vertex) (threshold : Nat)
     (receiver load : object.Vertex) where
@@ -256,15 +257,11 @@ structure Q4TargetDefect (Target : FiniteObject.{u} → Prop)
   separation : DecoratedHandoff.Separation object support receiver family.outside
   leftPath : separation.left.path = (family.germ leftLoad leftMem).path
   rightPath : separation.right.path = (family.germ rightLoad rightMem).path
-  reading : DecoratedHandoff.SwitchReading separation
   internal : separation.separator ∉
     Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
       separation.switchSupport
-  /-- Stated about G: the two switch realizations are distinguished by G's own
-  surroundings `G − S_z` (the atom's outside). -/
-  targetDefect : ¬ (Target (glue reading.quotient
-      separation.atom.decomposition.outside) ↔
-    Target (glue reading.full separation.atom.decomposition.outside))
+  /-- Stated about G: the switched graph and G differ in target truth. -/
+  targetDefect : ¬ (Target separation.switched ↔ Target object)
 
 /-! ## Q5: essential-incidence deletion in the exact route-8 census -/
 
@@ -401,8 +398,11 @@ structure Witness (Target : FiniteObject.{u} → Prop)
 Q1, Q2, Q3 and Q5 compare two readings of G at one support, both glued into G's
 own surroundings; both glues are subgraphs of G, so at a target-avoiding G they
 have the same target truth and the four defects are decided false.  Q4 compares
-the switch realization after the identification — a realization that is not a
-reading of G — with `S_z` itself, and is not decided. -/
+the switched graph — G with the switch at the separator `z`, the two
+configurations exchanging their continuations after `z`'s next incidences
+(`Separation.switched`, constructed from G) — with G itself; it is a
+real statement about G (the switched graph has an accepted cycle), not decided,
+and at G its cycle runs through an exchanged edge (`Q4TargetDefect.forced_cycle`). -/
 
 theorem Q1TargetDefect.false_of_avoids {L : Nat → Prop}
     {support : Finset object.Vertex} {threshold scale : Nat}
@@ -463,6 +463,26 @@ theorem Q5TargetDefect.false_of_avoids {L : Nat → Prop}
       ((congrFun targetEq _).mp accepted)))
   · exact (congrFun targetEq _).mpr (deleted.mpr (core.mp
       ((congrFun targetEq _).mp accepted)))
+
+/-- **Q4 at G is the target-cycle arm of the switch**: at a target-avoiding G
+a Q4 datum's switched graph carries an accepted cycle, the switch is a proper
+double-edge switch, and the cycle runs through an exchanged edge
+(`Separation.switched_forced_cycle`). -/
+theorem Q4TargetDefect.forced_cycle {L : Nat → Prop}
+    {support : Finset object.Vertex} {threshold : Nat}
+    {receiver load : object.Vertex}
+    (avoids : ¬ HasCycleWithLength L object)
+    (datum : Q4TargetDefect (HasCycleWithLength L) support threshold receiver
+      load) :
+    datum.separation.SwitchValid ∧
+      ∃ c : CycleCertificate datum.separation.switched L,
+        ∃ e ∈ c.walk.edges,
+          e = s(datum.separation.nextLeft, datum.separation.rightAfter) ∨
+            e = s(datum.separation.nextRight, datum.separation.leftAfter) := by
+  have accepted : HasCycleWithLength L datum.separation.switched := by
+    by_contra none
+    exact datum.targetDefect (iff_of_false none avoids)
+  exact datum.separation.switched_forced_cycle avoids accepted
 
 /-- **At a target-avoiding G every member of the canonical exit-(4) family is
 a Q4 member** (Lean improvement, decided at G). -/
