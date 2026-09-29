@@ -38,11 +38,12 @@ The proof follows the paper's case order.  The rank-reducing quotient is an
 admissible declared quotient of G, so it preserves the boundary-degree profile
 (`DeclaredQuotient.fibrewise`) and no context of G separates the readings it
 identifies (decided at G, `readings_agree_in_rest`): the paper's first two
-cases (a profile-crossing or a target-defective determination) do not arise.  It is therefore target-complete, and
-`DeclaredQuotient.localize` gives the remaining two: a proper determination
-support admits a replacement (exit (c)), and the whole-graph support has a
-strictly smaller closed baseline representative with no power-of-two cycle (the
-whole-graph support-dependence exit (d)).  In both cases the exit disjunct of the paper's
+cases (a profile-crossing or a target-defective determination) do not arise.
+It is therefore target-complete, and `DeclaredQuotient.localize` gives the
+remaining two: a proper determination support admits a replacement (exit (c)),
+and the whole-graph support has a strictly smaller closed baseline
+representative with no power-of-two cycle (the whole-graph support-dependence
+exit (d)).  In both cases the exit disjunct of the paper's
 conclusion holds; for a pair coordinate the paper additionally reads the same
 event as a blocker of type (e), which is not needed for the disjunction. -/
 theorem mixedSparseSpineDependence_of_baseline
@@ -58,8 +59,7 @@ theorem mixedSparseSpineDependence_of_baseline
   rcases declared.localize reducing with replacement |
       ⟨representative, smaller, baseline, noTarget⟩
   · exact Or.inl (.compression declared.support replacement)
-  · exact Or.inl (.delocalization representative smaller baseline
-      (fun target => (noTarget target).elim))
+  · exact Or.inl (.delocalization representative smaller baseline noTarget)
 
 /-- Node `[130]`, `lem:degree-profile-fibres` at G's pair family: at G's
 canonical activation (read from the blocked arm's pinned activation), every

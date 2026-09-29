@@ -9,9 +9,10 @@ stated over the live generic definitions, with every hypothesis explicit.
 * G1  the declared support of every obstruction coordinate is a response
       support `X_π` of a pair of the minimal obstruction, hence lies in the
       obstruction's connected overlap support `U = ⋃_{π∈𝒰} X_π`;
-* G2  (B2) a target defect among the obstruction coordinates is a `Spec`
-      witness `w''` whose two coordinates are obstruction pair coordinates,
-      with `Z'' ⊆`-minimal: `|Z''| ≤ |U|`, and `Z'' = X₁ ∪ X₂` when `X₁ ∩ X₂ ≠ ∅`;
+* G2  (B2) the canonical support of two meeting response supports is their
+      union (G-only restatement: the target defect of the obstruction
+      coordinates, exit (b) stated about G, is empty at G, so its former
+      `Spec`-witness lemmas are removed);
 * G3  (B1(ii)) two vertex-disjoint connector routes, the forward one inside
       `U`, build a one-cell serial system, i.e. a covered `[179]` outcome;
       so on the `[182]` systemRealizability arm every such disjoint pair is
@@ -67,7 +68,7 @@ theorem obstructionCoordinate_support
   rw [Finset.mem_biUnion]
   exact ⟨p, hp, hv⟩
 
-/-! ## G2: the chain's defect is a second `Spec` witness (B2) -/
+/-! ## G2: the canonical support of meeting response supports -/
 
 open Classical in
 theorem sparseDeclaredSupport_pair (r : object.PairCoordinate) :
@@ -75,65 +76,6 @@ theorem sparseDeclaredSupport_pair (r : object.PairCoordinate) :
   show Graph.DeclaredSignature.Coordinate.support r = _
   congr 1
   exact Subsingleton.elim _ _
-
-open Classical in
-/-- Any target defect among pair coordinates of the base pair family is a
-`Spec` witness with those two pair coordinates and that canonical support. -/
-theorem specWitness_of_pairDefect
-    (active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object data.threshold)
-    {family : Finset object.PairCoordinate}
-    (subset : family ⊆ (Graph.pairResponseActivation active).pairFamily
-      (object.portPairSchedule data.threshold))
-    (defect : Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK)
-      object family pairCoordinateSupport) :
-    ∃ w : SparseTargetDefectWitness data object, w.Spec ∧
-      ∃ r₁ ∈ family, ∃ r₂ ∈ family, r₁ ≠ r₂ ∧
-        w.first = Sum.inr (Sum.inl r₁) ∧ w.second = Sum.inr (Sum.inl r₂) ∧
-        Graph.CanonicalSupport.select? object
-          (pairCoordinateSupport r₁ ∪ pairCoordinateSupport r₂) = some w.support := by
-  classical
-  obtain ⟨r₁, m₁, r₂, m₂, ne, support, sel, profile, actual, outside, sep⟩ := defect
-  refine ⟨⟨Sum.inr (Sum.inl r₁), Sum.inr (Sum.inl r₂), support, outside⟩, ?_,
-    r₁, m₁, r₂, m₂, ne, rfl, rfl, sel⟩
-  refine ⟨pairFamily_subset_sparseDeclaredFamily data object active r₁ (subset m₁),
-    pairFamily_subset_sparseDeclaredFamily data object active r₂ (subset m₂),
-    fun h => ne (by simpa using h), ?_⟩
-  simp only [sparseDeclaredSupport_pair]
-  exact ⟨sel, profile, actual, sep⟩
-
-open Classical in
-/-- **G2 (B2).** The chain's pinned `[179]`/`[180]` defect is a `Spec` witness
-`w''` whose coordinates are two distinct obstruction coordinates `r₁ ≠ r₂`,
-with `X₁ ∪ X₂ ⊆ Z''`, `Z''` connected, and `|Z''| ≤ |U|` for the obstruction's
-connected overlap support `U`. -/
-theorem specWitness_of_obstructionDefect
-    (returns : PairDemandReturns data object)
-    (defect : Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK) object
-      returns.obstructionCoordinates pairCoordinateSupport) :
-    ∃ w : SparseTargetDefectWitness data object, w.Spec ∧
-      ∃ r₁ ∈ returns.obstructionCoordinates, ∃ r₂ ∈ returns.obstructionCoordinates,
-        r₁ ≠ r₂ ∧
-        w.first = Sum.inr (Sum.inl r₁) ∧ w.second = Sum.inr (Sum.inl r₂) ∧
-        Graph.CanonicalSupport.select? object
-          (pairCoordinateSupport r₁ ∪ pairCoordinateSupport r₂) = some w.support ∧
-        pairCoordinateSupport r₁ ∪ pairCoordinateSupport r₂ ⊆ w.support ∧
-        Graph.SupportComponents.Connected.ConnectedOn object w.support ∧
-        w.support.card ≤
-          (returns.overlap.system.overlapSupport returns.overlap.family).card := by
-  classical
-  obtain ⟨w, spec, r₁, m₁, r₂, m₂, ne, h₁, h₂, sel⟩ :=
-    specWitness_of_pairDefect returns.overlap.system.first.active
-      (Contracts.SurplusPair.obstructionCoordinates_subset returns) defect
-  have cand := Graph.CanonicalSupport.mem_candidates_iff.1
-    (Graph.CanonicalSupport.select?_mem_candidates sel)
-  obtain ⟨-, -, -, sub₁⟩ := obstructionCoordinate_support returns m₁
-  obtain ⟨-, -, -, sub₂⟩ := obstructionCoordinate_support returns m₂
-  refine ⟨w, spec, r₁, m₁, r₂, m₂, ne, h₁, h₂, sel, cand.1, cand.2, ?_⟩
-  exact Graph.CanonicalSupport.select?_card_le sel
-    (Graph.CanonicalSupport.mem_candidates_iff.2
-      ⟨Finset.union_subset sub₁ sub₂, returns.overlap.connected⟩)
 
 open Classical in
 /-- **G2b.** When the two response supports meet, the witness support is

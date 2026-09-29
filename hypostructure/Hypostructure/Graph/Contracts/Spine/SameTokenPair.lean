@@ -1,6 +1,5 @@
 import Hypostructure.Graph.Statements.SameTokenPair
 import Hypostructure.Graph.Statements.SurplusPair
-import Hypostructure.Graph.ReadingSpectrum
 import Hypostructure.Graph.Contracts.SurplusPair.Routing
 
 /-!
@@ -13,7 +12,9 @@ and the survivor (`K .sparseSurplusSurvivor`), which pin G's canonical routing;
 `K .noProperBaseline` (G connected); `K .tightEndpoint`; the unresolved pair
 (`K .sameTokenPatternUnresolved`); the selection and the presentation laws.
 The mathematics is the vocabulary-free library (`Graph/ReadingProfiles.lean`,
-`Graph/ReadingSpectrum.lean`).
+`Graph/ActualContext.lean`).  (G-only restatement: the equal-count readings
+agree in G's own surroundings `G − Z`; the former path-length equality through
+single-edge contexts is removed with those contexts.)
 
 This module imports no strategy, row, or vocabulary module.
 -/
@@ -188,19 +189,7 @@ theorem sameTokenPairPartition_holds
     have tq : ∀ b : (SupportAtom.boundary object Z).Vertex, b.1 ∈ Xq →
         ∀ w ∈ Xq, object.graph.Adj b.1 w → b.1 ∈ Xp :=
       fun b hb w hw adj => mem_of_profile_eq profile.symm b hb (qZ hw) hw adj
-    have ce : Response.ContextEquivalent (HasCycleWithLength data.LengthOK)
-        (SupportAtom.retainedPiece object Z Xp) (SupportAtom.retainedPiece object Z Xq) := by
-      rcases alternative with h | h
-      · exact absurd profile h
-      · exact h
-    have avoidsDyadic : ¬ HasCycleWithLength Core.DyadicLength.PowerOfTwoLength object := by
-      rw [← lengths]; exact avoids
-    have ceDyadic : Response.ContextEquivalent
-        (HasCycleWithLength Core.DyadicLength.PowerOfTwoLength)
-        (SupportAtom.retainedPiece object Z Xp) (SupportAtom.retainedPiece object Z Xq) := by
-      rw [← lengths]; exact ce
-    refine ⟨counts, tp, tq, ce, fun a b ab n =>
-      ReadingSpectrum.ChainContext.exact_spectrum_iff avoidsDyadic ab ceDyadic n, ?_⟩
+    refine ⟨counts, tp, tq, ActualContext.actualGlue_agree avoids Z Xp Xq, ?_⟩
     by_cases free : (∀ w ∈ Xp, w ∉ SupportAtom.cutBoundary object Z) ∧
         (∀ w ∈ Xq, w ∉ SupportAtom.cutBoundary object Z)
     · left

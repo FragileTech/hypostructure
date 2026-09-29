@@ -40,8 +40,9 @@ noncomputable abbrev pairCoordinateSupport {object : Graph.FiniteObject.{u}}
 `lem:pair-system-realizability` (tex 5110-5130) for the retained return system
 of the minimal overlap obstruction: (i) a target cycle; (ii) two of the
 obstruction's own response coordinates read on G's piece at their canonical
-support are distinguished by a context (a target-defective quotient, sparse
-exit (b)); (iii) a target-complete proper-support representative inside the
+support are distinguished by G's own surroundings `G − Z` (a target-defective
+quotient, sparse exit (b), stated about G; empty at a target-avoiding G,
+`Graph.not_residualTargetDefect_of_avoids`); (iii) a target-complete proper-support representative inside the
 obstruction's overlap support (sparse exit (c)); (iv) the first nonserial
 intersection is a routed bottleneck whose first separator is a high-degree
 vertex: the first-separator handoff of the obstruction's own overlap support
@@ -107,9 +108,10 @@ end PairSerialArithmetic
 
 /-- The periodic-response alternatives of node `[180]` that are already
 routed by the paper (`lem:pair-system-increment-arithmetic`, tex 5207-5220),
-for the exact serial system: two equal-residue states distinguished by a
-context -- a target-defective identification of the obstruction's own response
-coordinates (sparse exit (b)); a target-complete proper representative inside
+for the exact serial system: two equal-residue states distinguished by G's own
+surroundings `G − Z` -- a target-defective identification of the obstruction's
+own response coordinates (sparse exit (b), stated about G; empty at a
+target-avoiding G); a target-complete proper representative inside
 the overlap support (sparse exit (c)); or a class reaching a routed bottleneck,
 whose first-separator reading is the Type B handoff of the serial system's own
 obstruction at `P₀` (`PairObstructionHandoff`). -/

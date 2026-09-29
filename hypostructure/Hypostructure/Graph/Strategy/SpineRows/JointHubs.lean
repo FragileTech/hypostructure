@@ -402,27 +402,4 @@ code as implications. -/
           (inputs.get (K .highEndpointSwitch)).down⟩
       .nil)
 
-/-- Node `[20a]`, after the witness rows: arm B, (B2) at the pinned witness. -/
-@[reducible] noncomputable def pairArmBDefectRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.pairArmBDefect
-    { Requires := [K .cubicBaseline, K .selection, K .minDegreeBaseline, K .noProperBaseline,
-        K .tightEndpoint, K .returnAvoidance, K .highEndpointSwitch,
-        K .sparseTargetDefectResidual, K .specWitnessStructure]
-      Produces := [K .pairArmBDefect]
-      requiresUnique := by key_fresh
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      .cons (key := K .pairArmBDefect)
-        ⟨Contracts.Spine.PairArms.pairArmBDefect_holds (object := inputs.current.object)
-          (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .selection)).down.1
-          (inputs.get (K .cubicBaseline)).down.2.1.2.1
-          (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .noProperBaseline)).down
-          (inputs.get (K .tightEndpoint)).down (inputs.get (K .returnAvoidance)).down
-          (inputs.get (K .highEndpointSwitch)).down
-          (inputs.get (K .sparseTargetDefectResidual)).down
-          (inputs.get (K .specWitnessStructure)).down⟩
-      .nil)
-
 end Hypostructure.Graph.Strategy.Spine

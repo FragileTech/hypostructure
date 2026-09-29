@@ -4981,3 +4981,75 @@ at G (`Graph.readings_agree_in_rest`).
 - `[39]`, `[42]` close against `[13]` as before, with the G-form replacement.
 - `[45]` `GlobalBarrierStatement`: the closed representative has no
   power-of-two cycle; `[46]` closes against the selection's minimality.
+## G-only restatement (R1: sparse surplus exits, [20a], [187] target defect, [125]→[144a], pair-code chain)
+
+g-repair, agent R1 (branch `g-repair-R1`, keys 7800–7849).  Every test in this cluster is
+stated about G; the only context of G at a support boundary `∂Z` is G's own surroundings
+`G − Z` (`Graph.ActualContext.actualGlue`).
+
+### Lean improvement: exit (b) of `[125]` is empty at G
+
+* Test (`def:named-surplus-exits` (b), `lem:context-universality`, tex 6106-6112): the paper's
+  target-defective identification is "valid in the actual context `G − X` but not in every
+  context".  Stated about G, the contexts are the contexts of G, and there is one: `G − Z`.
+  `Graph.ResidualTargetDefect` now reads: two distinct declared coordinates, one
+  boundary-degree fibre at their canonical support `Z`, and `G − Z` separates the two
+  readings (`¬ (Target (actualGlue G Z A) ↔ Target (actualGlue G Z B))`).
+* Decided at G: both glued readings are subgraphs of G, hence target-free
+  (`ActualContext.actualGlue_agree`), so `Graph.not_residualTargetDefect_of_avoids`.
+* Published fact `K .sparseTargetDefectEmpty` (idx 7800,
+  `SparseTargetDefectEmptyStatement`: every reading of G at every `Z` is target-free in
+  `G − Z`, and G's declared sparse family has no clause-(b) defect), produced by
+  `sparseTargetDefectEmptyRow` from `K .selection`.
+* The exit arm of `[125]` (both instances: the strict arm `[20]`, and the near-cubic arm)
+  is still run: `sparseSurplusSurvivorDichotomy` → `sparseSurplusExitRoutingRow`
+  ((a), (c), (d), (e) literal terminals; (b) → `K .sparseTargetDefectResidual`) →
+  `AtomicCT.runAndCloseIncompatible sparseTargetDefectEmptyRow` with the instance
+  `instIncompatibleSparseTargetDefectResidualSparseTargetDefectEmpty`
+  (`Assembly/NearCubic/Local.lean`, `selectedSparseExitClosed`).
+* Consequence: the residuals `Node20aOutcome` (`[20a]`) and `NearCubicTargetDefectOutcome`
+  (`[187]` near-cubic target defect) are unreachable and removed with their returns; the root
+  result `SelectedLedgerBoundaryResult` loses those two disjuncts (the theorem
+  `officialCounterexample_reaches_selectedLedgerBoundary` keeps its name and shape).
+
+### Exits (a), (c), (d), (e) stated about G
+
+* (a) an accepted cycle of G: G-actual, unchanged.
+* (c) `ReplacementSupport` in R2's G form (a piece `X'` with G's boundary profile at `Z`,
+  `glue X' (G − Z)` smaller, baseline, no target cycle).  `replacementSupport_of_retainedReading`
+  now takes `avoids` (the glued reading is a subgraph of G).
+* (d) `SparseSurplusExit.delocalization` now carries `noTarget : ¬ Target representative`
+  (the replacement of all of G, `G − Z = ∅`), matching R2's closed clause of
+  `DeclaredQuotient.localize`; `SparsePairDEResponseObstructionAt`'s whole-graph arm likewise.
+* (e) the open-port suppression cycle is a cycle certificate of G's suppressed graph:
+  G-actual, unchanged.
+
+### Consumers on the survivor arm, re-proved in G-only form
+
+* `[125]`→`[130]`/`[131]`: `not_pairResponseObstruction_of_survivor`,
+  `baselineSpineDemand_of_survivor`, `mixedSparseSpineDependence_of_baseline` (closed
+  representative read as `noTarget`); the determination valuation
+  (`SparsePairExactValuation`) reads the response in `G − Z` instead of every context.
+* Pair-code chain `[178]`→`[180]`: `pairChain_outcome` closes the target-defect outcomes of
+  `[179]`/`[180]` by `not_residualTargetDefect_of_avoids`; `PairCodeConfigurationStatement`
+  and `PairArmBStatement` drop the (B2) target-defect alternative (empty at G).
+* `[144]`: at equal profiles the G-form of the (b) test (does `G − Z` separate the pattern
+  readings?) is decided no, so the pair goes to `[144a]` (`sameTokenBottleneckRouting`).
+* `[144a]`: `SameTokenPatternPairUnresolvedStatement` second disjunct is agreement in
+  `G − Z` (was context equivalence); `SameTokenEqualCountsAt` likewise, and its path-length
+  equality (derived through single-edge contexts) is removed.
+
+### Removed (O-based or unreachable)
+
+* Keys (61): `sparseTargetDefectStructure`, `pairArmBDefect`, and the 59 `[20a]` witness keys
+  of `sparseExitWitnessFactsRow`, `sparseExitRealizedContextsRow`, `sparseExitBoundaryRow`,
+  `sparseExitCompressionRow`, `sparseExitDeletionRow`, `sparseExitCombinationRow`,
+  `sparseExitReadingsRow`, `sparseExitReadingsConsequencesRow`, `sparseExitPrivateSwitchRow`:
+  facts at `[125]`'s pinned witness and its separating context `O` (not part of G), reachable
+  only on the closed `[20a]`/`[187]` arms.  Indices are not reused.
+* Library (salvaged from g-only-A): `ReadingCounts`, `SingleEdgeContext`,
+  `TargetDefectStructure` modules; the abstract-context parts of `GluedReadingMaps`,
+  `ReadingProfiles`, `ReadingSpectrum`, `ReadingSpectrumArms`; `canonicalCoordinateResponse`.
+* Entry-prefix keys kept with G-only `Holds`: `K .specWitnessStructure` (witness triples:
+  canonical support structure, and no triple satisfies clause (b)) and
+  `K .everyWitnessSpectrumSplit` (every reading of every triple is target-free in `G − Z`).

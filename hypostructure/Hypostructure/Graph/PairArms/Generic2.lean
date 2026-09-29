@@ -1,13 +1,8 @@
 import Hypostructure.Graph.PairArms.Generic
 
 /-!
-# Arm B, generic layer, part 2: joint facts of the chain with `Spec` witnesses
+# Arm B, generic layer, part 2: the serial routes and the exact `[182]` arms
 
-* G5  a `Spec` witness whose two coordinates are obstruction coordinates IS a
-      target defect of the obstruction coordinates (converse of G2); so on every
-      arm where the chain records `¬ defect` (B1(ii), B1(iii)), no `Spec`
-      witness of G — in particular not ``'s pinned `w` — has both
-      coordinates among the obstruction coordinates;
 * G6  every route of the serial system closes an actual cycle, so under
       `¬ HasCycle` no realized route length is accepted;
 * G7  the exact content of `¬ Nonempty (PairSystemRealizabilityOutcome returns)`
@@ -25,33 +20,6 @@ open Hypostructure.Graph.Strategy.InterfaceReplacement
 universe u
 
 variable {data : Parameters} {object : Graph.FiniteObject.{u}}
-
-open Classical in
-/-- **G5.** A `Spec` witness with both coordinates among a pair-coordinate family
-is a target defect of that family (with `pairCoordinateSupport`). -/
-theorem pairDefect_of_spec {family : Finset object.PairCoordinate}
-    {w : SparseTargetDefectWitness data object} (spec : w.Spec)
-    {r₁ r₂ : object.PairCoordinate} (m₁ : r₁ ∈ family) (m₂ : r₂ ∈ family)
-    (h₁ : w.first = Sum.inr (Sum.inl r₁)) (h₂ : w.second = Sum.inr (Sum.inl r₂)) :
-    Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK) object
-      family pairCoordinateSupport := by
-  classical
-  obtain ⟨-, -, ne, sel, prof, act, sep⟩ := spec
-  rw [h₁, h₂] at ne
-  simp only [h₁, h₂, sparseDeclaredSupport_pair] at sel prof act sep
-  exact ⟨r₁, m₁, r₂, m₂, fun e => ne (by rw [e]), w.support, sel, prof, act,
-    w.outside, sep⟩
-
-/-- **G5 at the obstruction.** When the obstruction coordinates carry no target
-defect, no `Spec` witness has both its coordinates among them. -/
-theorem spec_not_both_obstruction (returns : PairDemandReturns data object)
-    (noDefect : ¬ Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK)
-      object returns.obstructionCoordinates pairCoordinateSupport)
-    {w : SparseTargetDefectWitness data object} (spec : w.Spec) :
-    ¬ ∃ r₁ ∈ returns.obstructionCoordinates, ∃ r₂ ∈ returns.obstructionCoordinates,
-      w.first = Sum.inr (Sum.inl r₁) ∧ w.second = Sum.inr (Sum.inl r₂) := by
-  rintro ⟨r₁, m₁, r₂, m₂, h₁, h₂⟩
-  exact noDefect (pairDefect_of_spec spec m₁ m₂ h₁ h₂)
 
 /-- **G6.** Every route choice of a serial system closes an actual simple cycle
 of G, so on `¬ HasCycle` no realized route length is accepted. -/

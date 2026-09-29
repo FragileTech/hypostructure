@@ -12,8 +12,10 @@ arm (or outcome) of `PairCodeConfigurationStatement` it concerns (library:
 
 * arm A (`[137]`→`[143]`): the exact kind structure of the canonical homogeneous pattern, and
   its role in a ten-letter alphabet;
-* arm B (the first failure): its three outcomes (B1)–(B3) with their exact configurations,
-  the demand ends and the connector routes; (B2) at the pinned witness;
+* arm B (the first failure): its outcomes (B1), (B3) with their exact configurations,
+  the demand ends and the connector routes ((B2), the target defect of the obstruction
+  coordinates, is exit (b) stated about G, empty at G; its former pinned-witness fact is
+  removed with the `[20a]` exit);
 * every selected port endpoint has degree `δ`.
 
 This module imports no strategy, row, or vocabulary module.
@@ -104,7 +106,8 @@ noncomputable def PairArmARoleAlphabetStatement (data : Parameters)
       (role.blocker, role.token) ∈ liveRoles
 
 /-- **Arm B: its outcomes, exactly** — on arm B of the pair-code configuration, G's
-canonical overlap system exists and G is in (B1), (B2) or (B3); the `[182]` residual (B1)
+canonical overlap system exists and G is in (B1) or (B3) ((B2), the target defect of the
+obstruction coordinates, is exit (b) stated about G and is empty at G); the `[182]` residual (B1)
 is one of three exact configurations; the obstruction handoff (B3) has its canonical
 separator, envelope and escape; on the realizability failure every forward connector route in
 `U` meets every backward one and the demand ends split; at the canonical serial system the
@@ -114,11 +117,6 @@ noncomputable def PairArmBStatement (data : Parameters)
   (PairOverlapFirstFailureStatement data object ∧
       (PairConditionalFactorizationResidualStatement data
           object ∨
-        (∃ returns, canonicalPairDemandReturns data
-            object = some returns ∧
-          Graph.ResidualTargetDefect
-            (Graph.HasCycleWithLength data.LengthOK)
-            object returns.obstructionCoordinates pairCoordinateSupport) ∨
         ((∃ returns, canonicalPairDemandReturns data
             object = some returns ∧
             PairObstructionHandoff data object returns) ∧
@@ -128,13 +126,7 @@ noncomputable def PairArmBStatement (data : Parameters)
         some system ∧ ¬ system.ConditionalFactorization) ∨
       (∃ returns, canonicalPairDemandReturns data object =
           some returns ∧
-        ((∃ w'' : SparseTargetDefectWitness data object,
-          w''.Spec ∧ ∃ r₁ ∈ returns.obstructionCoordinates,
-            ∃ r₂ ∈ returns.obstructionCoordinates, r₁ ≠ r₂ ∧
-            w''.first = Sum.inr (Sum.inl r₁) ∧ w''.second = Sum.inr (Sum.inl r₂) ∧
-            w''.support.card ≤
-              (returns.overlap.system.overlapSupport returns.overlap.family).card) ∨
-        ¬ Graph.ResidualTargetDefect
+        (¬ Graph.ResidualTargetDefect
             (Graph.HasCycleWithLength data.LengthOK)
             object returns.obstructionCoordinates pairCoordinateSupport ∨
         (PairObstructionHandoff data object returns ∧
@@ -151,19 +143,12 @@ noncomputable def PairArmBStatement (data : Parameters)
         (∀ v ∈ routes.forward.support,
           v ∈ returns.overlap.system.overlapSupport returns.overlap.family) →
         (∀ v ∈ routes.forward.support, v ∉ routes.backward.support) →
-        routes.forward.length = 0 ∧ routes.backward.length = 0) ∧
-      (∀ w : SparseTargetDefectWitness data object, w.Spec →
-        ¬ ∃ r₁ ∈ returns.obstructionCoordinates, ∃ r₂ ∈ returns.obstructionCoordinates,
-          w.first = Sum.inr (Sum.inl r₁) ∧ w.second = Sum.inr (Sum.inl r₂))) ∨
+        routes.forward.length = 0 ∧ routes.backward.length = 0)) ∨
     (∃ serial, canonicalPairSerialSystem data object = some serial ∧
       canonicalPairDemandReturns data object = some serial.returns ∧
       ¬ Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK) object
         serial.returns.obstructionCoordinates pairCoordinateSupport ∧
       ¬ PairObstructionHandoff data object serial.returns ∧
-      (∀ w : SparseTargetDefectWitness data object, w.Spec →
-        ¬ ∃ r₁ ∈ serial.returns.obstructionCoordinates,
-          ∃ r₂ ∈ serial.returns.obstructionCoordinates,
-          w.first = Sum.inr (Sum.inl r₁) ∧ w.second = Sum.inr (Sum.inl r₂)) ∧
       (∀ choice : Fin serial.cells → Nat, (∀ i, choice i ∈ serial.lengths i) →
         ∀ offset ∈ serial.offsets,
           ¬ data.LengthOK (serial.closing + (∑ i, choice i) + offset)))) ∧
@@ -223,58 +208,5 @@ noncomputable def PairArmBStatement (data : Parameters)
         ∃ p : (object.graph.deleteEdges {s(R.leftDemand.2, R.leftDemand.1),
             s(u₂, h₂)}).Walk R.leftDemand.2 u₂,
           p.IsPath ∧ data.LengthOK (p.length + 1)))
-
-open Classical in
-/-- **Arm B, (B2) at the pinned witness**: the pinned defect of the canonical return system's
-obstruction coordinates gives a second `Spec` witness of G on two distinct obstruction
-coordinates, with the full witness structure. -/
-noncomputable def PairArmBDefectStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ∀ {returns : PairDemandReturns data object},
-    canonicalPairDemandReturns data object = some returns →
-    Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK) object
-      returns.obstructionCoordinates pairCoordinateSupport →
-    (∃ w, sparseTargetDefectWitness data object = some w ∧ w.Spec) ∧
-    ∃ w'' : SparseTargetDefectWitness data object, w''.Spec ∧
-      (∃ r₁ ∈ returns.obstructionCoordinates, ∃ r₂ ∈ returns.obstructionCoordinates,
-        r₁ ≠ r₂ ∧
-        w''.first = Sum.inr (Sum.inl r₁) ∧ w''.second = Sum.inr (Sum.inl r₂) ∧
-        Graph.CanonicalSupport.select? object
-          (pairCoordinateSupport r₁ ∪ pairCoordinateSupport r₂) = some w''.support ∧
-        pairCoordinateSupport r₁ ∪ pairCoordinateSupport r₂ ⊆ w''.support ∧
-        Graph.SupportComponents.Connected.ConnectedOn object w''.support ∧
-        w''.support.card ≤
-          (returns.overlap.system.overlapSupport returns.overlap.family).card) ∧
-      (IsEmpty (Graph.GluedReadings.RealizedIn w''.outside) ∧
-        Graph.BoundTargetDefectGeometryAt object w''.support data.LengthOK
-          (w''.reading w''.first) (w''.reading w''.second) w''.outside ∧
-        2 ≤ (SupportAtom.cutBoundary object w''.support).card ∧
-        (∃ vertex, vertex ∉ w''.support) ∧
-        (2 ≤ (by classical exact (SupportAtom.cutBoundary object w''.support ∩
-            sparseDeclaredSupport data object w''.first).card) ∨
-          2 ≤ (by classical exact (SupportAtom.cutBoundary object w''.support ∩
-            sparseDeclaredSupport data object w''.second).card)) ∧
-        (¬ ∃ a b, SupportAtom.cutBoundary object w''.support = {a, b} ∧
-          w''.support = {a, b}) ∧
-        (w''.support ⊆ sparseDeclaredSupport data object w''.first →
-          (Graph.HasCycleWithLength data.LengthOK
-              (Graph.glue (w''.reading w''.first) w''.outside) ∧
-            ¬ Graph.HasCycleWithLength data.LengthOK
-              (Graph.glue (w''.reading w''.second) w''.outside)) ∧
-          (∃ s ∈ w''.support, s ∉ sparseDeclaredSupport data object w''.second)) ∧
-        (∀ Y : Finset object.Vertex,
-          (by classical exact sparseDeclaredSupport data object w''.first ∪
-            sparseDeclaredSupport data object w''.second) ⊆ Y →
-          Graph.SupportComponents.Connected.ConnectedOn object Y →
-            w''.support.card ≤ Y.card)) ∧
-      PathSpectrumSplitAtWitness w'' ∧
-      PositiveSupportBoundaryTwoAtWitness w'' ∧
-      SupportCutEdgesTwoAtWitness w'' ∧
-      BoundaryLowInsideVertexAtWitness w'' ∧
-      OutsideLowVertexAtWitness w'' ∧
-      WitnessActiveLabelsAtWitness w'' ∧
-      TwoBoundaryAllActiveAtWitness w'' ∧
-      SpectrumArmOneRefinedAtWitness w'' ∧
-      PrivateEdgeSwitchAtWitness w''
 
 end Hypostructure.Graph.Strategy.Spine

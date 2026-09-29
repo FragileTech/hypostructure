@@ -39,11 +39,11 @@ abbrev SelectedNearCubicSurvivorBoundary (selected : EGInput.{u}) :=
         Node162ResidualSubtypes selected ∨
         Node54ResidualSubtypes selected
 
-/-- The near-cubic branch either leaves through the paper's named
-target-defect exit or, after all sparse exits have been excluded, follows the
-surviving-cold/net-charge continuation. -/
+/-- The near-cubic branch, after all sparse exits have been excluded, follows
+the surviving-cold/net-charge continuation.  (G-only restatement: the paper's
+named target-defect exit `[187]` is closed at G -- exit (b), stated about G, is
+empty -- so it returns no residual.) -/
 abbrev SelectedNearCubicBoundary (selected : EGInput.{u}) :=
-  NearCubicTargetDefectOutcome selected ∨
-    SelectedNearCubicSurvivorBoundary selected
+  SelectedNearCubicSurvivorBoundary selected
 
 end HypostructureErdos64EG
