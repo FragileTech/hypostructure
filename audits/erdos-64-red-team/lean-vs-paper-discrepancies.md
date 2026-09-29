@@ -2739,31 +2739,35 @@ route-8 product has 750 paths.
     - `K .windowClassOverload`: Node `[139]`, yes arm: the overloading token of node `[137]` lies in `𝔗_W`, so the branch enters the window-incidence audit `[140]`.
     - `K .typeBHandoff`: Node `[144]`, the survivor specialization of the preceding fact: the sparse-exit arm is impossible, so the same current object is entered directly in the Type B fan ledger.
     - `K .typeBFanEntry`: Nodes `[65]`/`[66]`: the common Type B fan support entry (`def:typeB-assigned-ledger`): a canonical core with its assigned centres — the ordinary support's own high centres at `[65]`, or the decorations of the handoff envelope at the dashed input `[66]` — nonempty and all high.
-  - *`Node144aOutcome_windowFails`* ([139] yes (token in 𝔗_W, audit [140]); [144] handoff fails): 92 facts, the 87 common facts and:
+  - *`Node144aOutcome_windowFails`* ([139] yes (token in 𝔗_W, audit [140]); [144] handoff fails): 94 facts, the 87 common facts and:
     - `K .windowClassOverload`: Node `[139]`, yes arm: the overloading token of node `[137]` lies in `𝔗_W`, so the branch enters the window-incidence audit `[140]`.
     - `K .typeBHandoffFails`: Node `[144]`, the exact complement of the same-token handoff.
     - `K .sameTokenPatternUnresolved`: Node `[144a]`, the residual of the paper error at `[144]`: the unresolved same-label pattern pair.
     - `K .sameTokenReadingsNotReplacement`: Node `[144a]`: no reading of G's piece at the pattern support is a replacement representative.
     - `K .sameTokenPairPartition`: Node `[144a]`: **the exact partition of the unresolved pair** at G's canonical routing, `X_p = select?(seed(p))`, `X_q = select?(seed(q))`, `Z = select?(X_p ∪ X_q)` (`X_p, X_q ⊆ Z`, `Z` connected): (U1) a boundary vertex `b` with `c_p(b) ≠ c_q(b)`, both `≤ deg b − 1`, retained with a neighbour by one support `X` and adjacent to its seed or with `X ∖ N(b)` disconnected; or equal counts, the transfer clauses, context equivalence and equal `a`–`b` path-length spectra, with (U2-free) neither support on `∂Z` (every `∂Z` vertex a connector cut vertex of `Z`, `N(X_p ∪ X_q) ⊆ Z`) or (U2-shared) a boundary vertex in both supports.  The one-sided region is empty (closed from G's facts, see Closed from G's facts).  *`sameTokenPairPartitionRow`; port-144a, Lean improvement (not routed by the paper; tex 5585-5620, 5589, 5594).*
+    - `K .sameTokenTransplantSize`: Node `[144a]` (G repair R5, Lean improvement): **the transplants of `X_q` and `X_p` into `Z`** (`Graph.Transplant.transplant`: interior `int(Z) ∩ X_·`, `G`'s edges, `∂Z`'s own labels): (iii) interior at most `int(Z)`; (iv) linkage-included in `G[Z]`; (i) profile of `G[Z]` iff no vertex of `∂Z` has a neighbour in `D_· = int(Z) ∖ X_·`; (ii) baseline in `glue X′ (G − Z)` iff every vertex outside `D_·` keeps `δ` neighbours outside `D_·`; and (ii) ∧ (iv) give `int(X′) = int(Z)`, i.e. `int(Z) ⊆ X_·` (minimality).
+    - `K .sameTokenTransplantDeficit`: Node `[144a]` (G repair R5, Lean improvement): **the exact failure of the two transplants**: for each of `X_q`, `X_p`, `D_· = ∅` and no exceptional vertex, or G's canonical exceptional vertex `transplantDeficit G δ Z X_·` exists, lies in `Z ∖ D_·`, has a neighbour in `D_·`, and keeps fewer than `δ` neighbours outside `D_·`.
   - *`Node144aOutcome_remainderHandoff`* ([139] no, [141] yes (token in 𝔗_R, audit [142]); [144] handoff): 91 facts, the 87 common facts and:
     - `K .windowClassAbsent`: Node `[139]`, no arm: the selected overloading token does not lie in `𝔗_W`, so that same witness falls through to node `[141]`.
     - `K .remainderClassOverload`: Node `[141]`, yes arm: the overloading token lies in `𝔗_R`, so the branch enters the remainder-surplus audit `[142]`.
     - `K .typeBHandoff`: Node `[144]`, the survivor specialization of the preceding fact: the sparse-exit arm is impossible, so the same current object is entered directly in the Type B fan ledger.
     - `K .typeBFanEntry`: Nodes `[65]`/`[66]`: the common Type B fan support entry (`def:typeB-assigned-ledger`): a canonical core with its assigned centres — the ordinary support's own high centres at `[65]`, or the decorations of the handoff envelope at the dashed input `[66]` — nonempty and all high.
-  - *`Node144aOutcome_remainderFails`* ([139] no, [141] yes (token in 𝔗_R, audit [142]); [144] handoff fails): 93 facts, the 87 common facts and:
+  - *`Node144aOutcome_remainderFails`* ([139] no, [141] yes (token in 𝔗_R, audit [142]); [144] handoff fails): 95 facts, the 87 common facts and:
     - `K .windowClassAbsent`: Node `[139]`, no arm: the selected overloading token does not lie in `𝔗_W`, so that same witness falls through to node `[141]`.
     - `K .remainderClassOverload`: Node `[141]`, yes arm: the overloading token lies in `𝔗_R`, so the branch enters the remainder-surplus audit `[142]`.
     - `K .typeBHandoffFails`: Node `[144]`, the exact complement of the same-token handoff.
     - `K .sameTokenPatternUnresolved`: Node `[144a]`, the residual of the paper error at `[144]`: the unresolved same-label pattern pair.
     - `K .sameTokenReadingsNotReplacement`: Node `[144a]`: no reading of G's piece at the pattern support is a replacement representative.
     - `K .sameTokenPairPartition`: Node `[144a]`: **the exact partition of the unresolved pair** at G's canonical routing, `X_p = select?(seed(p))`, `X_q = select?(seed(q))`, `Z = select?(X_p ∪ X_q)` (`X_p, X_q ⊆ Z`, `Z` connected): (U1) a boundary vertex `b` with `c_p(b) ≠ c_q(b)`, both `≤ deg b − 1`, retained with a neighbour by one support `X` and adjacent to its seed or with `X ∖ N(b)` disconnected; or equal counts, the transfer clauses, context equivalence and equal `a`–`b` path-length spectra, with (U2-free) neither support on `∂Z` (every `∂Z` vertex a connector cut vertex of `Z`, `N(X_p ∪ X_q) ⊆ Z`) or (U2-shared) a boundary vertex in both supports.  The one-sided region is empty (closed from G's facts, see Closed from G's facts).  *`sameTokenPairPartitionRow`; port-144a, Lean improvement (not routed by the paper; tex 5585-5620, 5589, 5594).*
+    - `K .sameTokenTransplantSize`: Node `[144a]` (G repair R5, Lean improvement): **the transplants of `X_q` and `X_p` into `Z`** (`Graph.Transplant.transplant`: interior `int(Z) ∩ X_·`, `G`'s edges, `∂Z`'s own labels): (iii) interior at most `int(Z)`; (iv) linkage-included in `G[Z]`; (i) profile of `G[Z]` iff no vertex of `∂Z` has a neighbour in `D_· = int(Z) ∖ X_·`; (ii) baseline in `glue X′ (G − Z)` iff every vertex outside `D_·` keeps `δ` neighbours outside `D_·`; and (ii) ∧ (iv) give `int(X′) = int(Z)`, i.e. `int(Z) ⊆ X_·` (minimality).
+    - `K .sameTokenTransplantDeficit`: Node `[144a]` (G repair R5, Lean improvement): **the exact failure of the two transplants**: for each of `X_q`, `X_p`, `D_· = ∅` and no exceptional vertex, or G's canonical exceptional vertex `transplantDeficit G δ Z X_·` exists, lies in `Z ∖ D_·`, has a neighbour in `D_·`, and keeps fewer than `δ` neighbours outside `D_·`.
   - *`Node144aOutcome_primitiveHandoff`* ([139] no, [141] no (primitive token, audit [143]); [144] handoff): 92 facts, the 87 common facts and:
     - `K .windowClassAbsent`: Node `[139]`, no arm: the selected overloading token does not lie in `𝔗_W`, so that same witness falls through to node `[141]`.
     - `K .remainderClassAbsent`: Node `[141]`, no arm: the selected overloading token lies in `𝔗_prim`, so that same witness enters `[143]`.
     - `K .primitiveClassOverload`: Node `[143]` entry: the overloading token is primitive.
     - `K .typeBHandoff`: Node `[144]`, the survivor specialization of the preceding fact: the sparse-exit arm is impossible, so the same current object is entered directly in the Type B fan ledger.
     - `K .typeBFanEntry`: Nodes `[65]`/`[66]`: the common Type B fan support entry (`def:typeB-assigned-ledger`): a canonical core with its assigned centres — the ordinary support's own high centres at `[65]`, or the decorations of the handoff envelope at the dashed input `[66]` — nonempty and all high.
-  - *`Node144aOutcome_primitiveFails`* ([139] no, [141] no (primitive token, audit [143]); [144] handoff fails): 94 facts, the 87 common facts and:
+  - *`Node144aOutcome_primitiveFails`* ([139] no, [141] no (primitive token, audit [143]); [144] handoff fails): 96 facts, the 87 common facts and:
     - `K .windowClassAbsent`: Node `[139]`, no arm: the selected overloading token does not lie in `𝔗_W`, so that same witness falls through to node `[141]`.
     - `K .remainderClassAbsent`: Node `[141]`, no arm: the selected overloading token lies in `𝔗_prim`, so that same witness enters `[143]`.
     - `K .primitiveClassOverload`: Node `[143]` entry: the overloading token is primitive.
@@ -2771,6 +2775,8 @@ route-8 product has 750 paths.
     - `K .sameTokenPatternUnresolved`: Node `[144a]`, the residual of the paper error at `[144]`: the unresolved same-label pattern pair.
     - `K .sameTokenReadingsNotReplacement`: Node `[144a]`: no reading of G's piece at the pattern support is a replacement representative.
     - `K .sameTokenPairPartition`: Node `[144a]`: **the exact partition of the unresolved pair** at G's canonical routing, `X_p = select?(seed(p))`, `X_q = select?(seed(q))`, `Z = select?(X_p ∪ X_q)` (`X_p, X_q ⊆ Z`, `Z` connected): (U1) a boundary vertex `b` with `c_p(b) ≠ c_q(b)`, both `≤ deg b − 1`, retained with a neighbour by one support `X` and adjacent to its seed or with `X ∖ N(b)` disconnected; or equal counts, the transfer clauses, context equivalence and equal `a`–`b` path-length spectra, with (U2-free) neither support on `∂Z` (every `∂Z` vertex a connector cut vertex of `Z`, `N(X_p ∪ X_q) ⊆ Z`) or (U2-shared) a boundary vertex in both supports.  The one-sided region is empty (closed from G's facts, see Closed from G's facts).  *`sameTokenPairPartitionRow`; port-144a, Lean improvement (not routed by the paper; tex 5585-5620, 5589, 5594).*
+    - `K .sameTokenTransplantSize`: Node `[144a]` (G repair R5, Lean improvement): **the transplants of `X_q` and `X_p` into `Z`** (`Graph.Transplant.transplant`: interior `int(Z) ∩ X_·`, `G`'s edges, `∂Z`'s own labels): (iii) interior at most `int(Z)`; (iv) linkage-included in `G[Z]`; (i) profile of `G[Z]` iff no vertex of `∂Z` has a neighbour in `D_· = int(Z) ∖ X_·`; (ii) baseline in `glue X′ (G − Z)` iff every vertex outside `D_·` keeps `δ` neighbours outside `D_·`; and (ii) ∧ (iv) give `int(X′) = int(Z)`, i.e. `int(Z) ⊆ X_·` (minimality).
+    - `K .sameTokenTransplantDeficit`: Node `[144a]` (G repair R5, Lean improvement): **the exact failure of the two transplants**: for each of `X_q`, `X_p`, `D_· = ∅` and no exceptional vertex, or G's canonical exceptional vertex `transplantDeficit G δ Z X_·` exists, lies in `Z ∖ D_·`, has a neighbour in `D_·`, and keeps fewer than `δ` neighbours outside `D_·`.
 
 <a id="residual-172a"></a>
 
@@ -4980,3 +4986,58 @@ stated about G; the only context of G at a support boundary `∂Z` is G's own su
 * Entry-prefix keys kept with G-only `Holds`: `K .specWitnessStructure` (witness triples:
   canonical support structure, and no triple satisfies clause (b)) and
   `K .everyWitnessSpectrumSplit` (every reading of every triple is target-free in `G − Z`).
+
+## G repair R5: [144a] transplant
+
+g-repair, agent R5 (branch `g-repair-R5`, keys 8000–8049).  All facts are about G at the
+`[144a]` handoff-fails residual's canonical objects: G's canonical routing, its pattern supports
+`X_p = select?(seed(p))`, `X_q = select?(seed(q))` and `Z = select?(X_p ∪ X_q)` (pinned by
+`K .sameTokenPairPartition`).  The only context is G's own surroundings `G − Z`.
+
+### Lean improvement: the transplant of a pattern support into `Z`, and the size equality
+
+* **Construction** (`Graph/Transplant.lean`, vocabulary-free).  `transplant G Z Y` is the
+  `∂Z`-boundaried piece with interior `int(Z) ∩ Y` (`TransplantInternal`) and the edges of `G`
+  among `∂Z ∪ (int(Z) ∩ Y)` (`SimpleGraph.comap transplantDecode G`).  It is on `∂Z`'s own
+  labels, so the boundary-label bijection with `G[Z]` is the identity of `∂Z`; the per-label
+  bijection that equal reading counts supply is `contactEquiv` (not needed by the construction).
+  It is not a reading of G: its interior omits `D = int(Z) ∖ Y` (`Removed`).
+* **Conditions.**
+  * (i) `transplant_profile_eq_iff`: profile of `G[Z]` iff no vertex of `∂Z` has a
+    `G`-neighbour in `D`.  (Equal counts `c_p = c_q` do not give (i); (i) is this predicate.)
+  * (ii) `transplant_baseline_iff`: `δ(glue X′ (G − Z)) ≥ δ` iff `TransplantDegreeCondition`
+    (every vertex outside `D` keeps `δ` neighbours outside `D`); the exceptional vertices are
+    exactly the kept vertices with a neighbour in `D` (an interior vertex of `Z` in `Y`, or a
+    boundary vertex of `Z`) and kept degree below `δ` (`transplantDeficit`, the first one in
+    G's order).
+  * (iii) `transplant_internalVertexCount_le`; equality iff `D = ∅`
+    (`transplant_internalVertexCount_eq_iff`).
+  * (iv) `LinkageIncluded X′`: every linkage of `X′` (edges with every vertex of degree ≤ 2 and
+    every interior vertex of degree 0 or 2: internally disjoint `∂Z`-to-`∂Z` paths and closed
+    components) has an injective relabelling of its interior into `int(Z)`, fixing `∂Z`, that
+    sends its edges to edges of `G` -- a family of `G[Z]` with the same endpoint pairs and
+    lengths.  Proved for the transplant (`transplant_linkageIncluded`).
+  * Key lemma (`cycle_transfer`, any `∂Z`-piece): under linkage inclusion every cycle of
+    `glue X′ (G − Z)` maps to a cycle of `G` of the same length; so a target-avoiding G gives
+    `¬ Target (glue X′ (G − Z))` (`not_target_of_linkageIncluded`).
+* **Size equality (Lean improvement).**  `not_vertexCount_lt_of_minimal` /
+  `internalVertexCount_le_of_minimal` (any `∂Z`-piece) and `transplant_size_eq`,
+  `transplant_fills_of_baseline`: on a minimal target-avoiding G, (ii) and (iv) give
+  `int(X′) = int(Z)`, i.e. `int(Z) ⊆ Y`; a smaller `X′` would be a strictly smaller baseline
+  object without a target cycle (the G-form of `ReplacementSupport` with (i) added).  Both
+  directions are published (`X_q` into `Z` and `X_p` into `Z`).
+* **Published facts** (`sameTokenTransplantRow`, on the three `[144a]` handoff-fails subtypes,
+  right after `K .sameTokenPairPartition`; reads `K .sameTokenPairPartition`,
+  `K .noProperBaseline`, `K .selection`, `K .minDegreeBaseline`):
+  * `K .sameTokenTransplantSize` (idx 8000, `SameTokenTransplantSizeStatement`): (i)--(iv) and
+    the size equality, for both transplants.
+  * `K .sameTokenTransplantDeficit` (idx 8001, `SameTokenTransplantDeficitStatement`): for
+    each of `X_q`, `X_p`: `D_· = ∅` and no exceptional vertex, or the canonical exceptional
+    vertex `v` exists, `v ∈ Z ∖ D_·`, `v` has a neighbour in `D_·`, and `v` keeps fewer than
+    `δ` neighbours outside `D_·`.  Linkage never fails for these transplants.
+* **No split.**  "Both transplants valid" is `int(Z) ⊆ X_p ∩ X_q`.  Against the `[144a]`
+  ledger no contradiction was derived: in (U2-free) it forces `X_p = X_q = Z` with `∂Z = ∅`,
+  hence `Z = V(G)` (Steiner minimality of `select?` and G connected; not implemented in Lean);
+  (U1) and (U2-shared) give no contradiction from the partition's constraints.  Neither arm
+  closes, so by the split rule the dichotomy is not run; the exact disjunction is published as
+  `K .sameTokenTransplantDeficit`.

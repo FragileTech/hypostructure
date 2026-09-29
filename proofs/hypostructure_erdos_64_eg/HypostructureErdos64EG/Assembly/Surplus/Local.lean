@@ -708,6 +708,8 @@ noncomputable def selectedBottleneckDischarge
     (supportsFresh : K .sameTokenPatternSupports ∉ known := by key_fresh)
     (swapFresh : K .sameTokenPatternSwap ∉ known := by key_fresh)
     (partitionFresh : K .sameTokenPairPartition ∉ known := by key_fresh)
+    (transplantSizeFresh : K .sameTokenTransplantSize ∉ known := by key_fresh)
+    (transplantDeficitFresh : K .sameTokenTransplantDeficit ∉ known := by key_fresh)
     (closedFresh : closed ∉ known := by key_fresh)
     [FactKeys.Has (K .activeSurplusFamily) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
@@ -793,7 +795,8 @@ noncomputable def selectedBottleneckDischarge
           K .sameTokenPatternSwap :: K .bottleneckRouting ::
           K .homogeneousCapsFail :: known) ⊕
       ExactLedger EGInput.{u} selected
-        (K .sameTokenPairPartition :: K .sameTokenReadingsNotReplacement ::
+        (K .sameTokenTransplantSize :: K .sameTokenTransplantDeficit ::
+          K .sameTokenPairPartition :: K .sameTokenReadingsNotReplacement ::
           K .sameTokenPatternUnresolved :: K .typeBHandoffFails ::
           K .sameTokenPatternSupports :: K .sameTokenPatternSwap :: K .bottleneckRouting ::
           K .homogeneousCapsFail :: known) := by
@@ -841,7 +844,16 @@ noncomputable def selectedBottleneckDischarge
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run unresolved (by key_fresh)
-          exact .inr partitioned
+          -- `[144a]` (G repair R5, Lean improvement): the transplants of the
+          -- two pattern supports into `Z`, their conditions (i)--(iv), the size
+          -- equality minimality gives, and their exact failure.  No decision:
+          -- the arm "both transplants valid" does not close at G.
+          let transplanted :=
+            (sameTokenTransplantRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run partitioned (by key_fresh)
+          exact .inr transplanted
   | .right capsHistory =>
       -- The caps arm, closed at G: the audited pattern at G's overloading
       -- token refutes the caps at the same ledger.

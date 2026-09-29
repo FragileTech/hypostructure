@@ -1896,6 +1896,11 @@ inductive Key where
   -- g-repair R1 keys (7800–7849)
   /-- Node `[125]`, clause (b) of `def:named-surplus-exits` stated about G (Lean improvement: exit (b) is empty at G): **every two readings of G agree in G's own surroundings `G − Z`** (both glued graphs are target-free subgraphs of G), so G's declared sparse family has no target-defective identification.  Published on `[125]`'s exit arm, where it closes the arm against `K .sparseTargetDefectResidual`. -/
   | sparseTargetDefectEmpty
+  -- g-repair R5 keys (8000–8049)
+  /-- Node `[144a]` (G repair R5, Lean improvement): **the transplants of G's pattern supports `X_q`, `X_p` into `Z = select?(X_p ∪ X_q)`**: each transplant (the `∂Z`-piece with interior `int(Z) ∩ X_·` and `G`'s edges) has (iii) interior at most `int(Z)`, (iv) linkage inclusion in `G[Z]`, (i) the profile of `G[Z]` iff no boundary vertex has a neighbour in `int(Z) ∖ X_·`, (ii) the baseline in `glue X′ (G − Z)` iff every vertex outside `int(Z) ∖ X_·` keeps `δ` neighbours outside it; and (ii) ∧ (iv) give `int(X′) = int(Z)` (minimality). -/
+  | sameTokenTransplantSize
+  /-- Node `[144a]` (G repair R5, Lean improvement): **the exact failure of the two transplants**: for each of `X_q`, `X_p`, either `int(Z) ⊆ X_·` and there is no exceptional vertex, or G's canonical exceptional vertex (the first vertex kept with fewer than `δ` neighbours outside `int(Z) ∖ X_·`) exists, lies in `Z`, and has a neighbour in `int(Z) ∖ X_·`. -/
+  | sameTokenTransplantDeficit
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2879,6 +2884,11 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   -- g-repair R1 keys
   | .sparseTargetDefectEmpty, object =>
       SparseTargetDefectEmptyStatement data.toParameters object
+  -- g-repair R5 keys
+  | .sameTokenTransplantSize, object =>
+      SameTokenTransplantSizeStatement data.toParameters object
+  | .sameTokenTransplantDeficit, object =>
+      SameTokenTransplantDeficitStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3349,6 +3359,8 @@ def label : Key → String
   | .pairArmARoleAlphabet => "pairArmARoleAlphabet"
   | .pairArmB => "pairArmB"
   | .sparseTargetDefectEmpty => "sparseTargetDefectEmpty"
+  | .sameTokenTransplantSize => "sameTokenTransplantSize"
+  | .sameTokenTransplantDeficit => "sameTokenTransplantDeficit"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3819,6 +3831,8 @@ example : label .pairArmAPattern = "pairArmAPattern" := rfl
 example : label .pairArmARoleAlphabet = "pairArmARoleAlphabet" := rfl
 example : label .pairArmB = "pairArmB" := rfl
 example : label .sparseTargetDefectEmpty = "sparseTargetDefectEmpty" := rfl
+example : label .sameTokenTransplantSize = "sameTokenTransplantSize" := rfl
+example : label .sameTokenTransplantDeficit = "sameTokenTransplantDeficit" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4283,6 +4297,8 @@ def idx : Key → Nat
   | .pairArmARoleAlphabet => 7235
   | .pairArmB => 7236
   | .sparseTargetDefectEmpty => 7800
+  | .sameTokenTransplantSize => 8000
+  | .sameTokenTransplantDeficit => 8001
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4736,6 +4752,8 @@ def ofIdx : Nat → Key
   | 7235 => .pairArmARoleAlphabet
   | 7236 => .pairArmB
   | 7800 => .sparseTargetDefectEmpty
+  | 8000 => .sameTokenTransplantSize
+  | 8001 => .sameTokenTransplantDeficit
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -5741,6 +5759,10 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmB") 7236
   | .sparseTargetDefectEmpty =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sparseTargetDefectEmpty") 7800
+  | .sameTokenTransplantSize =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenTransplantSize") 8000
+  | .sameTokenTransplantDeficit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenTransplantDeficit") 8001
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

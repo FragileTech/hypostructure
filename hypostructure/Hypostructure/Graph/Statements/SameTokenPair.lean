@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Statements.SurplusPairRouting
 import Hypostructure.Graph.ReadingProfiles
+import Hypostructure.Graph.Transplant
 
 /-!
 # Statements: G's same-token pattern pair, made exact
@@ -26,6 +27,12 @@ about G at those canonical objects:
   contexts read contexts that are not part of G and are removed).  The fourth region (U2-onesided:
   equal counts, one support on `∂Z` and no shared boundary vertex) is empty
   at G.
+
+On `[144a]`, at the same canonical objects, the transplants of `X_q` and of
+`X_p` into `Z` (`Graph.Transplant.transplant`, G repair R5, Lean improvement):
+their replacement conditions (i)--(iv) and the size equality that minimality
+gives (`SameTokenTransplantSizeStatement`), and their exact failure at G's
+canonical exceptional vertex (`SameTokenTransplantDeficitStatement`).
 
 The reading count `c_X(b)` is `Graph.ReadingProfiles.readingCount`.  This
 module imports no strategy, row, or vocabulary module.
@@ -158,5 +165,87 @@ noncomputable def SameTokenPairPartitionStatement (data : Parameters)
             (routing.capacity.activation.pairSeed routing.demands.first)
             (routing.capacity.activation.pairSeed routing.demands.second) b) ∨
         SameTokenEqualCountsAt data object Z Xp Xq)
+
+/-- **The transplant of `Y` into `Z` at G: conditions (i)--(iv) and the size
+equality.**  The transplant `X′ = transplant G Z Y` is the `∂Z`-piece with
+interior `int(Z) ∩ Y` and `G`'s edges among `∂Z ∪ (int(Z) ∩ Y)`, on `∂Z`'s own
+labels; `D = int(Z) ∖ Y` is the removed set.
+
+* (iii) `int(X′) ≤ int(Z)`;
+* (iv) `X′` is linkage-included in `G[Z]`;
+* (i) `X′` has the boundary profile of `G[Z]` iff no vertex of `∂Z` has a
+  neighbour in `D`;
+* (ii) `glue X′ (G − Z)` has minimum degree at least `δ` iff every vertex of
+  `G` outside `D` keeps at least `δ` neighbours outside `D`;
+* size: (ii) and (iv) give `int(X′) = int(Z)`, i.e. `Y` contains every interior
+  vertex of `Z` (a smaller `X′` would be a strictly smaller baseline object
+  without a target cycle). -/
+def SameTokenTransplantAt (data : Parameters) (object : Graph.FiniteObject.{u})
+    (Z Y : Finset object.Vertex) : Prop :=
+  (Graph.Transplant.transplant object Z Y).internalVertexCount ≤
+      (Strategy.InterfaceReplacement.SupportAtom.piece object Z).internalVertexCount ∧
+    Graph.Transplant.LinkageIncluded (Graph.Transplant.transplant object Z Y) ∧
+    ((Graph.Transplant.transplant object Z Y).boundaryDegreeProfile =
+        (Strategy.InterfaceReplacement.SupportAtom.piece object Z).boundaryDegreeProfile ↔
+      ∀ (b : (Strategy.InterfaceReplacement.SupportAtom.boundary object Z).Vertex) w,
+        object.graph.Adj b.1 w → ¬ Graph.Transplant.Removed object Z Y w) ∧
+    (Graph.MinimumDegreeAtLeast data.threshold
+        (Graph.glue (Graph.Transplant.transplant object Z Y)
+          (Strategy.InterfaceReplacement.SupportAtom.outside object Z)) ↔
+      Graph.Transplant.TransplantDegreeCondition object data.threshold Z Y) ∧
+    (Graph.MinimumDegreeAtLeast data.threshold
+        (Graph.glue (Graph.Transplant.transplant object Z Y)
+          (Strategy.InterfaceReplacement.SupportAtom.outside object Z)) →
+      Graph.Transplant.LinkageIncluded (Graph.Transplant.transplant object Z Y) →
+      (Graph.Transplant.transplant object Z Y).internalVertexCount =
+          (Strategy.InterfaceReplacement.SupportAtom.piece object Z).internalVertexCount ∧
+        ∀ v ∈ Z, v ∉ Strategy.InterfaceReplacement.SupportAtom.cutBoundary object Z → v ∈ Y)
+
+/-- **Node `[144a]`: the transplants of G's pattern supports into `Z`, with the
+size equality minimality gives** (G repair R5, Lean improvement).  At G's
+canonical routing, with `X_p`, `X_q` its pattern supports and
+`Z = select?(X_p ∪ X_q)`, the transplant of `X_q` into `Z` and the transplant
+of `X_p` into `Z` each satisfy `SameTokenTransplantAt`. -/
+noncomputable def SameTokenTransplantSizeStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact ∃ routing, canonicalSameTokenRouting data object = some routing ∧
+    ∃ Xp Xq Z : Finset object.Vertex,
+      Xp = sameTokenPairSupport routing routing.demands.first ∧
+      Xq = sameTokenPairSupport routing routing.demands.second ∧
+      Graph.CanonicalSupport.select? object (Xp ∪ Xq) = some Z ∧
+      SameTokenTransplantAt data object Z Xq ∧ SameTokenTransplantAt data object Z Xp
+
+/-- **The transplant of `Y` into `Z` at G, exactly**: either `D = int(Z) ∖ Y` is
+empty and there is no exceptional vertex, or G's canonical exceptional vertex
+`v = transplantDeficit G δ Z Y` (the first vertex in G's order that is kept
+with fewer than `δ` neighbours outside `D`) exists: `v ∈ Z`, `v ∉ D`, `v` has a
+neighbour in `D` -- an interior vertex of `Z` in `Y`, or a boundary vertex of
+`Z`, with a `G`-neighbour in `int(Z)` outside `Y` that the transplant does not
+match -- and `v` keeps fewer than `δ` neighbours outside `D`. -/
+def SameTokenTransplantExactAt (data : Parameters) (object : Graph.FiniteObject.{u})
+    (Z Y : Finset object.Vertex) : Prop :=
+  ((∀ v, ¬ Graph.Transplant.Removed object Z Y v) ∧
+      Graph.Transplant.transplantDeficit object data.threshold Z Y = none) ∨
+    ∃ v, Graph.Transplant.transplantDeficit object data.threshold Z Y = some v ∧ v ∈ Z ∧
+      ¬ Graph.Transplant.Removed object Z Y v ∧
+      (∃ w, Graph.Transplant.Removed object Z Y w ∧ object.graph.Adj v w) ∧
+      Graph.Transplant.keptDegree object Z Y v < data.threshold
+
+/-- **Node `[144a]`: the exact failure of the transplants of G's pattern
+supports** (G repair R5, Lean improvement).  At G's canonical routing, with
+`X_p`, `X_q` its pattern supports and `Z = select?(X_p ∪ X_q)`, the transplant
+of `X_q` into `Z` and the transplant of `X_p` into `Z` are each exact in the
+sense of `SameTokenTransplantExactAt`.  The linkage condition never fails:
+both transplants are linkage-included (`K .sameTokenTransplantSize`). -/
+noncomputable def SameTokenTransplantDeficitStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact ∃ routing, canonicalSameTokenRouting data object = some routing ∧
+    ∃ Xp Xq Z : Finset object.Vertex,
+      Xp = sameTokenPairSupport routing routing.demands.first ∧
+      Xq = sameTokenPairSupport routing routing.demands.second ∧
+      Graph.CanonicalSupport.select? object (Xp ∪ Xq) = some Z ∧
+      SameTokenTransplantExactAt data object Z Xq ∧ SameTokenTransplantExactAt data object Z Xp
 
 end Hypostructure.Graph.Strategy.Spine
