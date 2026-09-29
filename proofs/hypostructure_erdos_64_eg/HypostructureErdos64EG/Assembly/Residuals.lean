@@ -819,7 +819,17 @@ abbrev BlockedBarrierOverlapOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .blockedClassMember selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .blockedBarrierOverlap selected.object
+      erdosReceiverLoadProfile spineData .blockedBarrierOverlap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .blockedOwnRecord selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .blockedFailureSlack selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .blockedPrefixCompression selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .blockedRecordTransfer selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .blockedDominantState selected.object
 
 /-- The return of `BlockedBarrierOverlapOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -945,7 +955,12 @@ theorem blockedBarrierOverlapReturn
     [FactKeys.Has (K .coldCanonicalReplacementSwap) known]
     [FactKeys.Has (K .coldCanonicalReplacementTrivial) known]
     [FactKeys.Has (K .blockedClassMember) known]
-    [FactKeys.Has (K .blockedBarrierOverlap) known] :
+    [FactKeys.Has (K .blockedBarrierOverlap) known]
+    [FactKeys.Has (K .blockedOwnRecord) known]
+    [FactKeys.Has (K .blockedFailureSlack) known]
+    [FactKeys.Has (K .blockedPrefixCompression) known]
+    [FactKeys.Has (K .blockedRecordTransfer) known]
+    [FactKeys.Has (K .blockedDominantState) known] :
     BlockedBarrierOverlapOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -1066,7 +1081,12 @@ theorem blockedBarrierOverlapReturn
     (history.get (K .coldCanonicalReplacementSwap)).down,
     (history.get (K .coldCanonicalReplacementTrivial)).down,
     (history.get (K .blockedClassMember)).down,
-    (history.get (K .blockedBarrierOverlap)).down⟩
+    (history.get (K .blockedBarrierOverlap)).down,
+    (history.get (K .blockedOwnRecord)).down,
+    (history.get (K .blockedFailureSlack)).down,
+    (history.get (K .blockedPrefixCompression)).down,
+    (history.get (K .blockedRecordTransfer)).down,
+    (history.get (K .blockedDominantState)).down⟩
 
 /-- **Node `[182]`** (thm:main (iv), tex 359-363): the first failed coverage
 implication of [178], [179] or [180] on the strict-surplus pair-code chain.

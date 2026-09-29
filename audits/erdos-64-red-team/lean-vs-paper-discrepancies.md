@@ -5222,3 +5222,80 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
   all-context hypotheses (now also `avoids`, for R2's replacement form); they
   have no consumer.
 - `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.
+
+## G audit: BlockedBarrierOverlapOutcome (`[172a]`, keys 8600-8604)
+
+**Defining failure.**  The residual is the no-arm of node `[170]`
+(`lem:scale-additivity`): the first exposure coordinate at which the cleared bound
+`F_{a,b}·|A| ≥ W_{a,b}·|S|` fails, retained as `K .blockedBarrierOverlap`
+(`BlockedBarrierFailureStatement`).  The two subtypes differ only by the `[160]` arm through
+which the dense residual entered `[162]` (`τ ≥ 1/4`, or `τ < 1/4` with the private-carrier
+rate failing); `[170]` reads neither, so the split is bookkeeping and not a test of `[170]`.
+
+**Is it about G?**  Partly.  `K .blockedClassMember` (`[169]`) is about G (G's own skeleton in
+`𝓑(𝒫)`).  `K .blockedBarrierOverlap` retains `∃ member₀ : blockedClassAt`, a member of `𝓑(𝒫)`
+that need not be G's skeleton (the paper says so: "the graph selecting (d,q) is an arbitrary
+member of 𝓑(𝒫)", and "transfer from a comparison graph to the selected graph"), with fibres
+counted in the a-priori near-cubic class.  The class `𝓑(𝒫)` is built from G's canonical packing
+`P0`, so this is auxiliary quantification over G's labelled class (allowed); the published
+conclusion is still not a fact about G's own record.  The decision itself cannot be restated as
+a G-local test: the closure at `[171]` sums the bound over all records reached by blocked
+members, so a G-local bound alone closes nothing.  Nothing about G decides the test.
+
+**Not closed; not misrouted.**  `[170]` is reached after `[169]` (a real test at G) and its
+no-arm carries the paper's open obligation (`lem:barrier-failure-overlap`, connected overlap
+support, "open at 172a").  The overlap support cannot be constructed from a graph-count
+failure: absent completions (state `none`, retained as a state) and unequal graph
+multiplicities are the paper's own stated obstructions, and the completion is a closed walk
+through the window, so G's avoidance of accepted cycles does not force `none`.
+
+**New G facts (Type A row `blockedFailureGRow`, `Strategy/SpineRows/BlockedFailureG.lean`,
+on the failure arm of `[170]`, reading `K .blockedClassMember`, `K .blockedBarrierOverlap`,
+`K .cubicBaseline`); statements in `Statements/BlockedFailureG.lean`, contracts in
+`Contracts/Spine/BlockedFailureG.lean`.**
+- 8600 `blockedOwnRecord`: G's own skeleton (`= objectSkeletonMember`) is a member of `𝓑(𝒫)`
+  whose barrier state is surviving at every coordinate (the failure arm had dropped this) and
+  which lies in its own conditional fibres: `1 ≤ |S| ≤ |A|` at every coordinate.
+- 8601 `blockedFailureSlack`: at the retained first failing coordinate (all earlier coordinates
+  satisfy the bound at every reached record), the retained record has `0 < |S| ≤ |A|` and
+  `F_{a,b} < W_{a,b}`.
+- 8602 `blockedPrefixCompression`: for every coordinate `c` all of whose predecessors satisfy the
+  bound, `|𝓑(𝒫)|·∏_{rank<rank c} W ≤ |𝒢_{n,m}|·∏_{rank<rank c} F`.  This is the finite exposure
+  of `lem:blocked-graphs-compress` run on the predecessors (same proof, truncated), a quantified
+  consequence of the first-failure minimality.
+- 8603 `blockedRecordTransfer`: with `own` = G's skeleton, any blocked member with G's outside
+  record and G's barrier states before `c` has G's own a-priori and surviving fibres at `c`;
+  so a failure at a record agreeing with G's is a failure at G, and the complement carries an
+  explicit difference (in the outside edges or an earlier barrier state) from G's record.
+
+- 8604 `blockedDominantState` (gap G04, built from the failure): wherever the cleared bound fails
+  at a blocked record, some surviving barrier state `s` has `|S| ≤ (F_{a,b}+1)·|A_s|` and hence
+  `F_{a,b}|A| < W_{a,b}(F_{a,b}+1)|A_s|`, using the new carrier bound
+  `blockedSurvivingStateCard`: the surviving states of a row are finite and number at most
+  `F_{a,b}+1`.
+
+**Gaps built and tried against the defining test.**  G03, G05 (own record, slack, prefix
+compression) and G04 (dominant state) are built.  None closes the no-arm: each is a count
+inequality consistent with the failure.  D05/D06 (connected overlap support): the paper's own
+obstructions (absent completion, unequal graph multiplicities, transfer) are now stated as
+facts: absent completion is the state `none`, in the surviving carrier (8604); transfer is 8603;
+the support itself is not derivable from the counts, so it is left open.  G06 (injective
+reconstruction) is not needed: `lem:blocked-graphs-compress` counts the a-priori graphs that
+agree with a blocked record (`|B| ≤ |A_N|`), never injectivity, and the code is not injective
+(edges between window interiors are not recorded).  H04 (arm B transfer scheme) belongs to the
+`[160]` rate branch, not to `[170]`, and was not built.
+
+**Remaining proposition at G.**  `BlockedBarrierFailureStatement ∧ facts 8600-8604`: a first
+coordinate `c*` (rank `r`) and a blocked record `(d,q)` with `F·|A| < W·|S|`, where every
+earlier coordinate satisfies the bound at every reached record; the prefix compression holds at
+`c*`; the dominant surviving state carries `≥ F/(W(F+1))` of `A`; and the record either agrees
+with G's before `c*` (then G's own fibres fail) or differs from G's in the outside edges or an
+earlier barrier state.  The closure would need the conclusion for the arm on which the record
+differs from G's, or the overlap support.
+
+**Root type.**  `BlockedBarrierOverlapOutcome` gains the five `Holds` (generic residual and both
+subtypes).  The protected root theorem's name and form are unchanged.
+
+**Duplication to dedupe later.**  `blockedPrefixCompression_holds` repeats the coordinate-order
+construction and the exposure chain of `blockedCompressionBound_of_additive`
+(`Contracts/Spine/BlockedCompression.lean`), truncated at a rank.

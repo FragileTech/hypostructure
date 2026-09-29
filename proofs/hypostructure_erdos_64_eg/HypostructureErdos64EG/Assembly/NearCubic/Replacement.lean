@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.BlockedCompressionRows
+import Hypostructure.Graph.Strategy.SpineRows.BlockedFailureG
 import Hypostructure.Graph.Strategy.ColdCorridorRows.CanonicalReplacement
 import Hypostructure.Graph.Strategy.ColdCorridorRows.GermTrichotomy
 import HypostructureErdos64EG.Assembly.Residuals.BlockedBarrierOverlapOutcome
@@ -78,7 +79,9 @@ noncomputable def selectedCanonicalReplacementContinuation
     (fresh : List.Disjoint
       [K .coldCanonicalReplacementTrivial, K .blockedClassMember,
         K .blockedScaleAdditive, K .blockedBarrierOverlap,
-        K .blockedCompressionBound, K .blockedCompressionCap, closed] known := by
+        K .blockedCompressionBound, K .blockedCompressionCap,
+        K .blockedOwnRecord, K .blockedFailureSlack, K .blockedPrefixCompression,
+        K .blockedRecordTransfer, K .blockedDominantState, closed] known := by
         key_fresh)
     [FactKeys.Has (K .absorbedGermFanData) known]
     [FactKeys.Has (K .absorbedGermSplit) known]
@@ -213,6 +216,13 @@ noncomputable def selectedCanonicalReplacementContinuation
           (K .windowPackageUnrealized) (K .blockedCompressionCap)
           (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
   | .right overlapHistory =>
-      exact blockedBarrierOverlapSubtypesReturn overlapHistory tau
+      -- G's own record at the failure: the strict failure quantified, the prefix
+      -- compression, and the transfer from the retained comparison record to G.
+      let failureAtG :=
+        (blockedFailureGRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          overlapHistory (by key_fresh)
+      exact blockedBarrierOverlapSubtypesReturn failureAtG tau
 
 end HypostructureErdos64EG
