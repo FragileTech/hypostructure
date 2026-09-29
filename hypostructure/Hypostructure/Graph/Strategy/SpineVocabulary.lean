@@ -14,6 +14,7 @@ import Hypostructure.Graph.Statements.ColdGerm
 import Hypostructure.Graph.Statements.SpineDominantType
 import Hypostructure.Graph.Statements.ColdResiduals
 import Hypostructure.Graph.Statements.DensityOrder
+import Hypostructure.Graph.Statements.Route8RateFailsJoin
 import Hypostructure.Graph.Statements.SparseExitResidual
 import Hypostructure.Graph.Statements.SparseExitReadings
 import Hypostructure.Graph.Statements.SwitchForcedPaths
@@ -1698,6 +1699,12 @@ inductive Key where
   | realizedOrderSmall
   /-- Node `[24]` on `[146]` no: the density cap against the `[146]`-no lower bound, combined at G (`Graph.DensityOrderBound`). -/
   | boundedDensityOrder
+  /-- G audit `Route8RateFailsOutcome` (idx 8250): the failed private-carrier rate against the exact window join at `P₀`: `e(R,W) + 2(order−1)p + X = δ·order·p + σ_W` and `δ·n + (δs+1)·X ≤ A·p + D·T(n)`, `X` the cross-window incidences. -/
+  | route8RateFailsJoin
+  /-- G audit `Route8RateFailsOutcome` (idx 8251): the failed private-carrier rate on the connected pieces of G's remainder: `Σ|X_i| = |R|`, `Σ|∂X_i| = |∂R|`, and a piece with `m·δ·|X| ≤ m·(δs+1)·|∂X| + δ·F·s·T(n)`. -/
+  | route8RateFailsPiece
+  /-- G audit `Route8RateFailsOutcome` (idx 8252): the failed private-carrier rate against the exact window join and the density cap, with the cross-window incidences `X` kept: `2·r·L·(δn + (δs+1)X) ≤ A(L+1)(δn+T) + L·T·(A·S + 2rD)`. -/
+  | route8RateFailsCrossBound
   /-- Node `[24]` on `[146]` no, size test yes: `N₀ ≤ n` at the `[24]` cutoff. -/
   | boundedOrderLarge
   /-- Node `[24]` on `[146]` no, size test no: G has fewer than `N₀` vertices (exact complement). -/
@@ -2722,6 +2729,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       RealizedOrderSmallStatement data.toParameters object
   | .boundedDensityOrder, object =>
       BoundedDensityOrderStatement data.toParameters object
+  | .route8RateFailsJoin, object =>
+      Route8RateFailsJoinStatement data.toParameters object
+  | .route8RateFailsPiece, object =>
+      Route8RateFailsPieceStatement data.toParameters object
+  | .route8RateFailsCrossBound, object =>
+      Route8RateFailsCrossBoundStatement data.toParameters object
   | .boundedOrderLarge, object =>
       BoundedOrderLargeStatement data.toParameters object
   | .boundedOrderSmall, object =>
@@ -3277,6 +3290,9 @@ def label : Key → String
   | .realizedOrderLarge => "realizedOrderLarge"
   | .realizedOrderSmall => "realizedOrderSmall"
   | .boundedDensityOrder => "boundedDensityOrder"
+  | .route8RateFailsJoin => "route8RateFailsJoin"
+  | .route8RateFailsPiece => "route8RateFailsPiece"
+  | .route8RateFailsCrossBound => "route8RateFailsCrossBound"
   | .boundedOrderLarge => "boundedOrderLarge"
   | .boundedOrderSmall => "boundedOrderSmall"
   -- [20a] enrichment keys
@@ -3752,6 +3768,9 @@ example : label .realizedDensityOrder = "realizedDensityOrder" := rfl
 example : label .realizedOrderLarge = "realizedOrderLarge" := rfl
 example : label .realizedOrderSmall = "realizedOrderSmall" := rfl
 example : label .boundedDensityOrder = "boundedDensityOrder" := rfl
+example : label .route8RateFailsJoin = "route8RateFailsJoin" := rfl
+example : label .route8RateFailsPiece = "route8RateFailsPiece" := rfl
+example : label .route8RateFailsCrossBound = "route8RateFailsCrossBound" := rfl
 example : label .boundedOrderLarge = "boundedOrderLarge" := rfl
 example : label .boundedOrderSmall = "boundedOrderSmall" := rfl
 example : label .edgeSurplusIdentity = "edgeSurplusIdentity" := rfl
@@ -4214,6 +4233,9 @@ def idx : Key → Nat
   | .realizedOrderLarge => 6601
   | .realizedOrderSmall => 6602
   | .boundedDensityOrder => 6603
+  | .route8RateFailsJoin => 8250
+  | .route8RateFailsPiece => 8251
+  | .route8RateFailsCrossBound => 8252
   | .boundedOrderLarge => 6604
   | .boundedOrderSmall => 6605
   -- [20a] enrichment keys
@@ -4669,6 +4691,9 @@ def ofIdx : Nat → Key
   | 6601 => .realizedOrderLarge
   | 6602 => .realizedOrderSmall
   | 6603 => .boundedDensityOrder
+  | 8250 => .route8RateFailsJoin
+  | 8251 => .route8RateFailsPiece
+  | 8252 => .route8RateFailsCrossBound
   | 6604 => .boundedOrderLarge
   | 6605 => .boundedOrderSmall
   -- [20a] enrichment keys
@@ -5595,6 +5620,12 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "realizedOrderSmall") 6602
   | .boundedDensityOrder =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "boundedDensityOrder") 6603
+  | .route8RateFailsJoin =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8RateFailsJoin") 8250
+  | .route8RateFailsPiece =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8RateFailsPiece") 8251
+  | .route8RateFailsCrossBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8RateFailsCrossBound") 8252
   | .boundedOrderLarge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "boundedOrderLarge") 6604
   | .boundedOrderSmall =>

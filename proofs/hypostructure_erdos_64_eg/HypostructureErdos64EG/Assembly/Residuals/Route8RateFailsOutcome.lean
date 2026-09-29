@@ -148,6 +148,9 @@ theorem route8RateFailsReturn_realized_highEntropy
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known]
     (lanePrefix : Route8LanePrefixBlock_realizedColdAtOrAbove selected)
     (entropy : EntropyArmBlock_high selected) :
     Route8RateFailsOutcome_realized_highEntropy selected :=
@@ -283,6 +286,9 @@ theorem route8RateFailsReturn_realized_lowNonrepetitive
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known]
     (lanePrefix : Route8LanePrefixBlock_realizedColdAtOrAbove selected)
     (entropy : EntropyArmBlock_lowNonrepetitive selected) :
     Route8RateFailsOutcome_realized_lowNonrepetitive selected :=
@@ -421,6 +427,9 @@ theorem route8RateFailsReturn_realized_lowWedgeFree
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known]
     (lanePrefix : Route8LanePrefixBlock_realizedColdAtOrAbove selected)
     (entropy : EntropyArmBlock_lowRepetitiveWedgeFree selected) :
     Route8RateFailsOutcome_realized_lowWedgeFree selected :=
@@ -563,6 +572,9 @@ theorem route8RateFailsReturn_realized_lowWedge
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known]
     (lanePrefix : Route8LanePrefixBlock_realizedColdAtOrAbove selected)
     (entropy : EntropyArmBlock_lowRepetitiveWedge selected) :
     Route8RateFailsOutcome_realized_lowWedge selected :=
@@ -704,6 +716,9 @@ theorem route8RateFailsReturn_denseAtOrAbove_highEntropy
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known]
     (lanePrefix : Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove selected)
     (entropy : EntropyArmBlock_high selected) :
     Route8RateFailsOutcome_denseAtOrAbove_highEntropy selected :=
@@ -842,6 +857,9 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowNonrepetitive
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known]
     (lanePrefix : Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove selected)
     (entropy : EntropyArmBlock_lowNonrepetitive selected) :
     Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive selected :=
@@ -983,6 +1001,9 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowWedgeFree
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known]
     (lanePrefix : Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove selected)
     (entropy : EntropyArmBlock_lowRepetitiveWedgeFree selected) :
     Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree selected :=
@@ -1128,6 +1149,9 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowWedge
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known]
     (lanePrefix : Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove selected)
     (entropy : EntropyArmBlock_lowRepetitiveWedge selected) :
     Route8RateFailsOutcome_denseAtOrAbove_lowWedge selected :=
@@ -1267,6 +1291,9 @@ theorem route8RateFailsReturn_denseBelow_lowNonrepetitive
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
     [FactKeys.Has (K .boundedDensityOrder) known]
@@ -1410,6 +1437,9 @@ theorem route8RateFailsReturn_denseBelow_lowWedgeFree
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
     [FactKeys.Has (K .boundedDensityOrder) known]
@@ -1557,6 +1587,9 @@ theorem route8RateFailsReturn_denseBelow_lowWedge
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
     [FactKeys.Has (K .boundedDensityOrder) known]
@@ -1684,6 +1717,9 @@ theorem route8RateFailsSubtypesReturn_routeEightEntry
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known]
     (lanePrefix : DensityCapArm selected)
     (entropy : EntropyArm selected) :
     Route8RateFailsSubtypes selected := by
@@ -1795,6 +1831,9 @@ theorem route8RateFailsSubtypesReturn_rateFailedExit
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
     [FactKeys.Has (K .boundedDensityOrder) known]

@@ -5222,3 +5222,54 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
   all-context hypotheses (now also `avoids`, for R2's replacement form); they
   have no consumer.
 - `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.
+
+## G audit: Route8RateFailsOutcome (2026-09-29, keys 8250-8252)
+
+- **Defining failure.** `Graph.Route8Census.Rate` fails at G's `canonicalWindowPacking` `P0`
+  (`K .route8RateFails`): `(delta*s+1)*|dR| + delta*F*s*T(n) < delta*|R|` is false, with
+  `|dR| = boundaryIncidence R = |Route8.cutEdges R|`, `R = remainderSupport P0`. Every term is a
+  canonical object of G (`P0`, its remainder, its cut, `T(n)` the registered ceiling of
+  `sigma(G)`); no outside context. The test is decided at G (`Decision` on the decidable rate),
+  the arm is not empty (the density cap and the rate are compatible below the cutoff `N0`,
+  `Fixtures/Route8RateDensityCapGap`), and it is not trivially reached: it is reached by the
+  `[160]` second test (`denseBelow`), by `[146]` no (`denseAtOrAbove`) and by the realized package.
+  Not misrouted: it stops where the paper continues (`[120]`-`[122]` need the rate).
+- **Structural accounting** (`audits/structural-accounting/Route8RateFailsOutcome.md`): generic
+  residual has 92 facts (docstring said 71), before: x 45, ~ 28, gap 7, n/a 3, nonG 5.
+  After: x 45, ~ 29, gap 6, n/a 3, nonG 5 (H03 gap -> ~; A10, B01, H05 sharpened).
+- **nonG facts on the path** (all upstream, not owned by this residual; listed in the report, section
+  "Non-G facts"): #1 (SelectionMinimality conjunct), #11 and #12 (replacement piece and
+  `glue(X', G - Z)`), #15 (label-alphabet census without guard), #18, #21 (`G |_| M_h`), #67
+  (barrier table row), #69 and #80 second conjunct (all state maps on the skeleton class). None is
+  read by the rate; none is edited here. Minimality facts (`replacementExclusion`, `uncompressible`)
+  are legitimate and not counted as nonG.
+- **New facts about G (published on the `[187]` ledger right after the rate dichotomy,
+  `nearCubicRouteEightEntry` and `nearCubicRateFailedExit`, idx 8250-8252).**
+  - `K .route8RateFailsJoin` (8250; row `route8RateFailsJoinRow`; contract
+    `route8RateFailsJoin`): the exact window join identity at `P0`,
+    `e(R,W) + 2(order-1)p + X = delta*order*p + sigma_W` with `X = |crossWindowIncidences P0|`
+    (`lem:exact-window-join-identity`, which was only on the strict arm of `[19]`), and the failed
+    rate read against it: `delta*n + (delta*s+1)*X <= A*p + (delta*s+1)*sigma_W + delta*F*s*T(n)`
+    (`A = 234`). This is the `[146]`-no lower bound with the cross-window term kept and G's own
+    `sigma_W` in place of its ceiling.
+  - `K .route8RateFailsPiece` (8251; `route8RateFailsPiece`): `H03`, the connected negative
+    support. The canonical pieces of `G[R]` partition both currencies exactly,
+    `sum |X_i| = |R|`, `sum |dX_i| = |dR|`, and for nonempty `R` some piece has
+    `m*delta*|X| <= m*(delta*s+1)*|dX| + delta*F*s*T(n)`, `m` the number of pieces.
+  - `K .route8RateFailsCrossBound` (8252; `route8RateFailsCrossBound`): the join with the density
+    cap: `2rL(delta*n + (delta*s+1)X) <= A(L+1)(delta*n+T) + L*T*(A*S + 2rD)`, the combined order
+    bound with `X` kept on the left. It is strictly stronger than `K .boundedDensityOrder` /
+    `K .realizedDensityOrder` (which it implies by `X >= 0`).
+- **Closure test.** The three facts are combined with the whole ledger. At `n >= N0` the older
+  order bound is already false, so the large arms stay closed; below `N0` no fact of the inventory
+  bounds `X` from below, `sigma_W` from below, or gives a per-piece stub bound, so no contradiction
+  is derived. The residual stays a bounded-size residual, `n < N0`, now with `X`, `sigma_W` and the
+  pieces of `R` accounted. Remaining accounting (not built, each needs a G construction that no
+  fact of the ledger supplies): H06/H07 (an injection of the private carriers of R's entries onto
+  the cut, an integral stub-to-deficit flow), G04 (dominant type fibre versus `|R|` on the generic
+  ledger), the rate at G's exact `sigma(G)` instead of the ceiling `T(n)` (H08).
+- **Root type.** `Route8RateFailsOutcome` gains three conjuncts (92 -> 95 common facts); every
+  `Route8RateFailsOutcome_*` subtype gains them through `toGeneric`. No other residual type changes.
+- **Edited shared files.** `SpineVocabulary.lean` (three keys, idx 8250-8252), `Residuals.lean`
+  (`Route8RateFailsOutcome` and `route8RateFailsReturn`), `Residuals/Route8RateFailsOutcome.lean`
+  (13 `Has` lines), `NearCubic/Spine.lean` (`nearCubicRouteEightEntry`, `nearCubicRateFailedExit`).

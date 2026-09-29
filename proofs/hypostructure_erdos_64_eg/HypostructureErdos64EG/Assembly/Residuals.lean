@@ -3527,7 +3527,8 @@ theorem route8QuotientReturn
 /-- **Node `[187] (private-carrier rate failure)`** (thm:main (vi), tex
 369-378): failure of the exact private-carrier rate at the entry of the
 route-8 continuation.  The explicit conjunction of every fact on its maximal
-ledger (71 common facts). -/
+ledger (95 common facts: the 92 earlier ones and the G-audit facts
+`route8RateFailsJoin`, `route8RateFailsPiece`, `route8RateFailsCrossBound`). -/
 abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -3712,7 +3713,13 @@ abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .netDeficiencyCap selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8RateFails selected.object
+      erdosReceiverLoadProfile spineData .route8RateFails selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8RateFailsJoin selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8RateFailsPiece selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8RateFailsCrossBound selected.object
 
 /-- The return of `Route8RateFailsOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -3810,7 +3817,10 @@ theorem route8RateFailsReturn
     [FactKeys.Has (K .forcedCurvatureCost) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
-    [FactKeys.Has (K .route8RateFails) known] :
+    [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .route8RateFailsJoin) known]
+    [FactKeys.Has (K .route8RateFailsPiece) known]
+    [FactKeys.Has (K .route8RateFailsCrossBound) known] :
     Route8RateFailsOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -3903,7 +3913,10 @@ theorem route8RateFailsReturn
     (history.get (K .forcedCurvatureCost)).down,
     (history.get (K .largeBudgetResidual)).down,
     (history.get (K .netDeficiencyCap)).down,
-    (history.get (K .route8RateFails)).down⟩
+    (history.get (K .route8RateFails)).down,
+    (history.get (K .route8RateFailsJoin)).down,
+    (history.get (K .route8RateFailsPiece)).down,
+    (history.get (K .route8RateFailsCrossBound)).down⟩
 
 /-- **Node `[187] (local cold-terminal exclusion)`** (thm:main (vi), tex
 369-378): the local cold-terminal exclusion of thm:cold-branch-quantitative-

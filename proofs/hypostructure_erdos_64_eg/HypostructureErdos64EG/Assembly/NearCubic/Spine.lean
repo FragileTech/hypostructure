@@ -16,6 +16,7 @@ import Hypostructure.Graph.Strategy.SpineRows.NetDeficiencyCap
 import Hypostructure.Graph.Strategy.SpineRows.RemainderEntropyDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
 import Hypostructure.Graph.Strategy.SpineRows.Route8RateDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.Route8RateFailsJoin
 import Hypostructure.Graph.Strategy.SpineRows.RouteEightNetDeficiencyCap
 import Hypostructure.Graph.Strategy.SpineRows.StubSupply
 import Hypostructure.Graph.Strategy.SpineRows.TargetRankCircuit
@@ -407,7 +408,9 @@ noncomputable def nearCubicRouteEightEntry
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .minDegreeBaseline) known]
     (fresh : List.Disjoint
-      (K .route8Rate :: K .route8RateFails :: netChargeContinuationKeys.{u}) known := by
+      (K .route8Rate :: K .route8RateFails :: K .route8RateFailsJoin ::
+        K .route8RateFailsPiece :: K .route8RateFailsCrossBound ::
+        netChargeContinuationKeys.{u}) known := by
         key_fresh)
     [FactKeys.Has (K .barrierCap) known]
     [FactKeys.Has (K .barrierEnumeration) known]
@@ -438,7 +441,20 @@ noncomputable def nearCubicRouteEightEntry
       (Or.inl rfl) (by key_fresh) (by key_fresh) with
   | .left rated => Or.inl (selectedNetChargeContinuation rated (Or.inl ⟨arm.1.toPrefix, arm.2⟩))
   | .right rateFails =>
-      Or.inr (Or.inl (route8RateFailsSubtypesReturn_routeEightEntry rateFails arm.1 arm.2))
+      -- G audit: the failed rate against the exact window join at `P₀`.
+      let joined := (route8RateFailsJoinRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        rateFails (by key_fresh)
+      let pieced := (route8RateFailsPieceRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        joined (by key_fresh)
+      let crossed := (route8RateFailsCrossBoundRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        pieced (by key_fresh)
+      Or.inr (Or.inl (route8RateFailsSubtypesReturn_routeEightEntry crossed arm.1 arm.2))
 
 set_option maxHeartbeats 8000000 in
 /-- The route-8 continuation `[57]`--`[124]` on the `[162]` arm entered from
@@ -453,6 +469,9 @@ noncomputable def nearCubicRateFailedExit
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     (entropy : EntropyArmLow selected)
+    (joinFresh : K .route8RateFailsJoin ∉ known := by key_fresh)
+    (pieceFresh : K .route8RateFailsPiece ∉ known := by key_fresh)
+    (crossFresh : K .route8RateFailsCrossBound ∉ known := by key_fresh)
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
     [FactKeys.Has (K .boundedDensityOrder) known]
@@ -550,7 +569,19 @@ noncomputable def nearCubicRateFailedExit
     [FactKeys.Has (K .windowPackageSeparated) known]
     [FactKeys.Has (K .windowPresent) known] :
     SelectedNearCubicSurvivorBoundary selected :=
-  Or.inr (Or.inl (route8RateFailsSubtypesReturn_rateFailedExit history entropy))
+  let joined := (route8RateFailsJoinRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    history (by key_fresh)
+  let pieced := (route8RateFailsPieceRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    joined (by key_fresh)
+  let crossed := (route8RateFailsCrossBoundRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    pieced (by key_fresh)
+  Or.inr (Or.inl (route8RateFailsSubtypesReturn_rateFailedExit crossed entropy))
 
 set_option maxHeartbeats 8000000 in
 /-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[147]` arm (`θ < 1/78`): `[56]` reads the strict cap from `K .coldRoute8Below`,
