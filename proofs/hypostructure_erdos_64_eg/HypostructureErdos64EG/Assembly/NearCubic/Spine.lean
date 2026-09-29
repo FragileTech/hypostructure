@@ -410,6 +410,7 @@ noncomputable def nearCubicRouteEightEntry
     (fresh : List.Disjoint
       (K .route8Rate :: K .route8RateFails :: K .route8RateFailsJoin ::
         K .route8RateFailsPiece :: K .route8RateFailsCrossBound ::
+        K .route8RateFailsFlow :: K .route8CarrierInjection :: K .route8RateExactSlack ::
         netChargeContinuationKeys.{u}) known := by
         key_fresh)
     [FactKeys.Has (K .barrierCap) known]
@@ -454,7 +455,19 @@ noncomputable def nearCubicRouteEightEntry
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)).run
         pieced (by key_fresh)
-      Or.inr (Or.inl (route8RateFailsSubtypesReturn_routeEightEntry crossed arm.1 arm.2))
+      let flowed := (route8RateFailsFlowRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        crossed (by key_fresh)
+      let injected := (route8CarrierInjectionRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        flowed (by key_fresh)
+      let exacted := (route8RateExactSlackRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        injected (by key_fresh)
+      Or.inr (Or.inl (route8RateFailsSubtypesReturn_routeEightEntry exacted arm.1 arm.2))
 
 set_option maxHeartbeats 8000000 in
 /-- The route-8 continuation `[57]`--`[124]` on the `[162]` arm entered from
@@ -472,6 +485,9 @@ noncomputable def nearCubicRateFailedExit
     (joinFresh : K .route8RateFailsJoin ∉ known := by key_fresh)
     (pieceFresh : K .route8RateFailsPiece ∉ known := by key_fresh)
     (crossFresh : K .route8RateFailsCrossBound ∉ known := by key_fresh)
+    (flowFresh : K .route8RateFailsFlow ∉ known := by key_fresh)
+    (injectionFresh : K .route8CarrierInjection ∉ known := by key_fresh)
+    (exactFresh : K .route8RateExactSlack ∉ known := by key_fresh)
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
     [FactKeys.Has (K .boundedDensityOrder) known]
@@ -581,7 +597,19 @@ noncomputable def nearCubicRateFailedExit
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     pieced (by key_fresh)
-  Or.inr (Or.inl (route8RateFailsSubtypesReturn_rateFailedExit crossed entropy))
+  let flowed := (route8RateFailsFlowRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    crossed (by key_fresh)
+  let injected := (route8CarrierInjectionRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    flowed (by key_fresh)
+  let exacted := (route8RateExactSlackRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    injected (by key_fresh)
+  Or.inr (Or.inl (route8RateFailsSubtypesReturn_rateFailedExit exacted entropy))
 
 set_option maxHeartbeats 8000000 in
 /-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[147]` arm (`θ < 1/78`): `[56]` reads the strict cap from `K .coldRoute8Below`,

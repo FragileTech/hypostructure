@@ -1,6 +1,7 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Contracts.RouteEight.RateFailsJoin
 import Hypostructure.Graph.Contracts.RouteEight.RateFailsPiece
+import Hypostructure.Graph.Contracts.RouteEight.RateFailsFlow
 
 /-!
 # The failed private-carrier rate against the exact window join at G
@@ -74,6 +75,60 @@ universe u v
           (inputs.get (K .surplusAtOrBelow)).down inputs.current.baseline
           (inputs.get (K .densityCap)).down
           (inputs.get (K .route8RateFailsJoin)).down⟩ .nil)
+    0 0
+
+/-- The integral stub-to-deficit flow and the failed rate in deficit currency (`H07`). -/
+@[reducible] noncomputable def route8RateFailsFlowRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8RateFailsFlow
+    { Requires := [K .route8RateFails, K .route8RateFailsJoin, K .cubicBaseline]
+      Produces := [K .route8RateFailsFlow]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8RateFailsFlow)
+        ⟨Graph.Contracts.RouteEight.route8RateFailsFlow data.toParameters
+          inputs.current.object inputs.current.baseline
+          (inputs.get (K .route8RateFails)).down
+          (inputs.get (K .route8RateFailsJoin)).down⟩ .nil)
+    0 0
+
+/-- The carriers-to-cut injection of the canonical route-8 entries (`H06`). -/
+@[reducible] noncomputable def route8CarrierInjectionRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8CarrierInjection
+    { Requires := [K .route8RateFails]
+      Produces := [K .route8CarrierInjection]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8CarrierInjection)
+        ⟨Graph.Contracts.RouteEight.route8CarrierInjection data.toParameters
+          inputs.current.object⟩ .nil)
+    0 0
+
+/-- The rate at G's exact surplus next to the ceiling version (`H08`). -/
+@[reducible] noncomputable def route8RateExactSlackRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8RateExactSlack
+    { Requires := [K .route8RateFails]
+      Produces := [K .route8RateExactSlack]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8RateExactSlack)
+        ⟨Graph.Contracts.RouteEight.route8RateExactSlack data.toParameters
+          inputs.current.object
+          (inputs.get (K .route8RateFails)).down⟩ .nil)
     0 0
 
 end Hypostructure.Graph.Strategy.Spine
