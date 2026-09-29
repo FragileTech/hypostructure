@@ -2150,6 +2150,10 @@ inductive Key where
   | sameTokenPathInteractions
   /-- Node `[144a]` (G audit S144a, Lean improvement): **the ladder count of the canonical port walks**: for both pair seeds `T ∪ supp w₁ ∪ supp w₂` (`|T| ≤ 2δ`), `|H| ≤ σ`, and when both ports are triangular (the walks are shortest paths of `G − e`) and neither walk uses the other's end edge: if every degree-`3` vertex lies in the seed, `⌊(|wᵢ| − 1)/24⌋ ≤ 16|H| + 12|T| + 30`, `n ≤ |H| + |T| + |w₁| + |w₂| + 2` and `n ≤ 769|H| + 577|T| + 1490`; if every neighbour of a hub lies in the seed, `σ ≤ (|T| + 5)|H|`. -/
   | sameTokenLadderCount
+  /-- Node `[144a]` (G audit S144a, Lean improvement): **the attachment and chain cycles of the canonical port walks**: for both pair seeds `T ∪ supp w₁ ∪ supp w₂` (`|T| ≤ 2δ`, port walks), a path `r : x ⇝ y` avoiding the segment `wᵢ[i..j]` with `wᵢ(i) ~ x`, `y ~ wᵢ(j)` closes a cycle of length `|r| + |i − j| + 2` (not accepted), and routes `r`, `r'` joining vertex-disjoint segments `w₁[i..i']`, `w₂[j..j']` in a chain close a cycle of length `|r| + |r'| + |i − i'| + |j − j'| + 4` (not accepted). -/
+  | sameTokenWalkAttachment
+  /-- Node `[144a]` (G audit S144a, Lean improvement: the separated configuration is empty at G): **every vertex off a pair seed has a cubic neighbour in `T`**: at G's canonical routing and pinned `X_p`, `X_q`, `Z`, for both pair seeds `T ∪ supp w₁ ∪ supp w₂`, in the boundary-free configuration with both ports triangular, every vertex off the seed has a degree-`3` neighbour in `T`, at most `3|T|` vertices lie off the seed, and `n ≤ 4|T| + |w₁| + |w₂| + 2` (a separating off-seed vertex would force `n ≤ 729 < C_sp(C_sp + 1) + 9`). -/
+  | sameTokenSeparatorExcluded
   -- g-pieces-constructed keys (8700–8799)
   /-- Route 8 read on the pieces constructed from G: at every unified entry a fold pair of the selected basin (two interior vertices with no common neighbour) makes alternative (a) occur and the load an exit-`(4)` peel (Q3); a nonempty essential core means the declared family determines the target; every complete carrier set holds every fold pair. -/
   | route8FoldPeels
@@ -3290,6 +3294,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SameTokenPathInteractionsStatement data.toParameters object
   | .sameTokenLadderCount, object =>
       SameTokenLadderCountStatement data.toParameters object
+  | .sameTokenWalkAttachment, object =>
+      SameTokenWalkAttachmentStatement data.toParameters object
+  | .sameTokenSeparatorExcluded, object =>
+      SameTokenSeparatorExcludedStatement data.toParameters object
   -- g-pieces-constructed keys
   | .route8FoldPeels, object =>
       Route8FoldPeelsStatement data.toParameters object
@@ -3852,6 +3860,8 @@ def label : Key → String
   | .sameTokenSeedCover => "sameTokenSeedCover"
   | .sameTokenPathInteractions => "sameTokenPathInteractions"
   | .sameTokenLadderCount => "sameTokenLadderCount"
+  | .sameTokenWalkAttachment => "sameTokenWalkAttachment"
+  | .sameTokenSeparatorExcluded => "sameTokenSeparatorExcluded"
   | .route8FoldPeels => "route8FoldPeels"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
@@ -4404,6 +4414,8 @@ example : label .remainderCycleSpectrum = "remainderCycleSpectrum" := rfl
 example : label .sameTokenSeedCover = "sameTokenSeedCover" := rfl
 example : label .sameTokenPathInteractions = "sameTokenPathInteractions" := rfl
 example : label .sameTokenLadderCount = "sameTokenLadderCount" := rfl
+example : label .sameTokenWalkAttachment = "sameTokenWalkAttachment" := rfl
+example : label .sameTokenSeparatorExcluded = "sameTokenSeparatorExcluded" := rfl
 example : label .route8FoldPeels = "route8FoldPeels" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
@@ -4952,6 +4964,8 @@ def idx : Key → Nat
   | .sameTokenSeedCover => 8105
   | .sameTokenPathInteractions => 8106
   | .sameTokenLadderCount => 8107
+  | .sameTokenWalkAttachment => 9990
+  | .sameTokenSeparatorExcluded => 9991
   | .route8FoldPeels => 8700
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
@@ -5489,6 +5503,8 @@ def ofIdx : Nat → Key
   | 8105 => .sameTokenSeedCover
   | 8106 => .sameTokenPathInteractions
   | 8107 => .sameTokenLadderCount
+  | 9990 => .sameTokenWalkAttachment
+  | 9991 => .sameTokenSeparatorExcluded
   | 8700 => .route8FoldPeels
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
@@ -6652,6 +6668,10 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenPathInteractions") 8106
   | .sameTokenLadderCount =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenLadderCount") 8107
+  | .sameTokenWalkAttachment =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenWalkAttachment") 9990
+  | .sameTokenSeparatorExcluded =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenSeparatorExcluded") 9991
   | .route8FoldPeels =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8FoldPeels") 8700
   -- TA keys

@@ -1,6 +1,7 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Contracts.Spine.SameTokenSwap
 import Hypostructure.Graph.Contracts.Spine.SameTokenSeedCover
+import Hypostructure.Graph.Contracts.Spine.SameTokenWalkCycles
 
 /-!
 # G's pattern pair, tested at G (`[144a]`, G audit S144a)
@@ -8,8 +9,10 @@ import Hypostructure.Graph.Contracts.Spine.SameTokenSeedCover
 One Type A row (contracts: `Graph/Contracts/Spine/SameTokenSwap.lean`).  No row
 decides or splits anything.  On `[144a]`'s handoff-fails arm, after
 `K .sameTokenPairPartition`: the entry test decided at G, the exact readings,
-the rerouted swaps in both directions with their exact failure, and the
-boundary-free configuration.
+the rerouted swaps in both directions with their exact failure, the
+boundary-free configuration, the port-walk facts (seed cover, interactions,
+ladder count, attachment and chain cycles), and the empty separated
+configuration (`Contracts/Spine/SameTokenWalkCycles.lean`).
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -30,10 +33,12 @@ variable {data : Data.{u}}
   factOnly `Hypostructure.Graph.Strategy.Spine.sameTokenSwap
     { Requires := [K .sameTokenPairPartition, K .noProperBaseline, K .selection,
         K .minDegreeBaseline, K .vertexDeletionComponents, K .cubicBaseline,
-        K .activeSurplusFamily, K .hubCountBound, K .slackIndependent]
+        K .activeSurplusFamily, K .hubCountBound, K .slackIndependent,
+        K .orderAboveScaleSquare]
       Produces := [K .sameTokenUnresolvedDecided, K .sameTokenReadingsExact, K .sameTokenSwap,
         K .sameTokenSwapExact, K .sameTokenU2FreeWhole, K .sameTokenSeedCover,
-        K .sameTokenPathInteractions, K .sameTokenLadderCount]
+        K .sameTokenPathInteractions, K .sameTokenLadderCount, K .sameTokenWalkAttachment,
+        K .sameTokenSeparatorExcluded]
       requiresUnique := by key_fresh
       producesUnique := by key_fresh
       producesNonempty := by simp }
@@ -92,6 +97,26 @@ variable {data : Data.{u}}
           (inputs.get (K .cubicBaseline)).down.1.1
           (inputs.get (K .minDegreeBaseline)).down
           (inputs.get (K .cubicBaseline)).down.2.1.2.1⟩
-      .nil))))))))
+      (.cons (key := K .sameTokenWalkAttachment)
+        ⟨Contracts.Spine.SameTokenWalkCycles.sameTokenWalkAttachment_holds
+          (inputs.get (K .sameTokenPairPartition)).down
+          (inputs.get (K .selection)).down.1
+          (inputs.get (K .activeSurplusFamily)).down
+          (inputs.get (K .cubicBaseline)).down.1.1⟩
+      (.cons (key := K .sameTokenSeparatorExcluded)
+        ⟨Contracts.Spine.SameTokenWalkCycles.sameTokenSeparatorExcluded_holds
+          (inputs.get (K .sameTokenPairPartition)).down
+          (inputs.get (K .noProperBaseline)).down
+          (inputs.get (K .selection)).down.1
+          (fun H smaller base => (inputs.get (K .selection)).down.2.sizeMinimal H smaller base)
+          (inputs.get (K .vertexDeletionComponents)).down
+          (inputs.get (K .minDegreeBaseline)).down
+          (inputs.get (K .cubicBaseline)).down.1.1
+          (inputs.get (K .activeSurplusFamily)).down
+          (inputs.get (K .cubicBaseline)).down.2.1.2.1
+          (inputs.get (K .slackIndependent)).down
+          (inputs.get (K .orderAboveScaleSquare)).down
+          data.quadraticSafetyScale_le_twiceAdditive⟩
+      .nil))))))))))
 
 end Hypostructure.Graph.Strategy.Spine

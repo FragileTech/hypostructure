@@ -4,6 +4,7 @@ import Hypostructure.Graph.ReadingExactness
 import Hypostructure.Graph.U2FreeWhole
 import Hypostructure.Graph.PortPathCover
 import Hypostructure.Graph.LadderG
+import Hypostructure.Graph.WalkAttachment
 
 /-!
 # Statements: G's pattern pair, tested at G (`[144a]`, G audit S144a)
@@ -382,5 +383,84 @@ noncomputable def SameTokenLadderCountStatement (data : Parameters)
   ∃ routing, canonicalSameTokenRouting data object = some routing ∧
     PairLadderFacts data object (routing.capacity.activation.pairSeed routing.demands.first) ∧
     PairLadderFacts data object (routing.capacity.activation.pairSeed routing.demands.second)
+
+
+/-- **The attachment and chain cycles at one pair seed.**  The seed is `T ∪ supp w₁ ∪ supp w₂`
+for two canonical port walks, `|T| ≤ 2δ`, and
+
+* (attachment, both walks) a path `r : x ⇝ y` avoiding the segment `wᵢ[i..j]`, with
+  `wᵢ(i) ~ x`, `y ~ wᵢ(j)` and `i ≠ j ∨ x ≠ y`, closes a cycle of length `|r| + |i − j| + 2`,
+  which is not accepted;
+* (chain) routes `r : x ⇝ y`, `r' : x' ⇝ y'` (trivial routes allowed: hubs) off both walks
+  and disjoint, and vertex-disjoint segments `w₁[i..i']`, `w₂[j..j']`, with `w₁(i) ~ x`,
+  `y ~ w₂(j)`, `w₂(j') ~ x'`, `y' ~ w₁(i')`, close a cycle of length
+  `|r| + |r'| + |i − i'| + |j − j'| + 4`, which is not accepted. -/
+def PairWalkCycles (data : Parameters) (object : Graph.FiniteObject.{u})
+    (seed : Finset object.Vertex) : Prop := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact ∃ (T : Finset object.Vertex) (a1 b1 a2 b2 : object.Vertex)
+      (w1 : object.graph.Walk a1 b1) (w2 : object.graph.Walk a2 b2),
+    T.card ≤ 2 * data.threshold ∧
+    Graph.PortPathCover.PortWalk object data.LengthOK w1 ∧
+    Graph.PortPathCover.PortWalk object data.LengthOK w2 ∧
+    seed = T ∪ w1.support.toFinset ∪ w2.support.toFinset ∧
+    Graph.WalkAttachment.AttachCycles data.LengthOK w1 ∧
+    Graph.WalkAttachment.AttachCycles data.LengthOK w2 ∧
+    Graph.WalkAttachment.ChainCycles data.LengthOK w1 w2
+
+/-- **Node `[144a]`: the attachment and chain cycles of the canonical port walks.**  At G's
+canonical routing, for both pair seeds (`PairWalkCycles`): every route attached to one walk at
+two positions, and every chain `w₁ → route → w₂ → route → w₁` through vertex-disjoint
+segments, closes a cycle of G, whose length is therefore not accepted
+(`WalkAttachment.walk_attach_cycle`, `WalkAttachment.walk_pair_cycle`). -/
+noncomputable def SameTokenWalkAttachmentStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ routing, canonicalSameTokenRouting data object = some routing ∧
+    PairWalkCycles data object (routing.capacity.activation.pairSeed routing.demands.first) ∧
+    PairWalkCycles data object (routing.capacity.activation.pairSeed routing.demands.second)
+
+/-- **Every vertex off one pair seed has a cubic neighbour in `T`.**  The seed is
+`T ∪ supp w₁ ∪ supp w₂` for two canonical port walks, `|T| ≤ 2δ`.  In the boundary-free
+configuration (the antecedent of `SameTokenU2FreeWholeStatement`) with both ports triangular:
+every vertex outside the seed has a degree-`3` neighbour in `T`; hence at most `3|T|`
+vertices lie outside the seed, and `n ≤ 4|T| + |w₁| + |w₂| + 2`. -/
+def PairSeedAttached (data : Parameters) (object : Graph.FiniteObject.{u})
+    (Xp Xq Z seed : Finset object.Vertex) : Prop := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact ∃ (T : Finset object.Vertex) (a1 b1 a2 b2 : object.Vertex)
+      (w1 : object.graph.Walk a1 b1) (w2 : object.graph.Walk a2 b2),
+    T.card ≤ 2 * data.threshold ∧
+    Graph.PortPathCover.PortWalk object data.LengthOK w1 ∧
+    Graph.PortPathCover.PortWalk object data.LengthOK w2 ∧
+    seed = T ∪ w1.support.toFinset ∪ w2.support.toFinset ∧
+    ((∀ w ∈ Xp, w ∉ Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object Z) →
+      (∀ w ∈ Xq, w ∉ Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object Z) →
+      Graph.MinimumDegreeAtLeast data.threshold
+        (Graph.glue (Graph.Transplant.transplant object Z Xq)
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object Z)) →
+      Graph.MinimumDegreeAtLeast data.threshold
+        (Graph.glue (Graph.Transplant.transplant object Z Xp)
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object Z)) →
+      object.graph.Adj b1 a1 → object.graph.Adj b2 a2 →
+      (∀ v, v ∉ seed → ∃ t ∈ T, object.graph.Adj v t ∧ object.degree t = 3) ∧
+      (object.vertexFinset \ seed).card ≤ 3 * T.card ∧
+      object.vertexCount ≤ 4 * T.card + w1.length + w2.length + 2)
+
+/-- **Node `[144a]` (Lean improvement: the separated configuration is empty at G).**  At G's
+canonical routing and pinned supports `X_p`, `X_q`, `Z`, for both pair seeds
+(`PairSeedAttached`): in the boundary-free configuration with both ports of the pair
+triangular, every vertex off the seed has a cubic neighbour in `T`.  (Otherwise such a vertex
+`v` is a cut vertex whose neighbours all lie on the two walks; it separates them, every other
+off-seed vertex has a `T`-neighbour, every interior walk vertex has a neighbour off both
+walks, and the hub-degree bound `|T| + 8` gives `n ≤ 729`, against
+`n ≥ C_sp(C_sp + 1) + 9` with `C_sp ≥ 102`.) -/
+noncomputable def SameTokenSeparatorExcludedStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ routing, canonicalSameTokenRouting data object = some routing ∧
+    ∃ Xp Xq Z : Finset object.Vertex, SameTokenPinnedAt data object routing Xp Xq Z ∧
+      PairSeedAttached data object Xp Xq Z
+        (routing.capacity.activation.pairSeed routing.demands.first) ∧
+      PairSeedAttached data object Xp Xq Z
+        (routing.capacity.activation.pairSeed routing.demands.second)
 
 end Hypostructure.Graph.Strategy.Spine
