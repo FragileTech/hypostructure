@@ -1,5 +1,6 @@
 import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
 import Hypostructure.Graph.PathChords
+import Hypostructure.Graph.PathUncrossing
 import Hypostructure.Graph.StubDeficit
 import Hypostructure.Graph.Contraction
 
@@ -27,6 +28,16 @@ it is a canonical number of the given graph.
   `FiniteObject` the ledger's `lem:bridgeless` statement
   (`∀ contraction : EdgeContraction object, contraction.HasReturn`) gives
   `2 ≤ routeNumber u v` for every edge `uv`.
+* **Edge routes.**  `edgeRouteNumber u v`: the maximum number of pairwise
+  edge-disjoint `u`–`v` paths, canonical in the same way.  It is at most the
+  cut `e(S, G − S)` and the degree, at least `routeNumber u v`, and
+  `two_le_edgeRouteNumber`: in a graph where every edge has a return
+  (`lem:bridgeless`) any two distinct connected vertices have two edge-disjoint
+  paths (propagation of two edge-disjoint paths along a walk, each step
+  merging the edge's return by `PathUncrossing.exists_first_hit`).
+  `edgeDisjoint_pair_cycle`: two edge-disjoint `a ⇝ b` paths close a cycle
+  through `a` of length `|p₁| + |q₁|`, `p₁, q₁` their prefixes to the first
+  vertex `z ≠ a` of `p` on `q`.
 * **Coupling with the cycle spectrum.**  `route_pair_cycle`: two distinct
   routes of lengths `Lᵢ, Lⱼ` close a cycle of length `Lᵢ + Lⱼ`
   (`PathChords.ear_cycle`); under `avoids`, `¬ LengthOK (Lᵢ + Lⱼ)` for every
@@ -464,6 +475,363 @@ theorem return_not_lengthOK {LengthOK : Nat → Prop}
   rw [he1, hl] at h
   exact h
 
+/-! ## Edge-disjoint routes -/
+
+variable (G) in
+/-- An **edge-route family** between `u` and `v`: a finite set of `u`–`v`
+paths, two distinct members of which share no edge. -/
+def IsEdgeRouteFamily {u v : V} (F : Finset (G.Walk u v)) : Prop :=
+  (∀ p ∈ F, p.IsPath) ∧ ∀ p ∈ F, ∀ q ∈ F, p ≠ q → ∀ e ∈ p.edges, e ∉ q.edges
+
+theorem isEdgeRouteFamily_empty {u v : V} :
+    IsEdgeRouteFamily G (∅ : Finset (G.Walk u v)) :=
+  ⟨by simp, by simp⟩
+
+section EdgeFinite
+
+variable [Fintype V]
+
+variable (G) in
+/-- **The edge-route number** `edgeRouteNumber u v`: the maximum size of a
+family of pairwise edge-disjoint `u`–`v` paths of `G`.  A finite maximum over
+the powerset of the finite set of `u`–`v` paths. -/
+noncomputable def edgeRouteNumber (u v : V) : Nat := by
+  classical
+  exact ((pathFinset G u v).powerset.filter fun F => IsEdgeRouteFamily G F).sup Finset.card
+
+/-- Every edge-route family has at most `edgeRouteNumber u v` routes. -/
+theorem card_le_edgeRouteNumber {u v : V} {F : Finset (G.Walk u v)}
+    (hF : IsEdgeRouteFamily G F) : F.card ≤ edgeRouteNumber G u v := by
+  classical
+  unfold edgeRouteNumber
+  refine Finset.le_sup (f := Finset.card) ?_
+  rw [Finset.mem_filter, Finset.mem_powerset]
+  exact ⟨fun p hp => mem_pathFinset.2 (hF.1 p hp), hF⟩
+
+/-- The edge-route number is attained by an edge-route family of `G`. -/
+theorem exists_edgeRouteFamily_card_eq (u v : V) :
+    ∃ F : Finset (G.Walk u v), IsEdgeRouteFamily G F ∧ F.card = edgeRouteNumber G u v := by
+  classical
+  have mem : (∅ : Finset (G.Walk u v)) ∈
+      (pathFinset G u v).powerset.filter fun F => IsEdgeRouteFamily G F := by
+    rw [Finset.mem_filter, Finset.mem_powerset]
+    exact ⟨Finset.empty_subset _, isEdgeRouteFamily_empty⟩
+  obtain ⟨F, hF, eq⟩ := Finset.exists_mem_eq_sup _ ⟨_, mem⟩ Finset.card
+  refine ⟨F, (Finset.mem_filter.1 hF).2, ?_⟩
+  unfold edgeRouteNumber
+  convert eq.symm
+
+end EdgeFinite
+
+/-- A route family between distinct terminals is an edge-route family. -/
+theorem isEdgeRouteFamily_of_isRouteFamily {u v : V} {F : Finset (G.Walk u v)}
+    (hF : IsRouteFamily G F) (hne : u ≠ v) : IsEdgeRouteFamily G F := by
+  refine ⟨hF.1, ?_⟩
+  intro p hp q hq pq e ep eq
+  induction e using Sym2.ind with
+  | _ x y =>
+    have adj : G.Adj x y := p.adj_of_mem_edges ep
+    have hx := hF.2 p hp q hq pq x (p.fst_mem_support_of_mem_edges ep)
+      (q.fst_mem_support_of_mem_edges eq)
+    have hy := hF.2 p hp q hq pq y (p.snd_mem_support_of_mem_edges ep)
+      (q.snd_mem_support_of_mem_edges eq)
+    rcases hx with rfl | rfl <;> rcases hy with rfl | rfl
+    · exact adj.ne rfl
+    · exact edges_disjoint_of_routeFamily hF hne hp hq pq ep eq rfl rfl
+    · rw [Sym2.eq_swap] at ep eq
+      exact edges_disjoint_of_routeFamily hF hne hp hq pq ep eq rfl rfl
+    · exact adj.ne rfl
+
+/-- The route number is at most the edge-route number. -/
+theorem routeNumber_le_edgeRouteNumber [Fintype V] {u v : V} (hne : u ≠ v) :
+    routeNumber G u v ≤ edgeRouteNumber G u v := by
+  obtain ⟨F, hF, eq⟩ := exists_routeFamily_card_eq (G := G) u v
+  exact eq ▸ card_le_edgeRouteNumber (isEdgeRouteFamily_of_isRouteFamily hF hne)
+
+section EdgeUpper
+
+variable [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
+
+/-- **The cut bound for edge routes**: for every region `S` with `u ∈ S`,
+`v ∉ S`, `edgeRouteNumber u v ≤ Σ_{x∈S} |N(x) \ S|`. -/
+theorem edgeRouteNumber_le_cut {u v : V} (S : Finset V) (hu : u ∈ S) (hv : v ∉ S) :
+    edgeRouteNumber G u v ≤ ∑ x ∈ S, (G.neighborFinset x \ S).card := by
+  obtain ⟨F, hF, eq⟩ := exists_edgeRouteFamily_card_eq (G := G) u v
+  rw [← eq, ← Fintype.card_coe]
+  exact card_le_cut_of_edgeDisjoint S (fun _ : F => u) (fun _ => v) (fun i => i.1)
+    (fun _ => hu) (fun _ => hv)
+    (fun i j ij => hF.2 i.1 i.2 j.1 j.2 (fun h => ij (Subtype.ext h)))
+
+/-- **The degree bound for edge routes.** -/
+theorem edgeRouteNumber_le_degree_left {u v : V} (hne : u ≠ v) :
+    edgeRouteNumber G u v ≤ G.degree u := by
+  have h := edgeRouteNumber_le_cut (G := G) (u := u) (v := v) {u}
+    (Finset.mem_singleton_self u) (by simpa [eq_comm] using hne)
+  rw [Finset.sum_singleton] at h
+  have : G.neighborFinset u \ {u} = G.neighborFinset u := by
+    ext x
+    simp only [Finset.mem_sdiff, Finset.mem_singleton, SimpleGraph.mem_neighborFinset]
+    exact ⟨fun h => h.1, fun h => ⟨h, h.ne'⟩⟩
+  rw [this, SimpleGraph.card_neighborFinset_eq_degree] at h
+  exact h
+
+end EdgeUpper
+
+/-! ### Two edge-disjoint routes in a bridgeless connected graph -/
+
+variable (G) in
+/-- `x` is reached from `a` by two edge-disjoint paths. -/
+def TwoEdgeReach (a x : V) : Prop :=
+  ∃ p q : G.Walk a x, p.IsPath ∧ q.IsPath ∧ ∀ e ∈ p.edges, e ∉ q.edges
+
+theorem twoEdgeReach_of_walks [DecidableEq V] {a y : V} (A B : G.Walk a y)
+    (disj : ∀ e ∈ A.edges, e ∉ B.edges) : TwoEdgeReach G a y :=
+  ⟨A.bypass, B.bypass, A.bypass_isPath, B.bypass_isPath,
+    fun e hA hB => disj e (A.edges_bypass_subset_edges hA) (B.edges_bypass_subset_edges hB)⟩
+
+/-- A proper prefix `p₁ : a ⇝ y` of a path `a ⇝ x` does not visit `x`. -/
+theorem end_notMem_prefix {a x y : V} {p : G.Walk a x} (hp : p.IsPath) (p₁ : G.Walk a y)
+    (p₂ : G.Walk y x) (split : p = p₁.append p₂) (hyx : y ≠ x) : x ∉ p₁.support := by
+  intro xs
+  subst split
+  rw [Walk.isPath_def, Walk.support_append] at hp
+  exact (List.nodup_append.1 hp).2.2 x xs x (p₂.end_mem_tail_support_of_ne hyx) rfl
+
+/-- The core step: from two edge-disjoint `a ⇝ x` walks `p, q`, a prefix
+`p₁ : a ⇝ z` of `p` and a connector `r : z ⇝ y` sharing no edge with `q`,
+with `xy` on neither `p₁` nor `r`, the walks `q + xy` and `p₁ + r` are
+edge-disjoint `a ⇝ y` walks. -/
+theorem twoEdgeReach_core [DecidableEq V] {a x y z : V} (adj : G.Adj x y)
+    (p q : G.Walk a x) (disj : ∀ e ∈ p.edges, e ∉ q.edges) (p₁ : G.Walk a z)
+    (p₂ : G.Walk z x) (split : p = p₁.append p₂) (r : G.Walk z y)
+    (rq : ∀ e ∈ r.edges, e ∉ q.edges)
+    (ep : s(x, y) ∉ p₁.edges) (er : s(x, y) ∉ r.edges) :
+    TwoEdgeReach G a y := by
+  refine twoEdgeReach_of_walks (q.append (Walk.cons adj Walk.nil)) (p₁.append r) ?_
+  intro e hA hB
+  rw [Walk.edges_append, List.mem_append] at hA hB
+  have p₁p : ∀ f ∈ p₁.edges, f ∈ p.edges := fun f hf => by
+    rw [split, Walk.edges_append]; exact List.mem_append_left _ hf
+  rcases hA with hA | hA
+  · rcases hB with hB | hB
+    · exact disj e (p₁p e hB) hA
+    · exact rq e hB hA
+  · simp only [Walk.edges_cons, Walk.edges_nil, List.mem_singleton] at hA
+    subst hA
+    rcases hB with hB | hB
+    · exact ep hB
+    · exact er hB
+
+/-- The core step with the roles of `p` and `q` exchanged. -/
+theorem twoEdgeReach_core' [DecidableEq V] {a x y z : V} (adj : G.Adj x y)
+    (p q : G.Walk a x) (disj : ∀ e ∈ p.edges, e ∉ q.edges) (q₁ : G.Walk a z)
+    (q₂ : G.Walk z x) (split : q = q₁.append q₂) (r : G.Walk z y)
+    (rp : ∀ e ∈ r.edges, e ∉ p.edges) (eq : s(x, y) ∉ q₁.edges) (er : s(x, y) ∉ r.edges) :
+    TwoEdgeReach G a y :=
+  twoEdgeReach_core adj q p (fun e hq hp => disj e hp hq) q₁ q₂ split r rp eq er
+
+/-- **The propagation step**: two edge-disjoint paths to `x`, an edge `xy`
+and a return of `xy` give two edge-disjoint paths to `y`. -/
+theorem twoEdgeReach_step [DecidableEq V] {a x y : V} (hx : TwoEdgeReach G a x)
+    (adj : G.Adj x y) (ret : (G.deleteEdges {s(x, y)}).Path x y) : TwoEdgeReach G a y := by
+  obtain ⟨p, q, hp, hq, disj⟩ := hx
+  have disj' : ∀ e ∈ q.edges, e ∉ p.edges := fun e hq hp => disj e hp hq
+  have hyx : y ≠ x := adj.ne.symm
+  by_cases yp : y ∈ p.support
+  · obtain ⟨z, p₁, p₂, split, hz, _⟩ :=
+      PathUncrossing.exists_first_hit ({y} : Set V) p ⟨y, yp, rfl⟩
+    rw [Set.mem_singleton_iff] at hz
+    subst hz
+    have ep : s(x, z) ∉ p₁.edges := fun h =>
+      end_notMem_prefix hp p₁ p₂ split hyx (p₁.fst_mem_support_of_mem_edges h)
+    by_cases eq : s(x, z) ∈ q.edges
+    · -- the edge lies on `q`: cut `q` at `z` instead
+      have zq : z ∈ q.support := q.snd_mem_support_of_mem_edges eq
+      obtain ⟨z', q₁, q₂, splitq, hz', _⟩ :=
+        PathUncrossing.exists_first_hit ({z} : Set V) q ⟨z, zq, rfl⟩
+      rw [Set.mem_singleton_iff] at hz'
+      subst hz'
+      have eq₁ : s(x, z') ∉ q₁.edges := fun h =>
+        end_notMem_prefix hq q₁ q₂ splitq hyx (q₁.fst_mem_support_of_mem_edges h)
+      exact twoEdgeReach_core' adj p q disj q₁ q₂ splitq Walk.nil (by simp) eq₁ (by simp)
+    · exact twoEdgeReach_core adj p q disj p₁ p₂ split Walk.nil (by simp) ep (by simp)
+  by_cases yq : y ∈ q.support
+  · obtain ⟨z, q₁, q₂, split, hz, _⟩ :=
+      PathUncrossing.exists_first_hit ({y} : Set V) q ⟨y, yq, rfl⟩
+    rw [Set.mem_singleton_iff] at hz
+    subst hz
+    have eq₁ : s(x, z) ∉ q₁.edges := fun h =>
+      end_notMem_prefix hq q₁ q₂ split hyx (q₁.fst_mem_support_of_mem_edges h)
+    exact twoEdgeReach_core' adj p q disj q₁ q₂ split Walk.nil (by simp) eq₁ (by simp)
+  -- `y` is off both paths: follow the return from `y` to its first vertex on them
+  have ep : s(x, y) ∉ p.edges := fun h => yp (p.snd_mem_support_of_mem_edges h)
+  have eq : s(x, y) ∉ q.edges := fun h => yq (q.snd_mem_support_of_mem_edges h)
+  let r : G.Walk y x := (ret.1.mapLe (G.deleteEdges_le _)).reverse
+  have er : ∀ f ∈ r.edges, f ≠ s(x, y) := by
+    intro f hf h
+    subst h
+    simp only [r, Walk.edges_reverse, List.mem_reverse, Walk.edges_mapLe_eq_edges] at hf
+    have := ret.1.edges_subset_edgeSet hf
+    rw [SimpleGraph.edgeSet_deleteEdges] at this
+    exact this.2 rfl
+  let S : Set V := {v | v ∈ p.support ∨ v ∈ q.support}
+  obtain ⟨z, r₁, r₂, splitr, hz, first⟩ :=
+    PathUncrossing.exists_first_hit S r ⟨x, r.end_mem_support, Or.inl p.end_mem_support⟩
+  have r₁r : ∀ f ∈ r₁.edges, f ∈ r.edges := fun f hf => by
+    rw [splitr, Walk.edges_append]; exact List.mem_append_left _ hf
+  have off : ∀ f ∈ r₁.edges, (∀ c ∈ f, c ∈ S) → False := by
+    intro f hf hS
+    induction f using Sym2.ind with
+    | _ c d =>
+      have cz := first c (r₁.fst_mem_support_of_mem_edges hf) (hS c (Sym2.mem_mk_left c d))
+      have dz := first d (r₁.snd_mem_support_of_mem_edges hf) (hS d (Sym2.mem_mk_right c d))
+      exact (r₁.adj_of_mem_edges hf).ne (cz.trans dz.symm)
+  have rp : ∀ e ∈ r₁.reverse.edges, e ∉ p.edges := by
+    intro e he hp'
+    rw [Walk.edges_reverse, List.mem_reverse] at he
+    exact off e he fun c hc => Or.inl (p.mem_support_of_mem_edges hp' hc)
+  have rq : ∀ e ∈ r₁.reverse.edges, e ∉ q.edges := by
+    intro e he hq'
+    rw [Walk.edges_reverse, List.mem_reverse] at he
+    exact off e he fun c hc => Or.inr (q.mem_support_of_mem_edges hq' hc)
+  have err : s(x, y) ∉ r₁.reverse.edges := by
+    intro h
+    rw [Walk.edges_reverse, List.mem_reverse] at h
+    exact er _ (r₁r _ h) rfl
+  rcases hz with zp | zq
+  · obtain ⟨z', p₁, p₂, split, hz', _⟩ :=
+      PathUncrossing.exists_first_hit ({z} : Set V) p ⟨z, zp, rfl⟩
+    rw [Set.mem_singleton_iff] at hz'
+    subst hz'
+    have ep₁ : s(x, y) ∉ p₁.edges := fun h => ep (by
+      rw [split, Walk.edges_append]; exact List.mem_append_left _ h)
+    exact twoEdgeReach_core adj p q disj p₁ p₂ split r₁.reverse rq ep₁ err
+  · obtain ⟨z', q₁, q₂, split, hz', _⟩ :=
+      PathUncrossing.exists_first_hit ({z} : Set V) q ⟨z, zq, rfl⟩
+    rw [Set.mem_singleton_iff] at hz'
+    subst hz'
+    have eq₁ : s(x, y) ∉ q₁.edges := fun h => eq (by
+      rw [split, Walk.edges_append]; exact List.mem_append_left _ h)
+    exact twoEdgeReach_core' adj p q disj q₁ q₂ split r₁.reverse rp eq₁ err
+
+/-- **Bridgeless graphs are 2-edge-connected along walks**: if every edge has
+a return, two edge-disjoint paths from `a` extend along any walk. -/
+theorem twoEdgeReach_of_walk [DecidableEq V]
+    (returns : ∀ x y, G.Adj x y → Nonempty ((G.deleteEdges {s(x, y)}).Path x y))
+    {a : V} : ∀ {x b : V} (_ : G.Walk x b), TwoEdgeReach G a x → TwoEdgeReach G a b
+  | _, _, .nil, h => h
+  | _, _, .cons adj w, h => by
+      obtain ⟨ret⟩ := returns _ _ adj
+      exact twoEdgeReach_of_walk returns w (twoEdgeReach_step h adj ret)
+
+/-- **Two edge-disjoint routes in a bridgeless connected graph**: between any
+two distinct vertices there are two distinct edge-disjoint paths. -/
+theorem exists_two_edgeDisjoint_paths
+    (returns : ∀ x y, G.Adj x y → Nonempty ((G.deleteEdges {s(x, y)}).Path x y))
+    {a b : V} (reach : G.Reachable a b) (hne : a ≠ b) :
+    ∃ p q : G.Walk a b, p.IsPath ∧ q.IsPath ∧ p ≠ q ∧ ∀ e ∈ p.edges, e ∉ q.edges := by
+  classical
+  obtain ⟨w⟩ := reach
+  obtain ⟨p, q, hp, hq, disj⟩ := twoEdgeReach_of_walk returns w
+    ⟨Walk.nil, Walk.nil, by simp, by simp, by simp⟩
+  refine ⟨p, q, hp, hq, ?_, disj⟩
+  rintro rfl
+  cases p with
+  | nil => exact hne rfl
+  | @cons _ v _ h p' =>
+    exact disj s(a, v) (by rw [Walk.edges_cons]; exact List.mem_cons_self)
+      (by rw [Walk.edges_cons]; exact List.mem_cons_self)
+
+/-- **`2 ≤ edgeRouteNumber a b`** for distinct vertices of a bridgeless
+connected graph. -/
+theorem two_le_edgeRouteNumber [Fintype V]
+    (returns : ∀ x y, G.Adj x y → Nonempty ((G.deleteEdges {s(x, y)}).Path x y))
+    {a b : V} (reach : G.Reachable a b) (hne : a ≠ b) : 2 ≤ edgeRouteNumber G a b := by
+  classical
+  obtain ⟨p, q, hp, hq, pq, disj⟩ := exists_two_edgeDisjoint_paths returns reach hne
+  have fam : IsEdgeRouteFamily G ({p, q} : Finset (G.Walk a b)) := by
+    refine ⟨?_, ?_⟩
+    · intro w hw
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hw
+      rcases hw with h | h <;> rw [h]
+      · exact hp
+      · exact hq
+    · intro w hw w' hw' ww'
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hw hw'
+      rcases hw with rfl | rfl <;> rcases hw' with rfl | rfl
+      all_goals first
+        | exact absurd rfl ww'
+        | exact disj
+        | exact fun e h1 h2 => disj e h2 h1
+  have := card_le_edgeRouteNumber fam
+  rwa [Finset.card_pair pq] at this
+
+/-! ### Coupling of two edge-disjoint routes with the cycle spectrum -/
+
+/-- **Two edge-disjoint routes close a cycle through `a`**: for edge-disjoint
+paths `p, q : a ⇝ b` with `a ≠ b`, follow `p` to its first vertex `z ≠ a` on
+`q`.  The prefixes `p₁ : a ⇝ z` of `p` and `q₁ : a ⇝ z` of `q` close a cycle
+through `a` of length `|p₁| + |q₁|`. -/
+theorem edgeDisjoint_pair_cycle {a b : V} (p q : G.Walk a b) (hp : p.IsPath) (hq : q.IsPath)
+    (disj : ∀ e ∈ p.edges, e ∉ q.edges) (hne : a ≠ b) :
+    ∃ (z : V) (p₁ : G.Walk a z) (p₂ : G.Walk z b) (q₁ : G.Walk a z) (q₂ : G.Walk z b),
+      p = p₁.append p₂ ∧ q = q₁.append q₂ ∧ z ≠ a ∧
+      ∃ c : G.Walk a a, c.IsCycle ∧ c.length = p₁.length + q₁.length := by
+  let S : Set V := {v | v ∈ q.support ∧ v ≠ a}
+  obtain ⟨z, p₁, p₂, splitp, ⟨zq, za⟩, first⟩ := PathUncrossing.exists_first_hit S p
+    ⟨b, p.end_mem_support, q.end_mem_support, hne.symm⟩
+  obtain ⟨z', q₁, q₂, splitq, hz', _⟩ :=
+    PathUncrossing.exists_first_hit ({z} : Set V) q ⟨z, zq, rfl⟩
+  rw [Set.mem_singleton_iff] at hz'
+  subst hz'
+  refine ⟨z', p₁, p₂, q₁, q₂, splitp, splitq, za, ?_⟩
+  have hp₁ : p₁.IsPath := (splitp ▸ hp).of_append_left
+  have hq₁ : q₁.IsPath := (splitq ▸ hq).of_append_left
+  have len : ∀ w : G.Walk a z', 1 ≤ w.length := by
+    intro w
+    by_contra h
+    exact za (Walk.eq_of_length_eq_zero (p := w) (by omega)).symm
+  have first_edge : ∀ w : G.Walk a z', w.length = 1 → s(a, z') ∈ w.edges := by
+    intro w h1
+    cases w with
+    | nil => simp at h1
+    | cons h w' =>
+      simp only [Walk.length_cons, Nat.add_eq_right] at h1
+      have := Walk.eq_of_length_eq_zero h1
+      subst this
+      simp
+  obtain ⟨c, hc, hl⟩ := PathChords.ear_cycle p₁ q₁.reverse hp₁ hq₁.reverse
+    (fun y yp yq => by
+      rw [Walk.support_reverse, List.mem_reverse] at yq
+      by_cases ya : y = a
+      · exact Or.inl ya
+      · have yqq : y ∈ q.support := by
+          rw [splitq, Walk.support_append]; exact List.mem_append_left _ yq
+        exact Or.inr (first y yp ⟨yqq, ya⟩))
+    (len p₁) (by rw [Walk.length_reverse]; exact len q₁)
+    (by
+      rintro ⟨h1, h2⟩
+      rw [Walk.length_reverse] at h2
+      have ep := first_edge p₁ h1
+      have eq := first_edge q₁ h2
+      refine disj s(a, z') ?_ ?_
+      · rw [splitp, Walk.edges_append]; exact List.mem_append_left _ ep
+      · rw [splitq, Walk.edges_append]; exact List.mem_append_left _ eq)
+  exact ⟨c, hc, by rw [hl, Walk.length_reverse]⟩
+
+/-- **Under `avoids`**: the cycle through `a` of two edge-disjoint routes has
+a rejected length `|p₁| + |q₁|`. -/
+theorem edgeDisjoint_pair_not_lengthOK {LengthOK : Nat → Prop}
+    (avoids : ¬ ∃ (c : V) (cy : G.Walk c c), cy.IsCycle ∧ LengthOK cy.length)
+    {a b : V} (p q : G.Walk a b) (hp : p.IsPath) (hq : q.IsPath)
+    (disj : ∀ e ∈ p.edges, e ∉ q.edges) (hne : a ≠ b) :
+    ∃ (z : V) (p₁ : G.Walk a z) (p₂ : G.Walk z b) (q₁ : G.Walk a z) (q₂ : G.Walk z b),
+      p = p₁.append p₂ ∧ q = q₁.append q₂ ∧ z ≠ a ∧
+      ¬ LengthOK (p₁.length + q₁.length) := by
+  obtain ⟨z, p₁, p₂, q₁, q₂, sp, sq, za, c, hc, hl⟩ :=
+    edgeDisjoint_pair_cycle p q hp hq disj hne
+  exact ⟨z, p₁, p₂, q₁, q₂, sp, sq, za, fun ok => avoids ⟨a, c, hc, hl ▸ ok⟩⟩
+
 end Hypostructure.Graph.DisjointRoutes
 
 /-! ## The route number of a finite object -/
@@ -573,6 +941,78 @@ theorem exists_max_routeFamily_avoiding {LengthOK : Nat → Prop}
       ∀ p ∈ F, ∀ q ∈ F, p ≠ q → ¬ LengthOK (p.length + q.length) := by
   letI : FinEnum object.Vertex := object.vertices
   exact DisjointRoutes.exists_max_routeFamily_avoiding avoids hne
+
+/-! ## Edge-disjoint routes of a finite object -/
+
+/-- **`edgeRouteNumber u v`** of a finite object: the maximum number of
+pairwise edge-disjoint `u`–`v` paths of its graph. -/
+noncomputable def edgeRouteNumber (a b : object.Vertex) : Nat := by
+  letI : FinEnum object.Vertex := object.vertices
+  exact DisjointRoutes.edgeRouteNumber object.graph a b
+
+/-- `lem:bridgeless` in its published form supplies a return for every edge. -/
+theorem returns_of_bridgeless
+    (bridgeless : ∀ contraction : EdgeContraction object, contraction.HasReturn) :
+    ∀ x y, object.graph.Adj x y →
+      Nonempty ((object.graph.deleteEdges {s(x, y)}).Path x y) :=
+  fun x y adj => bridgeless ⟨x, y, adj⟩
+
+/-- **Two edge-disjoint routes between any two vertices of G**: from
+`lem:bridgeless` and connectivity (node `[8]`), `2 ≤ edgeRouteNumber a b`
+for every `a ≠ b`. -/
+theorem two_le_edgeRouteNumber
+    (bridgeless : ∀ contraction : EdgeContraction object, contraction.HasReturn)
+    (connected : object.graph.Connected) {a b : object.Vertex} (hne : a ≠ b) :
+    2 ≤ object.edgeRouteNumber a b := by
+  letI : FinEnum object.Vertex := object.vertices
+  exact DisjointRoutes.two_le_edgeRouteNumber (object.returns_of_bridgeless bridgeless)
+    (connected.preconnected a b) hne
+
+/-- **The cut bound for edge routes on G**: `edgeRouteNumber a b ≤ e(S, G − S)`
+for every region `S` containing `a` and not `b`. -/
+theorem edgeRouteNumber_le_boundaryIncidence {a b : object.Vertex}
+    (support : Finset object.Vertex) (ha : a ∈ support) (hb : b ∉ support) :
+    object.edgeRouteNumber a b ≤ object.boundaryIncidence support := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  rw [object.boundaryIncidence_eq_sum_sdiff support]
+  exact DisjointRoutes.edgeRouteNumber_le_cut support ha hb
+
+/-- **The degree bound for edge routes on G.** -/
+theorem edgeRouteNumber_le_degree {a b : object.Vertex} (hne : a ≠ b) :
+    object.edgeRouteNumber a b ≤ object.degree a := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  exact DisjointRoutes.edgeRouteNumber_le_degree_left hne
+
+/-- Internally disjoint routes are edge-disjoint:
+`routeNumber a b ≤ edgeRouteNumber a b`. -/
+theorem routeNumber_le_edgeRouteNumber {a b : object.Vertex} (hne : a ≠ b) :
+    object.routeNumber a b ≤ object.edgeRouteNumber a b := by
+  letI : FinEnum object.Vertex := object.vertices
+  exact DisjointRoutes.routeNumber_le_edgeRouteNumber hne
+
+/-- **Two edge-disjoint routes of G and their cycle through `a`**: under
+`lem:bridgeless`, connectivity and `avoids`, any `a ≠ b` have two distinct
+edge-disjoint paths `p, q : a ⇝ b`; following `p` to its first vertex
+`z ≠ a` on `q`, the prefixes `p₁, q₁ : a ⇝ z` close a cycle through `a`, so
+`¬ LengthOK (|p₁| + |q₁|)`. -/
+theorem exists_edgeDisjoint_pair_avoiding {LengthOK : Nat → Prop}
+    (bridgeless : ∀ contraction : EdgeContraction object, contraction.HasReturn)
+    (connected : object.graph.Connected)
+    (avoids : ¬ ∃ (c : object.Vertex) (cy : object.graph.Walk c c),
+      cy.IsCycle ∧ LengthOK cy.length)
+    {a b : object.Vertex} (hne : a ≠ b) :
+    ∃ p q : object.graph.Walk a b, p.IsPath ∧ q.IsPath ∧ p ≠ q ∧
+      (∀ e ∈ p.edges, e ∉ q.edges) ∧
+      ∃ (z : object.Vertex) (p₁ : object.graph.Walk a z) (p₂ : object.graph.Walk z b)
+        (q₁ : object.graph.Walk a z) (q₂ : object.graph.Walk z b),
+        p = p₁.append p₂ ∧ q = q₁.append q₂ ∧ z ≠ a ∧
+        ¬ LengthOK (p₁.length + q₁.length) := by
+  obtain ⟨p, q, hp, hq, pq, disj⟩ := DisjointRoutes.exists_two_edgeDisjoint_paths
+    (object.returns_of_bridgeless bridgeless) (connected.preconnected a b) hne
+  exact ⟨p, q, hp, hq, pq, disj,
+    DisjointRoutes.edgeDisjoint_pair_not_lengthOK avoids p q hp hq disj hne⟩
 
 /-! ## Stubs at a region -/
 
