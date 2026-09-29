@@ -5310,3 +5310,31 @@ changed: `Statements/Spine.lean` (`BlockedRelativeFibreBoundAt` removed; `blocke
 `BlockedAggregateBoundAt`, prefix products added; `BlockedScaleAdditivityStatement` and
 `BlockedBarrierFailureStatement` restated), `Contracts/Spine/BlockedCompression.lean`,
 `Strategy/BlockedCompressionRows.lean`.
+
+### `[172a]`: the conditional-independence route to `lem:barrier-failure-overlap` (attempted)
+
+`Graph/LayeredFactorization.lean` (generic, vocabulary-free, checked):
+- `aggregate_of_local_share`: if the class splits, layer by layer of the number `i` of edges in
+  a region `R`, as `R`-configurations `x ∈ X i` times the rest `y ∈ Y i` (the fixed edge count
+  `m` couples them only through the layer, so no binomial approximation is needed), the earlier
+  data depend on `y` only, and the state at the coordinate on `x` only, then
+  `W·A_{k+1} ≤ F·A_k` follows from the LOCAL SHARE TEST in every layer:
+  `W·#{x ∈ X i : s i x surviving} ≤ F·|X i|`.
+- `local_share_not_forced`: independence does not give the aggregate. A one-layer instance
+  with three `R`-configurations, two in the surviving state (`W = 2`, `F = 1`) has
+  `W·A_{k+1} = 4 > 3 = F·A_k`.  `F` and `W` count label triples, not configurations; the
+  paper's factor `F/W` presupposes a uniform distribution of configurations over triples.
+So the contrapositive of the independence route yields: the aggregate fails at `c` ⇒ locality
+or disjointness fails, OR the local share test fails in some layer of `R = Reg(c)`.  The third
+alternative is not an overlap.
+
+Not proved, and why (inventory of the code): (i) `barrierState` is defined through `support.some`
+(a global choice over completion supports of the whole graph), so `barrierState c` is not
+proved to depend on the slots of `Reg(c)` only; a locality theorem needs a canonical least
+choice defined from the ball, not built here. (ii) The completion walk has length `2^j`, so
+`Reg(c)` is the ball of radius about `2^j + 1` around the window; its size grows with the
+scale index `j < separatedScaleCount n`, and the disjointness hypothesis is a hypothesis about
+G's geometry not on the ledger. (iii) The local share test is not on the ledger. Hence no
+overlap of `c` with an earlier coordinate is derived, and the test of a forced overlap against
+`windowAttachmentGap` / `inducedPathAttachment` and accepted cycles was not run (there is no
+forced overlap to test).
