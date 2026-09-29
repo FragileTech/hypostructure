@@ -203,3 +203,7 @@ import Hypostructure.Graph.PairRoute
 
 -- Core routing modules included in the root build closure.
 import Hypostructure.Core.DependentOwnerGlueCapacity
+import Hypostructure.Graph.ThetaCycles
+import Hypostructure.Graph.DisjointRoutes
+import Hypostructure.Graph.FirstRepeatPeriod
+import Hypostructure.Graph.LocalCycleRank
