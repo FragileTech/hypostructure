@@ -438,4 +438,70 @@ theorem route8UnifiedDeficit (data : Parameters) (object : FiniteObject.{u})
   simp only [restMass, rest, support] at sharedSurplusSum
   omega
 
+/-- **Lean improvement: the quotient-free arm of the unified route-`8` ledger
+is empty at G** (node `[123]`, stated about G).  At a target-avoiding G every
+graph-owned entry has `α(ξ) = 0` (`PresentedEntry.ofTraceBasin_alpha_eq_zero`,
+`Entry.Complete` read in `G − B_u`); the census's `2 ≤ α(ξ)`
+(`lem:typeA-unified-carriers`, alternative (b) refuted by the quotient-freeness)
+therefore leaves no unified entry; the stage accounting of the descent
+(`lem:typeA-peeling-stage-accounting`: `s·\tilde D_A ≤ |\tilde\Xi ∖ P_4| + |P_4|`)
+clears the unified deficit; and `lem:typeA-unified-deficit` leaves
+`|R| ≤ s·|∂R| + F·s·T(n)`. -/
+theorem route8UnifiedEmptyAtG (data : Parameters) (object : FiniteObject.{u})
+    (census : Route8UnifiedEntryCensusFact data object)
+    (avoids : ¬ HasCycleWithLength data.LengthOK object)
+    (descent : Route8PeelingDescentStatement data object)
+    (deficit : Route8UnifiedDeficitFact data object) :
+    Route8UnifiedEmptyAtGStatement data object := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  have alphaZero : ∀ index : Route8Census.Index object,
+      ((Route8Census.presented object data.threshold data.LengthOK
+        index).toEntry (HasCycleWithLength data.LengthOK)).alpha = 0 :=
+    fun index => Route8.PresentedEntry.ofTraceBasin_alpha_eq_zero
+      (support := index.1) (basin := Route8Census.basin object data.threshold index)
+      (threshold := data.threshold) (receiver := index.2.1) (load := index.2.2)
+      avoids
+  have entriesEmpty : route8UnifiedEntries data object = ∅ := by
+    apply Finset.eq_empty_of_forall_notMem
+    intro index member
+    have two := (census index member).2.1
+    have zero := alphaZero index
+    change 2 ≤ ((Route8Census.presented object data.threshold data.LengthOK
+      index).toEntry (HasCycleWithLength data.LengthOK)).alpha at two
+    omega
+  obtain ⟨_chain, accounting, _outcome⟩ := descent
+  obtain ⟨_peeledSubset, entriesEq, _disjoint, _peeledLe, _deficitEq,
+    deficitLe, _reducedLe, _stageDeficit⟩ := accounting
+  rw [entriesEmpty] at entriesEq
+  obtain ⟨reducedEmpty, peeledEmpty⟩ := Finset.union_eq_empty.mp entriesEq.symm
+  have deficitZero : TypeBEnvelopeCharge.route8Deficit object
+      (object.remainderSupport (canonicalWindowPacking data object))
+      data.threshold data.dischargeScale (route8UnifiedComponents data object) =
+        0 := by
+    rw [entriesEmpty, reducedEmpty, peeledEmpty] at deficitLe
+    simpa using deficitLe
+  refine ⟨alphaZero, entriesEmpty, deficitZero, ?_⟩
+  have bound : (object.remainderSupport (canonicalWindowPacking data object)).card ≤
+      TypeBEnvelopeCharge.route8Deficit object
+          (object.remainderSupport (canonicalWindowPacking data object))
+          data.threshold data.dischargeScale (route8UnifiedComponents data object) +
+        data.dischargeScale *
+          (Route8Census.supply object (canonicalWindowPacking data object)).card +
+        data.bridgeMassFactor * data.dischargeScale *
+          data.surplusThreshold object.vertexCount := deficit
+  rw [deficitZero, Nat.zero_add] at bound
+  exact bound
+
+/-- **The private-carrier rate refutes the empty quotient-free arm at G**: the
+rate `(δ·s + 1)·|∂R| + δ·F·s·T(n) < δ·|R|` (`K .route8Rate`) against
+`|R| ≤ s·|∂R| + F·s·T(n)`. -/
+theorem route8UnifiedEmptyAtG_contradiction (data : Parameters)
+    (object : FiniteObject.{u})
+    (rate : Route8RateStatement data object)
+    (empty : Route8UnifiedEmptyAtGStatement data object) : False := by
+  obtain ⟨_alphaZero, _entriesEmpty, _deficitZero, bound⟩ := empty
+  unfold Route8RateStatement Route8Census.Rate at rate
+  have scaled := Nat.mul_le_mul_left data.threshold bound
+  nlinarith
+
 end Hypostructure.Graph.Contracts.RouteEight

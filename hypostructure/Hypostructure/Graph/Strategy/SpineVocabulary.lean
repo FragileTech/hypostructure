@@ -1629,6 +1629,12 @@ inductive Key where
   /-- Node `[181]`, yes: some unpaid entry of a maximal demand ledger has no
   exit-`(4)` witness. -/
   | route8UnpaidWitnessFree
+  -- R3 keys (7900–7949): route 8 and Type A stated about G
+  /-- Node `[123]`, stated about G (Lean improvement): **the quotient-free arm of
+  the unified route-`8` ledger is empty at G** — every essential core is empty
+  (`α(ξ) = 0`), so the census's `2 ≤ α(ξ)` leaves no unified entry, the stage
+  accounting clears `s·D̃_A`, and `|R| ≤ s·|∂R| + F·s·T(n)`. -/
+  | route8UnifiedEmptyAtG
   -- F5 keys
   /-- Node `[175]`, no arm: every selected corridor meets a high-degree
   vertex. -/
@@ -2777,6 +2783,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8UnpaidTwoCarrierStatement data.toParameters object
   | .route8UnpaidWitnessFree, object =>
       Route8UnpaidWitnessFreeStatement data.toParameters object
+  -- R3 keys
+  | .route8UnifiedEmptyAtG, object =>
+      Route8UnifiedEmptyAtGStatement data.toParameters object
   -- F5 keys
   | .coldNoPositiveGerm, object =>
       ColdNoPositiveGermStatement data.toParameters object
@@ -3475,6 +3484,8 @@ def label : Key → String
   | .route8StageRate => "route8StageRate"
   | .route8UnpaidTwoCarrier => "route8UnpaidTwoCarrier"
   | .route8UnpaidWitnessFree => "route8UnpaidWitnessFree"
+  -- R3 keys
+  | .route8UnifiedEmptyAtG => "route8UnifiedEmptyAtG"
   -- F5 keys
   | .coldNoPositiveGerm => "coldNoPositiveGerm"
   -- SD keys (final pass)
@@ -4011,6 +4022,7 @@ example : label .route8UnifiedTwoCarrierExit = "route8UnifiedTwoCarrierExit" := 
 example : label .route8StageRate = "route8StageRate" := rfl
 example : label .route8UnpaidTwoCarrier = "route8UnpaidTwoCarrier" := rfl
 example : label .route8UnpaidWitnessFree = "route8UnpaidWitnessFree" := rfl
+example : label .route8UnifiedEmptyAtG = "route8UnifiedEmptyAtG" := rfl
 -- F5 keys
 example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
 -- SD keys (final pass)
@@ -4530,6 +4542,8 @@ def idx : Key → Nat
   | .route8StageRate => 1402
   | .route8UnpaidTwoCarrier => 1403
   | .route8UnpaidWitnessFree => 1404
+  -- R3 keys
+  | .route8UnifiedEmptyAtG => 7900
   -- F5 keys
   | .coldNoPositiveGerm => 1800
   -- SD keys (final pass)
@@ -5043,6 +5057,8 @@ def ofIdx : Nat → Key
   | 1402 => .route8StageRate
   | 1403 => .route8UnpaidTwoCarrier
   | 1404 => .route8UnpaidWitnessFree
+  -- R3 keys
+  | 7900 => .route8UnifiedEmptyAtG
   -- F5 keys
   | 1800 => .coldNoPositiveGerm
   -- SD keys (final pass)
@@ -6001,6 +6017,9 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnpaidTwoCarrier") 1403
   | .route8UnpaidWitnessFree =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnpaidWitnessFree") 1404
+  -- R3 keys
+  | .route8UnifiedEmptyAtG =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnifiedEmptyAtG") 7900
   -- F5 keys
   | .coldNoPositiveGerm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldNoPositiveGerm") 1800

@@ -207,6 +207,9 @@ structure PresentedEntry (object : FiniteObject.{u}) where
   event? : Coordinate → Option (CoordinateEvent object)
   /-- The reading retaining exactly a set of declared coordinates. -/
   state : Finset Coordinate → BoundaryPiece interface
+  /-- The one outside context the readings are glued into: G's own surroundings
+  of the basin, `G − B_u` (`SupportAtom.outside`).  No other context is read. -/
+  actual : OutsideContext interface
 
 namespace PresentedEntry
 
@@ -375,6 +378,7 @@ noncomputable def toEntry (Target : FiniteObject.{u} → Prop) :
     · rename_i event _eventEq
       exact crossingCarriers_subset_cutEdges event.walk
   state := presented.state
+  actual := presented.actual
 
 end PresentedEntry
 
@@ -1351,11 +1355,14 @@ noncomputable def retainedReading (object : FiniteObject.{u})
     (retained : Finset (TraceCoordinateSystem.Base.Coordinate object support)) :
     BoundaryPiece
       (Strategy.InterfaceReplacement.SupportAtom.boundary object basin) :=
-  (CanonicalPiece.cutStateRepresentative
+  -- the cut state is read at G's own surroundings `G − B_u`
+  -- (`cutStateRepresentativeAt`), the only outside context that is part of G
+  (CanonicalPiece.cutStateRepresentativeAt
     (minimumDegreeAtLeast_isomorphismInvariant threshold)
     (cycleTargetInterface LengthOK).isomorphismInvariant
     (retainedBasinPiece object basin
-      (retainedVertices object support retained))).toPiece
+      (retainedVertices object support retained))
+    (Strategy.InterfaceReplacement.SupportAtom.outside object basin)).toPiece
 
 /-- **Every restriction of the reading has the basin's boundary-degree
 profile.**  `def:typeA-route8-carriers`: *"every incidence restriction is taken
@@ -1372,9 +1379,9 @@ theorem retainedReading_boundaryDegreeProfile (object : FiniteObject.{u})
   refine Eq.trans ?_
     (retainedBasinPiece_boundaryDegreeProfile object basin
       (retainedVertices object support retained))
-  exact (CanonicalPiece.cutStateRepresentative_reading
+  exact (CanonicalPiece.cutStateRepresentativeAt_reading
     (minimumDegreeAtLeast_isomorphismInvariant threshold)
-    (cycleTargetInterface LengthOK).isomorphismInvariant _).1
+    (cycleTargetInterface LengthOK).isomorphismInvariant _ _).1
 
 /-- **A boundary-only basin has a coordinate-independent reading.**
 
@@ -1706,6 +1713,7 @@ theorem compressibleSupport_of_triangleContraction (object : FiniteObject.{u})
         basin).graph.Adj (.inr remove) y →
       (Strategy.InterfaceReplacement.SupportAtom.piece object
         basin).graph.Adj (.inr common) y → y = .inr keep)
+    (avoids : ¬ HasCycleWithLength LengthOK object)
     (complete : Response.TargetComplete BoundaryPiece.boundaryDegreeProfile
       (HasCycleWithLength LengthOK)
       (((Strategy.InterfaceReplacement.SupportAtom.piece object
@@ -1720,7 +1728,8 @@ theorem compressibleSupport_of_triangleContraction (object : FiniteObject.{u})
       connected proper keep remove common keepRemove commonRemove second edgeKC
       edgeRC edgeKR baseline uniqueKR uniqueKC uniqueRC
   exact ⟨connected, proper, _, complete.profile_eq, dBaseline, dSmaller,
-    complete.contextEquivalent⟩
+    Strategy.InterfaceReplacement.not_target_of_transfer avoids
+      (complete.contextEquivalent _).mp⟩
 
 /-- **The fold realization is a target-complete compression of the basin.**
 
@@ -1741,6 +1750,7 @@ theorem compressibleSupport_of_foldRealization (object : FiniteObject.{u})
     (noCommon : ∀ x,
       ¬ ((Strategy.InterfaceReplacement.SupportAtom.piece object basin).graph.Adj (.inr keep) x ∧
         (Strategy.InterfaceReplacement.SupportAtom.piece object basin).graph.Adj (.inr remove) x))
+    (avoids : ¬ HasCycleWithLength LengthOK object)
     (complete : Response.TargetComplete BoundaryPiece.boundaryDegreeProfile
       (HasCycleWithLength LengthOK)
       ((Strategy.InterfaceReplacement.SupportAtom.piece object basin).identifyInternal keep remove different)
@@ -1754,7 +1764,9 @@ theorem compressibleSupport_of_foldRealization (object : FiniteObject.{u})
   exact ⟨connected, proper,
     (Strategy.InterfaceReplacement.SupportAtom.piece object basin).identifyInternal
       keep remove different,
-    complete.profile_eq, dBaseline, dSmaller, complete.contextEquivalent⟩
+    complete.profile_eq, dBaseline, dSmaller,
+    Strategy.InterfaceReplacement.not_target_of_transfer avoids
+      (complete.contextEquivalent _).mp⟩
 
 /-- **`cor:uncompressible` refutes target-completeness of the identification.**
 The standing uncompressibility fact `K .uncompressible` forbids every proper-support
@@ -1774,19 +1786,21 @@ theorem not_targetComplete_foldRealization (object : FiniteObject.{u})
     (uncompressible : ∀ candidate : Finset object.Vertex,
       ¬ Strategy.InterfaceReplacement.CompressibleSupport
           (MinimumDegreeAtLeast threshold) (HasCycleWithLength LengthOK) object
-          candidate) :
+          candidate)
+    (avoids : ¬ HasCycleWithLength LengthOK object) :
     ¬ Response.TargetComplete BoundaryPiece.boundaryDegreeProfile
       (HasCycleWithLength LengthOK)
       ((Strategy.InterfaceReplacement.SupportAtom.piece object basin).identifyInternal keep remove different)
       (Strategy.InterfaceReplacement.SupportAtom.piece object basin) :=
   fun complete => uncompressible basin
     (compressibleSupport_of_foldRealization object basin threshold two LengthOK
-      connected proper keep remove different baseline noCommon complete)
+      connected proper keep remove different baseline noCommon avoids complete)
 
 /-- **The retained reading is target-monotone toward the basin piece**
-(`lem:typeA-internal-quotient-mixed`'s one-sidedness, realized): an accepted
-cycle of a gluing of the retained reading yields one of the same gluing of the
-basin's full piece.  `glue_swap_target_iff` moves the certificate from the
+(`lem:typeA-internal-quotient-mixed`'s one-sidedness, realized), read at G's own
+surroundings `G − B_u`: an accepted cycle of the retained reading glued into
+`G − B_u` yields one of G's piece glued there.  The cut-state reading at
+`G − B_u` (`cutStateRepresentativeAt_reading`) moves the certificate from the
 canonical representative to the retained piece — the basin piece with only the
 retained-owned internal edges — and `glueGraph_mono` with the identity
 embedding transports it to the unrestricted piece. -/
@@ -1794,35 +1808,37 @@ theorem hasCycleWithLength_glue_of_retainedReading (object : FiniteObject.{u})
     (support basin : Finset object.Vertex) (threshold : Nat)
     (LengthOK : Nat → Prop)
     (retained : Finset (TraceCoordinateSystem.Base.Coordinate object support))
-    (outside : OutsideContext
-      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin))
     (accepted : HasCycleWithLength LengthOK
       (glue (retainedReading object support basin threshold LengthOK retained)
-        outside)) :
+        (Strategy.InterfaceReplacement.SupportAtom.outside object basin))) :
     HasCycleWithLength LengthOK
       (glue (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
-        outside) := by
+        (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) := by
   classical
   have swapped : HasCycleWithLength LengthOK
       (glue (retainedBasinPiece object basin
-        (retainedVertices object support retained)) outside) :=
-    (CanonicalPiece.glue_swap_target_iff
+        (retainedVertices object support retained))
+        (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) :=
+    (CanonicalPiece.cutStateRepresentativeAt_reading
       (minimumDegreeAtLeast_isomorphismInvariant threshold)
       (cycleTargetInterface LengthOK).isomorphismInvariant
       (retainedBasinPiece object basin
-        (retainedVertices object support retained)) outside).mp accepted
+        (retainedVertices object support retained))
+      (Strategy.InterfaceReplacement.SupportAtom.outside object basin)).2.1.mp
+      accepted
   obtain ⟨certificate⟩ := swapped
   have le : (retainedBasinPiece object basin
         (retainedVertices object support retained)).graph ≤
       (Strategy.InterfaceReplacement.SupportAtom.piece object basin).graph :=
     inf_le_left
   have glueLe : (glue (retainedBasinPiece object basin
-        (retainedVertices object support retained)) outside).graph ≤
+        (retainedVertices object support retained))
+        (Strategy.InterfaceReplacement.SupportAtom.outside object basin)).graph ≤
       (glue (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
-        outside).graph :=
+        (Strategy.InterfaceReplacement.SupportAtom.outside object basin)).graph :=
     glueGraph_mono
       (piece := Strategy.InterfaceReplacement.SupportAtom.piece object basin)
-      outside _
+      (Strategy.InterfaceReplacement.SupportAtom.outside object basin) _
       (retainedBasinPiece object basin
         (retainedVertices object support retained)).decideAdj le
   refine ⟨CycleCertificate.mapHom ?_ ?_ certificate⟩
@@ -2104,6 +2120,7 @@ noncomputable def ofTraceBasin (object : FiniteObject.{u})
   state := fun retained =>
     retainedReading object support basin threshold LengthOK
       (retainedBaseCoordinates object support retained)
+  actual := Strategy.InterfaceReplacement.SupportAtom.outside object basin
 
 /-- **Every boundary incidence of `X` is recorded by a declared coordinate.**
 
@@ -2292,6 +2309,79 @@ theorem ofTraceBasin_boundaryDegreeProfile (object : FiniteObject.{u})
       (retainedBaseCoordinates object support right)).boundaryDegreeProfile
   rw [retainedReading_boundaryDegreeProfile,
     retainedReading_boundaryDegreeProfile]
+
+/-- **No reading of the basin, glued into G's own surroundings `G − B_u`,
+carries a target cycle that G avoids**: its accepted cycles transfer to G's
+piece at the basin glued to `G − B_u`, which is G itself
+(`OwnedDecomposition.reconstructionIso`). -/
+theorem not_target_glue_retainedReading_outside {object : FiniteObject.{u}}
+    {support basin : Finset object.Vertex} {threshold : Nat}
+    {LengthOK : Nat → Prop}
+    (avoids : ¬ HasCycleWithLength LengthOK object)
+    (retained : Finset (TraceCoordinateSystem.Base.Coordinate object support)) :
+    ¬ HasCycleWithLength LengthOK
+      (glue (retainedReading object support basin threshold LengthOK retained)
+        (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) := by
+  intro accepted
+  exact avoids ((hasCycleWithLength_iff_of_iso
+    (Strategy.InterfaceReplacement.SupportAtom.decomposition object
+      basin).reconstructionIso LengthOK).mp
+    (hasCycleWithLength_glue_of_retainedReading object support basin threshold
+      LengthOK retained accepted))
+
+/-- **Every carrier set of a graph-owned route-8 entry is complete at a
+target-avoiding G** (`Entry.Complete`, read in `G − B_u`): every restriction and
+the full reading are target-free there. -/
+theorem ofTraceBasin_complete_of_avoids {object : FiniteObject.{u}}
+    {support basin : Finset object.Vertex} {threshold : Nat}
+    {LengthOK : Nat → Prop} {receiver load : object.Vertex}
+    (avoids : ¬ HasCycleWithLength LengthOK object)
+    (D : Finset (Sym2 object.Vertex)) :
+    ((ofTraceBasin object support basin threshold LengthOK receiver
+      load).toEntry (HasCycleWithLength LengthOK)).Complete D := by
+  unfold Entry.Complete Entry.restriction Entry.full
+  exact iff_of_false (not_target_glue_retainedReading_outside avoids _)
+    (not_target_glue_retainedReading_outside avoids _)
+
+/-- **Lean improvement: route-8 carrier core empty at G.**  With completeness
+read in G's own surroundings `G − B_u`, the empty carrier set is complete at a
+target-avoiding G, so the canonical essential core is empty and `α(ξ) = 0`. -/
+theorem ofTraceBasin_alpha_eq_zero {object : FiniteObject.{u}}
+    {support basin : Finset object.Vertex} {threshold : Nat}
+    {LengthOK : Nat → Prop} {receiver load : object.Vertex}
+    (avoids : ¬ HasCycleWithLength LengthOK object) :
+    ((ofTraceBasin object support basin threshold LengthOK receiver
+      load).toEntry (HasCycleWithLength LengthOK)).alpha = 0 :=
+  Entry.alpha_eq_zero_of_complete_empty _ (ofTraceBasin_complete_of_avoids avoids ∅)
+
+/-- **A vertex-kept reading of `Z`, glued into `G − Z`, is a subgraph of G**:
+`retainedBasinPiece object Z R` keeps only incidences of G's piece at `Z`, so
+its glue with G's own surroundings carries no target cycle that G avoids. -/
+theorem not_target_glue_retainedBasinPiece_outside {object : FiniteObject.{u}}
+    {LengthOK : Nat → Prop}
+    (avoids : ¬ HasCycleWithLength LengthOK object)
+    (basin retained : Finset object.Vertex) :
+    ¬ HasCycleWithLength LengthOK
+      (glue (retainedBasinPiece object basin retained)
+        (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) := by
+  classical
+  rintro ⟨certificate⟩
+  have le : (retainedBasinPiece object basin retained).graph ≤
+      (Strategy.InterfaceReplacement.SupportAtom.piece object basin).graph :=
+    inf_le_left
+  have glueLe : (glue (retainedBasinPiece object basin retained)
+        (Strategy.InterfaceReplacement.SupportAtom.outside object basin)).graph ≤
+      (glue (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+        (Strategy.InterfaceReplacement.SupportAtom.outside object basin)).graph :=
+    glueGraph_mono
+      (piece := Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+      (Strategy.InterfaceReplacement.SupportAtom.outside object basin) _
+      (retainedBasinPiece object basin retained).decideAdj le
+  refine Strategy.InterfaceReplacement.not_target_glue_piece_outside avoids basin
+    ⟨CycleCertificate.mapHom ?_ ?_ certificate⟩
+  · exact SimpleGraph.Hom.ofLE glueLe
+  · intro a b equal
+    exact equal
 
 end PresentedEntry
 
@@ -2763,11 +2853,20 @@ def TraceTargetCompleteCompression (object : FiniteObject.{u})
                         Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
                           basin) ∧
                     object.graph.Adj left right)) ∧
-      Response.TargetComplete BoundaryPiece.boundaryDegreeProfile
-        (HasCycleWithLength LengthOK)
-        (PresentedEntry.retainedReading object support basin threshold LengthOK
-          (PresentedEntry.retainedBaseCoordinates object support retained))
-        (Strategy.InterfaceReplacement.SupportAtom.piece object basin) ∧
+      -- G-form of `def:target-complete-compression` (the hypotheses of
+      -- `lem:replacement` stated about G): the same boundary-degree profile,
+      -- and no target cycle once glued into G's own surroundings `G − B_u`
+      -- (the only outside context that is part of G).
+      (PresentedEntry.retainedReading object support basin threshold LengthOK
+          (PresentedEntry.retainedBaseCoordinates object support
+            retained)).boundaryDegreeProfile =
+        (Strategy.InterfaceReplacement.SupportAtom.piece object
+          basin).boundaryDegreeProfile ∧
+      ¬ HasCycleWithLength LengthOK
+          (glue (PresentedEntry.retainedReading object support basin threshold
+              LengthOK
+              (PresentedEntry.retainedBaseCoordinates object support retained))
+            (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) ∧
       ∃ connected : SupportComponents.Connected.ConnectedOn object basin,
         ∃ proper : ∃ vertex, vertex ∉ basin,
           let atom :=
@@ -2823,15 +2922,51 @@ def TraceResponseQuotient (object : FiniteObject.{u})
                 PresentedEntry.traceDeclaredSupport object support threshold receiver
                   load changed,
               left ∈ basin ∧ right ∈ basin ∧ object.graph.Adj left right)) ∧
-    (∀ realization,
+    -- G-form of target-completeness: the realizations that are part of G are
+    -- G's own readings of `B_u` (`retainedReading` at a retained base set),
+    -- and the only outside context that is part of G is `G − B_u`.
+    (∀ reading : Finset (TraceCoordinateSystem.Base.Coordinate object support),
       QuotientRealization object support basin threshold receiver load quotient
-          realization →
-        ∀ outside, ProfileCompatible object basin threshold outside →
-          (declaredAlgebra object support basin threshold LengthOK receiver load
-              realization outside ↔
-            declaredAlgebra object support basin threshold LengthOK receiver load
-              (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
-              outside))
+          (PresentedEntry.retainedReading object support basin threshold LengthOK
+            reading) →
+        (declaredAlgebra object support basin threshold LengthOK receiver load
+            (PresentedEntry.retainedReading object support basin threshold
+              LengthOK reading)
+            (Strategy.InterfaceReplacement.SupportAtom.outside object basin) ↔
+          declaredAlgebra object support basin threshold LengthOK receiver load
+            (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+            (Strategy.InterfaceReplacement.SupportAtom.outside object basin)))
+
+/-- **At a target-avoiding G the completeness clause of alternative (b) is
+decided true** (G-form): a declared-algebra event needs an accepted cycle of the
+glue, and G's readings of `B_u` glued into `G − B_u`, like G's own piece, carry
+none. -/
+theorem traceResponseQuotient_complete_of_avoids {object : FiniteObject.{u}}
+    {support basin : Finset object.Vertex} {threshold : Nat}
+    {LengthOK : Nat → Prop} {receiver load : object.Vertex}
+    (avoids : ¬ HasCycleWithLength LengthOK object)
+    (quotient : ResponseQuotient object support basin) :
+    ∀ reading : Finset (TraceCoordinateSystem.Base.Coordinate object support),
+      QuotientRealization object support basin threshold receiver load quotient
+          (PresentedEntry.retainedReading object support basin threshold LengthOK
+            reading) →
+        (declaredAlgebra object support basin threshold LengthOK receiver load
+            (PresentedEntry.retainedReading object support basin threshold
+              LengthOK reading)
+            (Strategy.InterfaceReplacement.SupportAtom.outside object basin) ↔
+          declaredAlgebra object support basin threshold LengthOK receiver load
+            (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+            (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) := by
+  intro reading _realizes
+  refine iff_of_false ?_ ?_
+  · rintro ⟨_coordinate, _core, _event, _eventEq, _inside, _outside,
+      certificate, _label, _labelMem, _labelVisited⟩
+    exact PresentedEntry.not_target_glue_retainedReading_outside avoids reading
+      ⟨certificate⟩
+  · rintro ⟨_coordinate, _core, _event, _eventEq, _inside, _outside,
+      certificate, _label, _labelMem, _labelVisited⟩
+    exact Strategy.InterfaceReplacement.not_target_glue_piece_outside avoids
+      basin ⟨certificate⟩
 
 /-- **`False` from the all-realizations clause at an identification.**
 
@@ -2864,6 +2999,7 @@ theorem false_of_allRealizations_contextEquivalent {object : FiniteObject.{u}}
       ¬ Strategy.InterfaceReplacement.CompressibleSupport
           (MinimumDegreeAtLeast threshold) (HasCycleWithLength LengthOK) object
           candidate)
+    (avoids : ¬ HasCycleWithLength LengthOK object)
     {Realization : BoundaryPiece
       (Strategy.InterfaceReplacement.SupportAtom.boundary object basin) → Prop}
     (identificationRealizes : Realization
@@ -2875,7 +3011,7 @@ theorem false_of_allRealizations_contextEquivalent {object : FiniteObject.{u}}
     False :=
   PresentedEntry.not_targetComplete_foldRealization object basin threshold two
     LengthOK connected proper keep remove different baseline noCommon
-    uncompressible
+    uncompressible avoids
     ⟨BoundaryPiece.boundaryDegreeProfile_identifyInternal_of_noCommonLabel _ keep
       remove different (fun label common => noCommon (.inl label) common),
       allRealizations _ identificationRealizes⟩
@@ -2916,6 +3052,7 @@ theorem false_of_allQuotientRealizations_contextEquivalent
       ¬ Strategy.InterfaceReplacement.CompressibleSupport
           (MinimumDegreeAtLeast threshold) (HasCycleWithLength LengthOK) object
           candidate)
+    (avoids : ¬ HasCycleWithLength LengthOK object)
     (allRealizations : ∀ realization,
       QuotientRealization object support basin threshold receiver load
         (ResponseQuotient.forgetting retained)
@@ -2924,7 +3061,7 @@ theorem false_of_allQuotientRealizations_contextEquivalent
           (Strategy.InterfaceReplacement.SupportAtom.piece object basin)) :
     False :=
   false_of_allRealizations_contextEquivalent two connected proper baseline keep
-    remove different noCommon uncompressible
+    remove different noCommon uncompressible avoids
     (Realization := QuotientRealization object support basin threshold receiver
       load (ResponseQuotient.forgetting retained))
     (quotientRealization_identifyInternal object support basin threshold receiver
@@ -2969,6 +3106,7 @@ theorem false_of_interiorFoldPair {object : FiniteObject.{u}}
       ¬ Strategy.InterfaceReplacement.CompressibleSupport
           (MinimumDegreeAtLeast threshold) (HasCycleWithLength LengthOK) object
           candidate)
+    (avoids : ¬ HasCycleWithLength LengthOK object)
     (allRealizations : ∀ realization,
       QuotientRealization object support basin threshold receiver load
         (ResponseQuotient.forgetting retained)
@@ -2979,7 +3117,7 @@ theorem false_of_interiorFoldPair {object : FiniteObject.{u}}
   false_of_allQuotientRealizations_contextEquivalent two connected proper
     baseline keep remove (fun same => different (congrArg Subtype.val same))
     (noCommon_piece_of_noCommon object basin keep remove noCommon)
-    undeclared uncompressible allRealizations
+    undeclared uncompressible avoids allRealizations
 
 /-- **(B) The declared family determines the target, at one response quotient.**
 
@@ -3038,11 +3176,12 @@ theorem false_of_declaredFamilyDeterminacy {object : FiniteObject.{u}}
       ¬ Strategy.InterfaceReplacement.CompressibleSupport
           (MinimumDegreeAtLeast threshold) (HasCycleWithLength LengthOK) object
           candidate)
+    (avoids : ¬ HasCycleWithLength LengthOK object)
     (determinacy : DeclaredFamilyDeterminacy object support basin threshold
       LengthOK receiver load retained) :
     False :=
   false_of_allQuotientRealizations_contextEquivalent two connected proper
-    baseline keep remove different noCommon undeclared uncompressible
+    baseline keep remove different noCommon undeclared uncompressible avoids
     (fun realization realizes =>
       determinacy realization _ realizes
         (quotientRealization_self object support basin threshold receiver load
@@ -3082,12 +3221,13 @@ theorem not_declaredFamilyDeterminacy_of_undeclaredFoldPair
     (uncompressible : ∀ candidate : Finset object.Vertex,
       ¬ Strategy.InterfaceReplacement.CompressibleSupport
           (MinimumDegreeAtLeast threshold) (HasCycleWithLength LengthOK) object
-          candidate) :
+          candidate)
+    (avoids : ¬ HasCycleWithLength LengthOK object) :
     ¬ DeclaredFamilyDeterminacy object support basin threshold LengthOK receiver
       load retained :=
   fun determinacy =>
     false_of_declaredFamilyDeterminacy two connected proper baseline keep remove
-      different noCommon undeclared uncompressible determinacy
+      different noCommon undeclared uncompressible avoids determinacy
 
 end TraceBasin
 

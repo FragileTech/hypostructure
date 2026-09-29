@@ -118,10 +118,12 @@ structure GlobalLocalReflectionACE
   directCycleFree :
     ∀ hub ∈ obstruction.demands,
       TypeBDirectCycle.DirectCycleFree object order LengthOK packing hub
-  /-- Manuscript clause (d).  Every rank-reducing identification attempted on
-  the literal overlap-coordinate schedule is routed by the declared response
-  calculus: degree-profile failure, contextual target defect, a proper
-  replacement, or a smaller closed representative. -/
+  /-- Manuscript clause (d), stated about G.  Every rank-reducing
+  identification attempted on the literal overlap-coordinate schedule is routed
+  by the declared response calculus over G's own readings: degree-profile
+  failure, a proper replacement, or a smaller closed representative.  The
+  contextual target-defect arm is empty at G (two readings of G agree in
+  `G − Z`, `readings_agree_in_rest`) and is not an arm. -/
   replacementObstruction :
     ∀ attempt : AttemptedQuotient (TypeAB.Baseline presentation)
         presentation.Target object
@@ -132,17 +134,16 @@ structure GlobalLocalReflectionACE
       ¬ Set.InjOn attempt.label
         ↑(overlapCoordinateSchedule object threshold dischargeScale packing
           core assigned obstruction).toFinset →
-      (∃ left right, attempt.Identifies left right ∧
-          left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile) ∨
-        (∃ left right, attempt.Identifies left right ∧
-          Response.TargetDefect presentation.Target left right) ∨
+      (∃ first second : Finset object.Vertex, attempt.Identifies first second ∧
+          readingProfile object attempt.support first ≠
+            readingProfile object attempt.support second) ∨
         Strategy.InterfaceReplacement.ReplacementSupport
           (TypeAB.Baseline presentation) presentation.Target object
           attempt.support ∨
         (∃ representative : FiniteObject.{u},
           representative.LexicographicallySmaller object ∧
             TypeAB.Baseline presentation representative ∧
-              (presentation.Target representative → presentation.Target object))
+              ¬ presentation.Target representative)
   /-- Manuscript clause (e).  This is stated for every proper nonempty demand
   subfamily and therefore includes every proper connected sub-obstruction. -/
   minimalOverlap :

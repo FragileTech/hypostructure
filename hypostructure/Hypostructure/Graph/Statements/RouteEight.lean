@@ -905,6 +905,34 @@ noncomputable abbrev Route8PeelingDescentStatement
     data.threshold data.dischargeScale (route8StageSlack data object)
     data.LengthOK (route8DescentChain data object)
 
+/-- **Lean improvement: the quotient-free arm of the unified route-`8`
+ledger is empty at G** (node `[123]`, stated about G).
+
+Read in G's own surroundings `G − B_u`, every carrier set of every graph-owned
+entry is target-complete, so every essential core is empty and `α(ξ) = 0`
+(`PresentedEntry.ofTraceBasin_alpha_eq_zero`).  On the quotient-free arm the
+unified census publishes `2 ≤ α(ξ)` at every unified entry
+(`lem:typeA-unified-carriers`), so the unified entry family `\tilde\Xi` is
+empty; the stage accounting of the peeling descent then clears the whole
+unified deficit `s·\tilde D_A`, and the unified deficit bound leaves
+`|R| ≤ s·|∂R| + F·s·T(n)`.  All four facts are about G's canonical collection;
+the last one contradicts the private-carrier rate `K .route8Rate`. -/
+noncomputable abbrev Route8UnifiedEmptyAtGStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  let packing := canonicalWindowPacking data object
+  let support := object.remainderSupport packing
+  (∀ index : Graph.Route8Census.Index object,
+      ((Graph.Route8Census.presented object data.threshold data.LengthOK
+        index).toEntry (Graph.HasCycleWithLength data.LengthOK)).alpha = 0) ∧
+    route8UnifiedEntries data object = ∅ ∧
+    Graph.TypeBEnvelopeCharge.route8Deficit object support data.threshold
+        data.dischargeScale (route8UnifiedComponents data object) = 0 ∧
+    support.card ≤
+      data.dischargeScale * (Graph.Route8Census.supply object packing).card +
+        data.bridgeMassFactor * data.dischargeScale *
+          data.surplusThreshold object.vertexCount
+
 /-- The component collection `𝒳_A` of node `[111]` (a definition node,
 `def:typeA-large-budget-deficit`): the canonical pieces all of whose saturated
 receivers survive in the route-`8` residual.  "`𝒳_A` carries `D_A(𝒳_A)`" is
