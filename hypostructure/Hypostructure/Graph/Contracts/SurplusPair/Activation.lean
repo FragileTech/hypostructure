@@ -267,11 +267,12 @@ theorem baselineSpineDemand_of_survivor
     · intro declared _functional
       by_contra reducing
       rcases declared.localize reducing with replacement |
-        ⟨representative, smaller, baseline, transfer⟩
+        ⟨representative, smaller, baseline, noTarget⟩
       · exact survivor
           (.compression declared.support replacement)
       · exact survivor
-          (.delocalization representative smaller baseline transfer)
+          (.delocalization representative smaller baseline
+            (fun target => (noTarget target).elim))
     · rw [familyCard]
       exact
         Graph.cubicBaselineBudget_le_two_pow_add_spineDeficit
