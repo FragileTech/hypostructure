@@ -243,6 +243,30 @@ theorem signatureCount_le_succ (k : Nat) :
         Set.ncard_le_ncard subset ((Set.toFinite _).image _)
     _ ≤ _ := Set.ncard_image_le (Set.toFinite _)
 
+/-- Two exposure orders (of possibly different families) that agree on their
+first `k` coordinates have the same number of realized signatures at depth `k`.
+(Re-homed from g-audit-pairTypeB's `SparseEntropySandwich.signatureCount_congr`.) -/
+theorem signatureCount_congr
+    (family' : Finset {pair // pair ∈ model.pairSet})
+    (order' : Fin family'.card ≃ {pair // pair ∈ family'})
+    (k : Nat) (bound : k ≤ family.card) (bound' : k ≤ family'.card)
+    (agree : ∀ index (h : index < k),
+      (order ⟨index, lt_of_lt_of_le h bound⟩).1 =
+        (order' ⟨index, lt_of_lt_of_le h bound'⟩).1) :
+    signatureCount (LengthOK := LengthOK) model family order k =
+      signatureCount (LengthOK := LengthOK) model family' order' k := by
+  have same : signature (LengthOK := LengthOK) model family order k =
+      signature (LengthOK := LengthOK) model family' order' k := by
+    funext member
+    refine Prod.ext rfl ?_
+    funext index
+    by_cases h : index < k
+    · simp only [signature, if_pos h, responseSequence,
+        dif_pos (lt_of_lt_of_le h bound), dif_pos (lt_of_lt_of_le h bound'), agree index h]
+    · simp only [signature, if_neg h]
+  unfold signatureCount
+  rw [same]
+
 /-- **The correlation mass identity in G's class.**  For every exposure order of
 `family` and every `t ≤ |family|`,
 `2^{b+t} = P_t + mass`, hence `2^{b+t} ≤ |class| + mass`. -/

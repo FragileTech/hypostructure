@@ -34,6 +34,8 @@ import Hypostructure.Graph.Statements.BlockedFailureG
 import Hypostructure.Graph.Statements.BlockedOverlapG
 import Hypostructure.Graph.Statements.PairCorrelation
 import Hypostructure.Graph.Statements.Route8QuotientSize
+import Hypostructure.Graph.Statements.PairHandoffSupport
+import Hypostructure.Graph.Statements.PairHandoffFacts
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1999,6 +2001,23 @@ inductive Key where
   | blockedFailingSetCarries
   /-- Node `[172a]`, G's overlap support (`def:barrier-overlap-system`): **for G's own skeleton, every completion support has at most `2^j+1` vertices; a present one is a closed walk of length `2^j` through a vertex of the root window which is not a cycle; and the overlap support of every coordinate is connected in G**. -/
   | blockedOverlapSupport
+  -- g-audit PairTypeBOutcome keys (8350–8399)
+  /-- Nodes `[179]`/`[180]` → `[187]` (G audit): **the Type B support of G's pair-obstruction handoff, exactly**: on G's canonical pair returns the canonical obstruction support is `(Y, H) = ({d_p.2, d_q.2}, {h})` with `h` the canonical first separator of the obstruction's routes; `H` is nonempty and consists of high centres, and the whole support lies in the obstruction's overlap support `U`.  Published with `K .typeBFanEntry` by the `[179]`/`[180]` early rows. -/
+  | pairHandoffSupport
+  /-- Nodes `[179]`/`[180]` → `[187]` (G audit): **the ambient surplus of that support**: the core ends are cubic port ends (`σ(Y) = 0`), `Y ∩ H = ∅`, and `ω(H) = d_G(h) - δ ≥ 1` for the one centre `h`. -/
+  | pairHandoffCharge
+  /-- Nodes `[179]` → `[187]` (G audit): **the net charge of that support** (`def:net-charge`): the core has one or two vertices, `(δ-1)|Y| ≤ def⁺(Y) ≤ δ|Y|`, and at the canonical envelope either the net charge is negative or `ω(H) < def⁺(Y)`, i.e. the centre has degree `< 3δ`. -/
+  | pairHandoffNetCharge
+  /-- Nodes `[179]` → `[187]` (G audit): **flow-cut support of the capacity charge at the handoff centre `h`**: each pair of the obstruction family is charged to the port token of one of its own ports (a high centre); `h` has `d(h) − δ` port tokens; the pairs of the family charged to them are bounded by their new loads. -/
+  | pairHandoffHubCharge
+  /-- Nodes `[179]` → `[187]` (G audit): **boundaried type of `G[U]`**: the boundary vertices of the overlap support `U`, the degree identity `e(U, G−U) + Σ_U d_U = δ|U| + σ(U)`, `σ(U) ≥ 1`, and the response of every reading of `U` glued into `G − U` (no accepted cycle). -/
+  | pairHandoffBoundaryType
+  /-- Nodes `[179]` → `[187]` (G audit): **the exposure coordinate the handoff decides**: every coordinate of the obstruction family is critical (the order exposing it last doubles the realized signatures at every earlier level and fails exactly at it), and the canonical members whose response supports contain the first separator `h` and its two next vertices exist. -/
+  | pairHandoffCriticalCoordinate
+  /-- Nodes `[179]` → `[187]` (G audit): **demand descent of the obstruction**: `2 ≤ |𝒰| ≤ |Π|`, `𝒰` is not realizing, and peeling any one member leaves a realizing family. -/
+  | pairObstructionDescent
+  /-- Nodes `[179]` → `[187]` (G audit): **the ledger's hub facts at the handoff centre `h`**: the vertex split, the same-vertex switch, the endpoint switch at cubic neighbours, the length-3 fan and the chain `3, 3, 3`, instantiated at the canonical first separator. -/
+  | pairHandoffHubForces
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -3054,6 +3073,22 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       BlockedFailingSetCarriesStatement data.toParameters object
   | .blockedOverlapSupport, object =>
       BlockedOverlapSupportStatement data.toParameters object
+  | .pairHandoffSupport, object =>
+      PairHandoffSupportStatement data.toParameters object
+  | .pairHandoffCharge, object =>
+      PairHandoffChargeStatement data.toParameters object
+  | .pairHandoffNetCharge, object =>
+      PairHandoffNetChargeStatement data.toParameters object
+  | .pairHandoffHubCharge, object =>
+      PairHandoffHubChargeStatement data.toParameters object
+  | .pairHandoffBoundaryType, object =>
+      PairHandoffBoundaryTypeStatement data.toParameters object
+  | .pairHandoffCriticalCoordinate, object =>
+      PairHandoffCriticalCoordinateStatement data.toParameters object
+  | .pairObstructionDescent, object =>
+      PairObstructionDescentStatement data.toParameters object
+  | .pairHandoffHubForces, object =>
+      PairHandoffHubForcesStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3562,6 +3597,14 @@ def label : Key → String
   | .blockedPrefixCompression => "blockedPrefixCompression"
   | .blockedFailingSetCarries => "blockedFailingSetCarries"
   | .blockedOverlapSupport => "blockedOverlapSupport"
+  | .pairHandoffSupport => "pairHandoffSupport"
+  | .pairHandoffCharge => "pairHandoffCharge"
+  | .pairHandoffNetCharge => "pairHandoffNetCharge"
+  | .pairHandoffHubCharge => "pairHandoffHubCharge"
+  | .pairHandoffBoundaryType => "pairHandoffBoundaryType"
+  | .pairHandoffCriticalCoordinate => "pairHandoffCriticalCoordinate"
+  | .pairObstructionDescent => "pairObstructionDescent"
+  | .pairHandoffHubForces => "pairHandoffHubForces"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -4067,6 +4110,14 @@ example : label .blockedFailureSlack = "blockedFailureSlack" := rfl
 example : label .blockedPrefixCompression = "blockedPrefixCompression" := rfl
 example : label .blockedFailingSetCarries = "blockedFailingSetCarries" := rfl
 example : label .blockedOverlapSupport = "blockedOverlapSupport" := rfl
+example : label .pairHandoffSupport = "pairHandoffSupport" := rfl
+example : label .pairHandoffCharge = "pairHandoffCharge" := rfl
+example : label .pairHandoffNetCharge = "pairHandoffNetCharge" := rfl
+example : label .pairHandoffHubCharge = "pairHandoffHubCharge" := rfl
+example : label .pairHandoffBoundaryType = "pairHandoffBoundaryType" := rfl
+example : label .pairHandoffCriticalCoordinate = "pairHandoffCriticalCoordinate" := rfl
+example : label .pairObstructionDescent = "pairObstructionDescent" := rfl
+example : label .pairHandoffHubForces = "pairHandoffHubForces" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4568,6 +4619,14 @@ def idx : Key → Nat
   | .blockedPrefixCompression => 8602
   | .blockedFailingSetCarries => 8603
   | .blockedOverlapSupport => 8604
+  | .pairHandoffSupport => 8350
+  | .pairHandoffCharge => 8351
+  | .pairHandoffNetCharge => 8352
+  | .pairHandoffHubCharge => 8353
+  | .pairHandoffBoundaryType => 8354
+  | .pairHandoffCriticalCoordinate => 8355
+  | .pairObstructionDescent => 8356
+  | .pairHandoffHubForces => 8357
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -5058,6 +5117,14 @@ def ofIdx : Nat → Key
   | 8602 => .blockedPrefixCompression
   | 8603 => .blockedFailingSetCarries
   | 8604 => .blockedOverlapSupport
+  | 8350 => .pairHandoffSupport
+  | 8351 => .pairHandoffCharge
+  | 8352 => .pairHandoffNetCharge
+  | 8353 => .pairHandoffHubCharge
+  | 8354 => .pairHandoffBoundaryType
+  | 8355 => .pairHandoffCriticalCoordinate
+  | 8356 => .pairObstructionDescent
+  | 8357 => .pairHandoffHubForces
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -6133,6 +6200,22 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "blockedFailingSetCarries") 8603
   | .blockedOverlapSupport =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "blockedOverlapSupport") 8604
+  | .pairHandoffSupport =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffSupport") 8350
+  | .pairHandoffCharge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffCharge") 8351
+  | .pairHandoffNetCharge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffNetCharge") 8352
+  | .pairHandoffHubCharge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffHubCharge") 8353
+  | .pairHandoffBoundaryType =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffBoundaryType") 8354
+  | .pairHandoffCriticalCoordinate =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffCriticalCoordinate") 8355
+  | .pairObstructionDescent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairObstructionDescent") 8356
+  | .pairHandoffHubForces =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffHubForces") 8357
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000
