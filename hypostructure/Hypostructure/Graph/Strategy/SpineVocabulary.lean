@@ -1614,6 +1614,10 @@ inductive Key where
   /-- Node `[180]`, the full-modulus arithmetic of G's canonical serial system: its
   canonical Frobenius-filled data does not satisfy all of `FullModulusArithmetic`. -/
   | pairFullModulus
+  /-- Node `[179]`, the uncrossing of G's canonical connector routes: the closing
+  cycle of disjoint routes, or the two rerouted paths at the first and last common
+  vertex, each with a non-accepted closing length. -/
+  | pairUncrossing
   -- F1 keys
   /-- Node `[86]`: the Type A support `X₀`, `s·def⁺(X₀) < |V(X₀)|`. -/
   | typeASupport
@@ -2661,6 +2665,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairCoverageStatement data.toParameters object
   | .pairFullModulus, object =>
       PairFullModulusStatement data.toParameters object
+  | .pairUncrossing, object =>
+      PairUncrossingStatement data.toParameters object
   -- F1 keys
   | .typeASupport, object =>
       TypeASupportStatement data.toParameters object
@@ -3256,6 +3262,7 @@ def label : Key → String
   | .pairCorrelation => "pairCorrelation"
   | .pairCoverage => "pairCoverage"
   | .pairFullModulus => "pairFullModulus"
+  | .pairUncrossing => "pairUncrossing"
   -- SP keys
   -- F1 keys
   | .typeASupport => "typeASupport"
@@ -3736,6 +3743,7 @@ example : label .pairIncrementNoEarlyOutcome = "pairIncrementNoEarlyOutcome" := 
 example : label .pairCorrelation = "pairCorrelation" := rfl
 example : label .pairCoverage = "pairCoverage" := rfl
 example : label .pairFullModulus = "pairFullModulus" := rfl
+example : label .pairUncrossing = "pairUncrossing" := rfl
 -- SP keys
 -- F1 keys
 example : label .typeASupport = "typeASupport" := rfl
@@ -4199,6 +4207,7 @@ def idx : Key → Nat
   | .pairCorrelation => 8200
   | .pairCoverage => 8201
   | .pairFullModulus => 8202
+  | .pairUncrossing => 8203
   -- SP keys
   -- F1 keys
   | .typeASupport => 1000
@@ -4657,6 +4666,7 @@ def ofIdx : Nat → Key
   | 8200 => .pairCorrelation
   | 8201 => .pairCoverage
   | 8202 => .pairFullModulus
+  | 8203 => .pairUncrossing
   -- SP keys
   -- F1 keys
   | 1000 => .typeASupport
@@ -5551,6 +5561,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairCoverage") 8201
   | .pairFullModulus =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairFullModulus") 8202
+  | .pairUncrossing =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairUncrossing") 8203
   -- SP keys
   -- F1 keys
   | .typeASupport =>
