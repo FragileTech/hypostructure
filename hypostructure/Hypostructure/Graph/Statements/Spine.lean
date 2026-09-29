@@ -1,4 +1,5 @@
 import Hypostructure.Graph.CanonicalLexFamily
+import Hypostructure.Graph.CanonicalFamilyOrder
 import Hypostructure.Graph.Statements.Parameters
 import Hypostructure.Graph.Statements.CanonicalSurplus
 

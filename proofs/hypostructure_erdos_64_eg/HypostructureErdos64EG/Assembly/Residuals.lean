@@ -4193,7 +4193,9 @@ abbrev Node162ResidualOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .coldCutStatesDistinct selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldDenseHeavyEntryResidual selected.object
+      erdosReceiverLoadProfile spineData .coldDenseHeavyEntryResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldCorridorInducedRuns selected.object
 
 /-- The return of `Node162ResidualOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -4294,7 +4296,8 @@ theorem node162Return
     [FactKeys.Has (K .coldCorridorState) known]
     [FactKeys.Has (K .coldFirstFailureOccurrence) known]
     [FactKeys.Has (K .coldCutStatesDistinct) known]
-    [FactKeys.Has (K .coldDenseHeavyEntryResidual) known] :
+    [FactKeys.Has (K .coldDenseHeavyEntryResidual) known]
+    [FactKeys.Has (K .coldCorridorInducedRuns) known] :
     Node162ResidualOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -4390,7 +4393,8 @@ theorem node162Return
     (history.get (K .coldCorridorState)).down,
     (history.get (K .coldFirstFailureOccurrence)).down,
     (history.get (K .coldCutStatesDistinct)).down,
-    (history.get (K .coldDenseHeavyEntryResidual)).down⟩
+    (history.get (K .coldDenseHeavyEntryResidual)).down,
+    (history.get (K .coldCorridorInducedRuns)).down⟩
 
 /-- **Node `[54]`** (prop:entropy-high-theta, tex 9921): the configuration at G
 where the joint realization inequality RS(R0)*2^(rate*s*p13)*2^F <= B fails.
