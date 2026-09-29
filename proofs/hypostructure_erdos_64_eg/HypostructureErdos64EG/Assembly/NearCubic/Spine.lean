@@ -861,8 +861,8 @@ noncomputable def nearCubicLargeBudgetColdRate
           | .right residualHistory =>
               -- the configuration at G where the joint realization fails,
               -- returned.
-              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (node54SubtypesReturn_coldRate residualHistory lanePrefix)))))
+              exact Or.inr (Or.inr (Or.inr (Or.inr
+                (node54SubtypesReturn_coldRate residualHistory lanePrefix))))
       | .right boundHistory =>
           -- `[55]`: Residual C on the high-entropy arm.
           let largeHistory :=
@@ -1062,9 +1062,9 @@ noncomputable def nearCubicLargeBudgetDenseRate
           | .right residualHistory =>
               -- the configuration at G where the joint realization fails,
               -- returned.
-              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+              exact Or.inr (Or.inr (Or.inr (Or.inr
                 (Or.inr (Or.inr (Or.inr (Or.inr
-                  (node54Return_unrealizedBothRates residualHistory)))))))))
+                  (node54Return_unrealizedBothRates residualHistory))))))))
       | .right boundHistory =>
           -- `[53]`'s bound arm on the dense residual `[159]` with
           -- `τ(θ) < 1/4`: the package of `[159]` overflows the skeleton
@@ -1269,8 +1269,8 @@ noncomputable def nearCubicLargeBudgetDensityCap
           | .right residualHistory =>
               -- the configuration at G where the joint realization fails,
               -- returned.
-              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (node54SubtypesReturn_densityCap residualHistory lanePrefix)))))
+              exact Or.inr (Or.inr (Or.inr (Or.inr
+                (node54SubtypesReturn_densityCap residualHistory lanePrefix))))
       | .right boundHistory =>
           -- `[55]`: Residual C on the high-entropy arm.
           let largeHistory :=
@@ -1472,9 +1472,9 @@ noncomputable def nearCubicLargeBudgetRateFailed
           | .right residualHistory =>
               -- the configuration at G where the joint realization fails,
               -- returned.
-              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+              exact Or.inr (Or.inr (Or.inr (Or.inr
                 (Or.inr (Or.inr (Or.inr (Or.inl
-                  (node54Return_unrealizedRateFailsBounded residualHistory)))))))))
+                  (node54Return_unrealizedRateFailsBounded residualHistory))))))))
       | .right boundHistory =>
           -- `[53]`'s bound arm on the dense residual `[159]` with
           -- `τ(θ) < 1/4`: the package of `[159]` overflows the skeleton

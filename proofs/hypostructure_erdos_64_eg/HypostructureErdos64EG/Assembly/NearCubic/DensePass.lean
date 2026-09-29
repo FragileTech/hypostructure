@@ -5,14 +5,12 @@ import Hypostructure.Graph.Strategy.ColdCorridorRows.DenseTerminal
 import Hypostructure.Graph.Strategy.ColdCorridorRows.NeutralTerminal
 import Hypostructure.Graph.Strategy.ColdCorridorRows.TwoStrand
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
-import Hypostructure.Graph.Strategy.SpineRows.HeavyEntryCorridor
 import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
 import HypostructureErdos64EG.Assembly.NearCubic.Boundary
 import HypostructureErdos64EG.Assembly.NearCubic.ColdPass
 import HypostructureErdos64EG.Assembly.NearCubic.Replacement
 import HypostructureErdos64EG.Assembly.NearCubic.Spine
 import HypostructureErdos64EG.Assembly.Residuals.ColdBranchClosedOutcome
-import HypostructureErdos64EG.Assembly.Residuals.Node162ResidualOutcome
 
 /-!
 # Assembly: NearCubic / DensePass
@@ -44,7 +42,7 @@ noncomputable abbrev denseLinearKeys : FactKeys EGInput.{u} :=
     K .coldReturnCorridors, K .coldCorridorState,
     K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
     K .coldCutStatesDistinct, K .coldRepeatedStateResidual,
-    K .coldHeavyEntryTerminal, K .coldDenseHeavyEntryResidual, K .coldCorridorInducedRuns,
+    K .coldHeavyEntryTerminal,
     K .coldFailureCycle, K .coldFailureDefectRoute,
     K .coldFailureCompression, K .coldHandoffTransfer,
     K .coldFailureRouting, K .coldExchangeBound,
@@ -76,7 +74,7 @@ arm `[165]`--`[166]` enters the blocked class `[169]`, and its genuine
 symmetric strand pair `[167]`/`[168]` closes against the window stub
 structure.
 
-`tau` names the `[160]` arm the pass runs on; the `[162]`, `[172a]` and `[187]`
+`tau` names the `[160]` arm the pass runs on; the `[172a]` and `[187]`
 returns state the subtype of that arm.  The ¬(★) arm of `[153]` runs the germ
 path to `[157]` and returns `[187]`. -/
 -- EG-NODE [162] dense hot/cold pass: run [22]--[24] and [145]--[157] on the dense residual; [23], [149], [155], [156], [157] close as before; bounded arm of [153] and [146]/[160] arms return to [25]
@@ -214,62 +212,55 @@ noncomputable def nearCubicDenseLinear
               (coldBranchClosed_denseRepeatedReturn
                 (nearCubicColdTable silentHistory) tau)))))
   | .inl distinct =>
-      -- `[162]` on the (★) arm: the heavy-entry test; its failure returns the long
-      -- corridor of G through a heavy centre.
-      match coldHeavyEntryDichotomy (data := spineData) distinct
+      -- `[162]` on the (★) arm: the heavy entry of every retained corridor is read
+      -- within `Q_cold` states, a fact of G; a corridor whose first failure is a heavy
+      -- centre needs no terminality, so the pass has no long-corridor residual.
+      let heavyTerminal :=
+        (coldHeavyEntryBoundedRow (data := spineData)).run distinct (by key_fresh)
+      let terminal :=
+        (denseColdCorridorsTerminalRow (data := spineData)).run heavyTerminal
+          (by key_fresh)
+      let familyOnly := nearCubicColdGermFamily terminal
+      -- `[175]`'s per-half-edge split and `[177]`'s fan data are facts of
+      -- G on the extracted family here too.
+      let split :=
+        (absorbedGermSplitRow (data := spineData)).run familyOnly
+          (by key_fresh)
+      let family :=
+        (absorbedGermFanDataRow (data := spineData)).run split
+          (by key_fresh)
+      let unhit := nearCubicColdNoHit family
+      -- `[154]` second test (G2) is decided at G: its yes-arm is empty
+      -- (Lean improvement), closed against the selection.
+      match coldGermDistinctionDichotomy (data := spineData) unhit
           (by key_fresh) (by key_fresh) with
-      | .right heavyHistory =>
-          -- G's retained corridors are induced paths whose runs in the remainder are
-          -- short: a fact of G on the residual arm.
-          let runs := (coldCorridorInducedRunsRow (data := spineData)).run heavyHistory
-            (by key_fresh)
-          exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl
-            (node162SubtypesReturn runs tau)))))
-      | .left heavyTerminal =>
-          let terminal :=
-            (denseColdCorridorsTerminalRow (data := spineData)).run heavyTerminal
+      | .left distinguishedHistory =>
+          exact ((closeIncompatible distinguishedHistory
+            (K .coldGermSomeDistinguishing) (K .selection)
+            (by key_fresh)).elimClosed (by infer_instance)).elim
+      | .right silentHistory =>
+          let neutralConfiguration :=
+            (neutralEqualLengthTerminalRow (data := spineData)).run silentHistory
               (by key_fresh)
-          let familyOnly := nearCubicColdGermFamily terminal
-          -- `[175]`'s per-half-edge split and `[177]`'s fan data are facts of
-          -- G on the extracted family here too.
-          let split :=
-            (absorbedGermSplitRow (data := spineData)).run familyOnly
-              (by key_fresh)
-          let family :=
-            (absorbedGermFanDataRow (data := spineData)).run split
-              (by key_fresh)
-          let unhit := nearCubicColdNoHit family
-          -- `[154]` second test (G2) is decided at G: its yes-arm is empty
-          -- (Lean improvement), closed against the selection.
-          match coldGermDistinctionDichotomy (data := spineData) unhit
+          let closed := nearCubicColdTable neutralConfiguration
+          match neutralGermSymmetryDichotomy (data := spineData) closed
               (by key_fresh) (by key_fresh) with
-          | .left distinguishedHistory =>
-              exact ((closeIncompatible distinguishedHistory
-                (K .coldGermSomeDistinguishing) (K .selection)
-                (by key_fresh)).elimClosed (by infer_instance)).elim
-          | .right silentHistory =>
-              let neutralConfiguration :=
-                (neutralEqualLengthTerminalRow (data := spineData)).run silentHistory
+          | .left canonicalHistory =>
+              let swapped :=
+                (canonicalReplacementSwapRow (data := spineData)).run
+                  canonicalHistory (by key_fresh)
+              exact Or.inr (Or.inr (Or.inl
+                (selectedCanonicalReplacementContinuation swapped tau)))
+          | .right genuineHistory =>
+              let survivor :=
+                (twoStrandSurvivorRow (data := spineData)).run genuineHistory
                   (by key_fresh)
-              let closed := nearCubicColdTable neutralConfiguration
-              match neutralGermSymmetryDichotomy (data := spineData) closed
-                  (by key_fresh) (by key_fresh) with
-              | .left canonicalHistory =>
-                  let swapped :=
-                    (canonicalReplacementSwapRow (data := spineData)).run
-                      canonicalHistory (by key_fresh)
-                  exact Or.inr (Or.inr (Or.inl
-                    (selectedCanonicalReplacementContinuation swapped tau)))
-              | .right genuineHistory =>
-                  let survivor :=
-                    (twoStrandSurvivorRow (data := spineData)).run genuineHistory
-                      (by key_fresh)
-                  let stubbed :=
-                    (coldWindowStubStructureRow (data := spineData)).run survivor
-                      (by key_fresh)
-                  exact ((symmetricPairEndpointExclusionRow
-                    (data := spineData)).runAndCloseIncompatible stubbed
-                      (K .coldTwoStrandSurvivor) (K .coldSymmetricPairExcluded)
-                      (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+              let stubbed :=
+                (coldWindowStubStructureRow (data := spineData)).run survivor
+                  (by key_fresh)
+              exact ((symmetricPairEndpointExclusionRow
+                (data := spineData)).runAndCloseIncompatible stubbed
+                  (K .coldTwoStrandSurvivor) (K .coldSymmetricPairExcluded)
+                  (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
 
 end HypostructureErdos64EG

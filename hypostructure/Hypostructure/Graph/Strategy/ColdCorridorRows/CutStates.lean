@@ -25,15 +25,6 @@ noncomputable instance instIncompatibleColdRepeatedStateDistinct :
     Contracts.Spine.not_distinct_of_coldRepeatedStateResidual data.toParameters _
       residual.down distinct.down
 
-/-- `[162]`'s returned residual and the heavy-entry test cannot coexist
-(`Contracts.Spine.not_heavyEntryTerminal_of_residual`). -/
-noncomputable instance instIncompatibleColdHeavyEntryTerminal :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .coldDenseHeavyEntryResidual) (K .coldHeavyEntryTerminal) where
-  contradiction := fun _residual residual terminal =>
-    Contracts.Spine.not_heavyEntryTerminal_of_residual data.toParameters _
-      residual.down terminal.down
-
 /-! ## Node `[153]`: the exact decision behind `lem:cold-corridor-first-failure` (ii)
 
 At G the paper's (F2) (tex 7265-7270) is decided: it never fires.  What `[153]`
@@ -69,36 +60,27 @@ noncomputable def coldCutStatesDichotomy
         data.toParameters current.object distinct⟩)
     distinctFresh residualFresh
 
-/-! ## Node `[162]`: the exact decision on the distinct-states arm
+/-! ## Node `[162]`: the heavy entry on the distinct-states arm
 
 On the (★) arm the first failure of every retained corridor of G is read within
 `Q_cold` states (`ColdEqualStates.first_lt_stateBound`) and is either the
-terminal (F5) event or an (F4) heavy centre.  The only sub-case in which the
-corridor can fail to be terminal is an (F4) heavy centre strictly before the
-terminal segment on a corridor reading more than `Q_cold` states.  The
-decision reads (★) (`K .coldCutStatesDistinct`) and splits that sub-case
-exactly: every such corridor is terminal (`K .coldHeavyEntryTerminal`), or the
-explicitly constructed long corridor through a heavy centre of G
-(`Contracts.Spine.coldDenseHeavyEntryResidual_of_not_terminal`) is the
-returned residual `K .coldDenseHeavyEntryResidual`. -/
-noncomputable def coldHeavyEntryDichotomy
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (previous : ExactLedger
-      (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .coldCutStatesDistinct) known]
-    (terminalFresh : K .coldHeavyEntryTerminal ∉ known)
-    (residualFresh : K .coldDenseHeavyEntryResidual ∉ known) :
-    Decision (K .coldHeavyEntryTerminal) (K .coldDenseHeavyEntryResidual) previous := by
-  classical
-  exact Decision.run previous (K .coldHeavyEntryTerminal) (K .coldDenseHeavyEntryResidual)
-    `Hypostructure.Graph.Strategy.Spine.coldHeavyEntryDichotomy
-    (if terminal : ColdHeavyEntryTerminalStatement data.toParameters current.object then
-      .inl ⟨terminal⟩
-    else
-      .inr ⟨Contracts.Spine.coldDenseHeavyEntryResidual_of_not_terminal
-        data.toParameters current.object
-        (previous.get (K .coldCutStatesDistinct)).down terminal⟩)
-    terminalFresh residualFresh
+terminal (F5) event or an (F4) heavy centre.  The row reads (★) and publishes
+that fact of G (`K .coldHeavyEntryTerminal`); it splits nothing.  The pass does
+not need a heavy-entry corridor to be terminal, so there is no residual for a
+long corridor through a heavy centre: the corridor is routed by its first
+failure (`K .denseColdCorridorsTerminal`). -/
+@[reducible] noncomputable def coldHeavyEntryBoundedRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldHeavyEntryBounded
+    { Requires := [K .coldCutStatesDistinct]
+      Produces := [K .coldHeavyEntryTerminal]
+      requiresUnique := by key_fresh
+      producesUnique := by key_fresh
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .coldHeavyEntryTerminal)
+        ⟨Contracts.Spine.coldHeavyEntryTerminal_of_distinct data.toParameters
+          inputs.current.object (inputs.get (K .coldCutStatesDistinct)).down⟩
+        .nil)
 
 end Hypostructure.Graph.Strategy.Spine

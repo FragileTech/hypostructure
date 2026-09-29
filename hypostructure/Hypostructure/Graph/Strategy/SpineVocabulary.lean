@@ -39,7 +39,6 @@ import Hypostructure.Graph.Statements.PairCorrelation
 import Hypostructure.Graph.Statements.Route8QuotientSize
 import Hypostructure.Graph.Statements.PairHandoffSupport
 import Hypostructure.Graph.Statements.PairHandoffFacts
-import Hypostructure.Graph.Statements.HeavyEntryCorridor
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1790,10 +1789,8 @@ inductive Key where
   | coldCutStatesDistinct
   /-- Node `[153]`, returned residual: G's first equal-state pair on a retained cold corridor, with its separating context and profile separation. -/
   | coldRepeatedStateResidual
-  /-- Node `[162]`, test arm: a retained corridor of G first failing at a heavy centre before its terminal segment is still terminal. -/
+  /-- Node `[162]`: the heavy entry of every retained corridor of G is read within `Q_cold` states (a first failure at a heavy centre lies below `Q_cold` on the distinct-states arm); nothing about the length of the corridor beyond it is asserted. -/
   | coldHeavyEntryTerminal
-  /-- Node `[162]`, returned residual: a non-terminal retained corridor of G first failing at a heavy centre before its terminal segment. -/
-  | coldDenseHeavyEntryResidual
   /-- Node `[54]`, joint arm: `RS(R₀)·2^{rate·s·p₁₃}·2^F ≤ B` at G. -/
   | entropyJointRealization
   /-- Node `[54]`, returned residual: the configuration at G where the joint realization inequality fails. -/
@@ -1997,8 +1994,6 @@ inductive Key where
   | remainderPathBounds
   /-- Entry prefix (joint hubs): **Window-free geometry of `P₀`**: short induced walks in window-free sets; the hub-pair dichotomy; chords of long window-free paths and their residues (open at a hub, closed by an outside path); one chord per `13` vertices; the outside-return dichotomy; window-free connected sets have `≤ 1 + 2047(3 + σ_K)` vertices; the carrier position. -/
   | windowFreeGeometry
-  /-- `[162]` residual arm (idx 8500): **The retained cold corridors of G are induced paths whose runs in `R` are short**: two non-consecutive corridor vertices are not adjacent in G, and two corridor vertices joined by a walk inside `R = G - W(P0)` are at most `11` positions apart on the corridor (the corridor is a shortest path of its component `K`; `WindowFreeGeometry` of the canonical maximal packing). -/
-  | coldCorridorInducedRuns
   /-- Entry prefix (joint hubs): **Attachments to induced `P13`s**: a vertex off an induced `P13` of G has at most `7` neighbours on it, and every vertex of an induced `P13` has a neighbour off it. -/
   | inducedPathAttachment
   /-- Strict arm of `[19]`: **The orders the high-surplus closure excludes**: `8n ≤ 32(n − C⌈√n⌉ − 1) + 125(n − C⌈√n⌉ − 1)²`, and `n > C² + C + 1 + t` for every `t` with `125t² + 24t < 8(C² + C + 1)` (`C = C_sp`). -/
@@ -2939,8 +2934,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       ColdRepeatedStateResidualStatement data.toParameters object
   | .coldHeavyEntryTerminal, object =>
       ColdHeavyEntryTerminalStatement data.toParameters object
-  | .coldDenseHeavyEntryResidual, object =>
-      ColdDenseHeavyEntryResidualStatement data.toParameters object
   | .entropyJointRealization, object =>
       EntropyJointRealizationStatement data.toParameters object
   | .allColdEntropyResidual, object =>
@@ -3104,8 +3097,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       RemainderPathBoundsStatement data.toParameters object
   | .windowFreeGeometry, object =>
       WindowFreeGeometryStatement data.toParameters object
-  | .coldCorridorInducedRuns, object =>
-      ColdCorridorInducedRunsStatement data.toParameters object
   | .inducedPathAttachment, object =>
       InducedPathAttachmentStatement object
   | .highSurplusOrder, object =>
@@ -3602,7 +3593,6 @@ def label : Key → String
   | .coldCutStatesDistinct => "coldCutStatesDistinct"
   | .coldRepeatedStateResidual => "coldRepeatedStateResidual"
   | .coldHeavyEntryTerminal => "coldHeavyEntryTerminal"
-  | .coldDenseHeavyEntryResidual => "coldDenseHeavyEntryResidual"
   | .entropyJointRealization => "entropyJointRealization"
   | .allColdEntropyResidual => "allColdEntropyResidual"
   -- C6 keys (density order)
@@ -3687,7 +3677,6 @@ def label : Key → String
   | .windowHubBounds => "windowHubBounds"
   | .remainderPathBounds => "remainderPathBounds"
   | .windowFreeGeometry => "windowFreeGeometry"
-  | .coldCorridorInducedRuns => "coldCorridorInducedRuns"
   | .inducedPathAttachment => "inducedPathAttachment"
   | .highSurplusOrder => "highSurplusOrder"
   | .windowChargeKinds => "windowChargeKinds"
@@ -4138,7 +4127,6 @@ example : label .sameTokenPairPartition = "sameTokenPairPartition" := rfl
 example : label .coldCutStatesDistinct = "coldCutStatesDistinct" := rfl
 example : label .coldRepeatedStateResidual = "coldRepeatedStateResidual" := rfl
 example : label .coldHeavyEntryTerminal = "coldHeavyEntryTerminal" := rfl
-example : label .coldDenseHeavyEntryResidual = "coldDenseHeavyEntryResidual" := rfl
 example : label .entropyJointRealization = "entropyJointRealization" := rfl
 example : label .allColdEntropyResidual = "allColdEntropyResidual" := rfl
 example : label .realizedDensityOrder = "realizedDensityOrder" := rfl
@@ -4218,7 +4206,6 @@ example : label .hubWindowBudget = "hubWindowBudget" := rfl
 example : label .windowHubBounds = "windowHubBounds" := rfl
 example : label .remainderPathBounds = "remainderPathBounds" := rfl
 example : label .windowFreeGeometry = "windowFreeGeometry" := rfl
-example : label .coldCorridorInducedRuns = "coldCorridorInducedRuns" := rfl
 example : label .inducedPathAttachment = "inducedPathAttachment" := rfl
 example : label .highSurplusOrder = "highSurplusOrder" := rfl
 example : label .windowChargeKinds = "windowChargeKinds" := rfl
@@ -4659,7 +4646,6 @@ def idx : Key → Nat
   | .coldCutStatesDistinct => 3200
   | .coldRepeatedStateResidual => 3201
   | .coldHeavyEntryTerminal => 3202
-  | .coldDenseHeavyEntryResidual => 3203
   | .entropyJointRealization => 3204
   | .allColdEntropyResidual => 3205
   -- C6 keys (density order)
@@ -4744,7 +4730,6 @@ def idx : Key → Nat
   | .windowHubBounds => 7210
   | .remainderPathBounds => 7211
   | .windowFreeGeometry => 7212
-  | .coldCorridorInducedRuns => 8500
   | .inducedPathAttachment => 7213
   | .highSurplusOrder => 7214
   | .windowChargeKinds => 7215
@@ -5175,7 +5160,6 @@ def ofIdx : Nat → Key
   | 3200 => .coldCutStatesDistinct
   | 3201 => .coldRepeatedStateResidual
   | 3202 => .coldHeavyEntryTerminal
-  | 3203 => .coldDenseHeavyEntryResidual
   | 3204 => .entropyJointRealization
   | 3205 => .allColdEntropyResidual
   -- C6 keys (density order)
@@ -5260,7 +5244,6 @@ def ofIdx : Nat → Key
   | 7210 => .windowHubBounds
   | 7211 => .remainderPathBounds
   | 7212 => .windowFreeGeometry
-  | 8500 => .coldCorridorInducedRuns
   | 7213 => .inducedPathAttachment
   | 7214 => .highSurplusOrder
   | 7215 => .windowChargeKinds
@@ -6175,8 +6158,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldRepeatedStateResidual") 3201
   | .coldHeavyEntryTerminal =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldHeavyEntryTerminal") 3202
-  | .coldDenseHeavyEntryResidual =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "coldDenseHeavyEntryResidual") 3203
   | .entropyJointRealization =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "entropyJointRealization") 3204
   | .allColdEntropyResidual =>
@@ -6340,8 +6321,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "remainderPathBounds") 7211
   | .windowFreeGeometry =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "windowFreeGeometry") 7212
-  | .coldCorridorInducedRuns =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "coldCorridorInducedRuns") 8500
   | .inducedPathAttachment =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "inducedPathAttachment") 7213
   | .highSurplusOrder =>

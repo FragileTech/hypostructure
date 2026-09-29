@@ -302,3 +302,24 @@ None forced. One definitional point is recorded: the (F4) registry `ColdDeclared
 3. Every Table-2 row accounts for at least one coordinate or is labelled bookkeeping: PASS. Bookkeeping rows: 2 (presentation constants), 15 and 66 (G-independent tables). No row is a pure routing tag; 96 to 98 account for H01/A10/H09 and related.
 4. No fact counted twice for the same demand in different currencies: PASS with credit-once notes. 6 and 7 are equivalent given 3 (one demand, A06/A03 credited once); 24 and 25 are the two links of 81 (credited once as the boundary chain); 82 is 81 plus 64; 72 and 98 test the same rate inequality (98 sharper); 14 and 17 are the same packing currency (C09); 96 and 97 are complementary arms and never coexist. "Consumed by" was read from the `Requires` lists of the Strategy rows (regex scan); "no row Requires it" means that scan found none and is not a proof of non-use inside Contracts.
 5. Joint gap ranking (Section "Gaps ranked"): done for all six `gap` and all fourteen `~` coordinates.
+
+## After the G audit (re-run)
+
+Status counts before: x 62, ~ 14, gap 6, n/a 5, nonG 1 (98 facts, of which 96-98 are the `[160]`-arm history facts).
+
+The residual is removed (re-routed, see `lean-vs-paper-discrepancies.md`, "Node [162] ... G audit").  Its
+defining failure was the heavy-entry terminality test `coldHeavyEntryDichotomy`; the conjunct it
+served (`DenseColdCorridorsTerminalStatement`, "every return corridor is terminal") is never read
+downstream and is now the exact G-fact "terminal, or first failure a heavy handoff centre".  The
+retained fact `K .coldHeavyEntryTerminal` now says the heavy entry is read within `Q_cold` states.
+The `[160]` arm facts (96-98) no longer sit on any open residual ledger of `[162]`.
+
+The gaps ranked above (C11, B04, D03, H06, B03) were relevant only to a long corridor through a
+heavy centre.  Built and tried before the re-route (commit `8138cdd`): C08/C11 -- the corridor is a
+shortest path of `K`, hence an induced path of G (`Corridor.inside_induced`), and its runs in
+`R` are at most 11 steps (`Corridor.inside_run_short`, from `WindowFreeGeometry` of `P0`).  They
+bound the corridor only outside the windows it crosses, so they do not refute the residual; the
+residual is not needed, so no further gap is open for it.
+
+No fact of the reduced ledger is `nonG`.  Coordinate counts after: unchanged for the 95 generic
+facts (no residual remains to carry them).

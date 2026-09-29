@@ -2258,7 +2258,7 @@ free side.
 | `Route8RateFailsOutcome_*` | [187] (private-carrier rate failure) | 11 subtypes (all bounded-size) | 11 | 70 generic; 75–79 |
 | `ColdBranchClosedOutcome_linear*` | [187] (local cold-terminal exclusion) | 4 singletons (2 bounded-size) | 4 | 84 generic; 93, 94 (dense), 92, 92 (realized) |
 | `Node153ResidualOutcome_*` | [153] | 3 subtypes (linear arms; 1 bounded-size) | 3 | 69 generic; 73, 74, 74 |
-| `Node162ResidualOutcome_*` | [162] | 2 subtypes (`[160]` arm) | 2 | 73 generic; 74, 75 |
+| `Node162ResidualOutcome_*` | [162] | removed (G audit: re-routed, see Node [162]) | 0 | -- |
 | `Node54ResidualOutcome_*` | [54] | 5 subtypes (3 bounded-size) | 5 | 68 generic; 71, 71, 74, 75, 76 |
 
 **Path-count re-probe (final integration, after C1, C2, C3, C5, C6).**  The
@@ -2830,8 +2830,8 @@ route-8 product has 750 paths.
   43. `K .coldCorridorState`: Node `[153]`, `def:cold-corridor-first-failure`: the pinned cold corridor states (`coldCutStatePresentation`) of every retained return corridor of G, with the canonical second representative of every exchange germ.
   44. `K .coldFirstFailureOccurrence`: `lem:cold-corridor-first-failure`: every retained cold return corridor of G has a first failure, an (F1)--(F5) event at its first failing segment.
   45. `K .coldCutStatesDistinct`: Node `[153]`, distinct-states arm: G's pinned cut states along each retained cold corridor are pairwise distinct up to the first failure.
-  46. `K .coldHeavyEntryTerminal`: Node `[162]`, test arm: a retained corridor of G first failing at a heavy centre before its terminal segment is still terminal.
-  47. `K .denseColdCorridorsTerminal`: Node `[162]`: every return corridor of the dense hot/cold pass is the terminal (F5) subcase because its selected shortest path lies in the induced-window-free normalized remainder.
+  46. `K .coldHeavyEntryTerminal`: Node `[162]`: the first failure of every retained corridor of G that is a heavy entry is read within `Q_cold` states (G audit: replaces the terminality test).
+  47. `K .denseColdCorridorsTerminal`: Node `[162]`: every return corridor of the dense hot/cold pass is the terminal (F5) subcase or has a heavy handoff centre as its first failure (G audit).
   48. `K .coldFailureCycle`: `lem:cold-corridor-first-failure` (F1): a first failure that closes an accepted cycle is excluded at G by target avoidance.
   49. `K .coldFailureDefectRoute`: `lem:cold-corridor-first-failure` (ii): an (F2) pair of prefixes of one of G's corridors is a target-defective quotient.
   50. `K .coldFailureCompression`: `lem:cold-corridor-first-failure` (F3): a first failure that is a compression of G is excluded by uncompressibility.
@@ -4243,20 +4243,20 @@ route-8 product has 750 paths.
     - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
     - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
     - `K .coldGermSomeDistinguishing`: Node `[154]`, second binary test on the no-G1 arm (G2): some configuration of the extracted active family is hit-distinguished.
-    - `K .coldHeavyEntryTerminal`: Node `[162]`, test arm: a retained corridor of G first failing at a heavy centre before its terminal segment is still terminal.
+    - `K .coldHeavyEntryTerminal`: Node `[162]`: the first failure of every retained corridor of G that is a heavy entry is read within `Q_cold` states (G audit: replaces the terminality test).
     - `K .coldMassLinear`: Node `[153]`, exact form of "for all sufficiently large `n`": the cold mass exceeds the two branch-excess slacks, so the extracted germ family is positive (`lem:cold-germ-extraction`).
     - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
-    - `K .denseColdCorridorsTerminal`: Node `[162]`: every return corridor of the dense hot/cold pass is the terminal (F5) subcase because its selected shortest path lies in the induced-window-free normalized remainder.
+    - `K .denseColdCorridorsTerminal`: Node `[162]`: every return corridor of the dense hot/cold pass is the terminal (F5) subcase or has a heavy handoff centre as its first failure (G audit).
     - `K .denseDeficiencyAtOrAbove`: Its exact complement: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
     - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
   - **`ColdBranchClosedOutcome_linearDenseRateFailed`** (94 facts: 74 generic + 10; return `coldBranchClosed_linearDenseRateFailedReturn`): [153] linear cold mass through `nearCubicDenseLinear` after `nearCubicDensePassRateFailed`: [158] unrealized, [160] tau below 1/4 and route-8 rate failing, [146] theta at or above, [162] heavy entry, [154] none realizing / some distinguishing.
     - `K .coldGermFamilyPositive`: Node `[153]`, linear arm: the literal disjoint family retained by `coldGermCandidates` is nonempty after both surplus losses are paid.
     - `K .coldGermNoneRealizing`: Node `[154]`, the exact complement of `coldGermSomeRealizing`.
     - `K .coldGermSomeDistinguishing`: Node `[154]`, second binary test on the no-G1 arm (G2): some configuration of the extracted active family is hit-distinguished.
-    - `K .coldHeavyEntryTerminal`: Node `[162]`, test arm: a retained corridor of G first failing at a heavy centre before its terminal segment is still terminal.
+    - `K .coldHeavyEntryTerminal`: Node `[162]`: the first failure of every retained corridor of G that is a heavy entry is read within `Q_cold` states (G audit: replaces the terminality test).
     - `K .coldMassLinear`: Node `[153]`, exact form of "for all sufficiently large `n`": the cold mass exceeds the two branch-excess slacks, so the extracted germ family is positive (`lem:cold-germ-extraction`).
     - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
-    - `K .denseColdCorridorsTerminal`: Node `[162]`: every return corridor of the dense hot/cold pass is the terminal (F5) subcase because its selected shortest path lies in the induced-window-free normalized remainder.
+    - `K .denseColdCorridorsTerminal`: Node `[162]`: every return corridor of the dense hot/cold pass is the terminal (F5) subcase or has a heavy handoff centre as its first failure (G audit).
     - `K .denseDeficiencyBelow`: On the `[21]` unrealized residual: `prop:negative-net-charge`'s exact large-budget net-deficiency comparison holds at the fixed maximal packing — the manuscript's `τ(θ) < 1/4` deficiency reading with the exact `√n` allowance, i.e. the inequality node `[56]` supplies to `[57]`--`[62]`.
     - `K .route8RateFails`: The complement of the rate reading on an arm whose density fact does not decide it (`3/13 ≤ τ`): the manuscript's delicate density interval (row 2 of the cold-branch ledger), carried as its own branch.
     - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
@@ -4376,106 +4376,65 @@ route-8 product has 750 paths.
 
 <a id="residual-162"></a>
 
-### Node [162] (lem:dense-cold-pass, tex 7692-7694)
+### Node [162] (lem:dense-cold-pass, tex 7692-7694) -- CLOSED (re-routed), G audit
 
-- **Configuration at G.** A retained cold corridor of G whose first failure is a heavy centre strictly before its terminal segment and which reads more than Q_cold states; at G's canonical witness `coldHeavyEntryWitness? = some ⟨occurrence, ε, first, centre⟩` (`ColdDenseHeavyEntrySpecAt`): `head first = centre` with `δ < d_G(centre)`; `first` is an (F4) first failure with no earlier event; the pinned states up to `first` are pairwise distinct, so `first < Q_cold`; `first < |C_ε|`; `Q_cold ≤ |C_ε|` and `C_ε` is not terminal.
-- **Lean.** `Node162ResidualOutcome` (`Assembly/Residuals.lean`); return theorem `node162Return`; reached by 2 paths (distinct ledger histories from the root).
-- **Facts carried (73).**
-  1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
-  2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
-  3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
-  4. `K .noProperBaseline`: Node `[8]`: no proper subgraph satisfies the baseline.
-  5. `K .slackIndependent`: Node `[10]`: vertices strictly above the threshold are pairwise nonadjacent.
-  6. `K .tightEndpoint`: Node `[9]`: every oriented edge has an endpoint exactly at the threshold.
-  7. `K .cycleRankConstraint`: `lem:cycle-rank`: for the selected graph, `β(G) = m - n + 1` satisfies `2β(G) ≥ n + 2`.
-  8. `K .degreeProfileFibres`: Node `[11]`, `lem:degree-profile-fibres`: an admissible quotient of G's declared coordinates never identifies two realizations in different boundary-degree fibres.
-  9. `K .targetCompleteContextUniversality`: Node `[12]`, `lem:context-universality`: identifications of G's admissible quotients are target-complete, and an identification valid only at G's own outside context is target-defective.
-  10. `K .replacementExclusion`: Node `[13]`, `lem:replacement`: no proper atom admits a strictly smaller boundary-signature-preserving replacement with one-way obstruction inclusion.
-  11. `K .uncompressible`: Node `[14]`: no proper atom admits a nontrivial target-complete compression (`cor:uncompressible`).
-  12. `K .windowPresent`: Node `[15]`, no arm: the object contains an induced window of the registered order (`cor:p13-exists`).
-  13. `K .maximalPacking`: Nodes `[15]`--`[17]`: the object carries a maximal vertex-disjoint family of induced windows, and the family is nonempty.
-  14. `K .localAlgebra`: Node `[18]`: `lem:labels`'s exact legal-label census at the registered window order.
-  15. `K .surplusAtOrBelow`: Node `[19]`, at-or-below arm: `def:near-cubic-spine` in exact finite form.
-  16. `K .sparseSurplusSurvivor`: Node `[125]`, `def:named-surplus-exits`: the selected object survives the five sparse surplus exits.
-  17. `K .barrierEnumeration`: Node `[21]`: `lem:curv-enum`, the certified finite barrier enumeration read from the registered table.
-  18. `K .windowPackageSeparated`: Nodes `[21]`--`[22]`: `lem:p13-window-package`.
-  19. `K .skeletonDominates`: `lem:skeleton-dominates` at the current residual's exact order and edge count: the fixed-edge labelled skeleton class has exactly the registered skeleton budget, and every canonical state map realizes at most that many states.
-  20. `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
-  21. `K .hotColdPartition`: Node `[22]`: the canonical hot/cold partition of the maximal packing.
-  22. `K .barrierCap`: Node `[22]`, cap arm: the packing's entropy demand fits inside the labelled skeleton budget, which is itself stable under a variable edge count.
-  23. `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
-  24. `K .coldHotEntropyCap`: Node `[148]`, no: the live-hot coordinates fit in that allowance.
-  25. `K .coldMass`: Node `[150]`: the exact cleared cold-mass inequality.
-  26. `K .coldAmbientCubic`: Node `[151]`: the non-ambient-cubic cold-window loss.
-  27. `K .coldStubExcess`: Node `[152]`: the selected cold-skeleton branch-excess inequality.
-  28. `K .coldAmbientCubicStubExcess`: Node `[152]`, `lem:cold-window-stub-excess`: every ambient-baseline member of G's canonical cold family has exactly the presentation-derived external-stub count.
-  29. `K .coldSelectedBranchExcess`: Node `[152]`, `def:cold-skeleton-excess`: the restricted `9C` interior mass of G's canonical cold family, each selected half-edge charged once at its cold-window endpoint.
-  30. `K .coldMassLinear`: Node `[153]`, exact form of "for all sufficiently large `n`": the cold mass exceeds the two branch-excess slacks, so the extracted germ family is positive (`lem:cold-germ-extraction`).
-  31. `K .remainderNormalized`: Nodes `[25]`--`[27]`: the remainder of a maximal packing carries no window and no subgraph meeting the baseline (`sec:remainder`).
-  32. `K .boundaryDemand`: Nodes `[28]`--`[29]`: the remainder's positive deficiency is supplied by its boundary incidences (`lem:surplus-aware-window-stub`).
-  33. `K .stubSupply`: Node `[29]` proper: `lem:stub-positive`'s ceiling, the same chain with the object's own surplus and the registered near-cubic threshold spent against it.
-  34. `K .wedgeSupply`: Node `[30]`, the lemma proper: every region of the remainder meets the baseline out of its own internal wedge supply and twice its own positive deficiency (`lem:wedge-lower`).
-  35. `K .curvatureTargetRank`: Node `[31]`, `def:curvature-target-rank` at the remainder of every maximal packing: `r_Ω(R)` is attained by a surviving subfamily of raw curvature tests and bounds every surviving subfamily.
-  36. `K .exactResponseProfile`: Node `[31]`, `def:exact-response-profile` at the remainder of every maximal packing: the declared raw curvature coordinates are exact, so their labelled family has exactly `W₂(R)` entries.
-  37. `K .targetRankCircuit`: `lem:target-rank-circuit` at the remainder of every maximal packing: every raw test outside a maximal surviving family carries a proper finite target-dependence, and absence of proper dependences is full survival.
-  38. `K .curvatureFullRank`: Node `[32]`, no arm: `r_Ω(R) ≥ W₂(R) − o(W₂)` against every admissible quotient system.
-  39. `K .forcedCurvatureCost`: Nodes `[47]`--`[48]`: `cor:forced-curvature-cost`.
-  40. `K .netChargeLocalization`: Nodes `[57]`--`[58]`: `def:net-charge` and `lem:netcharge-superadd`.
-  41. `K .bridgeless`: `lem:bridgeless`: the selected minimal counterexample has no bridge — every oriented edge has a simple return after its deletion, `R_e(G) ≠ ∅`.
-  42. `K .coldReturnCorridors`: `def:cold-corridor-first-failure`, the corridor construction: every boundary stub of every outside component of the ambient-cubic cold windows has its cold return corridor.
-  43. `K .coldCorridorState`: Node `[153]`, `def:cold-corridor-first-failure`: the pinned cold corridor states (`coldCutStatePresentation`) of every retained return corridor of G, with the canonical second representative of every exchange germ.
-  44. `K .coldFirstFailureOccurrence`: `lem:cold-corridor-first-failure`: every retained cold return corridor of G has a first failure, an (F1)--(F5) event at its first failing segment.
-  45. `K .coldCutStatesDistinct`: Node `[153]`, distinct-states arm: G's pinned cut states along each retained cold corridor are pairwise distinct up to the first failure.
-  46. `K .coldDenseHeavyEntryResidual`: Node `[162]`, returned residual: a non-terminal retained corridor of G first failing at a heavy centre before its terminal segment.
-  47. `K .minDegreeBaseline`: Nodes `[1]`--`[3]` (`def:counterexample`, tex 714, 1370): G meets the registered baseline, `δ(G) ≥ δ` (`δ = 3` by `K .cubicBaseline`), published once at the entry by `minDegreeBaselineRow` from the selected object's own baseline proof (on the ledger directly after `K .cubicBaseline`; listed last here).
-  48. `K .packingOrderBound`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`).  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 33).*
-  49. `K .noSuppressionChordViolation`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 29).*
-  50. `K .specWitnessStructure`: **Every target-defect witness of G has the `[20a]` structure** (not only the canonical one): for every `w` with `w.Spec`, `O` is not realized in `G − Z`; the bound target-defect geometry; `2 ≤ |∂Z|` and `Z ⊊ V(G)`; `2 ≤ |∂Z ∩ X|` for a declared support `X`; the pair arm is excluded; the whole case `Z ⊆ A` orients the readings and leaves `Z ∖ B ≠ ∅`; and `Z` is a minimum connected set containing `A ∪ B`.  *Hoisted (entry prefix, after `[4]` (`entrySelectionFactsRow`); `[20a]` item 95).*
-  51. `K .remainderDeficiencyBelowCut`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder).  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 37).*
-  52. `K .windowCutCapacity`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`.  *Hoisted (entry prefix, after `[1]`--`[3]` (`sparseExitPackingRow`); `[20a]` item 38).*
-  53. `K .primitiveCarrierCount`: **`|𝔘_sp(G)| = 4n + 2σ`.**  *Hoisted (entry prefix, after `[1]`--`[3]` (`primitiveCarrierCountRow`); `[20a]` item 84).*
-  54. `K .singleBoundaryShape`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex).  *Hoisted (entry prefix, after `[8]` (`singleBoundaryShapeRow`); `[20a]` item 45).*
-  55. `K .surplusDartIdentity`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`).  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 31).*
-  56. `K .highDegreeCountBound`: **High-degree count**: `|H| ≤ σ`.  *Hoisted (entry prefix, after `[9]`/`[10]` (`degreeCountRow`); `[20a]` item 32).*
-  57. `K .admissibleQuotientsLabelInjective`: **Every admissible quotient of G is label-injective** on its family.  *Hoisted (entry prefix, after `[13]` (`sparseExitQuotientsRow`); `[20a]` item 44).*
-  58. `K .neighbourhoodPairCount` (idx 6900): **Neighbourhood pairs**: at every vertex `h`, `G[N(h)]` is a matching (no accepted quadrilateral), `N(h)` has at least `C(d_h, 2) − ⌊d_h/2⌋` nonadjacent pairs, and every `x ∈ N(h)` has at least `d_h − 2` nonadjacent partners in `N(h)`.  *Entry prefix, after the presentation laws (`cycleNeighbourhoodRow`); cycle counting, Lean improvement (not routed by the paper; see [Cycle counting at G](#cycle-counting)).*
-  59. `K .starCycleConstraint` (idx 6901): **Star constraint**: for every vertex `h`, distinct neighbours `y, z` and paths `P : x → y`, `Q : x → z` of `G − h` meeting only at `x`, `|P| + |Q| + 2 ≠ 2^k` (`k ≥ 2`).  *Entry prefix, after the presentation laws (`cycleNeighbourhoodRow`); cycle counting, Lean improvement (not routed by the paper; see [Cycle counting at G](#cycle-counting)).*
-  60. `K .meetingCycleConstraint` (idx 6902): **Meeting constraint**: for every vertex `h`, distinct neighbours `y, z` and paths `P : x → y`, `Q : x → z` of `G − h`, they meet at `t` (depths `P₁`, `Q₁`) with `|P| + |Q| + 2 ≠ 2^k + |P₁| + |Q₁|` for every `k ≥ 2`.  *Entry prefix, after the presentation laws (`cycleNeighbourhoodRow`); cycle counting, Lean improvement (not routed by the paper; see [Cycle counting at G](#cycle-counting)).*
-  61. `K .highDegreePairSum` (idx 6903): **Pair sums at the high vertices** `H = {d ≠ δ}`: `σ = Σ_H (d_h − 3)` (tex 2797-2802), `5σ ≤ Σ_H C(d_h, 2)`, `σ² + 5σ|H| + 6|H|² ≤ 2|H| Σ_H C(d_h, 2)`, `2 Σ_H C(d_h, 2) ≤ 16σ²`, and `σ = 0` or some `h ∈ H` has `σ ≤ |H|(d_h − 3)`.  *Entry prefix, after `[1]`--`[3]`'s baseline (`highDegreePairSumRow`); cycle counting, Lean improvement (not routed by the paper; see [Cycle counting at G](#cycle-counting)).*
-  62. `K .vertexDeletionComponents` (idx 6904): **Vertex deletions**: at every vertex `h`, `G − h` is connected, or `d_h = 2·#blocks(h)` is even and every component of `G − h` meeting `N(h)` holds exactly two neighbours of `h`.  *Entry prefix, after `[8]` and `lem:bridgeless` (`cutVertexCyclesRow`); cycle counting, Lean improvement (not routed by the paper; see [Cycle counting at G](#cycle-counting)).*
-  63. `K .cyclesThroughVertex` (idx 6905): **Cycles through every vertex**: `C(d_h, 2) ≤ #cycles(h)` when `G − h` is connected; otherwise `2·#pairs(h) = d_h` and `d_h / 2 ≤ #cycles(h)`.  *Entry prefix, after `[8]` and `lem:bridgeless` (`cutVertexCyclesRow`); cycle counting, Lean improvement (not routed by the paper; see [Cycle counting at G](#cycle-counting)).*
-  64. `K .cutVertexBlockPaths` (idx 6906): **Block paths at the cut vertices**: for every `h` with `G − h` disconnected and every neighbour `a`, the block `{a, b}`; every `a → b` path `r` of `G − h` has `|r| + 2 ≠ 2^k`; every return of `ha` is `a ⋯ b h`; an `a → b` path avoiding `ha`, `hb` avoids `h` (`|p| ≡ 3 mod 4` when `|p| + 1 = 2^j`); a path to another block avoiding both `h`-edges splits at `h` with `|r₁| + |r₂| + 2 = |p|` (`|r₁| + |r₂| ≡ 1 mod 4`, opposite parities, when `|p| + 1 = 2^j`).  *Entry prefix, after `[8]` and `lem:bridgeless` (`cutVertexCyclesRow`); cycle counting, Lean improvement (not routed by the paper; see [Cycle counting at G](#cycle-counting)).*
-  65. `K .cycleDoubleCount` (idx 6907): **Double count at the high vertices** (independent by `[10]`, tex 2107): `2 Σ_H #cycles(h) ≤ n · #cycles(G)`, `2 Σ_H L_h ≤ n · #cycles(G)` with `L_h = C(d_h, 2)` (`G − h` connected) or `d_h / 2`, and `#cycles(G) ≤ 2^m`.  *Entry prefix, after `[9]`/`[10]` (`cycleDoubleCountRow`); cycle counting, Lean improvement (not routed by the paper; see [Cycle counting at G](#cycle-counting)).*
-  66. `K .twoSwitchForcedPath`: **The two-edge switch of G forces a path**: for edges `u₁v₁`, `u₂v₂` of G with distinct ends, `u₁ ≁ u₂` and `deg v₁, deg v₂ ≥ δ + 1`, `G − {u₁v₁, u₂v₂}` has a simple `u₁`–`u₂` path `p` with `|p| + 1` accepted.  *Entry prefix, after `[1]`--`[3]` (`entrySwitchPathsRow`); port-144a, Lean improvement (not routed by the paper).*
-  67. `K .crossSwitchFamily`: **The cross-vertex switch family of G**: at an edge `u₁v` and `h' ≠ v` with `deg v, deg h' ≥ δ + 1`, every neighbour `u ≁ u₁` of `h'` has a forced `u₁ → u` path in `G − {u₁v, uh'}` with accepted closing length, and two `2^j − 1` paths from `u₁` into two neighbours of `h'` are never `h'`-free and internally disjoint (the dyadic star).  *Entry prefix, after `[1]`--`[3]` (`entrySwitchPathsRow`); port-144a, Lean improvement (not routed by the paper).*
-  68. `K .highCentreSplitForced`: **The vertex split of G at every high centre forces a cycle**: at every `h` with `deg h > δ`, `G ⊔ M_h` (`M_h` the non-adjacent pairs of `N(h)`) has an accepted cycle avoiding `h` through an edge of `M_h` absent from G.  *Entry prefix, after `[9]`/`[10]` (`highCentreSplitForcedRow`); port-144a, Lean improvement (not routed by the paper).*
-  69. `K .sameVertexSwitchForcedPath`: **The same-vertex switch of G forces a path, split exactly**: for non-adjacent neighbours `u₁ ≠ u₂` of `h` with `deg h ≥ δ + 2`, `G − {hu₁, hu₂}` has a simple `u₁`–`u₂` path `p` with `|p| + 1` accepted, and either `p` avoids `h` and `|p| + 2` is not accepted, or `p` splits at `h` into two returns `ℓ₁ + ℓ₂ = |p|` with neither `ℓᵢ + 1` accepted.  *Entry prefix, on `[6]`'s no arm (`sameVertexSwitchForcedPathRow`); port-144a, Lean improvement (not routed by the paper).*
-  70. `K .threeRouteFan` (idx 7100): **The length-3 fan**: at every vertex `h`, two paths `a p₁ p₂ b`, `a q₁ q₂ c` of length `3` of `G − h` from a neighbour `a` of `h` to distinct neighbours `b ≠ c` of `h` have `p₁ = q₁`, `p₂ ≠ q₂`, `p₂ ≠ c`, `q₂ ≠ b`; distinct first steps would close the 8-cycle `h b p₂ p₁ a q₁ q₂ c`.  *Entry prefix, after the presentation laws (`threeRouteRow`); port-local, Lean improvement (not routed by the paper; see [Local rigidity at G](#local-rigidity)).*
-  71. `K .threeRouteChain` (idx 7101): **The chain `3, 3, 3`**: at every vertex `h`, paths `a p₁ p₂ b`, `b r₁ r₂ c`, `c q₁ q₂ d` of length `3` of `G − h` between neighbours of `h` (`a ≠ c`, `b ≠ d`) have `r₁ = p₂`, `r₂ = q₁`.  *Entry prefix, after the presentation laws (`threeRouteRow`); port-local, Lean improvement (not routed by the paper).*
-  72. `K .windowPositionStubs` (idx 7102): **Window positions of `P₀`**: every window of `P₀` has a placement (an induced-path order of its vertices); at every placement an interior vertex carries `d − 2` external neighbours (exactly one when cubic) and an end vertex `d − 1`.  *Entry prefix, after the canonical packing `P₀` (`windowRigidityRow`); port-local, Lean improvement (not routed by the paper).*
-  73. `K .windowAttachmentGap` (idx 7103): **Cross-edge gap**: two vertex-disjoint placed paths of G joined at `(i, j)`, `(i', j')` have `|i − i'| + 2 + |j − j'|` not accepted; at every placed window of `P₀`: every outside vertex with a nonempty label carries a legal label (in `Labels 13`, tex 6661), two adjacent outside vertices carry `C₁`-safe labels, two distinct windows obey the same gap rule, and no two windows form a ladder (`|i − i'| = |j − j'| = 1`).  *Entry prefix, after the canonical packing `P₀` (`windowRigidityRow`); port-local, Lean improvement (not routed by the paper).*
-- **Distinct fact sets: 2** (2 paths, one per set).  Both paths reach the
-  return in `nearCubicDenseLinear` (`Assembly/NearCubic/DensePass.lean`) from
-  the no-arm of `[158]` (`nearCubicUnrealized`); their ledgers differ only by
-  the arm of `[160]` (`lem:dense-deficiency-routing`).  Each set is its own
-  subtype of the generic residual, in
-  `Assembly/Residuals/Node162ResidualOutcome.lean`, with `.toGeneric` and a
-  return theorem reading one `get` per key.
-- **Subtype `Node162ResidualOutcome_tauAtOrAbove`** (`[160]` first test fails,
-  `τ(θ) ≥ 1/4`; caller `nearCubicDensePassAtOrAbove`; return theorem
-  `node162Return_tauAtOrAbove`).  Extra facts:
-  - `K .denseDeficiencyAtOrAbove`
-  Total: 70 facts.
-- **Subtype `Node162ResidualOutcome_tauBelowRateFails`** (`[160]` first test
-  holds, `τ(θ) < 1/4`, and the private-carrier rate `τ(θ) < 3/13` fails;
-  caller `nearCubicDensePassRateFailed`; return theorem
-  `node162Return_tauBelowRateFails`).  Extra facts:
-  - `K .denseDeficiencyBelow`
-  - `K .route8RateFails`
-  Total: 71 facts.
-- **Wired.** `nearCubicDenseLinear` takes the `[160]` arm (`DenseTauArm`),
-  built by its two callers, and returns `node162SubtypesReturn`; the boundary
-  carries the two subtypes.
+**G audit: Node162ResidualOutcome.**  The residual (both subtypes `tauAtOrAbove`
+and `tauBelowRateFails`) no longer exists.
+
+- **Defining failure.**  `coldHeavyEntryDichotomy` (`Strategy/ColdCorridorRows/CutStates.lean`)
+  split "every retained cold corridor of G whose first failure is an (F4) heavy
+  centre strictly before its terminal segment is terminal (reads at most `Q_cold`
+  states)" from a constructed long corridor of G through a heavy centre
+  (`coldHeavyEntryWitness?`).  The test is about G and was not decided at G, but it
+  was **misrouted**: its only consumer was the conjunct `DenseColdCorridorsTerminalStatement`
+  ("every return corridor is terminal") that `neutralEqualLengthTerminalRow` copies into
+  `NeutralEqualLengthTerminalConfigurationStatement`, and that conjunct is never read
+  (`markedNeutralGerm?_spec_of_terminal` uses `.2`; `neutralEqualLengthTerminal_iff` is
+  `Iff.rfl`).  The paper's reason for terminality (bounded diameter of the pieces of `R`)
+  does not reach corridors of `G - X_cold`, which cross hot and non-ambient-cubic windows
+  (user ruling 2026-09-27); the corridor is a shortest path of its component `K`
+  (`Corridor.inside_length_le`), hence an induced path of G, but `K` contains windows, so
+  nothing bounds its length by G's remainder facts.
+- **Neither `[160]` arm is involved.**  The two subtypes differ only by the history facts
+  `denseDeficiencyAtOrAbove` / `denseDeficiencyBelow`, `route8RateFails`; the pass reads
+  none of them (`lem:dense-cold-pass`: "the density sentence is not among them").  The rate
+  failure `route8RateFails` is a fact about G (`¬ Route8Census.Rate` at `canonicalWindowPacking`)
+  and is not what fails.
+- **Fix (Lean improvement: the heavy-entry terminality test is not needed).**
+  * `DenseColdCorridorsTerminalStatement` (`Statements/Spine.lean`) now reads: G's retained
+    first-failure occurrence, in which every corridor is terminal (the (F5) terminal
+    subcase) or has a heavy handoff centre as its first failure (`ColdFirstFailureHandoffOccurrence`).
+    Proved from (★), target avoidance and uncompressibility, without the heavy-entry test
+    (`denseColdCorridorsTerminal_of_distinct`, `Contracts/Spine/ColdMass.lean`).
+  * `ColdHeavyEntryTerminalStatement` (key `K .coldHeavyEntryTerminal`, idx 3202, name kept)
+    now reads: the first failure of every retained corridor that is a heavy entry is read
+    within `Q_cold` states (`first.1 < stateBound`), a fact of G from (★)
+    (`coldHeavyEntryTerminal_of_distinct`).  It is published by the fact-only row
+    `coldHeavyEntryBoundedRow` and no longer splits anything.
+  * `K .coldDenseHeavyEntryResidual` (idx 3203) and its statement, witness
+    (`coldHeavyEntryWitness?`), spec, `coldDenseHeavyEntryResidual_of_not_terminal`,
+    `not_heavyEntryTerminal_of_residual`, the `Incompatible` instance and `coldHeavyEntryDichotomy`
+    are removed.  Idx 3203 is retired, not reused.
+  * `Node162ResidualOutcome*` (generic, two subtypes, `node162Return*`, `node162SubtypesReturn`)
+    are removed; `SelectedNearCubicSurvivorBoundary` and the root disjunction lose the `[162]`
+    disjunct (the `[54]` injections lose one `Or.inr`).
+- **Not a weakening of a needed fact.**  Downstream, the neutral configuration of `[163]` is a
+  germ of the subcubic extracted family; a heavy handoff centre has degree above `delta`, so its
+  first failure is never a candidate germ, and on the (★) arm an (F5) germ is terminal
+  (`denseColdCorridorsTerminal_of_distinct`, germ case).
+- **Facts built and tried against the old test** (not kept, commit `8138cdd` on `g-audit-162`):
+  `Corridor.shortcut_le`, `inside_induced` (non-consecutive corridor vertices are non-adjacent
+  in G) and `inside_run_short` (two corridor vertices in a window-free set joined inside it are
+  at most 11 positions apart, from `WindowFreeGeometry` of `P0`).  They do not close the old
+  test: a corridor of G can be long only by crossing windows of `P0`, and G's ledger bounds
+  neither the number of windows crossed nor `|K|`.  That is why the test was re-routed, not
+  refuted.
+- **Canonical hot family** (shared cold chain, coordinator order).  `canonicalHotWindows` was
+  `Classical.choose` of a maximal retained family.  It is now the lexicographically least
+  maximum-size retained family in G's vertex order (`Graph/CanonicalFamilyOrder.lean`:
+  `lexFamilyKey`, injective; `exists_lexLeast_hotFamily`, `canonicalHotWindows_lexLeast`);
+  every consumer reads `canonicalHotWindows_spec`.
+- Structural accounting report: `audits/structural-accounting/Node162ResidualOutcome.md`.
 
 <a id="residual-54"></a>
 

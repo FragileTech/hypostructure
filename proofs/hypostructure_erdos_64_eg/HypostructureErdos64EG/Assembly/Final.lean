@@ -101,9 +101,10 @@ fact sets are different residuals, stated as subtypes of the generic residual
 or, where the paths form a full product, as the product of their arm blocks:
 the six `[144a]` subtypes; the two `[172a]` subtypes; the six `[182]`
 subtypes; the remaining `[187]` outcomes; and the structural exhaustion
-residuals `[162]` (2 subtypes) and `[54]` (5 subtypes).  `[153]`'s equal-state
-pair is no longer a residual: it is the repeat subcase of (F5) and continues
-into the germ routing (`[187]`).
+residual `[54]` (5 subtypes).  `[153]`'s equal-state pair is no longer a
+residual: it is the repeat subcase of (F5) and continues into the germ routing
+(`[187]`).  (`[162]` is no longer returned: the dense pass needs no terminality
+of a heavy-entry corridor.)
 (G-only restatement: `[20a]` and the near-cubic target defect of `[187]` are
 closed at G -- exit (b) of `[125]`, stated about G, is empty -- and return no
 residual.  The `[186]` joint balance product and the three cold-terminal
@@ -137,8 +138,6 @@ abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
     PairConditionalFactorizationOutcome_blockedRealizabilityFails selected ∨
     PairConditionalFactorizationOutcome_blockedIncrementFails selected) ∨
   OtherReturnedOutcome selected ∨
-  (Node162ResidualOutcome_tauAtOrAbove selected ∨
-    Node162ResidualOutcome_tauBelowRateFails selected) ∨
   (Node54ResidualOutcome_realizedColdBelow selected ∨
     Node54ResidualOutcome_realizedBounded selected ∨
     Node54ResidualOutcome_unrealizedTauHighBounded selected ∨
@@ -322,12 +321,8 @@ noncomputable def selectedLedgerBoundary
           exact Or.inr (Or.inl blocked)
       | .inr (.inr (.inr (.inl cold))) =>
           exact other (Or.inr (Or.inr (Or.inr (Or.inr cold))))
-      | .inr (.inr (.inr (.inr (.inl heavy)))) =>
-          exact Or.inr (Or.inr (Or.inr (Or.inr
-            (Or.inl heavy))))
-      | .inr (.inr (.inr (.inr (.inr entropy)))) =>
-          exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-            (Or.inr entropy)))))
+      | .inr (.inr (.inr (.inr entropy))) =>
+          exact Or.inr (Or.inr (Or.inr (Or.inr entropy)))
 
 /-- The selected minimal counterexample has one of the exact boundary
 outcomes, each with every fact of the single ledger at its return. -/
