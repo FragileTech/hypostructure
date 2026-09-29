@@ -30,6 +30,8 @@ import Hypostructure.Graph.Statements.SparseExitReadings
 import Hypostructure.Graph.Statements.SwitchForcedPaths
 import Hypostructure.Graph.Statements.SameTokenPair
 import Hypostructure.Graph.Statements.SameTokenSwap
+import Hypostructure.Graph.Statements.SameTokenWalkWindows
+import Hypostructure.Graph.Statements.SameTokenHubEscape
 import Hypostructure.Graph.Statements.CycleCounting
 import Hypostructure.Graph.Statements.LocalRigidity
 import Hypostructure.Graph.Statements.JointHubs
@@ -2155,6 +2157,18 @@ inductive Key where
   | sameTokenWalkAttachment
   /-- Node `[144a]` (G audit S144a, Lean improvement: the separated configuration is empty at G): **every vertex off a pair seed has a cubic neighbour in `T`**: at G's canonical routing and pinned `X_p`, `X_q`, `Z`, for both pair seeds `T ∪ supp w₁ ∪ supp w₂`, in the boundary-free configuration with both ports triangular, every vertex off the seed has a degree-`3` neighbour in `T`, at most `3|T|` vertices lie off the seed, and `n ≤ 4|T| + |w₁| + |w₂| + 2` (a separating off-seed vertex would force `n ≤ 729 < C_sp(C_sp + 1) + 9`). -/
   | sameTokenSeparatorExcluded
+  /-- Node `[144a]` ([144a] exchange attack, Lean improvement): **induced windows along the canonical port walks**: at G's canonical routing, for both pair seeds, one walk witness `T ∪ supp w₁ ∪ supp w₂` (`|T| ≤ 2δ`, port walks) such that for each triangular walk every `13`-segment other than the whole walk induces a window and meets a member of `P₀`; `⌊|wᵢ|/13⌋ ≤ ν`; `⌊|w₁|/13⌋ + ⌊|w₂|/13⌋ ≤ ν` for two triangular walks with disjoint supports; and for `S ⊆ P₀` and disjoint segments `Q` avoiding `P₀ ∖ S`, `|Q| ≤ |S|` (no member of `P₀` has two disjoint segments avoiding all other members). -/
+  | sameTokenWalkWindows
+  /-- Node `[144a]` ([144a] exchange attack, Lean improvement): **the exchange at G's canonical packing `P₀`**: for `S ⊆ P₀` and a window packing `Q` of G avoiding every member of `P₀` outside `S`, `|Q| ≤ |S|`; no member `X ∈ P₀` has two disjoint windows avoiding every other member of `P₀`. -/
+  | sameTokenWalkExchange
+  /-- Node `[144a]` ([144a] exchange attack, Lean improvement): **the W0 escape at the canonical port walks**: at G's canonical routing, for both pair seeds (a walk witness exists) and every walk witness `T ∪ supp w₁ ∪ supp w₂` with both ports triangular, on both walks: a hub `h = w₁(i)` off `W₂`, not an end, with no neighbour in `Y = V ∖ (W₁ ∪ W₂)` has `W₂`-neighbours `w₂(j)`, `w₂(j + 1)`, `w₁(i ± 1)` are off `W₂`, a `W₂`-neighbour `w₂(k)` of `w₁(i ± 1)` has `k = j − 2` or `k = j + 3`, and one of `w₁(i ± 1)` has a neighbour in `Y`. -/
+  | sameTokenW0Escape
+  /-- Node `[144a]` ([144a] exchange attack, Lean improvement): **the crossings of the canonical port walks**: for both pair seeds and every walk witness with both ports triangular and `EndEdgesFree`, in both orders: a crossing hub (common, interior, no neighbour in `Y`) leaves `W₂` at its next position; every bubble carries a position exceptional for `H ∪ Y ∪ {a₂, b₂}`; the crossing hubs are at most `25|Y| + 17`. -/
+  | sameTokenCrossingCount
+  /-- Node `[144a]` ([144a] exchange attack, Lean improvement): **the hub count in `|Y|`**: for both pair seeds and every walk witness with both ports triangular and `EndEdgesFree`: `|H| ≤ 37|Y| + 21`, `|H_Y| ≤ 3|Y|` (hubs with a neighbour in `Y`) and `σ ≤ |H| + |H_Y|·|Y|`. -/
+  | sameTokenHubCount
+  /-- Node `[144a]` ([144a] exchange attack, Lean improvement: the triangular sub-arm is empty at G): at G's canonical routing and pinned `X_p`, `X_q`, `Z`, for both pair seeds and every walk witness, the boundary-free configuration with both ports triangular and `EndEdgesFree` is impossible (`|Y| ≤ 4|T| ≤ 24`, so `σ ≤ 2637 < 102·103 < C_sp⌈√n⌉ < σ`). -/
+  | sameTokenTriArmEmpty
   -- g-pieces-constructed keys (8700–8799)
   /-- Route 8 read on the pieces constructed from G: at every unified entry a fold pair of the selected basin (two interior vertices with no common neighbour) makes alternative (a) occur and the load an exit-`(4)` peel (Q3); a nonempty essential core means the declared family determines the target; every complete carrier set holds every fold pair. -/
   | route8FoldPeels
@@ -3312,6 +3326,18 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SameTokenWalkAttachmentStatement data.toParameters object
   | .sameTokenSeparatorExcluded, object =>
       SameTokenSeparatorExcludedStatement data.toParameters object
+  | .sameTokenWalkWindows, object =>
+      SameTokenWalkWindowsStatement data.toParameters object
+  | .sameTokenWalkExchange, object =>
+      SameTokenWalkExchangeStatement data.toParameters object
+  | .sameTokenW0Escape, object =>
+      SameTokenW0EscapeStatement data.toParameters object
+  | .sameTokenCrossingCount, object =>
+      SameTokenCrossingCountStatement data.toParameters object
+  | .sameTokenHubCount, object =>
+      SameTokenHubCountStatement data.toParameters object
+  | .sameTokenTriArmEmpty, object =>
+      SameTokenTriArmEmptyStatement data.toParameters object
   -- g-pieces-constructed keys
   | .route8FoldPeels, object =>
       Route8FoldPeelsStatement data.toParameters object
@@ -3888,6 +3914,12 @@ def label : Key → String
   | .sameTokenLadderCount => "sameTokenLadderCount"
   | .sameTokenWalkAttachment => "sameTokenWalkAttachment"
   | .sameTokenSeparatorExcluded => "sameTokenSeparatorExcluded"
+  | .sameTokenWalkWindows => "sameTokenWalkWindows"
+  | .sameTokenWalkExchange => "sameTokenWalkExchange"
+  | .sameTokenW0Escape => "sameTokenW0Escape"
+  | .sameTokenCrossingCount => "sameTokenCrossingCount"
+  | .sameTokenHubCount => "sameTokenHubCount"
+  | .sameTokenTriArmEmpty => "sameTokenTriArmEmpty"
   | .route8FoldPeels => "route8FoldPeels"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
@@ -4448,6 +4480,12 @@ example : label .sameTokenPathInteractions = "sameTokenPathInteractions" := rfl
 example : label .sameTokenLadderCount = "sameTokenLadderCount" := rfl
 example : label .sameTokenWalkAttachment = "sameTokenWalkAttachment" := rfl
 example : label .sameTokenSeparatorExcluded = "sameTokenSeparatorExcluded" := rfl
+example : label .sameTokenWalkWindows = "sameTokenWalkWindows" := rfl
+example : label .sameTokenWalkExchange = "sameTokenWalkExchange" := rfl
+example : label .sameTokenW0Escape = "sameTokenW0Escape" := rfl
+example : label .sameTokenCrossingCount = "sameTokenCrossingCount" := rfl
+example : label .sameTokenHubCount = "sameTokenHubCount" := rfl
+example : label .sameTokenTriArmEmpty = "sameTokenTriArmEmpty" := rfl
 example : label .route8FoldPeels = "route8FoldPeels" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
@@ -5004,6 +5042,12 @@ def idx : Key → Nat
   | .sameTokenLadderCount => 8107
   | .sameTokenWalkAttachment => 9990
   | .sameTokenSeparatorExcluded => 9991
+  | .sameTokenWalkWindows => 9850
+  | .sameTokenWalkExchange => 9851
+  | .sameTokenW0Escape => 9852
+  | .sameTokenCrossingCount => 9853
+  | .sameTokenHubCount => 9854
+  | .sameTokenTriArmEmpty => 9855
   | .route8FoldPeels => 8700
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
@@ -5549,6 +5593,12 @@ def ofIdx : Nat → Key
   | 8107 => .sameTokenLadderCount
   | 9990 => .sameTokenWalkAttachment
   | 9991 => .sameTokenSeparatorExcluded
+  | 9850 => .sameTokenWalkWindows
+  | 9851 => .sameTokenWalkExchange
+  | 9852 => .sameTokenW0Escape
+  | 9853 => .sameTokenCrossingCount
+  | 9854 => .sameTokenHubCount
+  | 9855 => .sameTokenTriArmEmpty
   | 8700 => .route8FoldPeels
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
@@ -6722,6 +6772,18 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenWalkAttachment") 9990
   | .sameTokenSeparatorExcluded =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenSeparatorExcluded") 9991
+  | .sameTokenWalkWindows =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenWalkWindows") 9850
+  | .sameTokenWalkExchange =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenWalkExchange") 9851
+  | .sameTokenW0Escape =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenW0Escape") 9852
+  | .sameTokenCrossingCount =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenCrossingCount") 9853
+  | .sameTokenHubCount =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenHubCount") 9854
+  | .sameTokenTriArmEmpty =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenTriArmEmpty") 9855
   | .route8FoldPeels =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8FoldPeels") 8700
   -- TA keys

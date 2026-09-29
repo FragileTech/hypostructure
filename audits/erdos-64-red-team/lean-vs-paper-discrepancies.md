@@ -6938,6 +6938,41 @@ power of two (8106, 9990); `|H| ≥ (n − 4952)/769`.  Open: a lower bound on t
 along some cycle's segments (`t + c ≥ L₀` closes by the dyadic lemma); the ledger bounds triangles
 only through `|H|`.  Outside W ∧ Tri (open ports, or `EndEdgesFree` failing) nothing here applies.
 
+### [144a] exchange attack — keys 9850–9855 (Lean improvement (not routed by the paper))
+
+Generic `Graph/WalkWindows.lean` (vocabulary-free): `seg_window` (a path `w : a ⇝ b` with
+`GeodesicDetours s(a, b)`: the `L` consecutive vertices `w(s..s+L−1)`, other than the whole path,
+induce a window of order `L`), `segFamily_packing` / `length_div_le` (blocks at `0, L, 2L, …`: a
+packing of size `⌊|w|/L⌋`), `two_length_div_le` (disjoint supports), `exchange_card_le` / `exchange_single`
+(local packing exchange; dedup: generic packing exchange, branch `g-packing-exchange`).  Contract:
+`Contracts/Spine/SameTokenWalkWindows.lean`; statements: `Statements/SameTokenWalkWindows.lean`;
+row: `SpineRows/SameTokenWalkWindows.lean` (`sameTokenWalkWindowsRow`).  `L = windowOrder = 13`,
+`P₀ = canonicalWindowPacking`, `ν = windowPackingNumber 13`.
+
+| idx | key | statement at G |
+|---|---|---|
+| 9850 | `K .sameTokenWalkWindows` | At G's canonical routing, for both pair seeds, ONE walk witness `(T, w₁, w₂)` from `pairSeedWalks` (`|T| ≤ 2δ`, port walks, seed `= T ∪ supp w₁ ∪ supp w₂`) with: every 13-segment of a triangular walk (`b ~ a`), not the whole walk, induces a window and meets a member of `P₀`; `⌊|wᵢ|/13⌋ ≤ ν` (triangular); `⌊|w₁|/13⌋ + ⌊|w₂|/13⌋ ≤ ν` (both triangular, disjoint supports); for `S ⊆ P₀` and pairwise disjoint such segments `Q` avoiding every member of `P₀` outside `S`, `|Q| ≤ |S|`; no `X ∈ P₀` has two disjoint such segments avoiding every other member of `P₀` (`PairWalkWindows`). |
+| 9851 | `K .sameTokenWalkExchange` | The exchange at `P₀` for all windows of G: `S ⊆ P₀`, `Q` a window packing avoiding every member of `P₀` outside `S` ⇒ `|Q| ≤ |S|`; no `X ∈ P₀` has two disjoint windows avoiding every other member of `P₀`. |
+| 9852 | `K .sameTokenW0Escape` | At G's canonical routing, for both pair seeds (a walk witness exists) and EVERY walk witness `(T, w₁, w₂)` of the seed with both ports triangular, on both walks: a hub `h = w₁(i)` off `W₂`, `0 < i < |w₁|`, with no neighbour in `Y = V ∖ (W₁ ∪ W₂)` has `W₂`-neighbours exactly `w₂(j)`, `w₂(j+1)`; `w₁(i±1) ∉ W₂`; a `W₂`-neighbour `w₂(k)` of `w₁(i±1)` has `k = j−2` or `k = j+3` (stub rule); one of `w₁(i±1)` has a neighbour in `Y` (K1; `WalkHubEscape.W0Escape`). No `EndEdgesFree` needed. |
+| 9853 | `K .sameTokenCrossingCount` | Same quantification, plus `EndEdgesFree`, in both orders: a crossing hub (common, interior to both walks, no `Y`-neighbour) leaves `W₂` at its next `w₁`-position (`common_iso`); every bubble carries a position exceptional for `H ∪ Y ∪ {a₂,b₂}` (`bubble_exc`); the crossing hubs are `≤ 25|Y| + 17` (exits `≤` exceptional positions `+ 1`). Deviation from MATH_EXCHANGE §3 B: the Y-only bubble escape is not formalized; the crossing count uses the existing `bubble_exc` with `S = H ∪ Y ∪ {a₂,b₂}` and charges its exceptional positions to non-crossing hubs (bounded by K1) and to `N(S ∖ W₁)`. |
+| 9854 | `K .sameTokenHubCount` | Same quantification (Tri ∧ EndEdgesFree): `|H| ≤ 37|Y| + 21`, `|H_Y| ≤ 3|Y|` (hubs with a `Y`-neighbour), `σ ≤ |H| + |H_Y|·|Y|` (from `d(v) ≤ 4 + |N(v) ∩ Y|`, every vertex has `≤ 2` neighbours on each walk). |
+| 9855 | `K .sameTokenTriArmEmpty` | At G's canonical routing and pinned `X_p, X_q, Z`, for both pair seeds and EVERY walk witness: W (the 8104 antecedent) ∧ Tri(1) ∧ Tri(2) ∧ EndEdgesFree ⇒ `False`. At the same witness: `seedAttached_core` (9991's argument) gives `|V ∖ seed| ≤ 3|T|`, so `|Y| ≤ 4|T| ≤ 24`; 9854's lemmas give `σ ≤ 37·24 + 21 + 72·24 = 2637`; `K .surplusAbove`, `K .ceilSqrtAboveScale`, `C_sp ≥ 102` give `σ > 102·103`. **Lean improvement: the sub-arm W ∧ Tri ∧ EndEdgesFree is empty at G.** |
+
+Generic module `Graph/WalkHubEscape.lean` (A: `deg_le`, `deg_le_four`, `deg_le_Y`, `Tri2.pos1/pos2`; K1: `w0_shape`, `stub_rule`, `w0_escape`; B: `crossing_exit`, `exitPos_le`, `bubble_escape`, `crossings_le`; C: `hub_count`, `sigma_count`). Contract `Contracts/Spine/SameTokenHubEscape.lean`; statements `Statements/SameTokenHubEscape.lean`; rows `SpineRows/SameTokenHubEscape.lean`: `sameTokenHubEscapeRow` (9852–9854) right after `sameTokenWalkWindowsRow` (generic `Node144aOutcome`, now 136 common facts), `sameTokenTriArmRow` (9855) on the handoff-fails arm right after `sameTokenPairPartitionRow` (the three `Node144aOutcome_*Fails` subtypes gain one conjunct). Remaining open on `[144a]`'s fails arm after 9855: the complement of the sub-arm (an open port, `EndEdgesFree` failing, or W failing), unchanged.
+
+Placement: `sameTokenWalkWindowsRow` runs right after `sameTokenPatternSupportsRow` in
+`selectedBottleneckDischarge` (`Assembly/Surplus/Local.lean`), above the `[144]` handoff decision
+(Requires `K .sameTokenPatternSupports`, `K .selection`, `K .activeSurplusFamily`,
+`K .cubicBaseline`); every path through that row ends in `[144a]`, so both keys are generic
+`Node144aOutcome` facts (133 common facts).  Root type: no outcome appears or disappears.
+
+**Derivation and outcome (paper: `scratchpad/144x/MATH_EXCHANGE.md`; independent verification: `scratchpad/144x/verify/`).**
+- *Counting (PROVED, Lean 9850).* `wᵢ + aᵢbᵢ` is an induced cycle, so every 13 consecutive walk vertices (not the whole walk) induce a `P₁₃`; `⌊|w₁|/13⌋ + ⌊|w₂|/13⌋ ≤ p` for disjoint walks, `13p ≤ n ≤ 4|T| + |w₁| + |w₂| + 2`, so `p ≍ n/13..n/26`.  Every window fact on the ledger stays compatible; the counting alone gives no contradiction.
+- *Exchange (PROVED, Lean 9850/9851).* For `S ⊆ P₀`, disjoint windows inside `R ∪ ⋃S` number `≤ |S|`; along a walk: `R`-runs `≤ 12`, `(R ∪ P)`-runs `≤ 25` with at most one reaching 13.  These rules use only chord-free walk arcs and do **not** constrain hubs or triangles.
+- *Toggles (PROVED on paper, not in Lean).* The apex of a W0 hub's triangle sits at the matched position of the complementary segment, i.e. on the cycle; a two-walk rung cycle has `t ≤ 14 + |Y|` toggleable triangles.  So `t + c ≥ L₀` is reachable only for `L₀ ≤ 41`: the dyadic-toggle route of the previous pass was structurally mis-targeted.
+- *The lever that closes (PROVED, Lean 9852–9855).*  Hubs are not exceptional: the W0 escape (K1) forces a `Y`-neighbour next to every W0 hub (`Y = V ∖ (W₁ ∪ W₂)`, `|Y| ≤ 24` by 9991's argument), bubbles need an exceptional position, so `|H| ≤ 37|Y| + 21` and `σ ≤ 2637`, against `σ > C_sp⌈√n⌉ ≥ 102·103`.  Cross-check (COMPUTED, orientation-free ladder search): no 7 consecutive clean walk positions (C4 only), no 5 (C4/8/16); no clean bubble for half-length 2..14.
+- **Outcome.** The main sub-arm W ∧ Tri ∧ EndEdgesFree of `[144a]`'s handoff-fails arm is empty at G (Lean improvement, 9855).  **Exact remaining proposition** on the three `*Fails` subtypes: the full ledger (136 generic facts + the fails-arm extras incl. 8100–8107, 9990, 9991, 9855) with, at every walk witness of each pair seed, the complement ¬(W ∧ Tri(1) ∧ Tri(2) ∧ EndEdgesFree): an open (non-triangular) port, a walk using the other pair's end edge, or the boundary-free/transplant antecedent W failing (then 8100–8103's U1/U2 boundary configurations).  The handoff subtypes are unchanged.
+
 ### G audit: Route8RateFailsOutcome, sixth pass: windows joined through the remainder (keys 8266-8267); rebased on d85731a
 
 - **Rebase.** Merged `g-repair-base` (d85731a; `Route8JointBalanceOutcome` removed there, conflict resolved by taking that removal). `nearCubicResidualBKeys` now lists the sixteen keys this audit publishes on the failed-rate arm (the freshness hypotheses of the callers of `nearCubicRouteEightEntry`/`nearCubicRateFailedExit` were the missing piece). Checked against the refreshed validation build: `NearCubic/Spine.lean`, `NearCubic/ColdPass.lean`, `NearCubic/Survivor/Unrealized.lean`, `RouteEight/Residual.lean`, `RouteEight/Local.lean`, `Residuals.lean`, `Residuals/Route8RateFailsOutcome.lean` and every library, contract and row file of the audit pass.

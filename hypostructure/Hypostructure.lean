@@ -219,3 +219,5 @@ import Hypostructure.Graph.LadderG
 import Hypostructure.Graph.RecordFibreCompression
 import Hypostructure.Graph.BlobCycles
 import Hypostructure.Graph.WalkAttachment
+import Hypostructure.Graph.WalkWindows
+import Hypostructure.Graph.WalkHubEscape
