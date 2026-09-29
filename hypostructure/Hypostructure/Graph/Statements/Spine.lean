@@ -819,17 +819,54 @@ def BlockedSurvivingConditionalFibre (data : Parameters)
     IsBlockedSurvivingState data coordinate.2
       ((blockedAprioriBarrierCode data object member).2 coordinate)}
 
-/-- The denominator-cleared `F_{a,b}/W_{a,b}` estimate at one exposure
-coordinate, uniformly over every outside record and earlier prefix reached by a
-blocked member. -/
-def BlockedRelativeFibreBoundAt (data : Parameters)
+/-- The number of a-priori near-cubic graphs whose outside record and barrier states at all
+coordinates of encoding rank below `k` agree with those of some member of `𝓑(𝒫)`: the set
+`A_k` of `lem:blocked-graphs-compress`'s proof, fixed by G's canonical packing, class and
+coordinate order. -/
+noncomputable def blockedReachedCount (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (k : Nat) : Nat :=
+  Nat.card {candidate : blockedAprioriClassAt data object //
+    ∃ member : blockedClassAt data object,
+      (blockedAprioriBarrierCode data object candidate).1 =
+          (blockedBarrierCode data object member).1 ∧
+        ∀ other : blockedCoordinate data object,
+          blockedEncodingRank data object other < k →
+            (blockedAprioriBarrierCode data object candidate).2 other =
+              (blockedBarrierCode data object member).2 other}
+
+/-- **The aggregate `F_{a,b}/W_{a,b}` test at one exposure coordinate**, in the form the
+exposure product of `lem:blocked-graphs-compress` consumes: the class of graphs reached
+through the coordinate's state, times `W_{a,b}`, is at most `F_{a,b}` times the class reached
+before it.  A numerical statement about G's class; no record is chosen. -/
+def BlockedAggregateBoundAt (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (coordinate : blockedCoordinate data object) : Prop :=
-  ∀ member₀ : blockedClassAt data object,
-    blockedAprioriCountAt data coordinate.2 *
-        Nat.card (BlockedSurvivingConditionalFibre data object member₀ coordinate) ≤
-      blockedSurvivingCountAt data coordinate.2 *
-        Nat.card (BlockedAprioriConditionalFibre data object member₀ coordinate)
+  blockedAprioriCountAt data coordinate.2 *
+      blockedReachedCount data object (blockedEncodingRank data object coordinate + 1) ≤
+    blockedSurvivingCountAt data coordinate.2 *
+      blockedReachedCount data object (blockedEncodingRank data object coordinate)
+
+/-- The product of the registered a-priori carriers `W_{a,b}` over the coordinates of encoding
+rank below `r`. -/
+noncomputable def blockedPrefixAprioriCount (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (r : Nat) : Nat := by
+  classical
+  letI := data.windowBarrier.indexFintype
+  exact ∏ coordinate ∈ Finset.univ.filter
+      (fun coordinate : blockedCoordinate data object =>
+        blockedEncodingRank data object coordinate < r),
+    blockedAprioriCountAt data coordinate.2
+
+/-- The product of the registered surviving carriers `F_{a,b}` over the coordinates of
+encoding rank below `r`. -/
+noncomputable def blockedPrefixSurvivingCount (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (r : Nat) : Nat := by
+  classical
+  letI := data.windowBarrier.indexFintype
+  exact ∏ coordinate ∈ Finset.univ.filter
+      (fun coordinate : blockedCoordinate data object =>
+        blockedEncodingRank data object coordinate < r),
+    blockedSurvivingCountAt data coordinate.2
 
 /-- The unconditional conditional-state-fibre bound supplied by the certified
 flat-state carrier.  The extra `1` is the distinguished `none` state recording
@@ -853,11 +890,10 @@ def BlockedGraphFibreMonotonicityAt (data : Parameters)
     Nat.card (BlockedSurvivingConditionalFibre data object member₀ coordinate) ≤
       Nat.card (BlockedAprioriConditionalFibre data object member₀ coordinate)
 
-/-- **`lem:scale-additivity`, node `[170]`.**  Blockedness makes the selected
-member's state a surviving state, and at every exposure coordinate the
-surviving a-priori graph fibre has relative size at most
-`F_{a,b}/W_{a,b}`.  The ratio is cleared of division, so both graph
-multiplicities and the `W_{a,b}` denominator are retained. -/
+/-- **`lem:scale-additivity`, node `[170]`.**  Blockedness makes every member's state a
+surviving state, and at every exposure coordinate the aggregate cleared `F_{a,b}/W_{a,b}` test
+holds: `W_{a,b}·A_{k+1} ≤ F_{a,b}·A_k` for the classes `A_k` reached through the blocked
+records (`blockedReachedCount`). -/
 def BlockedScaleAdditivityStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   (∀ (member : blockedClassAt data object)
@@ -867,27 +903,23 @@ def BlockedScaleAdditivityStatement (data : Parameters)
   ∀ coordinate : blockedCoordinate data object,
     BlockedStateFibreBoundAt data object coordinate ∧
       BlockedGraphFibreMonotonicityAt data object coordinate ∧
-        BlockedRelativeFibreBoundAt data object coordinate
+        BlockedAggregateBoundAt data object coordinate
 
-/-- The literal negative arm of node `[170]`: the first exposure coordinate at
-which some fixed outside record and earlier prefix violates the cleared
-`F_{a,b}/W_{a,b}` bound, together with the two unconditional local fibre facts
-also retained by the positive arm. -/
+/-- The literal negative arm of node `[170]`: a numerical fact about G's class.  The first
+exposure coordinate at which the aggregate test fails,
+`F_{a,b}·A_k < W_{a,b}·A_{k+1}`, all earlier aggregate tests holding.  No record or member is
+chosen. -/
 def BlockedBarrierFailureStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  (∀ coordinate : blockedCoordinate data object,
-    BlockedStateFibreBoundAt data object coordinate ∧
-      BlockedGraphFibreMonotonicityAt data object coordinate) ∧
   ∃ coordinate : blockedCoordinate data object,
     (∀ other : blockedCoordinate data object,
       blockedEncodingRank data object other <
           blockedEncodingRank data object coordinate →
-        BlockedRelativeFibreBoundAt data object other) ∧
-    ∃ member₀ : blockedClassAt data object,
-      blockedSurvivingCountAt data coordinate.2 *
-          Nat.card (BlockedAprioriConditionalFibre data object member₀ coordinate) <
-        blockedAprioriCountAt data coordinate.2 *
-          Nat.card (BlockedSurvivingConditionalFibre data object member₀ coordinate)
+        BlockedAggregateBoundAt data object other) ∧
+    blockedSurvivingCountAt data coordinate.2 *
+        blockedReachedCount data object (blockedEncodingRank data object coordinate) <
+      blockedAprioriCountAt data coordinate.2 *
+        blockedReachedCount data object (blockedEncodingRank data object coordinate + 1)
 
 /-- The external-stub count of an ambient baseline-degree window.  For the
 Erdős presentation this evaluates to `15`; no numerical value is written into

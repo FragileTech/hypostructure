@@ -5650,3 +5650,161 @@ consumers that read `Classical.choose_spec` directly (`Rate.lean`,
 opaque families.  Facts reading the two families do so by name, so they are
 unchanged; `exists_maximal_windowFamilyRealized` is kept as the nonemptiness
 witness.
+
+## G audit: BlockedBarrierOverlapOutcome (`[172a]`, keys 8600-8604; revised)
+
+**Correction applied.**  The first version of node `[170]` tested `F·|A| ≥ W·|S|` at every
+record of a blocked member, and its no-arm retained `∃ member₀ : blockedClassAt` failing it:
+an other-graph witness (a failure of the counting tool, not structure of G).  That clause, and
+everything that served the "record differs from G's" arm (the transfer fact 8603 and the
+dominant-state fact 8604, with the state-carrier lemma), are deleted.
+
+**The new test (`Statements/Spine.lean`).**  `[171]`'s exposure product consumes only, for each
+coordinate `c` of encoding rank `k`,
+`W_c · A_{k+1} ≤ F_c · A_k`, where `A_k = blockedReachedCount k` is the number of a-priori
+near-cubic graphs whose outside record and barrier states at all coordinates of rank `< k`
+agree with those of some member of 𝓑(𝒫) (`BlockedAggregateBoundAt`).  It is a number fixed by
+G's canonical packing, class and coordinate order; no record and no member is chosen.  The
+pointwise per-record bound implied it (partition of `A_k` by record), but the aggregate is
+what the counting needs and is weaker.
+
+**Yes-arm (`[171]`).**  `Contracts/Spine/BlockedExposure.lean`, `blockedExposureUpTo`:
+the aggregate tests at ranks `< r` give `|𝓑(𝒫)|·∏_{rank<r} W ≤ |𝒢_{n,m}|·∏_{rank<r} F`
+(the chain `A_r·∏W ≤ A_0·∏F`, `|𝓑| ≤ A_r`, `A_0 ≤ |𝒢|`); `blockedExposureFull` is `r =` all.
+`blockedCompressionBound_of_additive` now takes `exposure` from `blockedExposureFull`; the
+survival of states and the partition argument are no longer used there.  The dichotomy row
+tests `∀ c, BlockedAggregateBoundAt` (`blockedScaleAdditive_of_aggregate` /
+`blockedBarrierFailure_of_not_aggregate`).
+
+**No-arm (`K .blockedBarrierOverlap`, `BlockedBarrierFailureStatement`).**  Numerical fact
+about G's class: the unconditional local fibre facts, and a first coordinate `c` (rank `k`)
+with all earlier aggregate tests holding and `F_c·A_k < W_c·A_{k+1}`.
+
+**Facts on the no-arm** (`Strategy/SpineRows/BlockedFailureG.lean`):
+- 8600 `blockedOwnRecord`: G's own skeleton (`= objectSkeletonMember`) is a member of 𝓑(𝒫) with
+  surviving barrier state at every coordinate and lies in its own conditional fibres,
+  `1 ≤ |S| ≤ |A|` (kept).
+  Also (G04, built): the barrier states realized at G's own record number at most `F_{a,b}+1`
+  (`blockedStateFibreBound` at `own`).  The pointwise `∀ member₀` fibre facts are dropped from
+  the failure statement.
+- 8601 `blockedFailureSlack`: at the failing coordinate `A_{k+1} ≤ A_k`,
+  `1 ≤ |𝓑(𝒫)| ≤ A_{k+1}`, `F_c < W_c`.
+- 8602 `blockedPrefixCompression`: at every coordinate whose predecessors all pass, the prefix
+  inequality above (from `blockedExposureUpTo`, no survival hypothesis).
+
+- 8603 `blockedFailingSetCarries` (the tail, built): the exposure counting with the failing
+  coordinates removed (a failing step is only `A_{k+1} ≤ A_k`) needs no hypothesis:
+  `|𝓑|·∏_{passing}W ≤ |𝒢|·∏_{passing}F` (`blockedExposurePassing`).  With the certified
+  package rate `2^{bits·p}·∏F ≤ ∏W` (`blockedWindowPackageRate`) and the split
+  `∏ = ∏_{passing}·∏_Φ` this gives, for the set `Φ` of coordinates whose aggregate test
+  fails, `|𝓑|·2^{bits·p}·∏_Φ F ≤ |𝒢|·∏_Φ W`.
+- 8604 `blockedOverlapSupport` (D06, built at G): G's own skeleton; the canonical completion
+  support of each coordinate (the one `barrierState` reads); overlap of two windows of the same
+  scale and row = supports meet outside the two root interiors; overlap support = union over the
+  overlap component.  Forced: every support has `≤ 2^j+1` vertices; a present support is the
+  support of a closed walk of length `2^j` through a vertex of the root window which is **not a
+  cycle** (an accepted cycle through a window would contradict `IsBlocked`), so the completion
+  retraces or self-overlaps; the overlap support of every coordinate is connected in G.  The
+  proof holds for every completion support, so the choice `support.some` is immaterial to the
+  statement (a lexicographically least choice would give the same facts).
+
+**Closure test against the ledger (explicit).**
+- With 8603 and the ledger: `|A| ≤ skeletonBudget < 2^{bits·p}` (`windowPackageUnrealized`) and
+  `|𝓑| ≥ 1` give `2^{bits·p}∏_Φ F ≤ |𝒢|∏_Φ W < 2^{bits·p}∏_Φ W`, i.e. only `∏_Φ F < ∏_Φ W`,
+  already known row by row (8601).  Quantitatively, the failing set must carry the ratio
+  `∏_Φ W/F ≥ 2^{bits·p}|𝓑|/|A| > 1`; each failing row has `W/F ≤` the table ratio, so
+  `|Φ|` is bounded below, never above.  Nothing on the ledger bounds `∏_Φ W/F` from above, or
+  says which coordinates lie in `Φ`, so the chain closes only if `Φ = ∅`, which is the yes-arm.
+- Local counts do not force the tail: the unconditional local facts (state fibre `≤ F+1`,
+  monotonicity `S ⊆ A`) bound how many states a record has, not how many graphs of the fibre
+  carry a realized state; `A_{j+1} ≤ A_j` is all that follows for `j ≥ k`.
+- D06: nothing links the count `F_c·A_k < W_c·A_{k+1}` to the overlap components of G. The
+  facts of 8604 hold at every coordinate whether or not the aggregate fails there, and the
+  overlap system of the paper is defined through the conditional fibre (a class count), not
+  through G's own supports.  The count-to-overlap inference is exactly the open lemma
+  `lem:barrier-failure-overlap`; the objects it would be applied to are now built at G.
+
+**Exact proposition at G left open.**  `BlockedBarrierFailureStatement ∧ 8600-8604`: a first
+coordinate `c` with `F_c·A_k < W_c·A_{k+1}` (numbers of G's class), all earlier aggregate tests
+holding, the set `Φ` of failing coordinates nonempty with `|𝓑|2^{bits·p}∏_Φ F ≤ |𝒢|∏_Φ W`, and
+G's overlap supports connected non-cycle closed walks; missing: an upper bound on
+`∏_Φ W/F` (or emptiness of `Φ`), or a derivation of an overlap-component obstruction from a
+failed aggregate.
+
+**Root type.**  `BlockedBarrierOverlapOutcome` gains five `Holds`
+(`blockedOwnRecord`, `blockedFailureSlack`, `blockedPrefixCompression`,
+`blockedFailingSetCarries`, `blockedOverlapSupport`).  Shared statements
+changed: `Statements/Spine.lean` (`BlockedRelativeFibreBoundAt` removed; `blockedReachedCount`,
+`BlockedAggregateBoundAt`, prefix products added; `BlockedScaleAdditivityStatement` and
+`BlockedBarrierFailureStatement` restated), `Contracts/Spine/BlockedCompression.lean`,
+`Strategy/BlockedCompressionRows.lean`.
+
+### `[172a]`: the conditional-independence route to `lem:barrier-failure-overlap` (attempted)
+
+`Graph/LayeredFactorization.lean` (generic, vocabulary-free, checked):
+- `aggregate_of_local_share`: if the class splits, layer by layer of the number `i` of edges in
+  a region `R`, as `R`-configurations `x ∈ X i` times the rest `y ∈ Y i` (the fixed edge count
+  `m` couples them only through the layer, so no binomial approximation is needed), the earlier
+  data depend on `y` only, and the state at the coordinate on `x` only, then
+  `W·A_{k+1} ≤ F·A_k` follows from the LOCAL SHARE TEST in every layer:
+  `W·#{x ∈ X i : s i x surviving} ≤ F·|X i|`.
+- `local_share_not_forced`: independence does not give the aggregate. A one-layer instance
+  with three `R`-configurations, two in the surviving state (`W = 2`, `F = 1`) has
+  `W·A_{k+1} = 4 > 3 = F·A_k`.  `F` and `W` count label triples, not configurations; the
+  paper's factor `F/W` presupposes a uniform distribution of configurations over triples.
+So the contrapositive of the independence route yields: the aggregate fails at `c` ⇒ locality
+or disjointness fails, OR the local share test fails in some layer of `R = Reg(c)`.  The third
+alternative is not an overlap.
+
+Not proved, and why (inventory of the code): (i) `barrierState` is defined through `support.some`
+(a global choice over completion supports of the whole graph), so `barrierState c` is not
+proved to depend on the slots of `Reg(c)` only; a locality theorem needs a canonical least
+choice defined from the ball, not built here. (ii) The completion walk has length `2^j`, so
+`Reg(c)` is the ball of radius about `2^j + 1` around the window; its size grows with the
+scale index `j < separatedScaleCount n`, and the disjointness hypothesis is a hypothesis about
+G's geometry not on the ledger. (iii) The local share test is not on the ledger. Hence no
+overlap of `c` with an earlier coordinate is derived, and the test of a forced overlap against
+`windowAttachmentGap` / `inducedPathAttachment` and accepted cycles was not run (there is no
+forced overlap to test).
+
+### `[172a]`: consuming the three alternatives (status)
+
+Built and checked (`Graph/LayeredFactorization.lean`): `repetition_of_failed_share`.  If a layer
+fails the local share test (`F·|X| < W·#{x : s x surviving}`) and at most `F + 1` states
+survive, then some surviving state `t` has `F·|X| < W·(F+1)·#{x : s x = t}`, and once the
+surviving configurations outnumber `F + 1` two distinct configurations share a surviving state:
+the correlation is a repetition, generically.
+
+What the definitions show about the region (read from `BarrierOverlapSystem.lean`,
+`TypeBDirectCycle.Presentation`, `WindowLabelCollision.attachmentLabel`), which changes the
+factorization data:
+- the conditional fibre `A_{d,q,c}` fixes the WHOLE outside record `d` (every edge not inside
+  the union of the window interiors), including the arms of the completion.  The free slots of
+  the fibre are the interior slots only, so `Reg(c)` as a graph ball always meets the outside
+  record; the split `X × Y` must be over interior slots (of the windows the completion can use).
+- the state at `c` reads: the labels `attachmentLabel presentation v` (adjacency between an
+  outside vertex and the window: outside-record slots, fixed in the fibre) and the choice of
+  `presentation` (a path through the window's support, i.e. interior slots).
+- the completion of length `2^j` may pass through other windows (`completionThroughWindow`,
+  "every window segment used by the completion"), so the interior slots read at `c` include the
+  interiors of every window within reach; two coordinates overlap exactly when they can read a
+  common window interior, and the reach of a coordinate of scale `2^j` is the windows within
+  `2^j + 1` of the root window.
+- the a-priori class carries the minimum-degree condition, which couples interior slots at
+  boundary vertices to the fixed outside slots (a degree constraint per vertex); it must be
+  carried in the layering.
+
+Not built: (i) a canonical least completion support with a locality theorem, (ii) the
+publication of the overlap at the first failing coordinate with the least-rank earlier
+coordinate, (iii) the canonical compression of `Reg(c)` by swapping G's configuration for the
+least configuration with the same surviving state.  Reasons on the record: for (iii), equality of
+the barrier state does not make the swapped graph a counterexample (it must also avoid every
+accepted cycle and keep minimum degree 3), so minimality is not reached from the repetition
+alone; the swap would have to be constructed and shown valid (the `RerouteSwap` /
+`Transplant` tools of g-audit-144a and the splice of g-audit-coldSilent are not in this branch).
+For (ii), `windowAttachmentGap` (`CrossGap`: outside connections between two placed windows at
+positions `i, i'` and `j, j'` of length `|i−i'|+2+|j−j'|` are not accepted) and
+`inducedPathAttachment` constrain outside paths of specific lengths; an overlap of two supports
+gives an outside connection of unspecified length (the supports are closed walks of length
+`2^j`, not paths), so the length arithmetic that would test it against `CrossGap` is the
+uncrossing (`lem:window-system-realizability`), which the paper does not establish.

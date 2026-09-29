@@ -30,6 +30,8 @@ import Hypostructure.Graph.Statements.LocalRigidity
 import Hypostructure.Graph.Statements.JointHubs
 import Hypostructure.Graph.Statements.HubLinks
 import Hypostructure.Graph.Statements.PairArms
+import Hypostructure.Graph.Statements.BlockedFailureG
+import Hypostructure.Graph.Statements.BlockedOverlapG
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1962,6 +1964,17 @@ inductive Key where
   | sameTokenSwapExact
   /-- Node `[144a]` (G audit S144a, Lean improvement): **boundary-free configuration**: if neither support meets `∂Z` and the transplants of `X_q` and `X_p` keep the baseline, then `X_p = X_q = Z`, `∂Z = ∅`, `Z = V(G)`, and every vertex outside a pair seed is a cut vertex of G (Steiner minimality of `select?`, G connected). -/
   | sameTokenU2FreeWhole
+  -- g-audit 172a keys (8600–8649)
+  /-- Node `[172a]`, on the failure arm of `[170]` (`lem:scale-additivity`), G's own record: **G's own skeleton, the member of `𝓑(𝒫)` given by `K .blockedClassMember`, has a surviving barrier state at every coordinate and lies in both of its own conditional fibres**, so `1 ≤ |S| ≤ |A|` at G's own outside record and prefix at every coordinate. -/
+  | blockedOwnRecord
+  /-- Node `[172a]`, the aggregate failure of `[170]` quantified: **at the first failing coordinate `F·A_k < W·A_{k+1}` with `A_{k+1} ≤ A_k`, `1 ≤ |𝓑(𝒫)| ≤ A_{k+1}` and `F_{a,b} < W_{a,b}`**, all earlier aggregate tests holding. -/
+  | blockedFailureSlack
+  /-- Node `[172a]`, the exposure counting of `lem:blocked-graphs-compress` run on a prefix: **at every coordinate whose predecessors all satisfy the aggregate test, `|𝓑(𝒫)|·∏W ≤ |𝒢|·∏F` over the predecessors**. -/
+  | blockedPrefixCompression
+  /-- Node `[172a]`, the failing set carries the overflow: **with the failing coordinates removed the exposure counting and the certified package rate give `|𝓑(𝒫)|·2^{bits·p}·∏_Φ F ≤ |𝒢_{n,m}|·∏_Φ W`** over the set `Φ` of coordinates whose aggregate test fails. -/
+  | blockedFailingSetCarries
+  /-- Node `[172a]`, G's overlap support (`def:barrier-overlap-system`): **for G's own skeleton, every completion support has at most `2^j+1` vertices; a present one is a closed walk of length `2^j` through a vertex of the root window which is not a cycle; and the overlap support of every coordinate is connected in G**. -/
+  | blockedOverlapSupport
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2996,6 +3009,17 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SameTokenSwapExactStatement data.toParameters object
   | .sameTokenU2FreeWhole, object =>
       SameTokenU2FreeWholeStatement data.toParameters object
+  -- g-audit 172a keys
+  | .blockedOwnRecord, object =>
+      BlockedOwnRecordStatement data.toParameters object
+  | .blockedFailureSlack, object =>
+      BlockedFailureSlackStatement data.toParameters object
+  | .blockedPrefixCompression, object =>
+      BlockedPrefixCompressionStatement data.toParameters object
+  | .blockedFailingSetCarries, object =>
+      BlockedFailingSetCarriesStatement data.toParameters object
+  | .blockedOverlapSupport, object =>
+      BlockedOverlapSupportStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3493,6 +3517,12 @@ def label : Key → String
   | .sameTokenSwap => "sameTokenSwap"
   | .sameTokenSwapExact => "sameTokenSwapExact"
   | .sameTokenU2FreeWhole => "sameTokenU2FreeWhole"
+  -- g-audit 172a keys
+  | .blockedOwnRecord => "blockedOwnRecord"
+  | .blockedFailureSlack => "blockedFailureSlack"
+  | .blockedPrefixCompression => "blockedPrefixCompression"
+  | .blockedFailingSetCarries => "blockedFailingSetCarries"
+  | .blockedOverlapSupport => "blockedOverlapSupport"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3988,6 +4018,11 @@ example : label .sameTokenReadingsExact = "sameTokenReadingsExact" := rfl
 example : label .sameTokenSwap = "sameTokenSwap" := rfl
 example : label .sameTokenSwapExact = "sameTokenSwapExact" := rfl
 example : label .sameTokenU2FreeWhole = "sameTokenU2FreeWhole" := rfl
+example : label .blockedOwnRecord = "blockedOwnRecord" := rfl
+example : label .blockedFailureSlack = "blockedFailureSlack" := rfl
+example : label .blockedPrefixCompression = "blockedPrefixCompression" := rfl
+example : label .blockedFailingSetCarries = "blockedFailingSetCarries" := rfl
+example : label .blockedOverlapSupport = "blockedOverlapSupport" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4478,6 +4513,12 @@ def idx : Key → Nat
   | .sameTokenSwap => 8102
   | .sameTokenSwapExact => 8103
   | .sameTokenU2FreeWhole => 8104
+  -- g-audit 172a keys
+  | .blockedOwnRecord => 8600
+  | .blockedFailureSlack => 8601
+  | .blockedPrefixCompression => 8602
+  | .blockedFailingSetCarries => 8603
+  | .blockedOverlapSupport => 8604
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4957,6 +4998,12 @@ def ofIdx : Nat → Key
   | 8102 => .sameTokenSwap
   | 8103 => .sameTokenSwapExact
   | 8104 => .sameTokenU2FreeWhole
+  -- g-audit 172a keys
+  | 8600 => .blockedOwnRecord
+  | 8601 => .blockedFailureSlack
+  | 8602 => .blockedPrefixCompression
+  | 8603 => .blockedFailingSetCarries
+  | 8604 => .blockedOverlapSupport
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -6012,6 +6059,17 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenSwapExact") 8103
   | .sameTokenU2FreeWhole =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenU2FreeWhole") 8104
+  -- g-audit 172a keys
+  | .blockedOwnRecord =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedOwnRecord") 8600
+  | .blockedFailureSlack =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedFailureSlack") 8601
+  | .blockedPrefixCompression =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedPrefixCompression") 8602
+  | .blockedFailingSetCarries =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedFailingSetCarries") 8603
+  | .blockedOverlapSupport =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedOverlapSupport") 8604
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

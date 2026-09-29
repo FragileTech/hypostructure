@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Statements.Spine
+import Hypostructure.Graph.Contracts.Spine.BlockedExposure
 
 /-!
 # Contracts: the blocked class `[159]`, `[170]`--`[171]`
@@ -416,7 +417,7 @@ theorem blockedStateFibreBound (data : Parameters)
 conditional graph fibre satisfies the denominator-cleared `F_{a,b}/W_{a,b}`
 bound, the barrier states survive and the state, graph and relative fibre
 bounds hold at every coordinate. -/
-theorem blockedScaleAdditive_of_relative (data : Parameters)
+theorem blockedScaleAdditive_of_aggregate (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (lengthOK_iff_powerOfTwo : ∀ length,
       data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
@@ -450,7 +451,7 @@ theorem blockedScaleAdditive_of_relative (data : Parameters)
             data.windowBarrier.table.counts.rightLength row)
           (windowBarrierLabel source) (windowBarrierLabel target)))
     (additive : ∀ coordinate : blockedCoordinate data object,
-      BlockedRelativeFibreBoundAt data object coordinate) :
+      BlockedAggregateBoundAt data object coordinate) :
     BlockedScaleAdditivityStatement data object :=
   ⟨blockedStateSurvives data object lengthOK_iff_powerOfTwo
       degenerateClosureRejected,
@@ -466,7 +467,7 @@ theorem blockedScaleAdditive_of_relative (data : Parameters)
 conditional graph fibre fails the relative bound, the first failing coordinate
 in the canonical encoding order is retained with its failing fibres, together
 with the state and graph fibre bounds at every coordinate. -/
-theorem blockedBarrierFailure_of_not_relative (data : Parameters)
+theorem blockedBarrierFailure_of_not_aggregate (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (lengthOK_iff_powerOfTwo : ∀ length,
       data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
@@ -500,7 +501,7 @@ theorem blockedBarrierFailure_of_not_relative (data : Parameters)
             data.windowBarrier.table.counts.rightLength row)
           (windowBarrierLabel source) (windowBarrierLabel target)))
     (additive : ¬ ∀ coordinate : blockedCoordinate data object,
-      BlockedRelativeFibreBoundAt data object coordinate) :
+      BlockedAggregateBoundAt data object coordinate) :
     BlockedBarrierFailureStatement data object := by
   classical
   have stateFibreBound := blockedStateFibreBound data object
@@ -515,19 +516,17 @@ theorem blockedBarrierFailure_of_not_relative (data : Parameters)
   have failedRank : ∃ rank : Nat,
       ∃ coordinate : blockedCoordinate data object,
         blockedEncodingRank data object coordinate = rank ∧
-          ¬ BlockedRelativeFibreBoundAt data object coordinate :=
+          ¬ BlockedAggregateBoundAt data object coordinate :=
     ⟨blockedEncodingRank data object someCoordinate,
       someCoordinate, rfl, someFailure⟩
   let firstCoordinateWitness := Nat.find_spec failedRank
   let firstCoordinate := Classical.choose firstCoordinateWitness
   have firstCoordinateData := Classical.choose_spec firstCoordinateWitness
   have firstFailure :
-      ¬ BlockedRelativeFibreBoundAt data object firstCoordinate :=
+      ¬ BlockedAggregateBoundAt data object firstCoordinate :=
     firstCoordinateData.2
   have failure : BlockedBarrierFailureStatement data object := by
-    refine ⟨fun coordinate ↦
-      ⟨stateFibreBound coordinate, graphFibreMonotone coordinate⟩,
-      firstCoordinate, ?_, ?_⟩
+    refine ⟨firstCoordinate, ?_, ?_⟩
     · intro earlier earlierRank
       by_contra earlierFailure
       have firstLeEarlier : Nat.find failedRank ≤
@@ -537,9 +536,8 @@ theorem blockedBarrierFailure_of_not_relative (data : Parameters)
           blockedEncodingRank data object firstCoordinate =
             Nat.find failedRank := firstCoordinateData.1
       omega
-    · simp only [BlockedRelativeFibreBoundAt] at firstFailure
-      push Not at firstFailure
-      exact firstFailure
+    · unfold BlockedAggregateBoundAt at firstFailure
+      exact not_le.mp firstFailure
   exact failure
 
 set_option maxHeartbeats 800000 in
@@ -553,413 +551,14 @@ theorem blockedCompressionBound_of_additive (data : Parameters)
     BlockedCompressionBoundStatement data object := by
   classical
   letI := data.windowBarrier.indexFintype
-  let orderAndRank : {order : blockedCoordinate data object ≃
-        Fin (Fintype.card (blockedCoordinate data object)) //
-      ∀ coordinate, (order coordinate).1 =
-        blockedEncodingRank data object coordinate} := by
-    classical
-    letI := data.windowBarrier.indexFintype
-    have coordinateCard : Fintype.card (blockedCoordinate data object) =
-        (data.separatedScaleCount object.vertexCount *
-          Fintype.card {window // window ∈ blockedWindowLabels data object}) *
-            Fintype.card data.windowBarrier.Index := by
-      simp [blockedCoordinate, Graph.BarrierSystem.Coordinate, Nat.mul_comm]
-    have rankBound : ∀ coordinate : blockedCoordinate data object,
-        blockedEncodingRank data object coordinate <
-          Fintype.card (blockedCoordinate data object) := by
-      intro coordinate
-      rw [coordinateCard]
-      exact show blockedEncodingRank data object coordinate <
-        (data.separatedScaleCount object.vertexCount *
-          Fintype.card {window // window ∈ blockedWindowLabels data object}) *
-            Fintype.card data.windowBarrier.Index by
-        exact (by
-          let rowCount := Fintype.card data.windowBarrier.Index
-          let windowCount :=
-            Fintype.card {window // window ∈ blockedWindowLabels data object}
-          let scaleCount := data.separatedScaleCount object.vertexCount
-          have rowLt : (Fintype.equivFin _ coordinate.2).1 < rowCount :=
-            (Fintype.equivFin _ coordinate.2).2
-          have windowLt : (Fintype.equivFin _ coordinate.1.1).1 < windowCount :=
-            (Fintype.equivFin _ coordinate.1.1).2
-          have scaleLt : coordinate.1.2.1 < scaleCount := coordinate.1.2.2
-          have innerLt :
-              (Fintype.equivFin _ coordinate.1.1).1 +
-                  coordinate.1.2.1 * windowCount < scaleCount * windowCount := by
-            calc
-              _ < windowCount + coordinate.1.2.1 * windowCount :=
-                Nat.add_lt_add_right windowLt _
-              _ = (coordinate.1.2.1 + 1) * windowCount := by
-                rw [Nat.add_mul, one_mul, Nat.add_comm]
-              _ ≤ scaleCount * windowCount :=
-                Nat.mul_le_mul_right _ (Nat.succ_le_iff.mpr scaleLt)
-          change (Fintype.equivFin _ coordinate.2).1 +
-              ((Fintype.equivFin _ coordinate.1.1).1 +
-                coordinate.1.2.1 * windowCount) * rowCount < _
-          calc
-            _ < rowCount +
-                  ((Fintype.equivFin _ coordinate.1.1).1 +
-                    coordinate.1.2.1 * windowCount) * rowCount :=
-              Nat.add_lt_add_right rowLt _
-            _ = (((Fintype.equivFin _ coordinate.1.1).1 +
-                    coordinate.1.2.1 * windowCount) + 1) * rowCount := by ring
-            _ ≤ (scaleCount * windowCount) * rowCount :=
-              Nat.mul_le_mul_right _ (Nat.succ_le_iff.mpr innerLt))
-    let rankFin : blockedCoordinate data object →
-        Fin (Fintype.card (blockedCoordinate data object)) :=
-      fun coordinate ↦ ⟨blockedEncodingRank data object coordinate,
-        rankBound coordinate⟩
-    have rankFinInjective : Function.Injective rankFin := by
-      intro left right equal
-      apply blockedEncodingRank_injective data object
-      exact Fin.ext_iff.mp equal
-    let order := Equiv.ofBijective rankFin
-      ((Fintype.bijective_iff_injective_and_card rankFin).2
-        ⟨rankFinInjective, by simp⟩)
-    have orderRank : ∀ coordinate, (order coordinate).1 =
-        blockedEncodingRank data object coordinate := by
-      intro coordinate
-      rfl
-    exact ⟨order, orderRank⟩
-  let order := orderAndRank.1
-  have orderRank := orderAndRank.2
   have exposure :
       Nat.card (blockedClassAt data object) *
             ∏ coordinate : blockedCoordinate data object,
               blockedAprioriCountAt data coordinate.2 ≤
         Nat.card (blockedAprioriClassAt data object) *
             ∏ coordinate : blockedCoordinate data object,
-              blockedSurvivingCountAt data coordinate.2 := by
-    classical
-    letI := data.windowBarrier.indexFintype
-    letI : Fintype (blockedClassAt data object) := Fintype.ofFinite _
-    letI : Fintype (blockedAprioriClassAt data object) := Fintype.ofFinite _
-    let N := Fintype.card (blockedCoordinate data object)
-    let Apriori := blockedAprioriClassAt data object
-    let Blocked := blockedClassAt data object
-    let Outside := Finset (Sym2 (Fin object.vertexCount))
-    let BarrierState := Option
-      (Graph.WindowCurvature.Label data.windowOrder ×
-        Graph.WindowCurvature.Label data.windowOrder ×
-          Graph.WindowCurvature.Label data.windowOrder)
-    let embed : Blocked → Apriori := fun member ↦ member.1
-    have embed_injective : Function.Injective embed :=
-      Subtype.val_injective
-    let outside : Apriori → Outside := fun member ↦
-      (blockedAprioriBarrierCode data object member).1
-    let state : Apriori → Fin N → BarrierState := fun member coordinate ↦
-      (blockedAprioriBarrierCode data object member).2
-        (order.symm coordinate)
-    let Survives : Fin N → BarrierState → Prop := fun coordinate value ↦
-      IsBlockedSurvivingState data (order.symm coordinate).2 value
-    let W : Fin N → Nat := fun coordinate ↦
-      blockedAprioriCountAt data (order.symm coordinate).2
-    let F : Fin N → Nat := fun coordinate ↦
-      blockedSurvivingCountAt data (order.symm coordinate).2
-    have blocked_survives : ∀ member coordinate,
-        Survives coordinate (state (embed member) coordinate) := by
-      intro member coordinate
-      simpa [Survives, state, embed, blockedBarrierCode] using
-        additive.1 member (order.symm coordinate)
-    have local_bound : ∀ (coordinate : Fin N) (member₀ : Blocked),
-        W coordinate *
-            (Finset.univ.filter fun candidate : Apriori ↦
-              outside candidate = outside (embed member₀) ∧
-              (∀ earlier : Fin N, earlier.1 < coordinate.1 →
-                state candidate earlier = state (embed member₀) earlier) ∧
-              Survives coordinate (state candidate coordinate)).card ≤
-          F coordinate *
-            (Finset.univ.filter fun candidate : Apriori ↦
-              outside candidate = outside (embed member₀) ∧
-              (∀ earlier : Fin N, earlier.1 < coordinate.1 →
-                state candidate earlier =
-                  state (embed member₀) earlier)).card := by
-        intro coordinate member₀
-        have relative := additive.2 (order.symm coordinate)
-        rcases relative with ⟨_stateBound, _monotone, relative⟩
-        have relative := relative member₀
-        have rankSymm : ∀ index : Fin N,
-            blockedEncodingRank data object (order.symm index) = index.1 := by
-          intro index
-          rw [← orderRank (order.symm index)]
-          exact congrArg Fin.val (order.apply_symm_apply index)
-        have prefix_iff (candidate : blockedAprioriClassAt data object) :
-            (∀ other : blockedCoordinate data object,
-              blockedEncodingRank data object other <
-                  blockedEncodingRank data object (order.symm coordinate) →
-                (blockedAprioriBarrierCode data object candidate).2 other =
-                  (blockedBarrierCode data object member₀).2 other) ↔
-            (∀ earlier : Fin N, earlier.1 < coordinate.1 →
-                (blockedAprioriBarrierCode data object candidate).2
-                    (order.symm earlier) =
-                  (blockedAprioriBarrierCode data object member₀.1).2
-                    (order.symm earlier)) := by
-          constructor
-          · intro original earlier earlierLt
-            simpa [blockedBarrierCode] using original (order.symm earlier)
-              (by simpa [rankSymm] using earlierLt)
-          · intro indexed other otherLt
-            have earlierLt : (order other).1 < coordinate.1 := by
-              calc
-                (order other).1 = blockedEncodingRank data object other :=
-                  orderRank other
-                _ < blockedEncodingRank data object
-                      (order.symm coordinate) := otherLt
-                _ = coordinate.1 := rankSymm coordinate
-            simpa [blockedBarrierCode] using indexed (order other) earlierLt
-        simp only [Nat.card_eq_fintype_card] at relative
-        rw [Fintype.card_subtype, Fintype.card_subtype] at relative
-        convert relative using 1 <;>
-          congr 2 <;>
-          ext candidate <;>
-          simp only [Finset.mem_filter, Finset.mem_univ, true_and,
-            BlockedSurvivingConditionalFibre,
-            BlockedAprioriConditionalFibre, Set.mem_setOf_eq,
-            blockedBarrierCode] <;>
-          rw [← prefix_iff candidate] <;>
-          simp [blockedBarrierCode] <;>
-          tauto
-    have finiteExposure :
-        Fintype.card Blocked * ∏ coordinate, W coordinate ≤
-          Fintype.card Apriori * ∏ coordinate, F coordinate := by
-      classical
-      let Prefix : Nat → Type _ := fun k ↦
-        Outside × ({coordinate : Fin N // coordinate.1 < k} → BarrierState)
-      let record : (∀ k : Nat, Apriori → Prefix k) := fun _ candidate ↦
-        (outside candidate, fun coordinate ↦ state candidate coordinate.1)
-      let keys : (∀ k : Nat, Finset (Prefix k)) := fun k ↦
-        Finset.univ.image fun member : Blocked ↦ record k (embed member)
-      let reached : Nat → Finset Apriori := fun k ↦
-        Finset.univ.filter fun candidate ↦ record k candidate ∈ keys k
-      let Wn : Nat → Nat := fun i ↦ if h : i < N then W ⟨i, h⟩ else 1
-      let Fn : Nat → Nat := fun i ↦ if h : i < N then F ⟨i, h⟩ else 1
-      have reached_zero_le : (reached 0).card ≤ Fintype.card Apriori := by
-        change (reached 0).card ≤ Finset.univ.card
-        exact Finset.card_le_card (Finset.filter_subset _ _)
-      have blocked_le_reached : Fintype.card Blocked ≤ (reached N).card := by
-        change Finset.univ.card ≤ (reached N).card
-        refine Finset.card_le_card_of_injOn embed ?_ embed_injective.injOn
-        intro member _
-        refine Finset.mem_filter.2 ⟨Finset.mem_univ _, ?_⟩
-        exact Finset.mem_image.2 ⟨member, Finset.mem_univ _, rfl⟩
-      have step : ∀ k (hk : k < N),
-          W ⟨k, hk⟩ * (reached (k + 1)).card ≤
-            F ⟨k, hk⟩ * (reached k).card := by
-        intro k hk
-        let coordinate : Fin N := ⟨k, hk⟩
-        let before := reached k
-        let after := before.filter fun candidate ↦
-          Survives coordinate (state candidate coordinate)
-        have next_subset : reached (k + 1) ⊆ after := by
-          intro candidate candidateMem
-          simp only [reached, Finset.mem_filter, Finset.mem_univ, true_and] at candidateMem
-          obtain ⟨member, _memberMem, recordEq⟩ :=
-            Finset.mem_image.1 candidateMem
-          have recordParts :
-              outside (embed member) = outside candidate ∧
-                (∀ earlier : {coordinate : Fin N // coordinate.1 < k + 1},
-                  state (embed member) earlier.1 = state candidate earlier.1) := by
-            change (outside (embed member), fun earlier :
-                {coordinate : Fin N // coordinate.1 < k + 1} ↦
-                  state (embed member) earlier.1) =
-              (outside candidate, fun earlier :
-                {coordinate : Fin N // coordinate.1 < k + 1} ↦
-                  state candidate earlier.1) at recordEq
-            have parts := Prod.ext_iff.mp recordEq
-            exact ⟨parts.1, fun earlier ↦ congrFun parts.2 earlier⟩
-          simp only [after, before, Finset.mem_filter]
-          constructor
-          · simp only [reached, Finset.mem_filter, Finset.mem_univ, true_and]
-            refine Finset.mem_image.2 ⟨member, Finset.mem_univ _, ?_⟩
-            change
-              (outside (embed member), fun earlier :
-                  {coordinate : Fin N // coordinate.1 < k} ↦
-                state (embed member) earlier.1) =
-              (outside candidate, fun earlier :
-                  {coordinate : Fin N // coordinate.1 < k} ↦
-                state candidate earlier.1)
-            refine Prod.ext_iff.mpr ⟨recordParts.1, ?_⟩
-            funext earlier
-            exact recordParts.2
-              ⟨earlier.1, lt_trans earlier.2 (Nat.lt_succ_self k)⟩
-          · have currentEq := recordParts.2
-              (⟨coordinate, Nat.lt_succ_self k⟩ :
-                {coordinate : Fin N // coordinate.1 < k + 1})
-            exact currentEq.symm ▸ blocked_survives member coordinate
-        have after_bound : W coordinate * after.card ≤ F coordinate * before.card := by
-          let fibreBefore (key : Prefix k) : Finset Apriori :=
-            Finset.univ.filter fun candidate ↦ record k candidate = key
-          let fibreAfter (key : Prefix k) : Finset Apriori :=
-            (fibreBefore key).filter fun candidate ↦
-              Survives coordinate (state candidate coordinate)
-          have before_partition : before.card =
-              ∑ key ∈ keys k, (fibreBefore key).card := by
-            have partition := Finset.card_eq_sum_card_fiberwise
-              (s := before) (t := keys k) (f := record k) (by
-                intro candidate candidateMem
-                exact (Finset.mem_filter.1 candidateMem).2)
-            rw [partition]
-            apply Finset.sum_congr rfl
-            intro key keyMem
-            congr 1
-            ext candidate
-            simp only [fibreBefore, before, reached, Finset.mem_filter,
-              Finset.mem_univ, true_and]
-            constructor
-            · intro member
-              exact member.2
-            · intro equal
-              have candidateKey : record k candidate ∈ keys k := by
-                rw [equal]
-                exact keyMem
-              exact ⟨candidateKey, equal⟩
-          have after_partition : after.card =
-              ∑ key ∈ keys k, (fibreAfter key).card := by
-            have partition := Finset.card_eq_sum_card_fiberwise
-              (s := after) (t := keys k) (f := record k) (by
-                intro candidate candidateMem
-                exact (Finset.mem_filter.1 (Finset.mem_filter.1 candidateMem).1).2)
-            rw [partition]
-            apply Finset.sum_congr rfl
-            intro key keyMem
-            congr 1
-            ext candidate
-            simp only [fibreAfter, fibreBefore, after, before, reached,
-              Finset.mem_filter, Finset.mem_univ, true_and]
-            constructor
-            · intro member
-              exact ⟨member.2, member.1.2⟩
-            · intro member
-              have candidateKey : record k candidate ∈ keys k := by
-                rw [member.1]
-                exact keyMem
-              exact ⟨⟨candidateKey, member.2⟩, member.1⟩
-          rw [before_partition, after_partition, Finset.mul_sum, Finset.mul_sum]
-          apply Finset.sum_le_sum
-          intro key keyMem
-          obtain ⟨member₀, _memberMem, keyEq⟩ := Finset.mem_image.1 keyMem
-          have bound := local_bound coordinate member₀
-          have before_eq : (fibreBefore key).card =
-              (Finset.univ.filter fun candidate : Apriori ↦
-                outside candidate = outside (embed member₀) ∧
-                (∀ earlier : Fin N, earlier.1 < coordinate.1 →
-                  state candidate earlier = state (embed member₀) earlier)).card := by
-            congr 1
-            ext candidate
-            subst key
-            simp only [fibreBefore, Finset.mem_filter, Finset.mem_univ, true_and]
-            constructor
-            · intro equal
-              have parts := Prod.ext_iff.mp equal
-              refine ⟨parts.1, ?_⟩
-              intro earlier earlierLt
-              exact congrFun parts.2 ⟨earlier, earlierLt⟩
-            · rintro ⟨outsideEq, earlierEq⟩
-              change
-                (outside candidate, fun earlier :
-                    {coordinate : Fin N // coordinate.1 < k} ↦
-                  state candidate earlier.1) =
-                (outside (embed member₀), fun earlier :
-                    {coordinate : Fin N // coordinate.1 < k} ↦
-                  state (embed member₀) earlier.1)
-              refine Prod.ext_iff.mpr ⟨outsideEq, ?_⟩
-              funext earlier
-              exact earlierEq earlier.1 earlier.2
-          have after_eq : (fibreAfter key).card =
-              (Finset.univ.filter fun candidate : Apriori ↦
-                outside candidate = outside (embed member₀) ∧
-                (∀ earlier : Fin N, earlier.1 < coordinate.1 →
-                  state candidate earlier = state (embed member₀) earlier) ∧
-                Survives coordinate (state candidate coordinate)).card := by
-            congr 1
-            ext candidate
-            subst key
-            simp only [fibreAfter, fibreBefore, Finset.mem_filter,
-              Finset.mem_univ, true_and]
-            constructor
-            · rintro ⟨equal, survives⟩
-              have parts := Prod.ext_iff.mp equal
-              refine ⟨parts.1, ?_, survives⟩
-              intro earlier earlierLt
-              exact congrFun parts.2 ⟨earlier, earlierLt⟩
-            · rintro ⟨outsideEq, earlierEq, survives⟩
-              refine ⟨?_, survives⟩
-              change
-                (outside candidate, fun earlier :
-                    {coordinate : Fin N // coordinate.1 < k} ↦
-                  state candidate earlier.1) =
-                (outside (embed member₀), fun earlier :
-                    {coordinate : Fin N // coordinate.1 < k} ↦
-                  state (embed member₀) earlier.1)
-              refine Prod.ext_iff.mpr ⟨outsideEq, ?_⟩
-              funext earlier
-              exact earlierEq earlier.1 earlier.2
-          rwa [after_eq, before_eq]
-        exact (Nat.mul_le_mul_left _ (Finset.card_le_card next_subset)).trans after_bound
-      have accumulated : ∀ k, k ≤ N →
-          (reached k).card * ∏ i ∈ Finset.range k, Wn i ≤
-            (reached 0).card * ∏ i ∈ Finset.range k, Fn i := by
-        intro k hk
-        induction k with
-        | zero => simp
-        | succ k induction =>
-            have kLt : k < N := by omega
-            have previous := induction (by omega)
-            have current := step k kLt
-            have Wnk : Wn k = W ⟨k, kLt⟩ := by simp [Wn, kLt]
-            have Fnk : Fn k = F ⟨k, kLt⟩ := by simp [Fn, kLt]
-            rw [Finset.prod_range_succ, Finset.prod_range_succ]
-            calc
-              (reached (k + 1)).card *
-                    ((∏ i ∈ Finset.range k, Wn i) * Wn k) =
-                  (W ⟨k, kLt⟩ * (reached (k + 1)).card) *
-                    ∏ i ∈ Finset.range k, Wn i := by rw [Wnk]; ac_rfl
-              _ ≤ (F ⟨k, kLt⟩ * (reached k).card) *
-                    ∏ i ∈ Finset.range k, Wn i :=
-                Nat.mul_le_mul_right _ current
-              _ = F ⟨k, kLt⟩ *
-                    ((reached k).card *
-                      ∏ i ∈ Finset.range k, Wn i) := by ac_rfl
-              _ ≤ F ⟨k, kLt⟩ *
-                    ((reached 0).card *
-                      ∏ i ∈ Finset.range k, Fn i) :=
-                Nat.mul_le_mul_left _ previous
-              _ = (reached 0).card *
-                    ((∏ i ∈ Finset.range k, Fn i) * Fn k) := by
-                rw [Fnk]; ac_rfl
-      have total := accumulated N le_rfl
-      have Wprod : (∏ coordinate, W coordinate) = ∏ i ∈ Finset.range N, Wn i := by
-        rw [Finset.prod_fin_eq_prod_range]
-      have Fprod : (∏ coordinate, F coordinate) = ∏ i ∈ Finset.range N, Fn i := by
-        rw [Finset.prod_fin_eq_prod_range]
-      rw [Wprod, Fprod]
-      calc
-        Fintype.card Blocked * ∏ i ∈ Finset.range N, Wn i ≤
-            (reached N).card * ∏ i ∈ Finset.range N, Wn i :=
-          Nat.mul_le_mul_right _ blocked_le_reached
-        _ ≤ (reached 0).card * ∏ i ∈ Finset.range N, Fn i := total
-        _ ≤ Fintype.card Apriori * ∏ i ∈ Finset.range N, Fn i :=
-          Nat.mul_le_mul_right _ reached_zero_le
-    have exposed :
-        Fintype.card (blockedClassAt data object) *
-              ∏ coordinate : Fin N,
-                blockedAprioriCountAt data (order.symm coordinate).2 ≤
-          Fintype.card (blockedAprioriClassAt data object) *
-              ∏ coordinate : Fin N,
-                blockedSurvivingCountAt data (order.symm coordinate).2 := by
-      simpa [Blocked, Apriori, W, F] using finiteExposure
-    rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
-    have aprioriProd := Fintype.prod_equiv order.symm
-      (fun coordinate : Fin N ↦
-        blockedAprioriCountAt data (order.symm coordinate).2)
-      (fun coordinate : blockedCoordinate data object ↦
-        blockedAprioriCountAt data coordinate.2) (by intro; simp)
-    have survivingProd := Fintype.prod_equiv order.symm
-      (fun coordinate : Fin N ↦
-        blockedSurvivingCountAt data (order.symm coordinate).2)
-      (fun coordinate : blockedCoordinate data object ↦
-        blockedSurvivingCountAt data coordinate.2) (by intro; simp)
-    rwa [aprioriProd, survivingProd] at exposed
+              blockedSurvivingCountAt data coordinate.2 :=
+    blockedExposureFull data object fun coordinate ↦ (additive.2 coordinate).2.2
   have compressionBound :
       Nat.card (blockedClassAt data object) *
           2 ^ (windowPackageBits data object *
