@@ -46,11 +46,13 @@ theorem route8RateFromColdBelow (data : Parameters) (object : FiniteObject.{u})
       data.threshold * (data.bridgeMassFactor * data.dischargeScale *
         data.surplusThreshold object.vertexCount) <
     data.threshold * (object.vertexCount - data.windowOrder * packing.card) at below
-  change (data.threshold * data.dischargeScale + 1) *
+  suffices old : (data.threshold * data.dischargeScale + 1) *
       (Graph.Route8Census.supply object packing).card +
       data.threshold * (data.bridgeMassFactor * data.dischargeScale *
         data.surplusThreshold object.vertexCount) <
-    data.threshold * (object.remainderSupport packing).card
+    data.threshold * (object.remainderSupport packing).card by
+    exact Graph.Route8Census.strongRate_of_rate object packing data.threshold
+      data.dischargeScale _ old
   rw [supplyEq]
   have remEq : object.vertexCount - data.windowOrder * packing.card =
       (object.remainderSupport packing).card := by omega

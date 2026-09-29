@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Contracts.RouteEight.Basic
+import Hypostructure.Graph.Contracts.RouteEight.RateFailsThin
 import Hypostructure.Graph.Statements.Route8RateFailsJoin
 
 /-!
@@ -47,14 +48,7 @@ theorem route8RateFailsJoin (data : Parameters) (object : FiniteObject.{u})
   have join := object.exact_window_join_identity valid baselineAll
   have cut := object.card_windowRemainderIncidences packing
   have remainder := object.remainderSupport_card_add_eq valid
-  have supplyEq := Graph.Route8Census.card_supply object packing
-  change ¬ ((data.threshold * data.dischargeScale + 1) *
-      (Graph.Route8Census.supply object packing).card +
-      data.threshold * (data.bridgeMassFactor * data.dischargeScale *
-        data.surplusThreshold object.vertexCount) <
-    data.threshold * (object.remainderSupport packing).card) at fails
-  rw [supplyEq] at fails
-  have failsLe := Nat.not_lt.mp fails
+  have failsLe := route8RateFails_oldLe data object fails
   have prod : coldExternalStubCount data * packing.card =
       data.threshold * (data.windowOrder * packing.card) -
         2 * (data.windowOrder - 1) * packing.card := by

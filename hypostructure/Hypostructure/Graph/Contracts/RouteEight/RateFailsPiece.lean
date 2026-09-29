@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Contracts.RouteEight.Basic
+import Hypostructure.Graph.Contracts.RouteEight.RateFailsThin
 import Hypostructure.Graph.Statements.Route8RateFailsJoin
 
 /-!
@@ -48,14 +49,11 @@ theorem route8RateFailsPiece (data : Parameters) (object : FiniteObject.{u})
   set pieces := object.canonicalPieces remainder with hpieces
   have cardSum := object.sum_pieceSupport_card remainder
   have cutSum := sum_boundaryIncidence_canonicalPieces object remainder
-  have supplyEq := Graph.Route8Census.card_supply object packing
-  change ¬ ((data.threshold * data.dischargeScale + 1) *
-      (Graph.Route8Census.supply object packing).card +
-      data.threshold * (data.bridgeMassFactor * data.dischargeScale *
-        data.surplusThreshold object.vertexCount) <
-    data.threshold * remainder.card) at fails
-  rw [supplyEq] at fails
-  have failsLe := Nat.not_lt.mp fails
+  have failsLe : data.threshold * remainder.card ≤
+      (data.threshold * data.dischargeScale + 1) * object.boundaryIncidence remainder +
+        data.threshold * (data.bridgeMassFactor * data.dischargeScale *
+          data.surplusThreshold object.vertexCount) :=
+    route8RateFails_oldLe data object fails
   refine ⟨cardSum, cutSum, ?_⟩
   intro nonempty
   obtain ⟨vertex, member⟩ := nonempty
@@ -93,9 +91,7 @@ theorem route8RateFailsPiece (data : Parameters) (object : FiniteObject.{u})
     rw [Finset.sum_add_distrib, sumA, Finset.sum_const, smul_eq_mul]
   rw [sumC, sumB] at strict
   have scaled := Nat.mul_le_mul_left m failsLe
-  have hb : object.boundaryIncidence (object.remainderSupport packing) =
-      object.boundaryIncidence remainder := rfl
-  rw [hb, Nat.mul_add] at scaled
+  rw [Nat.mul_add] at scaled
   omega
 
 end Hypostructure.Graph.Contracts.RouteEight

@@ -39,16 +39,7 @@ theorem route8RateFailsFlow (data : Parameters) (object : FiniteObject.{u})
     Route8RateFailsFlowStatement data object := by
   have baselineAll : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex :=
     degree_ge_of_minDegree data object baseline
-  have supplyEq := Graph.Route8Census.card_supply object
-    (canonicalWindowPacking data object)
-  change ¬ ((data.threshold * data.dischargeScale + 1) *
-      (Graph.Route8Census.supply object (canonicalWindowPacking data object)).card +
-      data.threshold * (data.bridgeMassFactor * data.dischargeScale *
-        data.surplusThreshold object.vertexCount) <
-    data.threshold * (object.remainderSupport (canonicalWindowPacking data object)).card)
-    at fails
-  rw [supplyEq] at fails
-  have failsLe := Nat.not_lt.mp fails
+  have failsLe := route8RateFails_oldLe data object fails
   have lower := object.positiveDeficiency_le_boundaryIncidence
     (object.remainderSupport (canonicalWindowPacking data object))
     data.threshold baselineAll
@@ -87,14 +78,12 @@ theorem route8RateExactSlack (data : Parameters) (object : FiniteObject.{u})
     (fails : Route8RateFailsStatement data object) :
     Route8RateExactSlackStatement data object := by
   set packing := canonicalWindowPacking data object with hpack
-  have supplyEq := Graph.Route8Census.card_supply object packing
-  change ¬ ((data.threshold * data.dischargeScale + 1) *
-      (Graph.Route8Census.supply object packing).card +
-      data.threshold * (data.bridgeMassFactor * data.dischargeScale *
-        data.surplusThreshold object.vertexCount) <
-    data.threshold * (object.remainderSupport packing).card) at fails
-  rw [supplyEq] at fails
-  have failsLe := Nat.not_lt.mp fails
+  have failsLe : data.threshold * (object.remainderSupport packing).card ≤
+      (data.threshold * data.dischargeScale + 1) *
+          object.boundaryIncidence (object.remainderSupport packing) +
+        data.threshold * (data.bridgeMassFactor * data.dischargeScale *
+          data.surplusThreshold object.vertexCount) :=
+    route8RateFails_oldLe data object fails
   unfold Route8RateExactSlackStatement
   by_cases exact : (data.threshold * data.dischargeScale + 1) *
       object.boundaryIncidence (object.remainderSupport packing) +

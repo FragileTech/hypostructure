@@ -18,6 +18,7 @@ import Hypostructure.Graph.Statements.Route8RateFailsJoin
 import Hypostructure.Graph.Statements.Route8RateFailsFlow
 import Hypostructure.Graph.Statements.Route8RateFailsAccounting
 import Hypostructure.Graph.Statements.Route8RateFailsRoute
+import Hypostructure.Graph.Statements.Route8WindowRPath
 import Hypostructure.Graph.Statements.SparseExitResidual
 import Hypostructure.Graph.Statements.SparseExitReadings
 import Hypostructure.Graph.Statements.SwitchForcedPaths
@@ -1730,6 +1731,10 @@ inductive Key where
   | route8WindowStub
   /-- G audit `Route8RateFailsOutcome` (idx 8263): the thin remainder forces the order below the thin cutoff `N₀'` (`DensityOrderBound` at `A' = δ(order + sβ)`, `D' = δs(1+F)`). -/
   | route8ThinSmall
+  /-- G audit `Route8RateFailsOutcome` (idx 8264): two windows of `P₀` joined through `R` by two vertex-disjoint paths at fixed stub positions close a cycle of length `|i−i'|+|j−j'|+|r₁|+|r₂|+4` that is not a power of two. -/
+  | route8WindowRPathGap
+  /-- G audit `Route8RateFailsOutcome` (idx 8265): the incidences from the windows to vertices above the baseline number at most `(δ+1)·σ(G)`. -/
+  | route8HubStubs
   /-- Node `[24]` on `[146]` no, size test yes: `N₀ ≤ n` at the `[24]` cutoff. -/
   | boundedOrderLarge
   /-- Node `[24]` on `[146]` no, size test no: G has fewer than `N₀` vertices (exact complement). -/
@@ -2782,6 +2787,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8WindowStubStatement data.toParameters object
   | .route8ThinSmall, object =>
       Route8ThinSmallStatement data.toParameters object
+  | .route8WindowRPathGap, object =>
+      Route8WindowRPathGapStatement data.toParameters object
+  | .route8HubStubs, object =>
+      Route8HubStubsStatement data.toParameters object
   | .boundedOrderLarge, object =>
       BoundedOrderLargeStatement data.toParameters object
   | .boundedOrderSmall, object =>
@@ -3351,6 +3360,8 @@ def label : Key → String
   | .route8ThinIsolation => "route8ThinIsolation"
   | .route8WindowStub => "route8WindowStub"
   | .route8ThinSmall => "route8ThinSmall"
+  | .route8WindowRPathGap => "route8WindowRPathGap"
+  | .route8HubStubs => "route8HubStubs"
   | .boundedOrderLarge => "boundedOrderLarge"
   | .boundedOrderSmall => "boundedOrderSmall"
   -- [20a] enrichment keys
@@ -3840,6 +3851,8 @@ example : label .route8StrongRate = "route8StrongRate" := rfl
 example : label .route8ThinIsolation = "route8ThinIsolation" := rfl
 example : label .route8WindowStub = "route8WindowStub" := rfl
 example : label .route8ThinSmall = "route8ThinSmall" := rfl
+example : label .route8WindowRPathGap = "route8WindowRPathGap" := rfl
+example : label .route8HubStubs = "route8HubStubs" := rfl
 example : label .boundedOrderLarge = "boundedOrderLarge" := rfl
 example : label .boundedOrderSmall = "boundedOrderSmall" := rfl
 example : label .edgeSurplusIdentity = "edgeSurplusIdentity" := rfl
@@ -4316,6 +4329,8 @@ def idx : Key → Nat
   | .route8ThinIsolation => 8261
   | .route8WindowStub => 8262
   | .route8ThinSmall => 8263
+  | .route8WindowRPathGap => 8264
+  | .route8HubStubs => 8265
   | .boundedOrderLarge => 6604
   | .boundedOrderSmall => 6605
   -- [20a] enrichment keys
@@ -4785,6 +4800,8 @@ def ofIdx : Nat → Key
   | 8261 => .route8ThinIsolation
   | 8262 => .route8WindowStub
   | 8263 => .route8ThinSmall
+  | 8264 => .route8WindowRPathGap
+  | 8265 => .route8HubStubs
   | 6604 => .boundedOrderLarge
   | 6605 => .boundedOrderSmall
   -- [20a] enrichment keys
@@ -5739,6 +5756,10 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowStub") 8262
   | .route8ThinSmall =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8ThinSmall") 8263
+  | .route8WindowRPathGap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowRPathGap") 8264
+  | .route8HubStubs =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8HubStubs") 8265
   | .boundedOrderLarge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "boundedOrderLarge") 6604
   | .boundedOrderSmall =>

@@ -16,8 +16,8 @@ variable {data : Data.{u}}
 
 variable [FactSystem (Input BranchState Presentation presentation data)]
 
-/-! The rate reading as a decision (`rem:route8-carrier-margin` on an arm whose
-density fact does not decide it): `K .route8Rate` or its exact complement,
+/-! The rate reading as a decision (G's exact strong rate `s·|∂R| + F·s·T < |R|`, which the
+manuscript's `τ < 3/13` implies): `K .route8Rate` or its exact complement,
 read after the arm's density fact (`[24]` or `[56]`). -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def route8RateDichotomy
@@ -50,8 +50,8 @@ noncomputable def route8RateDichotomy
       -- not decide the rate, which is tested at G's fixed packing `P₀`.
       have _density := (previous.get (K density)).down
       have _arm := densityArm
-      exact if rate : Graph.Route8Census.Rate current.object
-          (canonicalWindowPacking data.toParameters current.object) data.threshold data.dischargeScale
+      exact if rate : Graph.Route8Census.StrongRate current.object
+          (canonicalWindowPacking data.toParameters current.object) data.dischargeScale
           (data.bridgeMassFactor * data.dischargeScale *
             data.surplusThreshold current.object.vertexCount) then
         .inl ⟨rate⟩

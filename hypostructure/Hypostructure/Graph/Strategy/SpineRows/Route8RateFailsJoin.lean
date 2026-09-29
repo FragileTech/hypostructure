@@ -4,6 +4,7 @@ import Hypostructure.Graph.Contracts.RouteEight.RateFailsPiece
 import Hypostructure.Graph.Contracts.RouteEight.RateFailsFlow
 import Hypostructure.Graph.Contracts.RouteEight.RateFailsAccounting
 import Hypostructure.Graph.Contracts.RouteEight.RateFailsRoute
+import Hypostructure.Graph.Contracts.RouteEight.WindowRPath
 
 /-!
 # The failed private-carrier rate against the exact window join at G
@@ -282,6 +283,41 @@ universe u v
           (inputs.get (K .surplusAtOrBelow)).down
           (inputs.get (K .densityCap)).down
           (inputs.get (K .route8RateFailsJoin)).down⟩ .nil)
+    0 0
+
+/-- Cycles through two windows via the remainder avoid every power of two. -/
+@[reducible] noncomputable def route8WindowRPathGapRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8WindowRPathGap
+    { Requires := [K .selection, K .cubicBaseline]
+      Produces := [K .route8WindowRPathGap]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8WindowRPathGap)
+        ⟨Graph.Contracts.RouteEight.route8WindowRPathGap data.toParameters
+          inputs.current.object (inputs.get (K .selection)).down.1
+          (inputs.get (K .cubicBaseline)).down.2.1.2.1⟩ .nil)
+    0 0
+
+/-- The stubs to hubs. -/
+@[reducible] noncomputable def route8HubStubsRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8HubStubs
+    { Requires := [K .route8RateFailsJoin]
+      Produces := [K .route8HubStubs]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8HubStubs)
+        ⟨Graph.Contracts.RouteEight.route8HubStubs data.toParameters
+          inputs.current.object inputs.current.baseline⟩ .nil)
     0 0
 
 end Hypostructure.Graph.Strategy.Spine
