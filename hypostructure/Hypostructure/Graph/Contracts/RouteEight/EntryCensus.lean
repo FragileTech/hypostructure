@@ -134,9 +134,11 @@ theorem route8Entry_smallCoreQuotient (data : Parameters)
     -- (`def:typeA-trace-basin`) because `alpha <= 1` refutes the failure side
     -- -- a surviving mixed return would carry two distinct boundary
     -- incidences of the core (`lem:typeA-carrier-cut-parity`).
-    exact fun realization _realizes outside _compatible =>
+    -- Stated about G: the realizations that are part of G are G's readings of
+    -- `B_u`, read in `G − B_u`; `α ≤ 1` refutes the failure side there too.
+    exact fun reading _realizes =>
       Graph.Route8.TraceBasin.allQuotientRealizations_declaredEquivalent_of_alpha_le_one
-        small realization _ outside
+        small _ _ _
 
 /-- **`def:typeA-unified-entries` with `lem:typeA-unified-carriers`, one
 entry** (node `[123]`): at a connected support whose receiver has a routed

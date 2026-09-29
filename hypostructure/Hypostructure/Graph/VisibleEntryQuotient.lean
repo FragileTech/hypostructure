@@ -35,16 +35,17 @@ theorem selected_mem_unpeeledLoads
   (Finset.mem_inter.mp (package.load_mem member)).2
 
 /-- **The Q1 exit-(4) witness of a target-defective origin pair**
-(`lem:typeA-unpeeled-visible-routing`, the Q1 sentence): a compatible outside
-context distinguishing the two selected response realizations makes the
+(`lem:typeA-unpeeled-visible-routing`, the Q1 sentence), stated about G: G's own
+surroundings `G − X` distinguishing the two selected response readings make the
 identifying quotient target-defective in the canonical family `Q_4(w)`, and its
 declared routed-load support contains the pair's own selected loads. -/
 def witnessOfPairTargetDefect {Target : FiniteObject.{u} → Prop}
     (package : VisibleFourUnpeeledPackage support threshold scale receiver peeled)
     (pair : package.Q1OriginPair)
-    (targetDefect : Response.TargetDefect Target
-      (visibleResponsePiece pair.leftResponseCoordinate)
-      (visibleResponsePiece pair.rightResponseCoordinate)) :
+    (targetDefect : ¬ (Target (glue (visibleResponsePiece pair.leftResponseCoordinate)
+        (Strategy.InterfaceReplacement.SupportAtom.outside object support)) ↔
+      Target (glue (visibleResponsePiece pair.rightResponseCoordinate)
+        (Strategy.InterfaceReplacement.SupportAtom.outside object support)))) :
     Witness Target support threshold scale receiver peeled where
   load := pair.left.1
   unpeeled := package.selected_mem_unpeeledLoads pair.left.2
@@ -53,10 +54,12 @@ def witnessOfPairTargetDefect {Target : FiniteObject.{u} → Prop}
 @[simp] theorem witnessOfPairTargetDefect_load {Target : FiniteObject.{u} → Prop}
     (package : VisibleFourUnpeeledPackage support threshold scale receiver peeled)
     (pair : package.Q1OriginPair)
-    (targetDefect : Response.TargetDefect Target
-      (visibleResponsePiece pair.leftResponseCoordinate)
-      (visibleResponsePiece pair.rightResponseCoordinate)) :
-    (witnessOfPairTargetDefect package pair targetDefect).load = pair.left.1 :=
+    (targetDefect : ¬ (Target (glue (visibleResponsePiece pair.leftResponseCoordinate)
+        (Strategy.InterfaceReplacement.SupportAtom.outside object support)) ↔
+      Target (glue (visibleResponsePiece pair.rightResponseCoordinate)
+        (Strategy.InterfaceReplacement.SupportAtom.outside object support)))) :
+    (witnessOfPairTargetDefect (Target := Target) package pair
+      targetDefect).load = pair.left.1 :=
   rfl
 
 /-- **The Q1 semantic dichotomy** (`lem:typeA-unpeeled-visible-routing`, after
@@ -64,9 +67,9 @@ exits (1)–(3) are removed): either some origin pair of the package is
 target-defective — and then the package supplies an exit-(4) witness at one of
 its own selected visible unpeeled loads — or every origin pair's two selected
 response realizations are target-complete, the identification entering exits
-(5)–(7).  The common boundary-degree fibre is
-`visibleResponsePiece_boundaryDegreeProfile`; the exhaustiveness is
-`lem:context-universality` (`Response.contextEquivalent_or_targetDefect`). -/
+(5)–(7).  Stated about G, target-completeness is one boundary-degree fibre
+(`visibleResponsePiece_boundaryDegreeProfile`) and agreement in `G − X`; the
+split is excluded middle on that agreement. -/
 theorem exists_witness_or_pairwise_targetComplete
     {Target : FiniteObject.{u} → Prop}
     (package : VisibleFourUnpeeledPackage support threshold scale receiver
@@ -75,14 +78,21 @@ theorem exists_witness_or_pairwise_targetComplete
         witness.load ∈ selectedVisibleUnpeeledLoads support threshold scale
           receiver package.outside peeled) ∨
       ∀ pair : package.Q1OriginPair,
-        Response.TargetComplete BoundaryPiece.boundaryDegreeProfile Target
-          (visibleResponsePiece pair.leftResponseCoordinate)
-          (visibleResponsePiece pair.rightResponseCoordinate) := by
+        (visibleResponsePiece pair.leftResponseCoordinate).boundaryDegreeProfile =
+            (visibleResponsePiece
+              pair.rightResponseCoordinate).boundaryDegreeProfile ∧
+          (Target (glue (visibleResponsePiece pair.leftResponseCoordinate)
+              (Strategy.InterfaceReplacement.SupportAtom.outside object
+                support)) ↔
+            Target (glue (visibleResponsePiece pair.rightResponseCoordinate)
+              (Strategy.InterfaceReplacement.SupportAtom.outside object
+                support))) := by
   classical
   by_cases defect : ∃ pair : package.Q1OriginPair,
-      Response.TargetDefect Target
-        (visibleResponsePiece pair.leftResponseCoordinate)
-        (visibleResponsePiece pair.rightResponseCoordinate)
+      ¬ (Target (glue (visibleResponsePiece pair.leftResponseCoordinate)
+          (Strategy.InterfaceReplacement.SupportAtom.outside object support)) ↔
+        Target (glue (visibleResponsePiece pair.rightResponseCoordinate)
+          (Strategy.InterfaceReplacement.SupportAtom.outside object support)))
   · obtain ⟨pair, targetDefect⟩ := defect
     exact Or.inl
       ⟨witnessOfPairTargetDefect package pair targetDefect, pair.left.2⟩
@@ -91,12 +101,8 @@ theorem exists_witness_or_pairwise_targetComplete
         pair.leftResponseCoordinate).trans
         (visibleResponsePiece_boundaryDegreeProfile
           pair.rightResponseCoordinate).symm
-    · rcases Response.contextEquivalent_or_targetDefect Target
-          (visibleResponsePiece pair.leftResponseCoordinate)
-          (visibleResponsePiece pair.rightResponseCoordinate) with
-        equivalent | bad
-      · exact equivalent
-      · exact absurd ⟨pair, bad⟩ defect
+    · by_contra bad
+      exact defect ⟨pair, bad⟩
 
 /-- **`lem:typeA-unpeeled-visible-routing` under the standing invariants**:
 either some selected visible unpeeled load of the overloaded port carries an

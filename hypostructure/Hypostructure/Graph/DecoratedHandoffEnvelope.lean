@@ -693,9 +693,18 @@ def Absorbed {support : Finset object.Vertex} {receiver outside : object.Vertex}
     (Target : FiniteObject.{u} → Prop)
     (reading : SwitchReading separation)
     (Enlarges : Prop) : Prop :=
-  Graph.Response.TargetDefect Target reading.quotient reading.full ∨
-    Graph.Response.TargetComplete Graph.BoundaryPiece.boundaryDegreeProfile
-        Target reading.quotient reading.full ∨
+  -- Stated about G: target-defective or target-complete in G's own
+  -- surroundings `G − S_z` (the atom's outside), the only outside context that
+  -- is part of G.
+  ¬ (Target (Graph.glue reading.quotient
+        separation.atom.decomposition.outside) ↔
+      Target (Graph.glue reading.full separation.atom.decomposition.outside)) ∨
+    (reading.quotient.boundaryDegreeProfile =
+        reading.full.boundaryDegreeProfile ∧
+      (Target (Graph.glue reading.quotient
+          separation.atom.decomposition.outside) ↔
+        Target (Graph.glue reading.full
+          separation.atom.decomposition.outside))) ∨
       Enlarges
 
 /-- **`z` is surviving**: it is not absorbed. -/
@@ -713,10 +722,9 @@ on this finite state.  If some compatible outside context distinguishes the two
 responses, the quotient is target-defective ..., which is exit (4).  Otherwise
 the identification is target-complete."*
 
-`lem:context-universality`'s exhaustiveness is
-`Response.contextEquivalent_or_targetDefect`; the boundary-degree half of
-target-completeness is the reading's `fibre` clause at the exhausted
-separator. -/
+Stated about G the only outside context is `G − S_z`, so the split is excluded
+middle on the agreement there; the boundary-degree half of target-completeness
+is the reading's `fibre` clause at the exhausted separator. -/
 theorem absorbed_of_internal {support : Finset object.Vertex}
     {receiver outside : object.Vertex}
     {separation : Separation object support receiver outside}
@@ -727,10 +735,12 @@ theorem absorbed_of_internal {support : Finset object.Vertex}
       Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
         separation.switchSupport) :
     Absorbed Target reading Enlarges := by
-  rcases Graph.Response.contextEquivalent_or_targetDefect Target
-      reading.quotient reading.full with equivalent | defect
-  · exact Or.inr (Or.inl ⟨reading.fibre internal, equivalent⟩)
-  · exact Or.inl defect
+  classical
+  by_cases agree : Target (Graph.glue reading.quotient
+        separation.atom.decomposition.outside) ↔
+      Target (Graph.glue reading.full separation.atom.decomposition.outside)
+  · exact Or.inr (Or.inl ⟨reading.fibre internal, agree⟩)
+  · exact Or.inl agree
 
 /-- **`lem:typeA-cubic-switch-absorption`.**  A surviving first separator for
 two declared response coordinates through one completion port has

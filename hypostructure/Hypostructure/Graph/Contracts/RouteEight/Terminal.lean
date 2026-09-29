@@ -59,7 +59,7 @@ theorem exitFour_of_deletionWitnesses (LengthOK : Nat → Prop)
       let entry := (Route8Census.presented object threshold LengthOK
         index).toEntry (HasCycleWithLength LengthOK)
       Route8.TwoCarrierDeletionWitnesses (Target := HasCycleWithLength LengthOK)
-        entry.carriers entry.coordinates entry.car entry.state
+        entry.carriers entry.coordinates entry.car entry.state entry.actual
         (Route8Census.entriesOfComponents object packing components threshold
           scale)
         (Route8Census.core object threshold LengthOK) (threshold - 1) index)
@@ -114,9 +114,11 @@ theorem exitFour_of_deletionWitnesses (LengthOK : Nat → Prop)
     refine ⟨packing, entries, canonicalCollection, (piece, receiver, load),
       indexMem, rfl, rfl, rfl, LengthOK, rfl, selected, twoCarrier,
       carrier, carrierMem, ?_, ?_, ?_⟩
-    · change Response.TargetDefect (HasCycleWithLength LengthOK)
-        (entry.restriction (entry.essentialCore.erase carrier))
-        (entry.restriction entry.essentialCore)
+    · change ¬ (HasCycleWithLength LengthOK
+          (glue (entry.restriction (entry.essentialCore.erase carrier))
+            entry.actual) ↔
+        HasCycleWithLength LengthOK
+          (glue (entry.restriction entry.essentialCore) entry.actual))
       exact targetDefect
     · change (entry.restriction
             (entry.essentialCore.erase carrier)).boundaryDegreeProfile =
@@ -148,7 +150,7 @@ theorem twoCarrier_deletionWitnesses (LengthOK : Nat → Prop)
     let entry := (Route8Census.presented object threshold LengthOK
       index).toEntry (HasCycleWithLength LengthOK)
     Route8.TwoCarrierDeletionWitnesses (Target := HasCycleWithLength LengthOK)
-      entry.carriers entry.coordinates entry.car entry.state
+      entry.carriers entry.coordinates entry.car entry.state entry.actual
       (Route8Census.entriesOfComponents object packing components threshold
         scale)
       (Route8Census.core object threshold LengthOK) (threshold - 1) index := by
@@ -158,7 +160,7 @@ theorem twoCarrier_deletionWitnesses (LengthOK : Nat → Prop)
     (piece, receiver, load)).toEntry (HasCycleWithLength LengthOK)
   exact Route8.twoCarrierDeletionWitnesses
     (Target := HasCycleWithLength LengthOK) entry.carriers
-    entry.coordinates entry.car entry.car_subset entry.state _
+    entry.coordinates entry.car entry.car_subset entry.state entry.actual _
     (Route8Census.core object threshold LengthOK) twoCarrier rfl
 
 /-- **Node `[124]`, `lem:typeA-carrier-deletion-exit`**: a two-support entry of

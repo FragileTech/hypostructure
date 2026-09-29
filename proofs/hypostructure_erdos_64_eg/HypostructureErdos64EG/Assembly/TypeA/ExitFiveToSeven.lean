@@ -120,6 +120,7 @@ noncomputable abbrev typeAExitFiveToEightKeys : FactKeys EGInput.{u} :=
     K .route8StageRate,
     K .route8UnpaidTwoCarrier,
     K .route8UnpaidWitnessFree,
+    K .route8UnifiedEmptyAtG,
     K .typeAExitSevenEnvelope,
     K .typeBAbsorbedCharge]
 

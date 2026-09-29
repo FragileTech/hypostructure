@@ -231,7 +231,6 @@ theorem route8UnifiedVisibleResidual (data : Parameters)
     have emptyComplete : entry.Complete ∅ := by
       unfold Graph.Route8.Entry.Complete Graph.Route8.Entry.restriction
         Graph.Route8.Entry.full
-      intro outside
       rw [stateIndependent]
     have minimumLe :=
       entry.carrierProfile.minimumCard_le ∅ emptyComplete

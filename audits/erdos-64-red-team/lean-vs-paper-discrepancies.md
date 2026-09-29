@@ -5120,3 +5120,105 @@ compatible context of a support `Z` of G is G's own surroundings `G − Z`
   labelled `(n,m)` class count is kept exactly.  Removed:
   `PairResponseValue`, `pairResponseReading` and its simp lemmas (all-context
   value, no users).
+
+## G-repair restatement (R3: Type A exits (1)–(7), the exit-(4) family, route 8) (2026-09-29)
+
+Every notion below is stated about G.  The only outside context of a support
+`Z` is G's own surroundings `G − Z` (`SupportAtom.outside G Z`); the readings of
+G at `Z` (`retainedBasinPiece`, `retainedReading`) glued there are subgraphs of
+G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
+(`route8UnifiedEmptyAtG`).  Branch based on R2 (414c637); R2's G-forms of
+`ReplacementSupport` / `CompressibleSupport` / `DeclaredQuotient` and R4's
+`cutStateRepresentativeAt` are used as published.
+
+### Route-8 carrier core: `Entry.Complete`, `α`, deletion witnesses (salvaged from C)
+
+- `Route8.Entry` / `PresentedEntry` carry the one actual context `actual`
+  (`SupportAtom.outside G B_u` for a graph-owned entry).  `Entry.Complete D`:
+  the restriction to `D` and the full reading have the same target truth in
+  `actual` (was: context-equivalent against every outside context).  The
+  essential core, `deletion_targetDefect` (now `¬ (T(glue ·) ↔ T(glue ·))` in
+  `actual`), `CarrierCoreFacts`, `TwoCarrierDeletionWitnesses` follow.
+- **Lean improvement: the essential core is empty at G.**
+  `PresentedEntry.ofTraceBasin_complete_of_avoids` (every carrier set is
+  complete at a target-avoiding G) and `ofTraceBasin_alpha_eq_zero`
+  (`α(ξ) = 0` for every graph-owned entry).
+- `retainedReading` is `cutStateRepresentativeAt … (G − B_u)` (R4's G-form);
+  `hasCycleWithLength_glue_of_retainedReading` is read at `G − B_u` only.
+
+### Trace-basin alternatives (`def:typeA-trace-basin`, tex 10695-10800)
+
+- (a) `TraceLocalTargetDefect`: distinguished in `G − B_u`.  **Decided false
+  at G** (`not_traceLocalTargetDefect`).  `exists_two_cutBoundary_of_traceLocalTargetDefect`
+  removed (it produced a distinguishing context that is not part of G; its
+  only consumer was the demand record).
+- (b) `TraceResponseQuotient`: completeness is read on G's readings of `B_u`
+  (`retainedReading`) in `G − B_u` (was: every realization, every profile-
+  compatible context).  **Decided at G**: `traceResponseQuotient_complete_of_avoids`;
+  **(b) occurs at every trace basin of a routed load of G**
+  (`exists_traceResponseQuotient_of_avoids`: forgetting the trace incidence of
+  the nondegenerate `T_u`).  Hence no basin of G is target-complete-minimal
+  (`not_targetCompleteMinimal_of_avoids`) and no routed load is a route-8
+  entry (`not_route8Entry_of_avoids`).
+- (c) `TraceDelocalization`: `not_traceDelocalization` now uses R2's
+  `Delocalization.false_of_minimal` (exit (6) is empty at a minimal G).
+- (d) switch absorption `DecoratedHandoff.Absorbed`: target-defective or
+  target-complete in `G − S_z` (the atom's outside).  Not decided at G: the
+  switch realization after the identification is not a reading of G.
+- `CanonicalDemandRecord`: the profile record (an event in a non-actual
+  context) is removed; the actual record is kept.  At G the implication
+  `(a) → record` holds because (a) is decided false.
+
+### Type A exits (`def:typeA-saturated-exits`, tex 10811)
+
+- Exits (1)–(3): unchanged (graph facts of G).
+- Exit (4), family Q1–Q5 (`def:typeA-exit4-family`): each target defect is read
+  in the support's own surroundings.  **Q1, Q2, Q3, Q5 are decided false at G**
+  (`Q1TargetDefect.false_of_avoids` … `Q5TargetDefect.false_of_avoids`); at G
+  every member of `Q_4(w)` is a Q4 member (`CanonicalMember.exists_q4_of_avoids`).
+  Q4 (the switch realization is not a reading of G) is not decided, so the
+  `[101]` test stays live.  The Q1/Q2 dichotomies and `ExitFourFreeAt` carry
+  the G-form completeness (one fibre and agreement in `G − Z`).
+- Exit (5), `[103]`/`[104]`: `TraceTargetCompleteCompression`'s completeness
+  clause is R2's G-form of `def:target-complete-compression`: the retained
+  reading `X'` has the basin's profile and `glue X' (G − B_u)` has no target
+  cycle.  `[104]` closes against `[14]` (`K .uncompressible`, R2 form) with
+  `X'`: profile, baseline, no target cycle, strictly smaller.
+- Exit (6), `[106]`: R2's closed representative (`¬ Target H`); the global
+  closure reads it directly.
+- Exit (7): unchanged apart from (d) above.
+
+### Route 8: `[113]`/`[348]` quotient-freeness and `[123]`
+
+- The derivation of `2 ≤ α(ξ)` on the quotient-free arm survives in G-form
+  (`route8Entry_smallCoreQuotient`: `α ≤ 1` and the cut parity give a G-form
+  trace-response quotient, refuting quotient-freeness).
+- **Lean improvement: `[123]`'s failed-rate arm is empty at G.**  On the
+  quotient-free arm, `α(ξ) = 0` at every unified entry, so the census leaves
+  `\tilde\Xi = ∅`; the descent's stage accounting gives `s·\tilde D_A = 0`;
+  `lem:typeA-unified-deficit` leaves `|R| ≤ s·|∂R| + F·s·T(n)`, and the
+  private-carrier rate `K .route8Rate` refutes it
+  (`Contracts.RouteEight.route8UnifiedEmptyAtG`,
+  `route8UnifiedEmptyAtG_contradiction`, row `route8UnifiedEmptyAtGRow`,
+  `Incompatible (K .route8Rate) (K .route8UnifiedEmptyAtG)`).  `[123]` is still
+  run as a test; its yes arm closes at `[124]` as before.  Nodes `[181]`,
+  `[183]`–`[186]` are not reached; the `[186]` returns
+  (`route8JointBalanceReturn`, `route8JointBalanceProductReturn`) are removed.
+  The disjunct `Route8JointBalanceOutcome_product` of the protected root type
+  is kept and is never produced.
+- `[348]` no arm (`Route8QuotientOutcome`) is reached at G: at G every unified
+  entry has a G-form trace-response quotient, so this arm is exactly
+  `\tilde\Xi ≠ ∅`.  The paper's step `(b) → exit (5)` ("when this quotient is
+  realized by a smaller connected representative, it is a target-complete
+  compression") constructs no representative; the residual carries
+  `¬ Route8QuotientFreeStatement` at G.
+- `Route8RateFailsOutcome`: decided before route 8 on G's numbers; unchanged.
+
+### Kept, not on any G path
+
+- `Route8Residual`: `compressibleSupport_of_foldRealization` /
+  `_triangleContraction`, `not_targetComplete_foldRealization`, the
+  `false_of_*` fold family and `DeclaredFamilyDeterminacy` keep their
+  all-context hypotheses (now also `avoids`, for R2's replacement form); they
+  have no consumer.
+- `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.

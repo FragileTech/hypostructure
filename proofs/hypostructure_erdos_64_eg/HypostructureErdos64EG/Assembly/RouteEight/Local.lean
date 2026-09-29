@@ -10,6 +10,7 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8StageOutcomeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8TwoCarrierExit
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedDeficit
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedEntryCensus
+import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedEmptyAtG
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedVisibleOverload
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedVisibleResidual
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnpaidExitFourDichotomy
@@ -42,14 +43,18 @@ universe u w
 The descent row records the terminal stage of `thm:large-budget-route8-only`;
 the decision is its reduced-rate test.  A passing stage carries the terminal
 true two-support entry, closed at node `[124]` by the framework
-(`thm:typeA-two-carrier-nogo` against `lem:typeA-carrier-deletion-exit`).  The
-failed stage runs the demand, absorption and unique-window blocker ledgers
-(with the recorded window-signature hits at its open units) and is the
-node-`[181]` residual
-(`def:typeA-peeled-demand-residual`), returned with every inherited key. -/
+(`thm:typeA-two-carrier-nogo` against `lem:typeA-carrier-deletion-exit`).
+
+The failed stage is empty at G (Lean improvement, G repair): read in G's own
+surroundings `G − B_u`, every essential carrier core is empty, so `α(ξ) = 0`
+at every entry, and the census's `2 ≤ α(ξ)` leaves no unified entry; the
+stage accounting clears the unified deficit and the private-carrier rate
+`K .route8Rate` closes the arm (`route8UnifiedEmptyAtGRow`).  Nodes `[181]`
+and `[183]`--`[186]` are therefore not reached at G, and the node-`[186]`
+residual `Route8JointBalanceOutcome` is not returned. -/
 -- EG-NODE [123] finite exact descent terminates in true route 8?
 -- EG-NODE [124] local exclusion theorem: no two-support route-8 obstruction
-noncomputable def selectedRouteEightDescent
+theorem selectedRouteEightDescent
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .route8UnifiedDeficit) known]
@@ -58,6 +63,7 @@ noncomputable def selectedRouteEightDescent
     [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .route8UnifiedEntryCensus) known]
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .route8Rate) known]
     (peelingFresh : K .route8PeelingDescent ∉ known := by key_fresh)
     (stageRateFresh : K .route8StageRate ∉ known := by key_fresh)
     (stageFailedFresh : K .route8StageRateFailed ∉ known := by key_fresh)
@@ -66,23 +72,8 @@ noncomputable def selectedRouteEightDescent
     (unifiedExitFresh : K .route8UnifiedTwoCarrierExit ∉ known := by
       key_fresh)
     (closureFresh : closed ∉ known := by key_fresh)
-    (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
-    (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
-      key_fresh)
-    (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known := by
-      key_fresh)
-    (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by key_fresh)
-    (windowBlockersFresh : K .route8WindowBlockers ∉ known := by key_fresh)
-    (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by
-      key_fresh)
-    (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by
-      key_fresh) :
-    ExactLedger EGInput.{u} selected
-      ([K .windowShadowHitExcluded, K .windowShadowHitCycle,
-        K .route8WindowBlockers, K .route8OpenBoundarySaturated,
-        K .route8DemandUnitCount, K .route8DemandAbsorption,
-        K .route8DemandLedger, K .route8StageRateFailed,
-        K .route8PeelingDescent] ++ known) := by
+    (emptyAtGFresh : K .route8UnifiedEmptyAtG ∉ known := by key_fresh) :
+    False := by
   let descended :=
     (route8PeelingDescentRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -105,107 +96,37 @@ noncomputable def selectedRouteEightDescent
           (K .route8UnifiedTwoCarrierExit)
           (by key_fresh) (by key_fresh)).elimClosed (by infer_instance)).elim
   | .right failedStage =>
-      -- `[123]` no ("failed reduced rate") → the ledgers of `[181]`.
-      let ledger :=
-        (route8DemandLedgerRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          failedStage (by key_fresh)
-      let absorbed :=
-        (route8DemandAbsorptionRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          ledger (by key_fresh)
-      let saturated :=
-        (route8OpenBoundarySaturatedRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          absorbed (by key_fresh)
-      let blocked :=
-        (route8WindowBlockersRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          saturated (by key_fresh)
-      let shadowCycle :=
-        (windowShadowHitCycleRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          blocked (by key_fresh)
-      exact
-        (windowShadowHitExcludedRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          shadowCycle (by key_fresh)
-
-/-- **Nodes `[181]`/`[183]`: maximal-ledger exit-`(4)` reduction**
-(`thm:typeA-unpaid-exit4-reduction`).
-
-The incoming node-`[181]` ledger is retained verbatim.  The one-entry
-augmentation (168.1) at the committed ledger `P₀` of node `[349]` is published
-first; the decision then reads `[349]` and asks whether some unpaid entry of
-`P₀` lacks an exit-`(4)` witness.  Such an entry is
-exactly the terminal input of `thm:typeA-two-carrier-nogo` and is closed at
-node `[124]`; the only survivor is node `[183]`, (168.2). -/
--- EG-NODE [181] maximal-ledger augmentation: some unpaid entry lacks an exit-\textup{(4)} witness?
--- EG-NODE [183] shortest-trace boundary-support test on the retained unified entries
-noncomputable def selectedRouteEightUnpaidReduction
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .route8UnifiedEntryCensus) known]
-    [FactKeys.Has (K .route8DemandLedger) known]
-    [FactKeys.Has (K .route8StageRateFailed) known]
-    [FactKeys.Has (K .cubicBaseline) known]
-    [FactKeys.Has (K .minDegreeBaseline) known]
-    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
-    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
-    (residualFresh : K .route8UnpaidExitFourResidual ∉ known := by key_fresh)
-    (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by
-      key_fresh)
-    (unifiedExitFresh : K .route8UnifiedTwoCarrierExit ∉ known := by
-      key_fresh)
-    (closureFresh : closed ∉ known := by key_fresh) :
-    ExactLedger EGInput.{u} selected
-      (K .route8UnpaidExitFourResidual :: K .route8UnpaidTwoCarrier :: known) := by
-  let twoCarrier :=
-    (route8UnpaidTwoCarrierRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by key_fresh)
-  match route8UnpaidExitFourDichotomy (data := spineData) twoCarrier
-      (by key_fresh) (by key_fresh) with
-  | .left witnessFree =>
-      -- `[181]` yes → `[124]`.
-      let trueEntry :=
-        (route8UnpaidTrueEntryRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          witnessFree (by key_fresh)
-      exact (((route8UnifiedTwoCarrierExitRow (BranchState := BranchState)
+      -- `[123]` no ("failed reduced rate") is empty at G: no unified entry
+      -- survives `α(ξ) = 0`, and the rate refutes the cleared deficit.
+      -- Lean improvement: `[123]`'s no arm is empty at G.
+      exact (((route8UnifiedEmptyAtGRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).runAndCloseIncompatible trueEntry
-          (K .route8UnifiedTrueTwoCarrierEntry)
-          (K .route8UnifiedTwoCarrierExit)
+          (data := spineData)).runAndCloseIncompatible failedStage
+          (K .route8Rate) (K .route8UnifiedEmptyAtG)
           (by key_fresh) (by key_fresh)).elimClosed (by infer_instance)).elim
-  | .right residualHistory =>
-      exact residualHistory
 
 set_option maxHeartbeats 8000000 in
 /-- **The unified target-defect/route-`8` residual** (`rem:why-unified`),
-from the Type B sublinear-bridge decision to node `[186]`.
+from the Type B sublinear-bridge decision to node `[123]`.
 
 The negative Type B bridge arm is the Type B residual; the sublinear arm
 publishes the unified deficit (`lem:typeA-unified-deficit`) and asks the
 quotient-freeness test of the unified census.  Its failure `[348]` is the
 route-`8` quotient residual, returned at `[187]` as `thm:main` returns it; on
-the free arm the unified entry census is published and
-the branch runs node `[123]`, node `[181]`, and the reductions `[183]`--`[185]`
-to the joint balance at node `[186]`.  `arm` names the path's prefix, entropy
-arm and net-charge continuation; each residual is returned as the product of
-its generic facts with those blocks. -/
--- EG-NODE [184] visible-first prefix test on the unchanged all-visible entries
--- EG-NODE [185] canonical actual visible-four packages; non-overloaded count zero
--- EG-NODE [186] OPEN: joint balance and silent-terminal exclusion; visible-entry history retained
+the free arm the unified entry census is published and the branch runs node
+`[123]`, whose two arms both close at G (`selectedRouteEightDescent`; Lean
+improvement: stated about G every essential core is empty, so the census's
+`2 ≤ α(ξ)` leaves no unified entry).  Nodes `[181]`, `[183]`--`[185]` and the
+joint balance `[186]` are therefore not reached at G, and the node-`[186]`
+residual is no longer returned.  `arm` names the path's prefix, entropy arm
+and net-charge continuation; each residual is returned as the product of its
+generic facts with those blocks. -/
+-- EG-NODE [181] maximal-ledger augmentation: some unpaid entry lacks an exit-\textup{(4)} witness? (not reached at G)
+-- EG-NODE [183] shortest-trace boundary-support test on the retained unified entries (not reached at G)
+-- EG-NODE [184] visible-first prefix test on the unchanged all-visible entries (not reached at G)
+-- EG-NODE [185] canonical actual visible-four packages; non-overloaded count zero (not reached at G)
+-- EG-NODE [186] OPEN: joint balance and silent-terminal exclusion; visible-entry history retained (not reached at G)
 noncomputable def selectedRouteEightUnifiedResidual
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -233,26 +154,7 @@ noncomputable def selectedRouteEightUnifiedResidual
     (unifiedExitFresh : K .route8UnifiedTwoCarrierExit ∉ known := by
       key_fresh)
     (closureFresh : closed ∉ known := by key_fresh)
-    (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
-    (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
-      key_fresh)
-    (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known := by
-      key_fresh)
-    (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by key_fresh)
-    (windowBlockersFresh : K .route8WindowBlockers ∉ known := by key_fresh)
-    (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by
-      key_fresh)
-    (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by
-      key_fresh)
-    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
-    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
-    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
-      key_fresh)
-    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
-      key_fresh)
-    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
-      key_fresh)
-    (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh)
+    (emptyAtGFresh : K .route8UnifiedEmptyAtG ∉ known := by key_fresh)
     [FactKeys.Has (K .barrierCap) known]
     [FactKeys.Has (K .barrierEnumeration) known]
     [FactKeys.Has (K .boundaryDemand) known]
@@ -380,27 +282,8 @@ noncomputable def selectedRouteEightUnifiedResidual
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run quotientFreeHistory (by key_fresh)
-          let peeled := selectedRouteEightDescent census
-          let unpaid := selectedRouteEightUnpaidReduction peeled
-          -- `[183]` → `[184]`: the silent coordinate is zero.
-          let visibleResidual :=
-            (route8UnifiedVisibleResidualRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run unpaid (by key_fresh)
-          -- `[184]` → `[185]`: the non-overloaded coordinate is zero.
-          let visibleOverload :=
-            (route8UnifiedVisibleOverloadRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run visibleResidual (by key_fresh)
-          -- `[185]` → `[186]`: the simultaneous exact account.
-          let jointBalance :=
-            (route8JointBalanceRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run visibleOverload (by key_fresh)
-          exact Or.inr (Or.inr
-            (route8JointBalanceProductReturn jointBalance arm.1 arm.2))
+          -- `[123]`: both arms close at G; `[181]`, `[183]`--`[186]` are not
+          -- reached.
+          exact (selectedRouteEightDescent census).elim
 
 end HypostructureErdos64EG
