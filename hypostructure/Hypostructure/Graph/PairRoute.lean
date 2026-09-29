@@ -241,4 +241,27 @@ theorem pair_route (G : FiniteObject.{u}) (c : Config G.graph) (t : Nat)
       exact R4
     exact hnok (hl ▸ hok)
 
+open Classical in
+/-- **A chord closes a cycle of length span + 1.**  For a path `p` and vertices `w1, w2` on it
+with `w1` before `w2`, joined by an edge of `G` although their subpath has length at least `2`:
+the subpath and the chord form a cycle of length `span + 1`. -/
+theorem chord_cycle {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.IsPath)
+    {w1 w2 : V} (h2 : w2 ∈ p.support) (h1 : w1 ∈ (p.takeUntil w2 h2).support)
+    (hadj : G.Adj w1 w2) (hlen : 2 ≤ ((p.takeUntil w2 h2).dropUntil w1 h1).length) :
+    ∃ (d : G.Walk w2 w2), d.IsCycle ∧
+      d.length = ((p.takeUntil w2 h2).dropUntil w1 h1).length + 1 := by
+  set q := (p.takeUntil w2 h2).dropUntil w1 h1 with hq
+  have hqp : q.IsPath := (hp.takeUntil h2).dropUntil h1
+  refine ⟨Walk.cons hadj.symm q, ?_, by simp⟩
+  rw [Walk.cons_isCycle_iff]
+  refine ⟨hqp, fun hmem => ?_⟩
+  have hmem' : s(w1, w2) ∈ q.edges := by rwa [Sym2.eq_swap] at hmem
+  obtain ⟨h', q', hq'⟩ := path_first_step q hqp hmem'
+  have hqp' := hqp
+  rw [hq', Walk.cons_isPath_iff] at hqp'
+  have := Walk.isPath_iff_nil.1 hqp'.1
+  have h0 := Walk.length_eq_zero_iff.2 this
+  have : q.length = q'.length + 1 := by rw [hq']; simp
+  omega
+
 end Hypostructure.Graph.PairRoute

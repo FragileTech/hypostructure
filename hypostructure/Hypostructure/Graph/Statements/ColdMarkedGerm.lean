@@ -1,6 +1,7 @@
 import Hypostructure.Graph.Statements.ColdGerm
 import Hypostructure.Graph.SpliceLift
 import Hypostructure.Graph.DoubleSuppress
+import Hypostructure.Graph.PairRoute
 
 /-!
 # Statements: the marked neutral germ measured at G, node `[157]`
@@ -101,5 +102,55 @@ noncomputable def ColdMarkedGermPairSuppressionStatement (data : Parameters)
           ∃ (Lk j : Nat) (w : object.Vertex) (d : object.graph.Walk w w),
             data.LengthOK Lk ∧ (j = 1 ∨ j = 2) ∧ ¬ data.LengthOK (Lk + j) ∧ d.IsCycle ∧
               d.length = Lk + j)
+
+/-- **The Mersenne paths of a suppressed pair.**  For the configuration `u v` with `N(u) = {v, pl,
+x}`, `N(v) = {u, y, q}`: an accepted length `Lk` and either a path `pl ⇝ x` of length `Lk - 1`
+avoiding `u, v` (Mersenne when `Lk = 2^k`), or a path `y ⇝ q` of length `Lk - 1` avoiding `u, v`, or
+a cycle of length `Lk + 2` through the four edges `u pl`, `u x`, `v y`, `v q`; the lengths
+`Lk + 1` (resp. `Lk + 2`) are not accepted. -/
+def PairMersenne (data : Parameters) (object : Graph.FiniteObject.{u})
+    (u v pl x y q : object.Vertex) : Prop :=
+  ∃ Lk : Nat, data.LengthOK Lk ∧
+    ((∃ M : object.graph.Walk pl x, M.IsPath ∧ u ∉ M.support ∧ v ∉ M.support ∧
+        M.length + 1 = Lk ∧ ¬ data.LengthOK (Lk + 1)) ∨
+      (∃ M : object.graph.Walk y q, M.IsPath ∧ u ∉ M.support ∧ v ∉ M.support ∧
+        M.length + 1 = Lk ∧ ¬ data.LengthOK (Lk + 1)) ∨
+      (∃ (z : object.Vertex) (d : object.graph.Walk z z), d.IsCycle ∧ d.length = Lk + 2 ∧
+        ¬ data.LengthOK (Lk + 2) ∧ s(u, pl) ∈ d.edges ∧ s(u, x) ∈ d.edges ∧
+        s(v, y) ∈ d.edges ∧ s(v, q) ∈ d.edges))
+
+/-- **Every consecutive interior pair of the marked germ's stretch carries a Mersenne path or a
+double cycle** (`PairMersenne`), unless a triangle or `C4` obstruction holds. -/
+noncomputable def ColdMarkedGermPairMersenneStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ marked, markedNeutralGerm? data object = some marked ∧
+    ∀ (a b : object.Vertex) (p : object.graph.Walk a b), p.IsPath →
+      (∀ v, v ∈ p.support ↔ v ∈ marked.1.support) →
+      ∀ i, 0 < i → i + 1 < p.length → ∀ x y : object.Vertex,
+        (∀ z, object.graph.Adj (p.getVert i) z ↔
+          z = p.getVert (i + 1) ∨ z = p.getVert (i - 1) ∨ z = x) →
+        (∀ z, object.graph.Adj (p.getVert (i + 1)) z ↔
+          z = p.getVert i ∨ z = y ∨ z = p.getVert (i + 2)) →
+        x ≠ p.getVert (i - 1) → x ≠ p.getVert (i + 1) →
+        y ≠ p.getVert (i + 2) → y ≠ p.getVert i →
+        ((object.graph.Adj (p.getVert (i - 1)) x ∨ object.graph.Adj y (p.getVert (i + 2)) ∨
+            s(p.getVert (i - 1), x) = s(y, p.getVert (i + 2))) ∨
+          PairMersenne data object (p.getVert i) (p.getVert (i + 1)) (p.getVert (i - 1)) x y
+            (p.getVert (i + 2)))
+
+open Classical in
+/-- **Chords of the marked germ's stretch.**  For every path `p` of G spanning the marked
+germ's support and vertices `w1` before `w2` on it that are adjacent although their subpath has
+length `>= 2`: the subpath and the chord close a cycle of G of length `span + 1`, which is
+therefore not accepted. -/
+noncomputable def ColdMarkedGermChordSpanStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ marked, markedNeutralGerm? data object = some marked ∧
+    ∀ (a b : object.Vertex) (p : object.graph.Walk a b), p.IsPath →
+      (∀ v, v ∈ p.support ↔ v ∈ marked.1.support) →
+      ∀ (w1 w2 : object.Vertex) (h2 : w2 ∈ p.support)
+        (h1 : w1 ∈ (p.takeUntil w2 h2).support), object.graph.Adj w1 w2 →
+        2 ≤ ((p.takeUntil w2 h2).dropUntil w1 h1).length →
+        ¬ data.LengthOK (((p.takeUntil w2 h2).dropUntil w1 h1).length + 1)
 
 end Hypostructure.Graph.Strategy.Spine

@@ -1749,6 +1749,10 @@ inductive Key where
   | coldMarkedGermStretchIncidence
   /-- Node `[157]`, F08 at every adjacent interior pair of the marked germ's stretch: suppressing the pair (delete `u v`, add `pl x` and `y q`) preserves every degree and is smaller by 2, so G has a cycle of length `Lk + j` with `Lk` accepted, `j` in `{1, 2}`, `Lk + j` not accepted; or a triangle/C4 obstruction holds. -/
   | coldMarkedGermPairSuppression
+  /-- Node `[157]`, the Mersenne paths of every suppressed adjacent pair of the marked germ's stretch: an accepted `Lk` and a path `pl ⇝ x` (or `y ⇝ q`) of length `Lk - 1` avoiding the pair, or a double cycle of length `Lk + 2` through the four edges at the pair; or a triangle/C4 obstruction. -/
+  | coldMarkedGermPairMersenne
+  /-- Node `[157]`, the chords of the marked germ's stretch: a chord whose subpath has length at least 2 closes a cycle of length span + 1, which is not accepted. -/
+  | coldMarkedGermChordSpan
   -- [20a] enrichment keys (6606-)
   /-- Node `[20a]`: **Edge–surplus identity**: `2m = δ·n + σ`. -/
   | edgeSurplusIdentity
@@ -2939,6 +2943,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       ColdMarkedGermStretchIncidenceStatement data.toParameters object
   | .coldMarkedGermPairSuppression, object =>
       ColdMarkedGermPairSuppressionStatement data.toParameters object
+  | .coldMarkedGermPairMersenne, object =>
+      ColdMarkedGermPairMersenneStatement data.toParameters object
+  | .coldMarkedGermChordSpan, object =>
+      ColdMarkedGermChordSpanStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -3400,6 +3408,8 @@ def label : Key → String
   | .coldMarkedGermStretchExcision => "coldMarkedGermStretchExcision"
   | .coldMarkedGermStretchIncidence => "coldMarkedGermStretchIncidence"
   | .coldMarkedGermPairSuppression => "coldMarkedGermPairSuppression"
+  | .coldMarkedGermPairMersenne => "coldMarkedGermPairMersenne"
+  | .coldMarkedGermChordSpan => "coldMarkedGermChordSpan"
 
 /-! ### Label pins
 
@@ -3875,6 +3885,8 @@ example : label .coldMarkedGermUncompressed = "coldMarkedGermUncompressed" := rf
 example : label .coldMarkedGermStretchExcision = "coldMarkedGermStretchExcision" := rfl
 example : label .coldMarkedGermStretchIncidence = "coldMarkedGermStretchIncidence" := rfl
 example : label .coldMarkedGermPairSuppression = "coldMarkedGermPairSuppression" := rfl
+example : label .coldMarkedGermPairMersenne = "coldMarkedGermPairMersenne" := rfl
+example : label .coldMarkedGermChordSpan = "coldMarkedGermChordSpan" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -4345,6 +4357,8 @@ def idx : Key → Nat
   | .coldMarkedGermStretchExcision => 8401
   | .coldMarkedGermStretchIncidence => 8402
   | .coldMarkedGermPairSuppression => 8403
+  | .coldMarkedGermPairMersenne => 8404
+  | .coldMarkedGermChordSpan => 8405
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -4804,6 +4818,8 @@ def ofIdx : Nat → Key
   | 8401 => .coldMarkedGermStretchExcision
   | 8402 => .coldMarkedGermStretchIncidence
   | 8403 => .coldMarkedGermPairSuppression
+  | 8404 => .coldMarkedGermPairMersenne
+  | 8405 => .coldMarkedGermChordSpan
   | _ => .selection
 
 set_option maxRecDepth 8192 in
@@ -5836,6 +5852,10 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermStretchIncidence") 8402
   | .coldMarkedGermPairSuppression =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermPairSuppression") 8403
+  | .coldMarkedGermPairMersenne =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermPairMersenne") 8404
+  | .coldMarkedGermChordSpan =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermChordSpan") 8405
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather

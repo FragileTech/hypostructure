@@ -107,4 +107,39 @@ two, so minimality gives a cycle of G of length `Lk + j`, `j ∈ {1,2}`, unless 
           (fun X small base => (inputs.get (K .selection)).down.2 X small base)⟩
         .nil)
 
+/-! ## Node `[157]`: the Mersenne paths of the suppressed pairs, and the chord spans -/
+@[reducible] noncomputable def coldMarkedGermPairMersenneRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldMarkedGermPairMersenne
+    { Requires := [K .coldAbsorbedNeutralConfiguration, K .minDegreeBaseline, K .selection]
+      Produces := [K .coldMarkedGermPairMersenne]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .coldMarkedGermPairMersenne)
+        ⟨Contracts.Spine.coldMarkedGermPairMersenne_of_neutral data.toParameters
+          inputs.current.object
+          (inputs.get (K .coldAbsorbedNeutralConfiguration)).down
+          (inputs.get (K .minDegreeBaseline)).down
+          (inputs.get (K .selection)).down.1
+          (fun X small base => (inputs.get (K .selection)).down.2 X small base)⟩
+        .nil)
+
+@[reducible] noncomputable def coldMarkedGermChordSpanRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldMarkedGermChordSpan
+    { Requires := [K .coldAbsorbedNeutralConfiguration, K .selection]
+      Produces := [K .coldMarkedGermChordSpan]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .coldMarkedGermChordSpan)
+        ⟨Contracts.Spine.coldMarkedGermChordSpan_of_neutral data.toParameters
+          inputs.current.object
+          (inputs.get (K .coldAbsorbedNeutralConfiguration)).down
+          (inputs.get (K .selection)).down.1⟩
+        .nil)
+
 end Hypostructure.Graph.Strategy.Spine
