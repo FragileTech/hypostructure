@@ -1,4 +1,5 @@
 import HypostructureErdos64EG.Assembly.Residuals.ArmBlocks
+import HypostructureErdos64EG.Assembly.Residuals.Node54Order
 
 /-!
 # Assembly: Residuals / Node54ResidualOutcome
