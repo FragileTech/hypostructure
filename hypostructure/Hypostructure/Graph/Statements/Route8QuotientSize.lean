@@ -242,11 +242,14 @@ decided at G).
 
 1. `Route8QuotientFreeStatement` holds exactly when the unified entry family
    is empty: alternative (b) is present at every routed load of G.
-2. The unified entry family carries the private-carrier rate: the boundary
-   incidence supply `|∂R|` is below `δ·|\tilde\Xi|` (the rate
-   `K .route8Rate`, the unified deficit `lem:typeA-unified-deficit`, and the
-   stage accounting `s·\tilde D_A ≤ |\tilde\Xi|`).  In particular the family
-   is nonempty.
+2. The unified entry family is nonempty (G's strong rate `K .route8Rate`,
+   the unified deficit `lem:typeA-unified-deficit`, and the stage accounting
+   `s·\tilde D_A ≤ |\tilde\Xi|`).  Under the manuscript's rate `τ < 3/13`
+   (`Route8Census.Rate`) it carries the rate: the boundary incidence supply
+   `|∂R|` is below `δ·|\tilde\Xi|`, and a two-support entry exists.
+   (Integration g-audit-int: `K .route8Rate` is now G's strong rate
+   (g-audit-r8rate), which does not give `|∂R| < δ·|\tilde\Xi|`; that clause
+   and the two-support entry are stated under the manuscript rate.)
 3. At every unified entry `ξ = (X, w, u)`: `α(ξ) = 0`; the selected basin `B_u`
    exists; its trace-response quotient (alternative (b), G-form) is present;
    the canonical representative of G's piece at `B_u` is a valid replacement
@@ -258,9 +261,14 @@ noncomputable abbrev Route8QuotientEntriesAtGStatement (data : Parameters)
   letI : DecidableEq object.Vertex := object.vertices.decEq
   (Route8QuotientFreeStatement data object ↔
       route8UnifiedEntries data object = ∅) ∧
-    (Graph.Route8Census.supply object (canonicalWindowPacking data object)).card <
-      data.threshold * (route8UnifiedEntries data object).card ∧
-    Route8TwoSupportEntryExists data object ∧
+    0 < (route8UnifiedEntries data object).card ∧
+    (Graph.Route8Census.Rate object (canonicalWindowPacking data object)
+        data.threshold data.dischargeScale
+        (data.bridgeMassFactor * data.dischargeScale *
+          data.surplusThreshold object.vertexCount) →
+      (Graph.Route8Census.supply object (canonicalWindowPacking data object)).card <
+          data.threshold * (route8UnifiedEntries data object).card ∧
+        Route8TwoSupportEntryExists data object) ∧
     ∀ index ∈ route8UnifiedEntries data object,
       ((Graph.Route8Census.presented object data.threshold data.LengthOK
         index).toEntry (Graph.HasCycleWithLength data.LengthOK)).alpha = 0 ∧

@@ -309,16 +309,17 @@ theorem not_traceTargetCompleteCompression (data : Parameters)
       (Graph.Route8.PresentedEntry.retainedBaseCoordinates object piece
         retained), profile, baselineAt, smaller, targetFree⟩
 
-/-- **The unified entry family carries the rate**: the stage accounting of the
-descent bounds the cleared unified deficit by the number of entries, so the
-unified deficit bound against the private-carrier rate leaves
-`|∂R| < δ·|\tilde\Xi|`. -/
-theorem route8SupplyLtEntries (data : Parameters) (object : FiniteObject.{u})
+/-- The stage accounting of the descent bounds the cleared unified deficit by
+the number of entries: `|R| ≤ |\tilde\Xi| + s·|∂R| + F·s·T(n)`. -/
+theorem route8RemainderLeEntries (data : Parameters) (object : FiniteObject.{u})
     (descent : Route8PeelingDescentStatement data object)
-    (deficit : Route8UnifiedDeficitFact data object)
-    (rate : Route8RateStatement data object) :
-    (Route8Census.supply object (canonicalWindowPacking data object)).card <
-      data.threshold * (route8UnifiedEntries data object).card := by
+    (deficit : Route8UnifiedDeficitFact data object) :
+    (object.remainderSupport (canonicalWindowPacking data object)).card ≤
+      (route8UnifiedEntries data object).card +
+        data.dischargeScale *
+          (Route8Census.supply object (canonicalWindowPacking data object)).card +
+        data.bridgeMassFactor * data.dischargeScale *
+          data.surplusThreshold object.vertexCount := by
   classical
   obtain ⟨_chain, accounting, _outcome⟩ := descent
   obtain ⟨_peeledSubset, entriesEq, disjoint, _peeledLe, _deficitEq,
@@ -334,15 +335,35 @@ theorem route8SupplyLtEntries (data : Parameters) (object : FiniteObject.{u})
       (route8UnifiedEntries data object).card := by
     rw [entriesCard]
     exact deficitLe
-  have bound : (object.remainderSupport (canonicalWindowPacking data object)).card ≤
-      (route8UnifiedEntries data object).card +
-        data.dischargeScale *
-          (Route8Census.supply object (canonicalWindowPacking data object)).card +
-        data.bridgeMassFactor * data.dischargeScale *
-          data.surplusThreshold object.vertexCount := by
-    have := deficit
-    omega
-  unfold Route8RateStatement Route8Census.Rate at rate
+  have := deficit
+  omega
+
+/-- **The unified entry family is nonempty** under G's strong rate
+`s·|∂R| + F·s·T(n) < |R|` (`K .route8Rate`). -/
+theorem route8EntriesPos (data : Parameters) (object : FiniteObject.{u})
+    (descent : Route8PeelingDescentStatement data object)
+    (deficit : Route8UnifiedDeficitFact data object)
+    (rate : Route8RateStatement data object) :
+    0 < (route8UnifiedEntries data object).card := by
+  have bound := route8RemainderLeEntries data object descent deficit
+  unfold Route8RateStatement Route8Census.StrongRate at rate
+  omega
+
+/-- **The unified entry family carries the manuscript rate**: under
+`(δs+1)·|∂R| + δ·F·s·T(n) < δ·|R|` (`Route8Census.Rate`, `τ < 3/13`) the unified
+deficit bound leaves `|∂R| < δ·|\tilde\Xi|`.  (Integration g-audit-int: stated
+under the manuscript rate; `K .route8Rate` is G's strong rate.) -/
+theorem route8SupplyLtEntries (data : Parameters) (object : FiniteObject.{u})
+    (descent : Route8PeelingDescentStatement data object)
+    (deficit : Route8UnifiedDeficitFact data object)
+    (rate : Route8Census.Rate object (canonicalWindowPacking data object)
+      data.threshold data.dischargeScale
+      (data.bridgeMassFactor * data.dischargeScale *
+        data.surplusThreshold object.vertexCount)) :
+    (Route8Census.supply object (canonicalWindowPacking data object)).card <
+      data.threshold * (route8UnifiedEntries data object).card := by
+  have bound := route8RemainderLeEntries data object descent deficit
+  unfold Route8Census.Rate at rate
   have scaled := Nat.mul_le_mul_left data.threshold bound
   nlinarith
 
@@ -469,8 +490,10 @@ theorem route8QuotientEntriesAtG (data : Parameters)
     rw [pieceEq]
     exact Graph.Route8Census.cutEdges_piece_subset object
       (canonicalWindowPacking data object) component
-  have supplyLt := route8SupplyLtEntries data object descent deficit rate
-  refine ⟨?_, supplyLt, route8TwoSupportEntryExists data object entryCut supplyLt, ?_⟩
+  refine ⟨?_, route8EntriesPos data object descent deficit rate,
+    fun manuscript =>
+      have supplyLt := route8SupplyLtEntries data object descent deficit manuscript
+      ⟨supplyLt, route8TwoSupportEntryExists data object entryCut supplyLt⟩, ?_⟩
   · constructor
     · intro free
       apply Finset.eq_empty_of_forall_notMem
