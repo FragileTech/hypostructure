@@ -5414,3 +5414,41 @@ span-plus-one cycle is).  The pigeonhole on span lengths gives a chord of span `
 under an unbounded supply of same-path chords, and for a triangular pair there are none, so it
 does not fire; a contradiction would need the dyadic constraints between different paths (cross
 chords), which reduce to the open cubic case of the conjecture and are not derived here.
+
+### G audit: Node144aOutcome, third pass (WIP, stopped at the coordinator's request): rungs, hubs, closing vertices (key 8106)
+
+**Status: work in progress.  [144a]'s entry test is trivially true only because realizations
+were G's own readings; the g-pieces-constructed agent redefines realizations as pieces built from
+G, which may change [144a]'s entry.  The generic lemmas below stay valid; the key 8106 wiring
+depends on the port-path cover (key 8105) and may need to be re-read against the new entry.**
+
+`Graph/PathChords.lean` (vocabulary-free, generic in any graph `H`):
+* `ear_cycle`: two paths `p : u ⇝ v`, `q : v ⇝ u` meeting only at their ends, not both single
+  edges, close a cycle of length `|p| + |q|`.
+* `HubCycles` / `hubCycles_of_avoids`: a vertex `h` off a path adjacent to both ends of a segment
+  `p₂` (`|p₂| ≥ 1`) closes a cycle of length `|p₂| + 2`; not accepted.
+* `ClosedCycles` / `closedCycles_of_avoids`: a vertex `x` off the path adjacent to both ends `a`,
+  `b`: the whole path closes a cycle of length `|w| + 2` and every chord's shortcut path one of
+  length `|p₁| + |p₃| + 3` (the open-port second constraint); not accepted.
+* `RungCycles` / `rungCycles_of_avoids`: two vertex-disjoint segments `p₂` of `w₁` and `q₂` of `w₂`
+  joined by two edges, parallel (`v c`, `d u`) or crossed (`v d`, `c u`), close a cycle of length
+  `|p₂| + |q₂| + 2`; not accepted.  With positions `i, i'` on `w₁` and `j, j'` on `w₂` this is
+  `|i − i'| + |j − j'| + 2 ∉ {4, 8, 16, …}`; for monotone rungs the `L¹` distances add.
+* `ShareEdge` / `shareEdge_of_paths`: at a degree-`3` vertex interior to two paths the two path
+  edges of one and the two of the other share an edge (four distinct neighbours cannot fit in
+  three).
+
+`K .sameTokenPathInteractions` (8106, `PortWalk`, `SameTokenPathInteractionsStatement`): the four
+canonical port walks of the two pair seeds carry `PortWalk` (all the above per-walk facts), the six
+`RungCycles` pairs, the four `ShareEdge` pairs, and, if every degree-`3` vertex lies in both pair
+seeds, every neighbour of a hub lies in both seeds.
+
+**Computational probe (not a proof, not used in Lean).**  A search over "two paths of `N` vertices
+with a perfect matching of rungs between them, no cycle of length `2^k`, `k ≥ 2`" found no
+solution for any `N` from `2` to `14`.  This is evidence that the pure two-path rung pattern is
+already unsatisfiable, but hubs, same-path chords and the terminal vertices `T` are not in that
+model, and it does not derive a contradiction at G.
+
+**Not derived.**  A forced number of rungs: stubs go to rungs, hubs, same-path chords and `T`;
+hub edges number `3|H| + σ` with `|H| ≤ σ` and `σ` bounded above only by `2n − 5|H|`, so rungs
+are forced only when `σ` is small (roughly `σ < 3n/20`).  The arm stays open.

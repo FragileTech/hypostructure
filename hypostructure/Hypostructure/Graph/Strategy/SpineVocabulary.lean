@@ -1924,6 +1924,8 @@ inductive Key where
   | sameTokenU2FreeWhole
   /-- Node `[144a]` (G audit S144a, Lean improvement): **the pair seeds are covered by their canonical port paths**: each pair seed `T(p) ∪ Γ(p) ∪ T(p') ∪ Γ(p')` is at most `2δ` vertices and two canonical port paths (a triangular port's shortest return `R_p` in `G − cx`, an induced path; an open port's suppression path `Q_p`), each with its chord facts (every chord has an unaccepted span, every interior cubic vertex has exactly one off-path edge); if every degree-`3` vertex lies in both pair seeds, the degree-`3` vertices are covered by at most four such paths and `4δ` vertices, and `3n ≤ 5(|T| + |P₁| + |P₂|)` (from `5|H| + σ ≤ 2n`). -/
   | sameTokenSeedCover
+  /-- Node `[144a]` (G audit S144a, Lean improvement): **the interactions of the canonical port paths**: the pair seeds are `T ∪ supp w₁ ∪ supp w₂` and `T' ∪ supp z₁ ∪ supp z₂` with canonical port walks (simple; every chord, hub and closing cycle length unaccepted; one stub per interior cubic vertex); two vertex-disjoint segments of two of the walks joined by two edges (a rung pair, parallel or crossed) close a cycle of length `|p₂| + |q₂| + 2`, which is not accepted (all six pairs of walks); at every cubic vertex interior to a `P`-walk and a `Q`-walk the two path edges of one and the two of the other share an edge; if every degree-`3` vertex lies in both pair seeds, every neighbour of a hub lies in both. -/
+  | sameTokenPathInteractions
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2928,6 +2930,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SameTokenU2FreeWholeStatement data.toParameters object
   | .sameTokenSeedCover, object =>
       SameTokenSeedCoverStatement data.toParameters object
+  | .sameTokenPathInteractions, object =>
+      SameTokenPathInteractionsStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3408,6 +3412,7 @@ def label : Key → String
   | .sameTokenSwapExact => "sameTokenSwapExact"
   | .sameTokenU2FreeWhole => "sameTokenU2FreeWhole"
   | .sameTokenSeedCover => "sameTokenSeedCover"
+  | .sameTokenPathInteractions => "sameTokenPathInteractions"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3887,6 +3892,7 @@ example : label .sameTokenSwap = "sameTokenSwap" := rfl
 example : label .sameTokenSwapExact = "sameTokenSwapExact" := rfl
 example : label .sameTokenU2FreeWhole = "sameTokenU2FreeWhole" := rfl
 example : label .sameTokenSeedCover = "sameTokenSeedCover" := rfl
+example : label .sameTokenPathInteractions = "sameTokenPathInteractions" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4361,6 +4367,7 @@ def idx : Key → Nat
   | .sameTokenSwapExact => 8103
   | .sameTokenU2FreeWhole => 8104
   | .sameTokenSeedCover => 8105
+  | .sameTokenPathInteractions => 8106
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4824,6 +4831,7 @@ def ofIdx : Nat → Key
   | 8103 => .sameTokenSwapExact
   | 8104 => .sameTokenU2FreeWhole
   | 8105 => .sameTokenSeedCover
+  | 8106 => .sameTokenPathInteractions
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -5848,6 +5856,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenU2FreeWhole") 8104
   | .sameTokenSeedCover =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenSeedCover") 8105
+  | .sameTokenPathInteractions =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenPathInteractions") 8106
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000
