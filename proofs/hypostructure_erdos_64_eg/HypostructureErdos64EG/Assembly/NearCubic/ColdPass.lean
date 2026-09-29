@@ -17,7 +17,7 @@ import Hypostructure.Graph.Strategy.EntropyClosure
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.HotColdPartition
 import Hypostructure.Graph.Strategy.SpineRows.LiveHotBarrierCap
-import HypostructureErdos64EG.Assembly.Residuals.Node153ResidualOutcome
+import HypostructureErdos64EG.Assembly.Residuals.ArmBlocks
 
 /-!
 # Assembly: NearCubic / ColdPass
@@ -170,128 +170,37 @@ noncomputable def nearCubicColdCorridorState
     (coldReturnCorridorRow (data := spineData)).run history (by key_fresh)
   (coldCorridorStateRow (data := spineData)).run corridors (by key_fresh)
 
-set_option maxHeartbeats 8000000 in
 /-- **Node `[153]`, linear arm: the first failures and the exact (★)
 decision.**  `lem:cold-corridor-first-failure`: every retained corridor of G has
 a first failure (`K .coldFirstFailureOccurrence`).  The paper's (ii) (tex
 7265-7270) is, at G, the statement (★) that G's pinned cut states along each
 retained corridor are pairwise distinct up to the first failure; the decision
-`coldCutStatesDichotomy` splits it.  The (★) arm is returned as a ledger on
-which routing continues; the ¬(★) arm returns the explicitly constructed
-residual `K .coldRepeatedStateResidual` (G's first equal-state pair, the
-profile separation of G's two readings and the equal capped degrees of its glue
-vertices).  (F2) is decided at G on both arms (`K .coldFailureDefectRoute`).
-
-`arm` names the path into `[153]` (one of its three linear arms; the absorbed
-lane is not entered, `[173]`'s no-arm being closed against `K .route8Rate`);
-the ¬(★) return is that path's subtype. -/
+`coldCutStatesDichotomy` splits it.  Both arms are returned as ledgers on which
+the routing continues: the (★) arm, and the ¬(★) arm, which carries G's
+explicitly constructed first equal-state pair `K .coldRepeatedStateResidual`.
+That pair is the repeat subcase of (F5) (proof of `lem:cold-corridor-first-failure`): the paper continues it
+into the germ routing `[154]`, so it is not a place to stop.  (F2) is decided
+at G on both arms (`K .coldFailureDefectRoute`).  The decision is taken only
+where a consumer reads (★): `[162]` on the dense arms of `[160]`; the realized
+package's linear arm runs `coldFirstFailureOccurrenceRow` alone. -/
 noncomputable def nearCubicColdOccurrence
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    (arm : Node153Arm selected)
-    [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .cubicBaseline) known]
-    [FactKeys.Has (K .minDegreeBaseline) known]
     [FactKeys.Has (K .coldCorridorState) known]
     (fresh : List.Disjoint
       [K .coldFirstFailureOccurrence, K .coldCutStatesDistinct,
-        K .coldRepeatedStateResidual] known := by key_fresh)
-    [FactKeys.Has (K .barrierCap) known]
-    [FactKeys.Has (K .barrierEnumeration) known]
-    [FactKeys.Has (K .boundaryDemand) known]
-    [FactKeys.Has (K .bridgeless) known]
-    [FactKeys.Has (K .coldAmbientCubic) known]
-    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
-    [FactKeys.Has (K .coldHotEntropyCap) known]
-    [FactKeys.Has (K .coldMass) known]
-    [FactKeys.Has (K .coldReturnCorridors) known]
-    [FactKeys.Has (K .coldSelectedBranchExcess) known]
-    [FactKeys.Has (K .coldStubExcess) known]
-    [FactKeys.Has (K .curvatureFullRank) known]
-    [FactKeys.Has (K .curvatureTargetRank) known]
-    [FactKeys.Has (K .cycleRankConstraint) known]
-    [FactKeys.Has (K .degreeProfileFibres) known]
-    [FactKeys.Has (K .exactResponseProfile) known]
-    [FactKeys.Has (K .forcedCurvatureCost) known]
-    [FactKeys.Has (K .hotColdPartition) known]
-    [FactKeys.Has (K .localAlgebra) known]
-    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
-    [FactKeys.Has (K .packingOrderBound) known]
-    [FactKeys.Has (K .noSuppressionChordViolation) known]
-    [FactKeys.Has (K .twoSwitchForcedPath) known]
-    [FactKeys.Has (K .crossSwitchFamily) known]
-    [FactKeys.Has (K .highCentreSplitForced) known]
-    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
-    [FactKeys.Has (K .specWitnessStructure) known]
-    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
-    [FactKeys.Has (K .windowCutCapacity) known]
-    [FactKeys.Has (K .primitiveCarrierCount) known]
-    [FactKeys.Has (K .singleBoundaryShape) known]
-    [FactKeys.Has (K .neighbourhoodPairCount) known]
-    [FactKeys.Has (K .starCycleConstraint) known]
-    [FactKeys.Has (K .meetingCycleConstraint) known]
-    [FactKeys.Has (K .highDegreePairSum) known]
-    [FactKeys.Has (K .vertexDeletionComponents) known]
-    [FactKeys.Has (K .cyclesThroughVertex) known]
-    [FactKeys.Has (K .cutVertexBlockPaths) known]
-    [FactKeys.Has (K .cycleDoubleCount) known]
-    [FactKeys.Has (K .threeRouteFan) known]
-    [FactKeys.Has (K .threeRouteChain) known]
-    [FactKeys.Has (K .windowPositionStubs) known]
-    [FactKeys.Has (K .windowAttachmentGap) known]
-    [FactKeys.Has (K .portEndDegree) known]
-    [FactKeys.Has (K .hubLinkStructure) known]
-    [FactKeys.Has (K .hubClassCounts) known]
-    [FactKeys.Has (K .slotRelation) known]
-    [FactKeys.Has (K .closedClasses) known]
-    [FactKeys.Has (K .hubTwoHopLinks) known]
-    [FactKeys.Has (K .slotLinear) known]
-    [FactKeys.Has (K .remainderPathBounds) known]
-    [FactKeys.Has (K .windowFreeGeometry) known]
-    [FactKeys.Has (K .inducedPathAttachment) known]
-    [FactKeys.Has (K .densityExcess) known]
-    [FactKeys.Has (K .remainderSlack) known]
-    [FactKeys.Has (K .hubWindowBudget) known]
-    [FactKeys.Has (K .windowHubBounds) known]
-    [FactKeys.Has (K .cubicNeighbourSupply) known]
-    [FactKeys.Has (K .hubCountBound) known]
-    [FactKeys.Has (K .lowEdgeParity) known]
-    [FactKeys.Has (K .bigHubBound) known]
-    [FactKeys.Has (K .bigHubVShapes) known]
-    [FactKeys.Has (K .highSurplusBound) known]
-    [FactKeys.Has (K .hubLengthThreePairs) known]
-    [FactKeys.Has (K .surplusDartIdentity) known]
-    [FactKeys.Has (K .highDegreeCountBound) known]
-    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
-    [FactKeys.Has (K .maximalPacking) known]
-    [FactKeys.Has (K .netChargeLocalization) known]
-    [FactKeys.Has (K .noProperBaseline) known]
-    [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .replacementExclusion) known]
-    [FactKeys.Has (K .returnAvoidance) known]
-    [FactKeys.Has (K .skeletonDominates) known]
-    [FactKeys.Has (K .slackIndependent) known]
-    [FactKeys.Has (K .sparseSurplusSurvivor) known]
-    [FactKeys.Has (K .stubSupply) known]
-    [FactKeys.Has (K .surplusAtOrBelow) known]
-    [FactKeys.Has (K .targetCompleteContextUniversality) known]
-    [FactKeys.Has (K .targetRankCircuit) known]
-    [FactKeys.Has (K .tightEndpoint) known]
-    [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .wedgeSupply) known]
-    [FactKeys.Has (K .windowPackageSeparated) known]
-    [FactKeys.Has (K .windowPresent) known] :
+        K .coldRepeatedStateResidual] known := by key_fresh) :
     PSum
       (ExactLedger EGInput.{u} selected
         (K .coldCutStatesDistinct :: K .coldFirstFailureOccurrence :: known))
-      (Node153ResidualSubtypes selected) :=
+      (ExactLedger EGInput.{u} selected
+        (K .coldRepeatedStateResidual :: K .coldFirstFailureOccurrence :: known)) :=
   let occurrence :=
     (coldFirstFailureOccurrenceRow (data := spineData)).run history (by key_fresh)
   match coldCutStatesDichotomy (data := spineData) occurrence
       (by key_fresh) (by key_fresh) with
   | .left distinctHistory => .inl distinctHistory
-  | .right repeatedHistory =>
-      .inr (node153SubtypesReturn repeatedHistory arm)
+  | .right repeatedHistory => .inr repeatedHistory
 
 /-- **Node `[153]`, linear arm: the routing and the candidate family**, on the
 (★) arm.  `lem:cold-corridor-first-failure`: the routing (F1)--(F5) of the
@@ -307,7 +216,6 @@ noncomputable def nearCubicColdCandidates
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .coldCorridorState) known]
     [FactKeys.Has (K .coldFirstFailureOccurrence) known]
-    [FactKeys.Has (K .coldCutStatesDistinct) known]
     (fresh : List.Disjoint
       [K .coldFailureCycle,
         K .coldFailureDefectRoute, K .coldFailureCompression,
@@ -348,7 +256,6 @@ noncomputable def nearCubicColdGermFamily
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .coldCorridorState) known]
     [FactKeys.Has (K .coldFirstFailureOccurrence) known]
-    [FactKeys.Has (K .coldCutStatesDistinct) known]
     [FactKeys.Has (K .coldMassLinear) known]
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]

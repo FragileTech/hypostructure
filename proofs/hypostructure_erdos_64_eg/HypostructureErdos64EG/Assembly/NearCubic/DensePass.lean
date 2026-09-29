@@ -10,6 +10,7 @@ import HypostructureErdos64EG.Assembly.NearCubic.Boundary
 import HypostructureErdos64EG.Assembly.NearCubic.ColdPass
 import HypostructureErdos64EG.Assembly.NearCubic.Replacement
 import HypostructureErdos64EG.Assembly.NearCubic.Spine
+import HypostructureErdos64EG.Assembly.Residuals.ColdBranchClosedOutcome
 import HypostructureErdos64EG.Assembly.Residuals.Node162ResidualOutcome
 
 /-!
@@ -72,8 +73,9 @@ arm `[165]`--`[166]` enters the blocked class `[169]`, and its genuine
 symmetric strand pair `[167]`/`[168]` closes against the window stub
 structure.
 
-`tau` names the `[160]` arm the pass runs on; the `[153]`, `[162]`, `[172a]`
-and `[187]` returns state the subtype of that arm. -/
+`tau` names the `[160]` arm the pass runs on; the `[162]`, `[172a]` and `[187]`
+returns state the subtype of that arm.  The ¬(★) arm of `[153]` runs the germ
+path to `[157]` and returns `[187]`. -/
 -- EG-NODE [162] dense hot/cold pass: run [22]--[24] and [145]--[157] on the dense residual; [23], [149], [155], [156], [157] close as before; bounded arm of [153] and [146]/[160] arms return to [25]
 -- EG-NODE [163] neutral equal-length terminal configuration: second strand graph-realized?
 -- EG-NODE [165] canonical replacement \(E\ne Q\): swap \(Q\to E\) gives a same-size counterexample
@@ -182,18 +184,40 @@ noncomputable def nearCubicDenseLinear
       normalized (by key_fresh)
   -- `lem:bridgeless` is on the ledger since the entry prefix.
   let state := nearCubicColdCorridorState localized
-  -- `[153]`: the first failures and the exact (★) decision; ¬(★) returns G's
-  -- first equal-state pair.
-  match nearCubicColdOccurrence state (tau.node153Arm state) with
-  | .inr repeated => exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl repeated))))
+  -- `[153]`: the first failures and the exact (★) decision.  `[162]` reads (★),
+  -- so the decision is taken here; the ¬(★) arm is G's first equal-state pair,
+  -- the repeat subcase of (F5), which the paper continues into the germ routing.
+  match nearCubicColdOccurrence state with
+  | .inr repeatedHistory =>
+      let familyOnly := nearCubicColdGermFamily repeatedHistory
+      let split :=
+        (absorbedGermSplitRow (data := spineData)).run familyOnly (by key_fresh)
+      let family :=
+        (absorbedGermFanDataRow (data := spineData)).run split (by key_fresh)
+      let unhit := nearCubicColdNoHit family
+      -- `[154]` second test (G2) is decided at G: its yes-arm is empty (Lean
+      -- improvement), closed against the selection.
+      match coldGermDistinctionDichotomy (data := spineData) unhit
+          (by key_fresh) (by key_fresh) with
+      | .left distinguishedHistory =>
+          exact ((closeIncompatible distinguishedHistory
+            (K .coldGermSomeDistinguishing) (K .selection)
+            (by key_fresh)).elimClosed (by infer_instance)).elim
+      | .right silentHistory =>
+          -- `[157]` on the repeat germ: the local cold-terminal exclusion `[187]`,
+          -- with the equal-state pair as one more fact of the ledger.
+          exact Or.inr (Or.inr (Or.inr (Or.inl
+            (Or.inr (Or.inr (Or.inr (Or.inr
+              (coldBranchClosed_denseRepeatedReturn
+                (nearCubicColdTable silentHistory) tau))))))))
   | .inl distinct =>
       -- `[162]` on the (★) arm: the heavy-entry test; its failure returns the long
       -- corridor of G through a heavy centre.
       match coldHeavyEntryDichotomy (data := spineData) distinct
           (by key_fresh) (by key_fresh) with
       | .right heavyHistory =>
-          exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl
-            (node162SubtypesReturn heavyHistory tau))))))
+          exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl
+            (node162SubtypesReturn heavyHistory tau)))))
       | .left heavyTerminal =>
           let terminal :=
             (denseColdCorridorsTerminalRow (data := spineData)).run heavyTerminal

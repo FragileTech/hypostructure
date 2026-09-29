@@ -109,34 +109,35 @@ noncomputable def Assembly.Internal.nearCubicRealized
                   (presentation := erdosReceiverLoadProfile) spineData).run
                   cost (by key_fresh)
               -- `lem:bridgeless` is on the ledger since the entry prefix.
-              match nearCubicColdOccurrence (nearCubicColdCorridorState localized)
-                  (Or.inr (Or.inr (Node153LinearBlock_realized.ret localized))) with
-              | .inr repeated =>
-                  -- `[153]`, ¬(★): G's first equal-state pair, returned.
-                  exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl repeated))))
-              | .inl distinct =>
-                  let familyOnly := nearCubicColdGermFamily distinct
-                  -- `[175]`'s per-half-edge split and `[177]`'s fan data are facts
-                  -- of G on the extracted family here too.
-                  let split :=
-                    (absorbedGermSplitRow (data := spineData)).run familyOnly
-                      (by key_fresh)
-                  let family :=
-                    (absorbedGermFanDataRow (data := spineData)).run split
-                      (by key_fresh)
-                  let unhit := nearCubicColdNoHit family
-                  -- `[154]` second test (G2) is decided at G: its yes-arm is
-                  -- empty (Lean improvement), closed against the selection.
-                  match coldGermDistinctionDichotomy (data := spineData) unhit
-                      (by key_fresh) (by key_fresh) with
-                  | .left distinguishedHistory =>
-                      exact ((closeIncompatible distinguishedHistory
-                        (K .coldGermSomeDistinguishing) (K .selection)
-                        (by key_fresh)).elimClosed (by infer_instance)).elim
-                  | .right silentHistory =>
-                      exact Or.inr (Or.inr (Or.inr (Or.inl
-                        (Or.inr (Or.inr (Or.inr
-                          (coldBranchClosed_linearRealizedSilentReturn
-                            (nearCubicColdTable silentHistory))))))))
+              -- `[153]`: the first failures.  No consumer on this arm reads (★)
+              -- (`[162]` runs on the dense arms), so it is not split; a repeat is
+              -- the (F5) repeat subcase and is a germ of the family like any
+              -- other, which the routing below reads.
+              let occurred :=
+                (coldFirstFailureOccurrenceRow (data := spineData)).run
+                  (nearCubicColdCorridorState localized) (by key_fresh)
+              let familyOnly := nearCubicColdGermFamily occurred
+              -- `[175]`'s per-half-edge split and `[177]`'s fan data are facts
+              -- of G on the extracted family here too.
+              let split :=
+                (absorbedGermSplitRow (data := spineData)).run familyOnly
+                  (by key_fresh)
+              let family :=
+                (absorbedGermFanDataRow (data := spineData)).run split
+                  (by key_fresh)
+              let unhit := nearCubicColdNoHit family
+              -- `[154]` second test (G2) is decided at G: its yes-arm is
+              -- empty (Lean improvement), closed against the selection.
+              match coldGermDistinctionDichotomy (data := spineData) unhit
+                  (by key_fresh) (by key_fresh) with
+              | .left distinguishedHistory =>
+                  exact ((closeIncompatible distinguishedHistory
+                    (K .coldGermSomeDistinguishing) (K .selection)
+                    (by key_fresh)).elimClosed (by infer_instance)).elim
+              | .right silentHistory =>
+                  exact Or.inr (Or.inr (Or.inr (Or.inl
+                    (Or.inr (Or.inr (Or.inr (Or.inl
+                      (coldBranchClosed_linearRealizedSilentReturn
+                        (nearCubicColdTable silentHistory)))))))))
 
 end HypostructureErdos64EG

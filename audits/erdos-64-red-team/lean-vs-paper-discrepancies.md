@@ -5222,3 +5222,64 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
   all-context hypotheses (now also `avoids`, for R2's replacement form); they
   have no consumer.
 - `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.
+
+## G audit: Node153ResidualOutcome (`[153]`, 2026-09-29)
+
+**Defining failure.**  `nearCubicColdOccurrence` split (★) (G's pinned cut
+states along every retained corridor are pairwise distinct up to the first
+failure) and returned the ¬(★) arm as the residual
+`K .coldRepeatedStateResidual`.  That arm is G's first repeated cut state on a
+retained corridor, with no earlier event, equal boundary-degree entries and
+equal capped head degrees, different profiles.  It is the *repeat subcase of
+(F5)* of `lem:cold-corridor-first-failure`, which the paper continues into the
+germ routing `[154]` (G1/G2/G3) and the same-interface table `[157]`.  The
+residual was misrouted: it stopped where the paper continues.  It is about G
+and decided at G, but it is reached by a split whose ¬(★) arm the paper never
+treats as a stopping point.
+
+**Soundness of the re-route.**  No row of the germ path reads (★):
+`coldFailureCycle`, `coldFailureDefectRoute`, `coldFailureCompression`,
+`coldHandoffTransfer`, `coldFailureRouting`, `coldExchangeBound`,
+`coldGermCandidates`, `coldGermFamilyPositive`, `absorbedGermSplit`,
+`absorbedGermFanData`, the `[154]` tests, `coldGermTrichotomy`,
+`coldSameInterfaceTable` and `coldBranchClosed` have `Requires` lists without
+`K .coldCutStatesDistinct` (only `denseColdCorridorsTerminalRow` and
+`coldHeavyEntryDichotomy`, i.e. `[162]`, read it).  The `[Has (K
+.coldCutStatesDistinct)]` on `nearCubicColdCandidates` / `nearCubicColdGermFamily`
+was unused and is removed.  (F2) is decided at G on every corridor
+(`not_coldFirstFailureDefectAt`), so nothing else changes.  G2 is empty at G, so
+the repeat germ takes the silent arm (`instIncompatibleColdGermSomeDistinguishingSelection`).
+
+**Fix.**
+- Realized arm (`[158]` yes): (★) has no consumer on this arm.  The split is
+  removed (split-needs-a-reason); the arm runs `coldFirstFailureOccurrenceRow`
+  and continues.  `K .coldCutStatesDistinct` is no longer a conjunct of the
+  generic `ColdBranchClosedOutcome` (85 to 84 common facts) nor a `Has` of
+  `coldBranchClosed_linearRealizedSilentReturn`.  The realized silent
+  singleton now covers every realized path.
+- Dense arms (`[160]`): `[162]` reads (★), so the decision stays
+  (`nearCubicColdOccurrence` now returns both ledgers, no residual).  The
+  ¬(★) arm runs the germ path to `[157]` and returns `[187]` with the new
+  subtypes `ColdBranchClosedOutcome_linearDenseAtOrAbove_repeated` and
+  `ColdBranchClosedOutcome_linearDenseRateFailed_repeated`
+  (`ColdBranchClosedOutcome` + `K .coldRepeatedStateResidual` + the `[154]`
+  silent facts + the arm facts; `coldBranchClosed_denseRepeatedReturn`).
+  `[162]` is not run there: its terminality argument needs (★).
+- `Node153ResidualOutcome` (generic, 70 facts), its three subtypes,
+  `Node153Arm`, `Node153LinearBlock_*`, `node153Return*`,
+  `Node153ResidualSubtypes` and the module
+  `Assembly/Residuals/Node153ResidualOutcome.lean` are deleted.
+
+**Root-type change.**  `SelectedLedgerBoundaryResult` loses the `[153]` group
+(3 subtypes) and `OtherReturnedOutcome` gains the two `_repeated` `[187]`
+subtypes; `SelectedNearCubicSurvivorBoundary` loses `Node153ResidualSubtypes`.
+The `Or` chains in `Final.lean`, `NearCubic/Spine.lean` (the `[54]` returns) and
+`NearCubic/DensePass.lean` (`[162]`) are shifted by one.  No new keys
+(idx 8450-8499 unused).
+
+**Status.**  `[153]` merges into `[187]` (the local cold-terminal exclusion,
+`thm:cold-branch-quantitative-closure`).  It does not close: the paper's
+terminality claim for the dense residual (bounded diameter of the boundaried
+pieces of `R`) does not reach corridors of `G - X_cold`, so a dense ¬(★) repeat
+germ is a germ the table `[157]` must exclude, which is exactly the content of
+`[187]`.
