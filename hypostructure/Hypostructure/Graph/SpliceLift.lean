@@ -542,4 +542,67 @@ theorem not_baseline_of_external (G : FiniteObject.{u}) (a b : G.Vertex)
   unfold MinimumDegreeAtLeast at h
   omega
 
+open Classical in
+open Hypostructure.Graph in
+/-- **The multiply excised object**: `G` with the interiors of the shortcut paths deleted and
+the shortcut edges added. -/
+noncomputable def multiSpliceObject (G : FiniteObject.{u}) (L : List (Shortcut G.graph)) :
+    FiniteObject.{u} :=
+  (FiniteObject.of (multiSplice G.graph L) G.vertices
+      (fun _ _ => Classical.propDecidable _)).induce
+    (G.vertexFinset.filter (fun v => v ∉ delSet L))
+
+open Classical in
+open Hypostructure.Graph in
+theorem vertexCount_multiSpliceObject_lt (G : FiniteObject.{u}) (L : List (Shortcut G.graph))
+    (v : G.Vertex) (hv : v ∈ delSet L) :
+    (multiSpliceObject G L).vertexCount < G.vertexCount := by
+  unfold multiSpliceObject
+  rw [FiniteObject.vertexCount_induce, ← FiniteObject.card_vertexFinset]
+  apply Finset.card_lt_card
+  refine Finset.ssubset_iff_subset_ne.2 ⟨Finset.filter_subset _ _, ?_⟩
+  intro h
+  have hdm : v ∈ G.vertexFinset := by simp [FiniteObject.vertexFinset]
+  have := (Finset.ext_iff.1 h v).2 hdm
+  exact (Finset.mem_filter.1 this).2 hv
+
+open Classical in
+open Hypostructure.Graph in
+theorem cycle_of_multiSpliceObject (G : FiniteObject.{u}) (L : List (Shortcut G.graph))
+    (LengthOK : Nat → Prop) (h : HasCycleWithLength LengthOK (multiSpliceObject G L)) :
+    ∃ (x : G.Vertex) (c : (multiSplice G.graph L).Walk x x), c.IsCycle ∧ LengthOK c.length := by
+  unfold multiSpliceObject at h
+  obtain ⟨cert⟩ := hasCycleWithLength_of_hom
+    (right := FiniteObject.of (multiSplice G.graph L) G.vertices
+      (fun _ _ => Classical.propDecidable _))
+    (FiniteObject.induceEmbedding _ _).toHom (FiniteObject.induceEmbedding _ _).injective h
+  exact ⟨cert.vertex, cert.walk, cert.isCycle, cert.length_ok⟩
+
+open Classical in
+open Hypostructure.Graph in
+/-- **F08 for a family of shortcuts (multi-boundary excision).**  `G` is a minimal
+target-avoiding object for `Baseline`; `L` is a compatible family of shortcut paths with a
+nonempty deleted set.  Either the multiply excised object misses the baseline, or `G` has a
+cycle whose length is an accepted length plus the shifts of a subfamily of `L`, and is not
+accepted. -/
+theorem multi_excision_dichotomy (G : FiniteObject.{u}) (L : List (Shortcut G.graph))
+    (hL : Compatible L) (v : G.Vertex) (hv : v ∈ delSet L)
+    (LengthOK : Nat → Prop) (avoids : ¬ HasCycleWithLength LengthOK G)
+    (Baseline : FiniteObject.{u} → Prop)
+    (minimal : ∀ X : FiniteObject.{u}, Baseline X → X.LexicographicallySmaller G →
+      HasCycleWithLength LengthOK X) :
+    ¬ Baseline (multiSpliceObject G L) ∨
+    ∃ (S : List (Shortcut G.graph)) (Lk : Nat) (y : G.Vertex) (d : G.graph.Walk y y),
+      S.Sublist L ∧ LengthOK Lk ∧ ¬ LengthOK (Lk + (S.map Shortcut.shift).sum) ∧
+        d.IsCycle ∧ d.length = Lk + (S.map Shortcut.shift).sum := by
+  by_cases hb : Baseline (multiSpliceObject G L)
+  · right
+    have small : (multiSpliceObject G L).LexicographicallySmaller G :=
+      FiniteObject.lexicographicallySmaller_of_vertexCount_lt
+        (vertexCount_multiSpliceObject_lt G L v hv)
+    obtain ⟨x, c, hc, hok⟩ := cycle_of_multiSpliceObject G L LengthOK (minimal _ hb small)
+    obtain ⟨S, y, d, hS, hd, hl⟩ := multiSplice_cycle_lift L hL c hc
+    refine ⟨S, c.length, y, d, hS, hok, fun hok' => avoids ⟨⟨y, d, hd, hl ▸ hok'⟩⟩, hd, hl⟩
+  · exact Or.inl hb
+
 end Hypostructure.Graph.SpliceLift
