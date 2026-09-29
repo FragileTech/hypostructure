@@ -881,7 +881,45 @@ theorem doubleSwitch_cycle_forced {L : ℕ → Prop} {a a' b b' : V}
       rw [Nat.add_comm P₁.length]
       exact acc
 
+/-- **The canonical least element**: shortest in a measure `f`, and among the
+shortest the lexicographically least in a code (the class is finite at each
+measure). -/
+theorem exists_least {α : Type*} (f : α → ℕ) (code : α → List ℕ)
+    (fin : ∀ n, {x | f x ≤ n}.Finite) {Q : α → Prop} (h : ∃ x, Q x) :
+    ∃ x, Q x ∧ (∀ y, Q y → f x ≤ f y) ∧
+      ∀ y, Q y → f y = f x → code x ≤ code y := by
+  classical
+  obtain ⟨x₀, hx₀, least⟩ := exists_min_of_exists f h
+  have finite : {y | Q y ∧ f y = f x₀}.Finite :=
+    (fin (f x₀)).subset fun y hy => le_of_eq hy.2
+  obtain ⟨x, hx, hmin⟩ := finite.toFinset.exists_min_image code
+    ⟨x₀, by simp [hx₀]⟩
+  rw [Set.Finite.mem_toFinset] at hx
+  refine ⟨x, hx.1, fun y hy => hx.2 ▸ least y hy, fun y hy hyx => ?_⟩
+  exact hmin y (by rw [Set.Finite.mem_toFinset]; exact ⟨hy, hyx.trans hx.2⟩)
+
+/-- Walks of bounded length form a finite set. -/
+theorem walk_length_finite {V : Type*} [Fintype V] {K : SimpleGraph V} (u v : V) (n : ℕ) :
+    {p : K.Walk u v | p.length ≤ n}.Finite := by
+  classical
+  exact (Set.toFinite {p : K.Walk u v | p.length < n + 1}).subset
+    fun p hp => Nat.lt_succ_of_le hp
+
+/-- Pairs of walks of bounded total length form a finite set. -/
+theorem walkPair_length_finite {V : Type*} [Fintype V] {K : SimpleGraph V}
+    (u v u' v' : V) (n : ℕ) :
+    {pair : K.Walk u v × K.Walk u' v' | pair.1.length + pair.2.length ≤ n}.Finite :=
+  ((walk_length_finite u v n).prod (walk_length_finite u' v' n)).subset
+    fun pair hp => ⟨le_trans (Nat.le_add_right _ _) hp, le_trans (Nat.le_add_left _ _) hp⟩
+
 end DoubleSwitch
+
+/-- **G's vertex order**: the rank of a vertex in G's fixed enumeration
+`object.vertices`.  Walks are compared by the lexicographic order of their
+support lists read through it. -/
+noncomputable def vertexRank (object : FiniteObject.{u}) (vertex : object.Vertex) : Nat :=
+  letI : FinEnum object.Vertex := object.vertices
+  ((FinEnum.equiv vertex : Fin (FinEnum.card object.Vertex)) : Nat)
 
 /-! ## The switch at the separator, constructed from G, and absorption
 
@@ -1093,7 +1131,8 @@ noncomputable def exchangedEdges : Set (Sym2 object.Vertex) :=
 
 /-- **The forced paths of the target-cycle arm, with their local length
 constraints at `z`** (all in `G − {a a⁺, b b⁺}`, each the shortest of its
-kind):
+kind and, among the shortest, the lexicographically least support in G's
+vertex order `vertexRank`, so each is a canonical object of G):
 
 * one exchanged edge `a b⁺`: a path `P : a ⇝ b⁺` with `|P| + 1` accepted; if it
   avoids `z` and `b`, the apex cycle `z a P b⁺ b z` of G has length `|P| + 3`,
@@ -1113,6 +1152,10 @@ def ForcedAtSwitch (L : Nat → Prop) : Prop :=
       (∀ P' : (object.graph.deleteEdges separation.exchangedEdges).Walk
           separation.nextLeft separation.rightAfter,
         P'.IsPath → L (P'.length + 1) → P.length ≤ P'.length) ∧
+      (∀ P' : (object.graph.deleteEdges separation.exchangedEdges).Walk
+          separation.nextLeft separation.rightAfter,
+        P'.IsPath → L (P'.length + 1) → P'.length = P.length →
+        P.support.map (vertexRank object) ≤ P'.support.map (vertexRank object)) ∧
       (separation.separator ∉ P.support → separation.nextRight ∉ P.support →
         ¬ L (P.length + 3))) ∨
     (∃ P : (object.graph.deleteEdges separation.exchangedEdges).Walk
@@ -1121,6 +1164,10 @@ def ForcedAtSwitch (L : Nat → Prop) : Prop :=
       (∀ P' : (object.graph.deleteEdges separation.exchangedEdges).Walk
           separation.nextRight separation.leftAfter,
         P'.IsPath → L (P'.length + 1) → P.length ≤ P'.length) ∧
+      (∀ P' : (object.graph.deleteEdges separation.exchangedEdges).Walk
+          separation.nextRight separation.leftAfter,
+        P'.IsPath → L (P'.length + 1) → P'.length = P.length →
+        P.support.map (vertexRank object) ≤ P'.support.map (vertexRank object)) ∧
       (separation.separator ∉ P.support → separation.nextLeft ∉ P.support →
         ¬ L (P.length + 3))) ∨
     ∃ (P₁ : (object.graph.deleteEdges separation.exchangedEdges).Walk
@@ -1136,6 +1183,15 @@ def ForcedAtSwitch (L : Nat → Prop) : Prop :=
           Q₁.IsPath → Q₂.IsPath → List.Disjoint Q₁.support Q₂.support →
           L (Q₁.length + Q₂.length + 2) →
           P₁.length + P₂.length ≤ Q₁.length + Q₂.length) ∧
+        (∀ (Q₁ : (object.graph.deleteEdges separation.exchangedEdges).Walk
+              separation.nextLeft separation.leftAfter)
+            (Q₂ : (object.graph.deleteEdges separation.exchangedEdges).Walk
+              separation.nextRight separation.rightAfter),
+          Q₁.IsPath → Q₂.IsPath → List.Disjoint Q₁.support Q₂.support →
+          L (Q₁.length + Q₂.length + 2) →
+          Q₁.length + Q₂.length = P₁.length + P₂.length →
+          (P₁.support ++ P₂.support).map (vertexRank object) ≤
+            (Q₁.support ++ Q₂.support).map (vertexRank object)) ∧
         ¬ L (P₁.length + 1) ∧ ¬ L (P₂.length + 1)
 
 /-- **The target-cycle arm at G, accounted**: an accepted cycle of the switched
@@ -1147,6 +1203,7 @@ theorem switched_forced_paths {L : Nat → Prop}
     (accepted : HasCycleWithLength L separation.switched) :
     separation.SwitchValid ∧ separation.ForcedAtSwitch L := by
   classical
+  letI : FinEnum object.Vertex := object.vertices
   have valid := (separation.switched_forced_cycle avoids accepted).1
   obtain ⟨tailL, tailR, adjL, adjR, hLR, hRL, hAfter, nL, nR⟩ := valid
   have noG : DoubleSwitch.NoAcceptedCycle object.graph L :=
@@ -1192,20 +1249,26 @@ theorem switched_forced_paths {L : Nat → Prop}
         exact SimpleGraph.Walk.length_transfer _ _) with
     one | one | both
   · refine ⟨⟨tailL, tailR, adjL, adjR, hLR, hRL, hAfter, nL, nR⟩, Or.inl ?_⟩
-    obtain ⟨P, ⟨pPath, pAcc⟩, least⟩ := DoubleSwitch.exists_min_of_exists
+    obtain ⟨P, ⟨pPath, pAcc⟩, least, lex⟩ := DoubleSwitch.exists_least
       (fun P : (object.graph.deleteEdges separation.exchangedEdges).Walk
-        separation.nextLeft separation.rightAfter => P.length) one
-    refine ⟨P, pPath, pAcc, fun P' p' a' => least P' ⟨p', a'⟩, fun zNot bNot => ?_⟩
+        separation.nextLeft separation.rightAfter => P.length)
+      (fun P => P.support.map (vertexRank object))
+      (DoubleSwitch.walk_length_finite _ _) one
+    refine ⟨P, pPath, pAcc, fun P' p' a' => least P' ⟨p', a'⟩,
+      fun P' p' a' l => lex P' ⟨p', a'⟩ l, fun zNot bNot => ?_⟩
     have apex := DoubleSwitch.apex_cycle_rejected noG separation.nextLeft_adj
       separation.nextRight_adj adjR separation.distinct (P.transfer _ (toG P))
       (pPath.transfer (toG P)) (by rw [SimpleGraph.Walk.support_transfer]; exact zNot)
       (by rw [SimpleGraph.Walk.support_transfer]; exact bNot)
     rwa [SimpleGraph.Walk.length_transfer] at apex
   · refine ⟨⟨tailL, tailR, adjL, adjR, hLR, hRL, hAfter, nL, nR⟩, Or.inr (Or.inl ?_)⟩
-    obtain ⟨P, ⟨pPath, pAcc⟩, least⟩ := DoubleSwitch.exists_min_of_exists
+    obtain ⟨P, ⟨pPath, pAcc⟩, least, lex⟩ := DoubleSwitch.exists_least
       (fun P : (object.graph.deleteEdges separation.exchangedEdges).Walk
-        separation.nextRight separation.leftAfter => P.length) one
-    refine ⟨P, pPath, pAcc, fun P' p' a' => least P' ⟨p', a'⟩, fun zNot aNot => ?_⟩
+        separation.nextRight separation.leftAfter => P.length)
+      (fun P => P.support.map (vertexRank object))
+      (DoubleSwitch.walk_length_finite _ _) one
+    refine ⟨P, pPath, pAcc, fun P' p' a' => least P' ⟨p', a'⟩,
+      fun P' p' a' l => lex P' ⟨p', a'⟩ l, fun zNot aNot => ?_⟩
     have apex := DoubleSwitch.apex_cycle_rejected noG separation.nextRight_adj
       separation.nextLeft_adj adjL (Ne.symm separation.distinct)
       (P.transfer _ (toG P)) (pPath.transfer (toG P))
@@ -1213,12 +1276,14 @@ theorem switched_forced_paths {L : Nat → Prop}
       (by rw [SimpleGraph.Walk.support_transfer]; exact aNot)
     rwa [SimpleGraph.Walk.length_transfer] at apex
   · refine ⟨⟨tailL, tailR, adjL, adjR, hLR, hRL, hAfter, nL, nR⟩, Or.inr (Or.inr ?_)⟩
-    obtain ⟨⟨P₁, P₂⟩, ⟨p₁, p₂, disj, acc⟩, least⟩ := DoubleSwitch.exists_min_of_exists
+    obtain ⟨⟨P₁, P₂⟩, ⟨p₁, p₂, disj, acc⟩, least, lex⟩ := DoubleSwitch.exists_least
       (fun pair : (object.graph.deleteEdges separation.exchangedEdges).Walk
           separation.nextLeft separation.leftAfter ×
         (object.graph.deleteEdges separation.exchangedEdges).Walk
           separation.nextRight separation.rightAfter =>
         pair.1.length + pair.2.length)
+      (fun pair => (pair.1.support ++ pair.2.support).map (vertexRank object))
+      (DoubleSwitch.walkPair_length_finite _ _ _ _)
       (Q := fun pair => pair.1.IsPath ∧ pair.2.IsPath ∧
         List.Disjoint pair.1.support pair.2.support ∧
         L (pair.1.length + pair.2.length + 2))
@@ -1226,7 +1291,8 @@ theorem switched_forced_paths {L : Nat → Prop}
         obtain ⟨P₁, P₂, rest⟩ := both
         exact ⟨⟨P₁, P₂⟩, rest⟩)
     refine ⟨P₁, P₂, p₁, p₂, disj, acc,
-      fun Q₁ Q₂ q₁ q₂ d a => least ⟨Q₁, Q₂⟩ ⟨q₁, q₂, d, a⟩, ?_, ?_⟩
+      fun Q₁ Q₂ q₁ q₂ d a => least ⟨Q₁, Q₂⟩ ⟨q₁, q₂, d, a⟩,
+      fun Q₁ Q₂ q₁ q₂ d a l => lex ⟨Q₁, Q₂⟩ ⟨q₁, q₂, d, a⟩ l, ?_, ?_⟩
     · have closed := DoubleSwitch.closing_edge_rejected noG adjL.symm
         (P₁.transfer _ (toG P₁)) (p₁.transfer (toG P₁))
         (by

@@ -5274,7 +5274,9 @@ Exit (4), Q4 at G (key 7960 now publishes `Separation.ForcedAtSwitch`):
   forms in `G − {a a⁺, b b⁺}`.  **Lean improvement: the crossed use of both
   exchanged edges (`a ⇝ b`, `b a⁺`, `a⁺ ⇝ b⁺`) closes the G-cycle
   `a ⇝ b – b⁺ ⇝ a⁺ – a` of the same accepted length and is excluded.**
-- Published forms, each the shortest of its kind (`exists_min_of_exists`):
+- Published forms, each the canonical path of its kind: shortest, and among
+  the shortest the lexicographically least support list in G's vertex order
+  `vertexRank` (for the pair: the concatenated supports) (`exists_least`):
   (i) `P : a ⇝ b⁺`, `L(|P| + 1)`, and if `P` avoids `z`, `b`: `¬ L(|P| + 3)`
   (apex cycle `z a P b⁺ b z`, `apex_cycle_rejected`); (ii) the mirror
   `P : b ⇝ a⁺`; (iii) disjoint `P₁ : a ⇝ a⁺`, `P₂ : b ⇝ b⁺` with
