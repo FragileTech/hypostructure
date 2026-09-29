@@ -6303,3 +6303,67 @@ order) are replaced by versions at the handoff's own objects; the global stateme
   charge; the load bound caps the pairs charged at `h`.  No contradiction with
   `PairObstructionHandoff` results: it remains the open proposition (first separator `h ∈ U`,
   `deg h > δ`, two next vertices in `U`, non-absorbing at `P₀`, escaping envelope).
+
+## G audit: TypeBSublinearOutcome (keys 8300–8313, 2026-09-29)
+
+Residual: `TypeBSublinearOutcome` (node `[187]`, thm:main (vi)), the negative arm of
+`typeBSublinearDichotomy`; it retains `¬ TypeBSublinearHypotheses data G`
+(`Statements/TypeBLanes.lean`), which was a bare negation. The report is
+`audits/structural-accounting/TypeBSublinearOutcome.md`.
+
+- **Defining test is about G.** Its four `∃` (handoff pieces, grouped centres, fan
+  envelope map, absorbed-core map) are each pinned by `↔`/`=` to G's canonical
+  objects; no free data field. Fan certificates (`canonicalFanCertificateLabelling`),
+  `DecoratedHandoff.Envelope`, `AbsorbedHandoffAt`, `IsFixedTypeBProfile` (labelling
+  quantified over G's own fan labellings) are built from G. The test is not decided
+  at G; the residual is not an artifact. The split is a plain `em`.
+- **nonG facts on the common ledger, not fixed here (shared with every residual):**
+  `#15 localAlgebra` (ignores its object), `#66 barrierEnumeration` (no object
+  argument), `#2 cubicBaseline` (mixed). Replacement: the label census / table row
+  read from G's placed windows at P0. Left to one shared edit.
+- **New facts (published on the negative arm, rows in
+  `SpineRows/TypeBSublinearCanonical.lean`, statements
+  `Statements/TypeBSublinearCanonical.lean`, `TypeBSublinearGaps.lean`, proofs
+  `Contracts/TypeB/SublinearCanonical.lean`, `SublinearGaps.lean`):**
+  - 8300 `typeBSublinearCanonicalForm`: the hypotheses ↔ bridge arm ∧ centres-high ∧
+    handoff arm ∧ cover arm, no `∃`.
+  - 8301 `groupedAbsorbedCoreSubset`, 8303 `groupedCentresHigh`,
+    8304 `handoffDegreeClauseEmpty`, 8305 `pieceRoutingTotal`
+    (Lean improvement: those failure arms are empty at G; routing is total by
+    `remainderNormalized`).
+  - 8306 `coverPayment` (¬cover ⇒ an unpaid absorbed vertex), 8308
+    `unpaidAbsorbedWindowPort` (an unpaid absorbed vertex is adjacent to its grouped
+    centre and has another neighbour in the packed windows), 8307
+    `loadFailureSaturated` (a load failure is a saturated receiver of the piece).
+  - 8302 `typeBSublinearFailureArms`: the exact decomposition of the failure into
+    (A) a route-8 piece of positive surplus whose flat vertex traces into a centre or
+    with an over-capacity non-centre receiver, (B) a handoff piece whose flat vertex
+    traces into the absorbed core or with an over-capacity receiver, (C) an unpaid
+    absorbed vertex.
+- **Root type:** `TypeBSublinearOutcome` gains nine conjuncts (8300–8308).
+- **Gap facts (second pass, 8309–8313; statements `Statements/TypeBSublinearFlow.lean`,
+  proofs `Contracts/TypeB/SublinearFlow.lean`):**
+  - 8309 `receiverPortsAreWindowStubs` (H05): at a baseline receiver of a canonical
+    piece, `missingPorts = degree − internalDegree R(P₀)` (its incidences leaving the
+    remainder, i.e. window stubs); `def⁺(piece) = Σ_receivers missingPorts`. The
+    stub-deficit identity `e(R,W)+exc(R)=σ(R)+def⁺(R)` (branch g-audit-r8rate, key 8256)
+    is to be combined with this at merge; it is not copied here.
+  - 8310 `saturatedReceiverBasin` (H05): a saturated receiver has a trace basin of
+    ≥ `s·missingPorts` full vertices, each in the piece, at the baseline, tracing to it.
+  - 8311 `loadFlowValue` (H07, H04): with routing landing outside the excluded set,
+    #flat + #receivers ≤ `s·Σ missingPorts` if every receiver is unsaturated. This is
+    the max-flow ≤ min-cut transfer to unsaturated receivers.
+  - 8312 `coverFlowValue` (H07): `Σ|absorbed| ≤ Σ closedCount + #unpaid`, `|absorbed| ≤ 2`
+    per handoff piece, `#unpaid ≤ 2·#handoff pieces`, `unpaid = ∅ → cover`.
+  - 8313 `pieceSizeProfile` (B01): pieces partition R(P₀), every piece has a receiver,
+    `#pieces ≤ def⁺(R(P₀))`.
+- **Status: still open.** Remaining proposition at G: 8302's arms with the numerical
+  form now fixed: (A) a flat vertex of a positive-surplus piece whose canonical trace
+  lands on a centre, or a non-centre receiver with `s·q ≤ L` (basin of ≥ `s·q` full
+  vertices; `q` = its window stubs); (B) the same for handoff pieces against the
+  absorbed core; (C) an absorbed vertex with a window port, at most `2·#handoff pieces
+  ≤ 2·def⁺(R(P₀))` of them. None contradicts the ledger: the receiver-load bound is
+  the Type A unsaturation lemma, which the paper proves only for zero-surplus
+  supports; on a positive-surplus piece the trace-into-centre outcome and a
+  saturated receiver remain as the residual, and the ledger carries no window-stub
+  count at the granularity of one receiver or one absorbed vertex.

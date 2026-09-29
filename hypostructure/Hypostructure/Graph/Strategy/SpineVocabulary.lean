@@ -8,6 +8,9 @@ import Hypostructure.Graph.Statements.TypeB
 import Hypostructure.Graph.Statements.RouteEightPinned
 import Hypostructure.Graph.Statements.SurplusPair
 import Hypostructure.Graph.Statements.TypeBLanes
+import Hypostructure.Graph.Statements.TypeBSublinearCanonical
+import Hypostructure.Graph.Statements.TypeBSublinearGaps
+import Hypostructure.Graph.Statements.TypeBSublinearFlow
 import Hypostructure.Graph.Statements.SurplusPairRouting
 import Hypostructure.Graph.Statements.SurplusPairCode
 import Hypostructure.Graph.Statements.ColdGerm
@@ -1667,6 +1670,65 @@ inductive Key where
   representative of G's piece at `B_u` has the size of the piece (a valid
   replacement is not smaller), and the exit-`(5)` datum is absent. -/
   | route8QuotientEntriesAtG
+  -- Type B sublinear audit keys (8300–8349)
+  /-- G audit of `TypeBSublinearOutcome`, `prop:typeB-bridge-sublinear`: **the
+  tested hypotheses in G's canonical form** -- every existential is pinned to a
+  canonical object of G, so the hypotheses are exactly the bridge, centre-height,
+  handoff and cover arms over G's canonical objects. -/
+  | typeBSublinearCanonicalForm
+  /-- G audit of `TypeBSublinearOutcome` (Lean improvement): **G's canonical
+  absorbed core of a piece lies in the piece**, so the clause `absorbedAt ⊆ piece`
+  of the sublinear hypotheses is empty as a failure arm at G. -/
+  | groupedAbsorbedCoreSubset
+  /-- G audit of `TypeBSublinearOutcome`: **the exact decomposition of the failed
+  sublinear hypotheses at G** into a route-`8` bridge piece of positive surplus, a
+  failing decorated handoff piece, a non-high grouped centre, or a failed cover
+  inequality. -/
+  | typeBSublinearFailureArms
+  /-- G audit of `TypeBSublinearOutcome` (Lean improvement): **the grouped centres
+  of G are high** (a surviving first separator has degree at least `4`), so the
+  height clause of the sublinear hypotheses is empty as a failure arm. -/
+  | groupedCentresHigh
+  /-- G audit of `TypeBSublinearOutcome` (Lean improvement): **the degree clause
+  of the handoff clauses is empty at G**: a decorated handoff piece has zero
+  ambient surplus, so no vertex of it has internal degree above the baseline. -/
+  | handoffDegreeClauseEmpty
+  /-- G audit of `TypeBSublinearOutcome`: **G's canonical routing is total on the
+  pieces of the remainder** (`K .remainderNormalized`): every flat vertex of a
+  canonical piece is routed by `traceReceiver?` to a receiver of the piece. -/
+  | pieceRoutingTotal
+  /-- G audit of `TypeBSublinearOutcome`: **the incidence payment of the cover
+  arm**: the cover inequality fails only if an absorbed vertex of a decorated
+  handoff piece is a cubic-closed neighbour of no grouped centre. -/
+  | coverPayment
+  /-- G audit of `TypeBSublinearOutcome` (gap H05): **a load failure of the
+  sublinear test is a saturated receiver of the piece** (the restricted load is a
+  sub-count of the routed load). -/
+  | loadFailureSaturated
+  /-- G audit of `TypeBSublinearOutcome` (gaps H06, H07): **the Hall violator of
+  the cover network is a window port**: an unpaid absorbed vertex is adjacent to
+  its grouped centre and has another neighbour in the packed windows. -/
+  | unpaidAbsorbedWindowPort
+  /-- G audit of `TypeBSublinearOutcome` (gap H05): **the ports of a receiver are
+  window stubs**: `missingPorts` is the number of incidences leaving the remainder,
+  and `def⁺` of a piece is the sum of its receivers' ports. -/
+  | receiverPortsAreWindowStubs
+  /-- G audit of `TypeBSublinearOutcome` (gap H05): **the structure of a saturated
+  receiver**: a trace basin of at least `s · missingPorts` full vertices of the
+  piece. -/
+  | saturatedReceiverBasin
+  /-- G audit of `TypeBSublinearOutcome` (gap H07): **the value of the load
+  network**: flat vertices plus receivers are at most `s · Σ missingPorts` when
+  every receiver is unsaturated and routing lands outside the excluded set. -/
+  | loadFlowValue
+  /-- G audit of `TypeBSublinearOutcome` (gap H07): **the value of the cover
+  network**: absorbed cardinalities are at most the closed counts plus the unpaid
+  count, absorbed cores have at most two vertices. -/
+  | coverFlowValue
+  /-- G audit of `TypeBSublinearOutcome` (gap B01): **the component size profile
+  of the remainder**: pieces partition `R(P₀)`, each has a receiver, and their
+  number is at most `def⁺(R(P₀))`. -/
+  | pieceSizeProfile
   -- F5 keys
   /-- Node `[175]`, no arm: every selected corridor meets a high-degree
   vertex. -/
@@ -2787,6 +2849,34 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   -- R8Q keys
   | .route8QuotientEntriesAtG, object =>
       Route8QuotientEntriesAtGStatement data.toParameters object
+  | .typeBSublinearCanonicalForm, object =>
+      TypeBSublinearCanonicalFormStatement data.toParameters object
+  | .groupedAbsorbedCoreSubset, object =>
+      GroupedAbsorbedCoreSubsetStatement data.toParameters object
+  | .typeBSublinearFailureArms, object =>
+      TypeBSublinearFailureArmsStatement data.toParameters object
+  | .groupedCentresHigh, object =>
+      GroupedCentresHighStatement data.toParameters object
+  | .handoffDegreeClauseEmpty, object =>
+      HandoffDegreeClauseEmptyStatement data.toParameters object
+  | .pieceRoutingTotal, object =>
+      PieceRoutingTotalStatement data.toParameters object
+  | .coverPayment, object =>
+      CoverPaymentStatement data.toParameters object
+  | .loadFailureSaturated, object =>
+      LoadFailureSaturatedStatement data.toParameters object
+  | .unpaidAbsorbedWindowPort, object =>
+      UnpaidAbsorbedWindowPortStatement data.toParameters object
+  | .receiverPortsAreWindowStubs, object =>
+      ReceiverPortsAreWindowStubsStatement data.toParameters object
+  | .saturatedReceiverBasin, object =>
+      SaturatedReceiverBasinStatement data.toParameters object
+  | .loadFlowValue, object =>
+      LoadFlowValueStatement data.toParameters object
+  | .coverFlowValue, object =>
+      CoverFlowValueStatement data.toParameters object
+  | .pieceSizeProfile, object =>
+      PieceSizeProfileStatement data.toParameters object
   -- F5 keys
   | .coldNoPositiveGerm, object =>
       ColdNoPositiveGermStatement data.toParameters object
@@ -3451,6 +3541,20 @@ def label : Key → String
   | .route8UnifiedEmptyAtG => "route8UnifiedEmptyAtG"
   -- R8Q keys
   | .route8QuotientEntriesAtG => "route8QuotientEntriesAtG"
+  | .typeBSublinearCanonicalForm => "typeBSublinearCanonicalForm"
+  | .groupedAbsorbedCoreSubset => "groupedAbsorbedCoreSubset"
+  | .typeBSublinearFailureArms => "typeBSublinearFailureArms"
+  | .groupedCentresHigh => "groupedCentresHigh"
+  | .handoffDegreeClauseEmpty => "handoffDegreeClauseEmpty"
+  | .pieceRoutingTotal => "pieceRoutingTotal"
+  | .coverPayment => "coverPayment"
+  | .loadFailureSaturated => "loadFailureSaturated"
+  | .unpaidAbsorbedWindowPort => "unpaidAbsorbedWindowPort"
+  | .receiverPortsAreWindowStubs => "receiverPortsAreWindowStubs"
+  | .saturatedReceiverBasin => "saturatedReceiverBasin"
+  | .loadFlowValue => "loadFlowValue"
+  | .coverFlowValue => "coverFlowValue"
+  | .pieceSizeProfile => "pieceSizeProfile"
   -- F5 keys
   | .coldNoPositiveGerm => "coldNoPositiveGerm"
   -- SD keys (final pass)
@@ -3970,6 +4074,20 @@ example : label .route8UnpaidWitnessFree = "route8UnpaidWitnessFree" := rfl
 example : label .route8UnifiedEmptyAtG = "route8UnifiedEmptyAtG" := rfl
 -- R8Q keys
 example : label .route8QuotientEntriesAtG = "route8QuotientEntriesAtG" := rfl
+example : label .typeBSublinearCanonicalForm = "typeBSublinearCanonicalForm" := rfl
+example : label .groupedAbsorbedCoreSubset = "groupedAbsorbedCoreSubset" := rfl
+example : label .typeBSublinearFailureArms = "typeBSublinearFailureArms" := rfl
+example : label .groupedCentresHigh = "groupedCentresHigh" := rfl
+example : label .handoffDegreeClauseEmpty = "handoffDegreeClauseEmpty" := rfl
+example : label .pieceRoutingTotal = "pieceRoutingTotal" := rfl
+example : label .coverPayment = "coverPayment" := rfl
+example : label .loadFailureSaturated = "loadFailureSaturated" := rfl
+example : label .unpaidAbsorbedWindowPort = "unpaidAbsorbedWindowPort" := rfl
+example : label .receiverPortsAreWindowStubs = "receiverPortsAreWindowStubs" := rfl
+example : label .saturatedReceiverBasin = "saturatedReceiverBasin" := rfl
+example : label .loadFlowValue = "loadFlowValue" := rfl
+example : label .coverFlowValue = "coverFlowValue" := rfl
+example : label .pieceSizeProfile = "pieceSizeProfile" := rfl
 -- F5 keys
 example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
 -- SD keys (final pass)
@@ -4473,6 +4591,20 @@ def idx : Key → Nat
   | .route8UnifiedEmptyAtG => 7900
   -- R8Q keys
   | .route8QuotientEntriesAtG => 8150
+  | .typeBSublinearCanonicalForm => 8300
+  | .groupedAbsorbedCoreSubset => 8301
+  | .typeBSublinearFailureArms => 8302
+  | .groupedCentresHigh => 8303
+  | .handoffDegreeClauseEmpty => 8304
+  | .pieceRoutingTotal => 8305
+  | .coverPayment => 8306
+  | .loadFailureSaturated => 8307
+  | .unpaidAbsorbedWindowPort => 8308
+  | .receiverPortsAreWindowStubs => 8309
+  | .saturatedReceiverBasin => 8310
+  | .loadFlowValue => 8311
+  | .coverFlowValue => 8312
+  | .pieceSizeProfile => 8313
   -- F5 keys
   | .coldNoPositiveGerm => 1800
   -- SD keys (final pass)
@@ -4971,6 +5103,20 @@ def ofIdx : Nat → Key
   | 7900 => .route8UnifiedEmptyAtG
   -- R8Q keys
   | 8150 => .route8QuotientEntriesAtG
+  | 8300 => .typeBSublinearCanonicalForm
+  | 8301 => .groupedAbsorbedCoreSubset
+  | 8302 => .typeBSublinearFailureArms
+  | 8303 => .groupedCentresHigh
+  | 8304 => .handoffDegreeClauseEmpty
+  | 8305 => .pieceRoutingTotal
+  | 8306 => .coverPayment
+  | 8307 => .loadFailureSaturated
+  | 8308 => .unpaidAbsorbedWindowPort
+  | 8309 => .receiverPortsAreWindowStubs
+  | 8310 => .saturatedReceiverBasin
+  | 8311 => .loadFlowValue
+  | 8312 => .coverFlowValue
+  | 8313 => .pieceSizeProfile
   -- F5 keys
   | 1800 => .coldNoPositiveGerm
   -- SD keys (final pass)
@@ -5917,6 +6063,34 @@ def name : Key → Lean.Name
   -- R8Q keys
   | .route8QuotientEntriesAtG =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8QuotientEntriesAtG") 8150
+  | .typeBSublinearCanonicalForm =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBSublinearCanonicalForm") 8300
+  | .groupedAbsorbedCoreSubset =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "groupedAbsorbedCoreSubset") 8301
+  | .typeBSublinearFailureArms =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBSublinearFailureArms") 8302
+  | .groupedCentresHigh =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "groupedCentresHigh") 8303
+  | .handoffDegreeClauseEmpty =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "handoffDegreeClauseEmpty") 8304
+  | .pieceRoutingTotal =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pieceRoutingTotal") 8305
+  | .coverPayment =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coverPayment") 8306
+  | .loadFailureSaturated =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "loadFailureSaturated") 8307
+  | .unpaidAbsorbedWindowPort =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "unpaidAbsorbedWindowPort") 8308
+  | .receiverPortsAreWindowStubs =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "receiverPortsAreWindowStubs") 8309
+  | .saturatedReceiverBasin =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "saturatedReceiverBasin") 8310
+  | .loadFlowValue =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "loadFlowValue") 8311
+  | .coverFlowValue =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coverFlowValue") 8312
+  | .pieceSizeProfile =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pieceSizeProfile") 8313
   -- F5 keys
   | .coldNoPositiveGerm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldNoPositiveGerm") 1800

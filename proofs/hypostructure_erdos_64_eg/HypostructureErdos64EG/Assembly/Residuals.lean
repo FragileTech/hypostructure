@@ -2349,7 +2349,35 @@ abbrev TypeBSublinearOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8ExtractedEntryCensus selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBSublinearResidual selected.object
+      erdosReceiverLoadProfile spineData .typeBSublinearResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .typeBSublinearCanonicalForm selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .groupedAbsorbedCoreSubset selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .typeBSublinearFailureArms selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .groupedCentresHigh selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .handoffDegreeClauseEmpty selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pieceRoutingTotal selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coverPayment selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .loadFailureSaturated selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .unpaidAbsorbedWindowPort selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .receiverPortsAreWindowStubs selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .saturatedReceiverBasin selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .loadFlowValue selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coverFlowValue selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pieceSizeProfile selected.object
 
 /-- The return of `TypeBSublinearOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -2466,7 +2494,21 @@ theorem typeBSublinearReturn
     [FactKeys.Has (K .typeBBridgeReduction) known]
     [FactKeys.Has (K .route8PiecesClassified) known]
     [FactKeys.Has (K .route8ExtractedEntryCensus) known]
-    [FactKeys.Has (K .typeBSublinearResidual) known] :
+    [FactKeys.Has (K .typeBSublinearResidual) known]
+    [FactKeys.Has (K .typeBSublinearCanonicalForm) known]
+    [FactKeys.Has (K .groupedAbsorbedCoreSubset) known]
+    [FactKeys.Has (K .typeBSublinearFailureArms) known]
+    [FactKeys.Has (K .groupedCentresHigh) known]
+    [FactKeys.Has (K .handoffDegreeClauseEmpty) known]
+    [FactKeys.Has (K .pieceRoutingTotal) known]
+    [FactKeys.Has (K .coverPayment) known]
+    [FactKeys.Has (K .loadFailureSaturated) known]
+    [FactKeys.Has (K .unpaidAbsorbedWindowPort) known]
+    [FactKeys.Has (K .receiverPortsAreWindowStubs) known]
+    [FactKeys.Has (K .saturatedReceiverBasin) known]
+    [FactKeys.Has (K .loadFlowValue) known]
+    [FactKeys.Has (K .coverFlowValue) known]
+    [FactKeys.Has (K .pieceSizeProfile) known] :
     TypeBSublinearOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -2578,7 +2620,21 @@ theorem typeBSublinearReturn
     (history.get (K .typeBBridgeReduction)).down,
     (history.get (K .route8PiecesClassified)).down,
     (history.get (K .route8ExtractedEntryCensus)).down,
-    (history.get (K .typeBSublinearResidual)).down⟩
+    (history.get (K .typeBSublinearResidual)).down,
+    (history.get (K .typeBSublinearCanonicalForm)).down,
+    (history.get (K .groupedAbsorbedCoreSubset)).down,
+    (history.get (K .typeBSublinearFailureArms)).down,
+    (history.get (K .groupedCentresHigh)).down,
+    (history.get (K .handoffDegreeClauseEmpty)).down,
+    (history.get (K .pieceRoutingTotal)).down,
+    (history.get (K .coverPayment)).down,
+    (history.get (K .loadFailureSaturated)).down,
+    (history.get (K .unpaidAbsorbedWindowPort)).down,
+    (history.get (K .receiverPortsAreWindowStubs)).down,
+    (history.get (K .saturatedReceiverBasin)).down,
+    (history.get (K .loadFlowValue)).down,
+    (history.get (K .coverFlowValue)).down,
+    (history.get (K .pieceSizeProfile)).down⟩
 
 /-- **Node `[187] ([348], route-8 quotient failure)`** (thm:main (vi), tex
 369-378, 388-390): failure of route-8 quotient freeness of the unified
