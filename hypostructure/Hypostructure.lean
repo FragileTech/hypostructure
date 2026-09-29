@@ -215,3 +215,5 @@ import Hypostructure.Graph.LadderBridge
 import Hypostructure.Graph.TwoGeodesics
 import Hypostructure.Graph.TwoGeodesicsCount
 import Hypostructure.Graph.LadderG
+import Hypostructure.Graph.RecordFibreCompression
+import Hypostructure.Graph.BlobCycles
