@@ -5389,6 +5389,100 @@ Report: `audits/structural-accounting/ColdBranchClosedOutcome_linearRealizedSile
   representative") and what equal cut states record.  Identifying the two heads (rather than
   adding the edge `s(a,b)`) changes the head degree to `deg a + deg b - 2`, still
   `>= t`, but does not repair the deleted vertices' outside neighbours.
+- **Complement arm: what the negation forces (round 3).**
+  New key 8402 `coldMarkedGermStretchIncidence` (requires `coldAbsorbedNeutralConfiguration`,
+  `minDegreeBaseline`): for every path `p` of G spanning the marked germ's support, every
+  interior vertex has degree exactly `t` (subcubic support, baseline) and exactly `t - 2`
+  neighbours besides its two path neighbours (`t = 3`: one extra neighbour, a pendant outside
+  the support or a chord inside it).  Note the correction to the negation: a failed baseline
+  of a *path* splice needs only ONE deficient outside neighbour, not every stretch vertex.
+  `SpliceLift.multiSplice` / `multiSplice_cycle_lift` / `multiSpliceObject` /
+  `multi_excision_dichotomy` (kernel-checked): the multi-boundary splice (several
+  vertex-disjoint compatible shortcut paths replaced by edges); every cycle of the result is a
+  cycle of G of the same length or lifts to a cycle of G of length `L + (sum of the shifts of
+  a subfamily)`; the excised object is strictly smaller.  This is the correct generalization of
+  "region excision with label identification": a refined state (recording outside incidences)
+  does not repair the deleted vertices' outside neighbours, since their degrees are lost
+  whatever the state at the two cuts; what repairs them is a degree-preserving shortcut
+  family, in which each pendant of a deleted vertex is re-attached through a shortcut whose
+  end is the pendant's outside endpoint.
+  Concrete case (all interior vertices pendant, an induced ladder-like stretch): deleting two
+  adjacent interior vertices `u_i, u_{i+1}` and adding the shortcut edges `u_{i-1} x_i` and
+  `x_{i+1} u_{i+2}` preserves every degree (when the new edges are not parallel) and removes 2
+  vertices; the lifts add 1, 1 or 2 to the cycle length, so the excision is a smaller
+  counterexample unless G has a cycle of length `2^k + 1`, `2^k + 2` or `2^k + 3` through the
+  suppressed pair.  That is the exact form of F08 for a pendant stretch; it is not
+  contradictory with the ledger (G may well have such cycles), so no closure follows.
+  A long stretch is not excluded: the stretch is not in the packing remainder `R` (the outside
+  component of the cold windows contains hot windows), so `remainderPathBounds` gives no
+  induced-`P13` bound on it; its length is bounded only by `M_cold`
+  (`coldMarkedGermUncompressed`).  The period `p` of the pendant pattern is not a G fact:
+  equal cut states record only the interfaces.
+- **Round 4: the concrete degree-preserving compression (kernel-checked).**
+  New module `Graph/DoubleSuppress.lean`: `Config` (an edge `u v` with `N(u) = {v, pl, x}`,
+  `N(v) = {u, y, q}`, the new edges `pl x` and `y q` non-edges of G and distinct),
+  `Config.family` (the shortcuts `pl u x`, `y v q`), `Config.adj_family` (adjacency of the
+  excised graph at kept vertices), `Config.repl` with `repl_injOn` (an explicit injection of
+  `N(w)` into the excised neighbourhood, hence **every kept degree is preserved**,
+  `degree_le_multiSpliceObject`), and `pair_suppression_dichotomy` (F08): for minimal
+  target-avoiding `G` with minimum degree `t`, G has a cycle of length `Lk + j` with `Lk`
+  accepted, `j ∈ {1, 2}`, `Lk + j` not accepted.  The excised object is smaller by 2.
+  New key 8403 `coldMarkedGermPairSuppression` (requires `coldAbsorbedNeutralConfiguration`,
+  `minDegreeBaseline`, `selection`): for every path spanning the marked germ's support and
+  EVERY pair of consecutive interior vertices `p_i, p_{i+1}` with `N(p_i) = {p_{i-1}, p_{i+1},
+  x}`, `N(p_{i+1}) = {p_i, y, p_{i+2}}` (`x`, `y` pendants or chords alike: the chord case is
+  covered), either a short-cycle obstruction holds (`p_{i-1} ~ x`: a triangle; `y ~ p_{i+2}`: a
+  triangle; or `s(p_{i-1}, x) = s(y, p_{i+2})`: a `C4` through `p_i p_{i+1}`), or G has a cycle
+  of length `Lk + j` (`Lk` accepted, `j ∈ {1,2}`, not accepted).  With `LengthOK` the dyadic
+  lengths `>= 4` the lengths are in `{5, 6, 9, 10, 17, 18, ...}`.
+- **Combination of consecutive pairs (analysis, not a theorem).**  The lifted cycle records only
+  its length, not its route: `multiSplice_cycle_lift` does not say which shortcut paths lie on
+  it.  So consecutive pairs `i`, `i+1` give two cycles of lengths `2^k + j`, `2^{k'} + j'` with
+  no forced overlap, hence no forced theta and no constraint on branch lengths; even with the
+  route recorded, a theta with branches `a, b, c` needs `a+b`, `a+c`, `b+c` non-dyadic and
+  only two of them are pinned to `2^k + j`, which is satisfiable.  `threeRouteFan`,
+  `threeRouteChain`, `windowAttachmentGap` and the no-`C4` fact constrain routes of length 3
+  and window attachments, not the routes of these lifts.  No explicit bound on the stretch
+  length follows; the bound remains `M_cold`.
+- **Exact surviving pattern.**  For every consecutive interior pair of the marked germ's
+  stretch: a cycle of G of length `2^k + 1` (through exactly one of `pl u x`, `y v q`) or
+  `2^k + 2` (through both), `k >= 2`, unless the pair sits in a triangle or `C4`.
+- **Round 5: routes, Mersenne paths, chords, and the consecutive-pair constraint
+  (kernel-checked).**
+  `Graph/SpliceRoute.lean`: `exists_cycle_snd_edges`, `cycle_lift_route`, `splice_cycle_route`,
+  `RouteCompatible`, `multiSplice_cycle_route`, `RouteLift`, `multi_excision_route`: the lifted
+  cycle keeps every non-shortcut edge of the excised cycle, contains the whole path of each used
+  shortcut, contains no other new edge, and has length `c.length` plus the shifts of the used
+  shortcuts.  `Graph/PairRoute.lean`: `path_around` (removing `u` and its two cycle edges leaves a
+  path), `routeCompatible_family`, `iso_u`, `iso_v`, `edge_avoids`, `pair_route`,
+  `chord_cycle`, `cycle_two_paths`, `mersenne_pair_distinct`.
+  New keys: 8404 `coldMarkedGermPairMersenne` and 8405 `coldMarkedGermChordSpan`.
+  **Correction:** the pair suppression does NOT give a Mersenne path around each vertex.  Its
+  outcome is one of: a path `pl ⇝ x` of length `Lk - 1` avoiding `u, v` (Mersenne when
+  `Lk = 2^k`), or a path `y ⇝ q` of length `Lk - 1` avoiding `u, v`, or a cycle of length
+  `Lk + 2` through all four edges `u pl`, `u x`, `v y`, `v q`.  A single vertex cannot be
+  suppressed (the third neighbour would lose degree).  Key 8405: for a path spanning the
+  support and vertices `w1` before `w2` with `w1 ~ w2` and subpath length `ℓ >= 2`, the chord
+  closes a cycle of length `ℓ + 1`, which is not accepted.
+  **Consecutive pairs.**  Pair `i` = `(u_i, u_{i+1})`, pair `i+1` = `(u_{i+1}, u_{i+2})`.  If
+  pair `i` yields `B_i : x_{i+1} ⇝ u_{i+2}` (length `2^b - 1`, avoiding `u_i, u_{i+1}`) and pair
+  `i+1` yields `A_{i+1} : u_i ⇝ x_{i+1}` (length `2^a - 1`, avoiding `u_{i+1}, u_{i+2}`), the two
+  share the endpoint `x_{i+1}` and the bridge `u_i u_{i+1} u_{i+2}`; if they are internally
+  disjoint they close a cycle of length `2^a + 2^b`, so `a ≠ b`
+  (`mersenne_pair_distinct`).  If they meet, take the first common vertex `w`: the two cycles
+  through `w` have lengths `ℓ'`, `ℓ''` with `ℓ' + ℓ'' = 2^a + 2^b`, both non-accepted, which is
+  satisfiable.  The other combinations (`A_i` with `A_{i+1}`, `B_i` with `B_{i+1}`, any with the
+  double cycle) do not close a walk from the data.  The constraint system along a stretch is
+  therefore: whenever outcome `B` is followed by outcome `A` with disjoint paths, the exponents
+  differ.  It is satisfiable for every stretch length (e.g. all outcomes `A`, no `B` followed by
+  `A`; or alternating exponents), so it gives no bound on the stretch length.
+  `threeRouteFan`, `threeRouteChain`, `windowAttachmentGap` and the no-`C4` fact constrain
+  routes of length `3` and window attachments; the Mersenne paths have length `2^k - 1 >= 3`
+  and lie anywhere in G, so they add nothing beyond disjointness.
+  **Closure test: negative.**  **Exact surviving pattern** along the stretch: for every
+  consecutive pair a Mersenne-length path around it (`2^k - 1`, `k >= 2`) or a double cycle of
+  length `2^k + 2`; no two consecutive Mersenne paths `B_i`, `A_{i+1}` of equal exponent that are
+  internally disjoint; every chord of the stretch has span `+ 1` non-accepted.
 - **Still open (exact proposition at G).** G's marked neutral equal-length germ `(Q, E)`,
   `E = Q`, of the positive extracted family on the realized package: a subcubic (F5)
   germ, not handed off, whose replacement has G's vertex and edge count, so `[157]`'s
