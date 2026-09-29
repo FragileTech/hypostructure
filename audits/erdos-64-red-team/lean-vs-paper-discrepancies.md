@@ -5222,3 +5222,147 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
   all-context hypotheses (now also `avoids`, for R2's replacement form); they
   have no consumer.
 - `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.
+
+## G audit: PairConditionalFactorizationOutcome
+
+Node `[182]` (`PairConditionalFactorizationOutcome`, six subtypes free/blocked x
+factorization/realizability/increment fails).  Branch `g-audit-182`, keys
+`8200`--`8201` (idx range 8200--8249).  Structural accounting:
+`audits/structural-accounting/PairConditionalFactorizationOutcome.md`.
+
+### The defining failures, restated about G
+
+- **`[178]` conditional factorization.**  The test was the class-level
+  `SparsePairSkeletonModel.ConditionalFactorization`: every separated family and
+  every split of every family is `RealizingOrder`, and `RealizingOrder` asked
+  `2 ≤ |conditionalValues|` **at every reference member of the labelled (n,m)
+  class**.  Its failure concluded a class member, possibly not G, whose
+  conditional value set is a singleton: an other-graph witness (the counting tool
+  failing, not structure of G).  It was also universal over families the proof
+  never consumes: `lem:pair-failure-overlap` uses the two clauses at the one
+  minimal obstruction it selects.
+  - **Lean improvement: `[178]` is decided in aggregate at G's canonical minimal
+    obstruction.**  `Graph.SparsePairSkeletonModel.CountRealizing` (`Graph/PairCorrelation.lean`):
+    some exposure order doubles the number `P_k` of realized
+    `(baseline word, first k responses)` signatures of G's class at every step.
+    This is the manuscript's `|𝒮(π_i | π_1..π_{i-1})| ≥ 2` in every conditional
+    fibre, as the count the entropy argument consumes.  Its failure is a number
+    (a positive correlation mass), not a member.  `PairOverlapSystem.realizingOrder`
+    is `CountRealizing`; `failedFamily_obstruction` is proved from the count
+    failure alone (`not_countRealizing_of_class_lt`), replacing ~250 lines of the
+    member-wise branching argument.
+  - **G's canonical minimal obstruction `F₀`** (`PairOverlapSystem.IsCanonicalObstruction`,
+    `obstructionFamily`): an obstruction inside the failed prefix, inclusion-minimal,
+    of least cardinality, and among those least in the colex order of its ranks in
+    G's canonical encoding; unique (`IsCanonicalObstruction.unique`).  The old
+    inline `Classical.choose` in `exists_pairFailureOverlap` is replaced.
+  - `PairOverlapSystem.ConditionalFactorization := FactorizesAt obstructionFamily`
+    (separated clause and concatenation clause at `F₀` only).  **The retained
+    negation has an exact shape** (`not_conditionalFactorization_iff`): `F₀` is
+    pairwise separated (this includes `|F₀| = 1`), or `F₀` splits into two nonempty
+    disjoint blocks with no cross-overlap, each block realized (minimality), while
+    `F₀` is not: a product failure among mutually non-overlapping response
+    supports.  Consequently `[178]` is genuinely about G, but the residual is the
+    coupling between non-overlapping supports, and the coupling channel is named
+    below.
+  - New field `PairOverlapSystem.failedFamily_card : |failedFamily| = index + 1`
+    (proved at the construction).
+- **`[179]` realizability.**  Decided at G (`Contracts/SurplusPair/PairCoverage.lean`,
+  `pairSystemRealizabilityOutcome_iff`): alternative (i) is empty (G avoids the
+  target), (ii) is empty (`actualGlue_agree`), (iii) is empty (`lem:replacement`,
+  `ReplacementExclusionStatement`), so coverage is exactly
+  `PairObstructionHandoff ∨ ∃ serial system on these returns`.  The failure is
+  `¬ handoff ∧ ∀ serial, serial.returns ≠ returns`
+  (`not_pairSystemRealizabilityOutcome_iff`): genuinely about G, and it is the
+  uncrossing lemma the manuscript does not prove.
+- **`[180]` increment coverage.**  The arithmetic arm is **empty at G**
+  (`not_pairSerialArithmetic_of_avoids`: the arithmetic input yields an accepted
+  cycle; the row already closes it against `[1]`), and so are the target-defect and
+  compression alternatives, so coverage is exactly
+  `PairObstructionHandoff serial.returns` (`pairIncrementOutcome_iff_handoff`).
+  The failure is therefore reached through the trivially true disjunct
+  `¬ Nonempty (PairSerialArithmetic serial)`; its content is the absence of a
+  periodic/Type B class for the canonical serial system.  The full-modulus
+  arithmetic data (`modulus`, `frequent`, `smear`, `spanning`) is not constructed
+  from the serial system in Lean: the paper's `lem:serial-system-sumset` (Frobenius
+  filling of the central range by several generators) is not formalized, only its
+  single-generator progression (`SerialSystem.System.realized_progression`).
+
+### `nonG` items and their repair
+
+- **Facts 9 (`degreeProfileFibres`) and 10 (`targetCompleteContextUniversality`
+  first clause)** quantified over arbitrary `Graph.CurvatureQuotient` structures
+  (free `Label`/`Value` types and value map).  **Lean improvement**: both are
+  restated about G's canonical quotient of its readings
+  (`canonicalReadingLabel data object Z X = (readingProfile Z X, HasCycleWithLength (actualGlue Z X))`,
+  as in `SparsePairExactValuation`).  `[11]`: readings in different fibres have
+  different canonical labels.  `[12]`: readings with the same canonical label
+  have the same profile and the same response; its second clause (no target cycle
+  in any `actualGlue`) is unchanged.  `QuotientIdentifies` is removed.
+  Consumers updated: `Contracts/Spine/SpineSelection.lean`
+  (`degreeProfileFibres_holds`, `targetCompleteContextUniversality_of_degreeProfileFibres`)
+  and `Contracts/Spine/BranchD.lean` (`contextDefect_false_of_contextUniversality`
+  reads the second clause: both gluings carry no target).
+- **Fact 64 (`admissibleQuotientsLabelInjective`)** still quantifies over abstract
+  `DeclaredQuotient` structures; it is not in this audit's order.  Its canonical
+  form is not `(profile, response)`-injectivity (false in general): the
+  minimality argument uses the representative fields of an admissible quotient.
+  Left as is, flagged.
+- Class-member statements (`response`, `conditionalValues`, `RealizingOrder`,
+  `ConditionalFactorization` of the model) remain in
+  `Graph/SparseEntropySandwich.lean` as unused auxiliary definitions; no test,
+  fact or residual reads them any more.
+
+### New facts about G
+
+- **`K .pairCorrelation` (idx 8200)**, `PairCorrelationStatement`, row
+  `pairCorrelationRow` (requires `pairOverlapSystem`, on every path, before the
+  `[178]` decision): for G's canonical overlap system, with `P_k` =
+  `signatureCount` along `failedOrder` (the rank order of the failed prefix),
+  `t = |failedFamily| = index + 1`, `b = |baselineFamily|`:
+  `P_0 = 2^b`; `P_k ≤ P_{k+1} ≤ 2 P_k` for `k < t`; `P_t ≤ skeletonBudget`;
+  `2^{b+t} ≤ skeletonBudget + Σ_{k<t} 2^{t-1-k} (2 P_k − P_{k+1})`; and the count
+  failure gives a first non-branching index `k* < t`: `P_{j+1} = 2 P_j` for
+  `j < k*` (the first `k*` responses are jointly free with the baseline word) and
+  `P_{k*+1} < 2 P_{k*}` (the next is correlated).  Proofs:
+  `Graph/PairCorrelation.lean`, `Contracts/SurplusPair/PairCorrelation.lean`
+  (`correlationProfile_of_system`).  Publishes the accounting coordinates G03
+  (conditional information of local tests) and G05 (additivity versus correlation).
+- **`K .pairCoverage` (idx 8201)**, `PairCoverageStatement`, row `pairCoverageRow`
+  (requires `pairDemandReturns`, `selection`, `replacementExclusion`,
+  `cubicBaseline`; on the realizability and increment subtypes): at G's canonical
+  return system, `Nonempty (PairSystemRealizabilityOutcome returns) ↔ handoff ∨ ∃
+  serial, serial.returns = returns`, and at every canonical serial system
+  `¬ Nonempty (PairSerialArithmetic serial) ∧ (Nonempty (PairIncrementOutcome
+  serial) ↔ handoff serial.returns)`.  Contract: `pairCoverage_of_demandReturns`.
+- Residual wiring: `pairCorrelation` is a generic conjunct of
+  `PairConditionalFactorizationOutcome` (all six subtypes); `pairCoverage` is an
+  extra fact of the four realizability/increment subtypes.  Rows are run in
+  `Assembly/Surplus/Local.lean` in both chains.  Root type: unchanged.
+
+### Tried and not closing
+
+- `[178]`: with `pairCorrelation`, the count failure yields `k*`, the first
+  correlated coordinate of the canonical order.  Closing would need the
+  independence of non-overlapping supports (the `F₀` product failure).  The
+  channels that couple non-overlapping supports are: (a) the baseline word, whose
+  coordinates are quotient images of the whole-graph return profile
+  (`BaselineCodeRealization.source_is_returnProfile`, support = `V(G)`), so every
+  `X_π` is inside a baseline support; (b) seed vertices shared by pairs on the
+  same demand; (c) the exact edge count `m`.  No ledger fact bounds (a); this is
+  the manuscript's own admission ("their independence is not a consequence of
+  label-injectivity").
+- `[179]`/`[180]`: `pairCoverage` reduces both failures to the absence of a Type B
+  handoff (and of a serial system for `[179]`).  Constructing the serial system is
+  the uncrossing of the overlap support of `F₀` (not proved by the manuscript);
+  the periodic class needs the sumset/Frobenius lemma.  Neither is derivable from
+  the ledger.
+
+### Exact remaining proposition at G
+
+One of: (`[178]`) `F₀` (least-cardinality, colex-least minimal obstruction of the
+failed prefix, `P_{k+1} < 2 P_k` at some `k` in every order) is pairwise separated
+or splits into two nonoverlapping realized blocks, with all facts above;
+(`[179]`) `¬ PairObstructionHandoff returns ∧ no serial demand system on returns`
+at G's canonical `returns`; (`[180]`) at G's canonical serial system,
+`¬ PairObstructionHandoff serial.returns`.

@@ -160,6 +160,7 @@ theorem pairConditionalFactorizationReturn_freeFactorizationFails
     [FactKeys.Has (K .skeletonDominates) known]
     [FactKeys.Has (K .pairOverlapSystem) known]
     [FactKeys.Has (K .pairConditionalFactorizationResidual) known]
+    [FactKeys.Has (K .pairCorrelation) known]
     [FactKeys.Has (K .independentPairFamily) known]
     [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .freePairCodeUnrealized) known]
@@ -185,7 +186,9 @@ abbrev PairConditionalFactorizationOutcome_freeRealizabilityFails (selected : EG
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairDemandReturns selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairRealizabilityFails selected.object
+      erdosReceiverLoadProfile spineData .pairRealizabilityFails selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairCoverage selected.object
 
 theorem PairConditionalFactorizationOutcome_freeRealizabilityFails.toGeneric {selected : EGInput.{u}}
     (outcome : PairConditionalFactorizationOutcome_freeRealizabilityFails selected) :
@@ -314,6 +317,8 @@ theorem pairConditionalFactorizationReturn_freeRealizabilityFails
     [FactKeys.Has (K .skeletonDominates) known]
     [FactKeys.Has (K .pairOverlapSystem) known]
     [FactKeys.Has (K .pairConditionalFactorizationResidual) known]
+    [FactKeys.Has (K .pairCorrelation) known]
+    [FactKeys.Has (K .pairCoverage) known]
     [FactKeys.Has (K .independentPairFamily) known]
     [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .freePairCodeUnrealized) known]
@@ -328,7 +333,8 @@ theorem pairConditionalFactorizationReturn_freeRealizabilityFails
     (history.get (K .pairConditionalFactorization)).down,
     (history.get (K .pairFailureOverlap)).down,
     (history.get (K .pairDemandReturns)).down,
-    (history.get (K .pairRealizabilityFails)).down⟩
+    (history.get (K .pairRealizabilityFails)).down,
+    (history.get (K .pairCoverage)).down⟩
 
 /-- **Node `[182]`, free side, incrementFails**: `[130]` blocker-free arm, `[131]` free-pair count fails; `[179]` realizability holds with no early outcome, `[180]` increment coverage fails.
 The generic residual and the 9 extra facts of this ledger (84 facts). -/
@@ -351,7 +357,9 @@ abbrev PairConditionalFactorizationOutcome_freeIncrementFails (selected : EGInpu
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairSerialDemandSystem selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairIncrementFails selected.object
+      erdosReceiverLoadProfile spineData .pairIncrementFails selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairCoverage selected.object
 
 theorem PairConditionalFactorizationOutcome_freeIncrementFails.toGeneric {selected : EGInput.{u}}
     (outcome : PairConditionalFactorizationOutcome_freeIncrementFails selected) :
@@ -480,6 +488,8 @@ theorem pairConditionalFactorizationReturn_freeIncrementFails
     [FactKeys.Has (K .skeletonDominates) known]
     [FactKeys.Has (K .pairOverlapSystem) known]
     [FactKeys.Has (K .pairConditionalFactorizationResidual) known]
+    [FactKeys.Has (K .pairCorrelation) known]
+    [FactKeys.Has (K .pairCoverage) known]
     [FactKeys.Has (K .independentPairFamily) known]
     [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .freePairCodeUnrealized) known]
@@ -500,7 +510,8 @@ theorem pairConditionalFactorizationReturn_freeIncrementFails
     (history.get (K .pairSystemRealizability)).down,
     (history.get (K .pairSystemNoEarlyOutcome)).down,
     (history.get (K .pairSerialDemandSystem)).down,
-    (history.get (K .pairIncrementFails)).down⟩
+    (history.get (K .pairIncrementFails)).down,
+    (history.get (K .pairCoverage)).down⟩
 
 /-- **Node `[182]`, blocked side, factorizationFails**: `[130]` blocked arm (no (d)/(e) blocker), `[132]` no sparse exit, `[134]`--`[137]` token ledger, `[137]` blocked-side count fails; `[178]` conditional factorization fails.
 The generic residual and the 12 extra facts of this ledger (87 facts). -/
@@ -659,6 +670,7 @@ theorem pairConditionalFactorizationReturn_blockedFactorizationFails
     [FactKeys.Has (K .skeletonDominates) known]
     [FactKeys.Has (K .pairOverlapSystem) known]
     [FactKeys.Has (K .pairConditionalFactorizationResidual) known]
+    [FactKeys.Has (K .pairCorrelation) known]
     [FactKeys.Has (K .dependentPairFamily) known]
     [FactKeys.Has (K .pairDegreeProfileFibres) known]
     [FactKeys.Has (K .pairNoProfileObstruction) known]
@@ -719,7 +731,9 @@ abbrev PairConditionalFactorizationOutcome_blockedRealizabilityFails (selected :
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairDemandReturns selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairRealizabilityFails selected.object
+      erdosReceiverLoadProfile spineData .pairRealizabilityFails selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairCoverage selected.object
 
 theorem PairConditionalFactorizationOutcome_blockedRealizabilityFails.toGeneric {selected : EGInput.{u}}
     (outcome : PairConditionalFactorizationOutcome_blockedRealizabilityFails selected) :
@@ -849,6 +863,8 @@ theorem pairConditionalFactorizationReturn_blockedRealizabilityFails
     [FactKeys.Has (K .skeletonDominates) known]
     [FactKeys.Has (K .pairOverlapSystem) known]
     [FactKeys.Has (K .pairConditionalFactorizationResidual) known]
+    [FactKeys.Has (K .pairCorrelation) known]
+    [FactKeys.Has (K .pairCoverage) known]
     [FactKeys.Has (K .dependentPairFamily) known]
     [FactKeys.Has (K .pairDegreeProfileFibres) known]
     [FactKeys.Has (K .pairNoProfileObstruction) known]
@@ -880,7 +896,8 @@ theorem pairConditionalFactorizationReturn_blockedRealizabilityFails
     (history.get (K .pairConditionalFactorization)).down,
     (history.get (K .pairFailureOverlap)).down,
     (history.get (K .pairDemandReturns)).down,
-    (history.get (K .pairRealizabilityFails)).down⟩
+    (history.get (K .pairRealizabilityFails)).down,
+    (history.get (K .pairCoverage)).down⟩
 
 /-- **Node `[182]`, blocked side, incrementFails**: `[130]` blocked arm (no (d)/(e) blocker), `[132]` no sparse exit, `[134]`--`[137]` token ledger, `[137]` blocked-side count fails; `[179]` realizability holds with no early outcome, `[180]` increment coverage fails.
 The generic residual and the 18 extra facts of this ledger (93 facts). -/
@@ -921,7 +938,9 @@ abbrev PairConditionalFactorizationOutcome_blockedIncrementFails (selected : EGI
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairSerialDemandSystem selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairIncrementFails selected.object
+      erdosReceiverLoadProfile spineData .pairIncrementFails selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairCoverage selected.object
 
 theorem PairConditionalFactorizationOutcome_blockedIncrementFails.toGeneric {selected : EGInput.{u}}
     (outcome : PairConditionalFactorizationOutcome_blockedIncrementFails selected) :
@@ -1051,6 +1070,8 @@ theorem pairConditionalFactorizationReturn_blockedIncrementFails
     [FactKeys.Has (K .skeletonDominates) known]
     [FactKeys.Has (K .pairOverlapSystem) known]
     [FactKeys.Has (K .pairConditionalFactorizationResidual) known]
+    [FactKeys.Has (K .pairCorrelation) known]
+    [FactKeys.Has (K .pairCoverage) known]
     [FactKeys.Has (K .dependentPairFamily) known]
     [FactKeys.Has (K .pairDegreeProfileFibres) known]
     [FactKeys.Has (K .pairNoProfileObstruction) known]
@@ -1088,6 +1109,7 @@ theorem pairConditionalFactorizationReturn_blockedIncrementFails
     (history.get (K .pairSystemRealizability)).down,
     (history.get (K .pairSystemNoEarlyOutcome)).down,
     (history.get (K .pairSerialDemandSystem)).down,
-    (history.get (K .pairIncrementFails)).down⟩
+    (history.get (K .pairIncrementFails)).down,
+    (history.get (K .pairCoverage)).down⟩
 
 end HypostructureErdos64EG

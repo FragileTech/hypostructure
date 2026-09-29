@@ -15,6 +15,7 @@ import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairOverlapSystem
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairFailureOverlap
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairSystemOutcome
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairPowerOfTwoCycle
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairCorrelation
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.FibrePressure
 
 /-!

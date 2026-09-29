@@ -1310,7 +1310,9 @@ abbrev PairConditionalFactorizationOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairOverlapSystem selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairConditionalFactorizationResidual selected.object
+      erdosReceiverLoadProfile spineData .pairConditionalFactorizationResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairCorrelation selected.object
 
 /-- The return of `PairConditionalFactorizationOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -1435,7 +1437,8 @@ theorem pairConditionalFactorizationReturn
     [FactKeys.Has (K .incrementalSkeletonRoom) known]
     [FactKeys.Has (K .skeletonDominates) known]
     [FactKeys.Has (K .pairOverlapSystem) known]
-    [FactKeys.Has (K .pairConditionalFactorizationResidual) known] :
+    [FactKeys.Has (K .pairConditionalFactorizationResidual) known]
+    [FactKeys.Has (K .pairCorrelation) known] :
     PairConditionalFactorizationOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -1555,7 +1558,8 @@ theorem pairConditionalFactorizationReturn
     (history.get (K .incrementalSkeletonRoom)).down,
     (history.get (K .skeletonDominates)).down,
     (history.get (K .pairOverlapSystem)).down,
-    (history.get (K .pairConditionalFactorizationResidual)).down⟩
+    (history.get (K .pairConditionalFactorizationResidual)).down,
+    (history.get (K .pairCorrelation)).down⟩
 
 /-- **Node `[186]`** (thm:main (v), tex 364-368): the visible-entry route-8
 residual after [181], [183]-[185], with the joint balances of lem:typeA-

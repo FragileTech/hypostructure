@@ -1,0 +1,63 @@
+import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.Basic
+import Hypostructure.Graph.Contracts.SurplusPair.PairCorrelation
+import Hypostructure.Graph.Contracts.SurplusPair.PairCoverage
+
+namespace Hypostructure.Graph.Strategy.Spine
+
+open Hypostructure
+open Hypostructure.Core.Residual
+open Hypostructure.Core.Strategy
+
+universe u v
+
+variable {BranchState : Graph.FiniteObject.{u} → Type v}
+variable {Presentation : Type} {presentation : Presentation}
+variable {data : Data.{u}}
+
+/-- **Node `[178]`, the correlation mass of G's canonical overlap system.**
+
+Reads the canonical overlap system and publishes the exact signature counts of
+the canonical exposure order of the failed prefix, the mass identity
+`2^{b+t} ≤ |class| + mass`, and the first non-branching index of the count
+failure. -/
+@[reducible] noncomputable def pairCorrelationRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairCorrelation
+    { Requires := [K .pairOverlapSystem]
+      Produces := [K .pairCorrelation]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairCorrelation)
+        ⟨Graph.Contracts.SurplusPair.pairCorrelation_of_overlapSystem
+          (inputs.get (K .pairOverlapSystem)).down⟩
+        .nil)
+
+/-- **Nodes `[179]`--`[180]`, coverage decided at G.**
+
+Reads G's canonical return system, the selection (G avoids the target), the
+replacement exclusion and the dyadic length law.  The target cycle, the target
+defect and the compression alternatives of `[179]` and `[180]` are empty at G,
+and the arithmetic input of `[180]` would produce an accepted cycle of G, so
+coverage is exactly the Type B handoff or the serial system. -/
+@[reducible] noncomputable def pairCoverageRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairCoverage
+    { Requires := [K .pairDemandReturns, K .selection, K .replacementExclusion,
+        K .cubicBaseline]
+      Produces := [K .pairCoverage]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairCoverage)
+        ⟨Graph.Contracts.SurplusPair.pairCoverage_of_demandReturns
+          (inputs.get (K .pairDemandReturns)).down
+          (inputs.get (K .selection)).down.1
+          (inputs.get (K .cubicBaseline)).down.2.1.2.1
+          (inputs.get (K .replacementExclusion)).down⟩
+        .nil)
+
+end Hypostructure.Graph.Strategy.Spine
