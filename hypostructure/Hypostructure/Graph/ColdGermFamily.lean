@@ -1199,16 +1199,101 @@ theorem rowRepresentative_size_le
     (rowReading_toCanonical baselineInvariant targetInvariant object support connected
       proper)
 
-/-- **A germ's second representative is the canonical one of its support**:
-`E = rowRepresentative` at the germ's own support. -/
+/-- **The constructed reading of a support** (user decision "everything is
+pieces built from G"): a canonical piece is admissible as the second
+representative `E` when it is the canonical form of a piece constructed from G at
+the support (`GConstructedPiece`) that keeps the support piece's boundary-degree
+profile and, glued into G's surroundings `G − Z`, keeps the baseline whenever
+`Q[x,y]` does.  No target response is imposed: whether `E` agrees with `Q[x,y]`
+in `G − Z` is the G2 test. -/
+def RowConstructedReading (Baseline : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
+    (support : Finset object.Vertex)
+    (connected : Graph.SupportComponents.Connected.ConnectedOn object support)
+    (proper : ∃ vertex, vertex ∉ support)
+    (candidate : CanonicalPiece (rowAtom object support connected proper).interface) :
+    Prop :=
+  ∃ constructed : GConstructedPiece object support,
+    constructed.toPiece.toCanonical = candidate ∧
+      constructed.toPiece.boundaryDegreeProfile =
+        (rowAtom object support connected proper).piece.boundaryDegreeProfile ∧
+      (Baseline (glue (rowAtom object support connected proper).piece
+          (rowAtom object support connected proper).outside) →
+        Baseline (glue constructed.toPiece
+          (rowAtom object support connected proper).outside))
+
+theorem rowConstructedReading_own (Baseline : FiniteObject.{u} → Prop)
+    (object : FiniteObject.{u}) (support : Finset object.Vertex)
+    (connected : Graph.SupportComponents.Connected.ConnectedOn object support)
+    (proper : ∃ vertex, vertex ∉ support) :
+    RowConstructedReading Baseline object support connected proper
+      (GConstructedPiece.own : GConstructedPiece object support).toPiece.toCanonical :=
+  ⟨.own, rfl, rfl, id⟩
+
+/-- **`E`, the canonical constructed second representative of a support**: the
+`Precedes`-least canonical form (internal size first) of the constructed pieces
+of `RowConstructedReading`.  It is a function of G and the support alone. -/
+noncomputable def rowConstructedCanonical (Baseline : FiniteObject.{u} → Prop)
+    (object : FiniteObject.{u}) (support : Finset object.Vertex)
+    (connected : Graph.SupportComponents.Connected.ConnectedOn object support)
+    (proper : ∃ vertex, vertex ∉ support) :
+    CanonicalPiece (rowAtom object support connected proper).interface :=
+  CanonicalPiece.canonicalRepresentative
+    (RowConstructedReading Baseline object support connected proper)
+    ⟨_, rowConstructedReading_own Baseline object support connected proper⟩
+
+theorem rowConstructedCanonical_reading (Baseline : FiniteObject.{u} → Prop)
+    (object : FiniteObject.{u}) (support : Finset object.Vertex)
+    (connected : Graph.SupportComponents.Connected.ConnectedOn object support)
+    (proper : ∃ vertex, vertex ∉ support) :
+    RowConstructedReading Baseline object support connected proper
+      (rowConstructedCanonical Baseline object support connected proper) :=
+  CanonicalPiece.canonicalRepresentative_reading _ _
+
+/-- The constructed piece whose canonical form is `rowConstructedCanonical`. -/
+noncomputable def rowConstructed (Baseline : FiniteObject.{u} → Prop)
+    (object : FiniteObject.{u}) (support : Finset object.Vertex)
+    (connected : Graph.SupportComponents.Connected.ConnectedOn object support)
+    (proper : ∃ vertex, vertex ∉ support) : GConstructedPiece object support :=
+  Classical.choose (rowConstructedCanonical_reading Baseline object support connected proper)
+
+theorem rowConstructed_spec (Baseline : FiniteObject.{u} → Prop)
+    (object : FiniteObject.{u}) (support : Finset object.Vertex)
+    (connected : Graph.SupportComponents.Connected.ConnectedOn object support)
+    (proper : ∃ vertex, vertex ∉ support) :
+    (rowConstructed Baseline object support connected proper).toPiece.toCanonical =
+        rowConstructedCanonical Baseline object support connected proper ∧
+      (rowConstructed Baseline object support connected proper).toPiece.boundaryDegreeProfile =
+        (rowAtom object support connected proper).piece.boundaryDegreeProfile ∧
+      (Baseline (glue (rowAtom object support connected proper).piece
+          (rowAtom object support connected proper).outside) →
+        Baseline (glue (rowConstructed Baseline object support connected proper).toPiece
+          (rowAtom object support connected proper).outside)) :=
+  Classical.choose_spec (rowConstructedCanonical_reading Baseline object support connected proper)
+
+/-- `E` is not larger than `Q[x,y]`. -/
+theorem rowConstructed_size_le (Baseline : FiniteObject.{u} → Prop)
+    (object : FiniteObject.{u}) (support : Finset object.Vertex)
+    (connected : Graph.SupportComponents.Connected.ConnectedOn object support)
+    (proper : ∃ vertex, vertex ∉ support) :
+    (rowConstructed Baseline object support connected proper).toPiece.internalVertexCount ≤
+      (rowAtom object support connected proper).piece.internalVertexCount := by
+  have canonicalEq := (rowConstructed_spec Baseline object support connected proper).1
+  have sizeLe := CanonicalPiece.canonicalRepresentative_size_le
+    (RowConstructedReading Baseline object support connected proper)
+    ⟨_, rowConstructedReading_own Baseline object support connected proper⟩
+    (rowConstructedReading_own Baseline object support connected proper)
+  change (rowConstructedCanonical Baseline object support connected proper).size ≤ _ at sizeLe
+  rw [← canonicalEq] at sizeLe
+  exact sizeLe
+
+/-- **A germ's second representative is the canonical constructed one of its
+support**: `E = rowConstructed` at the germ's own support. -/
 def BoundedGerm.HasCanonicalSecond {S : DeclaredSignature}
     {object : FiniteObject.{u}}
-    (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
-    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
+    (_baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
+    (_targetInvariant : FiniteObject.IsomorphismInvariant Target)
     (germ : BoundedGerm S Baseline Target object) : Prop :=
-  germ.canonical =
-    (rowRepresentative baselineInvariant targetInvariant object germ.support
-      germ.connected germ.proper).toPiece
+  germ.canonical = rowConstructed Baseline object germ.support germ.connected germ.proper
 
 end SecondRepresentative
 

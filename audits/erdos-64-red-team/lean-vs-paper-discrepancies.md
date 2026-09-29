@@ -6858,13 +6858,31 @@ G between the folded vertices.
   support has such a pair.  For the excision `E = splice a b D`, G2 is the
   excised glue's accepted cycle, which g-audit-coldSilent's `excision_dichotomy`
   turns into a cycle of G of length `L + q` (`L` accepted, `L + q` not).
-  **Residual not restored on this branch:** restoring it re-types
-  `BoundedGerm.canonical` as a constructed piece, removes the `[154]` G2
-  `Incompatible` closure (three assembly sites: `NearCubic/DensePass` ×2,
-  `NearCubic/Survivor/Realized`), rebuilds the G3 compression from the neutral
-  hypothesis instead of `sameResponse`, and returns a new cold G2 residual at the
-  root — a root-type change in modules g-audit-coldSilent is still changing.
-  Flagged for the coordinator.
+  **Residual restored (round 3).**  `BoundedGerm.canonical` is re-typed as a
+  `GConstructedPiece object support` (the field `sameResponse` is removed;
+  `BoundedGerm.second := canonical.toPiece`).  The germ's `E` is pinned
+  (`HasCanonicalSecond`) to `ColdCorridor.rowConstructed`: a constructed piece
+  whose canonical form is `Precedes`-least among the constructed pieces keeping
+  the support's boundary-degree profile and the baseline in `G − Z` (`own`
+  always qualifies, so `E` is never larger than `Q[x,y]`).  Consequences:
+  - `K .coldGermDistinguished` (restated): at every active germ, G2 ⇔ `E`'s
+    target response in `G − Z`, and every fold pair of the support
+    distinguishes (`distinguishingAt_fold`, minimality of G).
+  - `K .coldGermRouted` (restated): every shortening active germ is G2 (G3 is
+    still refuted by `cor:uncompressible`, now from the silent hypothesis
+    rather than from `sameResponse`).  `K .coldGermSilent`,
+    `K .coldSameInterfaceTable` and `K .coldBranchClosed` keep their
+    statements (the table rows are handed off *or distinguishing*).
+  - `instIncompatibleColdGermSomeDistinguishingSelection` is removed; the
+    `[154]` G2 yes-arm returns `[187]` at its three sites.
+  - **ROOT TYPE CHANGE:** `OtherReturnedOutcome`'s cold block (and
+    `ColdBranchClosedLinearSubtypes`) gains five subtypes on the G2 yes-arm:
+    `linearDenseAtOrAbove`, `linearDenseRateFailed`,
+    `linearRealizedDistinguished` (the three removed by c6b0a95, all reachable
+    again), and `linearDenseAtOrAbove_repeatedDistinguished`,
+    `linearDenseRateFailed_repeatedDistinguished` (the G2 yes-arm after
+    `[153]`'s repeat on the dense arms, a path that did not exist before
+    coldSilent's repeat routing).
 
 ### Integration with g-repair-base 20bd04f (g-audit-int)
 

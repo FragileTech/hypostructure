@@ -1,6 +1,7 @@
 import Hypostructure.Graph.CanonicalLexFamily
 import Hypostructure.Graph.Statements.Parameters
 import Hypostructure.Graph.Statements.CanonicalSurplus
+import Hypostructure.Graph.ColdGermConstructed
 
 /-!
 # Statements: Spine
@@ -1407,10 +1408,13 @@ reading, and the complete record read at both equal-state endpoints.
 
 The second representative `E` of every exchange germ -- outside corridors and
 immediate cross-window exchanges alike -- is pinned to G's canonical
-representative of the germ's own support (`BoundedGerm.HasCanonicalSecond`,
-`Graph.ColdCorridor.rowRepresentative`): the `Precedes`-least canonical piece
-with the support piece's retained cut-state read in G's own surroundings
-`G − Z`.  It is a function of G, not an object the existential chooses.
+constructed representative of the germ's own support
+(`BoundedGerm.HasCanonicalSecond`, `Graph.ColdCorridor.rowConstructed`): a
+piece constructed from G at the support (`GConstructedPiece`) whose canonical
+form is `Precedes`-least among those keeping the support piece's boundary-degree
+profile and baseline in G's own surroundings `G − Z`.  It is a function of G, not
+an object the existential chooses, and it carries no target response: the G2
+test reads it.
 
 Graph realization of the second representative is deliberately not required
 here.  The manuscript first separates canonical replacement pieces from
@@ -3235,9 +3239,9 @@ noncomputable abbrev ColdSameInterfaceTableStatement
   -- The first clause closes every row of `def:cold-same-interface-table`:
   -- no row is realizing, and every row either enters a support of G's
   -- declared (F4) registry (`ColdEntersHandoffRegistry`, tex 7234 "enters a
-  -- declared Type B handoff envelope") or is distinguishing.  Read at G the
-  -- distinguishing arm is empty (the row's two representatives have the same
-  -- response in `G − Z`), and a row that is not handed off supplies, by
+  -- declared Type B handoff envelope") or is distinguishing (G2, read on the
+  -- constructed second representative in `G − Z`).  A silent row that is not
+  -- handed off supplies, by
   -- `def:admissible-rank-quotient`, the strictly smaller representative
   -- `glue E (G − Z)`, a smaller counterexample refuted by the size
   -- minimality of G.
@@ -3322,15 +3326,22 @@ noncomputable abbrev ColdGermDistinguishedStatement
   -- `lem:cold-bounded-germ-trichotomy`, G2, read at G: "some compatible
   -- outside context distinguishes the two representatives by power-of-two
   -- truth value".  At G the support's only compatible context is G's own
-  -- surroundings `G − Z`, and the second representative `E` carries G's
-  -- retained cut-state there (`BoundedGerm.sameResponse`), so the two
-  -- representatives never separate: the G2 test is decided at G and no
-  -- configuration of node `[153]`'s extracted family is hit-distinguished.
-  -- Lean improvement: the G2 arm is empty at G.
+  -- surroundings `G − Z`, and the second representative `E` is the canonical
+  -- piece constructed from G at the support (`GConstructedPiece`).  The test
+  -- is the target response of `E` in `G − Z` (`Q[x,y]` glued there is G,
+  -- which avoids the target), and at the minimal G every fold of two interior
+  -- vertices of the support with no common neighbour distinguishes.
+  -- (g-pieces-constructed: the former clause "no germ is distinguishing" rested
+  -- on `E` carrying G's response by construction; it is withdrawn.)
   ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
       (Graph.MinimumDegreeAtLeast data.threshold)
       (Graph.HasCycleWithLength data.LengthOK) object,
-    CanonicalActiveColdGerm data object germ → ¬ germ.Distinguishing
+    CanonicalActiveColdGerm data object germ →
+      (germ.Distinguishing ↔ germ.canonical.response data.LengthOK) ∧
+        ∀ (keep remove : Graph.Strategy.InterfaceReplacement.SupportAtom.PieceInternal
+            object germ.support) (different : keep ≠ remove)
+          (noCommon : ∀ common, ¬ object.IsCommonNeighbor keep.1 remove.1 common),
+          germ.DistinguishingAt (Graph.GConstructedPiece.fold keep remove different noCommon)
 
 /-- The statement published under the `coldGermSilent` key. -/
 noncomputable abbrev ColdGermSilentStatement
@@ -3584,15 +3595,18 @@ noncomputable abbrev ColdGermRoutedStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- `lem:cold-bounded-germ-trichotomy`'s conclusion at G: "no length-changing
-  -- cold bounded configuration survives".  G1 is refuted by target avoidance,
-  -- G2 is empty at G, and G3 is a smaller counterexample `glue E (G − Z)`
-  -- refuted by the size minimality of G; so no configuration of node
-  -- `[153]`'s extracted family (`CanonicalActiveColdGerm`) is shortening.
+  -- `lem:cold-bounded-germ-trichotomy`'s routing at G: G1 is refuted by
+  -- target avoidance and G3 (a silent shortening germ) is a smaller
+  -- counterexample `glue E (G − Z)` refuted by `cor:uncompressible`; so every
+  -- shortening configuration of node `[153]`'s extracted family
+  -- (`CanonicalActiveColdGerm`) is hit-distinguished (G2).
+  -- (g-pieces-constructed: the former "no configuration is shortening" rested
+  -- on G2 being empty by the choice of `E`; it is withdrawn.)
   ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object,
-      CanonicalActiveColdGerm data object germ → ¬ germ.increment < 0
+      CanonicalActiveColdGerm data object germ → germ.increment < 0 →
+        germ.Distinguishing
 
 /-- Node `[154]`, first binary test of `lem:cold-bounded-germ-trichotomy`
 (G1): some configuration of the extracted active family is hit-realized. -/

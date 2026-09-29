@@ -71,10 +71,13 @@ reached through `[153]`'s repeat on the dense arms (its absorbed-germ product
 is not entered: `[173]`'s no-arm is closed against `K .route8Rate`).
 The pair-system entry retains its own source key and is not `[144a]`.  (G-only
 restatement: the near-cubic target defect of `[187]` is closed at G -- exit
-(b), stated about G, is empty.  The cold-terminal singletons
+(b), stated about G, is empty.)  g-pieces-constructed: `[154]`'s G2 yes-arm is
+live again (the second representative `E` is a piece constructed from G, not a
+reading carrying G's response), so the cold-terminal subtypes
 `linearDenseAtOrAbove`, `linearDenseRateFailed` and
-`linearRealizedDistinguished` carried `[154]`'s G2 yes-arm, which is empty at
-G; they are unreachable at G after the G-only repair and are removed.) -/
+`linearRealizedDistinguished` are restored, with the two repeat-arm subtypes
+`linearDenseAtOrAbove_repeatedDistinguished` and
+`linearDenseRateFailed_repeatedDistinguished`. -/
 abbrev OtherReturnedOutcome (selected : EGInput.{u}) :=
   (PairTypeBOutcome_independentSystem selected ∨
     PairTypeBOutcome_dependentSystem selected) ∨
@@ -92,8 +95,13 @@ abbrev OtherReturnedOutcome (selected : EGInput.{u}) :=
     Route8RateFailsOutcome_denseBelow_lowWedgeFree selected ∨
     Route8RateFailsOutcome_denseBelow_lowWedge selected) ∨
   (ColdBranchClosedOutcome_linearRealizedSilent selected ∨
-    ColdBranchClosedOutcome_linearDenseAtOrAbove_repeated selected ∨
-    ColdBranchClosedOutcome_linearDenseRateFailed_repeated selected)
+    (ColdBranchClosedOutcome_linearDenseAtOrAbove_repeated selected ∨
+      ColdBranchClosedOutcome_linearDenseRateFailed_repeated selected) ∨
+    (ColdBranchClosedOutcome_linearDenseAtOrAbove selected ∨
+      ColdBranchClosedOutcome_linearDenseRateFailed selected) ∨
+    ColdBranchClosedOutcome_linearRealizedDistinguished selected ∨
+    (ColdBranchClosedOutcome_linearDenseAtOrAbove_repeatedDistinguished selected ∨
+      ColdBranchClosedOutcome_linearDenseRateFailed_repeatedDistinguished selected))
 
 /-- Exact selected-root reduction.  Every returned residual carries every fact
 of the single ledger at its return, one `get` per fact; paths with different
@@ -107,8 +115,9 @@ residual: it is the repeat subcase of (F5) and continues into the germ routing
 of a heavy-entry corridor.)
 (G-only restatement: `[20a]` and the near-cubic target defect of `[187]` are
 closed at G -- exit (b) of `[125]`, stated about G, is empty -- and return no
-residual.  The three cold-terminal singletons on `[154]`'s G2 yes-arm are
-unreachable at G after the G-only repair and are removed from this type.  The
+residual.  The cold-terminal subtypes on `[154]`'s G2 yes-arm are restored:
+with the second representative `E` a piece constructed from G, G2 is a live
+test (five subtypes, one per root path).  The
 `[186]` joint balance product is restored: with the realizations of a trace
 basin read on the pieces constructed from G, the essential carrier cores are no
 longer empty, node `[123]`'s failed-rate arm is reached, and `[181]`,

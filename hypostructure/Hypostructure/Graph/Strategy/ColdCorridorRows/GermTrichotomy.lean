@@ -21,17 +21,20 @@ variable {data : Data.{u}}
 
 Every length-changing cold bounded germ of the current residual is hit-realized
 (G1, refuted by the selection's target avoidance), hit-distinguished (G2), or
-silent (G3).  Read at G, G2 is empty: the two representatives have the same
-target response in G's own surroundings `G − Z` (`K .coldGermDistinguished`,
-Lean improvement: the G2 arm is empty at G).  G3 is a target-complete
-compression of a proper support read at G, refuted by `cor:uncompressible`.
+silent (G3).  Read at G, G2 is the target response of the constructed second
+representative `E` in G's own surroundings `G − Z`, and every fold of two
+interior vertices of the support with no common neighbour distinguishes at the
+minimal G (`K .coldGermDistinguished`).  G3 is a target-complete compression of
+a proper support read at G, refuted by `cor:uncompressible`, so every shortening
+germ is G2 (`K .coldGermRouted`).
 The increment arithmetic clauses are the framework's `ColdIncrementArithmetic`
 lemmas.  The routed conclusion `K .coldGermRouted` is that no length-changing
 germ of the extracted family survives. -/
 @[reducible] noncomputable def coldGermTrichotomyRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldGermTrichotomy
-    { Requires := [K .coldGermCandidates, K .selection, K .uncompressible]
+    { Requires := [K .coldGermCandidates, K .selection, K .uncompressible,
+        K .cubicBaseline, K .minDegreeBaseline]
       Produces := [K .coldGermRealized, K .coldGermDistinguished,
         K .coldGermSilent, K .coldGermRouted]
       requiresUnique := by key_fresh
@@ -44,8 +47,12 @@ germ of the extracted family survives. -/
         ⟨Contracts.Spine.coldGermRealized_of_avoids data.toParameters
           inputs.current.object avoids⟩
         (.cons (key := K .coldGermDistinguished)
-          ⟨Contracts.Spine.coldGermDistinguished_holds data.toParameters
-            inputs.current.object⟩
+          ⟨Contracts.Spine.coldGermDistinguished_of_minimal data.toParameters
+            inputs.current.object avoids
+            (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
+            (inputs.get (K .minDegreeBaseline)).down
+            (fun H smaller base =>
+              (inputs.get (K .selection)).down.2.sizeMinimal H smaller base)⟩
           (.cons (key := K .coldGermSilent)
             ⟨Contracts.Spine.coldGermSilent_of_uncompressible data.toParameters
               inputs.current.object avoids uncompressible⟩
@@ -157,10 +164,10 @@ noncomputable def coldGermRealizationDichotomy
 
 /-- **Node `[154]`, second binary test on the no-G1 arm (G2).**  Is some active
 configuration hit-distinguished?  The no-arm is its literal negation: every
-active configuration is silent (G3 or the equal-length table, `[157]`).  Read at
-G the test is decided: its yes-arm is empty
-(`instIncompatibleColdGermSomeDistinguishingSelection`), and the caller closes
-it through Core's closure boundary. -/
+active configuration is silent (G3 or the equal-length table, `[157]`).  The
+test is read on the constructed second representative `E` in `G − Z`; its
+yes-arm is returned by the caller as the cold `[187]` subtypes on `[154]`'s G2
+arm. -/
 noncomputable def coldGermDistinctionDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}

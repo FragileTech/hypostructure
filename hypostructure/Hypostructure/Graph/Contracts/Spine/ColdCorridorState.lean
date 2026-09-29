@@ -30,8 +30,9 @@ state.**  Every eligible selected half-edge has its return corridor (from the
 selected-stub partition of the return corridors); the corridor carries the
 finite prefix-code presentation read from the current graph with its bounded
 active interface, and the terminal-or-first-repeat construction gives its
-exchange germ.  The second representative is selected from the retained
-finite-state class only, preserving the boundary-degree profile and baseline. -/
+exchange germ.  The second representative is the canonical piece constructed
+from G at the support (`rowConstructed`), preserving the boundary-degree profile
+and baseline. -/
 theorem coldCorridorState_of_corridors (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
@@ -107,14 +108,10 @@ theorem coldCorridorState_of_corridors (data : Parameters)
         (Graph.HasCycleWithLength data.LengthOK) object :=
     fun support bounded connected proper record => by
       let atom := Graph.ColdCorridor.rowAtom object support connected proper
-      let baselineInvariant :=
-        Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold
-      let targetInvariant :=
-        (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
-      let selected := Graph.ColdCorridor.rowRepresentative baselineInvariant
-        targetInvariant object support connected proper
-      have selectedReading := Graph.ColdCorridor.rowRepresentative_reading
-        baselineInvariant targetInvariant object support connected proper
+      let selected := Graph.ColdCorridor.rowConstructed
+        (Graph.MinimumDegreeAtLeast data.threshold) object support connected proper
+      have selectedSpec := Graph.ColdCorridor.rowConstructed_spec
+        (Graph.MinimumDegreeAtLeast data.threshold) object support connected proper
       have pieceSizeLe : atom.piece.internalVertexCount ≤ support.card := by
         let embedding : atom.piece.Internal →
             {vertex // vertex ∈ support} :=
@@ -134,12 +131,11 @@ theorem coldCorridorState_of_corridors (data : Parameters)
         rw [FinEnum.card_eq_fintypeCard]
         simpa using cardBound
       have selectedBound : selected.toPiece.internalVertexCount ≤
-          Graph.ColdCorridor.exchangeBound data.coldSignature := by
+          Graph.ColdCorridor.exchangeBound data.coldSignature :=
         calc
-          selected.toPiece.internalVertexCount = selected.size := by simp
-          _ ≤ atom.piece.internalVertexCount :=
-            Graph.ColdCorridor.rowRepresentative_size_le baselineInvariant
-              targetInvariant object support connected proper
+          selected.toPiece.internalVertexCount ≤ atom.piece.internalVertexCount :=
+            Graph.ColdCorridor.rowConstructed_size_le
+              (Graph.MinimumDegreeAtLeast data.threshold) object support connected proper
           _ ≤ support.card := pieceSizeLe
           _ ≤ Graph.ColdCorridor.exchangeBound data.coldSignature := bounded
       have sourceBaseline :
@@ -153,11 +149,10 @@ theorem coldCorridorState_of_corridors (data : Parameters)
           bounded := bounded
           connected := connected
           proper := proper
-          canonical := selected.toPiece
+          canonical := selected
           canonicalBounded := selectedBound
-          sameProfile := selectedReading.1
-          baseline := selectedReading.2.2 sourceBaseline
-          sameResponse := selectedReading.2.1
+          sameProfile := selectedSpec.2.1
+          baseline := selectedSpec.2.2 sourceBaseline
           record := record }
   have makeGerm_second : ∀ support bounded connected proper record,
       (makeGerm support bounded connected proper record).HasCanonicalSecond

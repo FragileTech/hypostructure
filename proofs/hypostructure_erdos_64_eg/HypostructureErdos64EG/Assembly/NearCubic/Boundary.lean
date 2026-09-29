@@ -23,9 +23,10 @@ universe u w
 continuation's residuals, the failed private-carrier rate retained at the
 entry of the route-8 continuation (`[187]`), the blocked-class overlap
 residual `[172a]`, the local cold-terminal exclusion of the realized
-package's silent cold configurations (`[157]`, retained at `[187]`; its three
-other linear singletons carry `[154]`'s G2 yes-arm, empty at G, and are not
-outcomes; also the germs of `[153]`'s repeat on the dense arms), and the
+package's cold configurations (`[157]`, retained at `[187]`: the silent
+singleton, the silent germs of `[153]`'s repeat on the dense arms, and the five
+subtypes of `[154]`'s G2 yes-arm, live with the constructed second
+representative), and the
 returned residual of the structural exhaustion at `[54]` (the configuration at
 G where the joint realization fails).  `[153]`'s first equal-state pair is not
 a residual: it is the repeat subcase of (F5) and continues into the germ
