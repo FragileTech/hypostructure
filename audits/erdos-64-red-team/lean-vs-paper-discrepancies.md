@@ -5808,3 +5808,210 @@ positions `i, i'` and `j, j'` of length `|i−i'|+2+|j−j'|` are not accepted) 
 gives an outside connection of unspecified length (the supports are closed walks of length
 `2^j`, not paths), so the length arithmetic that would test it against `CrossGap` is the
 uncrossing (`lem:window-system-realizability`), which the paper does not establish.
+
+## G audit: PairConditionalFactorizationOutcome
+
+Node `[182]` (`PairConditionalFactorizationOutcome`, six subtypes free/blocked x
+factorization/realizability/increment fails).  Branch `g-audit-182`, keys
+`8200`--`8201` (idx range 8200--8249).  Structural accounting:
+`audits/structural-accounting/PairConditionalFactorizationOutcome.md`.
+
+### The defining failures, restated about G
+
+- **`[178]` conditional factorization.**  The test was the class-level
+  `SparsePairSkeletonModel.ConditionalFactorization`: every separated family and
+  every split of every family is `RealizingOrder`, and `RealizingOrder` asked
+  `2 ≤ |conditionalValues|` **at every reference member of the labelled (n,m)
+  class**.  Its failure concluded a class member, possibly not G, whose
+  conditional value set is a singleton: an other-graph witness (the counting tool
+  failing, not structure of G).  It was also universal over families the proof
+  never consumes: `lem:pair-failure-overlap` uses the two clauses at the one
+  minimal obstruction it selects.
+  - **Lean improvement: `[178]` is decided in aggregate at G's canonical minimal
+    obstruction.**  `Graph.SparsePairSkeletonModel.CountRealizing` (`Graph/PairCorrelation.lean`):
+    some exposure order doubles the number `P_k` of realized
+    `(baseline word, first k responses)` signatures of G's class at every step.
+    This is the manuscript's `|𝒮(π_i | π_1..π_{i-1})| ≥ 2` in every conditional
+    fibre, as the count the entropy argument consumes.  Its failure is a number
+    (a positive correlation mass), not a member.  `PairOverlapSystem.realizingOrder`
+    is `CountRealizing`; `failedFamily_obstruction` is proved from the count
+    failure alone (`not_countRealizing_of_class_lt`), replacing ~250 lines of the
+    member-wise branching argument.
+  - **G's canonical minimal obstruction `F₀`** (`PairOverlapSystem.IsCanonicalObstruction`,
+    `obstructionFamily`): an obstruction inside the failed prefix, inclusion-minimal,
+    of least cardinality, and among those least in the colex order of its ranks in
+    G's canonical encoding; unique (`IsCanonicalObstruction.unique`).  The old
+    inline `Classical.choose` in `exists_pairFailureOverlap` is replaced.
+  - `PairOverlapSystem.ConditionalFactorization := FactorizesAt obstructionFamily`
+    (separated clause and concatenation clause at `F₀` only).  **The retained
+    negation has an exact shape** (`not_conditionalFactorization_iff`): `F₀` is
+    pairwise separated (this includes `|F₀| = 1`), or `F₀` splits into two nonempty
+    disjoint blocks with no cross-overlap, each block realized (minimality), while
+    `F₀` is not: a product failure among mutually non-overlapping response
+    supports.  Consequently `[178]` is genuinely about G, but the residual is the
+    coupling between non-overlapping supports, and the coupling channel is named
+    below.
+  - New field `PairOverlapSystem.failedFamily_card : |failedFamily| = index + 1`
+    (proved at the construction).
+- **`[179]` realizability.**  Decided at G (`Contracts/SurplusPair/PairCoverage.lean`,
+  `pairSystemRealizabilityOutcome_iff`): alternative (i) is empty (G avoids the
+  target), (ii) is empty (`actualGlue_agree`), (iii) is empty (`lem:replacement`,
+  `ReplacementExclusionStatement`), so coverage is exactly
+  `PairObstructionHandoff ∨ ∃ serial system on these returns`.  The failure is
+  `¬ handoff ∧ ∀ serial, serial.returns ≠ returns`
+  (`not_pairSystemRealizabilityOutcome_iff`): genuinely about G, and it is the
+  uncrossing lemma the manuscript does not prove.
+- **`[180]` increment coverage.**  The arithmetic arm is **empty at G**
+  (`not_pairSerialArithmetic_of_avoids`: the arithmetic input yields an accepted
+  cycle; the row already closes it against `[1]`), and so are the target-defect and
+  compression alternatives, so coverage is exactly
+  `PairObstructionHandoff serial.returns` (`pairIncrementOutcome_iff_handoff`).
+  The failure is therefore reached through the trivially true disjunct
+  `¬ Nonempty (PairSerialArithmetic serial)`; its content is the absence of a
+  periodic/Type B class for the canonical serial system.  The full-modulus
+  arithmetic data (`modulus`, `frequent`, `smear`, `spanning`) is not constructed
+  from the serial system in Lean: the paper's `lem:serial-system-sumset` (Frobenius
+  filling of the central range by several generators) is not formalized, only its
+  single-generator progression (`SerialSystem.System.realized_progression`).
+
+### `nonG` items and their repair
+
+- **Facts 9 (`degreeProfileFibres`) and 10 (`targetCompleteContextUniversality`
+  first clause)** quantified over arbitrary `Graph.CurvatureQuotient` structures
+  (free `Label`/`Value` types and value map).  **Lean improvement**: both are
+  restated about G's canonical quotient of its readings
+  (`canonicalReadingLabel data object Z X = (readingProfile Z X, HasCycleWithLength (actualGlue Z X))`,
+  as in `SparsePairExactValuation`).  `[11]`: readings in different fibres have
+  different canonical labels.  `[12]`: readings with the same canonical label
+  have the same profile and the same response; its second clause (no target cycle
+  in any `actualGlue`) is unchanged.  `QuotientIdentifies` is removed.
+  Consumers updated: `Contracts/Spine/SpineSelection.lean`
+  (`degreeProfileFibres_holds`, `targetCompleteContextUniversality_of_degreeProfileFibres`)
+  and `Contracts/Spine/BranchD.lean` (`contextDefect_false_of_contextUniversality`
+  reads the second clause: both gluings carry no target).
+- **Fact 64 (`admissibleQuotientsLabelInjective`)** still quantifies over abstract
+  `DeclaredQuotient` structures; it is not in this audit's order.  Its canonical
+  form is not `(profile, response)`-injectivity (false in general): the
+  minimality argument uses the representative fields of an admissible quotient.
+  Left as is, flagged.
+- Class-member statements (`response`, `conditionalValues`, `RealizingOrder`,
+  `ConditionalFactorization` of the model) remain in
+  `Graph/SparseEntropySandwich.lean` as unused auxiliary definitions; no test,
+  fact or residual reads them any more.
+
+### New facts about G
+
+- **`K .pairCorrelation` (idx 8200)**, `PairCorrelationStatement`, row
+  `pairCorrelationRow` (requires `pairOverlapSystem`, on every path, before the
+  `[178]` decision): for G's canonical overlap system, with `P_k` =
+  `signatureCount` along `failedOrder` (the rank order of the failed prefix),
+  `t = |failedFamily| = index + 1`, `b = |baselineFamily|`:
+  `P_0 = 2^b`; `P_k ≤ P_{k+1} ≤ 2 P_k` for `k < t`; `P_t ≤ skeletonBudget`;
+  `2^{b+t} ≤ skeletonBudget + Σ_{k<t} 2^{t-1-k} (2 P_k − P_{k+1})`; and the count
+  failure gives a first non-branching index `k* < t`: `P_{j+1} = 2 P_j` for
+  `j < k*` (the first `k*` responses are jointly free with the baseline word) and
+  `P_{k*+1} < 2 P_{k*}` (the next is correlated).  Proofs:
+  `Graph/PairCorrelation.lean`, `Contracts/SurplusPair/PairCorrelation.lean`
+  (`correlationProfile_of_system`).  Publishes the accounting coordinates G03
+  (conditional information of local tests) and G05 (additivity versus correlation).
+- **`K .pairCoverage` (idx 8201)**, `PairCoverageStatement`, row `pairCoverageRow`
+  (requires `pairDemandReturns`, `selection`, `replacementExclusion`,
+  `cubicBaseline`; on the realizability and increment subtypes): at G's canonical
+  return system, `Nonempty (PairSystemRealizabilityOutcome returns) ↔ handoff ∨ ∃
+  serial, serial.returns = returns`, and at every canonical serial system
+  `¬ Nonempty (PairSerialArithmetic serial) ∧ (Nonempty (PairIncrementOutcome
+  serial) ↔ handoff serial.returns)`.  Contract: `pairCoverage_of_demandReturns`.
+- Residual wiring: `pairCorrelation` is a generic conjunct of
+  `PairConditionalFactorizationOutcome` (all six subtypes); `pairCoverage` is an
+  extra fact of the four realizability/increment subtypes.  Rows are run in
+  `Assembly/Surplus/Local.lean` in both chains.  Root type: unchanged.
+
+### Tried and not closing
+
+- `[178]`: with `pairCorrelation`, the count failure yields `k*`, the first
+  correlated coordinate of the canonical order.  Closing would need the
+  independence of non-overlapping supports (the `F₀` product failure).  The
+  channels that couple non-overlapping supports are: (a) the baseline word, whose
+  coordinates are quotient images of the whole-graph return profile
+  (`BaselineCodeRealization.source_is_returnProfile`, support = `V(G)`), so every
+  `X_π` is inside a baseline support; (b) seed vertices shared by pairs on the
+  same demand; (c) the exact edge count `m`.  No ledger fact bounds (a); this is
+  the manuscript's own admission ("their independence is not a consequence of
+  label-injectivity").
+- `[179]`/`[180]`: `pairCoverage` reduces both failures to the absence of a Type B
+  handoff (and of a serial system for `[179]`).  Constructing the serial system is
+  the uncrossing of the overlap support of `F₀` (not proved by the manuscript);
+  the periodic class needs the sumset/Frobenius lemma.  Neither is derivable from
+  the ledger.
+
+### Exact remaining proposition at G
+
+One of: (`[178]`) `F₀` (least-cardinality, colex-least minimal obstruction of the
+failed prefix, `P_{k+1} < 2 P_k` at some `k` in every order) is pairwise separated
+or splits into two nonoverlapping realized blocks, with all facts above;
+(`[179]`) `¬ PairObstructionHandoff returns ∧ no serial demand system on returns`
+at G's canonical `returns`; (`[180]`) at G's canonical serial system,
+`¬ PairObstructionHandoff serial.returns`.
+
+### G audit: PairConditionalFactorizationOutcome, follow-up (deduplication, full modulus, correlation bounds)
+
+- **One implementation of the aggregate `[178]` test.**  The pair Type B audit
+  (`g-audit-pairTypeB`, f6b64b6) restated the same obstruction in aggregate form
+  with `SparsePairSkeletonModel.signature`, `signatureCount`, `signatureCount_eq`
+  and `RealizingOrder` (`P_t = 2^t P_0`) in `Graph/SparseEntropySandwich.lean`.  **The
+  owner is `Graph/PairCorrelation.lean`** (`signature`, `signatureCount` with the
+  count as `Set.ncard` of the range, the step lemmas `signatureCount_zero`,
+  `_le_succ`, `_succ_le`, `_le_class`, the mass identity `two_pow_le_class_add_mass`,
+  `CountRealizing`, `not_countRealizing_of_class_lt`).  Their `RealizingOrder` is the
+  corollary `countRealizing_iff_top_doubling` (`CountRealizing` iff some order has
+  `P_{|F|} = 2^{|F|} P_0`).  At the merge, drop their `signature`, `signatureCount`,
+  `signatureCount_eq`, `RealizingOrder` from `SparseEntropySandwich.lean` (the names
+  collide) and read `CountRealizing` / the corollary; `PairOverlapSystem.realizingOrder`
+  is `CountRealizing`.
+- **Dead member-based code deleted** from `SparseEntropySandwich.lean` and
+  `Statements/SurplusPair.lean`: `portReturns`, `outsideCode`, `conditionalFibre`,
+  `conditionalValues`, `RealizingOrder`, model-level `ConditionalFactorization`,
+  and the system-level `response`, `outsideCode`, `conditionalFibre`,
+  `conditionalValues`, `refinedFibre`, `fibreValues`.  `model.response` stays: it
+  is read inside `signature`.
+- **`[180]` full-modulus arithmetic built** (`Graph/SerialFrobenius.lean`).
+  - `frobenius_fill`: with distinguished generator `a = d_{i₀}`, other caps
+    `≥ a − 1`, Bézout `g = Σ c_i d_i`: every multiple `n` of `g` with
+    `a Σ_{i≠i₀} d_i ≤ n ≤ a M_{i₀}` is `Σ t_i d_i`, `t_i ≤ M_i`.
+  - `exists_gcd_data`, `System.realized_multiProgression` (disjoint frequent
+    classes realize `L + o + Σ t_j d_j`), and the canonical data of a serial system:
+    `cellBase` (shortest length), `cellIncrement`, `incrementClass`,
+    `frequentValues` (increments in `[1, D]` at `≥ D` cells), `FullModulus` (their
+    gcd), `canonicalSmear`, `FullModulus.spectrum` (the Frobenius-filled central
+    range), `FullModulusArithmetic` and `FullModulusArithmetic.exists_pow_realized`.
+  - **`K .pairFullModulus` (idx 8202)**, `PairFullModulusStatement`, row
+    `pairFullModulusRow` (before the `[180]` test, increment subtypes): at G's
+    canonical serial system `¬ FullModulusArithmetic serial.toSystem D_sp`, i.e. one
+    of: no frequent increment, `0 ∉ offsets`, `smear ≥ g`, `g − (s+1) ≥ ord_g(2)`
+    (always for even `g`), or no doubling orbit in the central range
+    (`pairFullModulus_of_serial`).  Tested against `[180]`: it does not close it, by
+    the same reason as `PairSerialArithmetic`: the arm is empty at G, and which of
+    the five tests fails is a numerical property of the canonical serial system
+    that no ledger fact bounds (`smear`, `g`, `M` and `base` are not related to any
+    other ledger quantity).
+- **`[178]` correlation bound per channel** (`weighted_deficiency_le`,
+  `le_pow_mul_zero`; extra clauses of `K .pairCorrelation`).  The total is exact:
+  `mass = 2^{b+t} − P_t ≥ 2^{b+t} − |class|`.  The first-failure condition gives
+  `2^{b+t-1} ≤ |class|`, so the gap is at most `2^{b+t-1}`, and every single
+  weighted deficiency `2^{t-1-k} (2 P_k − P_{k+1}) ≤ 2^{b+t-1}`.  **Test:** one
+  correlated step (any single channel, the whole-graph baseline word at `k = 0`
+  included) can carry the entire gap; no channel bound in the ledger forces more
+  than one, and none bounds a channel below the gap.  A per-channel decomposition
+  of `2 P_k − P_{k+1}` by cause (baseline word, shared seed vertices, fixed `m`) has
+  no G-defined meaning at the level of signature counts: the fixed `m` is already
+  inside `|class| = C(N, m)`, and the other two enter `P_{k+1}` only through the
+  same map.  The gap `2^{b+t} − |class|` therefore fits: no contradiction.
+- **`[179]` uncrossing not built.**  The concrete crossing pair of supports in G is
+  the `overlapWitness` of `PairFailureOverlap` (two members of `F₀` with a common
+  vertex outside both port returns) with the connected overlap support, on the
+  ledger as `K .pairFailureOverlap`.  The manuscript's uncrossing (first and last
+  common vertex, two internally disjoint strands, the five alternatives, and the
+  cell bound `D_sp` from the cold cut-state exchange of node `[166]`) needs path
+  surgery on `Walk`s and the cold first-failure closure `(F1)–(F5)`; neither is
+  available to construct the serial system.  Exact statement kept open:
+  `¬ handoff ∧ ∀ serial, serial.returns ≠ returns` at the canonical returns.

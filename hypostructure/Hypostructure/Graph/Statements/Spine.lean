@@ -2784,47 +2784,39 @@ noncomputable abbrev CycleRankConstraintStatement (object : Graph.FiniteObject.{
   object.vertexCount + 2 ≤
     2 * (object.edgeCount + 1 - object.vertexCount)
 
-/-- **Two readings of G a quotient of G's region identifies.**  An admissible
-rank quotient of the declared raw curvature coordinates of a region `X ⊆ V(G)`
-(`Graph.CurvatureQuotient`, the quotient system `r_Ω` is computed from,
-`def:admissible-rank-quotient`) identifies two of G's readings at its support
-`Z` (G's piece at `Z` restricted to `left`, resp. `right`) when it gives them
-the same value at every declared coordinate. -/
-def QuotientIdentifies {data : Parameters} {object : Graph.FiniteObject.{u}}
-    {region : Finset object.Vertex}
-    (quotient : Graph.CurvatureQuotient (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object region)
-    (left right : Finset object.Vertex) : Prop :=
-  ∀ test ∈ object.internalWedgeFamily region,
-    quotient.value left (quotient.label test) =
-      quotient.value right (quotient.label test)
+/-- **G's canonical quotient of its readings at a support `Z`.**  A reading `X`
+of G at `Z` (G's piece at `Z` restricted to `X`) is labelled by its
+boundary-degree profile and by its target response in G's own rest `G − Z`
+(`ActualContext.actualGlue`): the exact response data of
+`def:exact-response-profile` at G, as in `Graph.SparsePairExactValuation`.  The
+quotient identifies two readings when they carry the same label.  It is built
+from G alone: no abstract label or value type, no value map. -/
+noncomputable def canonicalReadingLabel (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (support reading : Finset object.Vertex) :=
+  (Graph.readingProfile object support reading,
+    Graph.HasCycleWithLength data.LengthOK
+      (Graph.ActualContext.actualGlue object support reading))
 
-/-- Node `[11]`, `lem:degree-profile-fibres` (tex 6088), at G's readings: "if
-`𝐝_∂(X₁) ≠ 𝐝_∂(X₂)`, then no target-complete quotient identifies `X₁` and
-`X₂`".  For every region `X ⊆ V(G)`, every admissible rank quotient of `X`'s
-declared coordinates on G, and every two readings of G at its support `Z ⊆ G`
-(on the boundary `∂Z` of G): readings in different boundary-degree fibres are
-not identified. -/
+/-- Node `[11]`, `lem:degree-profile-fibres` (tex 6088), at G's canonical
+quotient: "if `𝐝_∂(X₁) ≠ 𝐝_∂(X₂)`, then no target-complete quotient identifies
+`X₁` and `X₂`".  For every support `Z` of G and every two readings of G at `Z`,
+readings in different boundary-degree fibres carry different canonical labels. -/
 noncomputable abbrev DegreeProfileFibresStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  ∀ (region : Finset object.Vertex)
-    (quotient : Graph.CurvatureQuotient
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object region)
-    (left right : Finset object.Vertex),
-    Graph.readingProfile object quotient.support left ≠
-        Graph.readingProfile object quotient.support right →
-      ¬ QuotientIdentifies quotient left right
+  ∀ (support left right : Finset object.Vertex),
+    Graph.readingProfile object support left ≠
+        Graph.readingProfile object support right →
+      canonicalReadingLabel data object support left ≠
+        canonicalReadingLabel data object support right
 
 /-- Node `[12]`, `lem:context-universality` (tex 6106), stated about G.
 
 * "Suppose that two coordinates are identified in a target-complete quotient of
   `X`.  Then [they] have the same target response against every `T`-boundaried
-  context": for every region `X ⊆ V(G)`, every admissible rank quotient of its
-  declared coordinates on G with determination support `Z`, and every two
-  readings of G at `Z` that it identifies, the two readings lie in one
+  context": for every support `Z` of G and every two readings of G at `Z` that
+  G's canonical quotient identifies, the two readings lie in one
   boundary-degree fibre (node `[11]`) and have the same power-of-two-cycle
   response in G's own rest `G − Z` (`ActualContext.actualGlue`).
 * "Consequently any identification valid only for the actual outside context
@@ -2835,23 +2827,21 @@ noncomputable abbrev DegreeProfileFibresStatement
   context-validity test `[36]`: its defect arm `[37]` is empty at G.
 
 (G-only restatement: the quantification over every `∂Z`-boundaried context
-spoke about contexts that are not part of G.) -/
+spoke about contexts that are not part of G, and the quotient was an arbitrary
+`CurvatureQuotient` structure with free label and value types.) -/
 noncomputable abbrev TargetCompleteContextUniversalityStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  (∀ (region : Finset object.Vertex)
-    (quotient : Graph.CurvatureQuotient
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object region)
-    (left right : Finset object.Vertex),
-    QuotientIdentifies quotient left right →
-      Graph.readingProfile object quotient.support left =
-          Graph.readingProfile object quotient.support right ∧
+  (∀ (support left right : Finset object.Vertex),
+    canonicalReadingLabel data object support left =
+        canonicalReadingLabel data object support right →
+      Graph.readingProfile object support left =
+          Graph.readingProfile object support right ∧
         (Graph.HasCycleWithLength data.LengthOK
-            (Graph.ActualContext.actualGlue object quotient.support left) ↔
+            (Graph.ActualContext.actualGlue object support left) ↔
           Graph.HasCycleWithLength data.LengthOK
-            (Graph.ActualContext.actualGlue object quotient.support right))) ∧
+            (Graph.ActualContext.actualGlue object support right))) ∧
   (∀ support reading : Finset object.Vertex,
     ¬ Graph.HasCycleWithLength data.LengthOK
       (Graph.ActualContext.actualGlue object support reading))

@@ -32,6 +32,7 @@ import Hypostructure.Graph.Statements.HubLinks
 import Hypostructure.Graph.Statements.PairArms
 import Hypostructure.Graph.Statements.BlockedFailureG
 import Hypostructure.Graph.Statements.BlockedOverlapG
+import Hypostructure.Graph.Statements.PairCorrelation
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1608,6 +1609,20 @@ inductive Key where
   /-- Node `[180]`, arithmetic arm: the exact negation of
   `pairIncrementEarlyOutcome`. -/
   | pairIncrementNoEarlyOutcome
+  -- S182 keys (8200–8249): the [182] audit, node [178]--[180] facts stated about G
+  /-- Node `[178]`, the correlation mass of G's canonical overlap system: along
+  the canonical rank order of the failed prefix, the exact realized-signature
+  counts `P_k` (`P_0 = 2^b`, `P_k ≤ P_{k+1} ≤ 2 P_k`, `P_t ≤ |class|`), the
+  mass identity `2^{b+t} ≤ |class| + mass`, and the first non-branching index. -/
+  | pairCorrelation
+  /-- Nodes `[179]`--`[180]`, coverage decided at G: for G's canonical return
+  system and serial system, the realizability outcome is the Type B handoff or a
+  serial system on those returns; the arithmetic input does not exist; the
+  increment outcome is the Type B handoff of the serial returns. -/
+  | pairCoverage
+  /-- Node `[180]`, the full-modulus arithmetic of G's canonical serial system: its
+  canonical Frobenius-filled data does not satisfy all of `FullModulusArithmetic`. -/
+  | pairFullModulus
   -- F1 keys
   /-- Node `[86]`: the Type A support `X₀`, `s·def⁺(X₀) < |V(X₀)|`. -/
   | typeASupport
@@ -2709,6 +2724,13 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairIncrementFailsStatement data.toParameters object
   | .pairIncrementNoEarlyOutcome, object =>
       PairIncrementNoEarlyOutcomeStatement data.toParameters object
+  -- S182 keys
+  | .pairCorrelation, object =>
+      PairCorrelationStatement data.toParameters object
+  | .pairCoverage, object =>
+      PairCoverageStatement data.toParameters object
+  | .pairFullModulus, object =>
+      PairFullModulusStatement data.toParameters object
   -- F1 keys
   | .typeASupport, object =>
       TypeASupportStatement data.toParameters object
@@ -3362,6 +3384,9 @@ def label : Key → String
   | .pairSystemNoEarlyOutcome => "pairSystemNoEarlyOutcome"
   | .pairIncrementFails => "pairIncrementFails"
   | .pairIncrementNoEarlyOutcome => "pairIncrementNoEarlyOutcome"
+  | .pairCorrelation => "pairCorrelation"
+  | .pairCoverage => "pairCoverage"
+  | .pairFullModulus => "pairFullModulus"
   -- SP keys
   -- F1 keys
   | .typeASupport => "typeASupport"
@@ -3869,6 +3894,9 @@ example : label .pairRealizabilityFails = "pairRealizabilityFails" := rfl
 example : label .pairSystemNoEarlyOutcome = "pairSystemNoEarlyOutcome" := rfl
 example : label .pairIncrementFails = "pairIncrementFails" := rfl
 example : label .pairIncrementNoEarlyOutcome = "pairIncrementNoEarlyOutcome" := rfl
+example : label .pairCorrelation = "pairCorrelation" := rfl
+example : label .pairCoverage = "pairCoverage" := rfl
+example : label .pairFullModulus = "pairFullModulus" := rfl
 -- SP keys
 -- F1 keys
 example : label .typeASupport = "typeASupport" := rfl
@@ -4358,6 +4386,9 @@ def idx : Key → Nat
   | .pairSystemNoEarlyOutcome => 1606
   | .pairIncrementFails => 1607
   | .pairIncrementNoEarlyOutcome => 1608
+  | .pairCorrelation => 8200
+  | .pairCoverage => 8201
+  | .pairFullModulus => 8202
   -- SP keys
   -- F1 keys
   | .typeASupport => 1000
@@ -4843,6 +4874,9 @@ def ofIdx : Nat → Key
   | 1606 => .pairSystemNoEarlyOutcome
   | 1607 => .pairIncrementFails
   | 1608 => .pairIncrementNoEarlyOutcome
+  | 8200 => .pairCorrelation
+  | 8201 => .pairCoverage
+  | 8202 => .pairFullModulus
   -- SP keys
   -- F1 keys
   | 1000 => .typeASupport
@@ -5761,6 +5795,12 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairIncrementFails") 1607
   | .pairIncrementNoEarlyOutcome =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairIncrementNoEarlyOutcome") 1608
+  | .pairCorrelation =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairCorrelation") 8200
+  | .pairCoverage =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairCoverage") 8201
+  | .pairFullModulus =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairFullModulus") 8202
   -- SP keys
   -- F1 keys
   | .typeASupport =>

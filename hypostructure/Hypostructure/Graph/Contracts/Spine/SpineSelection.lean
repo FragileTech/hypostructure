@@ -127,18 +127,18 @@ theorem replacementExclusion_of_selection
 The paper's proof: "condition (a) in the definition of a target-complete
 quotient requires the quotient to preserve the boundary degree profile ... an
 identification of `X₁` with `X₂` would identify two different boundary-degree
-profiles, so it violates condition (a)".  Every admissible quotient of G's
-declared coordinates carries condition (a) as its `fibrewise` clause
-(`def:admissible-rank-quotient`, which requires target-completeness). -/
+profiles, so it violates condition (a)".  G's canonical quotient
+(`canonicalReadingLabel`) carries the boundary-degree profile of a reading in its
+label, so condition (a) holds by construction. -/
 theorem degreeProfileFibres_holds (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     DegreeProfileFibresStatement data object :=
-  fun _region quotient left right different identified =>
-    different (quotient.fibrewise left right identified)
+  fun _support _left _right different identified =>
+    different (congrArg Prod.fst identified)
 
 /-- **Node `[12]`, `lem:context-universality`** (tex 6106), stated about G,
-reading node `[11]` and the selection.  Two readings an admissible quotient of
-G's declared coordinates identifies lie in one boundary-degree fibre (node
+reading node `[11]` and the selection.  Two readings G's canonical quotient
+identifies lie in one boundary-degree fibre (node
 `[11]`, contrapositive).  Their responses in G's own rest `G − Z` agree, and no
 reading of G at any support closes a power-of-two cycle in `G − Z`, because
 such a gluing is a subgraph of G, which avoids the target (the decided G-form
@@ -151,11 +151,11 @@ theorem targetCompleteContextUniversality_of_degreeProfileFibres
     (fibres : DegreeProfileFibresStatement data object)
     (selection : SelectionStatement BranchState Presentation presentation data object) :
     TargetCompleteContextUniversalityStatement data object := by
-  refine ⟨fun region quotient left right identified => ⟨?_, ?_⟩,
+  refine ⟨fun support left right identified => ⟨?_, ?_⟩,
     fun support reading => Graph.ActualContext.not_target_actualGlue selection.1
       support reading⟩
   · by_contra different
-    exact fibres region quotient left right different identified
-  · exact Graph.readings_agree_in_rest selection.1 quotient.support left right
+    exact fibres support left right different identified
+  · exact Graph.readings_agree_in_rest selection.1 support left right
 
 end Hypostructure.Graph.Contracts.Spine
