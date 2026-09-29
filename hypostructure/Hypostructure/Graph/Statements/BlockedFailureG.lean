@@ -84,7 +84,7 @@ noncomputable def blockedFailingSurvivingCount (data : Parameters)
 /-- **G's own record at the barrier states.**  G's own skeleton is the member `own` of `𝓑(𝒫)`;
 its barrier state is surviving at every coordinate, and G lies in its own a-priori and
 surviving conditional fibres, so at every coordinate `1 ≤ |S| ≤ |A|` at G's own outside record
-and prefix. -/
+and prefix; and the barrier states realized at G's own record number at most `F_{a,b} + 1`. -/
 def BlockedOwnRecordStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ own : blockedClassAt data object,
@@ -92,10 +92,14 @@ def BlockedOwnRecordStatement (data : Parameters)
     (∀ coordinate : blockedCoordinate data object,
       IsBlockedSurvivingState data coordinate.2
         ((blockedBarrierCode data object own).2 coordinate)) ∧
-    ∀ coordinate : blockedCoordinate data object,
+    (∀ coordinate : blockedCoordinate data object,
       1 ≤ Nat.card (BlockedSurvivingConditionalFibre data object own coordinate) ∧
         Nat.card (BlockedSurvivingConditionalFibre data object own coordinate) ≤
-          Nat.card (BlockedAprioriConditionalFibre data object own coordinate)
+          Nat.card (BlockedAprioriConditionalFibre data object own coordinate)) ∧
+    ∀ coordinate : blockedCoordinate data object,
+      Nat.card (Graph.BarrierSystem.ConditionalFibre (blockedBarrierCode data object)
+        (blockedEncodingRank data object) own coordinate) ≤
+          blockedSurvivingCountAt data coordinate.2 + 1
 
 /-- **The aggregate failure, quantified.**  At the first failing coordinate `c` (rank `k`; all
 earlier aggregate tests hold): the failing inequality `F_{a,b}·A_k < W_{a,b}·A_{k+1}`, the

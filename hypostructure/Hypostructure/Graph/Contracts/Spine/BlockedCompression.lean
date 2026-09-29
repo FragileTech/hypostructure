@@ -526,9 +526,7 @@ theorem blockedBarrierFailure_of_not_aggregate (data : Parameters)
       ¬ BlockedAggregateBoundAt data object firstCoordinate :=
     firstCoordinateData.2
   have failure : BlockedBarrierFailureStatement data object := by
-    refine ⟨fun coordinate ↦
-      ⟨stateFibreBound coordinate, graphFibreMonotone coordinate⟩,
-      firstCoordinate, ?_, ?_⟩
+    refine ⟨firstCoordinate, ?_, ?_⟩
     · intro earlier earlierRank
       by_contra earlierFailure
       have firstLeEarlier : Nat.find failedRank ≤

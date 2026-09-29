@@ -38,10 +38,15 @@ quantified, and the prefix compression of `𝓑(𝒫)`. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .blockedOwnRecord)
-        ⟨Contracts.Spine.blockedOwnRecord_holds data.toParameters inputs.current.object
-          (inputs.get (K .cubicBaseline)).down.2.1.2.1
-          (inputs.get (K .cubicBaseline)).down.1.2.2.1
-          (inputs.get (K .blockedClassMember)).down⟩
+        ⟨match (inputs.get (K .cubicBaseline)).down.2.2.2 with
+          | ⟨_, _, _, _, labelMem, labelInjective, labelSurjective, leftSemantic,
+              rightSemantic, sumSemantic⟩ =>
+            Contracts.Spine.blockedOwnRecord_holds data.toParameters inputs.current.object
+              (inputs.get (K .cubicBaseline)).down.2.1.2.1
+              (inputs.get (K .cubicBaseline)).down.1.2.2.1
+              data.windowBarrierLabel labelMem labelInjective labelSurjective
+              leftSemantic rightSemantic sumSemantic
+              (inputs.get (K .blockedClassMember)).down⟩
       (.cons (key := K .blockedFailureSlack)
         ⟨Contracts.Spine.blockedFailureSlack_holds data.toParameters inputs.current.object
           (inputs.get (K .blockedClassMember)).down

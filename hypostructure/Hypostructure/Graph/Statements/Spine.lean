@@ -841,14 +841,10 @@ def BlockedScaleAdditivityStatement (data : Parameters)
 
 /-- The literal negative arm of node `[170]`: a numerical fact about G's class.  The first
 exposure coordinate at which the aggregate test fails,
-`F_{a,b}·A_k < W_{a,b}·A_{k+1}`, all earlier aggregate tests holding, together with the two
-unconditional local fibre facts also retained by the positive arm.  No record or member is
+`F_{a,b}·A_k < W_{a,b}·A_{k+1}`, all earlier aggregate tests holding.  No record or member is
 chosen. -/
 def BlockedBarrierFailureStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  (∀ coordinate : blockedCoordinate data object,
-    BlockedStateFibreBoundAt data object coordinate ∧
-      BlockedGraphFibreMonotonicityAt data object coordinate) ∧
   ∃ coordinate : blockedCoordinate data object,
     (∀ other : blockedCoordinate data object,
       blockedEncodingRank data object other <

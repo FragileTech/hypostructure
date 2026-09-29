@@ -26,6 +26,34 @@ theorem blockedOwnRecord_holds (data : Parameters) (object : Graph.FiniteObject.
     (lengthOK_iff_powerOfTwo : ∀ length,
       data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
     (degenerateClosureRejected : ¬ data.LengthOK 2)
+    (windowBarrierLabel : Fin data.windowBarrier.size →
+      Graph.WindowCurvature.Label data.windowOrder)
+    (windowBarrierLabel_mem : ∀ index,
+      windowBarrierLabel index ∈ Graph.WindowCurvature.Labels data.windowOrder)
+    (windowBarrierLabel_injective : Function.Injective windowBarrierLabel)
+    (windowBarrierLabel_surjective : ∀ label ∈
+        Graph.WindowCurvature.Labels data.windowOrder,
+      ∃ index, windowBarrierLabel index = label)
+    (windowBarrier_left_semantic : ∀ row source target,
+      (data.windowBarrier.profile.row
+        (data.windowBarrier.table.counts.leftLength row) source).getLsb target =
+        decide (Graph.WindowCurvature.Safe
+          (data.windowBarrier.table.counts.leftLength row)
+          (windowBarrierLabel source) (windowBarrierLabel target)))
+    (windowBarrier_right_semantic : ∀ row source target,
+      (data.windowBarrier.profile.row
+        (data.windowBarrier.table.counts.rightLength row) source).getLsb target =
+        decide (Graph.WindowCurvature.Safe
+          (data.windowBarrier.table.counts.rightLength row)
+          (windowBarrierLabel source) (windowBarrierLabel target)))
+    (windowBarrier_sum_semantic : ∀ row source target,
+      (data.windowBarrier.profile.row
+        (data.windowBarrier.table.counts.leftLength row +
+          data.windowBarrier.table.counts.rightLength row) source).getLsb target =
+        decide (Graph.WindowCurvature.Safe
+          (data.windowBarrier.table.counts.leftLength row +
+            data.windowBarrier.table.counts.rightLength row)
+          (windowBarrierLabel source) (windowBarrierLabel target)))
     (blocked : BlockedClassMemberStatement data object) :
     BlockedOwnRecordStatement data object := by
   classical
@@ -35,7 +63,12 @@ theorem blockedOwnRecord_holds (data : Parameters) (object : Graph.FiniteObject.
   have survives := blockedStateSurvives data object lengthOK_iff_powerOfTwo
     degenerateClosureRejected
   have monotone := blockedGraphFibreMonotone data object
-  refine ⟨own, rfl, fun coordinate ↦ survives own coordinate, fun coordinate ↦ ⟨?_, ?_⟩⟩
+  have stateFibre := blockedStateFibreBound data object lengthOK_iff_powerOfTwo
+    degenerateClosureRejected windowBarrierLabel windowBarrierLabel_mem
+    windowBarrierLabel_injective windowBarrierLabel_surjective windowBarrier_left_semantic
+    windowBarrier_right_semantic windowBarrier_sum_semantic
+  refine ⟨own, rfl, fun coordinate ↦ survives own coordinate,
+    fun coordinate ↦ ⟨?_, ?_⟩, fun coordinate ↦ stateFibre coordinate own⟩
   · have member : own.1 ∈ BlockedSurvivingConditionalFibre data object own coordinate :=
       ⟨⟨rfl, fun _ _ ↦ rfl⟩, survives own coordinate⟩
     have nonempty : Nonempty
@@ -94,7 +127,7 @@ theorem blockedFailureSlack_holds (data : Parameters) (object : Graph.FiniteObje
     BlockedFailureSlackStatement data object := by
   classical
   obtain ⟨minDegree, isBlocked, _cardLe⟩ := blocked
-  obtain ⟨_, coordinate, earlier, strict⟩ := failure
+  obtain ⟨coordinate, earlier, strict⟩ := failure
   let own : blockedClassAt data object :=
     ⟨⟨Graph.BlockedClass.objectSkeletonMember object, minDegree⟩, isBlocked⟩
   haveI : Nonempty (blockedClassAt data object) := ⟨own⟩

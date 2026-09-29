@@ -5256,6 +5256,9 @@ with all earlier aggregate tests holding and `F_c·A_k < W_c·A_{k+1}`.
 - 8600 `blockedOwnRecord`: G's own skeleton (`= objectSkeletonMember`) is a member of 𝓑(𝒫) with
   surviving barrier state at every coordinate and lies in its own conditional fibres,
   `1 ≤ |S| ≤ |A|` (kept).
+  Also (G04, built): the barrier states realized at G's own record number at most `F_{a,b}+1`
+  (`blockedStateFibreBound` at `own`).  The pointwise `∀ member₀` fibre facts are dropped from
+  the failure statement.
 - 8601 `blockedFailureSlack`: at the failing coordinate `A_{k+1} ≤ A_k`,
   `1 ≤ |𝓑(𝒫)| ≤ A_{k+1}`, `F_c < W_c`.
 - 8602 `blockedPrefixCompression`: at every coordinate whose predecessors all pass, the prefix
