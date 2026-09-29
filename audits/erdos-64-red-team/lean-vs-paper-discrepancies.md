@@ -7177,3 +7177,83 @@ windows.  The needed statement is: for every heavy piece, the outside-route leng
   TypeA/VisibleExitChain, ExitFourChain, ExitFiveToSeven, ExitFourDischargedRetest,
   LowSurplusContinuation, DecoratedHandoff).
 - Root type: no outcome appears or disappears; the two residuals' conjunctions grow by 3.
+
+## CT3 dominance irreducibility (branch g-ct3-irreducible, idx 9975–9989) (2026-09-29)
+
+Lean improvement (external-type compression of G's pieces).  Base 53135b04.
+
+- **Generic module** `Graph/DominatedReplacement.lean` (vocabulary-free, reuses
+  `Transplant.IsLinkage` / `LinkageRealized` / `LinkageIncluded` /
+  `cycle_transfer` and `PathChords.ne_of_path_length`; nothing duplicated).
+  * *Linkage system* of a `∂Z`-gadget `Y`: an acyclic `Transplant.IsLinkage`
+    (`IsLinkageSystem`).  *Dominance* (`Dominated LengthOK Y`): (i) every linkage
+    system of `Y` is realized in `G[Z]` (`LinkageRealized`: injective relabelling
+    of the interior into `int(Z)` fixing `∂Z`, edges to edges, i.e. the same
+    terminal pairing and length vector with interiors in `int(Z)`); (ii) `Y` has
+    no accepted cycle.  Interiors in `int(Z)` are exactly what keeps the
+    substituted closed walk simple (the brief's caveat): a realizing path may not
+    pass through another terminal.  A terminal may be interior to a linkage path
+    (a cycle can pass `Y → b → Y`); the Lean linkage allows it, so the brief's
+    "each terminal used at most once" is refined to "paths whose ends are
+    terminals".
+  * Cycle decomposition: `cycleLinkage_isAcyclic` (the `Y`-edges of a glued
+    cycle with a non-`Y` edge are acyclic; a cycle inside a cycle is the whole
+    cycle, `edges_subset_of_cycle_sub`).  All-`Y` cycles lift to `Y`
+    (`pieceCycle_of_allOwned`).
+  * Substitution: `cycle_transfer_of_realized` (restrict `Y` to the cycle's own
+    linkage system, `withGraph`, which is linkage-included, and apply
+    `Transplant.cycle_transfer`); `not_target_glue_of_dominated`.
+  * Minimality: `not_dominated_of_exclusion` (a smaller, profile-preserving,
+    baseline-keeping dominated gadget is a `ReplacementSupport`).
+  * Terminal-pair form: `exists_path_cover` (an acyclic linkage with two
+    terminals is one `u`–`v` path carrying every edge; longest path through a
+    vertex + `IsAcyclic.eq_snd_of_adj_start/eq_penultimate_of_adj_end` +
+    bridges), `linkageRealized_of_path` (position-by-position realization along a
+    `G[Z]` path of the same length), `dominated_of_twoTerminal`,
+    `exists_new_length_of_exclusion`.
+  * The copy gadget (constructed from G, no choice): `copyPiece u u' v'` = `G[Z']`
+    read on the labels `{u, v}` of `∂Z` (`u ↦ u'`, `v ↦ v'`, interior of `Z'`
+    fixed).  Proved: injective decode, no accepted cycle (subgraph of G),
+    `u`–`v` lengths ⊆ `L_{Z'}(u', v')`, profile of `G[Z]` iff the terminal inner
+    degrees match, and the baseline in `glue (copy) (G − Z)` always (every vertex
+    keeps at least its G-degree).  Hence `internalVertexCount_le_of_twoExit`.
+- **Published facts** (Type A rows `pieceDominanceRow`,
+  `canonicalPieceDominanceRow`, `Strategy/SpineRows/PieceDominance.lean`;
+  statements `Statements/PieceDominance.lean`; contracts
+  `Contracts/Spine/PieceDominance.lean`):
+  * 9975 `pieceDominanceIrreducible` [selection, replacementExclusion]: every
+    proper connected support `Z` of G: no gadget with `|int Y| < |int Z|`, the
+    profile of `G[Z]` and `δ ≥ threshold` in `glue Y (G − Z)` is dominated.
+  * 9977 `twoExitNewLength` [same]: at a two-exit support (`∂Z = {u, v}`) every
+    such gadget without an accepted cycle has a `u`–`v` path of length
+    `∉ L_Z(u, v)`.
+  * 9979 `twoExitSizeMonotone` [+ minDegreeBaseline]: `Z` proper connected with
+    `∂Z = {u, v}`, `Z'` with `∂Z' = {u', v'}`, `|N(u') ∩ Z'| = |N(u) ∩ Z|`,
+    `|N(v') ∩ Z'| = |N(v) ∩ Z|`, `L_{Z'}(u', v') ⊆ L_Z(u, v)` ⟹
+    `|int Z| ≤ |int Z'|` (equivalently `|Z| ≤ |Z'|`, both boundaries have two
+    vertices).
+  * 9976 / 9978 / 9980 (`canonicalPieceDominance`, `canonicalTwoExitNewLength`,
+    `canonicalTwoExitSizeMonotone`) [+ maximalPacking]: the same at the
+    canonical pieces of `R = G − W` (connected components; proper because `P₀`
+    is nonempty and its windows are nonempty).
+  These are genuine consequences of `[13]`: `ReplacementSupport` needs
+  `¬ Target (glue X' (G − Z))`, which dominance supplies.
+- **Position.** Run at the entry of `selectedRouteEightUnifiedResidual`
+  (`Assembly/RouteEight/Local.lean`), the earliest point of the composition
+  shared by `Route8QuotientOutcome` and `Route8JointBalanceOutcome`; all six keys
+  are listed on both residuals (113 facts on `[186]`; the quotient residual gains
+  six).  Freshness threaded exactly where `entriesAtGFresh` is.
+- **Not on every residual (decision).** Valid everywhere after `[13]`, but not
+  cheap: the spine prefix carries literal key lists in about ten Assembly files,
+  and publishing would add a conjunct to every residual and a `Has` line to
+  every arm-block product return.  It also does not touch the defining objects of
+  the non-route-8 residuals (binding rule: facts must touch the residual's
+  defining objects).
+- **Where it bites.** 9975/9976 are universal exclusions: they bite only against
+  a constructed gadget.  The constructed gadget is the copy of one two-exit
+  support onto another (9979/9980): among two-exit canonical pieces of `R` with
+  matching terminal inner degrees, length-set inclusion forces the size order,
+  and equal length sets force equal size.  No route-8 residual closes from
+  these facts alone: the defining failures (`K .route8QuotientEntriesAtG`,
+  `K .route8JointBalance`) are about unified entries and loads, and no fact on
+  those ledgers relates two two-exit pieces' length sets.

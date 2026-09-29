@@ -53,7 +53,7 @@ theorem Route8JointBalanceOutcome_product.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- The return of `Route8JointBalanceOutcome_product`, parameterised by the
-arm choices: the 102 common facts are read from the ledger by
+arm choices: the 108 common facts are read from the ledger by
 `route8JointBalanceReturn`, and each factor is the arm block the path took,
 built by that block's `.ret` from the same ledger (one `get` per key). -/
 theorem route8JointBalanceProductReturn
@@ -191,6 +191,12 @@ theorem route8JointBalanceProductReturn
     [FactKeys.Has (K .route8PieceWindowAttachment) known]
     [FactKeys.Has (K .route8PieceChainCycle) known]
     [FactKeys.Has (K .route8PiecewiseRate) known]
+    [FactKeys.Has (K .pieceDominanceIrreducible) known]
+    [FactKeys.Has (K .twoExitNewLength) known]
+    [FactKeys.Has (K .canonicalPieceDominance) known]
+    [FactKeys.Has (K .canonicalTwoExitNewLength) known]
+    [FactKeys.Has (K .twoExitSizeMonotone) known]
+    [FactKeys.Has (K .canonicalTwoExitSizeMonotone) known]
     (entry : Route8LaneEntry selected)
     (continuation : NetChargeContinuation selected) :
     Route8JointBalanceOutcome_product selected :=

@@ -275,6 +275,14 @@ noncomputable def selectedRouteEightResidual
     (pieceWindowAttachmentFresh : K .route8PieceWindowAttachment ∉ known := by key_fresh)
     (pieceChainCycleFresh : K .route8PieceChainCycle ∉ known := by key_fresh)
     (piecewiseRateFresh : K .route8PiecewiseRate ∉ known := by key_fresh)
+    (pieceDominanceFresh : K .pieceDominanceIrreducible ∉ known := by key_fresh)
+    (twoExitFresh : K .twoExitNewLength ∉ known := by key_fresh)
+    (canonicalPieceDominanceFresh : K .canonicalPieceDominance ∉ known := by
+      key_fresh)
+    (canonicalTwoExitFresh : K .canonicalTwoExitNewLength ∉ known := by key_fresh)
+    (sizeMonotoneFresh : K .twoExitSizeMonotone ∉ known := by key_fresh)
+    (canonicalSizeMonotoneFresh : K .canonicalTwoExitSizeMonotone ∉ known := by
+      key_fresh)
     (typeBSublinearCanonicalFormFresh : K .typeBSublinearCanonicalForm ∉ known := by key_fresh)
     (groupedAbsorbedCoreSubsetFresh : K .groupedAbsorbedCoreSubset ∉ known := by key_fresh)
     (typeBSublinearFailureArmsFresh : K .typeBSublinearFailureArms ∉ known := by key_fresh)

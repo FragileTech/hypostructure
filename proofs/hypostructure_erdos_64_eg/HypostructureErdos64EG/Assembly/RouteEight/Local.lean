@@ -8,6 +8,7 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8PeelingDescent
 import Hypostructure.Graph.Strategy.SpineRows.Route8QuotientDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8QuotientEntriesAtG
 import Hypostructure.Graph.Strategy.SpineRows.Route8BlobStructure
+import Hypostructure.Graph.Strategy.SpineRows.PieceDominance
 import Hypostructure.Graph.Strategy.SpineRows.Route8StageOutcomeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8TwoCarrierExit
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedDeficit
@@ -262,6 +263,14 @@ noncomputable def selectedRouteEightUnifiedResidual
     (pieceWindowAttachmentFresh : K .route8PieceWindowAttachment ∉ known := by key_fresh)
     (pieceChainCycleFresh : K .route8PieceChainCycle ∉ known := by key_fresh)
     (piecewiseRateFresh : K .route8PiecewiseRate ∉ known := by key_fresh)
+    (pieceDominanceFresh : K .pieceDominanceIrreducible ∉ known := by key_fresh)
+    (twoExitFresh : K .twoExitNewLength ∉ known := by key_fresh)
+    (canonicalPieceDominanceFresh : K .canonicalPieceDominance ∉ known := by
+      key_fresh)
+    (canonicalTwoExitFresh : K .canonicalTwoExitNewLength ∉ known := by key_fresh)
+    (sizeMonotoneFresh : K .twoExitSizeMonotone ∉ known := by key_fresh)
+    (canonicalSizeMonotoneFresh : K .canonicalTwoExitSizeMonotone ∉ known := by
+      key_fresh)
     (canonicalFormFresh : K .typeBSublinearCanonicalForm ∉ known := by
       key_fresh)
     (absorbedSubsetFresh : K .groupedAbsorbedCoreSubset ∉ known := by
@@ -385,7 +394,21 @@ noncomputable def selectedRouteEightUnifiedResidual
     [FactKeys.Has (K .windowPackageSeparated) known]
     [FactKeys.Has (K .windowPresent) known] :
     SelectedRouteEightBoundary selected := by
-  match typeBSublinearDichotomy (data := spineData) history
+  -- CT3 (keys 9975–9980, Lean improvement): G's pieces are
+  -- dominance-irreducible (from `[13]` and target avoidance), with the
+  -- terminal-pair form and the two-exit size monotonicity, at every proper
+  -- connected support and at the canonical pieces of `R`.
+  let dominance :=
+    (pieceDominanceRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by key_fresh)
+  let canonicalDominance :=
+    (canonicalPieceDominanceRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      dominance (by key_fresh)
+  match typeBSublinearDichotomy (data := spineData) canonicalDominance
       (by key_fresh) (by key_fresh) with
   | .right residualHistory =>
       -- G audit: the failed hypotheses are published in G's canonical form

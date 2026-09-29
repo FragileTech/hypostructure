@@ -43,6 +43,7 @@ import Hypostructure.Graph.Statements.Route8BlobStructure
 import Hypostructure.Graph.Statements.PairHandoffSupport
 import Hypostructure.Graph.Statements.PairHandoffFacts
 import Hypostructure.Graph.Statements.StubDeficit
+import Hypostructure.Graph.Statements.PieceDominance
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -2153,6 +2154,19 @@ inductive Key where
   -- g-pieces-constructed keys (8700–8799)
   /-- Route 8 read on the pieces constructed from G: at every unified entry a fold pair of the selected basin (two interior vertices with no common neighbour) makes alternative (a) occur and the load an exit-`(4)` peel (Q3); a nonempty essential core means the declared family determines the target; every complete carrier set holds every fold pair. -/
   | route8FoldPeels
+  -- CT3 dominance irreducibility keys (9975–9989)
+  /-- CT3 (idx 9975): **dominance irreducibility of G's pieces**: for every proper connected support `Z` of G, no gadget on `∂Z` with fewer interior vertices than `G[Z]`, the boundary-degree profile of `G[Z]` and minimum degree at least the threshold in `glue Y (G − Z)` is dominated by `G[Z]` (every linkage system realized in `G[Z]` with the same terminal pairing and length vector, and no power-of-two cycle of its own); from node `[13]` and target avoidance. -/
+  | pieceDominanceIrreducible
+  /-- CT3 (idx 9976): every canonical piece of `R = G − W` (canonical packing `P₀`) is dominance-irreducible. -/
+  | canonicalPieceDominance
+  /-- CT3 (idx 9977), terminal-pair form: at every proper connected support of G with exactly two cut-boundary vertices `u ≠ v`, every smaller degree-valid gadget on `{u, v}` without a power-of-two cycle has a `u`–`v` path whose length is not a `u`–`v` path length of G inside `Z`. -/
+  | twoExitNewLength
+  /-- CT3 (idx 9978), terminal-pair form at every two-exit canonical piece of `R`. -/
+  | canonicalTwoExitNewLength
+  /-- CT3 (idx 9979), explicit two-exit consequence: for a proper connected support `Z` with cut boundary `{u, v}` and a support `Z'` with cut boundary `{u', v'}` whose terminals have as many neighbours in `Z'` as `u, v` in `Z`, `L_{Z'}(u', v') ⊆ L_Z(u, v)` forces `|int Z| ≤ |int Z'|` (the copy of `G[Z']` onto `{u, v}` is a dominated, profile- and baseline-preserving gadget). -/
+  | twoExitSizeMonotone
+  /-- CT3 (idx 9980): two-exit size monotonicity between any two two-exit canonical pieces of `R`. -/
+  | canonicalTwoExitSizeMonotone
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -3336,6 +3350,18 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       ColdMarkedGermPairMersenneStatement data.toParameters object
   | .coldMarkedGermChordSpan, object =>
       ColdMarkedGermChordSpanStatement data.toParameters object
+  | .pieceDominanceIrreducible, object =>
+      PieceDominanceIrreducibleStatement data.toParameters object
+  | .canonicalPieceDominance, object =>
+      CanonicalPieceDominanceStatement data.toParameters object
+  | .twoExitNewLength, object =>
+      TwoExitNewLengthStatement data.toParameters object
+  | .canonicalTwoExitNewLength, object =>
+      CanonicalTwoExitNewLengthStatement data.toParameters object
+  | .twoExitSizeMonotone, object =>
+      TwoExitSizeMonotoneStatement data.toParameters object
+  | .canonicalTwoExitSizeMonotone, object =>
+      CanonicalTwoExitSizeMonotoneStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -3875,6 +3901,12 @@ def label : Key → String
   | .coldMarkedGermPairSuppression => "coldMarkedGermPairSuppression"
   | .coldMarkedGermPairMersenne => "coldMarkedGermPairMersenne"
   | .coldMarkedGermChordSpan => "coldMarkedGermChordSpan"
+  | .pieceDominanceIrreducible => "pieceDominanceIrreducible"
+  | .canonicalPieceDominance => "canonicalPieceDominance"
+  | .twoExitNewLength => "twoExitNewLength"
+  | .canonicalTwoExitNewLength => "canonicalTwoExitNewLength"
+  | .twoExitSizeMonotone => "twoExitSizeMonotone"
+  | .canonicalTwoExitSizeMonotone => "canonicalTwoExitSizeMonotone"
 
 /-! ### Label pins
 
@@ -4427,6 +4459,12 @@ example : label .coldMarkedGermStretchIncidence = "coldMarkedGermStretchIncidenc
 example : label .coldMarkedGermPairSuppression = "coldMarkedGermPairSuppression" := rfl
 example : label .coldMarkedGermPairMersenne = "coldMarkedGermPairMersenne" := rfl
 example : label .coldMarkedGermChordSpan = "coldMarkedGermChordSpan" := rfl
+example : label .pieceDominanceIrreducible = "pieceDominanceIrreducible" := rfl
+example : label .canonicalPieceDominance = "canonicalPieceDominance" := rfl
+example : label .twoExitNewLength = "twoExitNewLength" := rfl
+example : label .canonicalTwoExitNewLength = "canonicalTwoExitNewLength" := rfl
+example : label .twoExitSizeMonotone = "twoExitSizeMonotone" := rfl
+example : label .canonicalTwoExitSizeMonotone = "canonicalTwoExitSizeMonotone" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -4975,6 +5013,12 @@ def idx : Key → Nat
   | .coldMarkedGermPairSuppression => 8403
   | .coldMarkedGermPairMersenne => 8404
   | .coldMarkedGermChordSpan => 8405
+  | .pieceDominanceIrreducible => 9975
+  | .canonicalPieceDominance => 9976
+  | .twoExitNewLength => 9977
+  | .canonicalTwoExitNewLength => 9978
+  | .twoExitSizeMonotone => 9979
+  | .canonicalTwoExitSizeMonotone => 9980
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -5512,6 +5556,12 @@ def ofIdx : Nat → Key
   | 8403 => .coldMarkedGermPairSuppression
   | 8404 => .coldMarkedGermPairMersenne
   | 8405 => .coldMarkedGermChordSpan
+  | 9975 => .pieceDominanceIrreducible
+  | 9976 => .canonicalPieceDominance
+  | 9977 => .twoExitNewLength
+  | 9978 => .canonicalTwoExitNewLength
+  | 9979 => .twoExitSizeMonotone
+  | 9980 => .canonicalTwoExitSizeMonotone
   | _ => .selection
 
 set_option maxRecDepth 8192 in
@@ -6698,6 +6748,18 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermPairMersenne") 8404
   | .coldMarkedGermChordSpan =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermChordSpan") 8405
+  | .pieceDominanceIrreducible =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pieceDominanceIrreducible") 9975
+  | .canonicalPieceDominance =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalPieceDominance") 9976
+  | .twoExitNewLength =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "twoExitNewLength") 9977
+  | .canonicalTwoExitNewLength =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalTwoExitNewLength") 9978
+  | .twoExitSizeMonotone =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "twoExitSizeMonotone") 9979
+  | .canonicalTwoExitSizeMonotone =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalTwoExitSizeMonotone") 9980
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather
