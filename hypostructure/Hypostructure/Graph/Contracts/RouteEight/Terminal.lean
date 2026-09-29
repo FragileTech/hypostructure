@@ -58,8 +58,7 @@ theorem exitFour_of_deletionWitnesses (LengthOK : Nat → Prop)
     (deletion : letI := Route8.vertexDecEq object
       let entry := (Route8Census.presented object threshold LengthOK
         index).toEntry (HasCycleWithLength LengthOK)
-      Route8.TwoCarrierDeletionWitnesses (Target := HasCycleWithLength LengthOK)
-        entry.carriers entry.coordinates entry.car entry.state entry.actual
+      Route8.TwoCarrierDeletionWitnesses entry
         (Route8Census.entriesOfComponents object packing components threshold
           scale)
         (Route8Census.core object threshold LengthOK) (threshold - 1) index)
@@ -91,21 +90,13 @@ theorem exitFour_of_deletionWitnesses (LengthOK : Nat → Prop)
     omega
   obtain ⟨carrier, carrierMem⟩ := coreNonempty
   have deletionWitnesses := deletion
-  obtain ⟨targetDefect, coordinate, coordinateMem, coordinateCore,
-    carrierCoordinate⟩ := deletionWitnesses.2 carrier carrierMem
+  obtain ⟨⟨realization, realizes, targetDefect⟩, coordinate, coordinateMem,
+    coordinateCore, carrierCoordinate⟩ := deletionWitnesses.2 carrier carrierMem
   have loadRouted : load ∈ object.routedLoads piece threshold receiver :=
     (Finset.mem_sdiff.mp loadMem).1
   have unpeeled : load ∈ ExitFour.unpeeledLoads piece threshold receiver ∅ := by
     rw [ExitFour.mem_unpeeledLoads]
     exact ⟨loadRouted, by simp⟩
-  have sameBoundaryProfile :
-      (entry.restriction (entry.essentialCore.erase carrier)).boundaryDegreeProfile =
-        (entry.restriction entry.essentialCore).boundaryDegreeProfile := by
-    change (presented.state
-        (entry.retained (entry.essentialCore.erase carrier))).boundaryDegreeProfile =
-      (presented.state (entry.retained entry.essentialCore)).boundaryDegreeProfile
-    exact Route8.PresentedEntry.ofTraceBasin_boundaryDegreeProfile
-      object piece basin threshold LengthOK receiver load _ _
   have canonicalCollection :
       ExitFour.Q5CanonicalCollection object packing threshold scale entries :=
     Or.inr ⟨components, canonical, negative, rfl⟩
@@ -113,17 +104,7 @@ theorem exitFour_of_deletionWitnesses (LengthOK : Nat → Prop)
       threshold scale receiver load := by
     refine ⟨packing, entries, canonicalCollection, (piece, receiver, load),
       indexMem, rfl, rfl, rfl, LengthOK, rfl, selected, twoCarrier,
-      carrier, carrierMem, ?_, ?_, ?_⟩
-    · change ¬ (HasCycleWithLength LengthOK
-          (glue (entry.restriction (entry.essentialCore.erase carrier))
-            entry.actual) ↔
-        HasCycleWithLength LengthOK
-          (glue (entry.restriction entry.essentialCore) entry.actual))
-      exact targetDefect
-    · change (entry.restriction
-            (entry.essentialCore.erase carrier)).boundaryDegreeProfile =
-          (entry.restriction entry.essentialCore).boundaryDegreeProfile
-      exact sameBoundaryProfile
+      carrier, carrierMem, ⟨realization, realizes, targetDefect⟩, ?_⟩
     · refine ⟨coordinate, ?_, ?_, carrierCoordinate⟩
       · change coordinate ∈ entry.coordinates
         exact coordinateMem
@@ -149,8 +130,7 @@ theorem twoCarrier_deletionWitnesses (LengthOK : Nat → Prop)
     letI := Route8.vertexDecEq object
     let entry := (Route8Census.presented object threshold LengthOK
       index).toEntry (HasCycleWithLength LengthOK)
-    Route8.TwoCarrierDeletionWitnesses (Target := HasCycleWithLength LengthOK)
-      entry.carriers entry.coordinates entry.car entry.state entry.actual
+    Route8.TwoCarrierDeletionWitnesses entry
       (Route8Census.entriesOfComponents object packing components threshold
         scale)
       (Route8Census.core object threshold LengthOK) (threshold - 1) index := by
@@ -158,9 +138,7 @@ theorem twoCarrier_deletionWitnesses (LengthOK : Nat → Prop)
   obtain ⟨piece, receiver, load⟩ := index
   let entry := (Route8Census.presented object threshold LengthOK
     (piece, receiver, load)).toEntry (HasCycleWithLength LengthOK)
-  exact Route8.twoCarrierDeletionWitnesses
-    (Target := HasCycleWithLength LengthOK) entry.carriers
-    entry.coordinates entry.car entry.car_subset entry.state entry.actual _
+  exact Route8.twoCarrierDeletionWitnesses entry _
     (Route8Census.core object threshold LengthOK) twoCarrier rfl
 
 /-- **Node `[124]`, `lem:typeA-carrier-deletion-exit`**: a two-support entry of

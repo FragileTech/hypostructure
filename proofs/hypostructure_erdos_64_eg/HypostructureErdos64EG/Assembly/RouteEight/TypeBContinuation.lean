@@ -142,7 +142,6 @@ noncomputable def selectedTypeBRoute8Continuation
     (unifiedExitFresh : K .route8UnifiedTwoCarrierExit ∉ known := by
       key_fresh)
     (closureFresh : closed ∉ known := by key_fresh)
-    (emptyAtGFresh : K .route8UnifiedEmptyAtG ∉ known := by key_fresh)
     (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
       key_fresh)
@@ -317,7 +316,6 @@ noncomputable def selectedTypeBRoute8Entry
     (unifiedExitFresh : K .route8UnifiedTwoCarrierExit ∉ known := by
       key_fresh)
     (closureFresh : closed ∉ known := by key_fresh)
-    (emptyAtGFresh : K .route8UnifiedEmptyAtG ∉ known := by key_fresh)
     (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
       key_fresh)

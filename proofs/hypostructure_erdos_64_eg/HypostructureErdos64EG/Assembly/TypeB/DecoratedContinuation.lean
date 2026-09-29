@@ -92,7 +92,6 @@ noncomputable def selectedTypeBDecoratedContinuation
     (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by
       key_fresh)
-    (emptyAtGFresh : K .route8UnifiedEmptyAtG ∉ known := by key_fresh)
     (unifiedTerminalFresh : K .route8UnifiedTwoCarrierExit ∉ known)
     (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
     (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)

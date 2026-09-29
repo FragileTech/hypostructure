@@ -209,40 +209,11 @@ theorem route8UnifiedVisibleResidual (data : Parameters)
           object basin := by
       rw [← traceSupportEqBasin]
       exact traceBoundary
-    have stateIndependent :
-        ∀ left right : Finset entry.Coordinate,
-          entry.state left = entry.state right := by
-      intro left right
-      change Graph.Route8.PresentedEntry.retainedReading
-            object piece basin data.threshold
-            data.LengthOK
-            (Graph.Route8.PresentedEntry.retainedBaseCoordinates
-              object piece left) =
-          Graph.Route8.PresentedEntry.retainedReading
-            object piece basin data.threshold
-            data.LengthOK
-            (Graph.Route8.PresentedEntry.retainedBaseCoordinates
-              object piece right)
-      unfold Graph.Route8.PresentedEntry.retainedReading
-      rw [Graph.Route8.PresentedEntry.retainedBasinPiece_eq_piece_of_cutBoundary
-          object basin _ basinBoundary,
-        Graph.Route8.PresentedEntry.retainedBasinPiece_eq_piece_of_cutBoundary
-          object basin _ basinBoundary]
-    have emptyComplete : entry.Complete ∅ := by
-      unfold Graph.Route8.Entry.Complete Graph.Route8.Entry.restriction
-        Graph.Route8.Entry.full
-      rw [stateIndependent]
-    have minimumLe :=
-      entry.carrierProfile.minimumCard_le ∅ emptyComplete
-    have coreCard := entry.carrierProfile.core_card
-    change 2 ≤ entry.essentialCore.card at alphaTwo
-    change entry.essentialCore.card =
-      entry.carrierProfile.minimumCard at coreCard
-    have minimumZero : entry.carrierProfile.minimumCard = 0 := by
-      apply Nat.eq_zero_of_le_zero
-      simpa using minimumLe
-    have essentialZero : entry.essentialCore.card = 0 := by
-      rw [coreCard, minimumZero]
+    -- a boundary-only basin has `α(ξ) = 0`: its realizations of every
+    -- restriction are the full reading's (`lem:typeA-unified-visible-ownership`)
+    have alphaZero : entry.alpha = 0 :=
+      Graph.Route8.PresentedEntry.ofTraceBasin_alpha_eq_zero_of_cutBoundary
+        basinBoundary
     omega
   unfold Route8UnifiedVisibleResidualStatement
   refine ⟨allVisible, ?_⟩

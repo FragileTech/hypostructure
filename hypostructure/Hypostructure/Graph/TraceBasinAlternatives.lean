@@ -37,12 +37,15 @@ universe u
 
 /-- **Alternative (a) of `def:typeA-trace-basin`, stated about G.**  A
 trace-local quotient of `ρ_u(B_u)` — retaining a subset of the declared family
-and forgetting a coordinate with genuinely internal declared support — whose
-reading is distinguished from the basin itself by an outside `∂B_u`-context
-*of G*.  The only such context is G's own surroundings `G − B_u`
-(`SupportAtom.outside G B_u`); the manuscript's "some outside context" ranged
-over contexts that are not part of G.  At a target-avoiding G this is decided
-false (`not_traceLocalTargetDefect`). -/
+and forgetting a coordinate with genuinely internal declared support — is
+distinguished by an outside `∂B_u`-context: some realization of the quotient,
+glued into the context, has a different target truth from `ρ_u(B_u)`.  Stated
+about G, the context is G's own surroundings `G − B_u`
+(`SupportAtom.outside G B_u`) and the realizations are the pieces constructed
+from G at `B_u` (`GConstructedPiece`) that carry every retained coordinate
+exactly (`QuotientRealization`).  A reading of G glued into `G − B_u` is a
+subgraph of G and never separates; a fold of two interior basin vertices with no
+common neighbour does, at a minimal G (`traceLocalTargetDefect_of_foldPair`). -/
 def TraceLocalTargetDefect (object : FiniteObject.{u})
     (support : Finset object.Vertex) (threshold : Nat)
     (LengthOK : Nat → Prop) (receiver load : object.Vertex)
@@ -53,14 +56,15 @@ def TraceLocalTargetDefect (object : FiniteObject.{u})
         changed ∉ retained ∧
           ExitFour.TraceCoordinateInternal object support basin threshold receiver
             load changed) ∧
-      ¬ (HasCycleWithLength LengthOK
-          (glue (PresentedEntry.retainedReading object support basin threshold
-              LengthOK (PresentedEntry.retainedBaseCoordinates object support
-                retained))
-            (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) ↔
-        HasCycleWithLength LengthOK
-          (glue (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
-            (Strategy.InterfaceReplacement.SupportAtom.outside object basin)))
+      ∃ realization : GConstructedPiece object basin,
+        QuotientRealization object support basin threshold receiver load
+            (ResponseQuotient.forgetting retained) realization.toPiece ∧
+          ¬ (HasCycleWithLength LengthOK
+              (glue realization.toPiece
+                (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) ↔
+            HasCycleWithLength LengthOK
+              (glue (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+                (Strategy.InterfaceReplacement.SupportAtom.outside object basin)))
 
 /-- **Alternative (c) of `def:typeA-trace-basin`.**  An equality among declared
 coordinates of `ρ_u(B_u)` that becomes target-complete only after adjoining a
@@ -165,7 +169,8 @@ theorem exists_witness_of_traceLocalTargetDefect {object : FiniteObject.{u}}
         threshold scale receiver ∅,
       witness.load = load := by
   classical
-  obtain ⟨retained, retainedSubset, nontrivial, targetDefect⟩ := defect
+  obtain ⟨retained, retainedSubset, nontrivial, realization, realizes,
+    targetDefect⟩ := defect
   refine ⟨⟨load, ?_, .q3
     { LengthOK := LengthOK
       target_eq := rfl
@@ -174,53 +179,65 @@ theorem exists_witness_of_traceLocalTargetDefect {object : FiniteObject.{u}}
       retained := retained
       retained_subset := retainedSubset
       nontrivial := nontrivial
+      realization := realization
+      realizes := realizes
       targetDefect := targetDefect }⟩, rfl⟩
   rw [ExitFour.mem_unpeeledLoads]
   exact ⟨loadRouted, Finset.notMem_empty load⟩
 
 /-- **`def:typeA-two-terminal-pressure-records`, stated about G** — the
-canonical demand record at a selected basin: an *actual two-terminal record*, an
-accepted event of the basin glued to its actual exterior `G − B_u`, with an
-outside corridor between two distinct cut-boundary labels along event edges,
-every interior vertex context-internal.  The manuscript's *profile record* (an
-event glued to a distinguished non-actual context) is about a context that is
-not part of G and has no G-form; it is removed. -/
+canonical demand record at a selected basin.  At G every distinguishing token
+is read in the actual exterior `G − B_u`; its realization is a piece
+constructed from G at `B_u`, in G's boundary-degree fibre and separated from G's
+own piece there, and its event is an accepted cycle of that realization glued
+into `G − B_u`.  The record is
+
+* the **actual two-terminal record**: an outside corridor along event edges
+  between two distinct cut-boundary labels, every interior vertex
+  context-internal; or
+* the **internal event**: the event is a cycle of the realization itself; or
+* the **exterior event**: the event avoids the realization's interior
+  vertices.
+
+The last two are the cases the manuscript excludes through
+`lem:typeA-internal-quotient-mixed` ("if the event were contained entirely in
+`X`, it would be a power-of-two cycle in the target-safe support"); a
+realization built from G is not a subgraph of G, so at G they are explicit
+alternatives rather than impossibilities. -/
 def CanonicalDemandRecord (object : FiniteObject.{u})
     (basin : Finset object.Vertex) (LengthOK : Nat → Prop) : Prop :=
+  ∃ realization : GConstructedPiece object basin,
+    realization.Separated (HasCycleWithLength LengthOK) GConstructedPiece.own ∧
     ∃ certificate : CycleCertificate
-        (glue (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+        (glue realization.toPiece
           (Strategy.InterfaceReplacement.SupportAtom.outside object basin))
         LengthOK,
-      ∃ left right : (Strategy.InterfaceReplacement.SupportAtom.boundary
+      (∃ left right : (Strategy.InterfaceReplacement.SupportAtom.boundary
           object basin).Vertex,
         left ≠ right ∧
-          ∃ corridor : (glueGraph
-              (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+          ∃ corridor : (glueGraph realization.toPiece
               (Strategy.InterfaceReplacement.SupportAtom.outside object
                 basin)).Walk (.inl left) (.inl right),
             corridor.edges ⊆ certificate.walk.edges ∧
               ∀ x ∈ corridor.support,
                 x = Sum.inl left ∨ x = Sum.inl right ∨
-                  ∃ inner, x = Sum.inr (Sum.inr inner)
-
-/-- **Alternative (a) is decided false at a target-avoiding G**: G's retained
-reading of `B_u` and G's own piece, both glued into `G − B_u`, carry no target
-cycle, so they have the same target truth. -/
-theorem not_traceLocalTargetDefect {object : FiniteObject.{u}}
-    {support : Finset object.Vertex} {threshold : Nat} {LengthOK : Nat → Prop}
-    {receiver load : object.Vertex} {basin : Finset object.Vertex}
-    (avoids : ¬ HasCycleWithLength LengthOK object) :
-    ¬ TraceLocalTargetDefect object support threshold LengthOK receiver load
-      basin := by
-  rintro ⟨retained, _retainedSubset, _nontrivial, defect⟩
-  exact defect (iff_of_false
-    (PresentedEntry.not_target_glue_retainedReading_outside avoids _)
-    (Strategy.InterfaceReplacement.not_target_glue_piece_outside avoids basin))
+                  ∃ inner, x = Sum.inr (Sum.inr inner)) ∨
+      (∃ (pieceBase : (Strategy.InterfaceReplacement.SupportAtom.boundary object
+            basin).Vertex ⊕ realization.toPiece.Internal)
+          (lifted : realization.toPiece.graph.Walk pieceBase pieceBase),
+        lifted.IsCycle ∧ lifted.length = certificate.walk.length) ∨
+      (∀ inner : realization.toPiece.Internal,
+        (Sum.inr (Sum.inl inner) : GluedVertex realization.toPiece
+          (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) ∉
+            certificate.walk.support)
 
 /-- **`lem:typeA-pressure-records-canonical`, at G** — every target-defect entry
-carries its canonical demand record.  At a target-avoiding G there is no
-target-defect entry (`not_traceLocalTargetDefect`), so the implication holds
-because its premise is decided false. -/
+carries its canonical demand record.  The defect's realization carries an
+accepted cycle in `G − B_u` (G's own piece does not); split that event by
+`GluedCycleSides`: two distinct labels around a context-internal vertex give
+the outside corridor; a context-free event lifts to the realization or crosses
+a context-owned label edge (a one-edge corridor); a context event with fewer
+than two labels meets no interior vertex of the realization. -/
 theorem exists_record_of_traceLocalTargetDefect
     {object : FiniteObject.{u}} {support : Finset object.Vertex}
     {threshold : Nat} {LengthOK : Nat → Prop}
@@ -228,24 +245,102 @@ theorem exists_record_of_traceLocalTargetDefect
     (defect : TraceLocalTargetDefect object support threshold LengthOK
       receiver load basin)
     (avoids : ¬ HasCycleWithLength LengthOK object) :
-    CanonicalDemandRecord object basin LengthOK :=
-  absurd defect (not_traceLocalTargetDefect avoids)
+    CanonicalDemandRecord object basin LengthOK := by
+  classical
+  obtain ⟨_retained, _subset, _nontrivial, realization, realizes, defect⟩ := defect
+  have pieceFree := Strategy.InterfaceReplacement.not_target_glue_piece_outside
+    avoids basin
+  have accepted : HasCycleWithLength LengthOK (glue realization.toPiece
+      (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) := by
+    by_contra free
+    exact defect (iff_of_false free pieceFree)
+  have separated : realization.Separated (HasCycleWithLength LengthOK)
+      GConstructedPiece.own :=
+    ⟨realizes.1, fun same => pieceFree (same.mp accepted)⟩
+  obtain ⟨certificate⟩ := accepted
+  refine ⟨realization, separated, certificate, ?_⟩
+  by_cases twoLabels : ∃ left right : (Strategy.InterfaceReplacement.SupportAtom.boundary
+      object basin).Vertex, left ≠ right ∧
+      (Sum.inl left : GluedVertex realization.toPiece
+        (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) ∈
+          certificate.walk.support ∧
+      (Sum.inl right : GluedVertex realization.toPiece
+        (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) ∈
+          certificate.walk.support
+  · by_cases contextMeet : ∃ inner, (Sum.inr (Sum.inr inner) : GluedVertex
+        realization.toPiece
+        (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) ∈
+          certificate.walk.support
+    · obtain ⟨inner, innerMem⟩ := contextMeet
+      obtain ⟨left, right, distinct, leftMem, rightMem⟩ := twoLabels
+      exact Or.inl (GluedCycleSides.exists_corridor_of_cycle_contextInternal
+        certificate.isCycle innerMem distinct leftMem rightMem)
+    · push_neg at contextMeet
+      rcases GluedCycleSides.cycle_pieceLift_or_contextInternal_or_labelDart
+          certificate.isCycle with lifted | ⟨inner, innerMem⟩ |
+          ⟨dartLeft, dartRight, dartDistinct, _leftMem, _rightMem, dartAdj,
+            dartEdge⟩
+      · exact Or.inr (Or.inl lifted)
+      · exact absurd innerMem (contextMeet inner)
+      · have dartGlueAdj : (glueGraph realization.toPiece
+            (Strategy.InterfaceReplacement.SupportAtom.outside object
+              basin)).Adj (.inl dartLeft) (.inl dartRight) := by
+          refine (glueGraph_adj_iff _ _ _ _).mpr (Or.inr ⟨.inl dartLeft,
+            .inl dartRight, dartAdj, ?_, ?_⟩) <;> rfl
+        refine Or.inl ⟨dartLeft, dartRight, dartDistinct,
+          SimpleGraph.Walk.cons dartGlueAdj SimpleGraph.Walk.nil, ?_, ?_⟩
+        · intro e emem
+          rw [SimpleGraph.Walk.edges_cons, SimpleGraph.Walk.edges_nil] at emem
+          rw [List.mem_singleton.mp emem]
+          exact dartEdge
+        · intro x xmem
+          rw [SimpleGraph.Walk.support_cons, SimpleGraph.Walk.support_nil]
+            at xmem
+          rcases List.mem_cons.mp xmem with rfl | tailmem
+          · exact Or.inl rfl
+          · exact Or.inr (Or.inl (List.mem_singleton.mp tailmem))
+  · by_cases contextMeet : ∃ inner, (Sum.inr (Sum.inr inner) : GluedVertex
+        realization.toPiece
+        (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) ∈
+          certificate.walk.support
+    · refine Or.inr (Or.inr ?_)
+      intro pieceInner pieceMem
+      obtain ⟨inner, innerMem⟩ := contextMeet
+      exact twoLabels (GluedCycleSides.exists_two_labels_of_cycle_sides
+        certificate.isCycle pieceMem innerMem)
+    · push_neg at contextMeet
+      rcases GluedCycleSides.cycle_pieceLift_or_contextInternal_or_labelDart
+          certificate.isCycle with lifted | ⟨inner, innerMem⟩ |
+          ⟨dartLeft, dartRight, dartDistinct, leftMem, rightMem, _dartAdj,
+            _dartEdge⟩
+      · exact Or.inr (Or.inl lifted)
+      · exact absurd innerMem (contextMeet inner)
+      · exact absurd ⟨dartLeft, dartRight, dartDistinct, leftMem, rightMem⟩
+          twoLabels
 
-/-- **Alternative (b) occurs at every trace basin of a routed load of G**
-(Lean improvement, decided at G).  The response quotient forgetting every
-declared coordinate is nontrivial — it forgets the trace incidence of the
-nondegenerate trace `T_u ⊆ B_u` (`load ≠ receiver`) — and its G-form
-completeness clause is decided true at a target-avoiding G
-(`traceResponseQuotient_complete_of_avoids`). -/
-theorem exists_traceResponseQuotient_of_avoids {object : FiniteObject.{u}}
+/-- **A fold pair of the selected basin is a trace-local target defect**
+(alternative (a), at a minimal G).  Two interior vertices of `B_u` with no
+common neighbour in G fold to a piece constructed from G that carries every
+declared coordinate avoiding them; forgetting in addition the trace incidence of
+the nondegenerate trace `T_u ⊆ B_u` (`load ≠ receiver`) makes the quotient
+nontrivial, and the fold glued into `G − B_u` carries a target cycle
+(`GConstructedPiece.response_fold_of_minimal`) while G's piece does not. -/
+theorem traceLocalTargetDefect_of_foldPair {object : FiniteObject.{u}}
     {support : Finset object.Vertex} {threshold : Nat} {LengthOK : Nat → Prop}
     {receiver load : object.Vertex} {basin : Finset object.Vertex}
+    (two : 2 ≤ threshold) (baseline : MinimumDegreeAtLeast threshold object)
     (avoids : ¬ HasCycleWithLength LengthOK object)
+    (minimal : ∀ H : FiniteObject.{u}, H.LexicographicallySmaller object →
+      MinimumDegreeAtLeast threshold H → HasCycleWithLength LengthOK H)
     (receiverMem : receiver ∈ object.receivers support threshold)
     (loadRouted : load ∈ object.routedLoads support threshold receiver)
-    (complete : TraceComplete object support threshold receiver load basin) :
-    ∃ retained, TraceResponseQuotient object support threshold LengthOK receiver
-      load basin retained := by
+    (complete : TraceComplete object support threshold receiver load basin)
+    (keep remove :
+      Strategy.InterfaceReplacement.SupportAtom.PieceInternal object basin)
+    (different : keep ≠ remove)
+    (noCommon : ∀ common, ¬ object.IsCommonNeighbor keep.1 remove.1 common) :
+    TraceLocalTargetDefect object support threshold LengthOK receiver load
+      basin := by
   classical
   have loadDegree : object.internalDegree support load = threshold :=
     (object.mem_routedLoads.mp loadRouted).2.1
@@ -260,42 +355,57 @@ theorem exists_traceResponseQuotient_of_avoids {object : FiniteObject.{u}}
     apply Nat.pos_of_ne_zero
     intro zero
     exact loadNeReceiver (trace.1.eq_of_length_eq_zero zero)
-  refine ⟨ResponseQuotient.forgetting ∅, Finset.empty_subset _, ?_,
-    traceResponseQuotient_complete_of_avoids avoids _⟩
-  refine ⟨PresentedEntry.TraceCoordinate.traceIncidence, ?_,
-    Finset.notMem_empty _, Or.inl ⟨rfl, trace, traceSelected, tracePositive,
-      traceInside⟩⟩
-  change PresentedEntry.TraceCoordinate.traceIncidence ∈
-    PresentedEntry.traceCoordinates object support threshold receiver load
-  exact Finset.mem_insert_self _ _
+  let retained := ((PresentedEntry.traceCoordinates object support threshold
+      receiver load).filter fun coordinate =>
+        keep.1 ∉ PresentedEntry.traceDeclaredSupport object support threshold
+            receiver load coordinate ∧
+          remove.1 ∉ PresentedEntry.traceDeclaredSupport object support threshold
+            receiver load coordinate).erase
+    PresentedEntry.TraceCoordinate.traceIncidence
+  refine ⟨retained, ?_, ?_, GConstructedPiece.fold keep remove different noCommon,
+    ?_, ?_⟩
+  · intro coordinate member
+    exact (Finset.mem_filter.mp (Finset.mem_erase.mp member).2).1
+  · refine ⟨PresentedEntry.TraceCoordinate.traceIncidence, ?_,
+      Finset.notMem_erase _ _, Or.inl ⟨rfl, trace, traceSelected, tracePositive,
+        traceInside⟩⟩
+    change PresentedEntry.TraceCoordinate.traceIncidence ∈
+      PresentedEntry.traceCoordinates object support threshold receiver load
+    exact Finset.mem_insert_self _ _
+  · refine quotientRealization_fold object support basin threshold receiver load
+      retained keep remove different noCommon ?_
+    intro coordinate member
+    exact (Finset.mem_filter.mp (Finset.mem_erase.mp member).2).2
+  · intro same
+    exact Strategy.InterfaceReplacement.not_target_glue_piece_outside avoids basin
+      (same.mp (GConstructedPiece.response_fold_of_minimal two baseline minimal
+        keep remove different noCommon))
 
-/-- **No trace basin of a routed load of G is target-complete-minimal**
-(Lean improvement, decided at G): alternative (b) always occurs
-(`exists_traceResponseQuotient_of_avoids`). -/
-theorem not_targetCompleteMinimal_of_avoids {object : FiniteObject.{u}}
+/-- **Where alternative (a) is absent, the basin interior is pairwise
+common-neighboured** (at a minimal G): every two distinct interior vertices of
+the selected basin have a common neighbour in G.  Otherwise they fold
+(`traceLocalTargetDefect_of_foldPair`). -/
+theorem exists_commonNeighbor_of_not_traceLocalTargetDefect
+    {object : FiniteObject.{u}}
     {support : Finset object.Vertex} {threshold : Nat} {LengthOK : Nat → Prop}
     {receiver load : object.Vertex} {basin : Finset object.Vertex}
+    (two : 2 ≤ threshold) (baseline : MinimumDegreeAtLeast threshold object)
     (avoids : ¬ HasCycleWithLength LengthOK object)
+    (minimal : ∀ H : FiniteObject.{u}, H.LexicographicallySmaller object →
+      MinimumDegreeAtLeast threshold H → HasCycleWithLength LengthOK H)
     (receiverMem : receiver ∈ object.receivers support threshold)
-    (loadRouted : load ∈ object.routedLoads support threshold receiver) :
-    ¬ TargetCompleteMinimal object support threshold LengthOK receiver load
-      basin := fun minimal =>
-  minimal.2.2.1
-    (exists_traceResponseQuotient_of_avoids avoids receiverMem loadRouted
-      minimal.1)
-
-/-- **No routed load of G is a route-8 entry** (Lean improvement, decided at
-G): its selected basin is never target-complete-minimal. -/
-theorem not_route8Entry_of_avoids {object : FiniteObject.{u}}
-    {support : Finset object.Vertex} {threshold : Nat} {LengthOK : Nat → Prop}
-    {receiver load : object.Vertex}
-    (avoids : ¬ HasCycleWithLength LengthOK object)
-    (receiverMem : receiver ∈ object.receivers support threshold)
-    (loadRouted : load ∈ object.routedLoads support threshold receiver) :
-    ¬ Route8Entry object support threshold LengthOK receiver load := by
-  rintro ⟨_basin, _selected, minimal⟩
-  exact not_targetCompleteMinimal_of_avoids avoids receiverMem loadRouted
-    minimal
+    (loadRouted : load ∈ object.routedLoads support threshold receiver)
+    (complete : TraceComplete object support threshold receiver load basin)
+    (noDefect : ¬ TraceLocalTargetDefect object support threshold LengthOK
+      receiver load basin)
+    (keep remove :
+      Strategy.InterfaceReplacement.SupportAtom.PieceInternal object basin)
+    (different : keep ≠ remove) :
+    ∃ common, object.IsCommonNeighbor keep.1 remove.1 common := by
+  by_contra none
+  push_neg at none
+  exact noDefect (traceLocalTargetDefect_of_foldPair two baseline avoids minimal
+    receiverMem loadRouted complete keep remove different none)
 
 /-- **Target-complete-minimality from the branch's refutations**: the selected
 basin is trace-complete, and each of the four failure alternatives is refuted

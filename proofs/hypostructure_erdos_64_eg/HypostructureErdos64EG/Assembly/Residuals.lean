@@ -1557,10 +1557,530 @@ theorem pairConditionalFactorizationReturn
     (history.get (K .pairOverlapSystem)).down,
     (history.get (K .pairConditionalFactorizationResidual)).down⟩
 
-/- Node `[186]` (the route-8 joint balance) returns no residual: node `[123]`'s
-failed-rate arm is empty at G (G repair, R3; `selectedRouteEightDescent`,
-`K .route8UnifiedEmptyAtG`), so no ledger reaches `[181]`, `[183]`--`[186]`, and
-the residual `Route8JointBalanceOutcome` is removed from the root result. -/
+/-- **Node `[186]`** (thm:main (v), tex 364-368): the visible-entry route-8
+residual after [181], [183]-[185], with the joint balances of lem:typeA-
+unified-joint-balance.  The explicit conjunction of every fact on its
+maximal ledger (107 common facts). -/
+abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .selection selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cubicBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .minDegreeBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .returnAvoidance selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .noProperBaseline selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .slackIndependent selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .tightEndpoint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleRankConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .degreeProfileFibres selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .targetCompleteContextUniversality selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .replacementExclusion selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .uncompressible selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .windowPresent selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .maximalPacking selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .localAlgebra selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .everyWitnessSpectrumSplit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .packingOrderBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .noSuppressionChordViolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .twoSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .crossSwitchFamily selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreSplitForced selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameVertexSwitchForcedPath selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .specWitnessStructure selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .remainderDeficiencyBelowCut selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .windowCutCapacity selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .primitiveCarrierCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .singleBoundaryShape selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .neighbourhoodPairCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .starCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .meetingCycleConstraint selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreePairSum selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .vertexDeletionComponents selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cyclesThroughVertex selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cutVertexBlockPaths selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cycleDoubleCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .threeRouteFan selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .threeRouteChain selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .windowPositionStubs selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .windowAttachmentGap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .portEndDegree selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .hubLinkStructure selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .hubClassCounts selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .slotRelation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .closedClasses selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .hubTwoHopLinks selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .slotLinear selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .remainderPathBounds selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .windowFreeGeometry selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .inducedPathAttachment selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .densityExcess selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .remainderSlack selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .hubWindowBudget selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .windowHubBounds selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .cubicNeighbourSupply selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .hubCountBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .lowEdgeParity selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .bigHubBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .bigHubVShapes selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highSurplusBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .hubLengthThreePairs selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .surplusDartIdentity selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highDegreeCountBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .admissibleQuotientsLabelInjective selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .surplusAtOrBelow selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sparseSurplusSurvivor selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .barrierEnumeration selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .windowPackageSeparated selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .skeletonDominates selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .hotColdPartition selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .barrierCap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldHotEntropyCap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldMass selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldAmbientCubic selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldStubExcess selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldAmbientCubicStubExcess selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldSelectedBranchExcess selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .remainderNormalized selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .boundaryDemand selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .stubSupply selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .wedgeSupply selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .curvatureTargetRank selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .exactResponseProfile selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .targetRankCircuit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .curvatureFullRank selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .forcedCurvatureCost selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .largeBudgetResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .netDeficiencyCap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8Rate selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .bridgeless selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldReturnCorridors selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldCorridorState selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldFirstFailureOccurrence selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldFailureCycle selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldFailureCompression selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldHandoffTransfer selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .netChargeLocalization selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .typeBAbsorbedCharge selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .highCentreNormalForm selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameCenterOpenPortCompatibility selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .triangularShoulderCompletion selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .triangularPortReturn selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8BasinBurden selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8CarrierCore selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .typeBBridgeMass selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .typeBBridgeSublinear selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8UnifiedNegative selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .typeAExclusion selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .typeBBridgeReduction selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8PiecesClassified selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8ExtractedEntryCensus selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .typeBSublinearLedger selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8UnifiedDeficit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8QuotientFree selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8UnifiedEntryCensus selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8PeelingDescent selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8StageRateFailed selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8DemandLedger selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8DemandAbsorption selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8DemandUnitCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8OpenBoundarySaturated selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8WindowBlockers selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .windowShadowHitCycle selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .windowShadowHitExcluded selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8UnpaidTwoCarrier selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8UnpaidExitFourResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8UnifiedVisibleResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8UnifiedVisibleOverload selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8JointBalance selected.object
+
+/-- The return of `Route8JointBalanceOutcome`: one `get` per fact of
+its maximal ledger. -/
+theorem route8JointBalanceReturn
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .windowPresent) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
+    [FactKeys.Has (K .packingOrderBound) known]
+    [FactKeys.Has (K .noSuppressionChordViolation) known]
+    [FactKeys.Has (K .twoSwitchForcedPath) known]
+    [FactKeys.Has (K .crossSwitchFamily) known]
+    [FactKeys.Has (K .highCentreSplitForced) known]
+    [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
+    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
+    [FactKeys.Has (K .windowCutCapacity) known]
+    [FactKeys.Has (K .primitiveCarrierCount) known]
+    [FactKeys.Has (K .singleBoundaryShape) known]
+    [FactKeys.Has (K .neighbourhoodPairCount) known]
+    [FactKeys.Has (K .starCycleConstraint) known]
+    [FactKeys.Has (K .meetingCycleConstraint) known]
+    [FactKeys.Has (K .highDegreePairSum) known]
+    [FactKeys.Has (K .vertexDeletionComponents) known]
+    [FactKeys.Has (K .cyclesThroughVertex) known]
+    [FactKeys.Has (K .cutVertexBlockPaths) known]
+    [FactKeys.Has (K .cycleDoubleCount) known]
+    [FactKeys.Has (K .threeRouteFan) known]
+    [FactKeys.Has (K .threeRouteChain) known]
+    [FactKeys.Has (K .windowPositionStubs) known]
+    [FactKeys.Has (K .windowAttachmentGap) known]
+    [FactKeys.Has (K .portEndDegree) known]
+    [FactKeys.Has (K .hubLinkStructure) known]
+    [FactKeys.Has (K .hubClassCounts) known]
+    [FactKeys.Has (K .slotRelation) known]
+    [FactKeys.Has (K .closedClasses) known]
+    [FactKeys.Has (K .hubTwoHopLinks) known]
+    [FactKeys.Has (K .slotLinear) known]
+    [FactKeys.Has (K .remainderPathBounds) known]
+    [FactKeys.Has (K .windowFreeGeometry) known]
+    [FactKeys.Has (K .inducedPathAttachment) known]
+    [FactKeys.Has (K .densityExcess) known]
+    [FactKeys.Has (K .remainderSlack) known]
+    [FactKeys.Has (K .hubWindowBudget) known]
+    [FactKeys.Has (K .windowHubBounds) known]
+    [FactKeys.Has (K .cubicNeighbourSupply) known]
+    [FactKeys.Has (K .hubCountBound) known]
+    [FactKeys.Has (K .lowEdgeParity) known]
+    [FactKeys.Has (K .bigHubBound) known]
+    [FactKeys.Has (K .bigHubVShapes) known]
+    [FactKeys.Has (K .highSurplusBound) known]
+    [FactKeys.Has (K .hubLengthThreePairs) known]
+    [FactKeys.Has (K .surplusDartIdentity) known]
+    [FactKeys.Has (K .highDegreeCountBound) known]
+    [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .largeBudgetResidual) known]
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .route8Rate) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .coldReturnCorridors) known]
+    [FactKeys.Has (K .coldCorridorState) known]
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .coldFailureCycle) known]
+    [FactKeys.Has (K .coldFailureCompression) known]
+    [FactKeys.Has (K .coldHandoffTransfer) known]
+    [FactKeys.Has (K .netChargeLocalization) known]
+    [FactKeys.Has (K .typeBAbsorbedCharge) known]
+    [FactKeys.Has (K .highCentreNormalForm) known]
+    [FactKeys.Has (K .sameCenterOpenPortCompatibility) known]
+    [FactKeys.Has (K .triangularShoulderCompletion) known]
+    [FactKeys.Has (K .triangularPortReturn) known]
+    [FactKeys.Has (K .route8BasinBurden) known]
+    [FactKeys.Has (K .route8CarrierCore) known]
+    [FactKeys.Has (K .typeBBridgeMass) known]
+    [FactKeys.Has (K .typeBBridgeSublinear) known]
+    [FactKeys.Has (K .route8UnifiedNegative) known]
+    [FactKeys.Has (K .typeAExclusion) known]
+    [FactKeys.Has (K .typeBBridgeReduction) known]
+    [FactKeys.Has (K .route8PiecesClassified) known]
+    [FactKeys.Has (K .route8ExtractedEntryCensus) known]
+    [FactKeys.Has (K .typeBSublinearLedger) known]
+    [FactKeys.Has (K .route8UnifiedDeficit) known]
+    [FactKeys.Has (K .route8QuotientFree) known]
+    [FactKeys.Has (K .route8UnifiedEntryCensus) known]
+    [FactKeys.Has (K .route8PeelingDescent) known]
+    [FactKeys.Has (K .route8StageRateFailed) known]
+    [FactKeys.Has (K .route8DemandLedger) known]
+    [FactKeys.Has (K .route8DemandAbsorption) known]
+    [FactKeys.Has (K .route8DemandUnitCount) known]
+    [FactKeys.Has (K .route8OpenBoundarySaturated) known]
+    [FactKeys.Has (K .route8WindowBlockers) known]
+    [FactKeys.Has (K .windowShadowHitCycle) known]
+    [FactKeys.Has (K .windowShadowHitExcluded) known]
+    [FactKeys.Has (K .route8UnpaidTwoCarrier) known]
+    [FactKeys.Has (K .route8UnpaidExitFourResidual) known]
+    [FactKeys.Has (K .route8UnifiedVisibleResidual) known]
+    [FactKeys.Has (K .route8UnifiedVisibleOverload) known]
+    [FactKeys.Has (K .route8JointBalance) known] :
+    Route8JointBalanceOutcome selected :=
+  ⟨(history.get (K .selection)).down,
+    (history.get (K .cubicBaseline)).down,
+    (history.get (K .minDegreeBaseline)).down,
+    (history.get (K .returnAvoidance)).down,
+    (history.get (K .noProperBaseline)).down,
+    (history.get (K .slackIndependent)).down,
+    (history.get (K .tightEndpoint)).down,
+    (history.get (K .cycleRankConstraint)).down,
+    (history.get (K .degreeProfileFibres)).down,
+    (history.get (K .targetCompleteContextUniversality)).down,
+    (history.get (K .replacementExclusion)).down,
+    (history.get (K .uncompressible)).down,
+    (history.get (K .windowPresent)).down,
+    (history.get (K .maximalPacking)).down,
+    (history.get (K .localAlgebra)).down,
+    (history.get (K .everyWitnessSpectrumSplit)).down,
+    (history.get (K .packingOrderBound)).down,
+    (history.get (K .noSuppressionChordViolation)).down,
+    (history.get (K .twoSwitchForcedPath)).down,
+    (history.get (K .crossSwitchFamily)).down,
+    (history.get (K .highCentreSplitForced)).down,
+    (history.get (K .sameVertexSwitchForcedPath)).down,
+    (history.get (K .specWitnessStructure)).down,
+    (history.get (K .remainderDeficiencyBelowCut)).down,
+    (history.get (K .windowCutCapacity)).down,
+    (history.get (K .primitiveCarrierCount)).down,
+    (history.get (K .singleBoundaryShape)).down,
+    (history.get (K .neighbourhoodPairCount)).down,
+    (history.get (K .starCycleConstraint)).down,
+    (history.get (K .meetingCycleConstraint)).down,
+    (history.get (K .highDegreePairSum)).down,
+    (history.get (K .vertexDeletionComponents)).down,
+    (history.get (K .cyclesThroughVertex)).down,
+    (history.get (K .cutVertexBlockPaths)).down,
+    (history.get (K .cycleDoubleCount)).down,
+    (history.get (K .threeRouteFan)).down,
+    (history.get (K .threeRouteChain)).down,
+    (history.get (K .windowPositionStubs)).down,
+    (history.get (K .windowAttachmentGap)).down,
+    (history.get (K .portEndDegree)).down,
+    (history.get (K .hubLinkStructure)).down,
+    (history.get (K .hubClassCounts)).down,
+    (history.get (K .slotRelation)).down,
+    (history.get (K .closedClasses)).down,
+    (history.get (K .hubTwoHopLinks)).down,
+    (history.get (K .slotLinear)).down,
+    (history.get (K .remainderPathBounds)).down,
+    (history.get (K .windowFreeGeometry)).down,
+    (history.get (K .inducedPathAttachment)).down,
+    (history.get (K .densityExcess)).down,
+    (history.get (K .remainderSlack)).down,
+    (history.get (K .hubWindowBudget)).down,
+    (history.get (K .windowHubBounds)).down,
+    (history.get (K .cubicNeighbourSupply)).down,
+    (history.get (K .hubCountBound)).down,
+    (history.get (K .lowEdgeParity)).down,
+    (history.get (K .bigHubBound)).down,
+    (history.get (K .bigHubVShapes)).down,
+    (history.get (K .highSurplusBound)).down,
+    (history.get (K .hubLengthThreePairs)).down,
+    (history.get (K .surplusDartIdentity)).down,
+    (history.get (K .highDegreeCountBound)).down,
+    (history.get (K .admissibleQuotientsLabelInjective)).down,
+    (history.get (K .surplusAtOrBelow)).down,
+    (history.get (K .sparseSurplusSurvivor)).down,
+    (history.get (K .barrierEnumeration)).down,
+    (history.get (K .windowPackageSeparated)).down,
+    (history.get (K .skeletonDominates)).down,
+    (history.get (K .hotColdPartition)).down,
+    (history.get (K .barrierCap)).down,
+    (history.get (K .coldHotEntropyCap)).down,
+    (history.get (K .coldMass)).down,
+    (history.get (K .coldAmbientCubic)).down,
+    (history.get (K .coldStubExcess)).down,
+    (history.get (K .coldAmbientCubicStubExcess)).down,
+    (history.get (K .coldSelectedBranchExcess)).down,
+    (history.get (K .remainderNormalized)).down,
+    (history.get (K .boundaryDemand)).down,
+    (history.get (K .stubSupply)).down,
+    (history.get (K .wedgeSupply)).down,
+    (history.get (K .curvatureTargetRank)).down,
+    (history.get (K .exactResponseProfile)).down,
+    (history.get (K .targetRankCircuit)).down,
+    (history.get (K .curvatureFullRank)).down,
+    (history.get (K .forcedCurvatureCost)).down,
+    (history.get (K .largeBudgetResidual)).down,
+    (history.get (K .netDeficiencyCap)).down,
+    (history.get (K .route8Rate)).down,
+    (history.get (K .bridgeless)).down,
+    (history.get (K .coldReturnCorridors)).down,
+    (history.get (K .coldCorridorState)).down,
+    (history.get (K .coldFirstFailureOccurrence)).down,
+    (history.get (K .coldFailureCycle)).down,
+    (history.get (K .coldFailureCompression)).down,
+    (history.get (K .coldHandoffTransfer)).down,
+    (history.get (K .netChargeLocalization)).down,
+    (history.get (K .typeBAbsorbedCharge)).down,
+    (history.get (K .highCentreNormalForm)).down,
+    (history.get (K .sameCenterOpenPortCompatibility)).down,
+    (history.get (K .triangularShoulderCompletion)).down,
+    (history.get (K .triangularPortReturn)).down,
+    (history.get (K .route8BasinBurden)).down,
+    (history.get (K .route8CarrierCore)).down,
+    (history.get (K .typeBBridgeMass)).down,
+    (history.get (K .typeBBridgeSublinear)).down,
+    (history.get (K .route8UnifiedNegative)).down,
+    (history.get (K .typeAExclusion)).down,
+    (history.get (K .typeBBridgeReduction)).down,
+    (history.get (K .route8PiecesClassified)).down,
+    (history.get (K .route8ExtractedEntryCensus)).down,
+    (history.get (K .typeBSublinearLedger)).down,
+    (history.get (K .route8UnifiedDeficit)).down,
+    (history.get (K .route8QuotientFree)).down,
+    (history.get (K .route8UnifiedEntryCensus)).down,
+    (history.get (K .route8PeelingDescent)).down,
+    (history.get (K .route8StageRateFailed)).down,
+    (history.get (K .route8DemandLedger)).down,
+    (history.get (K .route8DemandAbsorption)).down,
+    (history.get (K .route8DemandUnitCount)).down,
+    (history.get (K .route8OpenBoundarySaturated)).down,
+    (history.get (K .route8WindowBlockers)).down,
+    (history.get (K .windowShadowHitCycle)).down,
+    (history.get (K .windowShadowHitExcluded)).down,
+    (history.get (K .route8UnpaidTwoCarrier)).down,
+    (history.get (K .route8UnpaidExitFourResidual)).down,
+    (history.get (K .route8UnifiedVisibleResidual)).down,
+    (history.get (K .route8UnifiedVisibleOverload)).down,
+    (history.get (K .route8JointBalance)).down⟩
 
 /-- **Node `[187] ([179]/[180] Type B entry)`** (thm:main (vi), tex 369-378): a
 Type B entry produced by the [179] or [180] pair-system outcome, with its

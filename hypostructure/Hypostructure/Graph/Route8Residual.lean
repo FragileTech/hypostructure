@@ -6,6 +6,7 @@ import Hypostructure.Graph.MinimumDegreeCycleTarget
 import Hypostructure.Graph.ExitFourPeeling
 import Hypostructure.Graph.InternalVertexFold
 import Hypostructure.Graph.BoundaryOverlap
+import Hypostructure.Graph.GConstructedPiece
 
 /-!
 # Route-8 presented entries at one object
@@ -210,6 +211,17 @@ structure PresentedEntry (object : FiniteObject.{u}) where
   /-- The one outside context the readings are glued into: G's own surroundings
   of the basin, `G − B_u` (`SupportAtom.outside`).  No other context is read. -/
   actual : OutsideContext interface
+  /-- The realizations a restricted reading is tested on: for a graph-owned
+  entry, the pieces constructed from G at the basin (`GConstructedPiece`). -/
+  Realization : Type u
+  /-- The boundaried piece a realization denotes. -/
+  realize : Realization → BoundaryPiece interface
+  /-- `Realizes R ρ`: `realize ρ` lies in the reading's boundary-degree fibre and
+  carries every coordinate of `R` exactly. -/
+  Realizes : Finset Coordinate → Realization → Prop
+  /-- A realization of a larger retained set realizes every smaller one. -/
+  realizes_anti : ∀ {R S : Finset Coordinate} (ρ : Realization),
+    R ⊆ S → Realizes S ρ → Realizes R ρ
 
 namespace PresentedEntry
 
@@ -379,6 +391,10 @@ noncomputable def toEntry (Target : FiniteObject.{u} → Prop) :
       exact crossingCarriers_subset_cutEdges event.walk
   state := presented.state
   actual := presented.actual
+  Realization := presented.Realization
+  realize := presented.realize
+  Realizes := presented.Realizes
+  realizes_anti := presented.realizes_anti
 
 end PresentedEntry
 
@@ -2097,6 +2113,163 @@ noncomputable def foldQuotient (object : FiniteObject.{u})
 
 end PresentedEntry
 
+namespace TraceBasin
+
+open TraceCoordinateSystem
+
+/-- **The fold changes no label-to-label incidence.**  The two extra disjuncts
+of `BoundaryPiece.identifyInternal_adj` ask a boundary label to decode to an
+internal vertex. -/
+theorem identifyInternal_labelAdj_iff {boundary : Boundary.{u}}
+    (piece : BoundaryPiece boundary) (keep remove : piece.Internal)
+    (different : keep ≠ remove) (left right : boundary.Vertex) :
+    (piece.identifyInternal keep remove different).graph.Adj (.inl left)
+        (.inl right) ↔
+      piece.graph.Adj (.inl left) (.inl right) := by
+  rw [BoundaryPiece.identifyInternal_adj]
+  constructor
+  · rintro ⟨_, old | ⟨decoded, _⟩ | ⟨decoded, _⟩⟩
+    · exact old
+    · exact absurd decoded (by simp [BoundaryPiece.foldDecode])
+    · exact absurd decoded (by simp [BoundaryPiece.foldDecode])
+  · intro adjacent
+    exact ⟨fun equality => adjacent.ne (congrArg Sum.inl (Sum.inl.inj equality)),
+      Or.inl adjacent⟩
+
+/-- The vertices of the basin's boundaried piece (its labels and its interior). -/
+abbrev BasinVertex (object : FiniteObject.{u}) (basin : Finset object.Vertex) :=
+  (Strategy.InterfaceReplacement.SupportAtom.boundary object basin).Vertex ⊕
+    (Strategy.InterfaceReplacement.SupportAtom.piece object basin).Internal
+
+/-- **The value of one entry of a boundaried response state**: on the declared
+support of the coordinate, which placed entries coincide and which are
+incident.  Two states carry the same entry exactly when these readings agree. -/
+abbrev EntryReading (object : FiniteObject.{u}) (basin : Finset object.Vertex) :=
+  BasinVertex object basin → BasinVertex object basin → Prop × Prop
+
+/-- The entry of `coordinate` carried by a state `realization` through a
+label-fixing placement `place` of the basin's entries. -/
+def entryReading (object : FiniteObject.{u})
+    (support basin : Finset object.Vertex) (threshold : Nat)
+    (receiver load : object.Vertex)
+    {realization : BoundaryPiece
+      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin)}
+    (place : BasinVertex object basin →
+      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin).Vertex ⊕
+        realization.Internal)
+    (coordinate : PresentedEntry.TraceCoordinate object support) :
+    EntryReading object basin :=
+  fun first second =>
+    let declared := fun vertex : BasinVertex object basin =>
+      Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin vertex ∈
+        PresentedEntry.traceDeclaredSupport object support threshold receiver load
+          coordinate
+    (declared first ∧ declared second ∧ place first = place second,
+      declared first ∧ declared second ∧
+        realization.graph.Adj (place first) (place second))
+
+/-- **A response quotient of `\rho_u(B_u)`** (`def:typeA-trace-basin`, tex
+10753-10755): *"obtained by identifying or forgetting entries of the finite
+coordinate family `\mathcal R_u(B_u)` while preserving the boundary degree
+profile"*.  Each declared coordinate is either kept (`retained`: its entry is
+kept exactly) or not; the entry of a coordinate that is not kept is read only up
+to the equivalence `identify` of the quotient map on its values -- identifying
+entries -- and forgetting it is the total identification (`forgetting`). -/
+structure ResponseQuotient (object : FiniteObject.{u})
+    (support basin : Finset object.Vertex) where
+  retained : Finset (PresentedEntry.TraceCoordinate object support)
+  identify : PresentedEntry.TraceCoordinate object support →
+    EntryReading object basin → EntryReading object basin → Prop
+  equivalence : ∀ coordinate, Equivalence (identify coordinate)
+
+/-- The quotient that keeps `retained` exactly and forgets every other entry. -/
+def ResponseQuotient.forgetting {object : FiniteObject.{u}}
+    {support basin : Finset object.Vertex}
+    (retained : Finset (PresentedEntry.TraceCoordinate object support)) :
+    ResponseQuotient object support basin where
+  retained := retained
+  identify := fun _ _ _ => True
+  equivalence := fun _ => ⟨fun _ => trivial, fun _ => trivial, fun _ _ => trivial⟩
+
+/-- **A realization of a response quotient of `\rho_u(B_u)`**
+(`def:typeA-trace-basin`, tex 10758-10760): *"a boundaried response state with
+the same boundary degree profile whose image under the quotient map is the given
+quotient"*.
+
+`R` lies in the basin's boundary-degree fibre, and, through one label-fixing
+placement `place` of the basin's entries into `R`: `R` keeps the labelled
+boundary itself (every label-to-label incidence of `\rho_u(B_u)`, which every
+restriction retains), `R` carries every *retained*
+entry exactly as `\rho_u(B_u)` carries it (`place` injective on that declared
+support, preserving and reflecting its incidences), and every other declared
+entry of `R` is identified by the quotient map with that of `\rho_u(B_u)`
+(`quotient.identify`, true for a forgotten entry).  The entry of a declared
+coordinate is the labelled state on its declared support (the port and channel
+of a return, the window of a `P_{13}` label, the wedge of an obstruction, the
+boundary vertex of a degree entry, the path `T_u` of the trace incidence). -/
+def QuotientRealization (object : FiniteObject.{u})
+    (support basin : Finset object.Vertex) (threshold : Nat)
+    (receiver load : object.Vertex)
+    (quotient : ResponseQuotient object support basin)
+    (realization : BoundaryPiece
+      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin)) :
+    Prop :=
+  realization.boundaryDegreeProfile =
+      (Strategy.InterfaceReplacement.SupportAtom.piece object
+        basin).boundaryDegreeProfile ∧
+    -- every restriction keeps the labelled boundary itself
+    (∀ left right : (Strategy.InterfaceReplacement.SupportAtom.boundary object
+        basin).Vertex,
+      realization.graph.Adj (.inl left) (.inl right) ↔
+        (Strategy.InterfaceReplacement.SupportAtom.piece object basin).graph.Adj
+          (.inl left) (.inl right)) ∧
+    ∃ place : BasinVertex object basin →
+          (Strategy.InterfaceReplacement.SupportAtom.boundary object
+              basin).Vertex ⊕ realization.Internal,
+      (∀ label, place (.inl label) = .inl label) ∧
+        (∀ coordinate ∈ quotient.retained, ∀ first second,
+          Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
+              first ∈
+            PresentedEntry.traceDeclaredSupport object support threshold receiver
+              load coordinate →
+          Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
+              second ∈
+            PresentedEntry.traceDeclaredSupport object support threshold receiver
+              load coordinate →
+          (place first = place second → first = second) ∧
+            (realization.graph.Adj (place first) (place second) ↔
+              (Strategy.InterfaceReplacement.SupportAtom.piece object
+                basin).graph.Adj first second)) ∧
+        ∀ coordinate ∈ PresentedEntry.traceCoordinates object support threshold
+            receiver load,
+          coordinate ∉ quotient.retained →
+          quotient.identify coordinate
+            (entryReading object support basin threshold receiver load place
+              coordinate)
+            (entryReading object support basin threshold receiver load
+              (realization := Strategy.InterfaceReplacement.SupportAtom.piece
+                object basin) id coordinate)
+
+/-- **Carrying more retained coordinates is carrying fewer**: a realization of a
+forgetting quotient realizes every forgetting quotient that retains less. -/
+theorem quotientRealization_forgetting_anti (object : FiniteObject.{u})
+    (support basin : Finset object.Vertex) (threshold : Nat)
+    (receiver load : object.Vertex)
+    {smaller larger : Finset (PresentedEntry.TraceCoordinate object support)}
+    (subset : smaller ⊆ larger)
+    {realization : BoundaryPiece
+      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin)}
+    (realizes : QuotientRealization object support basin threshold receiver load
+      (ResponseQuotient.forgetting larger) realization) :
+    QuotientRealization object support basin threshold receiver load
+      (ResponseQuotient.forgetting smaller) realization := by
+  obtain ⟨profile, labelAdj, place, labels, exact, _identified⟩ := realizes
+  exact ⟨profile, labelAdj, place, labels,
+    fun coordinate member => exact coordinate (subset member),
+    fun _ _ _ => trivial⟩
+
+end TraceBasin
+
 namespace PresentedEntry
 
 /-- The graph-owned presented entry assigned to a selected trace basin.  The
@@ -2121,6 +2294,14 @@ noncomputable def ofTraceBasin (object : FiniteObject.{u})
     retainedReading object support basin threshold LengthOK
       (retainedBaseCoordinates object support retained)
   actual := Strategy.InterfaceReplacement.SupportAtom.outside object basin
+  Realization := GConstructedPiece object basin
+  realize := GConstructedPiece.toPiece
+  Realizes := fun retained piece =>
+    TraceBasin.QuotientRealization object support basin threshold receiver load
+      (TraceBasin.ResponseQuotient.forgetting retained) piece.toPiece
+  realizes_anti := fun piece subset realizes =>
+    TraceBasin.quotientRealization_forgetting_anti object support basin threshold
+      receiver load subset realizes
 
 /-- **Every boundary incidence of `X` is recorded by a declared coordinate.**
 
@@ -2329,31 +2510,6 @@ theorem not_target_glue_retainedReading_outside {object : FiniteObject.{u}}
     (hasCycleWithLength_glue_of_retainedReading object support basin threshold
       LengthOK retained accepted))
 
-/-- **Every carrier set of a graph-owned route-8 entry is complete at a
-target-avoiding G** (`Entry.Complete`, read in `G − B_u`): every restriction and
-the full reading are target-free there. -/
-theorem ofTraceBasin_complete_of_avoids {object : FiniteObject.{u}}
-    {support basin : Finset object.Vertex} {threshold : Nat}
-    {LengthOK : Nat → Prop} {receiver load : object.Vertex}
-    (avoids : ¬ HasCycleWithLength LengthOK object)
-    (D : Finset (Sym2 object.Vertex)) :
-    ((ofTraceBasin object support basin threshold LengthOK receiver
-      load).toEntry (HasCycleWithLength LengthOK)).Complete D := by
-  unfold Entry.Complete Entry.restriction Entry.full
-  exact iff_of_false (not_target_glue_retainedReading_outside avoids _)
-    (not_target_glue_retainedReading_outside avoids _)
-
-/-- **Lean improvement: route-8 carrier core empty at G.**  With completeness
-read in G's own surroundings `G − B_u`, the empty carrier set is complete at a
-target-avoiding G, so the canonical essential core is empty and `α(ξ) = 0`. -/
-theorem ofTraceBasin_alpha_eq_zero {object : FiniteObject.{u}}
-    {support basin : Finset object.Vertex} {threshold : Nat}
-    {LengthOK : Nat → Prop} {receiver load : object.Vertex}
-    (avoids : ¬ HasCycleWithLength LengthOK object) :
-    ((ofTraceBasin object support basin threshold LengthOK receiver
-      load).toEntry (HasCycleWithLength LengthOK)).alpha = 0 :=
-  Entry.alpha_eq_zero_of_complete_empty _ (ofTraceBasin_complete_of_avoids avoids ∅)
-
 /-- **A vertex-kept reading of `Z`, glued into `G − Z`, is a subgraph of G**:
 `retainedBasinPiece object Z R` keeps only incidences of G's piece at `Z`, so
 its glue with G's own surroundings carries no target cycle that G avoids. -/
@@ -2524,131 +2680,6 @@ namespace TraceBasin
 
 open TraceCoordinateSystem
 
-/-- **The fold changes no label-to-label incidence.**  The two extra disjuncts
-of `BoundaryPiece.identifyInternal_adj` ask a boundary label to decode to an
-internal vertex. -/
-theorem identifyInternal_labelAdj_iff {boundary : Boundary.{u}}
-    (piece : BoundaryPiece boundary) (keep remove : piece.Internal)
-    (different : keep ≠ remove) (left right : boundary.Vertex) :
-    (piece.identifyInternal keep remove different).graph.Adj (.inl left)
-        (.inl right) ↔
-      piece.graph.Adj (.inl left) (.inl right) := by
-  rw [BoundaryPiece.identifyInternal_adj]
-  constructor
-  · rintro ⟨_, old | ⟨decoded, _⟩ | ⟨decoded, _⟩⟩
-    · exact old
-    · exact absurd decoded (by simp [BoundaryPiece.foldDecode])
-    · exact absurd decoded (by simp [BoundaryPiece.foldDecode])
-  · intro adjacent
-    exact ⟨fun equality => adjacent.ne (congrArg Sum.inl (Sum.inl.inj equality)),
-      Or.inl adjacent⟩
-
-/-- The vertices of the basin's boundaried piece (its labels and its interior). -/
-abbrev BasinVertex (object : FiniteObject.{u}) (basin : Finset object.Vertex) :=
-  (Strategy.InterfaceReplacement.SupportAtom.boundary object basin).Vertex ⊕
-    (Strategy.InterfaceReplacement.SupportAtom.piece object basin).Internal
-
-/-- **The value of one entry of a boundaried response state**: on the declared
-support of the coordinate, which placed entries coincide and which are
-incident.  Two states carry the same entry exactly when these readings agree. -/
-abbrev EntryReading (object : FiniteObject.{u}) (basin : Finset object.Vertex) :=
-  BasinVertex object basin → BasinVertex object basin → Prop × Prop
-
-/-- The entry of `coordinate` carried by a state `realization` through a
-label-fixing placement `place` of the basin's entries. -/
-def entryReading (object : FiniteObject.{u})
-    (support basin : Finset object.Vertex) (threshold : Nat)
-    (receiver load : object.Vertex)
-    {realization : BoundaryPiece
-      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin)}
-    (place : BasinVertex object basin →
-      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin).Vertex ⊕
-        realization.Internal)
-    (coordinate : PresentedEntry.TraceCoordinate object support) :
-    EntryReading object basin :=
-  fun first second =>
-    let declared := fun vertex : BasinVertex object basin =>
-      Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin vertex ∈
-        PresentedEntry.traceDeclaredSupport object support threshold receiver load
-          coordinate
-    (declared first ∧ declared second ∧ place first = place second,
-      declared first ∧ declared second ∧
-        realization.graph.Adj (place first) (place second))
-
-/-- **A response quotient of `\rho_u(B_u)`** (`def:typeA-trace-basin`, tex
-10753-10755): *"obtained by identifying or forgetting entries of the finite
-coordinate family `\mathcal R_u(B_u)` while preserving the boundary degree
-profile"*.  Each declared coordinate is either kept (`retained`: its entry is
-kept exactly) or not; the entry of a coordinate that is not kept is read only up
-to the equivalence `identify` of the quotient map on its values -- identifying
-entries -- and forgetting it is the total identification (`forgetting`). -/
-structure ResponseQuotient (object : FiniteObject.{u})
-    (support basin : Finset object.Vertex) where
-  retained : Finset (PresentedEntry.TraceCoordinate object support)
-  identify : PresentedEntry.TraceCoordinate object support →
-    EntryReading object basin → EntryReading object basin → Prop
-  equivalence : ∀ coordinate, Equivalence (identify coordinate)
-
-/-- The quotient that keeps `retained` exactly and forgets every other entry. -/
-def ResponseQuotient.forgetting {object : FiniteObject.{u}}
-    {support basin : Finset object.Vertex}
-    (retained : Finset (PresentedEntry.TraceCoordinate object support)) :
-    ResponseQuotient object support basin where
-  retained := retained
-  identify := fun _ _ _ => True
-  equivalence := fun _ => ⟨fun _ => trivial, fun _ => trivial, fun _ _ => trivial⟩
-
-/-- **A realization of a response quotient of `\rho_u(B_u)`**
-(`def:typeA-trace-basin`, tex 10758-10760): *"a boundaried response state with
-the same boundary degree profile whose image under the quotient map is the given
-quotient"*.
-
-`R` lies in the basin's boundary-degree fibre, and, through one label-fixing
-placement `place` of the basin's entries into `R`: `R` carries every *retained*
-entry exactly as `\rho_u(B_u)` carries it (`place` injective on that declared
-support, preserving and reflecting its incidences), and every other declared
-entry of `R` is identified by the quotient map with that of `\rho_u(B_u)`
-(`quotient.identify`, true for a forgotten entry).  The entry of a declared
-coordinate is the labelled state on its declared support (the port and channel
-of a return, the window of a `P_{13}` label, the wedge of an obstruction, the
-boundary vertex of a degree entry, the path `T_u` of the trace incidence). -/
-def QuotientRealization (object : FiniteObject.{u})
-    (support basin : Finset object.Vertex) (threshold : Nat)
-    (receiver load : object.Vertex)
-    (quotient : ResponseQuotient object support basin)
-    (realization : BoundaryPiece
-      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin)) :
-    Prop :=
-  realization.boundaryDegreeProfile =
-      (Strategy.InterfaceReplacement.SupportAtom.piece object
-        basin).boundaryDegreeProfile ∧
-    ∃ place : BasinVertex object basin →
-          (Strategy.InterfaceReplacement.SupportAtom.boundary object
-              basin).Vertex ⊕ realization.Internal,
-      (∀ label, place (.inl label) = .inl label) ∧
-        (∀ coordinate ∈ quotient.retained, ∀ first second,
-          Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
-              first ∈
-            PresentedEntry.traceDeclaredSupport object support threshold receiver
-              load coordinate →
-          Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
-              second ∈
-            PresentedEntry.traceDeclaredSupport object support threshold receiver
-              load coordinate →
-          (place first = place second → first = second) ∧
-            (realization.graph.Adj (place first) (place second) ↔
-              (Strategy.InterfaceReplacement.SupportAtom.piece object
-                basin).graph.Adj first second)) ∧
-        ∀ coordinate ∈ PresentedEntry.traceCoordinates object support threshold
-            receiver load,
-          coordinate ∉ quotient.retained →
-          quotient.identify coordinate
-            (entryReading object support basin threshold receiver load place
-              coordinate)
-            (entryReading object support basin threshold receiver load
-              (realization := Strategy.InterfaceReplacement.SupportAtom.piece
-                object basin) id coordinate)
-
 /-- **An outside `∂B_u`-context compatible with the boundary profile**
 (`def:typeA-trace-basin`, tex 10749-10750): glued to `\rho_u(B_u)` (hence to
 every state of its boundary-degree fibre) it keeps every boundary label at the
@@ -2670,7 +2701,7 @@ theorem quotientRealization_self (object : FiniteObject.{u})
     (quotient : ResponseQuotient object support basin) :
     QuotientRealization object support basin threshold receiver load quotient
       (Strategy.InterfaceReplacement.SupportAtom.piece object basin) :=
-  ⟨rfl, id, fun _ => rfl,
+  ⟨rfl, fun _ _ => Iff.rfl, id, fun _ => rfl,
     fun _ _ _ _ _ _ => ⟨id, Iff.rfl⟩,
     fun coordinate _ _ => (quotient.equivalence coordinate).refl _⟩
 
@@ -2750,6 +2781,7 @@ theorem quotientRealization_identifyInternal (object : FiniteObject.{u})
   let piece := Strategy.InterfaceReplacement.SupportAtom.piece object basin
   refine ⟨BoundaryPiece.boundaryDegreeProfile_identifyInternal_of_noCommonLabel _
       keep remove different noCommonLabel,
+    identifyInternal_labelAdj_iff piece keep remove different,
     PresentedEntry.foldMap piece keep remove different, fun label => ?_, ?_,
     fun _ _ _ => trivial⟩
   · rw [PresentedEntry.foldMap_of_ne _ _ _ _ (Sum.inl_ne_inr)]
@@ -2807,6 +2839,33 @@ theorem noCommon_piece_of_noCommon (object : FiniteObject.{u})
   exact noCommon
     (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin x)
     ⟨common.1, common.2⟩
+
+/-- **A fold of the basin realizes every forgetting quotient whose retained
+coordinates avoid the folded pair.**  The fold is a piece constructed from G at
+`B_u` (`GConstructedPiece.fold`): two interior basin vertices with no common
+neighbour in G, identified. -/
+theorem quotientRealization_fold (object : FiniteObject.{u})
+    (support basin : Finset object.Vertex) (threshold : Nat)
+    (receiver load : object.Vertex)
+    (retained : Finset (PresentedEntry.TraceCoordinate object support))
+    (keep remove :
+      Strategy.InterfaceReplacement.SupportAtom.PieceInternal object basin)
+    (different : keep ≠ remove)
+    (noCommon : ∀ common, ¬ object.IsCommonNeighbor keep.1 remove.1 common)
+    (undeclared : ∀ coordinate ∈ retained,
+      keep.1 ∉ PresentedEntry.traceDeclaredSupport object support threshold
+          receiver load coordinate ∧
+        remove.1 ∉ PresentedEntry.traceDeclaredSupport object support threshold
+          receiver load coordinate) :
+    QuotientRealization object support basin threshold receiver load
+      (ResponseQuotient.forgetting retained)
+      (GConstructedPiece.fold keep remove different noCommon).toPiece :=
+  quotientRealization_identifyInternal object support basin threshold receiver
+    load retained keep remove different
+    (fun label common =>
+      noCommon_piece_of_noCommon object basin keep remove noCommon (.inl label)
+        common)
+    undeclared
 
 /-- **Alternative (b) of `def:typeA-trace-basin`.**
 
@@ -2922,51 +2981,18 @@ def TraceResponseQuotient (object : FiniteObject.{u})
                 PresentedEntry.traceDeclaredSupport object support threshold receiver
                   load changed,
               left ∈ basin ∧ right ∈ basin ∧ object.graph.Adj left right)) ∧
-    -- G-form of target-completeness: the realizations that are part of G are
-    -- G's own readings of `B_u` (`retainedReading` at a retained base set),
-    -- and the only outside context that is part of G is `G − B_u`.
-    (∀ reading : Finset (TraceCoordinateSystem.Base.Coordinate object support),
+    -- G-form of target-completeness: the realizations are the pieces
+    -- constructed from G at `B_u` (`GConstructedPiece`), and the only outside
+    -- context that is part of G is `G − B_u`.
+    (∀ piece : GConstructedPiece object basin,
       QuotientRealization object support basin threshold receiver load quotient
-          (PresentedEntry.retainedReading object support basin threshold LengthOK
-            reading) →
+          piece.toPiece →
         (declaredAlgebra object support basin threshold LengthOK receiver load
-            (PresentedEntry.retainedReading object support basin threshold
-              LengthOK reading)
+            piece.toPiece
             (Strategy.InterfaceReplacement.SupportAtom.outside object basin) ↔
           declaredAlgebra object support basin threshold LengthOK receiver load
             (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
             (Strategy.InterfaceReplacement.SupportAtom.outside object basin)))
-
-/-- **At a target-avoiding G the completeness clause of alternative (b) is
-decided true** (G-form): a declared-algebra event needs an accepted cycle of the
-glue, and G's readings of `B_u` glued into `G − B_u`, like G's own piece, carry
-none. -/
-theorem traceResponseQuotient_complete_of_avoids {object : FiniteObject.{u}}
-    {support basin : Finset object.Vertex} {threshold : Nat}
-    {LengthOK : Nat → Prop} {receiver load : object.Vertex}
-    (avoids : ¬ HasCycleWithLength LengthOK object)
-    (quotient : ResponseQuotient object support basin) :
-    ∀ reading : Finset (TraceCoordinateSystem.Base.Coordinate object support),
-      QuotientRealization object support basin threshold receiver load quotient
-          (PresentedEntry.retainedReading object support basin threshold LengthOK
-            reading) →
-        (declaredAlgebra object support basin threshold LengthOK receiver load
-            (PresentedEntry.retainedReading object support basin threshold
-              LengthOK reading)
-            (Strategy.InterfaceReplacement.SupportAtom.outside object basin) ↔
-          declaredAlgebra object support basin threshold LengthOK receiver load
-            (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
-            (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) := by
-  intro reading _realizes
-  refine iff_of_false ?_ ?_
-  · rintro ⟨_coordinate, _core, _event, _eventEq, _inside, _outside,
-      certificate, _label, _labelMem, _labelVisited⟩
-    exact PresentedEntry.not_target_glue_retainedReading_outside avoids reading
-      ⟨certificate⟩
-  · rintro ⟨_coordinate, _core, _event, _eventEq, _inside, _outside,
-      certificate, _label, _labelMem, _labelVisited⟩
-    exact Strategy.InterfaceReplacement.not_target_glue_piece_outside avoids
-      basin ⟨certificate⟩
 
 /-- **`False` from the all-realizations clause at an identification.**
 
@@ -3231,5 +3257,134 @@ theorem not_declaredFamilyDeterminacy_of_undeclaredFoldPair
 
 end TraceBasin
 
+
+namespace PresentedEntry
+
+/-- **A fold pair of the basin that no coordinate retained by `D` holds makes
+`D` incomplete, at a minimal G.**  The fold (a piece constructed from G at
+`B_u`) realizes the restriction `ρ|_D`, and glued into `G − B_u` it is a
+strictly smaller baseline graph, so it carries a target cycle
+(`GConstructedPiece.response_fold_of_minimal`), while the full reading glued
+there is target-free. -/
+theorem ofTraceBasin_not_complete_of_foldPair {object : FiniteObject.{u}}
+    {support basin : Finset object.Vertex} {threshold : Nat}
+    {LengthOK : Nat → Prop} {receiver load : object.Vertex}
+    (two : 2 ≤ threshold) (baseline : MinimumDegreeAtLeast threshold object)
+    (avoids : ¬ HasCycleWithLength LengthOK object)
+    (minimal : ∀ H : FiniteObject.{u}, H.LexicographicallySmaller object →
+      MinimumDegreeAtLeast threshold H → HasCycleWithLength LengthOK H)
+    (D : Finset (Sym2 object.Vertex))
+    (keep remove :
+      Strategy.InterfaceReplacement.SupportAtom.PieceInternal object basin)
+    (different : keep ≠ remove)
+    (noCommon : ∀ common, ¬ object.IsCommonNeighbor keep.1 remove.1 common)
+    (undeclared : ∀ coordinate ∈ ((ofTraceBasin object support basin threshold
+        LengthOK receiver load).toEntry (HasCycleWithLength LengthOK)).retained D,
+      keep.1 ∉ traceDeclaredSupport object support threshold receiver load
+          coordinate ∧
+        remove.1 ∉ traceDeclaredSupport object support threshold receiver load
+          coordinate) :
+    ¬ ((ofTraceBasin object support basin threshold LengthOK receiver
+      load).toEntry (HasCycleWithLength LengthOK)).Complete D := by
+  intro complete
+  have realizes := TraceBasin.quotientRealization_fold object support basin
+    threshold receiver load _ keep remove different noCommon undeclared
+  have agree := complete (GConstructedPiece.fold keep remove different noCommon)
+    realizes
+  exact not_target_glue_retainedReading_outside avoids _
+    (agree.mp (GConstructedPiece.response_fold_of_minimal two baseline minimal
+      keep remove different noCommon))
+
+/-- **At a boundary-only basin every realization of one restriction realizes
+every other** (`lem:typeA-unified-visible-ownership`: *"the retained piece, and
+therefore its response state, is identical for every retained coordinate
+set"*): the basin has no interior vertex, every declared entry of the basin lies
+on the labelled boundary, and a realization keeps the labelled boundary itself. -/
+theorem ofTraceBasin_realizes_of_cutBoundary {object : FiniteObject.{u}}
+    {support basin : Finset object.Vertex} {threshold : Nat}
+    {LengthOK : Nat → Prop} {receiver load : object.Vertex}
+    (allBoundary : basin ⊆
+      Strategy.InterfaceReplacement.SupportAtom.cutBoundary object basin)
+    {smaller larger : Finset (TraceCoordinate object support)}
+    (piece : GConstructedPiece object basin)
+    (realizes : (ofTraceBasin object support basin threshold LengthOK receiver
+      load).Realizes smaller piece) :
+    (ofTraceBasin object support basin threshold LengthOK receiver
+      load).Realizes larger piece := by
+  obtain ⟨profile, labelAdj, place, labels, _exact, _identified⟩ := realizes
+  have noInterior : ∀ inner :
+      (Strategy.InterfaceReplacement.SupportAtom.piece object basin).Internal,
+      False := fun inner => inner.2.2 (allBoundary inner.2.1)
+  refine ⟨profile, labelAdj, place, labels, ?_, fun _ _ _ => trivial⟩
+  intro coordinate _member first second _firstDeclared _secondDeclared
+  cases first with
+  | inl first =>
+      cases second with
+      | inl second =>
+          have firstEq := labels first
+          have secondEq := labels second
+          refine ⟨fun same => ?_, ?_⟩
+          · erw [firstEq, secondEq] at same
+            exact congrArg Sum.inl (Sum.inl.inj same)
+          · erw [firstEq, secondEq]
+            exact labelAdj first second
+      | inr second => exact (noInterior second).elim
+  | inr first => exact (noInterior first).elim
+
+/-- **A boundary-only basin has `α(ξ) = 0`**: if the declared family determines
+the target, the empty carrier set is complete (its realizations are the full
+reading's, `ofTraceBasin_realizes_of_cutBoundary`); otherwise the core is empty
+by definition (`Entry.alpha_eq_zero_of_not_determined`). -/
+theorem ofTraceBasin_alpha_eq_zero_of_cutBoundary {object : FiniteObject.{u}}
+    {support basin : Finset object.Vertex} {threshold : Nat}
+    {LengthOK : Nat → Prop} {receiver load : object.Vertex}
+    (allBoundary : basin ⊆
+      Strategy.InterfaceReplacement.SupportAtom.cutBoundary object basin) :
+    ((ofTraceBasin object support basin threshold LengthOK receiver
+      load).toEntry (HasCycleWithLength LengthOK)).alpha = 0 := by
+  classical
+  let entry := (ofTraceBasin object support basin threshold LengthOK receiver
+    load).toEntry (HasCycleWithLength LengthOK)
+  by_cases determined : entry.Determined
+  · refine Entry.alpha_eq_zero_of_complete_empty entry ?_
+    intro piece realizes
+    exact determined piece
+      (ofTraceBasin_realizes_of_cutBoundary (LengthOK := LengthOK) allBoundary
+        piece realizes)
+  · exact Entry.alpha_eq_zero_of_not_determined entry determined
+
+/-- **A complete carrier set holds every fold pair of the basin**: some
+coordinate it retains has one of the two folded vertices in its declared
+support.  In particular, when the declared family determines the target
+(`Entry.Determined`) every fold pair is declared, and the essential core holds
+every fold pair. -/
+theorem ofTraceBasin_foldPair_held_of_complete {object : FiniteObject.{u}}
+    {support basin : Finset object.Vertex} {threshold : Nat}
+    {LengthOK : Nat → Prop} {receiver load : object.Vertex}
+    (two : 2 ≤ threshold) (baseline : MinimumDegreeAtLeast threshold object)
+    (avoids : ¬ HasCycleWithLength LengthOK object)
+    (minimal : ∀ H : FiniteObject.{u}, H.LexicographicallySmaller object →
+      MinimumDegreeAtLeast threshold H → HasCycleWithLength LengthOK H)
+    {D : Finset (Sym2 object.Vertex)}
+    (complete : ((ofTraceBasin object support basin threshold LengthOK receiver
+      load).toEntry (HasCycleWithLength LengthOK)).Complete D)
+    (keep remove :
+      Strategy.InterfaceReplacement.SupportAtom.PieceInternal object basin)
+    (different : keep ≠ remove)
+    (noCommon : ∀ common, ¬ object.IsCommonNeighbor keep.1 remove.1 common) :
+    ∃ coordinate ∈ ((ofTraceBasin object support basin threshold LengthOK
+        receiver load).toEntry (HasCycleWithLength LengthOK)).retained D,
+      keep.1 ∈ traceDeclaredSupport object support threshold receiver load
+          coordinate ∨
+        remove.1 ∈ traceDeclaredSupport object support threshold receiver load
+          coordinate := by
+  by_contra absent
+  refine ofTraceBasin_not_complete_of_foldPair two baseline avoids minimal D keep
+    remove different noCommon ?_ complete
+  intro coordinate member
+  exact ⟨fun held => absent ⟨coordinate, member, Or.inl held⟩,
+    fun held => absent ⟨coordinate, member, Or.inr held⟩⟩
+
+end PresentedEntry
 
 end Hypostructure.Graph.Route8
