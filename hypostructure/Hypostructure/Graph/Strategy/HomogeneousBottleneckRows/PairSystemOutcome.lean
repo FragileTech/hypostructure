@@ -168,12 +168,13 @@ obstruction, each fact derived from `K .pairHandoffSupport` and the ledger's own
 @[reducible] noncomputable def pairHandoffFactsRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.pairHandoffFacts
-    { Requires := [K .pairHandoffSupport, K .selection, K .minDegreeBaseline,
+    { Requires := [K .pairHandoffSupport, K .selection, K .minDegreeBaseline, K .portEndDegree,
         K .extFreeEmpty, K .newLoadBound, K .highCentreSplitForced,
         K .sameVertexSwitchForcedPath, K .highEndpointSwitch, K .threeRouteFan,
         K .threeRouteChain]
       Produces := [K .pairHandoffHubCharge, K .pairHandoffBoundaryType,
-        K .pairHandoffCriticalCoordinate, K .pairObstructionDescent, K .pairHandoffHubForces]
+        K .pairHandoffCriticalCoordinate, K .pairObstructionDescent, K .pairHandoffHubForces,
+        K .pairHandoffDemandEnds, K .pairHandoffFibreAtG]
       requiresUnique := by key_fresh
       producesUnique := by key_fresh
       producesNonempty := by simp }
@@ -199,7 +200,34 @@ obstruction, each fact derived from `K .pairHandoffSupport` and the ledger's own
                   (inputs.get (K .sameVertexSwitchForcedPath)).down
                   (inputs.get (K .highEndpointSwitch)).down
                   (inputs.get (K .threeRouteFan)).down (inputs.get (K .threeRouteChain)).down⟩
-                .nil)))))
+                (.cons (key := K .pairHandoffDemandEnds)
+                  ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffDemandEnds_holds
+                    (inputs.get (K .pairHandoffSupport)).down
+                    (inputs.get (K .portEndDegree)).down⟩
+                  (.cons (key := K .pairHandoffFibreAtG)
+                    ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffFibreAtG_holds
+                      (inputs.get (K .selection)).down.1
+                      (inputs.get (K .pairHandoffSupport)).down⟩
+                    .nil)))))))
+
+/-- Nodes `[179]` → `[187]` (G audit): the hub balance at the handoff, combining the net charge,
+the tokens of `h` and the hub facts. -/
+@[reducible] noncomputable def pairHandoffBalanceRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairHandoffBalance
+    { Requires := [K .pairHandoffSupport, K .pairHandoffHubCharge, K .pairHandoffNetCharge,
+        K .pairHandoffHubForces]
+      Produces := [K .pairHandoffHubBalance]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairHandoffHubBalance)
+        ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffHubBalance_holds
+          (inputs.get (K .pairHandoffSupport)).down (inputs.get (K .pairHandoffHubCharge)).down
+          (inputs.get (K .pairHandoffNetCharge)).down
+          (inputs.get (K .pairHandoffHubForces)).down⟩
+        .nil)
 
 /-- Node `[180]`: test `lem:pair-system-increment-arithmetic`'s coverage on G's
 canonical serial system, read from `K .pairSerialDemandSystem`.  The negative

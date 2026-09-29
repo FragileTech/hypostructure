@@ -207,6 +207,9 @@ noncomputable def selectedPairCodeChainIndependent
     (pairHandoffCriticalCoordinateFresh : K .pairHandoffCriticalCoordinate ∉ known := by key_fresh)
     (pairObstructionDescentFresh : K .pairObstructionDescent ∉ known := by key_fresh)
     (pairHandoffHubForcesFresh : K .pairHandoffHubForces ∉ known := by key_fresh)
+    (pairHandoffDemandEndsFresh : K .pairHandoffDemandEnds ∉ known := by key_fresh)
+    (pairHandoffHubBalanceFresh : K .pairHandoffHubBalance ∉ known := by key_fresh)
+    (pairHandoffFibreAtGFresh : K .pairHandoffFibreAtG ∉ known := by key_fresh)
     (incrementFresh : K .pairIncrementCovered ∉ known := by key_fresh)
     (incrementFailsFresh : K .pairIncrementFails ∉ known := by key_fresh)
     (incrementEarlyFresh : K .pairIncrementEarlyOutcome ∉ known := by key_fresh)
@@ -338,12 +341,17 @@ noncomputable def selectedPairCodeChainIndependent
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run earlyHistory (by key_fresh)
+              let factsHistory :=
+                (pairHandoffFactsRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run typeBHistory (by key_fresh)
               exact Or.inr (Or.inl (Or.inl
                 (pairTypeBIndependentSystemReturn
-                  ((pairHandoffFactsRow (BranchState := BranchState)
+                  ((pairHandoffBalanceRow (BranchState := BranchState)
                     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                     (presentation := erdosReceiverLoadProfile)
-                    (data := spineData)).run typeBHistory (by key_fresh)))))
+                    (data := spineData)).run factsHistory (by key_fresh)))))
           | .right noEarlyHistory =>
               let serialHistory :=
                 (pairSerialDemandSystemRow (BranchState := BranchState)
@@ -462,6 +470,9 @@ noncomputable def selectedPairCodeChainDependent
     (pairHandoffCriticalCoordinateFresh : K .pairHandoffCriticalCoordinate ∉ known := by key_fresh)
     (pairObstructionDescentFresh : K .pairObstructionDescent ∉ known := by key_fresh)
     (pairHandoffHubForcesFresh : K .pairHandoffHubForces ∉ known := by key_fresh)
+    (pairHandoffDemandEndsFresh : K .pairHandoffDemandEnds ∉ known := by key_fresh)
+    (pairHandoffHubBalanceFresh : K .pairHandoffHubBalance ∉ known := by key_fresh)
+    (pairHandoffFibreAtGFresh : K .pairHandoffFibreAtG ∉ known := by key_fresh)
     (incrementFresh : K .pairIncrementCovered ∉ known := by key_fresh)
     (incrementFailsFresh : K .pairIncrementFails ∉ known := by key_fresh)
     (incrementEarlyFresh : K .pairIncrementEarlyOutcome ∉ known := by key_fresh)
@@ -603,12 +614,17 @@ noncomputable def selectedPairCodeChainDependent
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run earlyHistory (by key_fresh)
+              let factsHistory :=
+                (pairHandoffFactsRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run typeBHistory (by key_fresh)
               exact Or.inr (Or.inl (Or.inr
                 (pairTypeBDependentSystemReturn
-                  ((pairHandoffFactsRow (BranchState := BranchState)
+                  ((pairHandoffBalanceRow (BranchState := BranchState)
                     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                     (presentation := erdosReceiverLoadProfile)
-                    (data := spineData)).run typeBHistory (by key_fresh)))))
+                    (data := spineData)).run factsHistory (by key_fresh)))))
           | .right noEarlyHistory =>
               let serialHistory :=
                 (pairSerialDemandSystemRow (BranchState := BranchState)

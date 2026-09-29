@@ -1,5 +1,7 @@
 import Hypostructure.Graph.Statements.PairHandoffFacts
 import Hypostructure.Graph.Contracts.Spine.PairHandoffSupport
+import Hypostructure.Graph.Contracts.Spine.PairArms
+import Hypostructure.Graph.Contracts.SurplusPair.PairOverlap
 
 /-!
 # Contracts: the structure of G at the pair-obstruction handoff (residual `[187]`)
@@ -19,6 +21,7 @@ open Hypostructure.Graph
 open Hypostructure.Graph.Strategy.Spine
 open Hypostructure.Graph.CapacityFreeSide
 open Hypostructure.Graph.SameTokenBlockerRoles
+open Hypostructure.Graph.Strategy.InterfaceReplacement
 
 universe u
 
@@ -295,6 +298,200 @@ theorem pairObstructionDescent_holds
       _ = returns.overlap.system.first.pairSet.card := Fintype.card_coe _
   · intro member memberMem nonempty
     exact returns.overlap.minimal.2 _ (Finset.erase_ssubset memberMem) nonempty
+
+
+/-- **G's own member of the skeleton class has every response negative**: reading G's piece at
+`Z` on its own boundary and gluing it into `G - Z` gives G back, which has no accepted cycle. -/
+theorem response_object_false
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : Graph.SparsePairSkeletonModel activation schedule)
+    (pair : {pair // pair ∈ model.pairSet}) :
+    ¬ model.response (LengthOK := data.LengthOK)
+      (Graph.BlockedClass.objectSkeletonMember object) pair := by
+  classical
+  intro responds
+  unfold Graph.SparsePairSkeletonModel.response at responds
+  have graphEq : ((Graph.BlockedClass.objectSkeletonMember object).1.graph.comap
+      object.vertices.equiv) = object.graph :=
+    SimpleGraph.comap_map_eq (Graph.BlockedClass.label object).toEmbedding object.graph
+  rw [graphEq] at responds
+  let iso := (SupportAtom.decomposition object (model.responseSupport pair)).reconstructionIso
+  exact avoids (Graph.hasCycleWithLength_of_hom iso.toHom iso.injective responds)
+
+/-- A port's endpoint lies in the port's declared support. -/
+theorem port_endpoint_mem_declaredSupport
+    {Baseline Target : Graph.FiniteObject.{u} → Prop}
+    (active : Graph.ActiveSurplusDemands Baseline Target data.LengthOK object
+      data.threshold)
+    {port : object.Vertex × object.Vertex}
+    (member : port ∈ object.excessPorts data.threshold) :
+    port.2 ∈ (Graph.pairResponseActivation active).declaredSupport port := by
+  refine Graph.pairResponseActivation_localBuffer_subset_declaredSupport_of_mem active member ?_
+  rw [Graph.pairResponseActivation_localBuffer_of_mem active member]
+  exact (object.surplusPortOfMem member).endpoint_mem_support
+
+theorem pairHandoffDemandEnds_holds
+    (support : PairHandoffSupportStatement data object)
+    (ports : PortEndDegreeStatement data object) :
+    PairHandoffDemandEndsStatement data object := by
+  classical
+  obtain ⟨returns, returnsSelected, -⟩ := support
+  refine ⟨returns, returnsSelected, fun pair member port portMem => ?_⟩
+  have scheduled := returns.overlap.system.first.pairSet_subset_schedule pair.2
+  have inPorts := object.subset_excessPorts_of_mem_portPairSchedule data.threshold
+    scheduled portMem
+  have inResponse : port.2 ∈ returns.overlap.system.responseSupport pair := by
+    have selected := returns.overlap.system.responseSupport_selected pair
+    have seedSub := (Graph.FiniteObject.DemandActivation.pairSupport_mem_candidates selected).1
+    apply seedSub
+    unfold Graph.FiniteObject.DemandActivation.pairSeed
+    exact Finset.mem_biUnion.mpr ⟨port, portMem,
+      port_endpoint_mem_declaredSupport returns.overlap.system.first.active inPorts⟩
+  refine ⟨inResponse, ?_, ports port inPorts,
+    Graph.FiniteObject.centre_high_of_mem_excessPorts inPorts⟩
+  unfold PairOverlapSystem.overlapSupport Graph.SparsePairSkeletonModel.responseSupportUnion
+  exact Finset.mem_biUnion.mpr ⟨pair, member, inResponse⟩
+
+theorem pairHandoffHubBalance_holds
+    (support : PairHandoffSupportStatement data object)
+    (charge : PairHandoffHubChargeStatement data object)
+    (net : PairHandoffNetChargeStatement data object)
+    (forces : PairHandoffHubForcesStatement data object) :
+    PairHandoffHubBalanceStatement data object := by
+  classical
+  refine ⟨charge, net, forces, ?_⟩
+  obtain ⟨returns, returnsSelected, routes, split, hsep, c, hc, -, portCount, load⟩ := charge
+  obtain ⟨returns₀, returnsSelected₀, routes₀, split₀, core, centres, hsep₀, supportSelected,
+    -, centresEq, -⟩ := support
+  obtain ⟨returns₁, returnsSelected₁, core₁, centres₁, supportSelected₁, -, -, -, -,
+    netBalance⟩ := net
+  have r0 : returns = returns₀ := (Option.some.inj (returnsSelected₀.symm.trans returnsSelected)).symm
+  subst r0
+  have r1 : returns = returns₁ := (Option.some.inj (returnsSelected₁.symm.trans returnsSelected)).symm
+  subst r1
+  have s0 : (routes, split) = (routes₀, split₀) := Option.some.inj (hsep.symm.trans hsep₀)
+  obtain ⟨rfl, rfl⟩ := Prod.mk.inj s0
+  have s1 : (core, centres) = (core₁, centres₁) :=
+    Option.some.inj (supportSelected.symm.trans supportSelected₁)
+  obtain ⟨rfl, rfl⟩ := Prod.mk.inj s1
+  refine ⟨returns, returnsSelected, routes, split, hsep, c, hc, ?_⟩
+  intro envelope henv
+  rcases netBalance envelope henv with negative | ⟨-, centre, centreEq, small⟩
+  · exact Or.inl negative
+  · right
+    have same : centre = split.separator :=
+      Finset.singleton_injective (centreEq.symm.trans centresEq)
+    rw [same] at small
+    have tokens : ((object.excessPorts data.threshold).filter
+        (fun port => port.1 = split.separator)).card < 2 * data.threshold := by
+      rw [portCount]; omega
+    refine ⟨small, tokens, load.trans ?_⟩
+    calc _ ≤ ((object.excessPorts data.threshold).filter
+          (fun port => port.1 = split.separator)).card •
+          ((sparseHighDegreeCount data object - 1) + object.degreeSurplus data.threshold) :=
+          Finset.sum_le_card_nsmul _ _ _ fun port _ => by
+            split_ifs <;> omega
+      _ ≤ _ := by
+          rw [smul_eq_mul]
+          exact Nat.mul_le_mul_right _ (by omega)
+
+/-- The fibre of G's own signature has one or two members. -/
+theorem fibreAtG_bounds
+    (returns : PairDemandReturns data object)
+    (order : Fin returns.overlap.family.card ≃ {pair // pair ∈ returns.overlap.family})
+    (level : Nat) (bound : level + 1 ≤ returns.overlap.family.card) :
+    1 ≤ FibreAtG returns order level bound ∧ FibreAtG returns order level bound ≤ 2 := by
+  classical
+  let model := returns.overlap.system.toSkeletonModel
+  let member := Graph.BlockedClass.objectSkeletonMember object
+  unfold FibreAtG
+  haveI : Finite (Set.range (model.signature (LengthOK := data.LengthOK)
+      returns.overlap.family order (level + 1) bound)) := Set.finite_range _ |>.to_subtype
+  have own : (model.signature (LengthOK := data.LengthOK) returns.overlap.family order
+      (level + 1) bound member) ∈ Set.range (model.signature (LengthOK := data.LengthOK)
+      returns.overlap.family order (level + 1) bound) := ⟨member, rfl⟩
+  constructor
+  · apply Nat.card_pos_iff.mpr
+    refine ⟨⟨⟨⟨_, own⟩, ?_⟩⟩, inferInstance⟩
+    apply Prod.ext rfl
+    funext index
+    rfl
+  · have prop : Nat.card Prop = 2 := by
+      rw [Nat.card_eq_fintype_card]; exact Fintype.card_prop
+    rw [← prop]
+    apply Nat.card_le_card_of_injective
+      (fun signature => signature.1.1.2 (Fin.last level))
+    rintro ⟨⟨⟨b₁, f₁⟩, m₁⟩, e₁⟩ ⟨⟨⟨b₂, f₂⟩, m₂⟩, e₂⟩ same
+    have both := e₁.trans e₂.symm
+    have baseEq : b₁ = b₂ := congrArg Prod.fst both
+    have restEq : (fun index : Fin level => f₁ index.castSucc) = fun index => f₂ index.castSucc :=
+      congrArg Prod.snd both
+    apply Subtype.ext
+    apply Subtype.ext
+    apply Prod.ext baseEq
+    funext index
+    refine Fin.lastCases ?_ (fun j => ?_) index
+    · exact same
+    · exact congrFun restEq j
+
+theorem pairHandoffFibreAtG_holds
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (support : PairHandoffSupportStatement data object) :
+    PairHandoffFibreAtGStatement data object := by
+  classical
+  obtain ⟨returns, returnsSelected, routes, split, core, centres, hsep, -, -, centresEq,
+    -, -, -, centresInU⟩ := support
+  refine ⟨returns, returnsSelected, fun pair =>
+    response_object_false avoids returns.overlap.system.toSkeletonModel pair, routes, split,
+    hsep, ?_⟩
+  have separatorInU : split.separator ∈
+      returns.overlap.system.overlapSupport returns.overlap.family :=
+    centresInU _ (by rw [centresEq]; exact Finset.mem_singleton_self _)
+  obtain ⟨member, memberMem, memberVertex⟩ : ∃ pair ∈ returns.overlap.family,
+      split.separator ∈ returns.overlap.system.responseSupport pair := by
+    unfold PairOverlapSystem.overlapSupport Graph.SparsePairSkeletonModel.responseSupportUnion
+      at separatorInU
+    exact Finset.mem_biUnion.mp separatorInU
+  obtain ⟨chosen, selected, chosenMem, chosenVertex⟩ :=
+    canonicalChoice_spec (spec := fun pair : {pair // pair ∈
+        returns.overlap.system.first.pairSet} => pair ∈ returns.overlap.family ∧
+          split.separator ∈ returns.overlap.system.responseSupport pair)
+      ⟨member, memberMem, memberVertex⟩
+  refine ⟨chosen, selected, ?_⟩
+  have two : 2 ≤ returns.overlap.family.card := by
+    obtain ⟨left, leftMem, right, rightMem, different, -⟩ := returns.overlap.overlapWitness
+    exact Finset.one_lt_card.mpr ⟨left, leftMem, right, rightMem, different⟩
+  have nonempty : (returns.overlap.family.erase chosen).Nonempty :=
+    Finset.card_pos.mp (by rw [Finset.card_erase_of_mem chosenMem]; omega)
+  obtain ⟨order, level, bound, last, cardEq, lastEq, atLevel, deficit⟩ :=
+    exists_critical_order returns.overlap.system.toSkeletonModel returns.overlap.family chosen
+      chosenMem (returns.overlap.minimal.2 _ (Finset.erase_ssubset chosenMem) nonempty)
+      returns.overlap.minimal.1.2
+  have bound' : level + 1 ≤ returns.overlap.family.card := last
+  have fibre := fibreAtG_bounds returns order level bound'
+  refine ⟨order, level, bound', cardEq, lastEq, atLevel, ?_, fibre.1, fibre.2⟩
+  have replace : ∀ (l : Nat) (b b' : l ≤ returns.overlap.family.card),
+      returns.overlap.system.toSkeletonModel.signatureCount (LengthOK := data.LengthOK)
+        returns.overlap.family order l b =
+      returns.overlap.system.toSkeletonModel.signatureCount (LengthOK := data.LengthOK)
+        returns.overlap.family order l b' := fun _ _ _ => rfl
+  have top : returns.overlap.system.toSkeletonModel.signatureCount (LengthOK := data.LengthOK)
+      returns.overlap.family order (level + 1) bound' =
+      returns.overlap.system.toSkeletonModel.signatureCount (LengthOK := data.LengthOK)
+      returns.overlap.family order returns.overlap.family.card le_rfl := by
+    have general : ∀ (l l' : Nat) (e : l = l') (b : l ≤ returns.overlap.family.card)
+        (b' : l' ≤ returns.overlap.family.card),
+        returns.overlap.system.toSkeletonModel.signatureCount (LengthOK := data.LengthOK)
+          returns.overlap.family order l b =
+        returns.overlap.system.toSkeletonModel.signatureCount (LengthOK := data.LengthOK)
+          returns.overlap.family order l' b' := by
+      intro l l' e; subst e; intros; rfl
+    exact general _ _ cardEq.symm _ _
+  rw [top]
+  exact deficit
 
 theorem pairHandoffHubForces_holds
     (support : PairHandoffSupportStatement data object)

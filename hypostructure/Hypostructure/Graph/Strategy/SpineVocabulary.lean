@@ -1924,6 +1924,12 @@ inductive Key where
   | pairObstructionDescent
   /-- Nodes `[179]` → `[187]` (G audit): **the ledger's hub facts at the handoff centre `h`**: the vertex split, the same-vertex switch, the endpoint switch at cubic neighbours, the length-3 fan and the chain `3, 3, 3`, instantiated at the canonical first separator. -/
   | pairHandoffHubForces
+  /-- Nodes `[179]` → `[187]` (G audit): **the demand ends of the obstruction lie in `U`**: every port of every pair of the family has its endpoint in the pair's response support (hence in `U`), the endpoint is a cubic port end and the centre is a high vertex. -/
+  | pairHandoffDemandEnds
+  /-- Nodes `[179]` → `[187]` (G audit): **the hub balance at the handoff**: the net charge (`pairHandoffNetCharge`), the tokens of `h` (`pairHandoffHubCharge`) and the hub facts (`pairHandoffHubForces`) together: at the canonical envelope either the charge is negative, or `d(h) < 3δ`, `h` has fewer than `2δ` tokens and at most `(2δ−1)((|H|−1)+σ)` pairs of the family are charged at `h`. -/
+  | pairHandoffHubBalance
+  /-- Nodes `[179]` → `[187]` (G audit): **the critical coordinate of the handoff read at G's own signature**: G's own responses are all negative; for the canonical member `π_h` whose support contains `h`, in the order exposing it last (earlier levels double, the last does not), G's own level signature has one or two realized extensions (a fibre of size one is a repetition of G's response at `π_h`). -/
+  | pairHandoffFibreAtG
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2926,6 +2932,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairObstructionDescentStatement data.toParameters object
   | .pairHandoffHubForces, object =>
       PairHandoffHubForcesStatement data.toParameters object
+  | .pairHandoffDemandEnds, object =>
+      PairHandoffDemandEndsStatement data.toParameters object
+  | .pairHandoffHubBalance, object =>
+      PairHandoffHubBalanceStatement data.toParameters object
+  | .pairHandoffFibreAtG, object =>
+      PairHandoffFibreAtGStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3406,6 +3418,9 @@ def label : Key → String
   | .pairHandoffCriticalCoordinate => "pairHandoffCriticalCoordinate"
   | .pairObstructionDescent => "pairObstructionDescent"
   | .pairHandoffHubForces => "pairHandoffHubForces"
+  | .pairHandoffDemandEnds => "pairHandoffDemandEnds"
+  | .pairHandoffHubBalance => "pairHandoffHubBalance"
+  | .pairHandoffFibreAtG => "pairHandoffFibreAtG"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3885,6 +3900,9 @@ example : label .pairHandoffBoundaryType = "pairHandoffBoundaryType" := rfl
 example : label .pairHandoffCriticalCoordinate = "pairHandoffCriticalCoordinate" := rfl
 example : label .pairObstructionDescent = "pairObstructionDescent" := rfl
 example : label .pairHandoffHubForces = "pairHandoffHubForces" := rfl
+example : label .pairHandoffDemandEnds = "pairHandoffDemandEnds" := rfl
+example : label .pairHandoffHubBalance = "pairHandoffHubBalance" := rfl
+example : label .pairHandoffFibreAtG = "pairHandoffFibreAtG" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4359,6 +4377,9 @@ def idx : Key → Nat
   | .pairHandoffCriticalCoordinate => 8355
   | .pairObstructionDescent => 8356
   | .pairHandoffHubForces => 8357
+  | .pairHandoffDemandEnds => 8358
+  | .pairHandoffHubBalance => 8359
+  | .pairHandoffFibreAtG => 8360
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4822,6 +4843,9 @@ def ofIdx : Nat → Key
   | 8355 => .pairHandoffCriticalCoordinate
   | 8356 => .pairObstructionDescent
   | 8357 => .pairHandoffHubForces
+  | 8358 => .pairHandoffDemandEnds
+  | 8359 => .pairHandoffHubBalance
+  | 8360 => .pairHandoffFibreAtG
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -5846,6 +5870,12 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairObstructionDescent") 8356
   | .pairHandoffHubForces =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffHubForces") 8357
+  | .pairHandoffDemandEnds =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffDemandEnds") 8358
+  | .pairHandoffHubBalance =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffHubBalance") 8359
+  | .pairHandoffFibreAtG =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffFibreAtG") 8360
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

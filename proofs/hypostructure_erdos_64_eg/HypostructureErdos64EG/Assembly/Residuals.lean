@@ -2091,6 +2091,12 @@ abbrev PairTypeBOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairHandoffHubForces selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffDemandEnds selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffHubBalance selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffFibreAtG selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairSystemEarlyOutcome selected.object
 
 /-- The return of `PairTypeBOutcome` (arm `system`): one `get` per fact of
@@ -2227,6 +2233,9 @@ theorem pairTypeBSystemReturn
     [FactKeys.Has (K .pairHandoffCriticalCoordinate) known]
     [FactKeys.Has (K .pairObstructionDescent) known]
     [FactKeys.Has (K .pairHandoffHubForces) known]
+    [FactKeys.Has (K .pairHandoffDemandEnds) known]
+    [FactKeys.Has (K .pairHandoffHubBalance) known]
+    [FactKeys.Has (K .pairHandoffFibreAtG) known]
     [FactKeys.Has (K .pairSystemEarlyOutcome) known] :
     PairTypeBOutcome selected :=
   ⟨(history.get (K .selection)).down,
@@ -2358,6 +2367,9 @@ theorem pairTypeBSystemReturn
     (history.get (K .pairHandoffCriticalCoordinate)).down,
     (history.get (K .pairObstructionDescent)).down,
     (history.get (K .pairHandoffHubForces)).down,
+    (history.get (K .pairHandoffDemandEnds)).down,
+    (history.get (K .pairHandoffHubBalance)).down,
+    (history.get (K .pairHandoffFibreAtG)).down,
     (history.get (K .pairSystemEarlyOutcome)).down⟩
 
 /-- **Node `[187] (Type B sublinear failure)`** (thm:main (vi), tex 369-378):

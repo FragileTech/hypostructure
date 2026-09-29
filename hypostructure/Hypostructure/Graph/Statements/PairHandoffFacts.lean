@@ -3,6 +3,7 @@ import Hypostructure.Graph.Statements.HubLinks
 import Hypostructure.Graph.Statements.LocalRigidity
 import Hypostructure.Graph.Statements.SparseExitReadings
 import Hypostructure.Graph.Statements.SwitchForcedPaths
+import Hypostructure.Graph.BlockedClass
 
 /-!
 # Statements: the structure of G at the pair-obstruction handoff (residual `[187]`)
@@ -175,5 +176,89 @@ noncomputable def PairHandoffHubForcesStatement (data : Parameters)
         split.separator ≠ p₁ → split.separator ≠ p₂ → split.separator ≠ r₁ →
         split.separator ≠ r₂ → split.separator ≠ q₁ → split.separator ≠ q₂ →
         r₁ = p₂ ∧ r₂ = q₁)
+
+/-- **The demand ends of the obstruction family lie in `U`.**  Every port of every pair of
+the family has its endpoint in the pair's response support (hence in `U`), the endpoint is a
+cubic port end, and the port's centre is a high vertex.  (The centre itself is in the seed only
+for a triangular port, through its return path; it is not claimed here.) -/
+noncomputable def PairHandoffDemandEndsStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ returns, canonicalPairDemandReturns data object = some returns ∧
+    ∀ pair ∈ returns.overlap.family, ∀ port ∈ pair.1,
+      port.2 ∈ returns.overlap.system.responseSupport pair ∧
+        port.2 ∈ returns.overlap.system.overlapSupport returns.overlap.family ∧
+        object.degree port.2 = data.threshold ∧ data.threshold < object.degree port.1
+
+open Classical in
+/-- **The hub balance at the handoff: net charge (8352), the tokens of `h` (8353) and the hub
+facts (8357) together.**  At the canonical envelope either the net charge is negative, or the
+centre has degree `< 3δ`, `h` has fewer than `2δ` tokens, and the pairs of the family charged at
+`h` number at most `(2δ - 1)·((|H| - 1) + σ)`. -/
+noncomputable def PairHandoffHubBalanceStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  PairHandoffHubChargeStatement data object ∧ PairHandoffNetChargeStatement data object ∧
+    PairHandoffHubForcesStatement data object ∧
+    ∃ returns, canonicalPairDemandReturns data object = some returns ∧
+      ∃ (routes : PairObstructionRoutes object) (split : SameTokenFirstSeparator object),
+        canonicalPairObstructionSeparator data object returns = some (routes, split) ∧
+        ∃ c : SurplusCapacity data object, canonicalCapacity data object = some c ∧
+          ∀ envelope : SameTokenEnvelope data object,
+            canonicalPairObstructionEnvelope data object returns = some envelope →
+            envelope.NegativeCharge data.threshold data.dischargeScale ∨
+              (object.degree split.separator < 3 * data.threshold ∧
+                ((object.excessPorts data.threshold).filter
+                  (fun port => port.1 = split.separator)).card < 2 * data.threshold ∧
+                (returns.overlap.family.filter (fun pair => ∃ port ∈ pair.1,
+                    port.1 = split.separator ∧
+                      extCharge data.LengthOK c pair.1 = some (portToken port))).card ≤
+                  (2 * data.threshold - 1) *
+                    ((sparseHighDegreeCount data object - 1) + object.degreeSurplus data.threshold))
+
+/-- The fibre of G's own level-`level` signature: the realized level-`level + 1` signatures
+extending it. -/
+noncomputable def FibreAtG {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (returns : PairDemandReturns data object)
+    (order : Fin returns.overlap.family.card ≃ {pair // pair ∈ returns.overlap.family})
+    (level : Nat) (bound : level + 1 ≤ returns.overlap.family.card) : Nat :=
+  Nat.card {signature : Set.range
+      (returns.overlap.system.toSkeletonModel.signature (LengthOK := data.LengthOK)
+        returns.overlap.family order (level + 1) bound) //
+    (signature.1.1, fun index : Fin level => signature.1.2 index.castSucc) =
+      returns.overlap.system.toSkeletonModel.signature (LengthOK := data.LengthOK)
+        returns.overlap.family order level (Nat.le_of_succ_le bound)
+        (Graph.BlockedClass.objectSkeletonMember object)}
+
+/-- **The critical coordinate of the handoff, read at G's own signature.**  For the canonical
+member `π_h` whose response support contains the first separator, in the order exposing it last
+(all earlier levels double, the last does not): G's own responses are all negative (G avoids the
+target), G's own level signature has one or two realized extensions, and `π_h` is a coordinate
+of the circuit.  A fibre of size one at G is a repetition (G's response at `π_h` is determined by
+the baseline word and the other responses); a fibre of size two means G's signature is not one of
+the deficient ones. -/
+noncomputable def PairHandoffFibreAtGStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ returns, canonicalPairDemandReturns data object = some returns ∧
+    (∀ pair : {pair // pair ∈ returns.overlap.system.first.pairSet},
+      ¬ returns.overlap.system.toSkeletonModel.response (LengthOK := data.LengthOK)
+        (Graph.BlockedClass.objectSkeletonMember object) pair) ∧
+    ∃ (routes : PairObstructionRoutes object) (split : SameTokenFirstSeparator object),
+      canonicalPairObstructionSeparator data object returns = some (routes, split) ∧
+      ∃ pair, canonicalChoice (fun pair : {pair // pair ∈
+          returns.overlap.system.first.pairSet} => pair ∈ returns.overlap.family ∧
+            split.separator ∈ returns.overlap.system.responseSupport pair) = some pair ∧
+        ∃ (order : Fin returns.overlap.family.card ≃ {pair // pair ∈ returns.overlap.family})
+          (level : Nat) (bound : level + 1 ≤ returns.overlap.family.card),
+          returns.overlap.family.card = level + 1 ∧
+            (order ⟨level, Nat.lt_of_succ_le bound⟩).1 = pair ∧
+            returns.overlap.system.toSkeletonModel.signatureCount (LengthOK := data.LengthOK)
+                returns.overlap.family order level (Nat.le_of_succ_le bound) =
+              2 ^ level * returns.overlap.system.toSkeletonModel.signatureCount
+                (LengthOK := data.LengthOK) returns.overlap.family order 0 (Nat.zero_le _) ∧
+            returns.overlap.system.toSkeletonModel.signatureCount (LengthOK := data.LengthOK)
+                returns.overlap.family order (level + 1) bound <
+              2 * returns.overlap.system.toSkeletonModel.signatureCount
+                (LengthOK := data.LengthOK) returns.overlap.family order level
+                (Nat.le_of_succ_le bound) ∧
+            1 ≤ FibreAtG returns order level bound ∧ FibreAtG returns order level bound ≤ 2
 
 end Hypostructure.Graph.Strategy.Spine
