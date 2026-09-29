@@ -5284,3 +5284,87 @@ g-repair, agent R5 (branch `g-repair-R5`, keys 8000–8049).  All facts are abou
   (U1) and (U2-shared) give no contradiction from the partition's constraints.  Neither arm
   closes, so by the split rule the dichotomy is not run; the exact disjunction is published as
   `K .sameTokenTransplantDeficit`.
+
+## G audit: Node144aOutcome
+
+g-audit S144a (branch `g-audit-144a`, keys 8100–8104).  Builds on R5's transplant
+(`Graph/Transplant.lean`, keys 8000/8001, cherry-picked unchanged) and does not edit it.  The
+structural accounting is `audits/structural-accounting/Node144aOutcome.md`.
+
+### The defining failure, and where it sits
+
+* **Test.**  `[144]`'s complement arm (`K .typeBHandoffFails`) carries the unresolved pair
+  (`SameTokenPatternPairUnresolvedStatement`): `r_p ≠ r_q`, `Z = select?(X_p ∪ X_q)`, and the
+  boundary profiles of the two retained readings differ **or** the two readings agree in
+  `G − Z`.
+* **Decided at G, and trivially reached.**  The second disjunct is true for every pair at G
+  (`ActualContext.actualGlue_agree`: both readings are subgraphs of G).  So the arm "equal
+  profiles, separated by `G − Z`" is empty, and the unresolved statement is equivalent to
+  "`r_p ≠ r_q` and `Z` exists".  Published as `K .sameTokenUnresolvedDecided` (8100), tagged
+  **Lean improvement: the entry test of `[144a]` is empty on its resolved arm at G**.  G is
+  routed onto the complement arm, whose consumers are the G-only facts below.
+* **Not misrouted.**  The routing proof (`Contracts/SurplusPair/Routing.lean`) already sends the
+  equal-profile case there with `actualGlue_agree`.  What the paper leaves unconstructed is the
+  replacement (`swap one port's piece for the other's`) that would turn the pair into a
+  compression exit (c); that object is built below.
+
+### Facts published on the three handoff-fails subtypes (after R5's two keys)
+
+* `K .sameTokenUnresolvedDecided` (8100): the coordinates differ; both readings of G at `Z` are
+  target-free; they agree; the arm "equal profiles ∧ separated by `G − Z`" is empty.
+* `K .sameTokenReadingsExact` (8101): each edge-restricted reading `actualGlue G Z Y`
+  (`Y = X_p, X_q`) either drops no edge of `G[Z]` with an interior end (it is G), or drops one,
+  is lexicographically smaller than G, and **fails the baseline** (minimality:
+  `Graph/ReadingExactness.lean`).  So a reading that keeps the baseline is G's whole piece.
+* `K .sameTokenSwap` (8102): **the rerouted swap `P → Q`**, both directions
+  (`Graph/RerouteSwap.lean`).  `swapPiece G Z P Q` is G's piece at `Z` with the interior
+  structure of `P` replaced by a **fresh copy** of the interior structure of `Q`: interior
+  `(int Z ∖ P) ⊕ copy(int Z ∩ Q)`, G's edges among `∂Z ∪ (int Z ∖ P)`, G's edges among
+  `∂Z ∪ copy(int Z ∩ Q)` on the copy, no edge between the rest and the copy, `∂Z`'s own
+  labels.  It is not a subgraph of G when `int Z ∩ Q` meets `int Z ∖ P`.
+  * (iii) `|int S| + |int Z ∩ P| = |int Z| + |int Z ∩ Q|`.
+  * (i) the profile of `G[Z]` iff every `b ∈ ∂Z` has as many interior neighbours in `Q` as in
+    `P`.  When it does, the copy vertices attached to `b` are exactly the images of `b`'s
+    `P`-neighbours under `orderEquiv`, the equal-count contact bijection with its choice fixed by
+    `G.orderedVertices` (k-th in G's order to k-th).
+  * (ii) the baseline of `glue S (G − Z)` iff no vertex of G is deficient in any of four roles
+    (rest, copy, boundary, outside), each a degree count on G (`SwapDegreeCondition`); the
+    canonical exceptional vertex is the first deficient vertex in G's order (`swapDeficit`).
+  * (iv) linkage inclusion (R5's `LinkageIncluded`): it holds when `int Z ∩ Q ⊆ P`; otherwise
+    some linkage of the swap uses a vertex of `int Z ∩ Q ∖ P` both as itself and as its copy.
+  * Minimality: valid swap ⇒ `|int Z ∩ P| ≤ |int Z ∩ Q|`, and the glued swap is not
+    lexicographically smaller than G.
+  * Response: on a target-avoiding G, every accepted cycle of the glued swap passes through a
+    vertex of `int Z ∩ Q ∖ P` both as itself and as its copy (`gdec` is injective off such
+    pairs and carries the cycle to an accepted cycle of G).
+* `K .sameTokenSwapExact` (8103): the exact failure: valid (no deficient vertex,
+  linkage-included, size inequality), or G's canonical exceptional vertex exists in `Z` and is
+  deficient in the rest / copy / boundary role, or a linkage uses a vertex and its copy.  Both
+  swaps valid ⇒ `|int Z ∩ X_p| = |int Z ∩ X_q|` (a valid swap is not strictly smaller, in both
+  directions).
+* `K .sameTokenU2FreeWhole` (8104): R5's unimplemented boundary-free argument
+  (`Graph/U2FreeWhole.lean`).  If neither support meets `∂Z` and the glued transplants of `X_q`
+  and `X_p` keep the baseline, then `X_p = X_q = Z`, `∂Z = ∅`, `Z = V(G)` (Steiner minimality
+  `select_no_smaller`, G connected), and every vertex outside a pair seed is a cut vertex of G
+  (`select_nonseed_cut`).
+
+### What was tried against the arms (no arm closes)
+
+* **U2-free, both transplants valid.**  The configuration is `X_p = X_q = Z = V(G)`; there the
+  swaps are trivially valid (`P = Q = Z`), so no contradiction is derived from the swap conditions.
+  The exit (d) route would need a strictly smaller representative, which does not exist here.
+  Remaining proposition at G: the two pair supports both equal `V(G)`, every vertex of G outside
+  the pair seeds a cut vertex of G.
+* **U1 and U2-shared.**  The swap profile identity is a count of *interior* neighbours,
+  `n_Q(b) = n_P(b)`; U1 and the equal-count region are statements about contacts `c_Y(b)`,
+  which also count `∂Z`-neighbours, so neither implies nor refutes it.  The remaining proposition
+  is `K .sameTokenSwapExact` itself at the two swaps.
+* **Readings.**  Since a reading that keeps the baseline is G, the retained-reading compression
+  route cannot fire unless `int Z ⊆ Y`; `K .sameTokenReadingsNotReplacement` is now the special
+  case of `K .sameTokenReadingsExact`.
+
+### Tagging
+
+**Lean improvement (not routed by the paper):** 8100 (test decided at G, resolved arm empty),
+8101 (readings are G or lose the baseline), 8102–8103 (the rerouted swap, its exact conditions,
+size relation, descent and response), 8104 (boundary-free configuration is the whole graph).

@@ -18,6 +18,7 @@ import Hypostructure.Graph.Statements.SparseExitResidual
 import Hypostructure.Graph.Statements.SparseExitReadings
 import Hypostructure.Graph.Statements.SwitchForcedPaths
 import Hypostructure.Graph.Statements.SameTokenPair
+import Hypostructure.Graph.Statements.SameTokenSwap
 import Hypostructure.Graph.Statements.CycleCounting
 import Hypostructure.Graph.Statements.LocalRigidity
 import Hypostructure.Graph.Statements.JointHubs
@@ -1910,6 +1911,17 @@ inductive Key where
   | sameTokenTransplantSize
   /-- Node `[144a]` (G repair R5, Lean improvement): **the exact failure of the two transplants**: for each of `X_q`, `X_p`, either `int(Z) ⊆ X_·` and there is no exceptional vertex, or G's canonical exceptional vertex (the first vertex kept with fewer than `δ` neighbours outside `int(Z) ∖ X_·`) exists, lies in `Z`, and has a neighbour in `int(Z) ∖ X_·`. -/
   | sameTokenTransplantDeficit
+  -- g-audit S144a keys (8100–8149)
+  /-- Node `[144a]` (G audit S144a, Lean improvement): **the entry test of `[144a]`, decided at G**: at G's canonical routing, `X_p`, `X_q`, `Z = select?(X_p ∪ X_q)`: the coordinates differ, both readings of G at `Z` are target-free subgraphs of G and agree in `G − Z`; the arm "equal boundary profiles, separated by `G − Z`" is empty. -/
+  | sameTokenUnresolvedDecided
+  /-- Node `[144a]` (G audit S144a, Lean improvement): **each reading of G at `Z` (edge restriction to `X_p`, `X_q`), exactly**: it drops no edge of `G[Z]` with an interior end (it is G), or it drops one, is lexicographically smaller than G, and fails the baseline (minimality). -/
+  | sameTokenReadingsExact
+  /-- Node `[144a]` (G audit S144a, Lean improvement): **the rerouted swap `P → Q` at G, in both directions**: G's piece at `Z` with the interior structure of `P` replaced by a copy of that of `Q`, attached through the order-fixed contact bijection: (iii) `|int S| + |int Z ∩ P| = |int Z| + |int Z ∩ Q|`; (i) the profile of `G[Z]` iff every boundary vertex has as many interior neighbours in `Q` as in `P`; (ii) the baseline iff no vertex of G is deficient in any of four roles; (iv) linkage inclusion, or a linkage using a vertex and its copy; minimality gives `|int Z ∩ P| ≤ |int Z ∩ Q|`. -/
+  | sameTokenSwap
+  /-- Node `[144a]` (G audit S144a, Lean improvement): **the exact failure of the two rerouted swaps**: valid (no deficient vertex, linkage-included, `|int Z ∩ P| ≤ |int Z ∩ Q|`), or G's canonical exceptional vertex exists and is deficient in the rest / copy / boundary role, or a linkage of the swap uses a vertex and its copy; both swaps valid give `|int Z ∩ X_p| = |int Z ∩ X_q|`. -/
+  | sameTokenSwapExact
+  /-- Node `[144a]` (G audit S144a, Lean improvement): **boundary-free configuration**: if neither support meets `∂Z` and the transplants of `X_q` and `X_p` keep the baseline, then `X_p = X_q = Z`, `∂Z = ∅`, `Z = V(G)`, and every vertex outside a pair seed is a cut vertex of G (Steiner minimality of `select?`, G connected). -/
+  | sameTokenU2FreeWhole
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2901,6 +2913,17 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SameTokenTransplantSizeStatement data.toParameters object
   | .sameTokenTransplantDeficit, object =>
       SameTokenTransplantDeficitStatement data.toParameters object
+  -- g-audit S144a keys
+  | .sameTokenUnresolvedDecided, object =>
+      SameTokenUnresolvedDecidedStatement data.toParameters object
+  | .sameTokenReadingsExact, object =>
+      SameTokenReadingsExactStatement data.toParameters object
+  | .sameTokenSwap, object =>
+      SameTokenSwapStatement data.toParameters object
+  | .sameTokenSwapExact, object =>
+      SameTokenSwapExactStatement data.toParameters object
+  | .sameTokenU2FreeWhole, object =>
+      SameTokenU2FreeWholeStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3375,6 +3398,11 @@ def label : Key → String
   | .sparseTargetDefectEmpty => "sparseTargetDefectEmpty"
   | .sameTokenTransplantSize => "sameTokenTransplantSize"
   | .sameTokenTransplantDeficit => "sameTokenTransplantDeficit"
+  | .sameTokenUnresolvedDecided => "sameTokenUnresolvedDecided"
+  | .sameTokenReadingsExact => "sameTokenReadingsExact"
+  | .sameTokenSwap => "sameTokenSwap"
+  | .sameTokenSwapExact => "sameTokenSwapExact"
+  | .sameTokenU2FreeWhole => "sameTokenU2FreeWhole"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3848,6 +3876,11 @@ example : label .pairArmB = "pairArmB" := rfl
 example : label .sparseTargetDefectEmpty = "sparseTargetDefectEmpty" := rfl
 example : label .sameTokenTransplantSize = "sameTokenTransplantSize" := rfl
 example : label .sameTokenTransplantDeficit = "sameTokenTransplantDeficit" := rfl
+example : label .sameTokenUnresolvedDecided = "sameTokenUnresolvedDecided" := rfl
+example : label .sameTokenReadingsExact = "sameTokenReadingsExact" := rfl
+example : label .sameTokenSwap = "sameTokenSwap" := rfl
+example : label .sameTokenSwapExact = "sameTokenSwapExact" := rfl
+example : label .sameTokenU2FreeWhole = "sameTokenU2FreeWhole" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4316,6 +4349,11 @@ def idx : Key → Nat
   | .sparseTargetDefectEmpty => 7800
   | .sameTokenTransplantSize => 8000
   | .sameTokenTransplantDeficit => 8001
+  | .sameTokenUnresolvedDecided => 8100
+  | .sameTokenReadingsExact => 8101
+  | .sameTokenSwap => 8102
+  | .sameTokenSwapExact => 8103
+  | .sameTokenU2FreeWhole => 8104
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4773,6 +4811,11 @@ def ofIdx : Nat → Key
   | 7800 => .sparseTargetDefectEmpty
   | 8000 => .sameTokenTransplantSize
   | 8001 => .sameTokenTransplantDeficit
+  | 8100 => .sameTokenUnresolvedDecided
+  | 8101 => .sameTokenReadingsExact
+  | 8102 => .sameTokenSwap
+  | 8103 => .sameTokenSwapExact
+  | 8104 => .sameTokenU2FreeWhole
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -5785,6 +5828,16 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenTransplantSize") 8000
   | .sameTokenTransplantDeficit =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenTransplantDeficit") 8001
+  | .sameTokenUnresolvedDecided =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenUnresolvedDecided") 8100
+  | .sameTokenReadingsExact =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenReadingsExact") 8101
+  | .sameTokenSwap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenSwap") 8102
+  | .sameTokenSwapExact =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenSwapExact") 8103
+  | .sameTokenU2FreeWhole =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenU2FreeWhole") 8104
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000
