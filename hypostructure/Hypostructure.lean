@@ -159,6 +159,7 @@ import Hypostructure.Graph.VisibleReceiverEntry
 import Hypostructure.Graph.CommonPortReturnCycle
 import Hypostructure.Graph.DecoratedHandoffEnvelope
 import Hypostructure.Graph.ActualContext
+import Hypostructure.Graph.GConstructedPiece
 import Hypostructure.Graph.AnchoredReturnCompletion
 import Hypostructure.Graph.WindowCurvatureAlgebra
 import Hypostructure.Graph.WindowCurvatureEnumeration
