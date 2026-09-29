@@ -5222,3 +5222,49 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
   all-context hypotheses (now also `avoids`, for R2's replacement form); they
   have no consumer.
 - `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.
+
+## G audit: TypeBSublinearOutcome (keys 8300–8308, 2026-09-29)
+
+Residual: `TypeBSublinearOutcome` (node `[187]`, thm:main (vi)), the negative arm of
+`typeBSublinearDichotomy`; it retains `¬ TypeBSublinearHypotheses data G`
+(`Statements/TypeBLanes.lean`), which was a bare negation. The report is
+`audits/structural-accounting/TypeBSublinearOutcome.md`.
+
+- **Defining test is about G.** Its four `∃` (handoff pieces, grouped centres, fan
+  envelope map, absorbed-core map) are each pinned by `↔`/`=` to G's canonical
+  objects; no free data field. Fan certificates (`canonicalFanCertificateLabelling`),
+  `DecoratedHandoff.Envelope`, `AbsorbedHandoffAt`, `IsFixedTypeBProfile` (labelling
+  quantified over G's own fan labellings) are built from G. The test is not decided
+  at G; the residual is not an artifact. The split is a plain `em`.
+- **nonG facts on the common ledger, not fixed here (shared with every residual):**
+  `#15 localAlgebra` (ignores its object), `#66 barrierEnumeration` (no object
+  argument), `#2 cubicBaseline` (mixed). Replacement: the label census / table row
+  read from G's placed windows at P0. Left to one shared edit.
+- **New facts (published on the negative arm, rows in
+  `SpineRows/TypeBSublinearCanonical.lean`, statements
+  `Statements/TypeBSublinearCanonical.lean`, `TypeBSublinearGaps.lean`, proofs
+  `Contracts/TypeB/SublinearCanonical.lean`, `SublinearGaps.lean`):**
+  - 8300 `typeBSublinearCanonicalForm`: the hypotheses ↔ bridge arm ∧ centres-high ∧
+    handoff arm ∧ cover arm, no `∃`.
+  - 8301 `groupedAbsorbedCoreSubset`, 8303 `groupedCentresHigh`,
+    8304 `handoffDegreeClauseEmpty`, 8305 `pieceRoutingTotal`
+    (Lean improvement: those failure arms are empty at G; routing is total by
+    `remainderNormalized`).
+  - 8306 `coverPayment` (¬cover ⇒ an unpaid absorbed vertex), 8308
+    `unpaidAbsorbedWindowPort` (an unpaid absorbed vertex is adjacent to its grouped
+    centre and has another neighbour in the packed windows), 8307
+    `loadFailureSaturated` (a load failure is a saturated receiver of the piece).
+  - 8302 `typeBSublinearFailureArms`: the exact decomposition of the failure into
+    (A) a route-8 piece of positive surplus whose flat vertex traces into a centre or
+    with an over-capacity non-centre receiver, (B) a handoff piece whose flat vertex
+    traces into the absorbed core or with an over-capacity receiver, (C) an unpaid
+    absorbed vertex.
+- **Root type:** `TypeBSublinearOutcome` gains nine conjuncts (8300–8308).
+- **Status: still open.** Remaining proposition at G: (A) a negative positive-surplus
+  piece with a flat vertex tracing into a centre, or a saturated non-centre receiver;
+  (B) a handoff piece with a flat vertex tracing into the absorbed core (≤ its
+  separator's first neighbours), or a saturated receiver outside it; (C) an
+  absorbed vertex with a window port. H07 flow-cut for the two networks is the
+  published Hall violator (8306/8308 and 8307); none of these contradicts the ledger:
+  the receiver-load bound is the Type A unsaturation that the paper leaves to the
+  route-8 continuation. H04 and B01 (component-size profile) are not built.

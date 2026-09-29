@@ -1,0 +1,4 @@
+interface:
+  display_name: "Structural Accounting"
+  short_description: "Mark every structural coordinate a residual accounts for, and map every fact to coordinates"
+  default_prompt: "Use $structural-accounting to perform a full structural accounting check of the named residual: generate the template, then fill Table 1 (all 88 register coordinates, marked x / ~ / gap / n/a / nonG) and Table 2 (every fact of the residual mapped to coordinates), cross-check them, and rank the gaps. Read-only; no builds."

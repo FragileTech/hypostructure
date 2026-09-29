@@ -8,6 +8,8 @@ import Hypostructure.Graph.Statements.TypeB
 import Hypostructure.Graph.Statements.RouteEightPinned
 import Hypostructure.Graph.Statements.SurplusPair
 import Hypostructure.Graph.Statements.TypeBLanes
+import Hypostructure.Graph.Statements.TypeBSublinearCanonical
+import Hypostructure.Graph.Statements.TypeBSublinearGaps
 import Hypostructure.Graph.Statements.SurplusPairRouting
 import Hypostructure.Graph.Statements.SurplusPairCode
 import Hypostructure.Graph.Statements.ColdGerm
@@ -1632,6 +1634,45 @@ inductive Key where
   (`α(ξ) = 0`), so the census's `2 ≤ α(ξ)` leaves no unified entry, the stage
   accounting clears `s·D̃_A`, and `|R| ≤ s·|∂R| + F·s·T(n)`. -/
   | route8UnifiedEmptyAtG
+  -- Type B sublinear audit keys (8300–8349)
+  /-- G audit of `TypeBSublinearOutcome`, `prop:typeB-bridge-sublinear`: **the
+  tested hypotheses in G's canonical form** -- every existential is pinned to a
+  canonical object of G, so the hypotheses are exactly the bridge, centre-height,
+  handoff and cover arms over G's canonical objects. -/
+  | typeBSublinearCanonicalForm
+  /-- G audit of `TypeBSublinearOutcome` (Lean improvement): **G's canonical
+  absorbed core of a piece lies in the piece**, so the clause `absorbedAt ⊆ piece`
+  of the sublinear hypotheses is empty as a failure arm at G. -/
+  | groupedAbsorbedCoreSubset
+  /-- G audit of `TypeBSublinearOutcome`: **the exact decomposition of the failed
+  sublinear hypotheses at G** into a route-`8` bridge piece of positive surplus, a
+  failing decorated handoff piece, a non-high grouped centre, or a failed cover
+  inequality. -/
+  | typeBSublinearFailureArms
+  /-- G audit of `TypeBSublinearOutcome` (Lean improvement): **the grouped centres
+  of G are high** (a surviving first separator has degree at least `4`), so the
+  height clause of the sublinear hypotheses is empty as a failure arm. -/
+  | groupedCentresHigh
+  /-- G audit of `TypeBSublinearOutcome` (Lean improvement): **the degree clause
+  of the handoff clauses is empty at G**: a decorated handoff piece has zero
+  ambient surplus, so no vertex of it has internal degree above the baseline. -/
+  | handoffDegreeClauseEmpty
+  /-- G audit of `TypeBSublinearOutcome`: **G's canonical routing is total on the
+  pieces of the remainder** (`K .remainderNormalized`): every flat vertex of a
+  canonical piece is routed by `traceReceiver?` to a receiver of the piece. -/
+  | pieceRoutingTotal
+  /-- G audit of `TypeBSublinearOutcome`: **the incidence payment of the cover
+  arm**: the cover inequality fails only if an absorbed vertex of a decorated
+  handoff piece is a cubic-closed neighbour of no grouped centre. -/
+  | coverPayment
+  /-- G audit of `TypeBSublinearOutcome` (gap H05): **a load failure of the
+  sublinear test is a saturated receiver of the piece** (the restricted load is a
+  sub-count of the routed load). -/
+  | loadFailureSaturated
+  /-- G audit of `TypeBSublinearOutcome` (gaps H06, H07): **the Hall violator of
+  the cover network is a window port**: an unpaid absorbed vertex is adjacent to
+  its grouped centre and has another neighbour in the packed windows. -/
+  | unpaidAbsorbedWindowPort
   -- F5 keys
   /-- Node `[175]`, no arm: every selected corridor meets a high-degree
   vertex. -/
@@ -2664,6 +2705,24 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   -- R3 keys
   | .route8UnifiedEmptyAtG, object =>
       Route8UnifiedEmptyAtGStatement data.toParameters object
+  | .typeBSublinearCanonicalForm, object =>
+      TypeBSublinearCanonicalFormStatement data.toParameters object
+  | .groupedAbsorbedCoreSubset, object =>
+      GroupedAbsorbedCoreSubsetStatement data.toParameters object
+  | .typeBSublinearFailureArms, object =>
+      TypeBSublinearFailureArmsStatement data.toParameters object
+  | .groupedCentresHigh, object =>
+      GroupedCentresHighStatement data.toParameters object
+  | .handoffDegreeClauseEmpty, object =>
+      HandoffDegreeClauseEmptyStatement data.toParameters object
+  | .pieceRoutingTotal, object =>
+      PieceRoutingTotalStatement data.toParameters object
+  | .coverPayment, object =>
+      CoverPaymentStatement data.toParameters object
+  | .loadFailureSaturated, object =>
+      LoadFailureSaturatedStatement data.toParameters object
+  | .unpaidAbsorbedWindowPort, object =>
+      UnpaidAbsorbedWindowPortStatement data.toParameters object
   -- F5 keys
   | .coldNoPositiveGerm, object =>
       ColdNoPositiveGermStatement data.toParameters object
@@ -3246,6 +3305,15 @@ def label : Key → String
   | .route8UnpaidWitnessFree => "route8UnpaidWitnessFree"
   -- R3 keys
   | .route8UnifiedEmptyAtG => "route8UnifiedEmptyAtG"
+  | .typeBSublinearCanonicalForm => "typeBSublinearCanonicalForm"
+  | .groupedAbsorbedCoreSubset => "groupedAbsorbedCoreSubset"
+  | .typeBSublinearFailureArms => "typeBSublinearFailureArms"
+  | .groupedCentresHigh => "groupedCentresHigh"
+  | .handoffDegreeClauseEmpty => "handoffDegreeClauseEmpty"
+  | .pieceRoutingTotal => "pieceRoutingTotal"
+  | .coverPayment => "coverPayment"
+  | .loadFailureSaturated => "loadFailureSaturated"
+  | .unpaidAbsorbedWindowPort => "unpaidAbsorbedWindowPort"
   -- F5 keys
   | .coldNoPositiveGerm => "coldNoPositiveGerm"
   -- SD keys (final pass)
@@ -3722,6 +3790,15 @@ example : label .route8StageRate = "route8StageRate" := rfl
 example : label .route8UnpaidTwoCarrier = "route8UnpaidTwoCarrier" := rfl
 example : label .route8UnpaidWitnessFree = "route8UnpaidWitnessFree" := rfl
 example : label .route8UnifiedEmptyAtG = "route8UnifiedEmptyAtG" := rfl
+example : label .typeBSublinearCanonicalForm = "typeBSublinearCanonicalForm" := rfl
+example : label .groupedAbsorbedCoreSubset = "groupedAbsorbedCoreSubset" := rfl
+example : label .typeBSublinearFailureArms = "typeBSublinearFailureArms" := rfl
+example : label .groupedCentresHigh = "groupedCentresHigh" := rfl
+example : label .handoffDegreeClauseEmpty = "handoffDegreeClauseEmpty" := rfl
+example : label .pieceRoutingTotal = "pieceRoutingTotal" := rfl
+example : label .coverPayment = "coverPayment" := rfl
+example : label .loadFailureSaturated = "loadFailureSaturated" := rfl
+example : label .unpaidAbsorbedWindowPort = "unpaidAbsorbedWindowPort" := rfl
 -- F5 keys
 example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
 -- SD keys (final pass)
@@ -4183,6 +4260,15 @@ def idx : Key → Nat
   | .route8UnpaidWitnessFree => 1404
   -- R3 keys
   | .route8UnifiedEmptyAtG => 7900
+  | .typeBSublinearCanonicalForm => 8300
+  | .groupedAbsorbedCoreSubset => 8301
+  | .typeBSublinearFailureArms => 8302
+  | .groupedCentresHigh => 8303
+  | .handoffDegreeClauseEmpty => 8304
+  | .pieceRoutingTotal => 8305
+  | .coverPayment => 8306
+  | .loadFailureSaturated => 8307
+  | .unpaidAbsorbedWindowPort => 8308
   -- F5 keys
   | .coldNoPositiveGerm => 1800
   -- SD keys (final pass)
@@ -4638,6 +4724,15 @@ def ofIdx : Nat → Key
   | 1404 => .route8UnpaidWitnessFree
   -- R3 keys
   | 7900 => .route8UnifiedEmptyAtG
+  | 8300 => .typeBSublinearCanonicalForm
+  | 8301 => .groupedAbsorbedCoreSubset
+  | 8302 => .typeBSublinearFailureArms
+  | 8303 => .groupedCentresHigh
+  | 8304 => .handoffDegreeClauseEmpty
+  | 8305 => .pieceRoutingTotal
+  | 8306 => .coverPayment
+  | 8307 => .loadFailureSaturated
+  | 8308 => .unpaidAbsorbedWindowPort
   -- F5 keys
   | 1800 => .coldNoPositiveGerm
   -- SD keys (final pass)
@@ -5537,6 +5632,24 @@ def name : Key → Lean.Name
   -- R3 keys
   | .route8UnifiedEmptyAtG =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnifiedEmptyAtG") 7900
+  | .typeBSublinearCanonicalForm =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBSublinearCanonicalForm") 8300
+  | .groupedAbsorbedCoreSubset =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "groupedAbsorbedCoreSubset") 8301
+  | .typeBSublinearFailureArms =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBSublinearFailureArms") 8302
+  | .groupedCentresHigh =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "groupedCentresHigh") 8303
+  | .handoffDegreeClauseEmpty =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "handoffDegreeClauseEmpty") 8304
+  | .pieceRoutingTotal =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pieceRoutingTotal") 8305
+  | .coverPayment =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coverPayment") 8306
+  | .loadFailureSaturated =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "loadFailureSaturated") 8307
+  | .unpaidAbsorbedWindowPort =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "unpaidAbsorbedWindowPort") 8308
   -- F5 keys
   | .coldNoPositiveGerm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldNoPositiveGerm") 1800
