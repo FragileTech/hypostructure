@@ -5247,7 +5247,7 @@ smaller representative.  Built from G:
   the degree baseline.
 - Every smaller degree-valid realization of the basin (folds and contractions
   included) has an accepted cycle by minimality, and the declared algebra does
-  not hold at it (`route8SmallerRealizationsUndeclared`): the gap between the
+  not hold at it (`route8ConstructedRealizationsUndeclared`): the gap between the
   declared-algebra completeness of (b) and the raw target completeness of exit
   (5) is exactly that the cycle of a smaller valid realization is never a
   declared event.

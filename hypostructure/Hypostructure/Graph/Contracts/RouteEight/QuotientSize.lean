@@ -197,25 +197,22 @@ theorem not_declaredAlgebra_of_alpha_zero (data : Parameters)
         data.threshold data.LengthOK receiver load).two_le_card_car crossing)
   omega
 
-/-- **Every smaller degree-valid realization of a basin of G carries an
-undeclared target cycle** (minimality of G; the declared algebra is empty at
-`α(ξ) = 0`). -/
-theorem route8SmallerRealizationsUndeclared (data : Parameters)
-    (object : FiniteObject.{u})
-    (minimality : ∀ representative : FiniteObject.{u},
-      representative.LexicographicallySmaller object →
-      MinimumDegreeAtLeast data.threshold representative →
-      HasCycleWithLength data.LengthOK representative)
-    (support basin : Finset object.Vertex) (receiver load : object.Vertex)
+/-- **The realizations constructed from G do not hold the declared algebra**
+(the declared algebra is empty at `α(ξ) = 0`). -/
+theorem route8ConstructedRealizationsUndeclared (data : Parameters)
+    (object : FiniteObject.{u}) (support basin : Finset object.Vertex)
+    (receiver load : object.Vertex)
     (small : ((Graph.Route8.PresentedEntry.ofTraceBasin object support basin
       data.threshold data.LengthOK receiver load).toEntry
         (HasCycleWithLength data.LengthOK)).alpha = 0) :
-    Route8SmallerRealizationsUndeclared data object support basin receiver
+    Route8ConstructedRealizationsUndeclared data object support basin receiver
       load :=
-  fun Q baselineAt smaller =>
-    ⟨minimality _ smaller baselineAt,
-      not_declaredAlgebra_of_alpha_zero data object support basin receiver load
-        small Q _⟩
+  ⟨not_declaredAlgebra_of_alpha_zero data object support basin receiver load
+      small _ _,
+    fun _ => not_declaredAlgebra_of_alpha_zero data object support basin
+      receiver load small _ _,
+    fun _ _ _ => not_declaredAlgebra_of_alpha_zero data object support basin
+      receiver load small _ _⟩
 
 /-- **The exit-`(5)` datum is absent at every basin of G**: its clauses are the
 hypotheses of `lem:replacement` at `B_u`, which `cor:uncompressible` excludes. -/
@@ -338,7 +335,7 @@ theorem route8QuotientEntriesAtG (data : Parameters)
       route8BasinFoldsCarryCycles data object two baseline minimality basin,
       route8BasinFoldPaths data object two baseline avoids minimality index.1
         basin,
-      route8SmallerRealizationsUndeclared data object minimality index.1 basin
+      route8ConstructedRealizationsUndeclared data object index.1 basin
         index.2.1 index.2.2 (by
           have selectedBasin : Graph.Route8Census.basin object data.threshold
               index = basin := by

@@ -76,37 +76,37 @@ abbrev Route8QuotientReadingsNotSmaller (data : Parameters)
           (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object
             basin)).LexicographicallySmaller object
 
-/-- **Every smaller degree-valid realization of the basin carries an undeclared
-target cycle**: for any boundaried piece `Q` of the basin's interface whose
-gluing into `G − basin` meets the degree baseline and is lexicographically
-smaller than G -- a fold or contraction of G's piece, a canonical
-representative, any valid replacement -- the gluing has an accepted cycle
-(the minimality of G), and the declared `u`-supported target algebra
-(`def:typeA-trace-basin`, the only target quotients are tested against) does
-not hold at `Q`.  This is the exact gap between the declared-algebra
-completeness of alternative (b) and the raw target completeness of the exit-`(5)`
-compression: the cycle of a smaller valid realization is never a declared
-event. -/
-abbrev Route8SmallerRealizationsUndeclared (data : Parameters)
+/-- **The realizations constructed from G do not hold the declared algebra**:
+neither the canonical representative of G's piece at the basin, nor any of G's
+quotient readings of the basin, nor any fold of two of its interior vertices,
+satisfies the declared `u`-supported target algebra
+(`def:typeA-trace-basin`) in `G − basin`.  The declared algebra is empty at
+`α(ξ) = 0`, so the accepted cycles that minimality forces on the folds
+(`Route8BasinFoldsCarryCycles`) are never declared events: this is the exact gap
+between the declared-algebra completeness of alternative (b) and the raw target
+completeness of the exit-`(5)` compression. -/
+abbrev Route8ConstructedRealizationsUndeclared (data : Parameters)
     (object : Graph.FiniteObject.{u}) (support basin : Finset object.Vertex)
     (receiver load : object.Vertex) : Prop :=
-  ∀ Q : Graph.BoundaryPiece
-      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object basin),
-    Graph.MinimumDegreeAtLeast data.threshold
-        (Graph.glue Q
-          (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object
-            basin)) →
-      (Graph.glue Q
-        (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object
-          basin)).LexicographicallySmaller object →
-      Graph.HasCycleWithLength data.LengthOK
-        (Graph.glue Q
-          (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object
-            basin)) ∧
-        ¬ Graph.Route8.TraceBasin.declaredAlgebra object support basin
-          data.threshold data.LengthOK receiver load Q
-          (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object
-            basin)
+  let piece := Graph.Strategy.InterfaceReplacement.SupportAtom.piece object basin
+  let outside :=
+    Graph.Strategy.InterfaceReplacement.SupportAtom.outside object basin
+  (¬ Graph.Route8.TraceBasin.declaredAlgebra object support basin
+      data.threshold data.LengthOK receiver load
+      (Graph.CanonicalPiece.cutStateRepresentativeAt
+        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+        (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
+        piece outside).toPiece outside) ∧
+    (∀ retained : Finset (Graph.TraceCoordinateSystem.Base.Coordinate object
+        support),
+      ¬ Graph.Route8.TraceBasin.declaredAlgebra object support basin
+        data.threshold data.LengthOK receiver load
+        (Graph.Route8.PresentedEntry.retainedReading object support basin
+          data.threshold data.LengthOK retained) outside) ∧
+    (∀ (keep remove : piece.Internal) (different : keep ≠ remove),
+      ¬ Graph.Route8.TraceBasin.declaredAlgebra object support basin
+        data.threshold data.LengthOK receiver load
+        (piece.identifyInternal keep remove different) outside)
 
 /-- **The folds of the basin's piece, constructed from G**: identifying two
 interior vertices of G's piece at `basin` that share no neighbour
@@ -214,7 +214,7 @@ noncomputable abbrev Route8QuotientEntriesAtGStatement (data : Parameters)
           Route8QuotientReadingsNotSmaller data object index.1 basin ∧
           Route8BasinFoldsCarryCycles data object basin ∧
           Route8BasinFoldPaths data object index.1 basin ∧
-          Route8SmallerRealizationsUndeclared data object index.1 basin
+          Route8ConstructedRealizationsUndeclared data object index.1 basin
             index.2.1 index.2.2 ∧
           ¬ Graph.Route8.TraceBasin.TraceTargetCompleteCompression object
             index.1 data.threshold data.LengthOK index.2.1 index.2.2 basin
