@@ -135,8 +135,7 @@ noncomputable def Assembly.Internal.nearCubicRealized
                         (by key_fresh)).elimClosed (by infer_instance)).elim
                   | .right silentHistory =>
                       exact Or.inr (Or.inr (Or.inr (Or.inl
-                        (Or.inr (Or.inr (Or.inr
-                          (coldBranchClosed_linearRealizedSilentReturn
-                            (nearCubicColdTable silentHistory))))))))
+                        (coldBranchClosed_linearRealizedSilentReturn
+                          (nearCubicColdTable silentHistory)))))
 
 end HypostructureErdos64EG

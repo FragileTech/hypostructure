@@ -5099,8 +5099,10 @@ compatible context of a support `Z` of G is G's own surroundings `G − Z`
   capped degrees of its glue vertices.
 - **`[187]` cold-terminal singletons**: `linearDenseAtOrAbove`,
   `linearDenseRateFailed`, `linearRealizedDistinguished` carry the empty G2
-  yes-arm; their returns are removed, the subtypes are kept only because the
-  protected root type lists them.  `linearRealizedSilent` is still reached.
+  yes-arm; their returns are removed.  `linearRealizedSilent` is still reached.
+  (Update, root cleanup: the three subtypes, their `toGeneric` theorems and the
+  disjunction `ColdBranchClosedLinearSubtypes` are deleted, and the disjuncts are
+  dropped from `OtherReturnedOutcome` / `SelectedLedgerBoundaryResult`.)
 - **Removed (not G):** `Presentation.FirstFailureResponse`,
   `contextEquivalent_of_state_eq`, `firstFailureResponse_of_not_contextEquivalent`,
   `Corridor.not_targetComplete_of_firstFailureDefect`,
@@ -5204,8 +5206,10 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
   run as a test; its yes arm closes at `[124]` as before.  Nodes `[181]`,
   `[183]`–`[186]` are not reached; the `[186]` returns
   (`route8JointBalanceReturn`, `route8JointBalanceProductReturn`) are removed.
-  The disjunct `Route8JointBalanceOutcome_product` of the protected root type
-  is kept and is never produced.
+  (Update, root cleanup: the disjunct `Route8JointBalanceOutcome_product` is
+  dropped from `SelectedRouteEightBoundary` and `SelectedLedgerBoundaryResult`;
+  `Residuals/Route8JointBalanceOutcome.lean` and the generic abbrev
+  `Route8JointBalanceOutcome` are deleted.)
 - `[348]` no arm (`Route8QuotientOutcome`) is reached at G: at G every unified
   entry has a G-form trace-response quotient, so this arm is exactly
   `\tilde\Xi ≠ ∅`.  The paper's step `(b) → exit (5)` ("when this quotient is

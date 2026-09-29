@@ -50,8 +50,8 @@ surroundings `G − B_u`, every essential carrier core is empty, so `α(ξ) = 0`
 at every entry, and the census's `2 ≤ α(ξ)` leaves no unified entry; the
 stage accounting clears the unified deficit and the private-carrier rate
 `K .route8Rate` closes the arm (`route8UnifiedEmptyAtGRow`).  Nodes `[181]`
-and `[183]`--`[186]` are therefore not reached at G, and the node-`[186]`
-residual `Route8JointBalanceOutcome` is not returned. -/
+and `[183]`--`[186]` are therefore not reached at G, and node `[186]` returns
+no residual (the joint balance is not a root outcome). -/
 -- EG-NODE [123] finite exact descent terminates in true route 8?
 -- EG-NODE [124] local exclusion theorem: no two-support route-8 obstruction
 theorem selectedRouteEightDescent
@@ -274,8 +274,8 @@ noncomputable def selectedRouteEightUnifiedResidual
       | .right residualHistory =>
           -- `[348]` → `[187]`: `thm:main` returns the failure of route-8
           -- quotient freeness as an open outcome (tex 369-372, 388-390).
-          exact Or.inr (Or.inl
-            (route8QuotientProductReturn residualHistory arm.1 arm.2))
+          exact Or.inr
+            (route8QuotientProductReturn residualHistory arm.1 arm.2)
       | .left quotientFreeHistory =>
           let census :=
             (route8UnifiedEntryCensusRow (BranchState := BranchState)
