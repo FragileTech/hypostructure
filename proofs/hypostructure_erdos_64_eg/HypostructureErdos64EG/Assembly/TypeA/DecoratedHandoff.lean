@@ -101,6 +101,8 @@ noncomputable abbrev typeADecoratedHandoffKeys : FactKeys EGInput.{u} :=
     K .route8UnpaidWitnessFree,
     K .route8UnifiedEmptyAtG,
     K .route8QuotientEntriesAtG,
+    K .typeAExitFourSwitchCycle,
+    K .typeAExitSevenSwitch,
     K .route8BasinBurden,
     K .route8CarrierCore,
     K .typeBAbsorbedCharge]

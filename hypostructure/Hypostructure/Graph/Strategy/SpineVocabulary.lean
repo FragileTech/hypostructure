@@ -1729,6 +1729,17 @@ inductive Key where
   of the remainder**: pieces partition `R(P₀)`, each has a receiver, and their
   number is at most `def⁺(R(P₀))`. -/
   | pieceSizeProfile
+  -- R3b keys (7960–7979): the switch at the separator, constructed from G
+  /-- Node `[102]` at G (Lean improvement): **the exit-(4) peel is a switch
+  peel** — the canonical witness is a Q4 member whose switch at the separator
+  (the two configurations exchange their continuations after `z`) is a proper double-edge
+  switch with an accepted cycle through an exchanged edge. -/
+  | typeAExitFourSwitchCycle
+  /-- Node `[108]` at G: **at the canonical handoff separation the switch at `z`
+  has no accepted cycle and the separator has an unused ambient incidence; the
+  switched graph is a counterexample of G's size (same vertices, same edge
+  count, the baseline)**. -/
+  | typeAExitSevenSwitch
   -- F5 keys
   /-- Node `[175]`, no arm: every selected corridor meets a high-degree
   vertex. -/
@@ -2877,6 +2888,11 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       CoverFlowValueStatement data.toParameters object
   | .pieceSizeProfile, object =>
       PieceSizeProfileStatement data.toParameters object
+  -- R3b keys
+  | .typeAExitFourSwitchCycle, object =>
+      TypeAExitFourSwitchCycleStatement data.toParameters object
+  | .typeAExitSevenSwitch, object =>
+      TypeAExitSevenSwitchStatement data.toParameters object
   -- F5 keys
   | .coldNoPositiveGerm, object =>
       ColdNoPositiveGermStatement data.toParameters object
@@ -3555,6 +3571,9 @@ def label : Key → String
   | .loadFlowValue => "loadFlowValue"
   | .coverFlowValue => "coverFlowValue"
   | .pieceSizeProfile => "pieceSizeProfile"
+  -- R3b keys
+  | .typeAExitFourSwitchCycle => "typeAExitFourSwitchCycle"
+  | .typeAExitSevenSwitch => "typeAExitSevenSwitch"
   -- F5 keys
   | .coldNoPositiveGerm => "coldNoPositiveGerm"
   -- SD keys (final pass)
@@ -4088,6 +4107,8 @@ example : label .saturatedReceiverBasin = "saturatedReceiverBasin" := rfl
 example : label .loadFlowValue = "loadFlowValue" := rfl
 example : label .coverFlowValue = "coverFlowValue" := rfl
 example : label .pieceSizeProfile = "pieceSizeProfile" := rfl
+example : label .typeAExitFourSwitchCycle = "typeAExitFourSwitchCycle" := rfl
+example : label .typeAExitSevenSwitch = "typeAExitSevenSwitch" := rfl
 -- F5 keys
 example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
 -- SD keys (final pass)
@@ -4605,6 +4626,9 @@ def idx : Key → Nat
   | .loadFlowValue => 8311
   | .coverFlowValue => 8312
   | .pieceSizeProfile => 8313
+  -- R3b keys
+  | .typeAExitFourSwitchCycle => 7960
+  | .typeAExitSevenSwitch => 7961
   -- F5 keys
   | .coldNoPositiveGerm => 1800
   -- SD keys (final pass)
@@ -5117,6 +5141,9 @@ def ofIdx : Nat → Key
   | 8311 => .loadFlowValue
   | 8312 => .coverFlowValue
   | 8313 => .pieceSizeProfile
+  -- R3b keys
+  | 7960 => .typeAExitFourSwitchCycle
+  | 7961 => .typeAExitSevenSwitch
   -- F5 keys
   | 1800 => .coldNoPositiveGerm
   -- SD keys (final pass)
@@ -6091,6 +6118,11 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coverFlowValue") 8312
   | .pieceSizeProfile =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "pieceSizeProfile") 8313
+  -- R3b keys
+  | .typeAExitFourSwitchCycle =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFourSwitchCycle") 7960
+  | .typeAExitSevenSwitch =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSevenSwitch") 7961
   -- F5 keys
   | .coldNoPositiveGerm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldNoPositiveGerm") 1800

@@ -6367,3 +6367,83 @@ Residual: `TypeBSublinearOutcome` (node `[187]`, thm:main (vi)), the negative ar
   supports; on a positive-surplus piece the trace-into-centre outcome and a
   saturated receiver remain as the residual, and the ledger carries no window-stub
   count at the granularity of one receiver or one absorbed vertex.
+
+## G-repair R3b: the switch at the separator constructed from G (2026-09-29)
+
+`DecoratedHandoff.SwitchReading` had free data fields (`Coordinate`, `state`,
+`base`, `reduced`, `registered`, `baseIsPiece`, `descends`): its `quotient`
+realization was an arbitrary piece that nothing built from G, and Q4 and exit
+(7) depended on it.  `Separation` likewise carried free `leftReading` /
+`rightReading` pieces.  Both are removed.
+
+- **The switch at `z`** (`Separation.switchedGraph`, `switched`,
+  `switchedPiece`): the two configurations leave `z` through `a = nextLeft`,
+  `b = nextRight` and continue to `a⁺`, `b⁺` (heads of the two tails, fixed by
+  G's germs).  The switch exchanges the continuations,
+  `G − {a a⁺, b b⁺} + {a b⁺, b a⁺}`, when this is a proper double-edge switch
+  (`SwitchValid`), and is G otherwise.  All four vertices lie in `S_z`.
+  Proved: it keeps every degree (`switched_degree`, generic
+  `doubleSwitch_ncard_neighborSet`), the edge count (`switched_edgeCount`) and
+  the baseline (`switched_baseline`).
+- **Absorbed / Surviving** (`def:typeA-continuation-classes`, stated about G):
+  target-defective = the switched graph and G differ in target truth;
+  target-complete = they agree and `z ∉ ∂S_z` (the manuscript derives the
+  common fibre exactly from "no unused ambient incidence at `z`"); or enlarges.
+  `lem:typeA-cubic-switch-absorption` (`four_le_degree_of_surviving`) is proved
+  unchanged.  At G: surviving ⟺ the switched graph has no accepted cycle, `z`
+  has an unused incidence, and it does not enlarge (`Surviving.of_avoids`).
+- **Q4**: the switched graph and G differ in target truth.  At G this is the
+  target-cycle arm: the switch is proper and an accepted cycle of the switched
+  graph runs through `a b⁺` or `b a⁺` (`Q4TargetDefect.forced_cycle`,
+  `Separation.switched_forced_cycle`): the forced-path pattern of
+  `SwitchForcedPaths` (a path of `G − {a a⁺, b b⁺}` with accepted closing
+  length).
+- **The no-cycle arm** (`switched_sameSize`): the switched graph is a
+  counterexample of G's size — G's vertices, G's edge count, the baseline, no
+  accepted cycle — and is not lexicographically smaller, so minimality gives
+  nothing further.  Not a contradiction; recorded as a fact.
+- Keys 7960 `typeAExitFourSwitchCycle` (node `[102]`, Lean improvement: at G
+  the canonical exit-(4) witness is Q4 and its switch carries a forced accepted
+  cycle) and 7961 `typeAExitSevenSwitch` (node `[108]`: at the canonical
+  handoff separation the switched graph is a target-free counterexample of G's
+  size with `z` on `∂S_z`).  No arm closes: exit (4) through Q4 and exit (7)
+  both remain live at G.
+
+### R3b accounting of the two open exits (2026-09-29)
+
+Exit (4), Q4 at G (key 7960 now publishes `Separation.ForcedAtSwitch`):
+- Generic (`DecoratedHandoff.DoubleSwitch`): an accepted cycle of a proper
+  double-edge switch `G − {a a⁺, b b⁺} + {a b⁺, b a⁺}` at a graph with no
+  accepted cycle uses an exchanged edge (`doubleSwitch_cycle_forced`); removing
+  it and splitting at the other one (`split_at_edge`) gives exactly three
+  forms in `G − {a a⁺, b b⁺}`.  **Lean improvement: the crossed use of both
+  exchanged edges (`a ⇝ b`, `b a⁺`, `a⁺ ⇝ b⁺`) closes the G-cycle
+  `a ⇝ b – b⁺ ⇝ a⁺ – a` of the same accepted length and is excluded.**
+- Published forms, each the canonical path of its kind: shortest, and among
+  the shortest the lexicographically least support list in G's vertex order
+  `vertexRank` (for the pair: the concatenated supports) (`exists_least`):
+  (i) `P : a ⇝ b⁺`, `L(|P| + 1)`, and if `P` avoids `z`, `b`: `¬ L(|P| + 3)`
+  (apex cycle `z a P b⁺ b z`, `apex_cycle_rejected`); (ii) the mirror
+  `P : b ⇝ a⁺`; (iii) disjoint `P₁ : a ⇝ a⁺`, `P₂ : b ⇝ b⁺` with
+  `L(|P₁| + |P₂| + 2)`, `¬ L(|P₁| + 1)`, `¬ L(|P₂| + 1)`
+  (`closing_edge_rejected`).
+- Closure test: at the dyadic target (i) is `|P| = 2^k − 1`, `k ≥ 2`
+  (`a ≁ b⁺`), and `|P| + 3 = 2^k + 2` is never a power of two — consistent;
+  (iii) is consistent (e.g. `2 + 4 + 2 = 8`, `3`, `5`).  The ledger switch facts
+  do not apply: `twoSwitchForcedPath` / `highEndpointSwitch` need
+  `deg ≥ δ + 1` at the switched endpoints, which nothing forces at `a⁺`, `b⁺`;
+  `threeRouteFan` / `threeRouteChain` need length-3 routes between neighbours
+  of one centre, and the forced paths end at `b⁺`, `a⁺`, which are not
+  neighbours of `z`.  Remaining at G: (i), (ii) or (iii) with those constraints.
+
+Exit (7) (key 7961 now also publishes every degree and the refined order):
+- The switched graph `H` keeps every degree (`switched_degree`), the edge count,
+  the baseline, and has no accepted cycle; `(|V|, |E|)` is equal, so the
+  size order says nothing.  Node `[4]`'s refined minimality (`refinedMinimal`,
+  third coordinate the canonical decomposition code) gives
+  `¬ WellOrderingRel (code H) (code G)`: G precedes H.  That is consistent — H
+  is a counterexample above G, not below it — and H's own separation is not a
+  separation of H (its germs use `a a⁺`, `b b⁺`, which H lacks), so the exit-7
+  analysis does not transfer to H.  Remaining at G: a same-size counterexample
+  `H` with G's degrees, `code G` before `code H`, and `z ∈ ∂S_z`
+  (`d_G(z) ≥ 4`).

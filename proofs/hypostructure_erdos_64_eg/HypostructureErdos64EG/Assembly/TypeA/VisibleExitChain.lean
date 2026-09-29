@@ -143,6 +143,8 @@ noncomputable abbrev typeAVisibleExitKeys : FactKeys EGInput.{u} :=
     K .route8UnpaidWitnessFree,
     K .route8UnifiedEmptyAtG,
     K .route8QuotientEntriesAtG,
+    K .typeAExitFourSwitchCycle,
+    K .typeAExitSevenSwitch,
     K .typeAPeeledSaturatedReceiver,
     K .typeAPeeledUnsaturatedDischarge,
     K .typeAPeeledVisibleEntry,
