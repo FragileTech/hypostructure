@@ -112,9 +112,11 @@ def PortWalk (object : FiniteObject.{u}) (LengthOK : Nat → Prop) {a b : object
     (w : object.graph.Walk a b) : Prop :=
   w.IsPath ∧ PathChords.ChordCycles LengthOK w ∧ PathChords.StubStructure w ∧
     PathChords.HubCycles LengthOK w ∧ PathChords.ClosedCycles LengthOK w ∧
-    ((∃ wd : (object.graph.deleteEdges {s(b, a)}).Walk a b, object.graph.Adj b a ∧ wd.IsPath ∧
+    (((∃ wd : (object.graph.deleteEdges {s(b, a)}).Walk a b, object.graph.Adj b a ∧ wd.IsPath ∧
         w = wd.mapLe (object.graph.deleteEdges_le _) ∧
-        ∀ q : (object.graph.deleteEdges {s(b, a)}).Walk a b, q.IsPath → wd.length ≤ q.length) ∨
+        ∀ q : (object.graph.deleteEdges {s(b, a)}).Walk a b, q.IsPath → wd.length ≤ q.length) ∧
+        PathChords.GeodesicAvoiding s(a, b) w ∧ PathChords.GeodesicDetours s(a, b) w ∧
+        PathChords.GeodesicHubAdj LengthOK w) ∨
       ∃ x, x ∉ w.support ∧ object.graph.Adj x a ∧ object.graph.Adj x b ∧
         ¬ object.graph.Adj a b ∧ LengthOK (w.length + 1))
 
@@ -153,10 +155,35 @@ theorem declaredSupport_portWalk {LengthOK : Nat → Prop}
     let w : object.graph.Walk port.endpoint port.centre :=
       sel.path.1.mapLe (object.graph.deleteEdges_le _)
     have hw : w.IsPath := hpath.mapLe _
+    have geo : PathChords.GeodesicAvoiding s(port.endpoint, port.centre) w := by
+      refine ⟨?_, ?_⟩
+      · intro ε hε heq
+        have hedge : ε ∈ (object.graph.deleteEdges {s(port.centre, port.endpoint)}).edgeSet :=
+          SimpleGraph.Walk.edges_subset_edgeSet sel.path.1
+            (by
+              have h1 : w.edges = sel.path.1.edges := SimpleGraph.Walk.edges_mapLe_eq_edges (object.graph.deleteEdges_le _) sel.path.1
+              rw [h1] at hε
+              exact hε)
+        rw [SimpleGraph.edgeSet_deleteEdges] at hedge
+        apply hedge.2
+        rw [heq, Sym2.eq_swap]; rfl
+      · intro q hq hqe
+        have hqe' : ∀ ε ∈ q.edges, ε ∉ ({s(port.centre, port.endpoint)} : Set (Sym2 object.Vertex)) := by
+          intro ε hε hmem
+          apply hqe ε hε
+          rw [Set.mem_singleton_iff] at hmem
+          rw [hmem, Sym2.eq_swap]
+        have := short (q.toDeleteEdges {s(port.centre, port.endpoint)} hqe')
+          (SimpleGraph.Walk.IsPath.toDeleteEdges object.graph {s(port.centre, port.endpoint)} hq hqe')
+        have hl : w.length = sel.path.1.length := by
+          exact SimpleGraph.Walk.length_map _ _
+        rw [hl]
+        simpa [SimpleGraph.Walk.length_transfer] using this
     refine ⟨port.endpoint, port.centre, w, ⟨hw, PathChords.chordCycles_of_avoids _ hw cyc,
       PathChords.stub_of_path _ hw, PathChords.hubCycles_of_avoids _ hw cyc,
-      PathChords.closedCycles_of_avoids _ hw cyc, Or.inl ⟨sel.path.1, port.adjacent, hpath, rfl,
-        short⟩⟩, ?_⟩
+      PathChords.closedCycles_of_avoids _ hw cyc, Or.inl ⟨⟨sel.path.1, port.adjacent, hpath, rfl,
+        short⟩, geo, PathChords.geodesicDetours geo,
+        PathChords.geodesicHubAdj_of w hw geo cyc⟩⟩, ?_⟩
     unfold SurplusPort.declaredSupport SurplusPort.responseSupport
     rw [dif_pos adj]
     ext v

@@ -2134,6 +2134,8 @@ inductive Key where
   | sameTokenSeedCover
   /-- Node `[144a]` (G audit S144a, Lean improvement): **the interactions of the canonical port paths**: the pair seeds are `T ∪ supp w₁ ∪ supp w₂` and `T' ∪ supp z₁ ∪ supp z₂` with canonical port walks (simple; every chord, hub and closing cycle length unaccepted; one stub per interior cubic vertex); two vertex-disjoint segments of two of the walks joined by two edges (a rung pair, parallel or crossed) close a cycle of length `|p₂| + |q₂| + 2`, which is not accepted (all six pairs of walks); at every cubic vertex interior to a `P`-walk and a `Q`-walk the two path edges of one and the two of the other share an edge; if every degree-`3` vertex lies in both pair seeds, every neighbour of a hub lies in both. -/
   | sameTokenPathInteractions
+  /-- Node `[144a]` (G audit S144a, Lean improvement): **the ladder count of the canonical port walks**: for both pair seeds `T ∪ supp w₁ ∪ supp w₂` (`|T| ≤ 2δ`), `|H| ≤ σ`, and when both ports are triangular (the walks are shortest paths of `G − e`) and neither walk uses the other's end edge: if every degree-`3` vertex lies in the seed, `⌊(|wᵢ| − 1)/24⌋ ≤ 16|H| + 12|T| + 30`, `n ≤ |H| + |T| + |w₁| + |w₂| + 2` and `n ≤ 769|H| + 577|T| + 1490`; if every neighbour of a hub lies in the seed, `σ ≤ (|T| + 5)|H|`. -/
+  | sameTokenLadderCount
   -- g-pieces-constructed keys (8700–8799)
   /-- Route 8 read on the pieces constructed from G: at every unified entry a fold pair of the selected basin (two interior vertices with no common neighbour) makes alternative (a) occur and the load an exit-`(4)` peel (Q3); a nonempty essential core means the declared family determines the target; every complete carrier set holds every fold pair. -/
   | route8FoldPeels
@@ -3266,6 +3268,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SameTokenSeedCoverStatement data.toParameters object
   | .sameTokenPathInteractions, object =>
       SameTokenPathInteractionsStatement data.toParameters object
+  | .sameTokenLadderCount, object =>
+      SameTokenLadderCountStatement data.toParameters object
   -- g-pieces-constructed keys
   | .route8FoldPeels, object =>
       Route8FoldPeelsStatement data.toParameters object
@@ -3824,6 +3828,7 @@ def label : Key → String
   | .remainderCycleSpectrum => "remainderCycleSpectrum"
   | .sameTokenSeedCover => "sameTokenSeedCover"
   | .sameTokenPathInteractions => "sameTokenPathInteractions"
+  | .sameTokenLadderCount => "sameTokenLadderCount"
   | .route8FoldPeels => "route8FoldPeels"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
@@ -4372,6 +4377,7 @@ example : label .stubDeficitIdentity = "stubDeficitIdentity" := rfl
 example : label .remainderCycleSpectrum = "remainderCycleSpectrum" := rfl
 example : label .sameTokenSeedCover = "sameTokenSeedCover" := rfl
 example : label .sameTokenPathInteractions = "sameTokenPathInteractions" := rfl
+example : label .sameTokenLadderCount = "sameTokenLadderCount" := rfl
 example : label .route8FoldPeels = "route8FoldPeels" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
@@ -4916,6 +4922,7 @@ def idx : Key → Nat
   | .remainderCycleSpectrum => 8551
   | .sameTokenSeedCover => 8105
   | .sameTokenPathInteractions => 8106
+  | .sameTokenLadderCount => 8107
   | .route8FoldPeels => 8700
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
@@ -5449,6 +5456,7 @@ def ofIdx : Nat → Key
   | 8551 => .remainderCycleSpectrum
   | 8105 => .sameTokenSeedCover
   | 8106 => .sameTokenPathInteractions
+  | 8107 => .sameTokenLadderCount
   | 8700 => .route8FoldPeels
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
@@ -6604,6 +6612,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenSeedCover") 8105
   | .sameTokenPathInteractions =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenPathInteractions") 8106
+  | .sameTokenLadderCount =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenLadderCount") 8107
   | .route8FoldPeels =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8FoldPeels") 8700
   -- TA keys

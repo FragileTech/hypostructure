@@ -33,7 +33,7 @@ variable {data : Data.{u}}
         K .activeSurplusFamily, K .hubCountBound, K .slackIndependent]
       Produces := [K .sameTokenUnresolvedDecided, K .sameTokenReadingsExact, K .sameTokenSwap,
         K .sameTokenSwapExact, K .sameTokenU2FreeWhole, K .sameTokenSeedCover,
-        K .sameTokenPathInteractions]
+        K .sameTokenPathInteractions, K .sameTokenLadderCount]
       requiresUnique := by key_fresh
       producesUnique := by key_fresh
       producesNonempty := by simp }
@@ -84,6 +84,14 @@ variable {data : Data.{u}}
           (inputs.get (K .cubicBaseline)).down.1.1
           (inputs.get (K .minDegreeBaseline)).down
           (inputs.get (K .slackIndependent)).down⟩
-      .nil)))))))
+      (.cons (key := K .sameTokenLadderCount)
+        ⟨Contracts.Spine.SameTokenSeedCover.sameTokenLadderCount_holds
+          (inputs.get (K .sameTokenPairPartition)).down
+          (inputs.get (K .selection)).down.1
+          (inputs.get (K .activeSurplusFamily)).down
+          (inputs.get (K .cubicBaseline)).down.1.1
+          (inputs.get (K .minDegreeBaseline)).down
+          (inputs.get (K .cubicBaseline)).down.2.1.2.1⟩
+      .nil))))))))
 
 end Hypostructure.Graph.Strategy.Spine

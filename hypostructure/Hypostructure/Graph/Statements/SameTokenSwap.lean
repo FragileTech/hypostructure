@@ -3,6 +3,7 @@ import Hypostructure.Graph.RerouteSwap
 import Hypostructure.Graph.ReadingExactness
 import Hypostructure.Graph.U2FreeWhole
 import Hypostructure.Graph.PortPathCover
+import Hypostructure.Graph.LadderG
 
 /-!
 # Statements: G's pattern pair, tested at G (`[144a]`, G audit S144a)
@@ -339,5 +340,47 @@ noncomputable def SameTokenPathInteractionsStatement (data : Parameters)
             ∀ h, object.degree h ≠ 3 → ∀ y, object.graph.Adj h y →
               y ∈ routing.capacity.activation.pairSeed routing.demands.first ∧
                 y ∈ routing.capacity.activation.pairSeed routing.demands.second))
+
+
+/-- **The ladder count at one pair seed.**  The seed is `T ∪ supp w₁ ∪ supp w₂` for two
+canonical port walks, `|T| ≤ 2δ`, and `|H| ≤ σ`.  When both ports are triangular (the ends of
+each walk are adjacent, so each walk is a shortest path of `G − e`) and neither walk uses the
+other's end edge:
+
+* if every degree-`3` vertex lies in the seed, `⌊(|wᵢ| − 1)/24⌋ ≤ 16|H| + 12|T| + 30` for
+  both walks, `n ≤ |H| + |T| + |w₁| + |w₂| + 2`, hence `n ≤ 769|H| + 577|T| + 1490`;
+* if every neighbour of a hub lies in the seed, `σ ≤ (|T| + 5)|H|`. -/
+def PairLadderFacts (data : Parameters) (object : Graph.FiniteObject.{u})
+    (seed : Finset object.Vertex) : Prop := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact ∃ (T : Finset object.Vertex) (a1 b1 a2 b2 : object.Vertex)
+      (w1 : object.graph.Walk a1 b1) (w2 : object.graph.Walk a2 b2),
+    T.card ≤ 2 * data.threshold ∧
+    Graph.PortPathCover.PortWalk object data.LengthOK w1 ∧
+    Graph.PortPathCover.PortWalk object data.LengthOK w2 ∧
+    seed = T ∪ w1.support.toFinset ∪ w2.support.toFinset ∧
+    (Graph.JointObject.hubs object).card ≤ object.degreeSurplus data.threshold ∧
+    (object.graph.Adj b1 a1 → object.graph.Adj b2 a2 →
+      Graph.LadderG.EndEdgesFree object w1 w2 →
+      ((∀ v, object.degree v = 3 → v ∈ seed) →
+        Graph.LadderG.LadderCounts object T w1 w2 ∧
+        object.vertexCount ≤
+          769 * (Graph.JointObject.hubs object).card + 577 * T.card + 1490) ∧
+      ((∀ v, object.degree v ≠ 3 → ∀ y, object.graph.Adj v y → y ∈ seed) →
+        object.degreeSurplus data.threshold ≤
+          (T.card + 5) * (Graph.JointObject.hubs object).card))
+
+/-- **Node `[144a]`: the ladder count of the canonical port walks.**  At G's canonical routing,
+for both pair seeds (`PairLadderFacts`).  In the whole-graph arm with both ports of a pair
+triangular and neither walk on the other's end edge, the number of hubs is at least
+`(n − 577|T| − 1490)/769`: the two shortest-path walks cover the cubic vertices, and a run of
+consecutive vertices of one walk joined by their stubs to the other walk, or a bubble between
+two common vertices, contains a hub, a vertex joined to a hub, or an end (window lemma
+`LadderWindow.window8`, bubble lemma `TwoGeodesics.bubble_exc`, count `ladder_count_geo`). -/
+noncomputable def SameTokenLadderCountStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ routing, canonicalSameTokenRouting data object = some routing ∧
+    PairLadderFacts data object (routing.capacity.activation.pairSeed routing.demands.first) ∧
+    PairLadderFacts data object (routing.capacity.activation.pairSeed routing.demands.second)
 
 end Hypostructure.Graph.Strategy.Spine
