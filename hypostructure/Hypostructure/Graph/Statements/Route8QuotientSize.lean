@@ -108,6 +108,44 @@ abbrev Route8SmallerRealizationsUndeclared (data : Parameters)
           (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object
             basin)
 
+/-- **The folds of the basin's piece, constructed from G**: identifying two
+interior vertices of G's piece at `basin` that share no neighbour
+(`BoundaryPiece.identifyInternal`) gives a piece whose gluing into `G − basin`
+meets the degree baseline and is lexicographically smaller than G
+(`foldRealization_baseline_and_smaller`), hence -- by the minimality of G --
+carries an accepted cycle: the fold is a smaller valid realization that is not
+target-complete. -/
+abbrev Route8BasinFoldsCarryCycles (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (basin : Finset object.Vertex) : Prop :=
+  ∀ (connected : Graph.SupportComponents.Connected.ConnectedOn object basin)
+    (proper : ∃ vertex, vertex ∉ basin)
+    (keep remove :
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object
+        basin).Internal)
+    (different : keep ≠ remove),
+    (∀ x, ¬ ((Graph.Strategy.InterfaceReplacement.SupportAtom.piece object
+        basin).graph.Adj (.inr keep) x ∧
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object
+        basin).graph.Adj (.inr remove) x)) →
+      Graph.MinimumDegreeAtLeast data.threshold
+          (Graph.glue
+            ((Graph.Strategy.InterfaceReplacement.SupportAtom.piece object
+              basin).identifyInternal keep remove different)
+            (Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom object
+              basin connected proper).decomposition.outside) ∧
+        (Graph.glue
+          ((Graph.Strategy.InterfaceReplacement.SupportAtom.piece object
+            basin).identifyInternal keep remove different)
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom object
+            basin connected proper).decomposition.outside).LexicographicallySmaller
+          object ∧
+        Graph.HasCycleWithLength data.LengthOK
+          (Graph.glue
+            ((Graph.Strategy.InterfaceReplacement.SupportAtom.piece object
+              basin).identifyInternal keep remove different)
+            (Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom object
+              basin connected proper).decomposition.outside)
+
 /-- **Node `[348]`, stated about G** (Lean improvement: the quotient test is
 decided at G).
 
@@ -142,6 +180,7 @@ noncomputable abbrev Route8QuotientEntriesAtGStatement (data : Parameters)
             retained) ∧
           Route8BasinRepresentative data object basin ∧
           Route8QuotientReadingsNotSmaller data object index.1 basin ∧
+          Route8BasinFoldsCarryCycles data object basin ∧
           Route8SmallerRealizationsUndeclared data object index.1 basin
             index.2.1 index.2.2 ∧
           ¬ Graph.Route8.TraceBasin.TraceTargetCompleteCompression object

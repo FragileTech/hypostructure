@@ -30,7 +30,8 @@ universe u v
     {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.route8QuotientEntriesAtG
-    { Requires := [K .selection, K .uncompressible, K .route8PeelingDescent,
+    { Requires := [K .selection, K .uncompressible, K .cubicBaseline,
+        K .route8PeelingDescent,
         K .route8UnifiedDeficit, K .route8Rate]
       Produces := [K .route8QuotientEntriesAtG]
       requiresUnique := by key_fresh
@@ -43,6 +44,7 @@ universe u v
           (inputs.get (K .selection)).down.1
           (inputs.get (K .selection)).down.2
           (inputs.get (K .uncompressible)).down
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
           (inputs.get (K .route8PeelingDescent)).down
           (inputs.get (K .route8UnifiedDeficit)).down
           (inputs.get (K .route8Rate)).down⟩ .nil)

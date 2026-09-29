@@ -3061,9 +3061,11 @@ theorem typeBSublinearReturn
 
 /-- **Node `[187] ([348], route-8 quotient failure)`** (thm:main (vi), tex
 369-378, 388-390): failure of route-8 quotient freeness of the unified
-census.  The explicit conjunction of every fact on its maximal ledger (94
-common facts; the last one, `K .route8QuotientEntriesAtG`, decides the quotient
-test at G: the failure is the non-emptiness of the unified entry family). -/
+census.  The explicit conjunction of every fact on its maximal ledger; the last
+one, `K .route8QuotientEntriesAtG`, decides the quotient test at G (the failure
+is the non-emptiness of the unified entry family, with the aggregate bound
+`|∂R| < δ·|\tilde\Xi|`) and the one before it, `K .route8PeelingDescent`, is the
+stage accounting that fact consumes. -/
 abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧

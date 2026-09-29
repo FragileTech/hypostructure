@@ -101,6 +101,25 @@ theorem route8QuotientReadingsNotSmaller (data : Parameters)
       (basin := basin) (threshold := data.threshold) avoids retained
       (minimality _ smaller baselineAt)
 
+/-- **The folds of the basin's piece are smaller valid realizations with an
+accepted cycle** (`foldRealization_baseline_and_smaller` and the minimality of
+G). -/
+theorem route8BasinFoldsCarryCycles (data : Parameters)
+    (object : FiniteObject.{u}) (two : 2 ≤ data.threshold)
+    (baseline : data.threshold ≤ object.minDegree)
+    (minimality : ∀ representative : FiniteObject.{u},
+      representative.LexicographicallySmaller object →
+      MinimumDegreeAtLeast data.threshold representative →
+      HasCycleWithLength data.LengthOK representative)
+    (basin : Finset object.Vertex) :
+    Route8BasinFoldsCarryCycles data object basin := by
+  intro connected proper keep remove different noCommon
+  obtain ⟨foldBaseline, foldSmaller⟩ :=
+    Graph.Route8.PresentedEntry.foldRealization_baseline_and_smaller object
+      basin data.threshold two connected proper keep remove different baseline
+      noCommon
+  exact ⟨foldBaseline, foldSmaller, minimality _ foldSmaller foldBaseline⟩
+
 /-- **The declared `u`-supported algebra is empty at `α(ξ) = 0`**, at every
 realization and every outside context. -/
 theorem not_declaredAlgebra_of_alpha_zero (data : Parameters)
@@ -208,6 +227,7 @@ theorem route8QuotientEntriesAtG (data : Parameters)
       MinimumDegreeAtLeast data.threshold representative →
       HasCycleWithLength data.LengthOK representative)
     (uncompressible : UncompressibleStatement data object)
+    (two : 2 ≤ data.threshold)
     (descent : Route8PeelingDescentStatement data object)
     (deficit : Route8UnifiedDeficitFact data object)
     (rate : Route8RateStatement data object) :
@@ -261,6 +281,7 @@ theorem route8QuotientEntriesAtG (data : Parameters)
       selectedEq, quotient,
       route8BasinRepresentative data object baseline avoids minimality basin,
       route8QuotientReadingsNotSmaller data object avoids minimality index.1 basin,
+      route8BasinFoldsCarryCycles data object two baseline minimality basin,
       route8SmallerRealizationsUndeclared data object minimality index.1 basin
         index.2.1 index.2.2 (by
           have selectedBasin : Graph.Route8Census.basin object data.threshold
