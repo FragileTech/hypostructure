@@ -5222,3 +5222,75 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
   all-context hypotheses (now also `avoids`, for R2's replacement form); they
   have no consumer.
 - `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.
+
+## G audit: Route8QuotientOutcome (`[187]` = `[348]`, branch g-audit-r8q, idx 8150)
+
+**Defining failure.**  `route8QuotientDichotomy` asks
+`Route8QuotientFreeStatement` (no unified entry has a `TraceResponseQuotient`
+at its selected basin); its negation is the residual.  The test is decided at
+G: `exists_traceResponseQuotient_of_avoids` shows alternative (b) is present at
+every routed load of G (forget every declared coordinate; completeness is
+trivially true because `α(ξ) = 0`, so the declared `u`-supported algebra is
+empty).  The residual is therefore reached through a trivially true disjunct:
+it is exactly `route8UnifiedEntries ≠ ∅`.
+
+**The paper's step `(b) → exit (5)`.**  The manuscript never constructs the
+smaller representative.  Built from G:
+
+- The canonical representative of the (b)-quotient class of G's own piece at
+  `B_u` (`CanonicalPiece.cutStateRepresentativeAt`, read in `G − B_u`) is a
+  valid replacement (profile, degree baseline, no target cycle) of exactly the
+  size of the piece and its gluing is not lexicographically smaller than G
+  (`route8BasinRepresentative`).  A valid replacement cannot be smaller.
+- No trace-response quotient reading of the basin is a smaller valid
+  replacement (`route8QuotientReadingsNotSmaller`): a smaller reading is below
+  the degree baseline.
+- Every smaller degree-valid realization of the basin (folds and contractions
+  included) has an accepted cycle by minimality, and the declared algebra does
+  not hold at it (`route8SmallerRealizationsUndeclared`): the gap between the
+  declared-algebra completeness of (b) and the raw target completeness of exit
+  (5) is exactly that the cycle of a smaller valid realization is never a
+  declared event.
+- The exit-`(5)` datum (`TraceTargetCompleteCompression`) is absent at every
+  basin (`not_traceTargetCompleteCompression`, from `K .uncompressible`).
+
+So `(b) → exit (5)` cannot be constructed: the smaller representative it needs
+would be a valid replacement smaller than G.
+
+**New fact (idx 8150) `K .route8QuotientEntriesAtG`**
+(`Route8QuotientEntriesAtGStatement`, row `route8QuotientEntriesAtGRow`,
+requires selection, uncompressible, `route8PeelingDescent`,
+`route8UnifiedDeficit`, `route8Rate`): (1) `Route8QuotientFreeStatement ↔
+route8UnifiedEntries = ∅`; (2) `|∂R| < δ·|\tilde\Xi|` (rate + unified deficit +
+stage accounting; so `\tilde\Xi ≠ ∅`); (3) at every unified entry `α(ξ) = 0`,
+the selected basin and its quotient, the size-preserving representative, the
+non-smaller readings, the undeclared smaller realizations, and the absent
+exit-(5) datum.  The row is run on the residual arm in
+`selectedRouteEightUnifiedResidual` after the descent row
+(`route8PeelingDescent`, added to `Route8QuotientOutcome`, now 94 facts).
+
+**Closure tests (all negative).**  (i) The free arm's emptiness argument needs
+`\tilde\Xi = ∅`; here `|∂R| < δ|\tilde\Xi|` is the opposite bound.  (ii) The
+demand ledger: with `α = 0` no entry is pinned (no basin is
+target-complete-minimal, `not_route8Entry_of_avoids`), all entries are residual
+and `3Ñ ≤ e(R,W) + P_ext` is vacuous; no entry is trace-locally
+target-defective (`not_traceLocalTargetDefect`), so the canonical demand
+records are vacuous.  (iii) Fold realizations
+(`foldRealization_baseline_and_smaller`) are valid smaller pieces but carry a
+target cycle (minimality), so they are never target-complete.
+
+**Still open (exact proposition at G).**  `route8UnifiedEntries data G ≠ ∅` with
+`|∂R| < δ·|route8UnifiedEntries data G|`, `α(ξ) = 0` at every entry and the
+facts above.  A contradiction needs a bound `δ·|\tilde\Xi| ≤ |∂R|` from a
+source other than private essential carriers (all empty at G), or a raw-target
+form of the paper's declared-algebra completeness that yields a smaller valid
+realization.
+
+**Shared edits.**  `SpineVocabulary.lean` (key 8150 and one import);
+`Residuals.lean` / `Route8QuotientOutcome.lean` (two facts added to the
+residual: `route8PeelingDescent`, `route8QuotientEntriesAtG`); `RouteEight/
+Local.lean`; freshness parameter or key-list entry for
+`K .route8QuotientEntriesAtG` in `RouteEight/Residual.lean`,
+`RouteEight/TypeBContinuation.lean`, `TypeB/{Continuation,HighSurplus,
+Decorated}Continuation.lean`, `TypeB/Internal/Certificate.lean`, the six
+`TypeA` chain files and `NetCharge/Continuation.lean`.  No root-type change.

@@ -6,6 +6,7 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8DemandPartition
 import Hypostructure.Graph.Strategy.SpineRows.Route8JointBalance
 import Hypostructure.Graph.Strategy.SpineRows.Route8PeelingDescent
 import Hypostructure.Graph.Strategy.SpineRows.Route8QuotientDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.Route8QuotientEntriesAtG
 import Hypostructure.Graph.Strategy.SpineRows.Route8StageOutcomeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8TwoCarrierExit
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedDeficit
@@ -155,6 +156,7 @@ noncomputable def selectedRouteEightUnifiedResidual
       key_fresh)
     (closureFresh : closed ∉ known := by key_fresh)
     (emptyAtGFresh : K .route8UnifiedEmptyAtG ∉ known := by key_fresh)
+    (entriesAtGFresh : K .route8QuotientEntriesAtG ∉ known := by key_fresh)
     [FactKeys.Has (K .barrierCap) known]
     [FactKeys.Has (K .barrierEnumeration) known]
     [FactKeys.Has (K .boundaryDemand) known]
@@ -274,8 +276,23 @@ noncomputable def selectedRouteEightUnifiedResidual
       | .right residualHistory =>
           -- `[348]` → `[187]`: `thm:main` returns the failure of route-8
           -- quotient freeness as an open outcome (tex 369-372, 388-390).
+          -- Lean improvement: `[348]` is decided at G.  Alternative (b) is
+          -- present at every routed load, so the failure of quotient
+          -- freeness is the non-emptiness of the unified entry family; at
+          -- every entry `α(ξ) = 0`, G's piece is its own size-minimal
+          -- representative, and the exit-`(5)` datum is absent.
+          let descended :=
+            (route8PeelingDescentRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              residualHistory (by key_fresh)
+          let entriesAtG :=
+            (route8QuotientEntriesAtGRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run descended (by key_fresh)
           exact Or.inr (Or.inl
-            (route8QuotientProductReturn residualHistory arm.1 arm.2))
+            (route8QuotientProductReturn entriesAtG arm.1 arm.2))
       | .left quotientFreeHistory =>
           let census :=
             (route8UnifiedEntryCensusRow (BranchState := BranchState)
