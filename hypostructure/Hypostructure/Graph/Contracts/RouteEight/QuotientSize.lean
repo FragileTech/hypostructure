@@ -1,6 +1,8 @@
 import Hypostructure.Graph.Contracts.RouteEight.EntryCensus
 import Hypostructure.Graph.Statements.Route8QuotientSize
 import Hypostructure.Graph.FoldCycleLift
+import Hypostructure.Graph.Contracts.RouteEight.Collection
+import Hypostructure.Graph.Statements.JointHubs
 
 /-!
 # Contracts: the route-8 quotient test decided at G
@@ -174,6 +176,82 @@ theorem route8BasinFoldPaths (data : Parameters)
       exact ⟨by simpa using P.edges_subset_edgeSet he2,
         x2, hx2, y2, hy2, hxS2, hyS2⟩
 
+/-- **The baseline-essential carriers of an entry**: the cut edges of the
+piece that meet the basin, with their map into `∂R`. -/
+theorem route8EntryCarriers (data : Parameters) (object : FiniteObject.{u})
+    (baseline : data.threshold ≤ object.minDegree)
+    (support basin : Finset object.Vertex) (receiver : object.Vertex)
+    (zero : object.ambientSurplus support data.threshold = 0)
+    (cutSubset : Graph.Route8.cutEdges object support ⊆
+      Graph.Route8Census.supply object (canonicalWindowPacking data object))
+    (basinSubset : basin ⊆ support)
+    (receiverMem : receiver ∈ object.receivers support data.threshold)
+    (inBasin : receiver ∈ basin) :
+    Route8EntryCarriers data object support basin := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  classical
+  have degreeEq := degree_eq_threshold_of_ambientSurplus_eq_zero data object
+    baseline zero
+  have isReceiver := Graph.FiniteObject.mem_receivers.mp receiverMem
+  have inSupport : receiver ∈ support := isReceiver.1
+  have port : ∃ y, object.graph.Adj receiver y ∧ y ∉ support := by
+    by_contra none
+    push_neg at none
+    have subset : object.graph.neighborFinset receiver ⊆ support := by
+      intro y hy
+      exact none y ((SimpleGraph.mem_neighborFinset _ _ _).mp hy)
+    have same : object.internalDegree support receiver = object.degree receiver := by
+      simp only [FiniteObject.internalDegree, FiniteObject.degree]
+      rw [Finset.inter_eq_left.mpr subset]
+      exact SimpleGraph.card_neighborFinset_eq_degree _ _
+    have := isReceiver.2
+    have := degreeEq receiver inSupport
+    omega
+  refine ⟨?_, ?_⟩
+  · obtain ⟨y, adjacent, outside⟩ := port
+    refine ⟨s(receiver, y), ?_, receiver, Sym2.mem_mk_left _ _, inBasin⟩
+    rw [Graph.Route8.mem_cutEdges]
+    refine ⟨?_, receiver, Sym2.mem_mk_left _ _, y, Sym2.mem_mk_right _ _,
+      inSupport, outside⟩
+    simpa using adjacent
+  · intro e he ⟨v, hv, hvB⟩
+    exact ⟨cutSubset he, v, hv, hvB, degreeEq v (basinSubset hvB)⟩
+
+/-- **Paths inside a hub-free part of the remainder are short**
+(`K .remainderPathBounds`). -/
+theorem route8InsidePathBound (data : Parameters) (object : FiniteObject.{u})
+    (three : data.threshold = 3) (baseline : data.threshold ≤ object.minDegree)
+    (bounds : RemainderPathBoundsStatement data object)
+    (support : Finset object.Vertex)
+    (subR : support ⊆ object.remainderSupport (canonicalWindowPacking data object))
+    (zero : object.ambientSurplus support data.threshold = 0) :
+    Route8InsidePathBound object support := by
+  classical
+  intro a b P hP hin
+  have degreeEq := degree_eq_threshold_of_ambientSurplus_eq_zero data object
+    baseline zero
+  have seq : Graph.RemainderPaths.PathSeq object.graph
+      (Graph.JointObject.Rset object (canonicalWindowPacking data object))
+      P.length (fun t => P.getVert t) := by
+    refine ⟨?_, fun t ht => P.adj_getVert_succ ht, fun t _ => ?_⟩
+    · intro i hi j hj h
+      exact hP.getVert_injOn hi hj h
+    · exact subR (hin _ (P.getVert_mem_support t))
+  have h3 := bounds.2.2.1 P.length (fun t => P.getVert t) seq
+  have noHub : ((Finset.range (P.length + 1)).filter
+      (fun t => P.getVert t ∈ Graph.JointObject.hubSet object)).card = 0 := by
+    apply Finset.card_eq_zero.mpr
+    apply Finset.filter_eq_empty_iff.mpr
+    intro t ht hub
+    have mem := hin _ (P.getVert_mem_support t)
+    have := degreeEq _ mem
+    have hubDeg := (Graph.JointObject.mem_hubs (object := object)).mp hub
+    exact hubDeg (by rw [← three]; exact this)
+  have := h3.1
+  rw [noHub] at this
+  omega
+
 /-- **The declared `u`-supported algebra is empty at `α(ξ) = 0`**, at every
 realization and every outside context. -/
 theorem not_declaredAlgebra_of_alpha_zero (data : Parameters)
@@ -281,7 +359,9 @@ theorem route8QuotientEntriesAtG (data : Parameters)
     (two : 2 ≤ data.threshold)
     (descent : Route8PeelingDescentStatement data object)
     (deficit : Route8UnifiedDeficitFact data object)
-    (rate : Route8RateStatement data object) :
+    (rate : Route8RateStatement data object)
+    (three : data.threshold = 3)
+    (pathBounds : RemainderPathBoundsStatement data object) :
     Route8QuotientEntriesAtGStatement data object := by
   classical
   -- every unified entry: its basin is selected and carries the quotient
@@ -289,9 +369,10 @@ theorem route8QuotientEntriesAtG (data : Parameters)
       ∃ basin : Finset object.Vertex,
         Graph.Route8.TraceBasin.select? object index.1 data.threshold
             index.2.1 index.2.2 = some basin ∧
-          ∃ retained, Graph.Route8.TraceBasin.TraceResponseQuotient object
+          (∃ retained, Graph.Route8.TraceBasin.TraceResponseQuotient object
             index.1 data.threshold data.LengthOK index.2.1 index.2.2 basin
-            retained := by
+            retained) ∧ Route8EntryCarriers data object index.1 basin ∧
+            Route8InsidePathBound object index.1 := by
     intro index indexMem
     obtain ⟨component, componentMem, pieceEq, receiverMem, loadMem⟩ :=
       mem_entriesOfComponents.mp indexMem
@@ -306,24 +387,38 @@ theorem route8QuotientEntriesAtG (data : Parameters)
     obtain ⟨basin, selectedEq⟩ :=
       Graph.Route8.TraceBasin.exists_select?_eq_some_of_mem_routedLoads
         object index.1 data.threshold connected loadRouted
+    have complete := Graph.Route8.TraceBasin.select?_traceComplete selectedEq
+    obtain ⟨trace, _traceSel, traceInside⟩ := complete.2.1
+    have receiverInBasin : index.2.1 ∈ basin :=
+      traceInside (List.mem_toFinset.mpr trace.1.end_mem_support)
+    have zero : object.ambientSurplus index.1 data.threshold = 0 := by
+      rw [pieceEq]; exact (Finset.mem_filter.mp componentMem).2.1
+    have cutSubset : Graph.Route8.cutEdges object index.1 ⊆
+        Graph.Route8Census.supply object (canonicalWindowPacking data object) := by
+      rw [pieceEq]
+      exact Graph.Route8Census.cutEdges_piece_subset object
+        (canonicalWindowPacking data object) component
     exact ⟨basin, selectedEq,
       Graph.Route8.TraceBasin.exists_traceResponseQuotient_of_avoids avoids
         (Graph.FiniteObject.mem_receivers.mpr
           (Graph.FiniteObject.mem_receivers.mp receiverIn))
-        loadRouted
-        (Graph.Route8.TraceBasin.select?_traceComplete selectedEq)⟩
+        loadRouted complete,
+      route8EntryCarriers data object baseline index.1 basin index.2.1 zero
+        cutSubset complete.1 receiverIn receiverInBasin,
+      route8InsidePathBound data object three baseline pathBounds index.1
+        (by rw [pieceEq]; exact object.pieceSupport_subset _ component) zero⟩
   refine ⟨?_, route8SupplyLtEntries data object descent deficit rate, ?_⟩
   · constructor
     · intro free
       apply Finset.eq_empty_of_forall_notMem
       intro index indexMem
-      obtain ⟨basin, selectedEq, quotient⟩ := perEntry index indexMem
+      obtain ⟨basin, selectedEq, quotient, _, _⟩ := perEntry index indexMem
       exact free index indexMem basin selectedEq quotient
     · intro empty index indexMem basin _selectedEq _quotient
       rw [empty] at indexMem
       exact absurd indexMem (Finset.notMem_empty _)
   · intro index indexMem
-    obtain ⟨basin, selectedEq, quotient⟩ := perEntry index indexMem
+    obtain ⟨basin, selectedEq, quotient, carriers, inside⟩ := perEntry index indexMem
     have alphaZero := Graph.Route8.PresentedEntry.ofTraceBasin_alpha_eq_zero
       (support := index.1) (basin := Graph.Route8Census.basin object
         data.threshold index) (threshold := data.threshold)
@@ -335,6 +430,7 @@ theorem route8QuotientEntriesAtG (data : Parameters)
       route8BasinFoldsCarryCycles data object two baseline minimality basin,
       route8BasinFoldPaths data object two baseline avoids minimality index.1
         basin,
+      carriers, inside,
       route8ConstructedRealizationsUndeclared data object index.1 basin
         index.2.1 index.2.2 (by
           have selectedBasin : Graph.Route8Census.basin object data.threshold

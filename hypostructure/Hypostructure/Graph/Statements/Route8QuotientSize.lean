@@ -178,6 +178,33 @@ abbrev Route8BasinFoldPaths (data : Parameters)
               e1 ∈ Graph.Route8.cutEdges object support ∧
               e2 ∈ Graph.Route8.cutEdges object support)
 
+/-- **The baseline-essential carriers of an entry, and their map to `∂R`.**
+G is at the degree baseline and the piece has zero ambient surplus, so every
+vertex of the piece has degree exactly `δ`: no incidence of a basin vertex is
+spare, and every edge of the cut of the piece meeting the basin is
+baseline-essential.  Those edges lie in the boundary `∂R` of the remainder, and
+they are nonempty: the receiver of the entry lies in the basin and has a port
+(`internalDegree < δ = degree`). -/
+abbrev Route8EntryCarriers (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (support basin : Finset object.Vertex) :
+    Prop :=
+  (∃ e ∈ Graph.Route8.cutEdges object support, ∃ v ∈ e, v ∈ basin) ∧
+    ∀ e ∈ Graph.Route8.cutEdges object support, (∃ v ∈ e, v ∈ basin) →
+      e ∈ Graph.Route8Census.supply object (canonicalWindowPacking data object) ∧
+        ∃ v ∈ e, v ∈ basin ∧ object.degree v = data.threshold
+
+/-- **A path inside the entry's piece is short**: the piece lies in the
+remainder `R` of the canonical packing and, having zero ambient surplus, has no
+hub (every vertex has degree `3`).  The remainder path bounds
+(`K .remainderPathBounds`: paths through `k` hubs have at most `6143k + 6142`
+vertices) give every path of G inside the piece at most `6142` vertices.  In
+particular an accepted-length fold path (`Route8BasinFoldPaths`) that stays in
+the piece has length `2^k ≤ 6141`, so `k ≤ 12`. -/
+abbrev Route8InsidePathBound (object : Graph.FiniteObject.{u})
+    (support : Finset object.Vertex) : Prop :=
+  ∀ {a b : object.Vertex} (P : object.graph.Walk a b), P.IsPath →
+    (∀ x ∈ P.support, x ∈ support) → P.length ≤ 6141
+
 /-- **Node `[348]`, stated about G** (Lean improvement: the quotient test is
 decided at G).
 
@@ -214,6 +241,8 @@ noncomputable abbrev Route8QuotientEntriesAtGStatement (data : Parameters)
           Route8QuotientReadingsNotSmaller data object index.1 basin ∧
           Route8BasinFoldsCarryCycles data object basin ∧
           Route8BasinFoldPaths data object index.1 basin ∧
+          Route8EntryCarriers data object index.1 basin ∧
+          Route8InsidePathBound object index.1 ∧
           Route8ConstructedRealizationsUndeclared data object index.1 basin
             index.2.1 index.2.2 ∧
           ¬ Graph.Route8.TraceBasin.TraceTargetCompleteCompression object

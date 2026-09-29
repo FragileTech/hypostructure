@@ -5299,11 +5299,41 @@ exit-(5) datum.  The row is run on the residual arm in
    piece and its receiver), so `Ξ̃` injects into the full-degree vertices of
    `R`; overlap of basins is unconstrained.  Not closing.
 
+**Third pass: the two closure requirements, derived as far as G allows.**
+
+- *Inside case, `Route8InsidePathBound`.*  A path of G inside the entry's piece
+  `X` (which is in `R`, hub-free because its ambient surplus is `0`) has at most
+  `6142` vertices (`K .remainderPathBounds`, third clause with zero hubs).  So
+  the negation of "the fold path leaves `X`" forces: an accepted length
+  `2^k` with `4 ≤ 2^k ≤ 6141`, i.e. `k ≤ 12`, on a path of a hub-free cubic part
+  of `R` with no induced `P13`.  The inside case is empty for `k ≥ 13`; for
+  `k ≤ 12` nothing on the ledger excludes it: the length of the cycle that
+  minimality forces on the fold is not controlled from below, and two paths
+  between the same two vertices give a cycle only when they are internally
+  disjoint, which the ledger does not supply.
+- *Carriers, `Route8EntryCarriers`.*  G is cubic at the piece, so no incidence
+  of a basin vertex is spare: the baseline-essential carriers of an entry are
+  exactly the cut edges of the piece meeting the basin.  They are nonempty (the
+  receiver lies in the basin and has a port, since `internalDegree < δ = degree`)
+  and lie in `∂R`.  This is the canonical charge map `ξ ↦ carriers(ξ) ⊆ ∂R`.
+- *Multiplicity.*  All entries with the same receiver `w` share its ports, and
+  `|E(w)| = L(w) + 1 − s·q(w) ≥ 1` at a saturated receiver.  A fold path of one
+  entry combines into a closed walk with the fold path of another only if the
+  two share endpoints; distinct entries have distinct loads, so no cycle is
+  produced, and the multiplicity of a port edge is unbounded on the ledger.
+  Consequence used against the arm: `|∂R| < δ·|Ξ̃|` says the port-charge has
+  average multiplicity above `1/δ` per unit of `∂R`, which is the arm itself,
+  not a contradiction.
+- *Retry.*  `δ|Ξ̃| ≤ |∂R|` is not obtained: (i) the inside case survives for
+  `k ≤ 12`; (ii) the carriers give one charge per entry into the receiver's
+  ports, with unbounded multiplicity.
+
 **Still open (exact proposition at G).**  `route8UnifiedEntries data G ≠ ∅`
 with `|∂R| < δ·|route8UnifiedEntries data G|` and `α(ξ) = 0` at every entry.
-A closure needs an injective (or bounded-multiplicity) assignment of `∂R` edges
-to entries: for the canonical fold path of an entry to leave `X`, and for at most
-`2/δ` entries to use any one `∂R` edge.  Nothing on the ledger gives either.
+Closure needs (a) exclusion of an accepted path of length `2^k`, `k ≤ 12`,
+between two interior vertices of a hub-free piece with no common neighbour, or
+its inside cycles; and (b) `Σ_{ξ} 1 ≤ |∂R|/δ`, i.e. `δ·|E(w)|` bounded by the
+ports of `w` on average.
 
 **Shared edits.**  `SpineVocabulary.lean` (key 8150 and one import);
 `Residuals.lean` / `Route8QuotientOutcome.lean` (two facts added to the
