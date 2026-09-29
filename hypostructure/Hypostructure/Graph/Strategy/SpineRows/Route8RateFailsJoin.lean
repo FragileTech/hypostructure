@@ -191,7 +191,7 @@ universe u v
           (inputs.get (K .route8RateFailsJoin)).down⟩ .nil)
     0 0
 
-/-- Every route-8 census core is empty at G. -/
+/-- Every route-8 census core is empty or determined at G. -/
 @[reducible] noncomputable def route8CoreEmptyRow
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
@@ -205,7 +205,7 @@ universe u v
     (fun inputs =>
       .cons (key := K .route8CoreEmpty)
         ⟨Graph.Contracts.RouteEight.route8CoreEmpty data.toParameters
-          inputs.current.object (inputs.get (K .selection)).down.1⟩ .nil)
+          inputs.current.object⟩ .nil)
     0 0
 
 /-- The strong rate or the thin remainder. -/
@@ -224,7 +224,6 @@ universe u v
         ⟨Graph.Contracts.RouteEight.route8StrongRate data.toParameters
           inputs.current.object inputs.current.baseline
           (by have := (inputs.get (K .cubicBaseline)).down.1.2.1; omega)
-          (inputs.get (K .selection)).down.1
           (inputs.get (K .route8BasinBurden)).down⟩ .nil)
     0 0
 

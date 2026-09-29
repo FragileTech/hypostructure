@@ -767,27 +767,12 @@ abbrev Route8PrivateCarrierBudget (data : Parameters)
   data.threshold * entries.card ≤
     (Graph.Route8Census.supply object packing).card
 
-/-- The route-`8` collection `Ξ(𝒳_A)` has no indexed entry.  At a target-avoiding G every
-core is empty, so this is what the no-two-carrier arm of `[117]` says. -/
-abbrev Route8CollectionEmpty (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  let packing := canonicalWindowPacking data object
-  let support := object.remainderSupport packing
-  let routeEight : Finset
-      (Graph.SupportComponents.Connected.Component object support) := by
-    classical
-    exact (object.canonicalPieces support).filter
-      (Route8Survives data object packing)
-  Graph.Route8Census.entriesOfComponents object packing routeEight
-    data.threshold data.dischargeScale = ∅
-
 /-- Nodes `[119]`--`[120]` as published: the private-support budget, carried with
 the positive baseline `1 ≤ δ` read from G's entry fact `K .cubicBaseline`, so
 that the `[121]`--`[122]` closure combines ledger facts only. -/
 abbrev Route8PrivateCarrierBudgetStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  1 ≤ data.threshold ∧ Route8PrivateCarrierBudget data object ∧
-    Route8CollectionEmpty data object
+  1 ≤ data.threshold ∧ Route8PrivateCarrierBudget data object
 
 /-! ## Key statements
 
@@ -839,32 +824,35 @@ noncomputable abbrev Route8CensusStatement
       data.threshold data.dischargeScale
       (data.bridgeMassFactor * data.dischargeScale *
         data.surplusThreshold object.vertexCount) ∧
-    Graph.Route8Census.StrongRate object packing data.dischargeScale
+    Graph.Route8Census.Rate object packing data.threshold data.dischargeScale
       (data.bridgeMassFactor * data.dischargeScale *
         data.surplusThreshold object.vertexCount)
 
-/-- Node `[120]`: the private-carrier rate reading of the census alone, in G's exact
-form `s·|∂R| + F·s·T(n) < |R|` (`Route8Census.StrongRate`): at G every route-`8` core is
-empty, so the census needs only a nonempty collection, and the manuscript's
-`τ < 3/13` (`(δs+1)|∂R| + δ·F·s·T(n) < δ|R|`, which implies this) is not needed. -/
+/-- Node `[120]`: the private-carrier rate reading of the census alone,
+`(δs+1)·|∂R| + δ·F·s·T(n) < δ·|R|` (`τ < 3/13` with the `o(|R|)` allowance,
+`rem:route8-carrier-margin`), read from the arm's density fact.
+(g-pieces-constructed: the strong rate `Route8Census.StrongRate` of g-audit-r8rate was
+justified by empty route-`8` cores at G; with the realizations constructed from G
+(`GConstructedPiece`) the cores are not empty in general, so the manuscript rate is
+restored: it is what the no-two-carrier arm `[119]`--`[122]` needs.) -/
 noncomputable abbrev Route8RateStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  Graph.Route8Census.StrongRate object (canonicalWindowPacking data object)
-    data.dischargeScale
+  Graph.Route8Census.Rate object (canonicalWindowPacking data object)
+    data.threshold data.dischargeScale
     (data.bridgeMassFactor * data.dischargeScale *
       data.surplusThreshold object.vertexCount)
 
 /-- The complement of the rate reading on an arm whose density fact does
-not decide it: the thin remainder `|R| ≤ s·|∂R| + F·s·T(n)` (`τ ≥ 1/4`), carried as
-its own branch. -/
+not decide it (`3/13 ≤ τ`): the manuscript's delicate density interval
+(row 2 of the cold-branch ledger), carried as its own branch. -/
 noncomputable abbrev Route8RateFailsStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  ¬ Graph.Route8Census.StrongRate object (canonicalWindowPacking data object)
-    data.dischargeScale
+  ¬ Graph.Route8Census.Rate object (canonicalWindowPacking data object)
+    data.threshold data.dischargeScale
     (data.bridgeMassFactor * data.dischargeScale *
       data.surplusThreshold object.vertexCount)
 
@@ -920,33 +908,60 @@ noncomputable abbrev Route8PeelingDescentStatement
     data.threshold data.dischargeScale (route8StageSlack data object)
     data.LengthOK (route8DescentChain data object)
 
-/-- **Lean improvement: the quotient-free arm of the unified route-`8`
-ledger is empty at G** (node `[123]`, stated about G).
+/-- **Route 8 read on the pieces constructed from G** (idx 8700).  At every
+unified entry `ξ = (X,w,u)` with selected trace basin `B_u`, the realizations
+of the declared trace-response state are the pieces constructed from G at
+`B_u` (`Graph.GConstructedPiece`), read in G's own surroundings `G − B_u`:
 
-Read in G's own surroundings `G − B_u`, every carrier set of every graph-owned
-entry is target-complete, so every essential core is empty and `α(ξ) = 0`
-(`PresentedEntry.ofTraceBasin_alpha_eq_zero`).  On the quotient-free arm the
-unified census publishes `2 ≤ α(ξ)` at every unified entry
-(`lem:typeA-unified-carriers`), so the unified entry family `\tilde\Xi` is
-empty; the stage accounting of the peeling descent then clears the whole
-unified deficit `s·\tilde D_A`, and the unified deficit bound leaves
-`|R| ≤ s·|∂R| + F·s·T(n)`.  All four facts are about G's canonical collection;
-the last one contradicts the private-carrier rate `K .route8Rate`. -/
-noncomputable abbrev Route8UnifiedEmptyAtGStatement (data : Parameters)
+1. every two distinct interior vertices of `B_u` with no common neighbour in G
+   fold to such a piece, which makes alternative (a) of `def:typeA-trace-basin`
+   occur (the fold glued into `G − B_u` is a strictly smaller baseline graph,
+   hence carries a target cycle), so the load `u` carries its canonical
+   exit-`(4)` witness (Q3) at the empty peeling;
+2. a nonempty essential core means the declared family determines the target
+   over the constructed pieces (`Route8.Entry.Determined`);
+3. every target-complete carrier set holds every such fold pair: some retained
+   declared coordinate has one of the two folded vertices in its support;
+4. `thm:typeA-two-carrier-nogo` run at G: a two-support entry (at most `δ − 1`
+   private essential incidences) with a nonempty essential core is an
+   exit-`(4)` peel (Q5): the core's minimality gives a constructed realization
+   of the deleted restriction separated from the full reading in `G − B_u`. -/
+noncomputable abbrev Route8FoldPeelsStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  let packing := canonicalWindowPacking data object
-  let support := object.remainderSupport packing
-  (∀ index : Graph.Route8Census.Index object,
-      ((Graph.Route8Census.presented object data.threshold data.LengthOK
-        index).toEntry (Graph.HasCycleWithLength data.LengthOK)).alpha = 0) ∧
-    route8UnifiedEntries data object = ∅ ∧
-    Graph.TypeBEnvelopeCharge.route8Deficit object support data.threshold
-        data.dischargeScale (route8UnifiedComponents data object) = 0 ∧
-    support.card ≤
-      data.dischargeScale * (Graph.Route8Census.supply object packing).card +
-        data.bridgeMassFactor * data.dischargeScale *
-          data.surplusThreshold object.vertexCount
+  ∀ index ∈ route8UnifiedEntries data object,
+    let basin := Graph.Route8Census.basin object data.threshold index
+    let entry := (Graph.Route8Census.presented object data.threshold
+      data.LengthOK index).toEntry (Graph.HasCycleWithLength data.LengthOK)
+    (∀ keep remove :
+        Graph.Strategy.InterfaceReplacement.SupportAtom.PieceInternal object basin,
+      keep ≠ remove →
+      (∀ common, ¬ object.IsCommonNeighbor keep.1 remove.1 common) →
+        Graph.Route8.TraceBasin.TraceLocalTargetDefect object index.1
+            data.threshold data.LengthOK index.2.1 index.2.2 basin ∧
+          ∃ witness : Graph.ExitFour.Witness
+              (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold
+              data.dischargeScale index.2.1 ∅,
+            witness.load = index.2.2) ∧
+      (1 ≤ entry.alpha → entry.Determined) ∧
+      (∀ D : Finset (Sym2 object.Vertex), entry.Complete D →
+        ∀ keep remove :
+          Graph.Strategy.InterfaceReplacement.SupportAtom.PieceInternal object basin,
+        keep ≠ remove →
+        (∀ common, ¬ object.IsCommonNeighbor keep.1 remove.1 common) →
+          ∃ coordinate ∈ entry.retained D,
+            keep.1 ∈ Graph.Route8.PresentedEntry.traceDeclaredSupport object index.1
+                data.threshold index.2.1 index.2.2 coordinate ∨
+              remove.1 ∈ Graph.Route8.PresentedEntry.traceDeclaredSupport object
+                index.1 data.threshold index.2.1 index.2.2 coordinate) ∧
+      (Graph.Route8.IndexedTwoCarrierCore (route8UnifiedEntries data object)
+          (Graph.Route8Census.core object data.threshold data.LengthOK)
+          (data.threshold - 1) index →
+        1 ≤ entry.alpha →
+          ∃ witness : Graph.ExitFour.Witness
+              (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold
+              data.dischargeScale index.2.1 ∅,
+            witness.load = index.2.2)
 
 /-- The component collection `𝒳_A` of node `[111]` (a definition node,
 `def:typeA-large-budget-deficit`): the canonical pieces all of whose saturated

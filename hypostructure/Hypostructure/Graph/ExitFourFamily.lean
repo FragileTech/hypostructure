@@ -135,7 +135,15 @@ noncomputable def excessBoundaryResponse (object : FiniteObject.{u})
 
 /-- Q2, the target-defective replacement of the whole silent/excess basin.
 The chosen load belongs to the exact visible-first excess, which is Q2's
-declared routed-load support. -/
+declared routed-load support.
+
+`lem:typeA-silent-excess`: *"If replacing `B(w)` by its boundary response
+changes the target predicate in some context, the induced quotient is
+target-defective"*.  A realization of the boundary response is a piece in the
+basin's boundary-degree fibre; stated about G, the realizations are the pieces
+constructed from G at `B(w)` and the context is `G − B(w)`.  So Q2 is a
+constructed piece at `B(w)`, in G's fibre, whose target truth in `G − B(w)`
+differs from G's own piece's (`GConstructedPiece.Separated`). -/
 structure Q2TargetDefect (Target : FiniteObject.{u} → Prop)
     (support : Finset object.Vertex) (threshold scale : Nat)
     (receiver load : object.Vertex) where
@@ -150,18 +158,13 @@ structure Q2TargetDefect (Target : FiniteObject.{u} → Prop)
   proper : ∃ vertex,
     vertex ∉ excessTraceSupport object support threshold scale receiver
       originPeeled
-  /-- Stated about G: `B(w)`'s boundary response and G's piece at `B(w)` are
-  distinguished by G's own surroundings `G − B(w)`. -/
-  targetDefect : ¬ (Target (glue
-      (excessBoundaryResponse object support threshold scale receiver originPeeled)
-      (Strategy.InterfaceReplacement.SupportAtom.outside object
-        (excessTraceSupport object support threshold scale receiver
-          originPeeled))) ↔
-    Target (glue (Strategy.InterfaceReplacement.SupportAtom.piece object
-        (excessTraceSupport object support threshold scale receiver originPeeled))
-      (Strategy.InterfaceReplacement.SupportAtom.outside object
-        (excessTraceSupport object support threshold scale receiver
-          originPeeled))))
+  /-- The realization of the boundary response: a piece constructed from G at
+  `B(w)`. -/
+  realization : GConstructedPiece object
+    (excessTraceSupport object support threshold scale receiver originPeeled)
+  /-- Stated about G: in G's boundary-degree fibre at `B(w)` and separated from
+  G's own piece by G's own surroundings `G − B(w)`. -/
+  targetDefect : realization.Separated Target GConstructedPiece.own
 
 /-! ## Q3: a trace-local quotient -/
 
@@ -218,12 +221,15 @@ structure Q3TargetDefect (Target : FiniteObject.{u} → Prop)
       Route8.PresentedEntry.traceCoordinates object support threshold receiver load,
     changed ∉ retained ∧
       TraceCoordinateInternal object support basin threshold receiver load changed
-  /-- Stated about G: the retained reading and G's piece at `B_u` are
-  distinguished by G's own surroundings `G − B_u`. -/
-  targetDefect : ¬ (Target (glue
-      (Route8.PresentedEntry.retainedReading object support basin threshold
-        LengthOK
-        (Route8.PresentedEntry.retainedBaseCoordinates object support retained))
+  /-- The realization of the trace-local quotient: a piece constructed from G
+  at `B_u` that carries every retained coordinate exactly. -/
+  realization : GConstructedPiece object basin
+  realizes : Route8.TraceBasin.QuotientRealization object support basin
+    threshold receiver load (Route8.TraceBasin.ResponseQuotient.forgetting retained)
+    realization.toPiece
+  /-- Stated about G: the realization and G's piece at `B_u` are distinguished
+  by G's own surroundings `G − B_u`. -/
+  targetDefect : ¬ (Target (glue realization.toPiece
       (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) ↔
     Target (glue (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
       (Strategy.InterfaceReplacement.SupportAtom.outside object basin)))
@@ -281,13 +287,6 @@ noncomputable def q5Core (object : FiniteObject.{u}) (threshold : Nat)
     (LengthOK : Nat → Prop) (index : Route8Census.Index object) :=
   Route8Census.core object threshold LengthOK index
 
-/-- The Q5 reading after deleting one essential incidence. -/
-noncomputable def q5DeletedReading (object : FiniteObject.{u}) (threshold : Nat)
-    (LengthOK : Nat → Prop) (index : Route8Census.Index object)
-    (carrier : Sym2 object.Vertex) :=
-  (q5Entry object threshold LengthOK index).restriction
-    ((q5Core object threshold LengthOK index).erase carrier)
-
 /-- The undeleted essential-core reading. -/
 noncomputable def q5CoreReading (object : FiniteObject.{u}) (threshold : Nat)
     (LengthOK : Nat → Prop) (index : Route8Census.Index object) :=
@@ -324,9 +323,16 @@ def Q5CanonicalCollection (object : FiniteObject.{u})
 
 /-- Q5 on the concrete object-level census.  The ambient collection consists
 of actual `(X,w,u)` indices from the unified Type A census; the selected entry
-is the exact `(support,receiver,load)` tuple, its private-core condition is the
-paper's `pi <= delta-1` (two at the registered baseline), and both realizations
-are the canonical essential-core restrictions of its graph-derived reading. -/
+is the exact `(support,receiver,load)` tuple, and its private-core condition is
+the paper's `pi <= delta-1` (two at the registered baseline).
+
+`lem:typeA-carrier-deletion-exit`: a realization `S` of
+`ρ_u(B_u)|_{𝒞 ∖ {c}}` and a compatible context distinguishing it from the core
+state distinguish the composite quotient `ρ_u(B_u) → ρ_u(B_u)|_{𝒞 ∖ {c}}`.
+Stated about G: the realization is a piece constructed from G at `B_u` (the
+entry's own realization family), it carries every coordinate the deletion
+retains (so it lies in the basin's boundary-degree fibre), and G's own
+surroundings `G − B_u` distinguish it from the full reading. -/
 def Q5TargetDefect (Target : FiniteObject.{u} → Prop)
     (support : Finset object.Vertex) (threshold scale : Nat)
     (receiver load : object.Vertex) : Prop :=
@@ -342,14 +348,16 @@ def Q5TargetDefect (Target : FiniteObject.{u} → Prop)
           Route8.IndexedTwoCarrierCore collection
               (q5Core object threshold LengthOK) (threshold - 1) index ∧
           ∃ carrier ∈ q5Core object threshold LengthOK index,
-            -- stated about G: distinguished in the entry's actual
-            -- surroundings `G − B_u`
-            ¬ (Target (glue (q5DeletedReading object threshold LengthOK index
-                  carrier) (q5Entry object threshold LengthOK index).actual) ↔
-              Target (glue (q5CoreReading object threshold LengthOK index)
-                (q5Entry object threshold LengthOK index).actual)) ∧
-            (q5DeletedReading object threshold LengthOK index carrier).boundaryDegreeProfile =
-                (q5CoreReading object threshold LengthOK index).boundaryDegreeProfile ∧
+            (∃ realization : (q5Entry object threshold LengthOK index).Realization,
+              (q5Entry object threshold LengthOK index).Realizes
+                  ((q5Entry object threshold LengthOK index).retained
+                    ((q5Core object threshold LengthOK index).erase carrier))
+                  realization ∧
+                ¬ (Target (glue
+                      ((q5Entry object threshold LengthOK index).realize realization)
+                      (q5Entry object threshold LengthOK index).actual) ↔
+                  Target (glue (q5Entry object threshold LengthOK index).full
+                    (q5Entry object threshold LengthOK index).actual))) ∧
             Q5DeclaredWitness object threshold LengthOK index carrier
 
 /-! ## The closed family and peeling witness -/
@@ -393,16 +401,21 @@ structure Witness (Target : FiniteObject.{u} → Prop)
   unpeeled : load ∈ unpeeledLoads support threshold receiver peeled
   member : CanonicalMember Target support threshold scale receiver load
 
-/-! ## Stated about G, only Q4 can occur
+/-! ## Stated about G: which members are decided
 
-Q1, Q2, Q3 and Q5 compare two readings of G at one support, both glued into G's
-own surroundings; both glues are subgraphs of G, so at a target-avoiding G they
-have the same target truth and the four defects are decided false.  Q4 compares
-the switched graph — G with the switch at the separator `z`, the two
+Q1 compares the two response readings of two declared visible coordinates —
+readings of G by definition — glued into G's own surroundings; both glues are
+subgraphs of G, so at a target-avoiding G the Q1 defect is decided false.  Q2,
+Q3 and Q5 compare a piece constructed from G (a realization of the quotient)
+with G's own reading; a fold, a swap, a splice or a switch is not a subgraph of
+G, and those three members are live tests at G (for instance a fold of two
+interior vertices of the basin with no common neighbour is a smaller baseline
+graph once glued, `GConstructedPiece.separated_fold_own_of_minimal`).  Q4
+compares the switched graph — G with the switch at the separator `z`, the two
 configurations exchanging their continuations after `z`'s next incidences
-(`Separation.switched`, constructed from G) — with G itself; it is a
-real statement about G (the switched graph has an accepted cycle), not decided,
-and at G its cycle runs through an exchanged edge (`Q4TargetDefect.forced_cycle`). -/
+(`Separation.switched`, constructed from G) — with G itself; it is a real
+statement about G, and at G its cycle runs through an exchanged edge
+(`Q4TargetDefect.forced_cycle`). -/
 
 theorem Q1TargetDefect.false_of_avoids {L : Nat → Prop}
     {support : Finset object.Vertex} {threshold scale : Nat}
@@ -413,56 +426,6 @@ theorem Q1TargetDefect.false_of_avoids {L : Nat → Prop}
   datum.targetDefect (iff_of_false
     (Route8.PresentedEntry.not_target_glue_retainedBasinPiece_outside avoids _ _)
     (Route8.PresentedEntry.not_target_glue_retainedBasinPiece_outside avoids _ _))
-
-theorem Q2TargetDefect.false_of_avoids {L : Nat → Prop}
-    {support : Finset object.Vertex} {threshold scale : Nat}
-    {receiver load : object.Vertex}
-    (avoids : ¬ HasCycleWithLength L object)
-    (datum : Q2TargetDefect (HasCycleWithLength L) support threshold scale
-      receiver load) : False :=
-  datum.targetDefect (iff_of_false
-    (Route8.PresentedEntry.not_target_glue_retainedBasinPiece_outside avoids _ _)
-    (Strategy.InterfaceReplacement.not_target_glue_piece_outside avoids _))
-
-theorem Q3TargetDefect.false_of_avoids {L : Nat → Prop}
-    {support : Finset object.Vertex} {threshold : Nat}
-    {receiver load : object.Vertex}
-    (avoids : ¬ HasCycleWithLength L object)
-    (datum : Q3TargetDefect (HasCycleWithLength L) support threshold receiver
-      load) : False := by
-  have avoids' : ¬ HasCycleWithLength datum.LengthOK object := fun accepted =>
-    avoids ((congrFun datum.target_eq object).mpr accepted)
-  refine datum.targetDefect (iff_of_false ?_ ?_)
-  · intro accepted
-    exact Route8.PresentedEntry.not_target_glue_retainedReading_outside avoids' _
-      ((congrFun datum.target_eq _).mp accepted)
-  · intro accepted
-    exact Strategy.InterfaceReplacement.not_target_glue_piece_outside avoids' _
-      ((congrFun datum.target_eq _).mp accepted)
-
-theorem Q5TargetDefect.false_of_avoids {L : Nat → Prop}
-    {support : Finset object.Vertex} {threshold scale : Nat}
-    {receiver load : object.Vertex}
-    (avoids : ¬ HasCycleWithLength L object)
-    (datum : Q5TargetDefect (HasCycleWithLength L) support threshold scale
-      receiver load) : False := by
-  obtain ⟨_packing, _collection, _canonical, index, _indexMem, _supportEq,
-    _receiverEq, _loadEq, LengthOK, targetEq, _selected, _twoCarrier, carrier,
-    _carrierMem, defect, _profile, _declared⟩ := datum
-  have avoids' : ¬ HasCycleWithLength LengthOK object := fun accepted =>
-    avoids ((congrFun targetEq object).mpr accepted)
-  have deleted : (q5Entry object threshold LengthOK index).Complete
-      ((q5Core object threshold LengthOK index).erase carrier) :=
-    Route8.PresentedEntry.ofTraceBasin_complete_of_avoids avoids' _
-  have core : (q5Entry object threshold LengthOK index).Complete
-      (q5Core object threshold LengthOK index) :=
-    Route8.PresentedEntry.ofTraceBasin_complete_of_avoids avoids' _
-  unfold Route8.Entry.Complete at deleted core
-  refine defect ⟨fun accepted => ?_, fun accepted => ?_⟩
-  · exact (congrFun targetEq _).mpr (core.mpr (deleted.mp
-      ((congrFun targetEq _).mp accepted)))
-  · exact (congrFun targetEq _).mpr (deleted.mpr (core.mp
-      ((congrFun targetEq _).mp accepted)))
 
 /-- **Q4 at G is the target-cycle arm of the switch**: at a target-avoiding G
 a Q4 datum's switched graph carries an accepted cycle, the switch is a proper
@@ -497,22 +460,6 @@ theorem Q4TargetDefect.forced_cycle {L : Nat → Prop}
     by_contra none
     exact datum.targetDefect (iff_of_false none avoids)
   exact datum.separation.switched_forced_cycle avoids accepted
-
-/-- **At a target-avoiding G every member of the canonical exit-(4) family is
-a Q4 member** (Lean improvement, decided at G). -/
-theorem CanonicalMember.exists_q4_of_avoids {L : Nat → Prop}
-    {support : Finset object.Vertex} {threshold scale : Nat}
-    {receiver load : object.Vertex}
-    (avoids : ¬ HasCycleWithLength L object)
-    (member : CanonicalMember (HasCycleWithLength L) support threshold scale
-      receiver load) :
-    ∃ datum, member = .q4 datum := by
-  cases member with
-  | q1 datum => exact (datum.false_of_avoids avoids).elim
-  | q2 datum => exact (datum.false_of_avoids avoids).elim
-  | q3 datum => exact (datum.false_of_avoids avoids).elim
-  | q4 datum => exact ⟨datum, rfl⟩
-  | q5 datum => exact (Q5TargetDefect.false_of_avoids avoids datum).elim
 
 namespace Witness
 
@@ -629,10 +576,11 @@ theorem unpeeledExcess_subset_unpeeledLoads
   Finset.sdiff_subset
 
 /-- **The Q2 exit-(4) witness of a target-defective excess basin**
-(`lem:typeA-unpeeled-silent-routing`, the exit-(4) sentence): a compatible
-outside context distinguishing the basin's literal boundary response from the
-basin itself makes the replacement quotient target-defective of type (Q2), and
-its declared routed-load support is the residual excess. -/
+(`lem:typeA-unpeeled-silent-routing`, the exit-(4) sentence), stated about G: a
+piece constructed from G at `B(w)`, in G's boundary-degree fibre there and
+separated from G's own piece by G's surroundings `G − B(w)`, makes the
+replacement quotient target-defective of type (Q2), and its declared routed-load
+support is the residual excess. -/
 def witnessOfExcessTargetDefect {Target : FiniteObject.{u} → Prop}
     {support : Finset object.Vertex} {threshold scale : Nat}
     {receiver : object.Vertex} {peeled : Finset object.Vertex}
@@ -648,28 +596,23 @@ def witnessOfExcessTargetDefect {Target : FiniteObject.{u} → Prop}
     (proper : ∃ vertex,
       vertex ∉ excessTraceSupport object support threshold scale receiver
         peeled)
-    (targetDefect : ¬ (Target (glue
-        (excessBoundaryResponse object support threshold scale receiver peeled)
-        (Strategy.InterfaceReplacement.SupportAtom.outside object
-          (excessTraceSupport object support threshold scale receiver peeled))) ↔
-      Target (glue (Strategy.InterfaceReplacement.SupportAtom.piece object
-          (excessTraceSupport object support threshold scale receiver peeled))
-        (Strategy.InterfaceReplacement.SupportAtom.outside object
-          (excessTraceSupport object support threshold scale receiver
-            peeled))))) :
+    (realization : GConstructedPiece object
+      (excessTraceSupport object support threshold scale receiver peeled))
+    (targetDefect : realization.Separated Target GConstructedPiece.own) :
     Witness Target support threshold scale receiver peeled where
   load := load
   unpeeled := unpeeledExcess_subset_unpeeledLoads support threshold scale
     receiver peeled excessMember
   member := .q2 ⟨peeled, silent, excessMember, basin_subset, connected, proper,
-    targetDefect⟩
+    realization, targetDefect⟩
 
 /-- **The Q2 semantic dichotomy** (`lem:typeA-unpeeled-silent-routing`),
-stated about G: at a silent unpeeled excess state, either the excess basin's
-boundary response is distinguished from the basin by G's own surroundings
-`G − B(w)` — and then the state supplies an exit-(4) witness at one of its own
-residual excess loads — or the two agree there and lie in one fibre
-(`retainedBasinPiece_boundaryDegreeProfile`), entering exits `(5)`–`(8)`. -/
+stated about G: at a silent unpeeled excess state, either some piece
+constructed from G at the excess basin `B(w)`, in G's fibre there, is
+separated from G's own piece by `G − B(w)` — and then the state supplies an
+exit-(4) witness at one of its own residual excess loads — or every such piece
+has G's target truth there, and the boundary-response replacement enters exits
+`(5)`–`(8)`. -/
 theorem exists_witness_or_excess_targetComplete
     {Target : FiniteObject.{u} → Prop}
     {support : Finset object.Vertex} {threshold scale : Nat}
@@ -685,39 +628,25 @@ theorem exists_witness_or_excess_targetComplete
         peeled) :
     (∃ witness : Witness Target support threshold scale receiver peeled,
         witness.load ∈ unpeeledExcess support threshold scale receiver peeled) ∨
-      -- G-form of target-completeness: one boundary-degree fibre and the same
-      -- target truth in G's own surroundings `G − B(w)`.
-      ((excessBoundaryResponse object support threshold scale receiver
-            peeled).boundaryDegreeProfile =
-          (Strategy.InterfaceReplacement.SupportAtom.piece object
-            (excessTraceSupport object support threshold scale receiver
-              peeled)).boundaryDegreeProfile ∧
-        (Target (glue
-            (excessBoundaryResponse object support threshold scale receiver peeled)
-            (Strategy.InterfaceReplacement.SupportAtom.outside object
+      ∀ realization : GConstructedPiece object
+          (excessTraceSupport object support threshold scale receiver peeled),
+        realization.profile = GConstructedPiece.own.profile →
+          (realization.targetOf Target ↔
+            (GConstructedPiece.own : GConstructedPiece object
               (excessTraceSupport object support threshold scale receiver
-                peeled))) ↔
-          Target (glue (Strategy.InterfaceReplacement.SupportAtom.piece object
-              (excessTraceSupport object support threshold scale receiver peeled))
-            (Strategy.InterfaceReplacement.SupportAtom.outside object
-              (excessTraceSupport object support threshold scale receiver
-                peeled))))) := by
+                peeled)).targetOf Target) := by
   classical
-  by_cases agree : Target (glue
-        (excessBoundaryResponse object support threshold scale receiver peeled)
-        (Strategy.InterfaceReplacement.SupportAtom.outside object
-          (excessTraceSupport object support threshold scale receiver peeled))) ↔
-      Target (glue (Strategy.InterfaceReplacement.SupportAtom.piece object
-          (excessTraceSupport object support threshold scale receiver peeled))
-        (Strategy.InterfaceReplacement.SupportAtom.outside object
-          (excessTraceSupport object support threshold scale receiver peeled)))
-  · refine Or.inr ⟨?_, agree⟩
-    exact Route8.PresentedEntry.retainedBasinPiece_boundaryDegreeProfile object
-      (excessTraceSupport object support threshold scale receiver peeled) _
-  · obtain ⟨load, excessMember⟩ := silent.2.1
+  by_cases separated : ∃ realization : GConstructedPiece object
+      (excessTraceSupport object support threshold scale receiver peeled),
+    realization.Separated Target GConstructedPiece.own
+  · obtain ⟨realization, defect⟩ := separated
+    obtain ⟨load, excessMember⟩ := silent.2.1
     exact Or.inl
       ⟨witnessOfExcessTargetDefect silent excessMember basin_subset connected
-        proper agree, excessMember⟩
+        proper realization defect, excessMember⟩
+  · refine Or.inr fun realization sameProfile => ?_
+    by_contra different
+    exact separated ⟨realization, sameProfile, different⟩
 
 
 /-! ## The excess basin's structural clauses

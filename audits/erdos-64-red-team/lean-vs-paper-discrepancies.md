@@ -6813,3 +6813,159 @@ port the walk is a shortest `x`–`c` path of `G − cx` (`GeodesicAvoiding s(a,
 - **Collisions.** No collision is forced. (i) The `s <= 2` system is separable: each constraint involves the path lengths of at most two pieces and the stub gaps `dist(i,i') <= order - 1 = 12`, and excludes at most `~ 13` values (`4, 8, ..., 4096` are the powers of two below `2*6142 + 2*12 + 4`, the largest `s = 2` length; `RemainderPathBounds`: bags of at most 6142 non-hub vertices) out of a range of about 12000; a Lean-checked statement about G cannot be drawn from that (a feasible assignment is not G's shape), but the ledger contains no equality or lower bound tying the length sets of two pieces or the stub choices of two cycles, which is what a forced collision needs. (ii) Sumsets of length sets meet a power of two only if they contain a whole interval around it; the flexibility available is at most `12` per window (stub position, `windowPositionStubs`: 15 stubs at fixed positions, interior positions one stub, ends two) plus the difference of two path lengths in a piece (nonzero only when the piece contains a cycle), against gaps `2^{k+1} - 2^k` that exceed every such interval once `2^k > 12s + 6142s`. (iii) Two B-cycles sharing a window differ by stub-gap amounts `<= 12`, giving differences of controlled size but no residue forced modulo a power of two; the family closed under symmetric difference (theta graphs `a, b, c` with `a+b, a+c, b+c` all avoiding `2^k`) is the counterexample hypothesis itself restricted to the cycle space of `B`, and its satisfiability is the Erdos-Gyarfas question; no local step reduces it. The general cycle of `B` with `s >= 3` windows is not built in Lean (the `2s`-cycle lemma generalising `cross_cycle_paths`).
 - **Exact surviving pattern.** Every cycle of `B` (any `s`, any stub choice, any path in each piece) has length outside `{2^k : k >= 2}`; for `s <= 2` this is 8266/8264/8269. Together with the thin remainder, the net cap, the join, `X + T < sigma_W + F*T` and `n < N0'`. Root type: `Route8RateFailsOutcome` has 113 common facts. Checked: `NearCubic/Spine.lean`, `Residuals.lean`, `Residuals/Route8RateFailsOutcome.lean` and all new library, contract and row files.
 
+## Pieces constructed from G (branch g-pieces-constructed, idx 8700–8799) (2026-09-29)
+
+**User decision (binding): "everything is pieces built from G".**  The G repair
+restated the target-completeness / quotient / exit-(4) / route-8 notions about
+G with G's own surroundings `G − Z` as the only context — kept.  It also
+restricted the *realizations* (the pieces that may occupy `Z`) to G's readings;
+a reading glued into `G − Z` is a subgraph of G, so those notions became
+vacuous at G.  The realizations are now the **pieces constructed from G**.
+
+### The family `GConstructedPiece G Z` (`Graph/GConstructedPiece.lean`)
+
+`own` (G[Z]), `reading X` (`SupportAtom.retainedPiece`), `fold keep remove`
+(two interior vertices with no common neighbour in G identified,
+`identifyInternal`; triangle-free edge contractions included), `transplant Y`
+(`Transplant.transplant`), `swap P Q` (`RerouteSwap.swapPiece`), `splice a b D`
+(excision of `D` with the shortcut `a b`, `SpliceLift.splice` read on `∂Z`),
+`switch a a' b b'` (proper double-edge switch, else G).  `toPiece`, `response L`
+(`glue P (G − Z)` has an accepted cycle), `targetOf`, `profile`, `Separated`.
+Construction sources copied verbatim from g-audit-int (FoldCycleLift from r8q,
+Transplant/RerouteSwap from 144a, SpliceLift from coldSilent).  Facts: own,
+readings, transplants, linkage-included swaps are target-free in `G − Z`; a
+fold keeps the profile, is strictly smaller with the baseline once glued, hence
+carries a target cycle at a minimal G, which lifts to an accepted-length path of
+G between the folded vertices.
+
+### Re-defined notions (realizations: constructed pieces; context: `G − Z`)
+
+- `AttemptedQuotient` / `DeclaredQuotient` (`DeclaredRankQuotient.lean`):
+  `value : GConstructedPiece G Z → Label → Value`; `Identifies` on constructed
+  pieces; `TargetCompleteAt` (fibre + agreement in `G − Z`) guards the
+  representative clauses; `DeclaredQuotient.contextUniversal` restored as a
+  field (condition (b)); `AttemptedQuotient.route` has four arms again
+  (profile blocker, **target defect in `G − Z`**, replacement, closed
+  representative); `defect_of_minimal` replaces `fibre_of_minimal`.
+- `[11]` `DegreeProfileFibresStatement`, `[12]`
+  `TargetCompleteContextUniversalityStatement`, `[36]`
+  `CertificateContextUniversal` / `[37]` `ContextDefectStatement`: over
+  constructed pieces.  `[36]` is still decided yes — now by admissibility
+  (`contextUniversal`), not by the subgraph argument; `[37]` still closes
+  against `[12]`.
+- Type B global–local reflection clause (d): target-defect arm restored.
+- `Route8.Entry`: realization family (`Realization`, `realize`, `Realizes`,
+  antitone).  `Complete D` := every realization of `ρ|_D` has the full reading's
+  target truth in `G − B_u`; `Determined` := the whole supply is complete; the
+  core is selected against `CoreComplete := Complete ∨ ¬ Determined` (empty when
+  undetermined).  Deletion witnesses are constructed realizations
+  (`exists_deletion_witness`).  `Route8CarrierCore`'s raw duplicate of the
+  core was removed; `TwoCarrierDeletionWitnesses` is stated over an `Entry`.
+- `PresentedEntry.ofTraceBasin`: realizations `GConstructedPiece G B_u`,
+  `Realizes := QuotientRealization` of the forgetting quotient, which now also
+  keeps the labelled boundary itself (every restriction keeps it).
+- (a) `TraceLocalTargetDefect`, (b) `TraceResponseQuotient` completeness, Q2,
+  Q3, Q5: over constructed realizations.  Q1 compares the two readings of two
+  declared coordinates (readings by definition): kept, still decided false.
+- Demand records (`CanonicalDemandRecord`): the defect's constructed
+  realization and event; actual corridor record, or the event is internal to
+  the realization, or it avoids the realization's interior (the two cases the
+  manuscript excludes through `lem:typeA-internal-quotient-mixed`, explicit at
+  G).
+- `[178]`: `SparsePairSkeletonModel.gSignature` — G's own response of every
+  constructed piece at `X_π` in `G − X_π`; `memberPiece = edgePiece`.
+
+### Status of the earlier closures
+
+- **"route-8 core empty, α = 0"** (`ofTraceBasin_alpha_eq_zero`): **invalid,
+  removed.**  α = 0 now holds only at undetermined entries and at boundary-only
+  basins (`ofTraceBasin_alpha_eq_zero_of_cutBoundary`).  A fold pair not held by
+  the coordinates `D` retains makes `D` incomplete
+  (`ofTraceBasin_not_complete_of_foldPair`); complete sets hold every fold pair.
+- **"[123] failed-rate arm empty"** (`route8UnifiedEmptyAtG`, key 7900):
+  **invalid, removed** (key, row, contract, freshness params).  `[123]`'s no
+  arm runs `[181]`, `[183]`–`[186]` again.
+- **"Route8JointBalance closed"**: **reopened.  ROOT TYPE CHANGE:**
+  `Route8JointBalanceOutcome_product` is restored as a disjunct of
+  `SelectedRouteEightBoundary` and of `SelectedLedgerBoundaryResult`
+  (`Residuals/Route8JointBalanceOutcome.lean`, `route8JointBalanceReturn`,
+  `route8JointBalanceProductReturn`); the root theorem keeps its name and form.
+- **"Q1–Q3/Q5 false at G"**: Q1 still false (declared-coordinate readings);
+  **Q2, Q3, Q5 reopen as live tests**; `exists_q4_of_avoids` removed.  At a
+  minimal G a fold pair of the basin is a Q3 defect
+  (`traceLocalTargetDefect_of_foldPair`), and where (a) is absent every two
+  interior basin vertices have a common neighbour in G.
+- **"exit (b) empty"** (`ResidualTargetDefect`): **still closed** — its two
+  realizations are the readings of two declared coordinates, readings of G by
+  definition.
+- **"cold G2 empty"** (`BoundedGerm.not_distinguishing`): its second
+  representative `E` is the `Precedes`-least piece *with G's response in
+  `G − Z`* (`CutStateReadingAt`, carried as the field `BoundedGerm.sameResponse`),
+  so G2 is empty by the choice of `E`, the readings-only pattern.  **Invalid under
+  the decision.**  Read on the constructed pieces at the germ's support
+  (`Graph/ColdGermConstructed.lean`): `DistinguishingAt germ P` is exactly
+  `P.response` in `G − Z` (`distinguishingAt_iff_response`), and at a minimal G
+  every fold of two interior vertices of the support with no common neighbour
+  distinguishes (`distinguishingAt_fold`) — G2 is inhabited at every germ whose
+  support has such a pair.  For the excision `E = splice a b D`, G2 is the
+  excised glue's accepted cycle, which g-audit-coldSilent's `excision_dichotomy`
+  turns into a cycle of G of length `L + q` (`L` accepted, `L + q` not).
+  **Residual not restored on this branch:** restoring it re-types
+  `BoundedGerm.canonical` as a constructed piece, removes the `[154]` G2
+  `Incompatible` closure (three assembly sites: `NearCubic/DensePass` ×2,
+  `NearCubic/Survivor/Realized`), rebuilds the G3 compression from the neutral
+  hypothesis instead of `sameResponse`, and returns a new cold G2 residual at the
+  root — a root-type change in modules g-audit-coldSilent is still changing.
+  Flagged for the coordinator.
+
+### Integration with g-repair-base 20bd04f (g-audit-int)
+
+- **`K .route8Rate` is the manuscript rate again** (`Route8Census.Rate`,
+  `τ < 3/13`).  g-audit-r8rate re-routed it to the strong rate
+  `s·|∂R| + F·s·T(n) < |R|`, justified by "every route-8 core is empty at G";
+  with constructed realizations the cores are not empty in general, and the
+  strong rate no longer closes the no-two-carrier arm `[119]`–`[122]`.  Restored:
+  `Route8CensusStatement`, `Route8RateStatement`, `Route8RateFailsStatement`,
+  `route8RateFromColdBelow`, `exactCollisionFails_route8Rate_false`,
+  `route8Census_privateCarrierBudget_false` (budget `δ·|Ξ| ≤ |∂R|` against the
+  census and the rate), the budget row and its incompatibility.  Removed:
+  `Route8CollectionEmpty`, `route8CollectionEmpty_of_noTwoCarrier`,
+  `route8Census_collectionEmpty_false`, `route8Thin_of_fails`.
+  **Root-type change:** `Route8RateFailsOutcome` (and its realized/dense
+  subtypes) now carries the manuscript failed rate
+  `δ|R| ≤ (δs+1)|∂R| + δ·F·s·T(n)` under `K .route8RateFails` (the thin
+  remainder is a sub-case, the second disjunct of `K .route8StrongRate`), and
+  the `K .route8Rate` conjunct of every residual that has it is the manuscript
+  rate.
+- **r8rate keys 8259/8260 restated in G-form** (key names kept):
+  `route8CoreEmpty` — every census core is empty *or its entry is determined*
+  (`Entry.alpha_eq_zero_of_not_determined`); `route8StrongRate` — the strong rate
+  with `[113]` gives a nonempty route-8 collection (no longer a two-carrier
+  entry), or the thin remainder.
+- **r8q key 8150 `route8QuotientEntriesAtG` restated:** withdrawn — "quotient-free
+  iff no entry" and "`α(ξ) = 0` at every entry"; kept — an empty family is
+  quotient-free, `0 < |Ξ̃|`, and (now unconditional, `K .route8Rate` being the
+  manuscript rate) `|∂R| < δ|Ξ̃|` with a two-support entry; per entry: the
+  selected basin, the size-preserving representative, readings not smaller,
+  folds carrying cycles and paths, carriers in `∂R`, short inside paths, no
+  exit-(5) datum; and **at `α(ξ) = 0`** the (b) quotient and the undeclared
+  constructed realizations.
+- `[11]`/`[12]` read `canonicalPieceLabel` (profile and `G − Z` response of every
+  constructed piece), replacing g-audit-182's `canonicalReadingLabel`.
+
+### New fact (Type A, idx 8700): `K .route8FoldPeels`
+
+`Route8FoldPeelsStatement` (row `route8FoldPeelsRow`, Requires `selection`,
+`cubicBaseline`), run after the unified deficit on the route-8 residual path, so
+`[348]` and `[186]` carry it: at every unified entry, (1) a fold pair of the
+selected basin makes (a) occur and the load an exit-`(4)` peel (Q3); (2) a
+nonempty core means the declared family determines the target; (3) every
+complete carrier set holds every fold pair; (4) `thm:typeA-two-carrier-nogo`
+run at G: a two-support entry with a nonempty core is an exit-`(4)` peel (Q5,
+`twoCarrier_exitFour_of_core`).
+
+### Route 8 does not close
+
+`[124]` now closes non-vacuously (the Q5 witness is a constructed realization).
+`[123]`'s failed-rate arm returns the `[186]` joint balance (open in the
+manuscript) and `[348]` returns the quotient residual.

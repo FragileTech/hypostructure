@@ -120,6 +120,7 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
     (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by
       key_fresh)
     (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known := by key_fresh)
+    (foldPeelsFresh : K .route8FoldPeels ∉ known := by key_fresh)
     (quotientFreeFresh : K .route8QuotientFree ∉ known := by key_fresh)
     (quotientResidualFresh : K .route8QuotientResidual ∉ known := by
       key_fresh)
@@ -151,7 +152,6 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
     (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
       key_fresh)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh)
-    (emptyAtGFresh : K .route8UnifiedEmptyAtG ∉ known := by key_fresh)
     (entriesAtGFresh : K .route8QuotientEntriesAtG ∉ known := by key_fresh)
     (typeBSublinearCanonicalFormFresh : K .typeBSublinearCanonicalForm ∉ known := by key_fresh)
     (groupedAbsorbedCoreSubsetFresh : K .groupedAbsorbedCoreSubset ∉ known := by key_fresh)

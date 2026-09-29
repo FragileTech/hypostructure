@@ -164,6 +164,8 @@ import Hypostructure.Graph.ReadingExactness
 import Hypostructure.Graph.RerouteSwap
 import Hypostructure.Graph.U2FreeWhole
 import Hypostructure.Graph.WholeBlocks
+import Hypostructure.Graph.GConstructedPiece
+import Hypostructure.Graph.ColdGermConstructed
 import Hypostructure.Graph.PathChords
 import Hypostructure.Graph.PortPathCover
 import Hypostructure.Graph.AnchoredReturnCompletion
@@ -201,3 +203,7 @@ import Hypostructure.Graph.PairRoute
 
 -- Core routing modules included in the root build closure.
 import Hypostructure.Core.DependentOwnerGlueCapacity
+import Hypostructure.Graph.ThetaCycles
+import Hypostructure.Graph.DisjointRoutes
+import Hypostructure.Graph.FirstRepeatPeriod
+import Hypostructure.Graph.LocalCycleRank

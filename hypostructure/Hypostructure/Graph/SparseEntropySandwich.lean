@@ -463,16 +463,8 @@ the skeleton class, pulled back to `V(G)`).  Glued into `G − Z` it is
 `glue X' (G − Z)` with `X'` the member's reading. -/
 noncomputable def memberPiece (object : FiniteObject.{u})
     (graph : SimpleGraph object.Vertex) (support : Finset object.Vertex) :
-    BoundaryPiece (Strategy.InterfaceReplacement.SupportAtom.boundary object support) where
-  Internal := Strategy.InterfaceReplacement.SupportAtom.PieceInternal object support
-  internalVertices := by
-    letI : FinEnum object.Vertex := object.vertices
-    exact FinEnum.Subtype.finEnum fun vertex =>
-      vertex ∈ support ∧
-        vertex ∉ Strategy.InterfaceReplacement.SupportAtom.cutBoundary object support
-  graph := SimpleGraph.comap
-    (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object support) graph
-  decideAdj := Classical.decRel _
+    BoundaryPiece (Strategy.InterfaceReplacement.SupportAtom.boundary object support) :=
+  edgePiece object support graph
 
 /-- The exact skeleton response model for a nonempty subfamily of a declared
 pair schedule.  Every support is the canonical `X_π`; every state is read from
@@ -518,6 +510,34 @@ noncomputable def response
         (model.responseSupport pair))
       (Strategy.InterfaceReplacement.SupportAtom.outside object
         (model.responseSupport pair)))
+
+/-- **G's own pair-response signature at `X_π`** (node `[178]`, read on the
+pieces constructed from G): the target response, in G's own surroundings
+`G − X_π`, of every piece constructed from G at the pair's support
+(`GConstructedPiece.response`).  This is a signature of G alone -- no member of
+the skeleton class and no other context is read. -/
+def gSignature (LengthOK : Nat → Prop) {object : FiniteObject.{u}}
+    {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (pair : {pair // pair ∈ model.pairSet}) :
+    GConstructedPiece object (model.responseSupport pair) → Prop :=
+  fun piece => piece.response LengthOK
+
+/-- At a target-avoiding G, G's own piece and every reading of G carry no
+response in G's signature at `X_π`. -/
+theorem gSignature_own_reading {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
+    {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (pair : {pair // pair ∈ model.pairSet})
+    (avoids : ¬ HasCycleWithLength LengthOK object) :
+    ¬ model.gSignature LengthOK pair GConstructedPiece.own ∧
+      ∀ reading, ¬ model.gSignature LengthOK pair (GConstructedPiece.reading reading) :=
+  ⟨GConstructedPiece.not_response_own avoids,
+    fun reading => GConstructedPiece.not_response_reading avoids reading⟩
 
 def Overlaps
     {object : FiniteObject.{u}} {Coordinate Chord : Type u}

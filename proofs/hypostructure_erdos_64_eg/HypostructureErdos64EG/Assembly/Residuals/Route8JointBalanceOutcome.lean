@@ -2,15 +2,15 @@ import HypostructureErdos64EG.Assembly.Residuals
 import HypostructureErdos64EG.Assembly.Residuals.Route8Blocks
 
 /-!
-# Assembly: Residuals / Route8QuotientOutcome
+# Assembly: Residuals / Route8JointBalanceOutcome
 
-Node `[187] ([348], route-8 quotient failure)` as a PRODUCT OF ARM BLOCKS.
+Node `[186]` as a PRODUCT OF ARM BLOCKS.
 
 The 750 paths from `selectedLedgerBoundary` to the one return site
-(`route8QuotientReturn` in `selectedRouteEightUnifiedResidual`,
+(`route8JointBalanceReturn` in `selectedRouteEightUnifiedResidual`,
 `Assembly/RouteEight/Local.lean`) carry 750 distinct fact sets.  Each is
-exactly the 65 common keys of `Route8QuotientOutcome` together with one block
-per factor of
+exactly the 80 common keys of `Route8JointBalanceOutcome` together with one
+block per factor of
 
   `15 lane entries × 50 continuation`,  `50 = 2·22 + 6`,
 
@@ -20,7 +20,10 @@ where the lane entry (`Route8LaneEntry`) is `3 prefix × 4 entropy` or the
 route with high entropy is closed at `[53]`,
 
 and every combination occurs (checked against the elaborated ledger of every
-path).  The blocks live in `Residuals/Route8Blocks.lean`.
+path).  These are the same factors as `Route8QuotientOutcome`: both residuals
+are returned from the same composition on the same incoming ledger, [186] on
+the quotient-free arm after `[123]`, `[181]` and `[183]`--`[185]`.  The blocks
+live in `Residuals/Route8Blocks.lean`.
 The absorbed lane `[174]`--`[177]` contributes no path: `[173]`'s no-arm is
 closed at the node against the private-carrier rate `K .route8Rate`
 (`instIncompatibleExactCollisionFailsRoute8Rate`).
@@ -35,25 +38,25 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u
 
-/-- **Node `[187] ([348])` as a product of arm blocks**: the generic
-residual (87 common facts), one lane entry (a near-cubic prefix block with an
-entropy block), and one net-charge continuation (Type A lane or Type B
-high-surplus lane, each a nested product of its own blocks).  Totals run from
-107 to 146 facts. -/
-abbrev Route8QuotientOutcome_product (selected : EGInput.{u}) : Prop :=
-  Route8QuotientOutcome selected ∧ Route8LaneEntry selected ∧
+/-- **Node `[186]` as a product of arm blocks**: the generic residual (102
+common facts), one lane entry (a near-cubic prefix block with an entropy
+block), and one net-charge continuation (Type A lane or Type B high-surplus
+lane, each a nested product of its own blocks).  Totals run from 110 to 149
+facts. -/
+abbrev Route8JointBalanceOutcome_product (selected : EGInput.{u}) : Prop :=
+  Route8JointBalanceOutcome selected ∧ Route8LaneEntry selected ∧
     NetChargeContinuation selected
 
-theorem Route8QuotientOutcome_product.toGeneric {selected : EGInput.{u}}
-    (h : Route8QuotientOutcome_product selected) :
-    Route8QuotientOutcome selected :=
+theorem Route8JointBalanceOutcome_product.toGeneric {selected : EGInput.{u}}
+    (h : Route8JointBalanceOutcome_product selected) :
+    Route8JointBalanceOutcome selected :=
   h.1
 
-/-- The return of `Route8QuotientOutcome_product`, parameterised by the arm
-choices: the 87 common facts are read from the ledger by
-`route8QuotientReturn`, and each factor is the arm block the path took, built
-by that block's `.ret` from the same ledger (one `get` per key). -/
-theorem route8QuotientProductReturn
+/-- The return of `Route8JointBalanceOutcome_product`, parameterised by the
+arm choices: the 102 common facts are read from the ledger by
+`route8JointBalanceReturn`, and each factor is the arm block the path took,
+built by that block's `.ret` from the same ledger (one `get` per key). -/
+theorem route8JointBalanceProductReturn
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
@@ -169,12 +172,25 @@ theorem route8QuotientProductReturn
     [FactKeys.Has (K .typeBSublinearLedger) known]
     [FactKeys.Has (K .route8UnifiedDeficit) known]
     [FactKeys.Has (K .route8FoldPeels) known]
-    [FactKeys.Has (K .route8QuotientResidual) known]
+    [FactKeys.Has (K .route8QuotientFree) known]
+    [FactKeys.Has (K .route8UnifiedEntryCensus) known]
     [FactKeys.Has (K .route8PeelingDescent) known]
-    [FactKeys.Has (K .route8QuotientEntriesAtG) known]
+    [FactKeys.Has (K .route8StageRateFailed) known]
+    [FactKeys.Has (K .route8DemandLedger) known]
+    [FactKeys.Has (K .route8DemandAbsorption) known]
+    [FactKeys.Has (K .route8DemandUnitCount) known]
+    [FactKeys.Has (K .route8OpenBoundarySaturated) known]
+    [FactKeys.Has (K .route8WindowBlockers) known]
+    [FactKeys.Has (K .windowShadowHitCycle) known]
+    [FactKeys.Has (K .windowShadowHitExcluded) known]
+    [FactKeys.Has (K .route8UnpaidTwoCarrier) known]
+    [FactKeys.Has (K .route8UnpaidExitFourResidual) known]
+    [FactKeys.Has (K .route8UnifiedVisibleResidual) known]
+    [FactKeys.Has (K .route8UnifiedVisibleOverload) known]
+    [FactKeys.Has (K .route8JointBalance) known]
     (entry : Route8LaneEntry selected)
     (continuation : NetChargeContinuation selected) :
-    Route8QuotientOutcome_product selected :=
-  ⟨route8QuotientReturn history, entry, continuation⟩
+    Route8JointBalanceOutcome_product selected :=
+  ⟨route8JointBalanceReturn history, entry, continuation⟩
 
 end HypostructureErdos64EG

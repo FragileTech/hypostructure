@@ -36,9 +36,10 @@ scheduled pair has a blocker of type (d) or (e).
 
 The proof follows the paper's case order.  The rank-reducing quotient is an
 admissible declared quotient of G, so it preserves the boundary-degree profile
-(`DeclaredQuotient.fibrewise`) and no context of G separates the readings it
-identifies (decided at G, `readings_agree_in_rest`): the paper's first two
-cases (a profile-crossing or a target-defective determination) do not arise.
+(`DeclaredQuotient.fibrewise`) and G's own rest `G − Z` separates no two
+constructed pieces it identifies (`DeclaredQuotient.contextUniversal`): the
+paper's first two cases (a profile-crossing or a target-defective
+determination) do not arise.
 It is therefore target-complete, and `DeclaredQuotient.localize` gives the
 remaining two: a proper determination support admits a replacement (exit (c)),
 and the whole-graph support has a strictly smaller closed baseline

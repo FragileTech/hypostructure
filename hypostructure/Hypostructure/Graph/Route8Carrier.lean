@@ -9,9 +9,12 @@ coordinates*, each of which records the finite set of *boundary carriers* --
 oriented incidences leaving the piece's own support -- that its declared
 support uses.  Restricting the reading to a set `D` of carriers keeps exactly
 the coordinates whose carrier set is contained in `D`, and always keeps the
-labelled boundary itself.  `D` is *complete* when the restricted reading has
-the same target response as the full one in the entry's one actual context
-(G's surroundings `G − B_u`; G-only restatement of "every outside context").
+labelled boundary itself.  `D` is *complete* when every *realization* of the
+restricted reading -- a piece of the entry's realization family (for a
+graph-owned entry, the pieces constructed from G at `B_u`, `GConstructedPiece`)
+that carries every retained coordinate exactly -- has the target response of the
+full reading in the entry's one actual context (G's surroundings `G − B_u`).
+The context is G's; the realizations are pieces built from G.
 
 This module owns four things, and nothing else:
 
@@ -57,7 +60,14 @@ reading may use; `coordinates` is the declared coordinate family of the reading;
 assembles the boundaried piece that retains exactly a given set of declared
 coordinates.  The labelled boundary is fixed, so every restriction below is
 taken inside one boundary-degree fibre -- which is what makes a restriction a
-*response quotient* rather than a change of interface. -/
+*response quotient* rather than a change of interface.
+
+`Realization`, `realize` and `Realizes` are the realizations a restricted
+reading is tested on (`def:typeA-trace-basin`: *"a realization of such a
+quotient is a boundaried response state with the same boundary degree profile
+whose image under the quotient map is the given quotient"*): `Realizes R ρ`
+says that `realize ρ` carries every coordinate of `R` exactly.  Carrying more
+coordinates is carrying fewer (`realizes_anti`). -/
 structure Entry (Target : FiniteObject.{u} → Prop) (Carrier : Type u) where
   /-- The labelled interface every restricted reading is presented on. -/
   boundary : Boundary.{u}
@@ -80,6 +90,17 @@ structure Entry (Target : FiniteObject.{u} → Prop) (Carrier : Type u) where
   graph-owned entry, `SupportAtom.outside G B_u`, i.e. `G − B_u`).  No other
   context is quantified. -/
   actual : OutsideContext boundary
+  /-- The realizations a restricted reading is tested on (for a graph-owned
+  entry: the pieces constructed from G at `B_u`). -/
+  Realization : Type u
+  /-- The boundaried piece a realization denotes. -/
+  realize : Realization → BoundaryPiece boundary
+  /-- `Realizes R ρ`: `realize ρ` lies in the reading's boundary-degree fibre and
+  carries every coordinate of `R` exactly. -/
+  Realizes : Finset Coordinate → Realization → Prop
+  /-- A realization of a larger retained set realizes every smaller one. -/
+  realizes_anti : ∀ {R S : Finset Coordinate} (ρ : Realization),
+    R ⊆ S → Realizes S ρ → Realizes R ρ
 
 namespace Entry
 
@@ -123,20 +144,56 @@ theorem retained_carriers :
     entry.restriction entry.carriers.toFinset = entry.full := by
   rw [restriction, retained_carriers, full]
 
-/-- **A target-complete carrier set, read in the entry's actual surroundings.**
-Restricting to `D` is invisible to the target in the one context the reading is
-glued into, `entry.actual` (G − B_u for a graph-owned entry).
+/-- **A target-complete carrier set, at G.**  Every realization of the
+restricted reading `ρ|_D` has, in the entry's actual surroundings (G − B_u for a
+graph-owned entry), the target truth of the full reading.
 
-G-only restatement: the paper's "against every outside context" ranged over
-contexts that are not part of G. -/
+G-only restatement: the paper's "for every outside context compatible with the
+boundary profile, all realizations of the quotient" reads the one context of G
+and the realizations built from G. -/
 def Complete (D : Finset Carrier) : Prop :=
-  Target (glue (entry.restriction D) entry.actual) ↔
-    Target (glue entry.full entry.actual)
+  ∀ ρ : entry.Realization, entry.Realizes (entry.retained D) ρ →
+    (Target (glue (entry.realize ρ) entry.actual) ↔
+      Target (glue entry.full entry.actual))
 
-/-- The whole supply is complete: it restricts nothing. -/
-theorem complete_carriers : entry.Complete entry.carriers.toFinset := by
+/-- **The declared family determines the target** (`def:typeA-trace-basin`:
+*"once the boundary degree profile and all entries of `𝓡_u(B_u)` are fixed,
+every compatible outside context has the same truth value"*), at G: the whole
+supply is complete.  The manuscript asserts it ("Such sets exist: for
+`D = ∂_E X` ... the completeness clause applies"); at G it is a property of the
+entry that can fail, and it is tested, not assumed. -/
+def Determined : Prop :=
+  entry.Complete entry.carriers.toFinset
+
+/-- Completeness is monotone: a larger carrier set retains more coordinates, so
+it has fewer realizations. -/
+theorem complete_mono {D E : Finset Carrier} (subset : D ⊆ E)
+    (complete : entry.Complete D) : entry.Complete E :=
+  fun ρ realizes =>
+    complete ρ (entry.realizes_anti ρ (entry.retained_mono subset) realizes)
+
+/-- Completeness reads only the retained coordinates. -/
+theorem complete_congr {D E : Finset Carrier}
+    (same : entry.retained D = entry.retained E) :
+    entry.Complete D ↔ entry.Complete E := by
   unfold Complete
-  rw [restriction_carriers]
+  rw [same]
+
+/-- An undetermined entry has no complete carrier set at all. -/
+theorem not_complete_of_not_determined (undetermined : ¬ entry.Determined)
+    (D : Finset Carrier) : ¬ entry.Complete D := by
+  classical
+  intro complete
+  have union := entry.complete_mono (Finset.subset_union_left
+    (s₂ := entry.carriers.toFinset)) complete
+  refine undetermined ((entry.complete_congr ?_).mp union)
+  rw [retained_carriers]
+  apply Finset.Subset.antisymm
+  · intro r member
+    exact (entry.mem_retained.mp member).1
+  · intro r member
+    exact entry.mem_retained.mpr ⟨member,
+      (entry.car_subset r member).trans Finset.subset_union_right⟩
 
 /-- A carrier outside this entry's own supply is used by no declared
 coordinate, so deleting it from a carrier set changes no restriction. -/
@@ -152,15 +209,26 @@ theorem retained_erase_of_not_mem {D : Finset Carrier} {carrier : Carrier}
   intro same
   exact outside (same ▸ entry.car_subset r member.1 used)
 
+/-- The completeness predicate the core is selected against: `D` is complete,
+or the entry is undetermined (then no carrier set is complete and the core is
+empty). -/
+def CoreComplete (D : Finset Carrier) : Prop :=
+  entry.Complete D ∨ ¬ entry.Determined
+
+theorem coreComplete_carriers : entry.CoreComplete entry.carriers.toFinset := by
+  by_cases determined : entry.Determined
+  · exact Or.inl determined
+  · exact Or.inr determined
+
 /-- Core's own inclusion-minimal carrier selection, at this entry's supply and
 completeness predicate.  The core is a *minimum-cardinality* complete set, hence
 inclusion-minimal, and `Finite.EssentialCarrier` owns both facts. -/
 noncomputable def carrierProfile : EssentialCarrier.Profile.{u} where
   Carrier := Carrier
   schedule := entry.carriers
-  Complete := entry.Complete
+  Complete := entry.CoreComplete
   completeDecidable := fun _ => Classical.propDecidable _
-  fullComplete := entry.complete_carriers
+  fullComplete := entry.coreComplete_carriers
 
 /-- `𝓒_ess(ξ)`: the canonical inclusion-minimal target-complete carrier set. -/
 noncomputable def essentialCore : Finset Carrier :=
@@ -170,12 +238,19 @@ noncomputable def essentialCore : Finset Carrier :=
 noncomputable def alpha : Nat :=
   entry.essentialCore.card
 
-theorem essentialCore_complete : entry.Complete entry.essentialCore :=
+theorem essentialCore_coreComplete : entry.CoreComplete entry.essentialCore :=
   entry.carrierProfile.core_complete
+
+/-- **A determined entry's core is complete.** -/
+theorem essentialCore_complete (determined : entry.Determined) :
+    entry.Complete entry.essentialCore := by
+  rcases entry.essentialCore_coreComplete with complete | undetermined
+  · exact complete
+  · exact absurd determined undetermined
 
 /-- **An empty complete set empties the core**: the core is a minimum-cardinality
 complete set, so a complete `∅` gives `α(ξ) = 0`. -/
-theorem alpha_eq_zero_of_complete_empty (empty : entry.Complete ∅) :
+theorem alpha_eq_zero_of_coreComplete_empty (empty : entry.CoreComplete ∅) :
     entry.alpha = 0 := by
   have minimumLe := entry.carrierProfile.minimumCard_le ∅ empty
   have coreCard := entry.carrierProfile.core_card
@@ -183,6 +258,30 @@ theorem alpha_eq_zero_of_complete_empty (empty : entry.Complete ∅) :
   change entry.essentialCore.card = 0
   rw [coreCard]
   simpa using minimumLe
+
+theorem alpha_eq_zero_of_complete_empty (empty : entry.Complete ∅) :
+    entry.alpha = 0 :=
+  entry.alpha_eq_zero_of_coreComplete_empty (Or.inl empty)
+
+/-- **An undetermined entry has an empty core.** -/
+theorem alpha_eq_zero_of_not_determined (undetermined : ¬ entry.Determined) :
+    entry.alpha = 0 :=
+  entry.alpha_eq_zero_of_coreComplete_empty (Or.inr undetermined)
+
+/-- **A nonempty core means the declared family determines the target.** -/
+theorem determined_of_mem_essentialCore {carrier : Carrier}
+    (member : carrier ∈ entry.essentialCore) : entry.Determined := by
+  by_contra undetermined
+  have zero := entry.alpha_eq_zero_of_not_determined undetermined
+  have positive : 0 < entry.essentialCore.card :=
+    Finset.card_pos.mpr ⟨carrier, member⟩
+  change entry.essentialCore.card = 0 at zero
+  omega
+
+theorem determined_of_one_le_alpha (one : 1 ≤ entry.alpha) : entry.Determined := by
+  have positive : 0 < entry.essentialCore.card := one
+  obtain ⟨carrier, member⟩ := Finset.card_pos.mp positive
+  exact entry.determined_of_mem_essentialCore member
 
 /-- **`lem:typeA-carrier-cut-parity`, last step**:
 *"Each such crossing is recorded in the declared support of the corresponding
@@ -193,10 +292,7 @@ crossings therefore give two distinct boundary incidences from
 `\mathcal C_{\rm ess}(\xi)`."*
 
 A coordinate the core retains has its whole carrier set inside the core, so a
-coordinate with two distinct carriers forces `\alpha(\xi) \ge 2`.  This is the
-hinge of `lem:typeA-one-terminal-collapse`: it is what
-contradicts `|\mathcal C| \le 1`, and it is the step that makes the claim
-independent of how strong target-completeness is taken to be. -/
+coordinate with two distinct carriers forces `\alpha(\xi) \ge 2`. -/
 theorem two_le_alpha_of_two_le_card_car {r : entry.Coordinate}
     (member : r ∈ entry.retained entry.essentialCore)
     (two : 2 ≤ (entry.car r).card) : 2 ≤ entry.alpha :=
@@ -223,13 +319,7 @@ theorem two_le_alpha_of_two_carriers {r : entry.Coordinate}
   exact card ▸ Finset.card_le_card subset
 
 /-- **Two recorded incidences are two essential carriers, even when they are
-recorded by different coordinates.**
-
-`lem:typeA-carrier-cut-parity`: *"Each
-such crossing is recorded in the declared support of **the corresponding**
-`u`-supported coordinate"* -- one coordinate per crossing, not one coordinate
-for both.  All that `\alpha(\xi)\ge2` needs is two distinct carriers inside the
-core, and a core-retained coordinate carries its whole carrier set there. -/
+recorded by different coordinates.** -/
 theorem two_le_alpha_of_two_core_carriers {left right : Carrier}
     (distinct : left ≠ right) {r s : entry.Coordinate}
     (rCore : r ∈ entry.retained entry.essentialCore)
@@ -253,66 +343,57 @@ theorem two_le_alpha_of_two_core_carriers {left right : Carrier}
   exact card ▸ Finset.card_le_card subset
 
 /-- **Every essential carrier is essential.**  Deleting one from the core
-destroys completeness; this is Core's `erase_not_complete` read here. -/
+destroys completeness; this is Core's `erase_not_complete` read here (the entry
+is determined, since its core is nonempty). -/
 theorem essentialCore_erase_not_complete {carrier : Carrier}
     (member : carrier ∈ entry.essentialCore) :
     ¬ entry.Complete (entry.essentialCore.erase carrier) := by
   letI : DecidableEq entry.carrierProfile.Carrier := ‹DecidableEq Carrier›
   have essential := entry.carrierProfile.erase_not_complete carrier member
-  exact essential
+  exact fun complete => essential (Or.inl complete)
 
-/-- **The canonical core draws on this entry's own supply.**  A carrier outside
-the supply is used by no declared coordinate, so a core containing one would
-stay complete after deleting it -- and a complete proper subset contradicts the
-core's minimality. -/
+/-- **The canonical core draws on this entry's own supply.** -/
 theorem essentialCore_subset_carriers :
     entry.essentialCore ⊆ entry.carriers.toFinset := by
   intro carrier member
   by_contra outside
   refine entry.essentialCore_erase_not_complete member ?_
-  have same := entry.retained_erase_of_not_mem
-    (D := entry.essentialCore) outside
-  have rewritten :
-      entry.restriction (entry.essentialCore.erase carrier) =
-        entry.restriction entry.essentialCore := by
-    rw [restriction, restriction, same]
-  unfold Complete
-  rw [rewritten]
-  exact entry.essentialCore_complete
+  exact (entry.complete_congr (entry.retained_erase_of_not_mem outside)).mpr
+    (entry.essentialCore_complete (entry.determined_of_mem_essentialCore member))
 
-/-- **Deletion witnesses exist** (`lem:typeA-essential-deletion-witness`),
-read in the entry's actual surroundings.
+/-- **Deletion witnesses exist** (`lem:typeA-essential-deletion-witness`), at G.
 
 For every essential carrier `c`, the `c`-deletion quotient of the core reading
-is not target-complete: in `entry.actual` the core reading and the reading `c`
-was deleted from have different target truth.  Nothing is assumed -- it is
-forced by inclusion-minimality of the core and completeness of the core
-itself. -/
-theorem deletion_targetDefect {carrier : Carrier}
+is not target-complete: some realization of `ρ|_{𝒞 ∖ {c}}` has, in
+`entry.actual`, a target truth different from the full reading's -- equivalently
+(`lem:target-complete-quotient-composition`, the core being complete) from the
+core reading's.  Nothing is assumed: it is forced by inclusion-minimality of the
+core. -/
+theorem exists_deletion_witness {carrier : Carrier}
     (member : carrier ∈ entry.essentialCore) :
-    ¬ (Target (glue (entry.restriction (entry.essentialCore.erase carrier))
-          entry.actual) ↔
-        Target (glue (entry.restriction entry.essentialCore) entry.actual)) := by
-  intro equivalent
+    ∃ ρ : entry.Realization,
+      entry.Realizes (entry.retained (entry.essentialCore.erase carrier)) ρ ∧
+        ¬ (Target (glue (entry.realize ρ) entry.actual) ↔
+          Target (glue entry.full entry.actual)) := by
+  by_contra absent
   refine entry.essentialCore_erase_not_complete member ?_
-  exact equivalent.trans entry.essentialCore_complete
+  intro ρ realizes
+  by_contra different
+  exact absent ⟨ρ, realizes, different⟩
 
 /-- A deletion quotient really forgets a declared coordinate: if it retained the
-same coordinates it would be the same reading, with the same target truth. -/
+same coordinates it would have the same realizations. -/
 theorem retained_erase_ne {carrier : Carrier}
     (member : carrier ∈ entry.essentialCore) :
     entry.retained (entry.essentialCore.erase carrier) ≠
       entry.retained entry.essentialCore := by
   intro same
-  refine entry.deletion_targetDefect member ?_
-  rw [restriction, restriction, same]
+  refine entry.essentialCore_erase_not_complete member ?_
+  exact (entry.complete_congr same).mpr
+    (entry.essentialCore_complete (entry.determined_of_mem_essentialCore member))
 
 /-- **Deletion witnesses are declared, and their carrier support contains the
-deleted carrier** (`lem:typeA-deletion-witness-declared`).
-
-The coordinates a `c`-deletion forgets are exactly the declared coordinates of
-the core reading whose carrier support uses `c`, and at least one of them
-exists.  Both halves are forced by the definition of the `D`-restriction. -/
+deleted carrier** (`lem:typeA-deletion-witness-declared`). -/
 theorem exists_forgotten_coordinate {carrier : Carrier}
     (member : carrier ∈ entry.essentialCore) :
     ∃ r ∈ entry.coordinates,
@@ -330,24 +411,29 @@ theorem exists_forgotten_coordinate {carrier : Carrier}
     intro same
     exact missing r inCore.1 inCore.2 (same ▸ used)
 
-/-- The selected entry's carrier-core facts: completeness of the canonical
-core, containment in the entry's own supply, and the deletion witness/declared
-forgotten-coordinate clause for every essential carrier. -/
+/-- The selected entry's carrier-core facts: the core is complete or the entry is
+undetermined (and then the core is empty), it lies in the entry's own supply,
+and every essential carrier has a realization of the deleted restriction whose
+target truth differs from the full reading's, together with a declared
+forgotten coordinate using it. -/
 def CarrierCoreFacts : Prop :=
-  entry.Complete entry.essentialCore ∧
+  entry.CoreComplete entry.essentialCore ∧
     entry.essentialCore ⊆ entry.carriers.toFinset ∧
       ∀ carrier ∈ entry.essentialCore,
-        ¬ (Target (glue (entry.restriction (entry.essentialCore.erase carrier))
-              entry.actual) ↔
-            Target (glue (entry.restriction entry.essentialCore) entry.actual)) ∧
+        entry.Determined ∧
+        (∃ ρ : entry.Realization,
+          entry.Realizes (entry.retained (entry.essentialCore.erase carrier)) ρ ∧
+            ¬ (Target (glue (entry.realize ρ) entry.actual) ↔
+              Target (glue entry.full entry.actual))) ∧
         ∃ r ∈ entry.coordinates,
           entry.car r ⊆ entry.essentialCore ∧ carrier ∈ entry.car r
 
 theorem carrierCoreFacts : entry.CarrierCoreFacts := by
   dsimp [CarrierCoreFacts]
-  refine ⟨entry.essentialCore_complete, entry.essentialCore_subset_carriers, ?_⟩
+  refine ⟨entry.essentialCore_coreComplete, entry.essentialCore_subset_carriers, ?_⟩
   intro carrier member
-  exact ⟨entry.deletion_targetDefect member,
+  exact ⟨entry.determined_of_mem_essentialCore member,
+    entry.exists_deletion_witness member,
     entry.exists_forgotten_coordinate member⟩
 
 end Entry

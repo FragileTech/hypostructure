@@ -58,15 +58,14 @@ theorem exitFour_of_deletionWitnesses (LengthOK : Nat → Prop)
     (deletion : letI := Route8.vertexDecEq object
       let entry := (Route8Census.presented object threshold LengthOK
         index).toEntry (HasCycleWithLength LengthOK)
-      Route8.TwoCarrierDeletionWitnesses (Target := HasCycleWithLength LengthOK)
-        entry.carriers entry.coordinates entry.car entry.state entry.actual
+      Route8.TwoCarrierDeletionWitnesses entry
         (Route8Census.entriesOfComponents object packing components threshold
           scale)
         (Route8Census.core object threshold LengthOK) (threshold - 1) index)
     (selected : Route8.TraceBasin.select? object index.1 threshold index.2.1
         index.2.2 = some (Route8Census.basin object threshold index))
     (alphaAtLeast : letI := Route8.vertexDecEq object
-      2 ≤ ((Route8Census.presented object threshold LengthOK index).toEntry
+      1 ≤ ((Route8Census.presented object threshold LengthOK index).toEntry
         (HasCycleWithLength LengthOK)).alpha) :
     ∃ witness : ExitFour.Witness (HasCycleWithLength LengthOK) index.1
         threshold scale index.2.1 ∅,
@@ -87,25 +86,17 @@ theorem exitFour_of_deletionWitnesses (LengthOK : Nat → Prop)
     rw [Finset.nonempty_iff_ne_empty]
     intro empty
     have zero : entry.essentialCore.card = 0 := by rw [empty]; simp
-    change 2 ≤ entry.essentialCore.card at alphaAtLeast
+    change 1 ≤ entry.essentialCore.card at alphaAtLeast
     omega
   obtain ⟨carrier, carrierMem⟩ := coreNonempty
   have deletionWitnesses := deletion
-  obtain ⟨targetDefect, coordinate, coordinateMem, coordinateCore,
-    carrierCoordinate⟩ := deletionWitnesses.2 carrier carrierMem
+  obtain ⟨⟨realization, realizes, targetDefect⟩, coordinate, coordinateMem,
+    coordinateCore, carrierCoordinate⟩ := deletionWitnesses.2 carrier carrierMem
   have loadRouted : load ∈ object.routedLoads piece threshold receiver :=
     (Finset.mem_sdiff.mp loadMem).1
   have unpeeled : load ∈ ExitFour.unpeeledLoads piece threshold receiver ∅ := by
     rw [ExitFour.mem_unpeeledLoads]
     exact ⟨loadRouted, by simp⟩
-  have sameBoundaryProfile :
-      (entry.restriction (entry.essentialCore.erase carrier)).boundaryDegreeProfile =
-        (entry.restriction entry.essentialCore).boundaryDegreeProfile := by
-    change (presented.state
-        (entry.retained (entry.essentialCore.erase carrier))).boundaryDegreeProfile =
-      (presented.state (entry.retained entry.essentialCore)).boundaryDegreeProfile
-    exact Route8.PresentedEntry.ofTraceBasin_boundaryDegreeProfile
-      object piece basin threshold LengthOK receiver load _ _
   have canonicalCollection :
       ExitFour.Q5CanonicalCollection object packing threshold scale entries :=
     Or.inr ⟨components, canonical, negative, rfl⟩
@@ -113,17 +104,7 @@ theorem exitFour_of_deletionWitnesses (LengthOK : Nat → Prop)
       threshold scale receiver load := by
     refine ⟨packing, entries, canonicalCollection, (piece, receiver, load),
       indexMem, rfl, rfl, rfl, LengthOK, rfl, selected, twoCarrier,
-      carrier, carrierMem, ?_, ?_, ?_⟩
-    · change ¬ (HasCycleWithLength LengthOK
-          (glue (entry.restriction (entry.essentialCore.erase carrier))
-            entry.actual) ↔
-        HasCycleWithLength LengthOK
-          (glue (entry.restriction entry.essentialCore) entry.actual))
-      exact targetDefect
-    · change (entry.restriction
-            (entry.essentialCore.erase carrier)).boundaryDegreeProfile =
-          (entry.restriction entry.essentialCore).boundaryDegreeProfile
-      exact sameBoundaryProfile
+      carrier, carrierMem, ⟨realization, realizes, targetDefect⟩, ?_⟩
     · refine ⟨coordinate, ?_, ?_, carrierCoordinate⟩
       · change coordinate ∈ entry.coordinates
         exact coordinateMem
@@ -149,8 +130,7 @@ theorem twoCarrier_deletionWitnesses (LengthOK : Nat → Prop)
     letI := Route8.vertexDecEq object
     let entry := (Route8Census.presented object threshold LengthOK
       index).toEntry (HasCycleWithLength LengthOK)
-    Route8.TwoCarrierDeletionWitnesses (Target := HasCycleWithLength LengthOK)
-      entry.carriers entry.coordinates entry.car entry.state entry.actual
+    Route8.TwoCarrierDeletionWitnesses entry
       (Route8Census.entriesOfComponents object packing components threshold
         scale)
       (Route8Census.core object threshold LengthOK) (threshold - 1) index := by
@@ -158,9 +138,7 @@ theorem twoCarrier_deletionWitnesses (LengthOK : Nat → Prop)
   obtain ⟨piece, receiver, load⟩ := index
   let entry := (Route8Census.presented object threshold LengthOK
     (piece, receiver, load)).toEntry (HasCycleWithLength LengthOK)
-  exact Route8.twoCarrierDeletionWitnesses
-    (Target := HasCycleWithLength LengthOK) entry.carriers
-    entry.coordinates entry.car entry.car_subset entry.state entry.actual _
+  exact Route8.twoCarrierDeletionWitnesses entry _
     (Route8Census.core object threshold LengthOK) twoCarrier rfl
 
 /-- **Node `[124]`, `lem:typeA-carrier-deletion-exit`**: a two-support entry of
@@ -200,7 +178,50 @@ theorem twoCarrier_exitFour (LengthOK : Nat → Prop)
     scale canonical negative indexMem
     (twoCarrier_deletionWitnesses LengthOK object packing components threshold
       scale twoCarrier)
-    selected alphaAtLeast
+    selected (le_trans (by decide) alphaAtLeast)
+
+/-- **`thm:typeA-two-carrier-nogo`, run at G**: a two-support entry of a
+canonical negative zero-surplus collection with selected basin and a nonempty
+essential core is an exit-`(4)` peel.  The core's minimality gives a
+realization of the deleted restriction (a piece constructed from G at `B_u`)
+separated from the full reading in `G − B_u`
+(`Route8.Entry.exists_deletion_witness`), and the two-support condition places
+the deletion quotient in `𝒬₄(w)` (Q5). -/
+theorem twoCarrier_exitFour_of_core (LengthOK : Nat → Prop)
+    (object : FiniteObject.{u}) (packing : Finset (Finset object.Vertex))
+    (components : Finset (SupportComponents.Connected.Component object
+      (object.remainderSupport packing)))
+    (threshold scale : Nat)
+    (canonical : components ⊆
+      object.canonicalPieces (object.remainderSupport packing))
+    (negative : ∀ component ∈ components,
+      object.NegativeNetCharge
+          (object.pieceSupport (object.remainderSupport packing) component)
+          threshold scale ∧
+        object.ambientSurplus
+          (object.pieceSupport (object.remainderSupport packing) component)
+          threshold = 0)
+    {index : Route8Census.Index object}
+    (indexMem : index ∈ Route8Census.entriesOfComponents object packing
+      components threshold scale)
+    (twoCarrier : letI := Route8.vertexDecEq object
+      Route8.IndexedTwoCarrierCore
+        (Route8Census.entriesOfComponents object packing components threshold
+          scale)
+        (Route8Census.core object threshold LengthOK) (threshold - 1) index)
+    (selected : Route8.TraceBasin.select? object index.1 threshold index.2.1
+        index.2.2 = some (Route8Census.basin object threshold index))
+    (coreNonempty : letI := Route8.vertexDecEq object
+      1 ≤ ((Route8Census.presented object threshold LengthOK index).toEntry
+        (HasCycleWithLength LengthOK)).alpha) :
+    ∃ witness : ExitFour.Witness (HasCycleWithLength LengthOK) index.1
+        threshold scale index.2.1 ∅,
+      witness.load = index.2.2 :=
+  exitFour_of_deletionWitnesses LengthOK object packing components threshold
+    scale canonical negative indexMem
+    (twoCarrier_deletionWitnesses LengthOK object packing components threshold
+      scale twoCarrier)
+    selected coreNonempty
 
 /-- The unified collection is a canonical collection of negative zero-surplus
 components (`def:typeA-unified-negative`). -/
@@ -411,45 +432,29 @@ theorem route8PrivateCarrierBudget_of_noTwoCarrier (data : Parameters)
   dsimp only [Route8PrivateCarrierBudget]
   simpa [Nat.sub_add_cancel thresholdPos] using budget
 
-/-- **The no-two-carrier arm of `[117]` is the empty collection at G.**  At a
-target-avoiding G every route-`8` core is empty (`α(ξ) = 0`), so every indexed entry has
-zero private carriers and is a two-carrier entry: the only way no entry is two-carrier
-is that there is no entry. -/
-theorem route8CollectionEmpty_of_noTwoCarrier (data : Parameters)
+/-- **Nodes `[119]`--`[122]`** (`rem:route8-carrier-margin`): the
+private-support budget `δ·|Ξ(𝒳_A)| ≤ |∂R|` contradicts the census deficit and
+rate readings, since `τ_win < 3/13`. -/
+theorem route8Census_privateCarrierBudget_false (data : Parameters)
     (object : FiniteObject.{u})
-    (avoids : ¬ HasCycleWithLength data.LengthOK object)
-    (noTwo : Route8NoTwoCarrierEntryStatement data object) :
-    Route8CollectionEmpty data object := by
+    (thresholdPos : 1 ≤ data.threshold)
+    (census : Route8CensusStatement data object)
+    (budget : Route8PrivateCarrierBudget data object) : False := by
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  unfold Route8CollectionEmpty
-  dsimp only
-  apply Finset.eq_empty_of_forall_notMem
-  intro index member
-  refine noTwo index member ?_
-  have coreEmpty : Route8Census.core object data.threshold data.LengthOK index = ∅ :=
-    Finset.card_eq_zero.mp (Route8.PresentedEntry.ofTraceBasin_alpha_eq_zero
-      (support := index.1) (basin := Route8Census.basin object data.threshold index)
-      (threshold := data.threshold) (receiver := index.2.1) (load := index.2.2) avoids)
-  unfold Route8Census.CollectionTwoCarrierEntry Route8.IndexedTwoCarrierCore
-    Route8.indexedPrivateCoreCount Route8.indexedPrivateCoreCarriers
-  rw [coreEmpty]
-  simp
-
-/-- **Nodes `[119]`--`[122]`** at G: the empty collection contradicts the census deficit
-`|R| ≤ |Ξ(𝒳_A)| + s·|∂R| + slack` against the rate `s·|∂R| + slack < |R|`. -/
-theorem route8Census_collectionEmpty_false (data : Parameters)
-    (object : FiniteObject.{u})
-    (census : Route8CensusStatement data object)
-    (empty : Route8CollectionEmpty data object) : False := by
-  classical
-  obtain ⟨deficit, rate⟩ := census
-  unfold Route8CollectionEmpty at empty
-  dsimp only at empty deficit rate
-  unfold Route8Census.CollectionDeficit at deficit
-  unfold Route8Census.StrongRate at rate
-  rw [empty] at deficit
-  simp only [Finset.card_empty] at deficit
-  omega
+  let packing := canonicalWindowPacking data object
+  let support := object.remainderSupport packing
+  let routeEight :=
+    (object.canonicalPieces support).filter (Route8Survives data object packing)
+  let entries := Route8Census.entriesOfComponents object packing routeEight
+    data.threshold data.dischargeScale
+  let supply := Route8Census.supply object packing
+  obtain ⟨deficit, rate⟩ := Route8Census.ambient_of_readings thresholdPos
+    census.1 census.2
+  have budget' : (data.threshold - 1 + 1) * entries.card ≤ supply.card := by
+    change Route8PrivateCarrierBudget data object at budget
+    dsimp only [Route8PrivateCarrierBudget] at budget
+    simpa [Nat.sub_add_cancel thresholdPos] using budget
+  exact Route8.privateCarrierCensus_contradiction deficit budget' rate
 
 end Hypostructure.Graph.Contracts.RouteEight

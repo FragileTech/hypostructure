@@ -32,10 +32,23 @@ theorem exactCollisionFails_route8Rate_false (data : Parameters)
   simp only [ExactCollisionFailsStatement,
     Graph.FiniteObject.NonNegativeNetCharge] at nonnegative
   have census : _ := rate
-  unfold Route8RateStatement Graph.Route8Census.StrongRate at census
+  unfold Route8RateStatement Graph.Route8Census.Rate at census
   rw [Graph.Route8Census.card_supply] at census
   have deficiencyLe := demand.1
-  have scaled := Nat.mul_le_mul_left data.dischargeScale deficiencyLe
+  set remainder := (object.remainderSupport
+    (canonicalWindowPacking data object)).card
+  set deficiency := object.positiveDeficiency
+    (object.remainderSupport (canonicalWindowPacking data object)) data.threshold
+  set incidence := object.boundaryIncidence
+    (object.remainderSupport (canonicalWindowPacking data object))
+  set δ := data.threshold
+  set s := data.dischargeScale
+  have remainderLe : remainder ≤ s * incidence :=
+    le_trans (by omega) (Nat.mul_le_mul_left s deficiencyLe)
+  have scaled : δ * remainder ≤ δ * (s * incidence) :=
+    Nat.mul_le_mul_left δ remainderLe
+  have margin : δ * (s * incidence) ≤ (δ * s + 1) * incidence := by
+    rw [← Nat.mul_assoc, Nat.add_mul, one_mul]; omega
   omega
 
 end Hypostructure.Graph.Contracts.RouteEight

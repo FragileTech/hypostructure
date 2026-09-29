@@ -27,11 +27,13 @@ and the isolated vertex `9`.  At baseline `3` and discharge scale `4`:
 * the canonical payable prefix is `{1,2,3}` and the residual excess is
   `E₄(0) = {4,5,6,7,8}`, which is silent -- `SilentUnpeeledExcessAt`;
 * the graph has exactly one triangle, `{6,7,8}`, and it lies inside the
-  excess basin away from its cut boundary, so the basin's literal boundary
-  response (all internal incidences forgotten) loses that triangle while the
-  basin itself keeps it.  The object's own surroundings of the basin therefore
-  distinguish the two readings for `HasCycleWithLength (· = 3)` (the G-form
-  Q2 defect; the fixture carries a target cycle, so it is not a counterexample).
+  excess basin away from its cut boundary.  The splice of the basin that
+  excises `7` and adds the shortcut `4 8` (a piece constructed from the
+  fixture, `GConstructedPiece.splice`) keeps every boundary degree and has no
+  triangle, while the basin keeps its triangle.  The object's own surroundings
+  of the basin therefore separate the two realizations for
+  `HasCycleWithLength (· = 3)` (the G-form Q2 defect; the fixture carries a
+  target cycle, so it is not a counterexample).
 
 That is exactly the Q2 clause of `def:typeA-exit4-family`, so
 `ExitFour.witnessOfExcessTargetDefect` assembles a genuine
@@ -456,9 +458,6 @@ theorem basin_connected :
 open Hypostructure.Graph.Strategy.InterfaceReplacement in
 noncomputable abbrev bdry : Boundary.{0} := SupportAtom.boundary fixture basin
 
-noncomputable abbrev leftPiece : BoundaryPiece bdry :=
-  ExitFour.excessBoundaryResponse fixture support baseline dischargeScale 0 ∅
-
 open Hypostructure.Graph.Strategy.InterfaceReplacement in
 noncomputable abbrev rightPiece : BoundaryPiece bdry :=
   SupportAtom.piece fixture basin
@@ -538,84 +537,178 @@ theorem right_has_cycle :
      isCycle := triangleWalk_isCycle
      length_ok := by show triangleWalk.length = 3; rfl }⟩
 
-/-! ## The literal boundary response has no accepted cycle in `G − B(0)` -/
+/-! ## A piece constructed from the fixture that separates: the excision of `7`
 
-noncomputable def ambient : GluedVertex leftPiece actualOutside → Fin 10
+The realization of the boundary response is a piece constructed from the
+fixture at `B(0)`: the splice `GConstructedPiece.splice 4 8 {7}` deletes the
+interior vertex `7` and adds the shortcut `4 8`.  It keeps every boundary
+degree (the only label that could see `7` is `4`, which trades `4 7` for
+`4 8`) and it has no triangle, so the fixture's own surroundings `G − B(0)`
+separate it from the basin, which keeps its triangle. -/
+
+open Hypostructure.Graph.Strategy.InterfaceReplacement in
+/-- The splice of the fixture at the basin: `7` excised, `4 8` added. -/
+noncomputable abbrev spliced : GConstructedPiece fixture basin :=
+  GConstructedPiece.splice 4 8 {7}
+
+/-- The adjacency of the spliced fixture graph. -/
+def splicedAdj (a b : Fin 10) : Prop :=
+  (fixtureGraph.Adj a b ∧ a ≠ 7 ∧ b ≠ 7) ∨ ((a = 4 ∧ b = 8) ∨ (a = 8 ∧ b = 4))
+
+instance : DecidableRel splicedAdj := fun _ _ => by
+  unfold splicedAdj; infer_instance
+
+theorem spliced_no_triangle : ∀ p q r : Fin 10, splicedAdj p q →
+    splicedAdj q r → splicedAdj r p → False := by
+  decide
+
+theorem spliceGraph_adj (a b : Fin 10) :
+    (spliceGraph fixture 4 8 {7}).Adj a b ↔ splicedAdj a b := by
+  unfold spliceGraph splicedAdj
+  simp only [SpliceLift.splice, Finset.coe_singleton, Set.mem_singleton_iff]
+  constructor
+  · rintro (⟨adjacent, left, right⟩ | ⟨same, distinct⟩)
+    · exact Or.inl ⟨adjacent, left, right⟩
+    · rcases Sym2.eq_iff.mp same with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
+      · exact Or.inr (Or.inl ⟨rfl, rfl⟩)
+      · exact Or.inr (Or.inr ⟨rfl, rfl⟩)
+  · rintro (⟨adjacent, left, right⟩ | (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩))
+    · exact Or.inl ⟨adjacent, left, right⟩
+    · exact Or.inr ⟨rfl, by decide⟩
+    · exact Or.inr ⟨Sym2.eq_swap, by decide⟩
+
+theorem four_mem_basin : (4 : Fin 10) ∈ basin :=
+  mem_basin_of_closure 4 (by decide)
+
+open Hypostructure.Graph.Strategy.InterfaceReplacement in
+theorem seven_interior : (7 : Fin 10) ∈ basin ∧
+    (7 : Fin 10) ∉ SupportAtom.cutBoundary fixture basin :=
+  triangle_internal 7 (by decide)
+
+open Hypostructure.Graph.Strategy.InterfaceReplacement in
+theorem eight_interior : (8 : Fin 10) ∈ basin ∧
+    (8 : Fin 10) ∉ SupportAtom.cutBoundary fixture basin :=
+  triangle_internal 8 (by decide)
+
+open Hypostructure.Graph.Strategy.InterfaceReplacement in
+theorem six_interior : (6 : Fin 10) ∈ basin ∧
+    (6 : Fin 10) ∉ SupportAtom.cutBoundary fixture basin :=
+  triangle_internal 6 (by decide)
+
+theorem ncard_insert_sdiff {s : Set (Fin 10)} {p q : Fin 10} (hp : p ∈ s)
+    (hq : q ∉ s) : (insert q (s \ {p})).ncard = s.ncard := by
+  rw [Set.ncard_insert_of_notMem (fun h => hq h.1),
+    Set.ncard_sdiff_singleton_of_mem hp]
+  have : 0 < s.ncard := (Set.ncard_pos (Set.toFinite s)).mpr ⟨p, hp⟩
+  omega
+
+open Hypostructure.Graph.Strategy.InterfaceReplacement in
+/-- **The splice keeps the basin's boundary-degree profile.** -/
+theorem spliced_profile :
+    spliced.profile = (GConstructedPiece.own : GConstructedPiece fixture basin).profile := by
+  funext label
+  rw [GConstructedPiece.profile_splice_apply, GConstructedPiece.profile_own_apply]
+  have labelNot : ∀ v : Fin 10, v ∉ SupportAtom.cutBoundary fixture basin →
+      label.1 ≠ v := fun v notCut same => notCut (same ▸ label.2)
+  have ne7 := labelNot 7 seven_interior.2
+  have ne8 := labelNot 8 eight_interior.2
+  have ne6 := labelNot 6 six_interior.2
+  have keepIff : ∀ w, (w ∈ basin ∧
+      (w ∈ SupportAtom.cutBoundary fixture basin ∨ w ∉ ({7} : Finset (Fin 10)))) ↔
+      w ∈ basin ∧ w ≠ 7 := by
+    intro w
+    constructor
+    · rintro ⟨wB, cut | notD⟩
+      · exact ⟨wB, fun same => seven_interior.2 (same ▸ cut)⟩
+      · exact ⟨wB, by simpa using notD⟩
+    · rintro ⟨wB, ne⟩
+      exact ⟨wB, Or.inr (by simpa using ne)⟩
+  by_cases four : label.1 = 4
+  · have gSet : {w | fixture.graph.Adj label.1 w ∧ w ∈ basin} =
+        {w | fixtureGraph.Adj 4 w ∧ w ∈ basin} := by
+      ext w
+      rw [Set.mem_setOf_eq, Set.mem_setOf_eq, four]
+    have sSet : {w | (spliceGraph fixture 4 8 {7}).Adj label.1 w ∧ w ∈ basin ∧
+        (w ∈ SupportAtom.cutBoundary fixture basin ∨ w ∉ ({7} : Finset (Fin 10)))} =
+        insert 8 ({w | fixtureGraph.Adj 4 w ∧ w ∈ basin} \ {7}) := by
+      ext w
+      rw [Set.mem_setOf_eq, keepIff, spliceGraph_adj, four, Set.mem_insert_iff,
+        Set.mem_sdiff, Set.mem_setOf_eq, Set.mem_singleton_iff]
+      unfold splicedAdj
+      constructor
+      · rintro ⟨(⟨adjacent, _, ne⟩ | (⟨_, same⟩ | ⟨bad, _⟩)), wB, _⟩
+        · exact Or.inr ⟨⟨adjacent, wB⟩, ne⟩
+        · exact Or.inl same
+        · exact absurd bad (by decide)
+      · rintro (same | ⟨⟨adjacent, wB⟩, ne⟩)
+        · subst same
+          exact ⟨Or.inr (Or.inl ⟨rfl, rfl⟩), eight_interior.1, by decide⟩
+        · exact ⟨Or.inl ⟨adjacent, by decide, ne⟩, wB, ne⟩
+    rw [gSet, sSet]
+    exact ncard_insert_sdiff ⟨by decide, seven_interior.1⟩ (fun h => absurd h.1 (by decide))
+  · congr 1
+    ext w
+    rw [Set.mem_setOf_eq, Set.mem_setOf_eq, keepIff, spliceGraph_adj]
+    unfold splicedAdj
+    constructor
+    · rintro ⟨(⟨adjacent, _, _⟩ | (⟨bad, _⟩ | ⟨bad, _⟩)), wB, _⟩
+      · exact ⟨adjacent, wB⟩
+      · exact absurd bad four
+      · exact absurd bad ne8
+    · rintro ⟨adjacent, wB⟩
+      have wNe : w ≠ 7 := by
+        rintro rfl
+        have seen : label.1 = 4 ∨ label.1 = 6 ∨ label.1 = 8 := by
+          have : ∀ v : Fin 10, fixtureGraph.Adj v 7 → v = 4 ∨ v = 6 ∨ v = 8 := by
+            decide
+          exact this _ adjacent
+        rcases seen with h | h | h
+        · exact four h
+        · exact ne6 h
+        · exact ne8 h
+      exact ⟨Or.inl ⟨adjacent, ne7, wNe⟩, wB, wNe⟩
+
+noncomputable def splicedAmbient :
+    GluedVertex spliced.toPiece actualOutside → Fin 10
   | .inl boundaryVertex => boundaryVertex.1
-  | .inr (.inl internal) => internal.1
+  | .inr (.inl internal) => splicePieceDecode fixture basin 4 8 {7} (.inr internal)
   | .inr (.inr outsideVertex) => outsideVertex.1
 
 open Hypostructure.Graph.Strategy.InterfaceReplacement in
-theorem ambient_pieceEmbedding (piecewise : bdry.Vertex ⊕ leftPiece.Internal) :
-    ambient (pieceEmbedding leftPiece actualOutside piecewise) =
-      SupportAtom.pieceDecode fixture basin piecewise := by
-  cases piecewise <;> rfl
-
-open Hypostructure.Graph.Strategy.InterfaceReplacement in
-theorem ambient_contextEmbedding
-    (contextwise : bdry.Vertex ⊕ actualOutside.Internal) :
-    ambient (contextEmbedding leftPiece actualOutside contextwise) =
-      SupportAtom.outsideDecode fixture basin contextwise := by
-  cases contextwise <;> rfl
-
-open Hypostructure.Graph.Strategy.InterfaceReplacement in
-theorem decode_mem_cutBoundary (piecewise : bdry.Vertex ⊕ leftPiece.Internal)
-    (left : piecewise.isLeft = true) :
-    SupportAtom.pieceDecode fixture basin piecewise ∈
-      SupportAtom.cutBoundary fixture basin := by
-  revert left
-  cases piecewise with
-  | inl boundaryVertex => exact fun _ => boundaryVertex.2
-  | inr internal => exact fun left => by simp at left
-
-open Hypostructure.Graph.Strategy.InterfaceReplacement in
-/-- A vertex of `G − B(0)` or of its cut boundary is not an interior basin
-vertex. -/
-theorem outsideDecode_not_interior
-    (contextwise : bdry.Vertex ⊕ actualOutside.Internal) :
-    SupportAtom.outsideDecode fixture basin contextwise ∉ basin ∨
-      SupportAtom.outsideDecode fixture basin contextwise ∈
-        SupportAtom.cutBoundary fixture basin := by
-  cases contextwise with
-  | inl boundaryVertex => exact Or.inr boundaryVertex.2
-  | inr outsideVertex => exact Or.inl outsideVertex.2
-
-open Hypostructure.Graph.Strategy.InterfaceReplacement in
-/-- Every edge of the glued boundary response is an ambient edge with an
-endpoint that is not an interior basin vertex: the internal incidences of the
-basin have been forgotten, and `G − B(0)` has none. -/
-theorem left_edge {x y : GluedVertex leftPiece actualOutside}
-    (adjacent : (glue leftPiece actualOutside).graph.Adj x y) :
-    fixtureGraph.Adj (ambient x) (ambient y) ∧
-      ((ambient x ∉ basin ∨ ambient x ∈ SupportAtom.cutBoundary fixture basin) ∨
-        (ambient y ∉ basin ∨ ambient y ∈ SupportAtom.cutBoundary fixture basin)) := by
-  rcases (glueGraph_adj_iff leftPiece actualOutside x y).mp adjacent with
+/-- Every edge of the spliced piece glued into `G − B(0)` is an edge of the
+spliced fixture graph. -/
+theorem spliced_edge {x y : GluedVertex spliced.toPiece actualOutside}
+    (adjacent : (glue spliced.toPiece actualOutside).graph.Adj x y) :
+    splicedAdj (splicedAmbient x) (splicedAmbient y) := by
+  rcases (glueGraph_adj_iff spliced.toPiece actualOutside x y).mp adjacent with
     ⟨s, t, owned, hs, ht⟩ | ⟨s, t, owned, hs, ht⟩
   · subst hs
     subst ht
-    rw [ambient_pieceEmbedding, ambient_pieceEmbedding]
-    refine ⟨owned.1, ?_⟩
-    rcases owned.2.2 with side | side
-    · rcases side with left | left | ⟨empty, -⟩
-      · exact Or.inl (Or.inr (decode_mem_cutBoundary s left))
-      · exact Or.inr (Or.inr (decode_mem_cutBoundary t left))
-      · exact absurd empty (Finset.notMem_empty _)
-    · rcases side with left | left | ⟨empty, -⟩
-      · exact Or.inr (Or.inr (decode_mem_cutBoundary t left))
-      · exact Or.inl (Or.inr (decode_mem_cutBoundary s left))
-      · exact absurd empty (Finset.notMem_empty _)
+    have owned' := (splicePiece_adj fixture basin 4 8 {7} s t).mp owned
+    rw [spliceGraph_adj] at owned'
+    cases s <;> cases t <;> exact owned'
   · subst hs
     subst ht
-    rw [ambient_contextEmbedding, ambient_contextEmbedding]
-    exact ⟨owned, Or.inl (outsideDecode_not_interior s)⟩
+    have notSeven : ∀ c : bdry.Vertex ⊕ actualOutside.Internal,
+        SupportAtom.outsideDecode fixture basin c ≠ 7 := by
+      intro c same
+      cases c with
+      | inl boundaryVertex =>
+          have h : boundaryVertex.1 = 7 := same
+          exact seven_interior.2 (h ▸ boundaryVertex.2)
+      | inr outsideVertex =>
+          have h : outsideVertex.1 = 7 := same
+          exact outsideVertex.2 (h ▸ seven_interior.1)
+    refine Or.inl ⟨?_, ?_, ?_⟩
+    · cases s <;> cases t <;> exact owned
+    · have := notSeven s
+      cases s <;> exact this
+    · have := notSeven t
+      cases t <;> exact this
 
-theorem unique_triangle : ∀ p q r : Fin 10, fixtureGraph.Adj p q →
-    fixtureGraph.Adj q r → fixtureGraph.Adj r p →
-    p ∈ ({6,7,8} : Finset (Fin 10)) ∧ q ∈ ({6,7,8} : Finset (Fin 10)) := by
-  decide
-
-theorem left_no_cycle :
-    ¬ HasCycleWithLength LengthOK (glue leftPiece actualOutside) := by
+/-- The spliced piece glued into `G − B(0)` has no triangle. -/
+theorem spliced_no_cycle :
+    ¬ HasCycleWithLength LengthOK (glue spliced.toPiece actualOutside) := by
   rintro ⟨⟨start, walk, isCycle, lengthOK⟩⟩
   have length : walk.length = 3 := lengthOK
   clear isCycle
@@ -631,39 +724,28 @@ theorem left_no_cycle :
         cases rest with
         | cons fourth rest => simp at length
         | nil =>
-          obtain ⟨adj1, cut⟩ := left_edge first
-          obtain ⟨adj2, -⟩ := left_edge second
-          obtain ⟨adj3, -⟩ := left_edge third
-          obtain ⟨member1, member2⟩ := unique_triangle _ _ _ adj1 adj2 adj3
-          rcases cut with notInterior | notInterior
-          · rcases notInterior with outside | cut
-            · exact outside (triangle_internal _ member1).1
-            · exact (triangle_internal _ member1).2 cut
-          · rcases notInterior with outside | cut
-            · exact outside (triangle_internal _ member2).1
-            · exact (triangle_internal _ member2).2 cut
+          exact spliced_no_triangle _ _ _ (spliced_edge first) (spliced_edge second)
+            (spliced_edge third)
 
 /-! ## The exit-(4) witness -/
 
-open Hypostructure.Graph.Strategy.InterfaceReplacement in
-/-- Stated about the fixture object: G's own surroundings `G − B(0)`
-distinguish the basin's boundary response from the basin (the fixture object
-carries a target cycle, so it is not a counterexample; at a target-avoiding G
-this defect is decided false, `Q2TargetDefect.false_of_avoids`). -/
+/-- **The Q2 defect at the fixture**: the splice is in the basin's fibre and
+the fixture's own surroundings `G − B(0)` separate it from the basin (the
+fixture object carries a target cycle, so it is not a counterexample). -/
 theorem targetDefect :
-    ¬ (HasCycleWithLength LengthOK (glue leftPiece actualOutside) ↔
-      HasCycleWithLength LengthOK (glue rightPiece actualOutside)) :=
-  fun equivalent => left_no_cycle (equivalent.mpr right_has_cycle)
+    spliced.Separated (HasCycleWithLength LengthOK) GConstructedPiece.own :=
+  ⟨spliced_profile, fun same => spliced_no_cycle (same.mpr right_has_cycle)⟩
 
 /-- **The compiled exit-(4) peeling witness.**  `def:typeA-exit4-peeling`: the
 quotient is the Q2 member of `def:typeA-exit4-family`, the two realizations are
-the basin's literal boundary response and the basin itself, and the fixture's
-own surroundings `G − B(0)` distinguish their target predicates. -/
+the splice of the basin (a piece constructed from the fixture) and the basin
+itself, and the fixture's own surroundings `G − B(0)` distinguish their target
+predicates. -/
 noncomputable def witness :
     ExitFour.Witness (object := fixture) (HasCycleWithLength LengthOK) support baseline
       dischargeScale 0 ∅ :=
   ExitFour.witnessOfExcessTargetDefect silent excess_member basin_subset
-    basin_connected basin_proper targetDefect
+    basin_connected basin_proper spliced targetDefect
 
 /-- **The exit-(4) witness type is inhabited.** -/
 theorem witness_inhabited :

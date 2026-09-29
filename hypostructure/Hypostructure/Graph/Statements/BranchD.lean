@@ -33,22 +33,20 @@ noncomputable abbrev BranchDependenceStatement (data : Parameters)
   ∃ certificate, BranchCertificateSpec data object certificate
 
 /-- The determination a certificate makes is valid in every context of G
-(`lem:context-universality`, tex 6106, stated about G): every two readings of G
-at the certificate's support `Z` that it identifies have the same
-power-of-two-cycle response in G's own rest `G − Z`
-(`ActualContext.actualGlue`). -/
+(`lem:context-universality`, tex 6106, stated about G): every two pieces
+constructed from G at the certificate's support `Z` that it identifies
+(`Graph.GConstructedPiece`) have the same power-of-two-cycle response in G's
+own rest `G − Z`. -/
 def CertificateContextUniversal (data : Parameters)
     {object : Graph.FiniteObject.{u}}
     (certificate : BranchCertificateData data object) : Prop :=
-  ∀ left right : Finset object.Vertex,
+  ∀ left right : Graph.GConstructedPiece object certificate.quotient.support,
     Identified certificate.quotient left right →
-      (Graph.HasCycleWithLength data.LengthOK
-          (Graph.ActualContext.actualGlue object certificate.quotient.support left) ↔
-        Graph.HasCycleWithLength data.LengthOK
-          (Graph.ActualContext.actualGlue object certificate.quotient.support right))
+      (left.response data.LengthOK ↔ right.response data.LengthOK)
 
 /-- Node `[36]`, yes arm: the certificate of `G` is valid in every context of
-G.  This is the arm G takes: the test is decided at G (node `[12]`). -/
+G.  This is the arm G takes: the certificate's quotient is admissible, so its
+condition (b) holds at G (node `[12]`). -/
 noncomputable abbrev ContextUniversalStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ certificate, branchCertificate? data object = some certificate ∧
@@ -56,20 +54,17 @@ noncomputable abbrev ContextUniversalStatement (data : Parameters)
 
 /-- Node `[36]`, no arm — the terminal `[37]` (case (i) of
 `lem:curvature-dependence-routing`, tex 9220), stated about G: the exact
-complement at the same certificate — some two readings of G at its support `Z`
-that it identifies are separated by G's own rest `G − Z`.  **Empty at G**
-(Lean improvement: `[36]`'s defect arm is empty at G): no reading of G closes a
-power-of-two cycle in `G − Z` (node `[12]`), so the terminal `[37]` closes
-against node `[12]`. -/
+complement at the same certificate — some two pieces constructed from G at its
+support `Z` that it identifies are separated by G's own rest `G − Z`.  The
+certificate's quotient is an admissible rank quotient, whose condition (b)
+(node `[12]`) excludes such a pair, so the terminal `[37]` closes against node
+`[12]`. -/
 noncomputable abbrev ContextDefectStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ certificate, branchCertificate? data object = some certificate ∧
-    ∃ left right : Finset object.Vertex,
+    ∃ left right : Graph.GConstructedPiece object certificate.quotient.support,
       Identified certificate.quotient left right ∧
-        ¬ (Graph.HasCycleWithLength data.LengthOK
-            (Graph.ActualContext.actualGlue object certificate.quotient.support left) ↔
-          Graph.HasCycleWithLength data.LengthOK
-            (Graph.ActualContext.actualGlue object certificate.quotient.support right))
+        ¬ (left.response data.LengthOK ↔ right.response data.LengthOK)
 
 /-- Node `[38]`, yes arm — the terminal `[39]` (case (ii), tex 9224): the
 certificate's support lies in the proper atom `C = R(P₀)`, so its rank-reducing

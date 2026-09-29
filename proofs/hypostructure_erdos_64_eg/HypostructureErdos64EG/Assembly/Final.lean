@@ -100,18 +100,19 @@ of the single ledger at its return, one `get` per fact; paths with different
 fact sets are different residuals, stated as subtypes of the generic residual
 or, where the paths form a full product, as the product of their arm blocks:
 the six `[144a]` subtypes; the two `[172a]` subtypes; the six `[182]`
-subtypes; the remaining `[187]` outcomes; and the structural exhaustion
-residual `[54]` (5 subtypes).  `[153]`'s equal-state pair is no longer a
+subtypes; the `[186]` joint balance product; the remaining `[187]` outcomes;
+and the structural exhaustion residual `[54]` (5 subtypes).  `[153]`'s equal-state pair is no longer a
 residual: it is the repeat subcase of (F5) and continues into the germ routing
 (`[187]`).  (`[162]` is no longer returned: the dense pass needs no terminality
 of a heavy-entry corridor.)
 (G-only restatement: `[20a]` and the near-cubic target defect of `[187]` are
 closed at G -- exit (b) of `[125]`, stated about G, is empty -- and return no
-residual.  The `[186]` joint balance product and the three cold-terminal
-singletons on `[154]`'s G2 yes-arm are unreachable at G after the G-only
-repair: node `[123]`'s failed-rate arm is empty at G, so `[181]`,
-`[183]`--`[186]` are not reached, and G2's yes-arm is empty at G.  They are
-removed from this type.)
+residual.  The three cold-terminal singletons on `[154]`'s G2 yes-arm are
+unreachable at G after the G-only repair and are removed from this type.  The
+`[186]` joint balance product is restored: with the realizations of a trace
+basin read on the pieces constructed from G, the essential carrier cores are no
+longer empty, node `[123]`'s failed-rate arm is reached, and `[181]`,
+`[183]`--`[186]` run as in the manuscript.)
 
 Bounded-size residuals: on `[146]` no, the density order (`[158]`'s realized
 package, or `[24]` on the bounded arm of `[153]`, against `θ ≥ 1/78`) is
@@ -137,6 +138,7 @@ abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
     PairConditionalFactorizationOutcome_blockedFactorizationFails selected ∨
     PairConditionalFactorizationOutcome_blockedRealizabilityFails selected ∨
     PairConditionalFactorizationOutcome_blockedIncrementFails selected) ∨
+  Route8JointBalanceOutcome_product selected ∨
   OtherReturnedOutcome selected ∨
   (Node54ResidualOutcome_realizedColdBelow selected ∨
     Node54ResidualOutcome_realizedBounded selected ∨
@@ -155,7 +157,7 @@ noncomputable def selectedLedgerBoundary
     (history : ExactLedger EGInput.{u} selected [EGSelectionKey]) :
     SelectedLedgerBoundaryResult selected := by
   have other : OtherReturnedOutcome selected → SelectedLedgerBoundaryResult selected :=
-    fun outcome => Or.inr (Or.inr (Or.inr (Or.inl outcome)))
+    fun outcome => Or.inr (Or.inr (Or.inr (Or.inr (Or.inl outcome))))
   match selectedSurplusDichotomy history with
   | .left strictHistory =>
       -- Top of the strict arm of `[19]`: every fact that reads only entry facts
@@ -311,8 +313,10 @@ noncomputable def selectedLedgerBoundary
         match route with
         | .inl sublinear =>
             exact other (Or.inr (Or.inl sublinear))
-        | .inr quotient =>
+        | .inr (.inl quotient) =>
             exact other (Or.inr (Or.inr (Or.inl quotient)))
+        | .inr (.inr joint) =>
+            exact Or.inr (Or.inr (Or.inr (Or.inl joint)))
       match survivor with
       | .inl route => exact liftRoute route
       | .inr (.inl rate) =>
@@ -322,7 +326,7 @@ noncomputable def selectedLedgerBoundary
       | .inr (.inr (.inr (.inl cold))) =>
           exact other (Or.inr (Or.inr (Or.inr (Or.inr cold))))
       | .inr (.inr (.inr (.inr entropy))) =>
-          exact Or.inr (Or.inr (Or.inr (Or.inr entropy)))
+          exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr entropy))))
 
 /-- The selected minimal counterexample has one of the exact boundary
 outcomes, each with every fact of the single ledger at its return. -/

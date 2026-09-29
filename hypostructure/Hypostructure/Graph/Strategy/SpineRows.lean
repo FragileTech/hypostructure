@@ -82,6 +82,7 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8TrueResidual
 import Hypostructure.Graph.Strategy.SpineRows.Route8TrueTwoCarrierEntry
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedDeficit
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedEntryCensus
+import Hypostructure.Graph.Strategy.SpineRows.Route8FoldPeels
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedNegative
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedVisibleOverload
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedVisibleResidual

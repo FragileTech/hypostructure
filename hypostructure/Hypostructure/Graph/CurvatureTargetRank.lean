@@ -13,12 +13,11 @@ Every clause is the manuscript's, stated about G (`Graph.DeclaredQuotient`).
 
 * A quotient lives on a connected **determination support** `Z ⊆ V(G)` that
   carries the coordinates under discussion, and the states it identifies are
-  G's own readings at `Z` (`SupportAtom.retainedPiece`), indexed by the vertex
-  set `X ⊆ V(G)` they keep.
-* `def:target-complete-quotient`: (a) identified readings lie in one
-  boundary-degree fibre (`DeclaredQuotient.fibrewise`); (b) no context
-  separates them — decided at G, since a reading glued into G's own rest
-  `G − Z` is a subgraph of G (`readings_agree_in_rest`).
+  the pieces constructed from G at `Z` (`GConstructedPiece`: G's piece, its
+  readings, folds, transplants, rerouted swaps, splices, double switches).
+* `def:target-complete-quotient`: (a) identified realizations lie in one
+  boundary-degree fibre (`DeclaredQuotient.fibrewise`); (b) G's own rest
+  `G − Z` does not separate them (`DeclaredQuotient.contextUniversal`).
 * `def:admissible-rank-quotient`, proper clause: at `Z ⊊ G` a rank-reducing
   quotient supplies a strictly smaller proper representative.  Its defining
   properties are the hypotheses of `lem:replacement` at `Z`, stated about G:

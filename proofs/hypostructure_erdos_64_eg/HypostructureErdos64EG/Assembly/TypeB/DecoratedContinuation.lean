@@ -72,6 +72,7 @@ noncomputable def selectedTypeBDecoratedContinuation
     (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known)
     (sublinearResidualFresh : K .typeBSublinearResidual ∉ known)
     (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known)
+    (foldPeelsFresh : K .route8FoldPeels ∉ known := by key_fresh)
     (quotientFreeFresh : K .route8QuotientFree ∉ known)
     (quotientResidualFresh : K .route8QuotientResidual ∉ known)
     (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known)
@@ -92,7 +93,6 @@ noncomputable def selectedTypeBDecoratedContinuation
     (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by
       key_fresh)
-    (emptyAtGFresh : K .route8UnifiedEmptyAtG ∉ known := by key_fresh)
     (entriesAtGFresh : K .route8QuotientEntriesAtG ∉ known := by key_fresh)
     (typeBSublinearCanonicalFormFresh : K .typeBSublinearCanonicalForm ∉ known := by key_fresh)
     (groupedAbsorbedCoreSubsetFresh : K .groupedAbsorbedCoreSubset ∉ known := by key_fresh)

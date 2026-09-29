@@ -269,15 +269,15 @@ theorem remainderSupport_ssubset_delocalizationSupport (data : Parameters)
     fun contained => outside fun vertex member => ?_⟩
   exact contained (by simp [delocalizationSupport, member])
 
-/-- **The readings of G a quotient identifies.**  `def:target-complete-quotient`
+/-- **The realizations a quotient identifies.**  `def:target-complete-quotient`
 governs exactly the pairs of states that carry the same quotient datum, which
-here is the same value at every declared raw curvature test; the states are G's
-readings at the quotient support `Z` (G's piece at `Z` restricted to `left`,
-resp. `right`). -/
+here is the same value at every declared raw curvature test; the states are the
+pieces constructed from G at the quotient support `Z`
+(`Graph.GConstructedPiece`). -/
 def Identified {data : Parameters} {object : Graph.FiniteObject.{u}}
     {packing : Finset (Finset object.Vertex)}
     (quotient : remainderQuotient data object packing)
-    (left right : Finset object.Vertex) : Prop :=
+    (left right : Graph.GConstructedPiece object quotient.support) : Prop :=
   ∀ test ∈ remainderCurvatureTests object packing,
     quotient.value left (quotient.label test) =
       quotient.value right (quotient.label test)
@@ -2785,64 +2785,61 @@ noncomputable abbrev CycleRankConstraintStatement (object : Graph.FiniteObject.{
   object.vertexCount + 2 ≤
     2 * (object.edgeCount + 1 - object.vertexCount)
 
-/-- **G's canonical quotient of its readings at a support `Z`.**  A reading `X`
-of G at `Z` (G's piece at `Z` restricted to `X`) is labelled by its
-boundary-degree profile and by its target response in G's own rest `G − Z`
-(`ActualContext.actualGlue`): the exact response data of
-`def:exact-response-profile` at G, as in `Graph.SparsePairExactValuation`.  The
-quotient identifies two readings when they carry the same label.  It is built
-from G alone: no abstract label or value type, no value map. -/
-noncomputable def canonicalReadingLabel (data : Parameters)
-    (object : Graph.FiniteObject.{u}) (support reading : Finset object.Vertex) :=
-  (Graph.readingProfile object support reading,
-    Graph.HasCycleWithLength data.LengthOK
-      (Graph.ActualContext.actualGlue object support reading))
+/-- **G's canonical quotient of the pieces constructed from G at a support
+`Z`.**  A piece constructed from G at `Z` (`Graph.GConstructedPiece`: G's piece,
+its readings, folds, transplants, rerouted swaps, splices, double switches) is
+labelled by its boundary-degree profile and by its target response in G's own
+rest `G − Z`: the exact response data of `def:exact-response-profile` at G.  The
+quotient identifies two realizations when they carry the same label.  It is
+built from G alone: no abstract label or value type, no value map. -/
+noncomputable def canonicalPieceLabel (data : Parameters)
+    {object : Graph.FiniteObject.{u}} {support : Finset object.Vertex}
+    (piece : Graph.GConstructedPiece object support) :=
+  (piece.profile, piece.response data.LengthOK)
 
 /-- Node `[11]`, `lem:degree-profile-fibres` (tex 6088), at G's canonical
 quotient: "if `𝐝_∂(X₁) ≠ 𝐝_∂(X₂)`, then no target-complete quotient identifies
-`X₁` and `X₂`".  For every support `Z` of G and every two readings of G at `Z`,
-readings in different boundary-degree fibres carry different canonical labels. -/
+`X₁` and `X₂`".  For every support `Z` of G and every two pieces constructed
+from G at `Z`, realizations in different boundary-degree fibres carry different
+canonical labels. -/
 noncomputable abbrev DegreeProfileFibresStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  ∀ (support left right : Finset object.Vertex),
-    Graph.readingProfile object support left ≠
-        Graph.readingProfile object support right →
-      canonicalReadingLabel data object support left ≠
-        canonicalReadingLabel data object support right
+  ∀ (support : Finset object.Vertex)
+    (left right : Graph.GConstructedPiece object support),
+    left.profile ≠ right.profile →
+      canonicalPieceLabel data left ≠ canonicalPieceLabel data right
 
 /-- Node `[12]`, `lem:context-universality` (tex 6106), stated about G.
 
 * "Suppose that two coordinates are identified in a target-complete quotient of
   `X`.  Then [they] have the same target response against every `T`-boundaried
-  context": for every support `Z` of G and every two readings of G at `Z` that
-  G's canonical quotient identifies, the two readings lie in one
-  boundary-degree fibre (node `[11]`) and have the same power-of-two-cycle
-  response in G's own rest `G − Z` (`ActualContext.actualGlue`).
+  context": for every support `Z` of G and every two pieces constructed from G
+  at `Z` that G's canonical quotient identifies (`Graph.GConstructedPiece`),
+  the two lie in one boundary-degree fibre (node `[11]`) and have the same
+  power-of-two-cycle response in G's own rest `G − Z`.
 * "Consequently any identification valid only for the actual outside context
-  `G − X`, but not for all `T`-boundaried contexts, is target-defective": about
-  G there is no such identification — no reading of G at any support `Z`
-  closes a power-of-two cycle in `G − Z` (it is a subgraph of G), so no context
-  of G separates two readings.  This decided fact is what routes G at the
-  context-validity test `[36]`: its defect arm `[37]` is empty at G.
+  `G − X`, but not for all `T`-boundaried contexts, is target-defective": the
+  one context of G at `∂Z` is `G − Z`, and a reading of G glued there is a
+  subgraph of G, so it closes no power-of-two cycle.  The realizations that
+  can separate are the constructed pieces that are not subgraphs of G (folds,
+  swaps, splices, switches); an admissible quotient never identifies a
+  separated pair (first clause).
 
 (G-only restatement: the quantification over every `∂Z`-boundaried context
-spoke about contexts that are not part of G, and the quotient was an arbitrary
-`CurvatureQuotient` structure with free label and value types.) -/
+spoke about contexts that are not part of G, the quotient was an arbitrary
+`CurvatureQuotient` structure with free label and value types, and its
+realizations are the pieces constructed from G.) -/
 noncomputable abbrev TargetCompleteContextUniversalityStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  (∀ (support left right : Finset object.Vertex),
-    canonicalReadingLabel data object support left =
-        canonicalReadingLabel data object support right →
-      Graph.readingProfile object support left =
-          Graph.readingProfile object support right ∧
-        (Graph.HasCycleWithLength data.LengthOK
-            (Graph.ActualContext.actualGlue object support left) ↔
-          Graph.HasCycleWithLength data.LengthOK
-            (Graph.ActualContext.actualGlue object support right))) ∧
+  (∀ (support : Finset object.Vertex)
+    (left right : Graph.GConstructedPiece object support),
+    canonicalPieceLabel data left = canonicalPieceLabel data right →
+      left.profile = right.profile ∧
+        (left.response data.LengthOK ↔ right.response data.LengthOK)) ∧
   (∀ support reading : Finset object.Vertex,
     ¬ Graph.HasCycleWithLength data.LengthOK
       (Graph.ActualContext.actualGlue object support reading))

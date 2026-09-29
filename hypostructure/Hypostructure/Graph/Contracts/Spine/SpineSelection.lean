@@ -123,27 +123,26 @@ theorem replacementExclusion_of_selection
   Graph.Strategy.InterfaceReplacement.not_replacementSupport_of_minimal
     (fun H smaller baseline => selection.2 H smaller baseline)
 
-/-- **Node `[11]`, `lem:degree-profile-fibres`** (tex 6088), at G's readings.
-The paper's proof: "condition (a) in the definition of a target-complete
-quotient requires the quotient to preserve the boundary degree profile ... an
-identification of `X₁` with `X₂` would identify two different boundary-degree
-profiles, so it violates condition (a)".  G's canonical quotient
-(`canonicalReadingLabel`) carries the boundary-degree profile of a reading in its
-label, so condition (a) holds by construction. -/
+/-- **Node `[11]`, `lem:degree-profile-fibres`** (tex 6088), at the pieces
+constructed from G.  The paper's proof: "condition (a) in the definition of a
+target-complete quotient requires the quotient to preserve the boundary degree
+profile ... an identification of `X₁` with `X₂` would identify two different
+boundary-degree profiles, so it violates condition (a)".  G's canonical quotient
+(`canonicalPieceLabel`) carries the boundary-degree profile of a constructed
+piece in its label, so condition (a) holds by construction. -/
 theorem degreeProfileFibres_holds (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     DegreeProfileFibresStatement data object :=
   fun _support _left _right different identified => by
-    unfold canonicalReadingLabel at identified
+    unfold canonicalPieceLabel at identified
     exact different (Prod.mk.inj identified).1
 
 /-- **Node `[12]`, `lem:context-universality`** (tex 6106), stated about G,
-reading node `[11]` and the selection.  Two readings G's canonical quotient
-identifies lie in one boundary-degree fibre (node
-`[11]`, contrapositive).  Their responses in G's own rest `G − Z` agree, and no
-reading of G at any support closes a power-of-two cycle in `G − Z`, because
-such a gluing is a subgraph of G, which avoids the target (the decided G-form
-of "no context separates them"). -/
+reading node `[11]` and the selection.  Two constructed pieces G's canonical
+quotient identifies lie in one boundary-degree fibre (node `[11]`,
+contrapositive) and have the same response in G's own rest `G − Z` (the label
+carries it); no reading of G at any support closes a power-of-two cycle in
+`G − Z`, because such a gluing is a subgraph of G. -/
 theorem targetCompleteContextUniversality_of_degreeProfileFibres
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation}
@@ -157,6 +156,6 @@ theorem targetCompleteContextUniversality_of_degreeProfileFibres
       support reading⟩
   · by_contra different
     exact fibres support left right different identified
-  · exact Graph.readings_agree_in_rest selection.1 support left right
+  · exact Iff.of_eq (Prod.mk.inj identified).2
 
 end Hypostructure.Graph.Contracts.Spine

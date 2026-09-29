@@ -73,6 +73,7 @@ noncomputable def selectedTypeBHighSurplusContinuation
     (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known := by key_fresh)
     (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by key_fresh)
     (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known := by key_fresh)
+    (foldPeelsFresh : K .route8FoldPeels ∉ known := by key_fresh)
     (quotientFreeFresh : K .route8QuotientFree ∉ known := by key_fresh)
     (quotientResidualFresh : K .route8QuotientResidual ∉ known := by key_fresh)
     (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known := by key_fresh)
@@ -97,7 +98,6 @@ noncomputable def selectedTypeBHighSurplusContinuation
       key_fresh)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by
       key_fresh)
-    (emptyAtGFresh : K .route8UnifiedEmptyAtG ∉ known := by key_fresh)
     (entriesAtGFresh : K .route8QuotientEntriesAtG ∉ known := by key_fresh)
     (typeBSublinearCanonicalFormFresh : K .typeBSublinearCanonicalForm ∉ known := by key_fresh)
     (groupedAbsorbedCoreSubsetFresh : K .groupedAbsorbedCoreSubset ∉ known := by key_fresh)
