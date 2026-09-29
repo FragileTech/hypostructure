@@ -319,8 +319,8 @@ theorem allColdEntropyResidual_of_not_jointRealization (data : Parameters)
     AllColdEntropyResidualStatement data object := by
   have notBound : ¬ EntropyCapBoundStatement data object := fun bound =>
     fails ((entropyJointRealization_iff_entropyCapBound data object).2 bound)
-  refine ⟨fun retained => notBound
-      (entropyCapBound_of_retained data object package dominates cost retained),
+  refine ⟨unretained_package_overflow data object dominates (fun retained => notBound
+      (entropyCapBound_of_retained data object package dominates cost retained)),
     remainderStates_mul_outerRoom_le data object, rfl,
     forcedObstructionBits_le_cost data object cost, ?_, ?_, fails⟩
   · by_contra fits

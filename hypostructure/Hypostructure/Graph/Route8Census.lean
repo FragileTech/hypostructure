@@ -220,6 +220,34 @@ def Rate (packing : Finset (Finset object.Vertex)) (threshold discharge slack : 
   (threshold * discharge + 1) * (supply object packing).card + threshold * slack <
     threshold * (object.remainderSupport packing).card
 
+/-- **The strong rate** (G's exact private-carrier rate): `s·|∂R| + slack < |R|`.
+At a target-avoiding G every route-`8` core is empty (`α(ξ) = 0`), so an entry is a
+two-carrier entry as soon as it exists, and the census needs only a nonempty
+collection: by `|R| ≤ N + s·|∂R| + slack` this holds as soon as the remainder exceeds
+`s·|∂R| + slack`.  This replaces the manuscript's `τ < 3/13` (`Rate`), which is the
+stronger requirement `(δs+1)|∂R| + δ·slack < δ|R|`. -/
+def StrongRate (packing : Finset (Finset object.Vertex)) (discharge slack : Nat) : Prop :=
+  discharge * (supply object packing).card + slack <
+    (object.remainderSupport packing).card
+
+/-- The old rate implies the strong rate. -/
+theorem strongRate_of_rate (packing : Finset (Finset object.Vertex))
+    (threshold discharge slack : Nat)
+    (rate : Rate object packing threshold discharge slack) :
+    StrongRate object packing discharge slack := by
+  unfold Rate at rate
+  unfold StrongRate
+  by_contra notStrong
+  have le : (object.remainderSupport packing).card ≤
+      discharge * (supply object packing).card + slack := Nat.le_of_not_lt notStrong
+  have scaled := Nat.mul_le_mul_left threshold le
+  have e1 : (threshold * discharge + 1) * (supply object packing).card =
+      threshold * discharge * (supply object packing).card + (supply object packing).card := by
+    ring
+  have e2 : threshold * (discharge * (supply object packing).card + slack) =
+      threshold * discharge * (supply object packing).card + threshold * slack := by ring
+  omega
+
 /-- The supply is the boundary incidence `e(R,W)` of the remainder. -/
 theorem card_supply (packing : Finset (Finset object.Vertex)) :
     (supply object packing).card =

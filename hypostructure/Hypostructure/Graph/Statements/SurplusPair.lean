@@ -2,6 +2,7 @@ import Hypostructure.Graph.Statements.TypeB
 import Hypostructure.Graph.Statements.CanonicalSurplus
 import Hypostructure.Graph.Statements.CanonicalSurplusCapacity
 import Hypostructure.Graph.ActualContext
+import Hypostructure.Graph.PairCorrelation
 
 /-!
 # Statements: SurplusPair
@@ -518,6 +519,9 @@ structure PairOverlapSystem (data : Parameters)
     failedFamily = Finset.univ.filter fun pair =>
       rank pair < first.firstFailure.index + 1
   failedFamily_nonempty : failedFamily.Nonempty
+  /-- The failed prefix has exactly `index + 1` coordinates: the schedule's
+  ranks are the initial segment `0, …, |Π| − 1`. -/
+  failedFamily_card : failedFamily.card = first.firstFailure.index + 1
   failedFamily_obstruction :
     let model : Graph.SparsePairSkeletonModel
         (Graph.pairResponseActivation first.active)
@@ -532,7 +536,7 @@ structure PairOverlapSystem (data : Parameters)
         responseSupport_selected := responseSupport_selected
         responseSupport_connected := responseSupport_connected }
     failedFamily.Nonempty ∧
-      ¬ model.RealizingOrder (LengthOK := data.LengthOK) failedFamily
+      ¬ model.CountRealizing data.LengthOK failedFamily
 
 namespace PairOverlapSystem
 
@@ -566,37 +570,17 @@ abbrev Skeleton {data : Parameters} {object : Graph.FiniteObject.{u}}
     (system : PairOverlapSystem data object) :=
   system.toSkeletonModel.Skeleton
 
-noncomputable def response {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (system : PairOverlapSystem data object) (member : system.Skeleton)
-    (pair : {pair // pair ∈ system.first.pairSet}) : PairResponseState data :=
-  system.toSkeletonModel.response (LengthOK := data.LengthOK) member pair
-
-noncomputable def outsideCode {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (system : PairOverlapSystem data object) (member : system.Skeleton) :=
-  system.toSkeletonModel.outsideCode member
-
-def conditionalFibre {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (system : PairOverlapSystem data object) (reference : system.Skeleton) :
-    Set system.Skeleton :=
-  system.toSkeletonModel.conditionalFibre reference
-
-def conditionalValues {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (system : PairOverlapSystem data object)
-    (family : Finset {pair // pair ∈ system.first.pairSet})
-    (order : Fin family.card ≃ {pair // pair ∈ family})
-    (reference : system.Skeleton) (index : Fin family.card) :
-    Set (PairResponseState data) :=
-  system.toSkeletonModel.conditionalValues (LengthOK := data.LengthOK)
-    family order reference index
-
+/-- **Aggregate realization** of a family of pair coordinates: some exposure
+order doubles the count of realized `(baseline word, exposed prefix)`
+signatures at every step (`Graph.SparsePairSkeletonModel.CountRealizing`).  This
+is the manuscript's `|𝒮(π_i | π_1, …, π_{i−1})| ≥ 2` in every conditional
+fibre, stated on G's labelled `(n,m)` class as a count: its failure is a
+numerical fact about G (a positive correlation mass), not a class member that
+fails. -/
 def realizingOrder {data : Parameters} {object : Graph.FiniteObject.{u}}
     (system : PairOverlapSystem data object)
     (family : Finset {pair // pair ∈ system.first.pairSet}) : Prop :=
-  system.toSkeletonModel.RealizingOrder (LengthOK := data.LengthOK) family
+  system.toSkeletonModel.CountRealizing data.LengthOK family
 
 def obstruction {data : Parameters} {object : Graph.FiniteObject.{u}}
     (system : PairOverlapSystem data object)
@@ -623,30 +607,6 @@ noncomputable def overlapSupport {data : Parameters}
     Finset object.Vertex :=
   system.toSkeletonModel.responseSupportUnion family
 
-/-- A relevant conditional skeleton fibre after a finite set of pair
-coordinates has already been exposed.  The candidate must remain in the
-system's literal baseline/outside fibre and must agree with the reference
-skeleton on every exposed exact response. -/
-def refinedFibre {data : Parameters} {object : Graph.FiniteObject.{u}}
-    (system : PairOverlapSystem data object)
-    (exposed : Finset {pair // pair ∈ system.first.pairSet})
-    (reference : system.Skeleton) : Set system.Skeleton :=
-  {candidate | candidate ∈ system.conditionalFibre reference ∧
-    ∀ pair, pair ∈ exposed →
-      system.response candidate pair = system.response reference pair}
-
-/-- The exact response values of one pair coordinate that are graph-realized
-in a relevant conditional fibre.  This is a range of actual fixed-`(n,m)`
-skeletons, not the label set of a rank quotient. -/
-def fibreValues {data : Parameters} {object : Graph.FiniteObject.{u}}
-    (system : PairOverlapSystem data object)
-    (exposed : Finset {pair // pair ∈ system.first.pairSet})
-    (reference : system.Skeleton)
-    (pair : {pair // pair ∈ system.first.pairSet}) :
-    Set (PairResponseState data) :=
-  {state | ∃ candidate, candidate ∈ system.refinedFibre exposed reference ∧
-    system.response candidate pair = state}
-
 /-- The manuscript's geometric separation condition for a family of pair
 coordinates: no two distinct members meet outside the port-return supports of
 their own demands. -/
@@ -662,21 +622,196 @@ noncomputable def familyUnion {data : Parameters}
     Finset {pair // pair ∈ system.first.pairSet} :=
   system.toSkeletonModel.familyUnion left right
 
-/-- The skeleton-response realization statement used by
-`lem:pair-failure-overlap`.
+/-- **G's canonical minimal obstruction `F₀`**, by its defining property: an
+obstruction inside the failed prefix of G's pair schedule which is minimal by
+inclusion, of least cardinality among the obstructions of the prefix
+(`lem:pair-failure-overlap`: "choose one minimal by cardinality"), and among
+those least in the colexicographic order of its ranks in G's canonical encoding
+order `rank`.  The last two clauses fix it uniquely
+(`IsCanonicalObstruction.unique`). -/
+def IsCanonicalObstruction {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (system : PairOverlapSystem data object)
+    (family : Finset {pair // pair ∈ system.first.pairSet}) : Prop :=
+  family ⊆ system.failedFamily ∧ system.minimalObstruction family ∧
+    ∀ other, other ⊆ system.failedFamily → system.obstruction other →
+      family.card < other.card ∨
+        (family.card = other.card ∧
+          toColex (family.image system.rank) ≤ toColex (other.image system.rank))
 
-The first clause is the paper's product-code assertion for a family whose
-response supports are pairwise separated.  The second is its componentwise
-form: if a family is split into two nonempty blocks with no cross-overlap, an
-admissible exposure order in each block concatenates to one for their union.
-Both clauses speak through `realizingOrder`, hence through existential witnesses
-in the literal fixed-`(n,m)` skeleton fibre.  They do not replace graph
-realization by rank-label injectivity. -/
+/-- G's canonical minimal obstruction exists: least cardinality, then least
+colexicographic rank set, among the obstructions of the failed prefix. -/
+theorem exists_canonicalObstruction {data : Parameters}
+    {object : Graph.FiniteObject.{u}}
+    (system : PairOverlapSystem data object) :
+    ∃ family, system.IsCanonicalObstruction family := by
+  classical
+  let S := system.failedFamily.powerset.filter system.obstruction
+  have hS : S.Nonempty := by
+    refine ⟨system.failedFamily, ?_⟩
+    simp [S, PairOverlapSystem.obstruction,
+      PairOverlapSystem.realizingOrder,
+      PairOverlapSystem.toSkeletonModel,
+      system.failedFamily_nonempty, system.failedFamily_obstruction]
+  obtain ⟨least, leastMem, leastMin⟩ := Finset.exists_min_image S Finset.card hS
+  let S1 := S.filter fun candidate => candidate.card = least.card
+  have hS1 : S1.Nonempty := ⟨least, Finset.mem_filter.mpr ⟨leastMem, rfl⟩⟩
+  obtain ⟨family, familyMem, familyMin⟩ := Finset.exists_min_image S1
+    (fun candidate => toColex (candidate.image system.rank)) hS1
+  have familyS : family ∈ S := (Finset.mem_filter.mp familyMem).1
+  have familyCard : family.card = least.card := (Finset.mem_filter.mp familyMem).2
+  have familyFacts : family ⊆ system.failedFamily ∧
+      system.obstruction family := by
+    simpa [S] using familyS
+  refine ⟨family, familyFacts.1, ⟨familyFacts.2, ?_⟩, ?_⟩
+  · intro proper properSubset properNonempty
+    by_contra notRealizing
+    have properMem : proper ∈ S := by
+      simp only [S, Finset.mem_filter, Finset.mem_powerset]
+      exact ⟨properSubset.subset.trans familyFacts.1,
+        ⟨properNonempty, notRealizing⟩⟩
+    have leastLe := leastMin proper properMem
+    have smaller := Finset.card_lt_card properSubset
+    omega
+  · intro other otherSubset otherObstruction
+    have otherMem : other ∈ S := by
+      simp only [S, Finset.mem_filter, Finset.mem_powerset]
+      exact ⟨otherSubset, otherObstruction⟩
+    have leastLe := leastMin other otherMem
+    by_cases sameCard : other.card = least.card
+    · right
+      exact ⟨familyCard.trans sameCard.symm,
+        familyMin other (Finset.mem_filter.mpr ⟨otherMem, sameCard⟩)⟩
+    · left
+      omega
+
+/-- The canonical minimal obstruction is unique: cardinality and the colex order
+of the rank sets, which determine the family because `rank` is injective. -/
+theorem IsCanonicalObstruction.unique {data : Parameters}
+    {object : Graph.FiniteObject.{u}}
+    {system : PairOverlapSystem data object}
+    {family family' : Finset {pair // pair ∈ system.first.pairSet}}
+    (canonical : system.IsCanonicalObstruction family)
+    (canonical' : system.IsCanonicalObstruction family') :
+    family = family' := by
+  classical
+  obtain ⟨subset, minimal, order⟩ := canonical
+  obtain ⟨subset', minimal', order'⟩ := canonical'
+  have forward := order family' subset' minimal'.1
+  have backward := order' family subset minimal.1
+  have cardEq : family.card = family'.card := by
+    rcases forward with forward | ⟨forward, -⟩ <;>
+      rcases backward with backward | ⟨backward, -⟩ <;> omega
+  have leForward : toColex (family.image system.rank) ≤
+      toColex (family'.image system.rank) := by
+    rcases forward with forward | ⟨-, forward⟩
+    · omega
+    · exact forward
+  have leBackward : toColex (family'.image system.rank) ≤
+      toColex (family.image system.rank) := by
+    rcases backward with backward | ⟨-, backward⟩
+    · omega
+    · exact backward
+  have imageEq : family.image system.rank = family'.image system.rank :=
+    toColex_inj.mp (le_antisymm leForward leBackward)
+  exact Finset.image_injective system.rank_injective imageEq
+
+/-- **G's canonical minimal obstruction `F₀`** of `def:pair-overlap-system`, the
+one family of `IsCanonicalObstruction`.  The factorization test of node `[178]`
+is decided at this family, the only one the argument of
+`lem:pair-failure-overlap` consumes. -/
+noncomputable def obstructionFamily {data : Parameters}
+    {object : Graph.FiniteObject.{u}}
+    (system : PairOverlapSystem data object) :
+    Finset {pair // pair ∈ system.first.pairSet} :=
+  Classical.choose system.exists_canonicalObstruction
+
+theorem obstructionFamily_isCanonical {data : Parameters}
+    {object : Graph.FiniteObject.{u}}
+    (system : PairOverlapSystem data object) :
+    system.IsCanonicalObstruction system.obstructionFamily :=
+  Classical.choose_spec system.exists_canonicalObstruction
+
+theorem obstructionFamily_subset {data : Parameters}
+    {object : Graph.FiniteObject.{u}}
+    (system : PairOverlapSystem data object) :
+    system.obstructionFamily ⊆ system.failedFamily :=
+  system.obstructionFamily_isCanonical.1
+
+theorem obstructionFamily_minimal {data : Parameters}
+    {object : Graph.FiniteObject.{u}}
+    (system : PairOverlapSystem data object) :
+    system.minimalObstruction system.obstructionFamily :=
+  system.obstructionFamily_isCanonical.2.1
+
+/-- The two clauses of the paper's conditional factorization, at one family:
+if its response supports are pairwise separated, or if it splits into two
+nonempty blocks with no cross-overlap, then it is realized.  Both speak through
+the aggregate `realizingOrder`, the count of realized signatures in G's
+labelled `(n,m)` class. -/
+structure FactorizesAt {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (system : PairOverlapSystem data object)
+    (family : Finset {pair // pair ∈ system.first.pairSet}) : Prop where
+  separated : system.PairwiseSeparated family → system.realizingOrder family
+  concatenate : ∀ left right, left.Nonempty → right.Nonempty → Disjoint left right →
+    system.familyUnion left right = family →
+    (∀ leftPair, leftPair ∈ left → ∀ rightPair, rightPair ∈ right →
+      ¬ system.overlaps leftPair rightPair) →
+    system.realizingOrder left → system.realizingOrder right →
+      system.realizingOrder family
+
+/-- **The conditional-factorization test of node `[178]`, at G's canonical
+minimal obstruction.**
+
+Lean improvement: the manuscript's test quantifies over every separated family
+of the pair set and every split of every family.  The proof of
+`lem:pair-failure-overlap` consumes only the two clauses at the one family
+`obstructionFamily`, and this is what is decided.  The retained negation is
+therefore a statement about G's canonical minimal obstruction
+(`not_conditionalFactorization_iff`), with the failed realization stated as a
+count of signatures (`realizingOrder`), not as a class member that fails. -/
 abbrev ConditionalFactorization {data : Parameters}
     {object : Graph.FiniteObject.{u}}
     (system : PairOverlapSystem data object) : Prop :=
-  system.toSkeletonModel.ConditionalFactorization
-    (LengthOK := data.LengthOK)
+  system.FactorizesAt system.obstructionFamily
+
+/-- **The exact shape of a failed factorization at G.**  The test fails iff G's
+canonical minimal obstruction `F₀` either has pairwise separated response
+supports (all pairs meet only inside the port returns of their own demands; this
+includes `|F₀| = 1`), or splits into two nonempty disjoint blocks with no
+cross-overlap, each block realized by minimality.  In both cases `F₀` is not
+realized: the failure is a product failure among mutually non-overlapping
+response supports. -/
+theorem not_conditionalFactorization_iff {data : Parameters}
+    {object : Graph.FiniteObject.{u}}
+    (system : PairOverlapSystem data object) :
+    ¬ system.ConditionalFactorization ↔
+      (system.PairwiseSeparated system.obstructionFamily ∨
+        ∃ left right, left.Nonempty ∧ right.Nonempty ∧ Disjoint left right ∧
+          system.familyUnion left right = system.obstructionFamily ∧
+          (∀ leftPair, leftPair ∈ left → ∀ rightPair, rightPair ∈ right →
+            ¬ system.overlaps leftPair rightPair) ∧
+          system.realizingOrder left ∧ system.realizingOrder right) := by
+  classical
+  have notRealizing : ¬ system.realizingOrder system.obstructionFamily :=
+    system.obstructionFamily_minimal.1.2
+  constructor
+  · intro fails
+    by_cases separated : system.PairwiseSeparated system.obstructionFamily
+    · exact Or.inl separated
+    · right
+      by_contra absent
+      push Not at absent
+      apply fails
+      refine ⟨fun separatedFamily => (separated separatedFamily).elim, ?_⟩
+      intro left right leftNonempty rightNonempty disjoint unionEq noCross
+        leftRealizing rightRealizing
+      exact (absent left right leftNonempty rightNonempty disjoint unionEq
+        noCross leftRealizing rightRealizing).elim
+  · rintro (separated | ⟨left, right, leftNonempty, rightNonempty, disjoint,
+      unionEq, noCross, leftRealizing, rightRealizing⟩) holds
+    · exact notRealizing (holds.separated separated)
+    · exact notRealizing (holds.concatenate left right leftNonempty rightNonempty
+        disjoint unionEq noCross leftRealizing rightRealizing)
 
 end PairOverlapSystem
 

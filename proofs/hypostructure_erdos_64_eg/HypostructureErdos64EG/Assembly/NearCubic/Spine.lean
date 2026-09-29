@@ -16,7 +16,10 @@ import Hypostructure.Graph.Strategy.SpineRows.NetDeficiencyCap
 import Hypostructure.Graph.Strategy.SpineRows.RemainderEntropyDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
 import Hypostructure.Graph.Strategy.SpineRows.Route8RateDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.Route8BasinBurden
+import Hypostructure.Graph.Strategy.SpineRows.Route8RateFailsJoin
 import Hypostructure.Graph.Strategy.SpineRows.RouteEightNetDeficiencyCap
+import Hypostructure.Graph.Strategy.SpineRows.StubDeficit
 import Hypostructure.Graph.Strategy.SpineRows.StubSupply
 import Hypostructure.Graph.Strategy.SpineRows.TargetRankCircuit
 import Hypostructure.Graph.Strategy.SpineRows.WedgeSupply
@@ -70,10 +73,19 @@ arm whose route-8 rate is already decided. -/
 noncomputable abbrev nearCubicResidualBKeys : FactKeys EGInput.{u} :=
   [K .forcedCurvatureCost, K .remainderEntropyHigh, K .remainderEntropyLow,
     K .entropyPackageDemand, K .entropyCapActive, K .largeBudgetResidual,
-    K .entropyCapBound, K .entropyJointRealization, K .allColdEntropyResidual, K .localTypeCoordinateRepetitive,
+    K .entropyCapBound, K .entropyJointRealization, K .allColdEntropyResidual, K .stubDeficitIdentity,
+    K .remainderCycleSpectrum, K .localTypeCoordinateRepetitive,
     K .localTypeCoordinateNonrepetitive, K .dominantRootedType,
     K .dominantRootedWedgeType, K .dominantRootedTypeWedgeFree,
-    K .independentObstructionTranslates, K .netDeficiencyCap] ++
+    K .independentObstructionTranslates, K .netDeficiencyCap,
+    -- G audit of `Route8RateFailsOutcome`: facts published on the failed-rate arm.
+    K .route8RateFailsJoin, K .route8RateFailsPiece, K .route8RateFailsCrossBound,
+    K .route8RateFailsFlow, K .route8CarrierInjection, K .route8RateExactSlack,
+    K .route8StubDeficit, K .route8DeficitVsStubs, K .route8EntryLowerBound,
+    K .route8CoreEmpty, K .route8StrongRate, K .route8ThinIsolation,
+    K .route8WindowStub, K .route8ThinSmall, K .route8WindowRPathGap,
+    K .route8HubStubs, K .route8WindowSelfRPathGap, K .route8PieceBoundary,
+    K .route8WindowPieceRank, K .route8AchievableLengths] ++
     netChargeContinuationKeys
 
 /-- Branch D, nodes `[36]`--`[46]`, on the literal ledger returned by node
@@ -407,7 +419,16 @@ noncomputable def nearCubicRouteEightEntry
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .minDegreeBaseline) known]
     (fresh : List.Disjoint
-      (K .route8Rate :: K .route8RateFails :: netChargeContinuationKeys.{u}) known := by
+      (K .route8Rate :: K .route8RateFails :: K .route8RateFailsJoin ::
+        K .route8RateFailsPiece :: K .route8RateFailsCrossBound ::
+        K .route8RateFailsFlow :: K .route8CarrierInjection :: K .route8RateExactSlack ::
+        K .route8BasinBurden :: K .route8StubDeficit :: K .route8DeficitVsStubs ::
+        K .route8EntryLowerBound :: K .route8CoreEmpty :: K .route8StrongRate ::
+        K .route8ThinIsolation :: K .route8WindowStub :: K .route8ThinSmall ::
+        K .route8WindowRPathGap :: K .route8HubStubs ::
+        K .route8WindowSelfRPathGap :: K .route8PieceBoundary ::
+        K .route8WindowPieceRank :: K .route8AchievableLengths ::
+        netChargeContinuationKeys.{u}) known := by
         key_fresh)
     [FactKeys.Has (K .barrierCap) known]
     [FactKeys.Has (K .barrierEnumeration) known]
@@ -438,7 +459,92 @@ noncomputable def nearCubicRouteEightEntry
       (Or.inl rfl) (by key_fresh) (by key_fresh) with
   | .left rated => Or.inl (selectedNetChargeContinuation rated (Or.inl ⟨arm.1.toPrefix, arm.2⟩))
   | .right rateFails =>
-      Or.inr (Or.inl (route8RateFailsSubtypesReturn_routeEightEntry rateFails arm.1 arm.2))
+      -- G audit: the failed rate against the exact window join at `P₀`.
+      let joined := (route8RateFailsJoinRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        rateFails (by key_fresh)
+      let pieced := (route8RateFailsPieceRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        joined (by key_fresh)
+      let crossed := (route8RateFailsCrossBoundRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        pieced (by key_fresh)
+      let flowed := (route8RateFailsFlowRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        crossed (by key_fresh)
+      let injected := (route8CarrierInjectionRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        flowed (by key_fresh)
+      let exacted := (route8RateExactSlackRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        injected (by key_fresh)
+      let basined := (route8BasinBurdenRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        exacted (by key_fresh)
+      let stubbed := (route8StubDeficitRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        basined (by key_fresh)
+      let versus := (route8DeficitVsStubsRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        stubbed (by key_fresh)
+      let entried := (route8EntryLowerBoundRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        versus (by key_fresh)
+      let coreEmpty := (route8CoreEmptyRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        entried (by key_fresh)
+      let strongRate := (route8StrongRateRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        coreEmpty (by key_fresh)
+      let thinIso := (route8ThinIsolationRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        strongRate (by key_fresh)
+      let windowStub := (route8WindowStubRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        thinIso (by key_fresh)
+      let thinSmall := (route8ThinSmallRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        windowStub (by key_fresh)
+      let rpathGap := (route8WindowRPathGapRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        thinSmall (by key_fresh)
+      let hubStubs := (route8HubStubsRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        rpathGap (by key_fresh)
+      let selfGap := (route8WindowSelfRPathGapRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        hubStubs (by key_fresh)
+      let pieceCut := (route8PieceBoundaryRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        selfGap (by key_fresh)
+      let pieceRank := (route8WindowPieceRankRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        pieceCut (by key_fresh)
+      let achievable := (route8AchievableLengthsRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        pieceRank (by key_fresh)
+      Or.inr (Or.inl (route8RateFailsSubtypesReturn_routeEightEntry achievable arm.1 arm.2))
 
 set_option maxHeartbeats 8000000 in
 /-- The route-8 continuation `[57]`--`[124]` on the `[162]` arm entered from
@@ -453,6 +559,27 @@ noncomputable def nearCubicRateFailedExit
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     (entropy : EntropyArmLow selected)
+    (joinFresh : K .route8RateFailsJoin ∉ known := by key_fresh)
+    (pieceFresh : K .route8RateFailsPiece ∉ known := by key_fresh)
+    (crossFresh : K .route8RateFailsCrossBound ∉ known := by key_fresh)
+    (flowFresh : K .route8RateFailsFlow ∉ known := by key_fresh)
+    (injectionFresh : K .route8CarrierInjection ∉ known := by key_fresh)
+    (exactFresh : K .route8RateExactSlack ∉ known := by key_fresh)
+    (basinFresh : K .route8BasinBurden ∉ known := by key_fresh)
+    (stubFresh : K .route8StubDeficit ∉ known := by key_fresh)
+    (versusFresh : K .route8DeficitVsStubs ∉ known := by key_fresh)
+    (entryFresh : K .route8EntryLowerBound ∉ known := by key_fresh)
+    (coreEmptyFresh : K .route8CoreEmpty ∉ known := by key_fresh)
+    (strongFresh : K .route8StrongRate ∉ known := by key_fresh)
+    (thinIsoFresh : K .route8ThinIsolation ∉ known := by key_fresh)
+    (windowStubFresh : K .route8WindowStub ∉ known := by key_fresh)
+    (thinSmallFresh : K .route8ThinSmall ∉ known := by key_fresh)
+    (rpathFresh : K .route8WindowRPathGap ∉ known := by key_fresh)
+    (hubFresh : K .route8HubStubs ∉ known := by key_fresh)
+    (selfGapFresh : K .route8WindowSelfRPathGap ∉ known := by key_fresh)
+    (pieceCutFresh : K .route8PieceBoundary ∉ known := by key_fresh)
+    (pieceRankFresh : K .route8WindowPieceRank ∉ known := by key_fresh)
+    (achievableFresh : K .route8AchievableLengths ∉ known := by key_fresh)
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
     [FactKeys.Has (K .boundedDensityOrder) known]
@@ -550,7 +677,91 @@ noncomputable def nearCubicRateFailedExit
     [FactKeys.Has (K .windowPackageSeparated) known]
     [FactKeys.Has (K .windowPresent) known] :
     SelectedNearCubicSurvivorBoundary selected :=
-  Or.inr (Or.inl (route8RateFailsSubtypesReturn_rateFailedExit history entropy))
+  let joined := (route8RateFailsJoinRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    history (by key_fresh)
+  let pieced := (route8RateFailsPieceRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    joined (by key_fresh)
+  let crossed := (route8RateFailsCrossBoundRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    pieced (by key_fresh)
+  let flowed := (route8RateFailsFlowRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    crossed (by key_fresh)
+  let injected := (route8CarrierInjectionRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    flowed (by key_fresh)
+  let exacted := (route8RateExactSlackRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    injected (by key_fresh)
+  let basined := (route8BasinBurdenRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    exacted (by key_fresh)
+  let stubbed := (route8StubDeficitRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    basined (by key_fresh)
+  let versus := (route8DeficitVsStubsRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    stubbed (by key_fresh)
+  let entried := (route8EntryLowerBoundRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    versus (by key_fresh)
+  let coreEmpty := (route8CoreEmptyRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    entried (by key_fresh)
+  let strongRate := (route8StrongRateRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    coreEmpty (by key_fresh)
+  let thinIso := (route8ThinIsolationRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    strongRate (by key_fresh)
+  let windowStub := (route8WindowStubRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    thinIso (by key_fresh)
+  let thinSmall := (route8ThinSmallRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    windowStub (by key_fresh)
+  let rpathGap := (route8WindowRPathGapRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    thinSmall (by key_fresh)
+  let hubStubs := (route8HubStubsRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    rpathGap (by key_fresh)
+  let selfGap := (route8WindowSelfRPathGapRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    hubStubs (by key_fresh)
+  let pieceCut := (route8PieceBoundaryRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    selfGap (by key_fresh)
+  let pieceRank := (route8WindowPieceRankRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    pieceCut (by key_fresh)
+  let achievable := (route8AchievableLengthsRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    pieceRank (by key_fresh)
+  Or.inr (Or.inl (route8RateFailsSubtypesReturn_rateFailedExit achievable entropy))
 
 set_option maxHeartbeats 8000000 in
 /-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[147]` arm (`θ < 1/78`): `[56]` reads the strict cap from `K .coldRoute8Below`,
@@ -697,9 +908,15 @@ noncomputable def nearCubicLargeBudgetColdRate
                   (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
           | .right residualHistory =>
               -- the configuration at G where the joint realization fails,
+              -- with the stub-deficit identity and the cycle spectrum of `R₀`,
               -- returned.
-              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (node54SubtypesReturn_coldRate residualHistory lanePrefix))))))
+              let residualHistory :=
+                (stubDeficitRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run residualHistory (by key_fresh)
+              exact Or.inr (Or.inr (Or.inr (Or.inr
+                (node54SubtypesReturn_coldRate residualHistory lanePrefix))))
       | .right boundHistory =>
           -- `[55]`: Residual C on the high-entropy arm.
           let largeHistory :=
@@ -898,10 +1115,16 @@ noncomputable def nearCubicLargeBudgetDenseRate
                   (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
           | .right residualHistory =>
               -- the configuration at G where the joint realization fails,
+              -- with the stub-deficit identity and the cycle spectrum of `R₀`,
               -- returned.
-              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+              let residualHistory :=
+                (stubDeficitRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run residualHistory (by key_fresh)
+              exact Or.inr (Or.inr (Or.inr (Or.inr
                 (Or.inr (Or.inr (Or.inr (Or.inr
-                  (node54Return_unrealizedBothRates residualHistory))))))))))
+                  (node54Return_unrealizedBothRates residualHistory))))))))
       | .right boundHistory =>
           -- `[53]`'s bound arm on the dense residual `[159]` with
           -- `τ(θ) < 1/4`: the package of `[159]` overflows the skeleton
@@ -1105,9 +1328,15 @@ noncomputable def nearCubicLargeBudgetDensityCap
                   (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
           | .right residualHistory =>
               -- the configuration at G where the joint realization fails,
+              -- with the stub-deficit identity and the cycle spectrum of `R₀`,
               -- returned.
-              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (node54SubtypesReturn_densityCap residualHistory lanePrefix))))))
+              let residualHistory :=
+                (stubDeficitRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run residualHistory (by key_fresh)
+              exact Or.inr (Or.inr (Or.inr (Or.inr
+                (node54SubtypesReturn_densityCap residualHistory lanePrefix))))
       | .right boundHistory =>
           -- `[55]`: Residual C on the high-entropy arm.
           let largeHistory :=
@@ -1308,10 +1537,16 @@ noncomputable def nearCubicLargeBudgetRateFailed
                   (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
           | .right residualHistory =>
               -- the configuration at G where the joint realization fails,
+              -- with the stub-deficit identity and the cycle spectrum of `R₀`,
               -- returned.
-              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+              let residualHistory :=
+                (stubDeficitRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run residualHistory (by key_fresh)
+              exact Or.inr (Or.inr (Or.inr (Or.inr
                 (Or.inr (Or.inr (Or.inr (Or.inl
-                  (node54Return_unrealizedRateFailsBounded residualHistory))))))))))
+                  (node54Return_unrealizedRateFailsBounded residualHistory))))))))
       | .right boundHistory =>
           -- `[53]`'s bound arm on the dense residual `[159]` with
           -- `τ(θ) < 1/4`: the package of `[159]` overflows the skeleton

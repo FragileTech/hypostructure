@@ -1,5 +1,5 @@
 import HypostructureErdos64EG.Assembly.RouteEight.Boundary
-import HypostructureErdos64EG.Assembly.Residuals.Node153ResidualOutcome
+import HypostructureErdos64EG.Assembly.Residuals.ArmBlocks
 
 /-!
 # Assembly: NetCharge / Boundary
@@ -18,7 +18,7 @@ universe u w
 
 /-- The only live conclusions of the net-charge continuation are the literal
 Route-8 residuals.  The `[173]` no-arm (the absorbed-configuration residual
-`[174]`, with its fan data, its cold-closure exits and its node-`[153]` return)
+`[174]`, with its fan data, and its cold-closure exits)
 is closed at the node against the private-carrier rate `K .route8Rate`. -/
 abbrev SelectedNetChargeBoundary (selected : EGInput.{u}) :=
   SelectedRouteEightBoundary selected

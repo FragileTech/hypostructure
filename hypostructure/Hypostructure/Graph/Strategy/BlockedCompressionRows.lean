@@ -56,13 +56,13 @@ noncomputable def scaleAdditivityDichotomy
   exact Decision.run previous (K .blockedScaleAdditive) (K .blockedBarrierOverlap)
     `Hypostructure.Graph.Strategy.Spine.scaleAdditivityDichotomy
     (if additive : ∀ coordinate : blockedCoordinate data.toParameters current.object,
-        BlockedRelativeFibreBoundAt data.toParameters current.object coordinate then
-      .inl ⟨Contracts.Spine.blockedScaleAdditive_of_relative data.toParameters
+        BlockedAggregateBoundAt data.toParameters current.object coordinate then
+      .inl ⟨Contracts.Spine.blockedScaleAdditive_of_aggregate data.toParameters
         current.object dyadic degenerate
         data.windowBarrierLabel labelMem labelInjective labelSurjective
         leftSemantic rightSemantic sumSemantic additive⟩
     else
-      .inr ⟨Contracts.Spine.blockedBarrierFailure_of_not_relative data.toParameters
+      .inr ⟨Contracts.Spine.blockedBarrierFailure_of_not_aggregate data.toParameters
         current.object dyadic degenerate
         data.windowBarrierLabel labelMem labelInjective labelSurjective
         leftSemantic rightSemantic sumSemantic additive⟩)

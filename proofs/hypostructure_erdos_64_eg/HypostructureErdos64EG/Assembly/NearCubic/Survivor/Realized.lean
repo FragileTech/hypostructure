@@ -1,5 +1,9 @@
 import Hypostructure.Graph.Strategy.ColdCorridorRows.AbsorbedGerm
+import Hypostructure.Graph.Strategy.ColdCorridorRows.CanonicalReplacement
 import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdFamilyClosure
+import Hypostructure.Graph.Strategy.ColdCorridorRows.MarkedGerm
+import Hypostructure.Graph.Strategy.ColdCorridorRows.NeutralTerminal
+import Hypostructure.Graph.Strategy.ColdCorridorRows.TwoStrand
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.DensityOrder
 import Hypostructure.Graph.Strategy.SpineRows.Route8RateFromColdBelow
@@ -23,6 +27,8 @@ open Hypostructure.Graph.Strategy.Spine
 universe u w
 
 set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxSize 200000 in
+set_option synthInstance.maxHeartbeats 4000000 in
 /-- **The realized-package arm of `[158]`.**  `[22]`--`[23]`, then `[146]`
 (`θ < 1/78`).  Its yes arm `[147]`: the route-8 private-carrier inequality
 `τ(θ) < 3/13` is `K .coldRoute8Below` read through `|∂R| ≤ 15p + σ_W`
@@ -109,34 +115,112 @@ noncomputable def Assembly.Internal.nearCubicRealized
                   (presentation := erdosReceiverLoadProfile) spineData).run
                   cost (by key_fresh)
               -- `lem:bridgeless` is on the ledger since the entry prefix.
-              match nearCubicColdOccurrence (nearCubicColdCorridorState localized)
-                  (Or.inr (Or.inr (Node153LinearBlock_realized.ret localized))) with
-              | .inr repeated =>
-                  -- `[153]`, ¬(★): G's first equal-state pair, returned.
-                  exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl repeated))))
-              | .inl distinct =>
-                  let familyOnly := nearCubicColdGermFamily distinct
-                  -- `[175]`'s per-half-edge split and `[177]`'s fan data are facts
-                  -- of G on the extracted family here too.
-                  let split :=
-                    (absorbedGermSplitRow (data := spineData)).run familyOnly
-                      (by key_fresh)
-                  let family :=
-                    (absorbedGermFanDataRow (data := spineData)).run split
-                      (by key_fresh)
-                  let unhit := nearCubicColdNoHit family
-                  -- `[154]` second test (G2) is decided at G: its yes-arm is
-                  -- empty (Lean improvement), closed against the selection.
-                  match coldGermDistinctionDichotomy (data := spineData) unhit
+              -- `[153]`: the first failures.  No consumer on this arm reads (★)
+              -- (`[162]` runs on the dense arms), so it is not split; a repeat is
+              -- the (F5) repeat subcase and is a germ of the family like any
+              -- other, which the routing below reads.
+              let occurred :=
+                (coldFirstFailureOccurrenceRow (data := spineData)).run
+                  (nearCubicColdCorridorState localized) (by key_fresh)
+              let familyOnly := nearCubicColdGermFamily occurred
+              -- `[175]`'s per-half-edge split and `[177]`'s fan data are facts
+              -- of G on the extracted family here too.
+              let split :=
+                (absorbedGermSplitRow (data := spineData)).run familyOnly
+                  (by key_fresh)
+              let family :=
+                (absorbedGermFanDataRow (data := spineData)).run split
+                  (by key_fresh)
+              let unhit := nearCubicColdNoHit family
+              -- `[154]` second test (G2) is decided at G: its yes-arm is
+              -- empty (Lean improvement), closed against the selection.
+              match coldGermDistinctionDichotomy (data := spineData) unhit
+                  (by key_fresh) (by key_fresh) with
+              | .left distinguishedHistory =>
+                  exact ((closeIncompatible distinguishedHistory
+                    (K .coldGermSomeDistinguishing) (K .selection)
+                    (by key_fresh)).elimClosed (by infer_instance)).elim
+              | .right silentHistory =>
+                  -- `[157]`, silent arm: G's silent extracted family has a
+                  -- neutral equal-length configuration (`[163]`, read as at
+                  -- `[176]`: no dense terminality on this arm).  Its genuine
+                  -- second strand is closed at `[167]`--`[168]`; the
+                  -- canonical-replacement arm `[165]`--`[166]` forces `Q = E`
+                  -- and is retained.
+                  let neutral :=
+                    (absorbedNeutralConfigurationRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      silentHistory (by key_fresh)
+                  let closed := nearCubicColdTable neutral
+                  match absorbedNeutralSymmetryDichotomy (data := spineData) closed
                       (by key_fresh) (by key_fresh) with
-                  | .left distinguishedHistory =>
-                      exact ((closeIncompatible distinguishedHistory
-                        (K .coldGermSomeDistinguishing) (K .selection)
-                        (by key_fresh)).elimClosed (by infer_instance)).elim
-                  | .right silentHistory =>
-                      exact Or.inr (Or.inr (Or.inr (Or.inl
-                        (Or.inr (Or.inr (Or.inr
-                          (coldBranchClosed_linearRealizedSilentReturn
-                            (nearCubicColdTable silentHistory))))))))
+                  | .left canonicalHistory =>
+                      let swapped :=
+                        (canonicalReplacementSwapRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          canonicalHistory (by key_fresh)
+                      let trivial :=
+                        (canonicalReplacementTrivialRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          swapped (by key_fresh)
+                      -- `[169]`, `def:blocked-class`: on the trivial neutral
+                      -- residual G lies in the blocked class `B(P)` of the fixed
+                      -- packing, `card B(P) <= skeletonBudget`.  (On `[158]` yes
+                      -- its compression cap is `windowPackageRealized` itself:
+                      -- `blockedCompressionCap_iff_windowPackageRealized`.)
+                      -- `[157]`: the marked germ against the table's compression
+                      -- clause: not handed off, replacement not strictly smaller.
+                      let uncompressed : ExactLedger EGInput.{u} selected _ :=
+                        (coldMarkedGermUncompressedRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          trivial (by key_fresh)
+                      let excised : ExactLedger EGInput.{u} selected _ :=
+                        (coldMarkedGermStretchExcisionRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile)
+                          (data := spineData)).run uncompressed (by key_fresh)
+                      let incident : ExactLedger EGInput.{u} selected _ :=
+                        (coldMarkedGermStretchIncidenceRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile)
+                          (data := spineData)).run excised (by key_fresh)
+                      let suppressed : ExactLedger EGInput.{u} selected _ :=
+                        (coldMarkedGermPairSuppressionRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile)
+                          (data := spineData)).run incident (by key_fresh)
+                      let mersenne : ExactLedger EGInput.{u} selected _ :=
+                        (coldMarkedGermPairMersenneRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile)
+                          (data := spineData)).run suppressed (by key_fresh)
+                      let chorded : ExactLedger EGInput.{u} selected _ :=
+                        (coldMarkedGermChordSpanRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile)
+                          (data := spineData)).run mersenne (by key_fresh)
+                      exact Or.inr (Or.inr (Or.inr (Or.inl (Or.inl
+                        (coldBranchClosed_linearRealizedSilentReturn chorded)))))
+                  | .right genuineHistory =>
+                      let survivor :=
+                        (twoStrandSurvivorRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run genuineHistory
+                          (by key_fresh)
+                      let stubbed :=
+                        (coldWindowStubStructureRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run survivor
+                          (by key_fresh)
+                      exact ((symmetricPairEndpointExclusionRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).runAndCloseIncompatible stubbed
+                          (K .coldTwoStrandSurvivor) (K .coldSymmetricPairExcluded)
+                          (by key_fresh) (by key_fresh)).elimClosed
+                            (by infer_instance) |>.elim
 
 end HypostructureErdos64EG

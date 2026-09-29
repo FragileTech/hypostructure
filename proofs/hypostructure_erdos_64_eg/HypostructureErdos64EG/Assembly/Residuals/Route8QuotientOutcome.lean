@@ -169,6 +169,8 @@ theorem route8QuotientProductReturn
     [FactKeys.Has (K .typeBSublinearLedger) known]
     [FactKeys.Has (K .route8UnifiedDeficit) known]
     [FactKeys.Has (K .route8QuotientResidual) known]
+    [FactKeys.Has (K .route8PeelingDescent) known]
+    [FactKeys.Has (K .route8QuotientEntriesAtG) known]
     (entry : Route8LaneEntry selected)
     (continuation : NetChargeContinuation selected) :
     Route8QuotientOutcome_product selected :=

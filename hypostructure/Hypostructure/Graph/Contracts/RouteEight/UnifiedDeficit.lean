@@ -493,15 +493,14 @@ theorem route8UnifiedEmptyAtG (data : Parameters) (object : FiniteObject.{u})
   exact bound
 
 /-- **The private-carrier rate refutes the empty quotient-free arm at G**: the
-rate `(δ·s + 1)·|∂R| + δ·F·s·T(n) < δ·|R|` (`K .route8Rate`) against
+rate `s·|∂R| + F·s·T(n) < |R|` (`K .route8Rate`) against
 `|R| ≤ s·|∂R| + F·s·T(n)`. -/
 theorem route8UnifiedEmptyAtG_contradiction (data : Parameters)
     (object : FiniteObject.{u})
     (rate : Route8RateStatement data object)
     (empty : Route8UnifiedEmptyAtGStatement data object) : False := by
   obtain ⟨_alphaZero, _entriesEmpty, _deficitZero, bound⟩ := empty
-  unfold Route8RateStatement Route8Census.Rate at rate
-  have scaled := Nat.mul_le_mul_left data.threshold bound
-  nlinarith
+  unfold Route8RateStatement Route8Census.StrongRate at rate
+  omega
 
 end Hypostructure.Graph.Contracts.RouteEight

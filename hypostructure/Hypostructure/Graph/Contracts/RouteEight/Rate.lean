@@ -26,8 +26,7 @@ theorem route8RateFromColdBelow (data : Parameters) (object : FiniteObject.{u})
     Route8RateStatement data object := by
   set packing := canonicalWindowPacking data object with hpack
   have valid : object.IsWindowPacking data.windowOrder packing :=
-    (Classical.choose_spec
-      (object.exists_windowPacking_card_eq data.windowOrder)).1
+    (canonicalWindowPacking_spec data object).1
   have baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex :=
     degree_ge_of_minDegree data object baseline
   -- `lem:surplus-aware-window-stub`'s capacity link, read off the object
@@ -46,11 +45,13 @@ theorem route8RateFromColdBelow (data : Parameters) (object : FiniteObject.{u})
       data.threshold * (data.bridgeMassFactor * data.dischargeScale *
         data.surplusThreshold object.vertexCount) <
     data.threshold * (object.vertexCount - data.windowOrder * packing.card) at below
-  change (data.threshold * data.dischargeScale + 1) *
+  suffices old : (data.threshold * data.dischargeScale + 1) *
       (Graph.Route8Census.supply object packing).card +
       data.threshold * (data.bridgeMassFactor * data.dischargeScale *
         data.surplusThreshold object.vertexCount) <
-    data.threshold * (object.remainderSupport packing).card
+    data.threshold * (object.remainderSupport packing).card by
+    exact Graph.Route8Census.strongRate_of_rate object packing data.threshold
+      data.dischargeScale _ old
   rw [supplyEq]
   have remEq : object.vertexCount - data.windowOrder * packing.card =
       (object.remainderSupport packing).card := by omega

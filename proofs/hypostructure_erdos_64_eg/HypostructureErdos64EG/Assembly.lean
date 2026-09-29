@@ -8,14 +8,12 @@ import HypostructureErdos64EG.Assembly.NearCubic.Replacement
 import HypostructureErdos64EG.Assembly.NearCubic.Survivor
 import HypostructureErdos64EG.Assembly.NetCharge.Boundary
 import HypostructureErdos64EG.Assembly.NetCharge.Continuation
-import HypostructureErdos64EG.Assembly.Residuals.Node153ResidualOutcome
 import HypostructureErdos64EG.Assembly.RouteEight.Boundary
 import HypostructureErdos64EG.Assembly.RouteEight.Local
 import HypostructureErdos64EG.Assembly.RouteEight.Residual
 import HypostructureErdos64EG.Assembly.RouteEight.TypeBContinuation
 import HypostructureErdos64EG.Assembly.Residuals.Route8Blocks
 import HypostructureErdos64EG.Assembly.Residuals.ArmBlocks
-import HypostructureErdos64EG.Assembly.Residuals.Route8JointBalanceOutcome
 import HypostructureErdos64EG.Assembly.Residuals.TypeBSublinearOutcome
 import HypostructureErdos64EG.Assembly.Residuals.Route8QuotientOutcome
 import HypostructureErdos64EG.Assembly.Residuals.Route8RateFailsOutcome

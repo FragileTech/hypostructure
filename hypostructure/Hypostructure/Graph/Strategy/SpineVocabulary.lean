@@ -8,12 +8,23 @@ import Hypostructure.Graph.Statements.TypeB
 import Hypostructure.Graph.Statements.RouteEightPinned
 import Hypostructure.Graph.Statements.SurplusPair
 import Hypostructure.Graph.Statements.TypeBLanes
+import Hypostructure.Graph.Statements.TypeBSublinearCanonical
+import Hypostructure.Graph.Statements.TypeBSublinearGaps
+import Hypostructure.Graph.Statements.TypeBSublinearFlow
+import Hypostructure.Graph.Statements.TypeBSublinearLanding
 import Hypostructure.Graph.Statements.SurplusPairRouting
 import Hypostructure.Graph.Statements.SurplusPairCode
 import Hypostructure.Graph.Statements.ColdGerm
+import Hypostructure.Graph.Statements.ColdMarkedGerm
 import Hypostructure.Graph.Statements.SpineDominantType
 import Hypostructure.Graph.Statements.ColdResiduals
 import Hypostructure.Graph.Statements.DensityOrder
+import Hypostructure.Graph.Statements.Route8RateFailsJoin
+import Hypostructure.Graph.Statements.Route8RateFailsFlow
+import Hypostructure.Graph.Statements.Route8RateFailsAccounting
+import Hypostructure.Graph.Statements.Route8RateFailsRoute
+import Hypostructure.Graph.Statements.Route8WindowRPath
+import Hypostructure.Graph.Statements.Route8WindowPieceLengths
 import Hypostructure.Graph.Statements.SparseExitResidual
 import Hypostructure.Graph.Statements.SparseExitReadings
 import Hypostructure.Graph.Statements.SwitchForcedPaths
@@ -24,6 +35,13 @@ import Hypostructure.Graph.Statements.LocalRigidity
 import Hypostructure.Graph.Statements.JointHubs
 import Hypostructure.Graph.Statements.HubLinks
 import Hypostructure.Graph.Statements.PairArms
+import Hypostructure.Graph.Statements.BlockedFailureG
+import Hypostructure.Graph.Statements.BlockedOverlapG
+import Hypostructure.Graph.Statements.PairCorrelation
+import Hypostructure.Graph.Statements.Route8QuotientSize
+import Hypostructure.Graph.Statements.PairHandoffSupport
+import Hypostructure.Graph.Statements.PairHandoffFacts
+import Hypostructure.Graph.Statements.StubDeficit
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1600,6 +1618,24 @@ inductive Key where
   /-- Node `[180]`, arithmetic arm: the exact negation of
   `pairIncrementEarlyOutcome`. -/
   | pairIncrementNoEarlyOutcome
+  -- S182 keys (8200–8249): the [182] audit, node [178]--[180] facts stated about G
+  /-- Node `[178]`, the correlation mass of G's canonical overlap system: along
+  the canonical rank order of the failed prefix, the exact realized-signature
+  counts `P_k` (`P_0 = 2^b`, `P_k ≤ P_{k+1} ≤ 2 P_k`, `P_t ≤ |class|`), the
+  mass identity `2^{b+t} ≤ |class| + mass`, and the first non-branching index. -/
+  | pairCorrelation
+  /-- Nodes `[179]`--`[180]`, coverage decided at G: for G's canonical return
+  system and serial system, the realizability outcome is the Type B handoff or a
+  serial system on those returns; the arithmetic input does not exist; the
+  increment outcome is the Type B handoff of the serial returns. -/
+  | pairCoverage
+  /-- Node `[180]`, the full-modulus arithmetic of G's canonical serial system: its
+  canonical Frobenius-filled data does not satisfy all of `FullModulusArithmetic`. -/
+  | pairFullModulus
+  /-- Node `[179]`, the uncrossing of G's canonical connector routes: the closing
+  cycle of disjoint routes, or the two rerouted paths at the first and last common
+  vertex, each with a non-accepted closing length. -/
+  | pairUncrossing
   -- F1 keys
   /-- Node `[86]`: the Type A support `X₀`, `s·def⁺(X₀) < |V(X₀)|`. -/
   | typeASupport
@@ -1633,6 +1669,96 @@ inductive Key where
   (`α(ξ) = 0`), so the census's `2 ≤ α(ξ)` leaves no unified entry, the stage
   accounting clears `s·D̃_A`, and `|R| ≤ s·|∂R| + F·s·T(n)`. -/
   | route8UnifiedEmptyAtG
+  -- R8Q keys (8150–8199): the route-8 quotient test stated about G
+  /-- Node `[348]`, stated about G (Lean improvement): **the quotient test is
+  decided at G** — alternative (b) is present at every routed load, so
+  quotient freeness fails exactly when the unified entry family is nonempty;
+  at every unified entry `α(ξ) = 0`, the quotient is present, the canonical
+  representative of G's piece at `B_u` has the size of the piece (a valid
+  replacement is not smaller), and the exit-`(5)` datum is absent. -/
+  | route8QuotientEntriesAtG
+  -- Type B sublinear audit keys (8300–8349)
+  /-- G audit of `TypeBSublinearOutcome`, `prop:typeB-bridge-sublinear`: **the
+  tested hypotheses in G's canonical form** -- every existential is pinned to a
+  canonical object of G, so the hypotheses are exactly the bridge, centre-height,
+  handoff and cover arms over G's canonical objects. -/
+  | typeBSublinearCanonicalForm
+  /-- G audit of `TypeBSublinearOutcome` (Lean improvement): **G's canonical
+  absorbed core of a piece lies in the piece**, so the clause `absorbedAt ⊆ piece`
+  of the sublinear hypotheses is empty as a failure arm at G. -/
+  | groupedAbsorbedCoreSubset
+  /-- G audit of `TypeBSublinearOutcome`: **the exact decomposition of the failed
+  sublinear hypotheses at G** into a route-`8` bridge piece of positive surplus, a
+  failing decorated handoff piece, a non-high grouped centre, or a failed cover
+  inequality. -/
+  | typeBSublinearFailureArms
+  /-- G audit of `TypeBSublinearOutcome` (Lean improvement): **the grouped centres
+  of G are high** (a surviving first separator has degree at least `4`), so the
+  height clause of the sublinear hypotheses is empty as a failure arm. -/
+  | groupedCentresHigh
+  /-- G audit of `TypeBSublinearOutcome` (Lean improvement): **the degree clause
+  of the handoff clauses is empty at G**: a decorated handoff piece has zero
+  ambient surplus, so no vertex of it has internal degree above the baseline. -/
+  | handoffDegreeClauseEmpty
+  /-- G audit of `TypeBSublinearOutcome`: **G's canonical routing is total on the
+  pieces of the remainder** (`K .remainderNormalized`): every flat vertex of a
+  canonical piece is routed by `traceReceiver?` to a receiver of the piece. -/
+  | pieceRoutingTotal
+  /-- G audit of `TypeBSublinearOutcome`: **the incidence payment of the cover
+  arm**: the cover inequality fails only if an absorbed vertex of a decorated
+  handoff piece is a cubic-closed neighbour of no grouped centre. -/
+  | coverPayment
+  /-- G audit of `TypeBSublinearOutcome` (gap H05): **a load failure of the
+  sublinear test is a saturated receiver of the piece** (the restricted load is a
+  sub-count of the routed load). -/
+  | loadFailureSaturated
+  /-- G audit of `TypeBSublinearOutcome` (gaps H06, H07): **the Hall violator of
+  the cover network is a window port**: an unpaid absorbed vertex is adjacent to
+  its grouped centre and has another neighbour in the packed windows. -/
+  | unpaidAbsorbedWindowPort
+  /-- G audit of `TypeBSublinearOutcome` (gap H05): **the ports of a receiver are
+  window stubs**: `missingPorts` is the number of incidences leaving the remainder,
+  and `def⁺` of a piece is the sum of its receivers' ports. -/
+  | receiverPortsAreWindowStubs
+  /-- G audit of `TypeBSublinearOutcome` (gap H05): **the structure of a saturated
+  receiver**: a trace basin of at least `s · missingPorts` full vertices of the
+  piece. -/
+  | saturatedReceiverBasin
+  /-- G audit of `TypeBSublinearOutcome` (gap H07): **the value of the load
+  network**: flat vertices plus receivers are at most `s · Σ missingPorts` when
+  every receiver is unsaturated and routing lands outside the excluded set. -/
+  | loadFlowValue
+  /-- G audit of `TypeBSublinearOutcome` (gap H07): **the value of the cover
+  network**: absorbed cardinalities are at most the closed counts plus the unpaid
+  count, absorbed cores have at most two vertices. -/
+  | coverFlowValue
+  /-- G audit of `TypeBSublinearOutcome` (gap B01): **the component size profile
+  of the remainder**: pieces partition `R(P₀)`, each has a receiver, and their
+  number is at most `def⁺(R(P₀))`. -/
+  | pieceSizeProfile
+  -- R3b keys (7960–7979): the switch at the separator, constructed from G
+  /-- Node `[102]` at G (Lean improvement): **the exit-(4) peel is a switch
+  peel** — the canonical witness is a Q4 member whose switch at the separator
+  (the two configurations exchange their continuations after `z`) is a proper double-edge
+  switch with an accepted cycle through an exchanged edge. -/
+  | typeAExitFourSwitchCycle
+  /-- Node `[108]` at G: **at the canonical handoff separation the switch at `z`
+  has no accepted cycle and the separator has an unused ambient incidence; the
+  switched graph is a counterexample of G's size (same vertices, same edge
+  count, the baseline)**. -/
+  | typeAExitSevenSwitch
+  /-- G audit of `TypeBSublinearOutcome` (gap H05, corrected bound): **a canonical
+  piece either has a trace into a centre, a saturated non-centre receiver, or
+  `|Y| ≤ s·def⁺(Y) + σ(Y)`** (the surplus costs `c = 1` per unit). -/
+  | bridgePieceMassDichotomy
+  /-- G audit of `TypeBSublinearOutcome` (gap H04, arm A): **what a trace into a
+  centre forces**: the centre is a high receiver with two cubic window
+  neighbours. -/
+  | traceIntoCentreStructure
+  /-- G audit of `TypeBSublinearOutcome` (gap H04, arm B): **what a trace into the
+  absorbed core forces**: a cubic vertex adjacent to a high grouped centre lying in
+  the packed windows. -/
+  | traceIntoAbsorbedStructure
   -- F5 keys
   /-- Node `[175]`, no arm: every selected corridor meets a high-degree
   vertex. -/
@@ -1682,10 +1808,8 @@ inductive Key where
   | coldCutStatesDistinct
   /-- Node `[153]`, returned residual: G's first equal-state pair on a retained cold corridor, with its separating context and profile separation. -/
   | coldRepeatedStateResidual
-  /-- Node `[162]`, test arm: a retained corridor of G first failing at a heavy centre before its terminal segment is still terminal. -/
+  /-- Node `[162]`: the heavy entry of every retained corridor of G is read within `Q_cold` states (a first failure at a heavy centre lies below `Q_cold` on the distinct-states arm); nothing about the length of the corridor beyond it is asserted. -/
   | coldHeavyEntryTerminal
-  /-- Node `[162]`, returned residual: a non-terminal retained corridor of G first failing at a heavy centre before its terminal segment. -/
-  | coldDenseHeavyEntryResidual
   /-- Node `[54]`, joint arm: `RS(R₀)·2^{rate·s·p₁₃}·2^F ≤ B` at G. -/
   | entropyJointRealization
   /-- Node `[54]`, returned residual: the configuration at G where the joint realization inequality fails. -/
@@ -1699,6 +1823,46 @@ inductive Key where
   | realizedOrderSmall
   /-- Node `[24]` on `[146]` no: the density cap against the `[146]`-no lower bound, combined at G (`Graph.DensityOrderBound`). -/
   | boundedDensityOrder
+  /-- G audit `Route8RateFailsOutcome` (idx 8250): the failed private-carrier rate against the exact window join at `P₀`: `e(R,W) + 2(order−1)p + X = δ·order·p + σ_W` and `δ·n + (δs+1)·X ≤ A·p + D·T(n)`, `X` the cross-window incidences. -/
+  | route8RateFailsJoin
+  /-- G audit `Route8RateFailsOutcome` (idx 8251): the failed private-carrier rate on the connected pieces of G's remainder: `Σ|X_i| = |R|`, `Σ|∂X_i| = |∂R|`, and a piece with `m·δ·|X| ≤ m·(δs+1)·|∂X| + δ·F·s·T(n)`. -/
+  | route8RateFailsPiece
+  /-- G audit `Route8RateFailsOutcome` (idx 8252): the failed private-carrier rate against the exact window join and the density cap, with the cross-window incidences `X` kept: `2·r·L·(δn + (δs+1)X) ≤ A(L+1)(δn+T) + L·T·(A·S + 2rD)`. -/
+  | route8RateFailsCrossBound
+  /-- G audit `Route8RateFailsOutcome` (idx 8253, `H07`): the integral stub-to-deficit flow at `R` and its pieces, `def⁺ ≤ |∂X| ≤ def⁺ + σ`, the window stub capacity delivered to the deficit and surplus of `R`, and the failed rate in deficit currency. -/
+  | route8RateFailsFlow
+  /-- G audit `Route8RateFailsOutcome` (idx 8254, `H06`): the carriers-to-cut injection of the canonical route-8 entries of `P₀`: cores lie in the cut and private cores total at most `|∂R|`. -/
+  | route8CarrierInjection
+  /-- G audit `Route8RateFailsOutcome` (idx 8255, `H08`): the rate at G's exact `σ(G)` next to the ceiling version: exact rate holds strictly inside the failed ceiling rate, or the exact rate fails. -/
+  | route8RateExactSlack
+  /-- G audit `Route8RateFailsOutcome` (idx 8256): the stub-deficit identity `e(R,W) + exc(R) = σ(R) + def⁺(R)`, the injection of deficit units into cut incidences, and `def⁺(R) + X + σ(R) + 2(order−1)p = δ·order·p + σ_W + exc(R)`. -/
+  | route8StubDeficit
+  /-- G audit `Route8RateFailsOutcome` (idx 8257): the deficit reaches the window stub capacity (then `X + σ(R) ≤ σ_W + exc`, `d ≤ βp + σ_W`) or falls short of it (then `σ_W + exc < X + σ(R)`). -/
+  | route8DeficitVsStubs
+  /-- G audit `Route8RateFailsOutcome` (idx 8258): the route-8 entries against the large-budget deficit test: `N_basin ≥ D_A`, and either the test holds with `|R| + s(X + 2(order−1)p) ≤ N_basin + s(δ·order·p + σ_W) + slack` or `D_A + s|∂R| + slack < |R|`. -/
+  | route8EntryLowerBound
+  /-- G audit `Route8RateFailsOutcome` (idx 8259): every route-8 census core is empty at G (`α(ξ) = 0`), so an entry is a two-carrier entry as soon as it exists. -/
+  | route8CoreEmpty
+  /-- G audit `Route8RateFailsOutcome` (idx 8260): the strong rate `s|∂R| + F·s·T < |R|` (then `[113]` yes gives a two-carrier entry without the `3/13` rate) or the thin remainder `|R| ≤ s|∂R| + F·s·T`. -/
+  | route8StrongRate
+  /-- G audit `Route8RateFailsOutcome` (idx 8261): under the net cap the thin remainder forces `X + T < σ_W + F·T` (windows isolated). -/
+  | route8ThinIsolation
+  /-- G audit `Route8RateFailsOutcome` (idx 8262): exact stub count per window (`exits_R + exits_W + 2(order−1) = δ·order + σ(P)`), its sums `X` and `|∂R|`, and the attached remainder vertices. -/
+  | route8WindowStub
+  /-- G audit `Route8RateFailsOutcome` (idx 8263): the thin remainder forces the order below the thin cutoff `N₀'` (`DensityOrderBound` at `A' = δ(order + sβ)`, `D' = δs(1+F)`). -/
+  | route8ThinSmall
+  /-- G audit `Route8RateFailsOutcome` (idx 8264): two windows of `P₀` joined through `R` by two vertex-disjoint paths at fixed stub positions close a cycle of length `|i−i'|+|j−j'|+|r₁|+|r₂|+4` that is not a power of two. -/
+  | route8WindowRPathGap
+  /-- G audit `Route8RateFailsOutcome` (idx 8265): the incidences from the windows to vertices above the baseline number at most `(δ+1)·σ(G)`. -/
+  | route8HubStubs
+  /-- G audit `Route8RateFailsOutcome` (idx 8266): a remainder path joining two stubs of one window closes a cycle of length `|i−i'|+|r|+2` that is not a power of two. -/
+  | route8WindowSelfRPathGap
+  /-- G audit `Route8RateFailsOutcome` (idx 8267): every canonical piece of the remainder has at least two boundary edges (bridgeless) and `2·#pieces ≤ |∂R|`. -/
+  | route8PieceBoundary
+  /-- G audit `Route8RateFailsOutcome` (idx 8268): cycle rank of the window-piece stub multigraph: `β·p + σ_W ≤ 2(e(R,W) − (p + #pieces)) + 2p + X`. -/
+  | route8WindowPieceRank
+  /-- G audit `Route8RateFailsOutcome` (idx 8269): the achievable path lengths of a piece between two stubs are nonempty and bounded by the piece size, and every element of the cycle-length sumsets of `B` (one window one piece, two windows two pieces) avoids the powers of two. -/
+  | route8AchievableLengths
   /-- Node `[24]` on `[146]` no, size test yes: `N₀ ≤ n` at the `[24]` cutoff. -/
   | boundedOrderLarge
   /-- Node `[24]` on `[146]` no, size test no: G has fewer than `N₀` vertices (exact complement). -/
@@ -1741,6 +1905,18 @@ inductive Key where
   G's selected cold branch-excess family is empty and G has no ambient-cubic
   cold window. -/
   | coldSelectedFamilyEmpty
+  /-- Node `[157]`, the marked neutral equal-length germ of G measured against the compression clause of a table row: `|Q| ≤ M_cold`, `|E| = |Q|`, the support does not enter G's (F4) registry, and `glue E (G − Z)` has the vertex and edge count of G (not strictly smaller). -/
+  | coldMarkedGermUncompressed
+  /-- Node `[157]`, F08 at the marked germ: for every path of G of length at least 2 spanning the marked germ's support, the excised object (interior deleted, ends joined) misses the baseline or G has a cycle of length `L + q` with `L` accepted and `L + q` not (`q = |p| - 1`). -/
+  | coldMarkedGermStretchExcision
+  /-- Node `[157]`, the incidence structure of the marked germ's stretch: for every path of G spanning its support, every interior vertex has degree exactly `t` and exactly `t - 2` neighbours besides its two path neighbours (a pendant or a chord). -/
+  | coldMarkedGermStretchIncidence
+  /-- Node `[157]`, F08 at every adjacent interior pair of the marked germ's stretch: suppressing the pair (delete `u v`, add `pl x` and `y q`) preserves every degree and is smaller by 2, so G has a cycle of length `Lk + j` with `Lk` accepted, `j` in `{1, 2}`, `Lk + j` not accepted; or a triangle/C4 obstruction holds. -/
+  | coldMarkedGermPairSuppression
+  /-- Node `[157]`, the Mersenne paths of every suppressed adjacent pair of the marked germ's stretch: an accepted `Lk` and a path `pl ⇝ x` (or `y ⇝ q`) of length `Lk - 1` avoiding the pair, or a double cycle of length `Lk + 2` through the four edges at the pair; or a triangle/C4 obstruction. -/
+  | coldMarkedGermPairMersenne
+  /-- Node `[157]`, the chords of the marked germ's stretch: a chord whose subpath has length at least 2 closes a cycle of length span + 1, which is not accepted. -/
+  | coldMarkedGermChordSpan
   -- [20a] enrichment keys (6606-)
   /-- Node `[20a]`: **Edge–surplus identity**: `2m = δ·n + σ`. -/
   | edgeSurplusIdentity
@@ -1922,6 +2098,44 @@ inductive Key where
   | sameTokenSwapExact
   /-- Node `[144a]` (G audit S144a, Lean improvement): **boundary-free configuration**: if neither support meets `∂Z` and the transplants of `X_q` and `X_p` keep the baseline, then `X_p = X_q = Z`, `∂Z = ∅`, `Z = V(G)`, and every vertex outside a pair seed is a cut vertex of G (Steiner minimality of `select?`, G connected). -/
   | sameTokenU2FreeWhole
+  -- g-audit 172a keys (8600–8649)
+  /-- Node `[172a]`, on the failure arm of `[170]` (`lem:scale-additivity`), G's own record: **G's own skeleton, the member of `𝓑(𝒫)` given by `K .blockedClassMember`, has a surviving barrier state at every coordinate and lies in both of its own conditional fibres**, so `1 ≤ |S| ≤ |A|` at G's own outside record and prefix at every coordinate. -/
+  | blockedOwnRecord
+  /-- Node `[172a]`, the aggregate failure of `[170]` quantified: **at the first failing coordinate `F·A_k < W·A_{k+1}` with `A_{k+1} ≤ A_k`, `1 ≤ |𝓑(𝒫)| ≤ A_{k+1}` and `F_{a,b} < W_{a,b}`**, all earlier aggregate tests holding. -/
+  | blockedFailureSlack
+  /-- Node `[172a]`, the exposure counting of `lem:blocked-graphs-compress` run on a prefix: **at every coordinate whose predecessors all satisfy the aggregate test, `|𝓑(𝒫)|·∏W ≤ |𝒢|·∏F` over the predecessors**. -/
+  | blockedPrefixCompression
+  /-- Node `[172a]`, the failing set carries the overflow: **with the failing coordinates removed the exposure counting and the certified package rate give `|𝓑(𝒫)|·2^{bits·p}·∏_Φ F ≤ |𝒢_{n,m}|·∏_Φ W`** over the set `Φ` of coordinates whose aggregate test fails. -/
+  | blockedFailingSetCarries
+  /-- Node `[172a]`, G's overlap support (`def:barrier-overlap-system`): **for G's own skeleton, every completion support has at most `2^j+1` vertices; a present one is a closed walk of length `2^j` through a vertex of the root window which is not a cycle; and the overlap support of every coordinate is connected in G**. -/
+  | blockedOverlapSupport
+  -- g-audit PairTypeBOutcome keys (8350–8399)
+  /-- Nodes `[179]`/`[180]` → `[187]` (G audit): **the Type B support of G's pair-obstruction handoff, exactly**: on G's canonical pair returns the canonical obstruction support is `(Y, H) = ({d_p.2, d_q.2}, {h})` with `h` the canonical first separator of the obstruction's routes; `H` is nonempty and consists of high centres, and the whole support lies in the obstruction's overlap support `U`.  Published with `K .typeBFanEntry` by the `[179]`/`[180]` early rows. -/
+  | pairHandoffSupport
+  /-- Nodes `[179]`/`[180]` → `[187]` (G audit): **the ambient surplus of that support**: the core ends are cubic port ends (`σ(Y) = 0`), `Y ∩ H = ∅`, and `ω(H) = d_G(h) - δ ≥ 1` for the one centre `h`. -/
+  | pairHandoffCharge
+  /-- Nodes `[179]` → `[187]` (G audit): **the net charge of that support** (`def:net-charge`): the core has one or two vertices, `(δ-1)|Y| ≤ def⁺(Y) ≤ δ|Y|`, and at the canonical envelope either the net charge is negative or `ω(H) < def⁺(Y)`, i.e. the centre has degree `< 3δ`. -/
+  | pairHandoffNetCharge
+  /-- Nodes `[179]` → `[187]` (G audit): **flow-cut support of the capacity charge at the handoff centre `h`**: each pair of the obstruction family is charged to the port token of one of its own ports (a high centre); `h` has `d(h) − δ` port tokens; the pairs of the family charged to them are bounded by their new loads. -/
+  | pairHandoffHubCharge
+  /-- Nodes `[179]` → `[187]` (G audit): **boundaried type of `G[U]`**: the boundary vertices of the overlap support `U`, the degree identity `e(U, G−U) + Σ_U d_U = δ|U| + σ(U)`, `σ(U) ≥ 1`, and the response of every reading of `U` glued into `G − U` (no accepted cycle). -/
+  | pairHandoffBoundaryType
+  /-- Nodes `[179]` → `[187]` (G audit): **the exposure coordinate the handoff decides**: every coordinate of the obstruction family is critical (the order exposing it last doubles the realized signatures at every earlier level and fails exactly at it), and the canonical members whose response supports contain the first separator `h` and its two next vertices exist. -/
+  | pairHandoffCriticalCoordinate
+  /-- Nodes `[179]` → `[187]` (G audit): **demand descent of the obstruction**: `2 ≤ |𝒰| ≤ |Π|`, `𝒰` is not realizing, and peeling any one member leaves a realizing family. -/
+  | pairObstructionDescent
+  /-- Nodes `[179]` → `[187]` (G audit): **the ledger's hub facts at the handoff centre `h`**: the vertex split, the same-vertex switch, the endpoint switch at cubic neighbours, the length-3 fan and the chain `3, 3, 3`, instantiated at the canonical first separator. -/
+  | pairHandoffHubForces
+  /-- Nodes `[179]` → `[187]` (G audit): **the demand ends of the obstruction lie in `U`**: every port of every pair of the family has its endpoint in the pair's response support (hence in `U`), the endpoint is a cubic port end and the centre is a high vertex. -/
+  | pairHandoffDemandEnds
+  /-- Nodes `[179]` → `[187]` (G audit): **the hub balance at the handoff**: the net charge (`pairHandoffNetCharge`), the tokens of `h` (`pairHandoffHubCharge`) and the hub facts (`pairHandoffHubForces`) together: at the canonical envelope either the charge is negative, or `d(h) < 3δ`, `h` has fewer than `2δ` tokens and at most `(2δ−1)((|H|−1)+σ)` pairs of the family are charged at `h`. -/
+  | pairHandoffHubBalance
+  /-- Nodes `[179]` → `[187]` (G audit): **the critical coordinate of the handoff read at G's own signature**: G's own responses are all negative; for the canonical member `π_h` whose support contains `h`, in the order exposing it last (earlier levels double, the last does not), G's own level signature has one or two realized extensions (a fibre of size one is a repetition of G's response at `π_h`). -/
+  | pairHandoffFibreAtG
+  /-- Terminal `[54]` (`prop:entropy-high-theta`): **the stub-deficit identity at `R₀`**: `e(R₀,W) + exc(R₀) = σ(R₀) + def⁺(R₀)`, `2e(G[R₀]) + e(R₀,W) = δ|R₀| + σ(R₀)`, and the canonical assignment of the `def⁺(R₀)` deficit units to distinct boundary stubs by G's vertex order. -/
+  | stubDeficitIdentity
+  /-- Terminal `[54]`: **the cycle spectrum of `R₀`**: `G[R₀]` and every induced subgraph of it carry no cycle of an accepted length. -/
+  | remainderCycleSpectrum
   /-- Node `[144a]` (G audit S144a, Lean improvement): **the pair seeds are covered by their canonical port paths**: each pair seed `T(p) ∪ Γ(p) ∪ T(p') ∪ Γ(p')` is at most `2δ` vertices and two canonical port paths (a triangular port's shortest return `R_p` in `G − cx`, an induced path; an open port's suppression path `Q_p`), each with its chord facts (every chord has an unaccepted span, every interior cubic vertex has exactly one off-path edge); if every degree-`3` vertex lies in both pair seeds, the degree-`3` vertices are covered by at most four such paths and `4δ` vertices, and `3n ≤ 5(|T| + |P₁| + |P₂|)` (from `5|H| + σ ≤ 2n`). -/
   | sameTokenSeedCover
   /-- Node `[144a]` (G audit S144a, Lean improvement): **the interactions of the canonical port paths**: the pair seeds are `T ∪ supp w₁ ∪ supp w₂` and `T' ∪ supp z₁ ∪ supp z₂` with canonical port walks (simple; every chord, hub and closing cycle length unaccepted; one stub per interior cubic vertex); two vertex-disjoint segments of two of the walks joined by two edges (a rung pair, parallel or crossed) close a cycle of length `|p₂| + |q₂| + 2`, which is not accepted (all six pairs of walks); at every cubic vertex interior to a `P`-walk and a `Q`-walk the two path edges of one and the two of the other share an edge; if every degree-`3` vertex lies in both pair seeds, every neighbour of a hub lies in both. -/
@@ -2660,6 +2874,15 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairIncrementFailsStatement data.toParameters object
   | .pairIncrementNoEarlyOutcome, object =>
       PairIncrementNoEarlyOutcomeStatement data.toParameters object
+  -- S182 keys
+  | .pairCorrelation, object =>
+      PairCorrelationStatement data.toParameters object
+  | .pairCoverage, object =>
+      PairCoverageStatement data.toParameters object
+  | .pairFullModulus, object =>
+      PairFullModulusStatement data.toParameters object
+  | .pairUncrossing, object =>
+      PairUncrossingStatement data.toParameters object
   -- F1 keys
   | .typeASupport, object =>
       TypeASupportStatement data.toParameters object
@@ -2685,6 +2908,48 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   -- R3 keys
   | .route8UnifiedEmptyAtG, object =>
       Route8UnifiedEmptyAtGStatement data.toParameters object
+  -- R8Q keys
+  | .route8QuotientEntriesAtG, object =>
+      Route8QuotientEntriesAtGStatement data.toParameters object
+  | .typeBSublinearCanonicalForm, object =>
+      TypeBSublinearCanonicalFormStatement data.toParameters object
+  | .groupedAbsorbedCoreSubset, object =>
+      GroupedAbsorbedCoreSubsetStatement data.toParameters object
+  | .typeBSublinearFailureArms, object =>
+      TypeBSublinearFailureArmsStatement data.toParameters object
+  | .groupedCentresHigh, object =>
+      GroupedCentresHighStatement data.toParameters object
+  | .handoffDegreeClauseEmpty, object =>
+      HandoffDegreeClauseEmptyStatement data.toParameters object
+  | .pieceRoutingTotal, object =>
+      PieceRoutingTotalStatement data.toParameters object
+  | .coverPayment, object =>
+      CoverPaymentStatement data.toParameters object
+  | .loadFailureSaturated, object =>
+      LoadFailureSaturatedStatement data.toParameters object
+  | .unpaidAbsorbedWindowPort, object =>
+      UnpaidAbsorbedWindowPortStatement data.toParameters object
+  | .receiverPortsAreWindowStubs, object =>
+      ReceiverPortsAreWindowStubsStatement data.toParameters object
+  | .saturatedReceiverBasin, object =>
+      SaturatedReceiverBasinStatement data.toParameters object
+  | .loadFlowValue, object =>
+      LoadFlowValueStatement data.toParameters object
+  | .coverFlowValue, object =>
+      CoverFlowValueStatement data.toParameters object
+  | .pieceSizeProfile, object =>
+      PieceSizeProfileStatement data.toParameters object
+  -- R3b keys
+  | .typeAExitFourSwitchCycle, object =>
+      TypeAExitFourSwitchCycleStatement data.toParameters object
+  | .typeAExitSevenSwitch, object =>
+      TypeAExitSevenSwitchStatement data.toParameters object
+  | .bridgePieceMassDichotomy, object =>
+      BridgePieceMassDichotomyStatement data.toParameters object
+  | .traceIntoCentreStructure, object =>
+      TraceIntoCentreStructureStatement data.toParameters object
+  | .traceIntoAbsorbedStructure, object =>
+      TraceIntoAbsorbedStructureStatement data.toParameters object
   -- F5 keys
   | .coldNoPositiveGerm, object =>
       ColdNoPositiveGermStatement data.toParameters object
@@ -2728,8 +2993,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       ColdRepeatedStateResidualStatement data.toParameters object
   | .coldHeavyEntryTerminal, object =>
       ColdHeavyEntryTerminalStatement data.toParameters object
-  | .coldDenseHeavyEntryResidual, object =>
-      ColdDenseHeavyEntryResidualStatement data.toParameters object
   | .entropyJointRealization, object =>
       EntropyJointRealizationStatement data.toParameters object
   | .allColdEntropyResidual, object =>
@@ -2743,6 +3006,46 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       RealizedOrderSmallStatement data.toParameters object
   | .boundedDensityOrder, object =>
       BoundedDensityOrderStatement data.toParameters object
+  | .route8RateFailsJoin, object =>
+      Route8RateFailsJoinStatement data.toParameters object
+  | .route8RateFailsPiece, object =>
+      Route8RateFailsPieceStatement data.toParameters object
+  | .route8RateFailsCrossBound, object =>
+      Route8RateFailsCrossBoundStatement data.toParameters object
+  | .route8RateFailsFlow, object =>
+      Route8RateFailsFlowStatement data.toParameters object
+  | .route8CarrierInjection, object =>
+      Route8CarrierInjectionStatement data.toParameters object
+  | .route8RateExactSlack, object =>
+      Route8RateExactSlackStatement data.toParameters object
+  | .route8StubDeficit, object =>
+      Route8StubDeficitStatement data.toParameters object
+  | .route8DeficitVsStubs, object =>
+      Route8DeficitVsStubsStatement data.toParameters object
+  | .route8EntryLowerBound, object =>
+      Route8EntryLowerBoundStatement data.toParameters object
+  | .route8CoreEmpty, object =>
+      Route8CoreEmptyStatement data.toParameters object
+  | .route8StrongRate, object =>
+      Route8StrongRateStatement data.toParameters object
+  | .route8ThinIsolation, object =>
+      Route8ThinIsolationStatement data.toParameters object
+  | .route8WindowStub, object =>
+      Route8WindowStubStatement data.toParameters object
+  | .route8ThinSmall, object =>
+      Route8ThinSmallStatement data.toParameters object
+  | .route8WindowRPathGap, object =>
+      Route8WindowRPathGapStatement data.toParameters object
+  | .route8HubStubs, object =>
+      Route8HubStubsStatement data.toParameters object
+  | .route8WindowSelfRPathGap, object =>
+      Route8WindowSelfRPathGapStatement data.toParameters object
+  | .route8PieceBoundary, object =>
+      Route8PieceBoundaryStatement data.toParameters object
+  | .route8WindowPieceRank, object =>
+      Route8WindowPieceRankStatement data.toParameters object
+  | .route8AchievableLengths, object =>
+      Route8AchievableLengthsStatement data.toParameters object
   | .boundedOrderLarge, object =>
       BoundedOrderLargeStatement data.toParameters object
   | .boundedOrderSmall, object =>
@@ -2928,6 +3231,43 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SameTokenSwapExactStatement data.toParameters object
   | .sameTokenU2FreeWhole, object =>
       SameTokenU2FreeWholeStatement data.toParameters object
+  -- g-audit 172a keys
+  | .blockedOwnRecord, object =>
+      BlockedOwnRecordStatement data.toParameters object
+  | .blockedFailureSlack, object =>
+      BlockedFailureSlackStatement data.toParameters object
+  | .blockedPrefixCompression, object =>
+      BlockedPrefixCompressionStatement data.toParameters object
+  | .blockedFailingSetCarries, object =>
+      BlockedFailingSetCarriesStatement data.toParameters object
+  | .blockedOverlapSupport, object =>
+      BlockedOverlapSupportStatement data.toParameters object
+  | .pairHandoffSupport, object =>
+      PairHandoffSupportStatement data.toParameters object
+  | .pairHandoffCharge, object =>
+      PairHandoffChargeStatement data.toParameters object
+  | .pairHandoffNetCharge, object =>
+      PairHandoffNetChargeStatement data.toParameters object
+  | .pairHandoffHubCharge, object =>
+      PairHandoffHubChargeStatement data.toParameters object
+  | .pairHandoffBoundaryType, object =>
+      PairHandoffBoundaryTypeStatement data.toParameters object
+  | .pairHandoffCriticalCoordinate, object =>
+      PairHandoffCriticalCoordinateStatement data.toParameters object
+  | .pairObstructionDescent, object =>
+      PairObstructionDescentStatement data.toParameters object
+  | .pairHandoffHubForces, object =>
+      PairHandoffHubForcesStatement data.toParameters object
+  | .pairHandoffDemandEnds, object =>
+      PairHandoffDemandEndsStatement data.toParameters object
+  | .pairHandoffHubBalance, object =>
+      PairHandoffHubBalanceStatement data.toParameters object
+  | .pairHandoffFibreAtG, object =>
+      PairHandoffFibreAtGStatement data.toParameters object
+  | .stubDeficitIdentity, object =>
+      StubDeficitIdentityStatement data.toParameters object
+  | .remainderCycleSpectrum, object =>
+      RemainderCycleSpectrumStatement data.toParameters object
   | .sameTokenSeedCover, object =>
       SameTokenSeedCoverStatement data.toParameters object
   | .sameTokenPathInteractions, object =>
@@ -2963,6 +3303,18 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       NeutralConfigurationStatement data.toParameters object
   | .coldSelectedFamilyEmpty, object =>
       ColdSelectedFamilyEmptyStatement data.toParameters object
+  | .coldMarkedGermUncompressed, object =>
+      ColdMarkedGermUncompressedStatement data.toParameters object
+  | .coldMarkedGermStretchExcision, object =>
+      ColdMarkedGermStretchExcisionStatement data.toParameters object
+  | .coldMarkedGermStretchIncidence, object =>
+      ColdMarkedGermStretchIncidenceStatement data.toParameters object
+  | .coldMarkedGermPairSuppression, object =>
+      ColdMarkedGermPairSuppressionStatement data.toParameters object
+  | .coldMarkedGermPairMersenne, object =>
+      ColdMarkedGermPairMersenneStatement data.toParameters object
+  | .coldMarkedGermChordSpan, object =>
+      ColdMarkedGermChordSpanStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -3272,6 +3624,10 @@ def label : Key → String
   | .pairSystemNoEarlyOutcome => "pairSystemNoEarlyOutcome"
   | .pairIncrementFails => "pairIncrementFails"
   | .pairIncrementNoEarlyOutcome => "pairIncrementNoEarlyOutcome"
+  | .pairCorrelation => "pairCorrelation"
+  | .pairCoverage => "pairCoverage"
+  | .pairFullModulus => "pairFullModulus"
+  | .pairUncrossing => "pairUncrossing"
   -- SP keys
   -- F1 keys
   | .typeASupport => "typeASupport"
@@ -3287,6 +3643,28 @@ def label : Key → String
   | .route8UnpaidWitnessFree => "route8UnpaidWitnessFree"
   -- R3 keys
   | .route8UnifiedEmptyAtG => "route8UnifiedEmptyAtG"
+  -- R8Q keys
+  | .route8QuotientEntriesAtG => "route8QuotientEntriesAtG"
+  | .typeBSublinearCanonicalForm => "typeBSublinearCanonicalForm"
+  | .groupedAbsorbedCoreSubset => "groupedAbsorbedCoreSubset"
+  | .typeBSublinearFailureArms => "typeBSublinearFailureArms"
+  | .groupedCentresHigh => "groupedCentresHigh"
+  | .handoffDegreeClauseEmpty => "handoffDegreeClauseEmpty"
+  | .pieceRoutingTotal => "pieceRoutingTotal"
+  | .coverPayment => "coverPayment"
+  | .loadFailureSaturated => "loadFailureSaturated"
+  | .unpaidAbsorbedWindowPort => "unpaidAbsorbedWindowPort"
+  | .receiverPortsAreWindowStubs => "receiverPortsAreWindowStubs"
+  | .saturatedReceiverBasin => "saturatedReceiverBasin"
+  | .loadFlowValue => "loadFlowValue"
+  | .coverFlowValue => "coverFlowValue"
+  | .pieceSizeProfile => "pieceSizeProfile"
+  -- R3b keys
+  | .typeAExitFourSwitchCycle => "typeAExitFourSwitchCycle"
+  | .typeAExitSevenSwitch => "typeAExitSevenSwitch"
+  | .bridgePieceMassDichotomy => "bridgePieceMassDichotomy"
+  | .traceIntoCentreStructure => "traceIntoCentreStructure"
+  | .traceIntoAbsorbedStructure => "traceIntoAbsorbedStructure"
   -- F5 keys
   | .coldNoPositiveGerm => "coldNoPositiveGerm"
   -- SD keys (final pass)
@@ -3310,7 +3688,6 @@ def label : Key → String
   | .coldCutStatesDistinct => "coldCutStatesDistinct"
   | .coldRepeatedStateResidual => "coldRepeatedStateResidual"
   | .coldHeavyEntryTerminal => "coldHeavyEntryTerminal"
-  | .coldDenseHeavyEntryResidual => "coldDenseHeavyEntryResidual"
   | .entropyJointRealization => "entropyJointRealization"
   | .allColdEntropyResidual => "allColdEntropyResidual"
   -- C6 keys (density order)
@@ -3318,6 +3695,26 @@ def label : Key → String
   | .realizedOrderLarge => "realizedOrderLarge"
   | .realizedOrderSmall => "realizedOrderSmall"
   | .boundedDensityOrder => "boundedDensityOrder"
+  | .route8RateFailsJoin => "route8RateFailsJoin"
+  | .route8RateFailsPiece => "route8RateFailsPiece"
+  | .route8RateFailsCrossBound => "route8RateFailsCrossBound"
+  | .route8RateFailsFlow => "route8RateFailsFlow"
+  | .route8CarrierInjection => "route8CarrierInjection"
+  | .route8RateExactSlack => "route8RateExactSlack"
+  | .route8StubDeficit => "route8StubDeficit"
+  | .route8DeficitVsStubs => "route8DeficitVsStubs"
+  | .route8EntryLowerBound => "route8EntryLowerBound"
+  | .route8CoreEmpty => "route8CoreEmpty"
+  | .route8StrongRate => "route8StrongRate"
+  | .route8ThinIsolation => "route8ThinIsolation"
+  | .route8WindowStub => "route8WindowStub"
+  | .route8ThinSmall => "route8ThinSmall"
+  | .route8WindowRPathGap => "route8WindowRPathGap"
+  | .route8HubStubs => "route8HubStubs"
+  | .route8WindowSelfRPathGap => "route8WindowSelfRPathGap"
+  | .route8PieceBoundary => "route8PieceBoundary"
+  | .route8WindowPieceRank => "route8WindowPieceRank"
+  | .route8AchievableLengths => "route8AchievableLengths"
   | .boundedOrderLarge => "boundedOrderLarge"
   | .boundedOrderSmall => "boundedOrderSmall"
   -- [20a] enrichment keys
@@ -3411,6 +3808,25 @@ def label : Key → String
   | .sameTokenSwap => "sameTokenSwap"
   | .sameTokenSwapExact => "sameTokenSwapExact"
   | .sameTokenU2FreeWhole => "sameTokenU2FreeWhole"
+  -- g-audit 172a keys
+  | .blockedOwnRecord => "blockedOwnRecord"
+  | .blockedFailureSlack => "blockedFailureSlack"
+  | .blockedPrefixCompression => "blockedPrefixCompression"
+  | .blockedFailingSetCarries => "blockedFailingSetCarries"
+  | .blockedOverlapSupport => "blockedOverlapSupport"
+  | .pairHandoffSupport => "pairHandoffSupport"
+  | .pairHandoffCharge => "pairHandoffCharge"
+  | .pairHandoffNetCharge => "pairHandoffNetCharge"
+  | .pairHandoffHubCharge => "pairHandoffHubCharge"
+  | .pairHandoffBoundaryType => "pairHandoffBoundaryType"
+  | .pairHandoffCriticalCoordinate => "pairHandoffCriticalCoordinate"
+  | .pairObstructionDescent => "pairObstructionDescent"
+  | .pairHandoffHubForces => "pairHandoffHubForces"
+  | .pairHandoffDemandEnds => "pairHandoffDemandEnds"
+  | .pairHandoffHubBalance => "pairHandoffHubBalance"
+  | .pairHandoffFibreAtG => "pairHandoffFibreAtG"
+  | .stubDeficitIdentity => "stubDeficitIdentity"
+  | .remainderCycleSpectrum => "remainderCycleSpectrum"
   | .sameTokenSeedCover => "sameTokenSeedCover"
   | .sameTokenPathInteractions => "sameTokenPathInteractions"
   -- TA keys
@@ -3429,6 +3845,12 @@ def label : Key → String
   | .typeAExitSevenEnvelope => "typeAExitSevenEnvelope"
   | .coldAbsorbedNeutralConfiguration => "coldAbsorbedNeutralConfiguration"
   | .coldSelectedFamilyEmpty => "coldSelectedFamilyEmpty"
+  | .coldMarkedGermUncompressed => "coldMarkedGermUncompressed"
+  | .coldMarkedGermStretchExcision => "coldMarkedGermStretchExcision"
+  | .coldMarkedGermStretchIncidence => "coldMarkedGermStretchIncidence"
+  | .coldMarkedGermPairSuppression => "coldMarkedGermPairSuppression"
+  | .coldMarkedGermPairMersenne => "coldMarkedGermPairMersenne"
+  | .coldMarkedGermChordSpan => "coldMarkedGermChordSpan"
 
 /-! ### Label pins
 
@@ -3758,6 +4180,10 @@ example : label .pairRealizabilityFails = "pairRealizabilityFails" := rfl
 example : label .pairSystemNoEarlyOutcome = "pairSystemNoEarlyOutcome" := rfl
 example : label .pairIncrementFails = "pairIncrementFails" := rfl
 example : label .pairIncrementNoEarlyOutcome = "pairIncrementNoEarlyOutcome" := rfl
+example : label .pairCorrelation = "pairCorrelation" := rfl
+example : label .pairCoverage = "pairCoverage" := rfl
+example : label .pairFullModulus = "pairFullModulus" := rfl
+example : label .pairUncrossing = "pairUncrossing" := rfl
 -- SP keys
 -- F1 keys
 example : label .typeASupport = "typeASupport" := rfl
@@ -3772,6 +4198,27 @@ example : label .route8StageRate = "route8StageRate" := rfl
 example : label .route8UnpaidTwoCarrier = "route8UnpaidTwoCarrier" := rfl
 example : label .route8UnpaidWitnessFree = "route8UnpaidWitnessFree" := rfl
 example : label .route8UnifiedEmptyAtG = "route8UnifiedEmptyAtG" := rfl
+-- R8Q keys
+example : label .route8QuotientEntriesAtG = "route8QuotientEntriesAtG" := rfl
+example : label .typeBSublinearCanonicalForm = "typeBSublinearCanonicalForm" := rfl
+example : label .groupedAbsorbedCoreSubset = "groupedAbsorbedCoreSubset" := rfl
+example : label .typeBSublinearFailureArms = "typeBSublinearFailureArms" := rfl
+example : label .groupedCentresHigh = "groupedCentresHigh" := rfl
+example : label .handoffDegreeClauseEmpty = "handoffDegreeClauseEmpty" := rfl
+example : label .pieceRoutingTotal = "pieceRoutingTotal" := rfl
+example : label .coverPayment = "coverPayment" := rfl
+example : label .loadFailureSaturated = "loadFailureSaturated" := rfl
+example : label .unpaidAbsorbedWindowPort = "unpaidAbsorbedWindowPort" := rfl
+example : label .receiverPortsAreWindowStubs = "receiverPortsAreWindowStubs" := rfl
+example : label .saturatedReceiverBasin = "saturatedReceiverBasin" := rfl
+example : label .loadFlowValue = "loadFlowValue" := rfl
+example : label .coverFlowValue = "coverFlowValue" := rfl
+example : label .pieceSizeProfile = "pieceSizeProfile" := rfl
+example : label .typeAExitFourSwitchCycle = "typeAExitFourSwitchCycle" := rfl
+example : label .typeAExitSevenSwitch = "typeAExitSevenSwitch" := rfl
+example : label .bridgePieceMassDichotomy = "bridgePieceMassDichotomy" := rfl
+example : label .traceIntoCentreStructure = "traceIntoCentreStructure" := rfl
+example : label .traceIntoAbsorbedStructure = "traceIntoAbsorbedStructure" := rfl
 -- F5 keys
 example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
 -- SD keys (final pass)
@@ -3795,13 +4242,32 @@ example : label .sameTokenPairPartition = "sameTokenPairPartition" := rfl
 example : label .coldCutStatesDistinct = "coldCutStatesDistinct" := rfl
 example : label .coldRepeatedStateResidual = "coldRepeatedStateResidual" := rfl
 example : label .coldHeavyEntryTerminal = "coldHeavyEntryTerminal" := rfl
-example : label .coldDenseHeavyEntryResidual = "coldDenseHeavyEntryResidual" := rfl
 example : label .entropyJointRealization = "entropyJointRealization" := rfl
 example : label .allColdEntropyResidual = "allColdEntropyResidual" := rfl
 example : label .realizedDensityOrder = "realizedDensityOrder" := rfl
 example : label .realizedOrderLarge = "realizedOrderLarge" := rfl
 example : label .realizedOrderSmall = "realizedOrderSmall" := rfl
 example : label .boundedDensityOrder = "boundedDensityOrder" := rfl
+example : label .route8RateFailsJoin = "route8RateFailsJoin" := rfl
+example : label .route8RateFailsPiece = "route8RateFailsPiece" := rfl
+example : label .route8RateFailsCrossBound = "route8RateFailsCrossBound" := rfl
+example : label .route8RateFailsFlow = "route8RateFailsFlow" := rfl
+example : label .route8CarrierInjection = "route8CarrierInjection" := rfl
+example : label .route8RateExactSlack = "route8RateExactSlack" := rfl
+example : label .route8StubDeficit = "route8StubDeficit" := rfl
+example : label .route8DeficitVsStubs = "route8DeficitVsStubs" := rfl
+example : label .route8EntryLowerBound = "route8EntryLowerBound" := rfl
+example : label .route8CoreEmpty = "route8CoreEmpty" := rfl
+example : label .route8StrongRate = "route8StrongRate" := rfl
+example : label .route8ThinIsolation = "route8ThinIsolation" := rfl
+example : label .route8WindowStub = "route8WindowStub" := rfl
+example : label .route8ThinSmall = "route8ThinSmall" := rfl
+example : label .route8WindowRPathGap = "route8WindowRPathGap" := rfl
+example : label .route8HubStubs = "route8HubStubs" := rfl
+example : label .route8WindowSelfRPathGap = "route8WindowSelfRPathGap" := rfl
+example : label .route8PieceBoundary = "route8PieceBoundary" := rfl
+example : label .route8WindowPieceRank = "route8WindowPieceRank" := rfl
+example : label .route8AchievableLengths = "route8AchievableLengths" := rfl
 example : label .boundedOrderLarge = "boundedOrderLarge" := rfl
 example : label .boundedOrderSmall = "boundedOrderSmall" := rfl
 example : label .edgeSurplusIdentity = "edgeSurplusIdentity" := rfl
@@ -3891,6 +4357,24 @@ example : label .sameTokenReadingsExact = "sameTokenReadingsExact" := rfl
 example : label .sameTokenSwap = "sameTokenSwap" := rfl
 example : label .sameTokenSwapExact = "sameTokenSwapExact" := rfl
 example : label .sameTokenU2FreeWhole = "sameTokenU2FreeWhole" := rfl
+example : label .blockedOwnRecord = "blockedOwnRecord" := rfl
+example : label .blockedFailureSlack = "blockedFailureSlack" := rfl
+example : label .blockedPrefixCompression = "blockedPrefixCompression" := rfl
+example : label .blockedFailingSetCarries = "blockedFailingSetCarries" := rfl
+example : label .blockedOverlapSupport = "blockedOverlapSupport" := rfl
+example : label .pairHandoffSupport = "pairHandoffSupport" := rfl
+example : label .pairHandoffCharge = "pairHandoffCharge" := rfl
+example : label .pairHandoffNetCharge = "pairHandoffNetCharge" := rfl
+example : label .pairHandoffHubCharge = "pairHandoffHubCharge" := rfl
+example : label .pairHandoffBoundaryType = "pairHandoffBoundaryType" := rfl
+example : label .pairHandoffCriticalCoordinate = "pairHandoffCriticalCoordinate" := rfl
+example : label .pairObstructionDescent = "pairObstructionDescent" := rfl
+example : label .pairHandoffHubForces = "pairHandoffHubForces" := rfl
+example : label .pairHandoffDemandEnds = "pairHandoffDemandEnds" := rfl
+example : label .pairHandoffHubBalance = "pairHandoffHubBalance" := rfl
+example : label .pairHandoffFibreAtG = "pairHandoffFibreAtG" := rfl
+example : label .stubDeficitIdentity = "stubDeficitIdentity" := rfl
+example : label .remainderCycleSpectrum = "remainderCycleSpectrum" := rfl
 example : label .sameTokenSeedCover = "sameTokenSeedCover" := rfl
 example : label .sameTokenPathInteractions = "sameTokenPathInteractions" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
@@ -3909,6 +4393,12 @@ example : label .typeAExitSevenEnvelope = "typeAExitSevenEnvelope" := rfl
 example : label .coldAbsorbedNeutralConfiguration =
     "coldAbsorbedNeutralConfiguration" := rfl
 example : label .coldSelectedFamilyEmpty = "coldSelectedFamilyEmpty" := rfl
+example : label .coldMarkedGermUncompressed = "coldMarkedGermUncompressed" := rfl
+example : label .coldMarkedGermStretchExcision = "coldMarkedGermStretchExcision" := rfl
+example : label .coldMarkedGermStretchIncidence = "coldMarkedGermStretchIncidence" := rfl
+example : label .coldMarkedGermPairSuppression = "coldMarkedGermPairSuppression" := rfl
+example : label .coldMarkedGermPairMersenne = "coldMarkedGermPairMersenne" := rfl
+example : label .coldMarkedGermChordSpan = "coldMarkedGermChordSpan" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -4227,6 +4717,10 @@ def idx : Key → Nat
   | .pairSystemNoEarlyOutcome => 1606
   | .pairIncrementFails => 1607
   | .pairIncrementNoEarlyOutcome => 1608
+  | .pairCorrelation => 8200
+  | .pairCoverage => 8201
+  | .pairFullModulus => 8202
+  | .pairUncrossing => 8203
   -- SP keys
   -- F1 keys
   | .typeASupport => 1000
@@ -4242,6 +4736,28 @@ def idx : Key → Nat
   | .route8UnpaidWitnessFree => 1404
   -- R3 keys
   | .route8UnifiedEmptyAtG => 7900
+  -- R8Q keys
+  | .route8QuotientEntriesAtG => 8150
+  | .typeBSublinearCanonicalForm => 8300
+  | .groupedAbsorbedCoreSubset => 8301
+  | .typeBSublinearFailureArms => 8302
+  | .groupedCentresHigh => 8303
+  | .handoffDegreeClauseEmpty => 8304
+  | .pieceRoutingTotal => 8305
+  | .coverPayment => 8306
+  | .loadFailureSaturated => 8307
+  | .unpaidAbsorbedWindowPort => 8308
+  | .receiverPortsAreWindowStubs => 8309
+  | .saturatedReceiverBasin => 8310
+  | .loadFlowValue => 8311
+  | .coverFlowValue => 8312
+  | .pieceSizeProfile => 8313
+  -- R3b keys
+  | .typeAExitFourSwitchCycle => 7960
+  | .typeAExitSevenSwitch => 7961
+  | .bridgePieceMassDichotomy => 8314
+  | .traceIntoCentreStructure => 8315
+  | .traceIntoAbsorbedStructure => 8316
   -- F5 keys
   | .coldNoPositiveGerm => 1800
   -- SD keys (final pass)
@@ -4265,7 +4781,6 @@ def idx : Key → Nat
   | .coldCutStatesDistinct => 3200
   | .coldRepeatedStateResidual => 3201
   | .coldHeavyEntryTerminal => 3202
-  | .coldDenseHeavyEntryResidual => 3203
   | .entropyJointRealization => 3204
   | .allColdEntropyResidual => 3205
   -- C6 keys (density order)
@@ -4273,6 +4788,26 @@ def idx : Key → Nat
   | .realizedOrderLarge => 6601
   | .realizedOrderSmall => 6602
   | .boundedDensityOrder => 6603
+  | .route8RateFailsJoin => 8250
+  | .route8RateFailsPiece => 8251
+  | .route8RateFailsCrossBound => 8252
+  | .route8RateFailsFlow => 8253
+  | .route8CarrierInjection => 8254
+  | .route8RateExactSlack => 8255
+  | .route8StubDeficit => 8256
+  | .route8DeficitVsStubs => 8257
+  | .route8EntryLowerBound => 8258
+  | .route8CoreEmpty => 8259
+  | .route8StrongRate => 8260
+  | .route8ThinIsolation => 8261
+  | .route8WindowStub => 8262
+  | .route8ThinSmall => 8263
+  | .route8WindowRPathGap => 8264
+  | .route8HubStubs => 8265
+  | .route8WindowSelfRPathGap => 8266
+  | .route8PieceBoundary => 8267
+  | .route8WindowPieceRank => 8268
+  | .route8AchievableLengths => 8269
   | .boundedOrderLarge => 6604
   | .boundedOrderSmall => 6605
   -- [20a] enrichment keys
@@ -4366,6 +4901,25 @@ def idx : Key → Nat
   | .sameTokenSwap => 8102
   | .sameTokenSwapExact => 8103
   | .sameTokenU2FreeWhole => 8104
+  -- g-audit 172a keys
+  | .blockedOwnRecord => 8600
+  | .blockedFailureSlack => 8601
+  | .blockedPrefixCompression => 8602
+  | .blockedFailingSetCarries => 8603
+  | .blockedOverlapSupport => 8604
+  | .pairHandoffSupport => 8350
+  | .pairHandoffCharge => 8351
+  | .pairHandoffNetCharge => 8352
+  | .pairHandoffHubCharge => 8353
+  | .pairHandoffBoundaryType => 8354
+  | .pairHandoffCriticalCoordinate => 8355
+  | .pairObstructionDescent => 8356
+  | .pairHandoffHubForces => 8357
+  | .pairHandoffDemandEnds => 8358
+  | .pairHandoffHubBalance => 8359
+  | .pairHandoffFibreAtG => 8360
+  | .stubDeficitIdentity => 8550
+  | .remainderCycleSpectrum => 8551
   | .sameTokenSeedCover => 8105
   | .sameTokenPathInteractions => 8106
   -- TA keys
@@ -4384,6 +4938,12 @@ def idx : Key → Nat
   | .typeAExitSevenEnvelope => 2012
   | .coldAbsorbedNeutralConfiguration => 2700
   | .coldSelectedFamilyEmpty => 2701
+  | .coldMarkedGermUncompressed => 8400
+  | .coldMarkedGermStretchExcision => 8401
+  | .coldMarkedGermStretchIncidence => 8402
+  | .coldMarkedGermPairSuppression => 8403
+  | .coldMarkedGermPairMersenne => 8404
+  | .coldMarkedGermChordSpan => 8405
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -4691,6 +5251,10 @@ def ofIdx : Nat → Key
   | 1606 => .pairSystemNoEarlyOutcome
   | 1607 => .pairIncrementFails
   | 1608 => .pairIncrementNoEarlyOutcome
+  | 8200 => .pairCorrelation
+  | 8201 => .pairCoverage
+  | 8202 => .pairFullModulus
+  | 8203 => .pairUncrossing
   -- SP keys
   -- F1 keys
   | 1000 => .typeASupport
@@ -4706,6 +5270,28 @@ def ofIdx : Nat → Key
   | 1404 => .route8UnpaidWitnessFree
   -- R3 keys
   | 7900 => .route8UnifiedEmptyAtG
+  -- R8Q keys
+  | 8150 => .route8QuotientEntriesAtG
+  | 8300 => .typeBSublinearCanonicalForm
+  | 8301 => .groupedAbsorbedCoreSubset
+  | 8302 => .typeBSublinearFailureArms
+  | 8303 => .groupedCentresHigh
+  | 8304 => .handoffDegreeClauseEmpty
+  | 8305 => .pieceRoutingTotal
+  | 8306 => .coverPayment
+  | 8307 => .loadFailureSaturated
+  | 8308 => .unpaidAbsorbedWindowPort
+  | 8309 => .receiverPortsAreWindowStubs
+  | 8310 => .saturatedReceiverBasin
+  | 8311 => .loadFlowValue
+  | 8312 => .coverFlowValue
+  | 8313 => .pieceSizeProfile
+  -- R3b keys
+  | 7960 => .typeAExitFourSwitchCycle
+  | 7961 => .typeAExitSevenSwitch
+  | 8314 => .bridgePieceMassDichotomy
+  | 8315 => .traceIntoCentreStructure
+  | 8316 => .traceIntoAbsorbedStructure
   -- F5 keys
   | 1800 => .coldNoPositiveGerm
   -- SD keys (final pass)
@@ -4729,7 +5315,6 @@ def ofIdx : Nat → Key
   | 3200 => .coldCutStatesDistinct
   | 3201 => .coldRepeatedStateResidual
   | 3202 => .coldHeavyEntryTerminal
-  | 3203 => .coldDenseHeavyEntryResidual
   | 3204 => .entropyJointRealization
   | 3205 => .allColdEntropyResidual
   -- C6 keys (density order)
@@ -4737,6 +5322,26 @@ def ofIdx : Nat → Key
   | 6601 => .realizedOrderLarge
   | 6602 => .realizedOrderSmall
   | 6603 => .boundedDensityOrder
+  | 8250 => .route8RateFailsJoin
+  | 8251 => .route8RateFailsPiece
+  | 8252 => .route8RateFailsCrossBound
+  | 8253 => .route8RateFailsFlow
+  | 8254 => .route8CarrierInjection
+  | 8255 => .route8RateExactSlack
+  | 8256 => .route8StubDeficit
+  | 8257 => .route8DeficitVsStubs
+  | 8258 => .route8EntryLowerBound
+  | 8259 => .route8CoreEmpty
+  | 8260 => .route8StrongRate
+  | 8261 => .route8ThinIsolation
+  | 8262 => .route8WindowStub
+  | 8263 => .route8ThinSmall
+  | 8264 => .route8WindowRPathGap
+  | 8265 => .route8HubStubs
+  | 8266 => .route8WindowSelfRPathGap
+  | 8267 => .route8PieceBoundary
+  | 8268 => .route8WindowPieceRank
+  | 8269 => .route8AchievableLengths
   | 6604 => .boundedOrderLarge
   | 6605 => .boundedOrderSmall
   -- [20a] enrichment keys
@@ -4830,6 +5435,25 @@ def ofIdx : Nat → Key
   | 8102 => .sameTokenSwap
   | 8103 => .sameTokenSwapExact
   | 8104 => .sameTokenU2FreeWhole
+  -- g-audit 172a keys
+  | 8600 => .blockedOwnRecord
+  | 8601 => .blockedFailureSlack
+  | 8602 => .blockedPrefixCompression
+  | 8603 => .blockedFailingSetCarries
+  | 8604 => .blockedOverlapSupport
+  | 8350 => .pairHandoffSupport
+  | 8351 => .pairHandoffCharge
+  | 8352 => .pairHandoffNetCharge
+  | 8353 => .pairHandoffHubCharge
+  | 8354 => .pairHandoffBoundaryType
+  | 8355 => .pairHandoffCriticalCoordinate
+  | 8356 => .pairObstructionDescent
+  | 8357 => .pairHandoffHubForces
+  | 8358 => .pairHandoffDemandEnds
+  | 8359 => .pairHandoffHubBalance
+  | 8360 => .pairHandoffFibreAtG
+  | 8550 => .stubDeficitIdentity
+  | 8551 => .remainderCycleSpectrum
   | 8105 => .sameTokenSeedCover
   | 8106 => .sameTokenPathInteractions
   -- TA keys
@@ -4848,6 +5472,12 @@ def ofIdx : Nat → Key
   | 2012 => .typeAExitSevenEnvelope
   | 2700 => .coldAbsorbedNeutralConfiguration
   | 2701 => .coldSelectedFamilyEmpty
+  | 8400 => .coldMarkedGermUncompressed
+  | 8401 => .coldMarkedGermStretchExcision
+  | 8402 => .coldMarkedGermStretchIncidence
+  | 8403 => .coldMarkedGermPairSuppression
+  | 8404 => .coldMarkedGermPairMersenne
+  | 8405 => .coldMarkedGermChordSpan
   | _ => .selection
 
 set_option maxRecDepth 8192 in
@@ -5588,6 +6218,14 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairIncrementFails") 1607
   | .pairIncrementNoEarlyOutcome =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairIncrementNoEarlyOutcome") 1608
+  | .pairCorrelation =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairCorrelation") 8200
+  | .pairCoverage =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairCoverage") 8201
+  | .pairFullModulus =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairFullModulus") 8202
+  | .pairUncrossing =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairUncrossing") 8203
   -- SP keys
   -- F1 keys
   | .typeASupport =>
@@ -5614,6 +6252,48 @@ def name : Key → Lean.Name
   -- R3 keys
   | .route8UnifiedEmptyAtG =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnifiedEmptyAtG") 7900
+  -- R8Q keys
+  | .route8QuotientEntriesAtG =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8QuotientEntriesAtG") 8150
+  | .typeBSublinearCanonicalForm =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBSublinearCanonicalForm") 8300
+  | .groupedAbsorbedCoreSubset =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "groupedAbsorbedCoreSubset") 8301
+  | .typeBSublinearFailureArms =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBSublinearFailureArms") 8302
+  | .groupedCentresHigh =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "groupedCentresHigh") 8303
+  | .handoffDegreeClauseEmpty =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "handoffDegreeClauseEmpty") 8304
+  | .pieceRoutingTotal =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pieceRoutingTotal") 8305
+  | .coverPayment =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coverPayment") 8306
+  | .loadFailureSaturated =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "loadFailureSaturated") 8307
+  | .unpaidAbsorbedWindowPort =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "unpaidAbsorbedWindowPort") 8308
+  | .receiverPortsAreWindowStubs =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "receiverPortsAreWindowStubs") 8309
+  | .saturatedReceiverBasin =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "saturatedReceiverBasin") 8310
+  | .loadFlowValue =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "loadFlowValue") 8311
+  | .coverFlowValue =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coverFlowValue") 8312
+  | .pieceSizeProfile =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pieceSizeProfile") 8313
+  -- R3b keys
+  | .typeAExitFourSwitchCycle =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFourSwitchCycle") 7960
+  | .typeAExitSevenSwitch =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSevenSwitch") 7961
+  | .bridgePieceMassDichotomy =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "bridgePieceMassDichotomy") 8314
+  | .traceIntoCentreStructure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "traceIntoCentreStructure") 8315
+  | .traceIntoAbsorbedStructure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "traceIntoAbsorbedStructure") 8316
   -- F5 keys
   | .coldNoPositiveGerm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldNoPositiveGerm") 1800
@@ -5657,8 +6337,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldRepeatedStateResidual") 3201
   | .coldHeavyEntryTerminal =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldHeavyEntryTerminal") 3202
-  | .coldDenseHeavyEntryResidual =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "coldDenseHeavyEntryResidual") 3203
   | .entropyJointRealization =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "entropyJointRealization") 3204
   | .allColdEntropyResidual =>
@@ -5672,6 +6350,46 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "realizedOrderSmall") 6602
   | .boundedDensityOrder =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "boundedDensityOrder") 6603
+  | .route8RateFailsJoin =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8RateFailsJoin") 8250
+  | .route8RateFailsPiece =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8RateFailsPiece") 8251
+  | .route8RateFailsCrossBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8RateFailsCrossBound") 8252
+  | .route8RateFailsFlow =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8RateFailsFlow") 8253
+  | .route8CarrierInjection =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8CarrierInjection") 8254
+  | .route8RateExactSlack =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8RateExactSlack") 8255
+  | .route8StubDeficit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8StubDeficit") 8256
+  | .route8DeficitVsStubs =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8DeficitVsStubs") 8257
+  | .route8EntryLowerBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8EntryLowerBound") 8258
+  | .route8CoreEmpty =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8CoreEmpty") 8259
+  | .route8StrongRate =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8StrongRate") 8260
+  | .route8ThinIsolation =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8ThinIsolation") 8261
+  | .route8WindowStub =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowStub") 8262
+  | .route8ThinSmall =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8ThinSmall") 8263
+  | .route8WindowRPathGap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowRPathGap") 8264
+  | .route8HubStubs =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8HubStubs") 8265
+  | .route8WindowSelfRPathGap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowSelfRPathGap") 8266
+  | .route8PieceBoundary =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8PieceBoundary") 8267
+  | .route8WindowPieceRank =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowPieceRank") 8268
+  | .route8AchievableLengths =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8AchievableLengths") 8269
   | .boundedOrderLarge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "boundedOrderLarge") 6604
   | .boundedOrderSmall =>
@@ -5854,6 +6572,43 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenSwapExact") 8103
   | .sameTokenU2FreeWhole =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenU2FreeWhole") 8104
+  -- g-audit 172a keys
+  | .blockedOwnRecord =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedOwnRecord") 8600
+  | .blockedFailureSlack =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedFailureSlack") 8601
+  | .blockedPrefixCompression =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedPrefixCompression") 8602
+  | .blockedFailingSetCarries =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedFailingSetCarries") 8603
+  | .blockedOverlapSupport =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedOverlapSupport") 8604
+  | .pairHandoffSupport =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffSupport") 8350
+  | .pairHandoffCharge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffCharge") 8351
+  | .pairHandoffNetCharge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffNetCharge") 8352
+  | .pairHandoffHubCharge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffHubCharge") 8353
+  | .pairHandoffBoundaryType =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffBoundaryType") 8354
+  | .pairHandoffCriticalCoordinate =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffCriticalCoordinate") 8355
+  | .pairObstructionDescent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairObstructionDescent") 8356
+  | .pairHandoffHubForces =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffHubForces") 8357
+  | .pairHandoffDemandEnds =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffDemandEnds") 8358
+  | .pairHandoffHubBalance =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffHubBalance") 8359
+  | .pairHandoffFibreAtG =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffFibreAtG") 8360
+  | .stubDeficitIdentity =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "stubDeficitIdentity") 8550
+  | .remainderCycleSpectrum =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "remainderCycleSpectrum") 8551
   | .sameTokenSeedCover =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenSeedCover") 8105
   | .sameTokenPathInteractions =>
@@ -5890,6 +6645,18 @@ def name : Key → Lean.Name
         "coldAbsorbedNeutralConfiguration") 2700
   | .coldSelectedFamilyEmpty =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldSelectedFamilyEmpty") 2701
+  | .coldMarkedGermUncompressed =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermUncompressed") 8400
+  | .coldMarkedGermStretchExcision =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermStretchExcision") 8401
+  | .coldMarkedGermStretchIncidence =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermStretchIncidence") 8402
+  | .coldMarkedGermPairSuppression =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermPairSuppression") 8403
+  | .coldMarkedGermPairMersenne =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermPairMersenne") 8404
+  | .coldMarkedGermChordSpan =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermChordSpan") 8405
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather
