@@ -11,15 +11,16 @@ Five facts about G at the canonical handoff of its retained pair obstruction (th
 `R`, the obstruction family `𝒰`, its overlap support `U`, the canonical first separator `h`, the
 core `Y = {d_p.2, d_q.2}`).  Every choice is the `canonicalChoice` of its spec, fixed by G's data.
 
-* `PairHandoffFlowCutStatement` (flow-cut support of the capacity charge): the extended charge
-  sends every pair of the obstruction family to a token of G's canonical capacity (an integral
-  flow of the demand of `𝒰`), and, when the pair-deficit coefficient is positive, the canonical
-  overloaded token `t*` and its charged pair set are a Hall violator (`load > M₀`).
+* `PairHandoffHubChargeStatement` (flow-cut support of the capacity charge at `h`): every pair of
+  the obstruction family is charged to the port token of one of its own ports (a high centre),
+  `h` has `d(h) - δ` port tokens, and the pairs of the family charged to them are bounded by
+  their new loads.
 * `PairHandoffBoundaryTypeStatement` (boundaried type of `G[U]`): the boundary vertices of `U`,
   the exact degree identity `e(U, G−U) + Σ_U d_U = δ|U| + σ(U)`, `σ(U) ≥ 1`, and the response of
   every reading of `U` glued into `G − U` (negative: no accepted cycle).
-* `PairObstructionCountDeficitStatement` (fibre-size count): for every exposure order of `𝒰`
-  some level has strictly fewer than twice as many realized signatures as the level before.
+* `PairHandoffCriticalCoordinateStatement` (fibre-size count at the coordinate `h` decides): every
+  coordinate of `𝒰` is critical: the order exposing it last doubles at every earlier level and
+  fails to double exactly at it; the canonical members whose supports contain `h`, `a`, `b` exist.
 * `PairObstructionDescentStatement` (demand descent): `2 ≤ |𝒰| ≤ |Π|`, `𝒰` is not realizing, and
   peeling any one member leaves a realizing family.
 * `PairHandoffHubForcesStatement` (what the ledger's hub facts say at `h`): the vertex split, the
@@ -38,20 +39,31 @@ open Hypostructure.Graph.SameTokenBlockerRoles
 
 universe u
 
-/-- **Flow-cut support of the capacity charge at the obstruction.** -/
-noncomputable def PairHandoffFlowCutStatement (data : Parameters)
+open Classical in
+/-- **Flow-cut support of the capacity charge, at the handoff centre `h`.**  Each pair of the
+obstruction family, being free, is charged by the extended charge to the port token of one of
+its own ports, whose centre is a high vertex; `h`'s own tokens are its `d(h) - δ` excess ports,
+and the number of pairs of the family charged to them is at most the sum of their new loads. -/
+noncomputable def PairHandoffHubChargeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ returns, canonicalPairDemandReturns data object = some returns ∧
-    ∃ c : SurplusCapacity data object, canonicalCapacity data object = some c ∧
-      (∀ pair ∈ returns.overlap.system.first.pairSet,
-        ∃ t ∈ c.tokens, extCharge data.LengthOK c pair = some t) ∧
-      (0 < pairDeficitCoefficient data →
-        ∃ t, canonicalChoice (fun t => t ∈ c.tokens ∧
-            homogeneousTokenCap data.routingLabelBound < extLoad data.LengthOK c t) = some t ∧
-          t ∈ c.tokens ∧ homogeneousTokenCap data.routingLabelBound < extLoad data.LengthOK c t ∧
-          extLoad data.LengthOK c t =
-            ((object.portPairSchedule data.threshold).filter fun pair =>
-              extCharge data.LengthOK c pair = some t).card)
+    ∃ (routes : PairObstructionRoutes object) (split : SameTokenFirstSeparator object),
+      canonicalPairObstructionSeparator data object returns = some (routes, split) ∧
+      ∃ c : SurplusCapacity data object, canonicalCapacity data object = some c ∧
+        (∀ pair ∈ returns.overlap.family, ∃ port ∈ pair.1,
+          port ∈ object.excessPorts data.threshold ∧
+            data.threshold < object.degree port.1 ∧
+            extCharge data.LengthOK c pair.1 = some (portToken port)) ∧
+        ((object.excessPorts data.threshold).filter
+            (fun port => port.1 = split.separator)).card =
+          object.degree split.separator - data.threshold ∧
+        (returns.overlap.family.filter (fun pair => ∃ port ∈ pair.1,
+            port.1 = split.separator ∧
+              extCharge data.LengthOK c pair.1 = some (portToken port))).card ≤
+          ∑ port ∈ (object.excessPorts data.threshold).filter
+              (fun port => port.1 = split.separator),
+            ((sparseHighDegreeCount data object - 1) +
+              (if TriPortAt object port then object.degreeSurplus data.threshold else 0))
 
 /-- **Boundaried type of `G[U]`.** -/
 noncomputable def PairHandoffBoundaryTypeStatement (data : Parameters)
@@ -69,16 +81,42 @@ noncomputable def PairHandoffBoundaryTypeStatement (data : Parameters)
       (∀ X : Finset object.Vertex,
         ¬ Graph.HasCycleWithLength data.LengthOK (ActualContext.actualGlue object U X))
 
-/-- **Fibre-size count of the obstruction.** -/
-noncomputable def PairObstructionCountDeficitStatement (data : Parameters)
+/-- The deficit of an exposure order sits exactly at coordinate `pair`: `pair` is its last
+coordinate, all earlier levels double, and adding `pair` does not. -/
+def CriticalCoordinateAt {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (returns : PairDemandReturns data object)
+    (pair : {pair // pair ∈ returns.overlap.system.first.pairSet}) : Prop :=
+  ∃ (order : Fin returns.overlap.family.card ≃ {pair // pair ∈ returns.overlap.family})
+    (level : Nat) (bound : level ≤ returns.overlap.family.card)
+    (last : level < returns.overlap.family.card),
+    returns.overlap.family.card = level + 1 ∧
+      (order ⟨level, last⟩).1 = pair ∧
+      returns.overlap.system.toSkeletonModel.signatureCount (LengthOK := data.LengthOK)
+          returns.overlap.family order level bound =
+        2 ^ level * returns.overlap.system.toSkeletonModel.signatureCount
+          (LengthOK := data.LengthOK) returns.overlap.family order 0 (Nat.zero_le _) ∧
+      returns.overlap.system.toSkeletonModel.signatureCount (LengthOK := data.LengthOK)
+          returns.overlap.family order returns.overlap.family.card le_rfl <
+        2 * returns.overlap.system.toSkeletonModel.signatureCount (LengthOK := data.LengthOK)
+          returns.overlap.family order level bound
+
+/-- **The exposure coordinate the handoff decides.**  Every coordinate of the obstruction is
+critical (the deficit of the order that exposes it last sits exactly there), and the canonical
+members of the family whose response supports contain the first separator `h` and its two next
+vertices `a`, `b` exist. -/
+noncomputable def PairHandoffCriticalCoordinateStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ returns, canonicalPairDemandReturns data object = some returns ∧
-    ∀ order : Fin returns.overlap.family.card ≃ {pair // pair ∈ returns.overlap.family},
-      ∃ (level : Nat) (bound : level + 1 ≤ returns.overlap.family.card),
-        returns.overlap.system.toSkeletonModel.signatureCount (LengthOK := data.LengthOK)
-            returns.overlap.family order (level + 1) bound <
-          2 * returns.overlap.system.toSkeletonModel.signatureCount (LengthOK := data.LengthOK)
-            returns.overlap.family order level (Nat.le_of_succ_le bound)
+    (∀ pair ∈ returns.overlap.family, CriticalCoordinateAt returns pair) ∧
+    ∃ (routes : PairObstructionRoutes object) (split : SameTokenFirstSeparator object),
+      canonicalPairObstructionSeparator data object returns = some (routes, split) ∧
+      ∀ vertex, (vertex = split.separator ∨ vertex = split.nextFirst ∨
+          vertex = split.nextSecond) →
+        ∃ pair, canonicalChoice (fun pair : {pair // pair ∈
+            returns.overlap.system.first.pairSet} => pair ∈ returns.overlap.family ∧
+              vertex ∈ returns.overlap.system.responseSupport pair) = some pair ∧
+          pair ∈ returns.overlap.family ∧
+          vertex ∈ returns.overlap.system.responseSupport pair
 
 open Classical in
 /-- **Demand descent of the obstruction.** -/

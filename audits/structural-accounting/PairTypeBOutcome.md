@@ -426,10 +426,16 @@ Keys 8353-8357, published by `pairHandoffFactsRow` right after the early row (st
 
 | # | Key | Statement at G | Coordinates | Certificate |
 |---|---|---|---|---|
-| 132 | `pairHandoffFlowCut` (8353) | every pair of the obstruction family has an extended charge in the canonical capacity's tokens (integral flow); if the pair-deficit coefficient is positive the canonical overloaded token and its charged pair set are a Hall violator (`load > M0`) | H07~ H03~ | flow, cut |
+| 132 | `pairHandoffHubCharge` (8353) | every pair of the obstruction family has an extended charge in the canonical capacity's tokens (integral flow); if the pair-deficit coefficient is positive the canonical overloaded token and its charged pair set are a Hall violator (`load > M0`) | H07~ H03~ | flow, cut |
 | 133 | `pairHandoffBoundaryType` (8354) | boundary vertices of U, `e(U,G-U)` as their deficit sum, `e(U,G-U) + sum_U d_U = delta|U| + sigma(U)`, `sigma(U) >= 1`, and the response of every reading of U glued into `G - U` has no accepted cycle | B06~ A11 A10 | decomposition, identity |
-| 134 | `pairObstructionCountDeficit` (8355) | for every exposure order of the obstruction family some level has `N_{k+1} < 2 N_k` (uses the new level bound `N_{k+1} <= 2 N_k`) | G03~ | bound |
+| 134 | `pairHandoffCriticalCoordinate` (8355) | for every exposure order of the obstruction family some level has `N_{k+1} < 2 N_k` (uses the new level bound `N_{k+1} <= 2 N_k`) | G03~ | bound |
 | 135 | `pairObstructionDescent` (8356) | `2 <= |U-family| <= |Pi|`, the family is not realizing, every one-step peel is realizing | H10~ | descent measure |
 | 136 | `pairHandoffHubForces` (8357) | at the canonical first separator h: vertex split forced, same-vertex switch, endpoint switch at cubic neighbours, length-3 fan and chain 3,3,3 | D07~ C06~ C07~ | classification |
 
 Also removed from this residual: facts `pairArmAPattern`, `pairArmARoleAlphabet` (vacuous on all four paths).
+
+
+### Third pass: rows 132 and 134 re-derived at the handoff
+
+Row 132 `pairHandoffHubCharge` (8353): each pair of the obstruction family is charged to the port token of one of its own ports (high centre); `h` has `d(h) - delta` port tokens; the pairs of the family charged at `h` are at most `sum over h's ports of newLoadBound`. Coordinates: H07~ (flow-cut restricted to h's tokens; the Hall-violator token of the global version is dropped), H03~.
+Row 134 `pairHandoffCriticalCoordinate` (8355): every coordinate of the obstruction is critical (deficit exactly at it in the order exposing it last); canonical members with `h`, `nextFirst`, `nextSecond` in their supports exist. Coordinates: G03~ (fibre-size count at the coordinate h decides), H10~.

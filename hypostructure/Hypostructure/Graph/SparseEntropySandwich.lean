@@ -678,6 +678,49 @@ theorem signatureCount_succ_le
   rw [prop] at bounded
   exact bounded.trans (le_of_eq (Nat.mul_comm _ _))
 
+/-- The level bound for two named levels `length' = length + 1`. -/
+theorem signatureCount_le_two_mul
+    {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
+    {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (family : Finset {pair // pair ∈ model.pairSet})
+    (order : Fin family.card ≃ {pair // pair ∈ family})
+    (length length' : Nat) (step : length' = length + 1)
+    (bound : length' ≤ family.card) (bound' : length ≤ family.card) :
+    model.signatureCount (LengthOK := LengthOK) family order length' bound ≤
+      2 * model.signatureCount (LengthOK := LengthOK) family order length bound' := by
+  subst step
+  exact model.signatureCount_succ_le (LengthOK := LengthOK) family order length bound
+
+/-- Two exposure orders (of possibly different families) that agree on their first `length`
+coordinates have the same number of realized signatures at level `length`. -/
+theorem signatureCount_congr
+    {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
+    {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (family family' : Finset {pair // pair ∈ model.pairSet})
+    (order : Fin family.card ≃ {pair // pair ∈ family})
+    (order' : Fin family'.card ≃ {pair // pair ∈ family'})
+    (length : Nat) (bound : length ≤ family.card) (bound' : length ≤ family'.card)
+    (agree : ∀ index : Fin length,
+      (order (Fin.castLE bound index)).1 = (order' (Fin.castLE bound' index)).1) :
+    model.signatureCount (LengthOK := LengthOK) family order length bound =
+      model.signatureCount (LengthOK := LengthOK) family' order' length bound' := by
+  rw [signatureCount_eq, signatureCount_eq]
+  have same : model.signature (LengthOK := LengthOK) family order length bound =
+      model.signature (LengthOK := LengthOK) family' order' length bound' := by
+    funext member
+    unfold signature
+    refine Prod.ext rfl ?_
+    funext index
+    dsimp only
+    rw [agree index]
+  rw [same]
+
 /-- An exposure order realizes one binary response coordinate at every step of every realized
 `(baseline word, prefix)` signature, **in the aggregate form the counting consumes**: the number
 of realized signatures doubles at every level, i.e. at the last level it is

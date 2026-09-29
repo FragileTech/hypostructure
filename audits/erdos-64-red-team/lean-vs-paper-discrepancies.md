@@ -5284,11 +5284,11 @@ Node `[187]` ([179]/[180] Type B entry), branch `g-audit-pairTypeB`.  Accounting
   upstream for the other strict-surplus residuals).
 - **Built gaps** (keys 8353-8357, `pairHandoffFactsRow`, contracts in
   `Contracts/Spine/PairHandoffFacts.lean`):
-  `pairHandoffFlowCut` (H07): every pair of the obstruction family is extended-charged to a token of
+  `pairHandoffHubCharge` (H07): every pair of the obstruction family is extended-charged to a token of
   the canonical capacity; canonical overloaded token (Hall violator, `load > M₀`) when `K > 0`;
   `pairHandoffBoundaryType` (B06): boundary vertices of `U`, `e(U, G−U) + Σ_U d_U = δ|U| + σ(U)`,
   `σ(U) ≥ 1`, every reading of `U` glued into `G − U` has no accepted cycle;
-  `pairObstructionCountDeficit` (G03): for every exposure order of the obstruction family some level
+  `pairHandoffCriticalCoordinate` (G03): for every exposure order of the obstruction family some level
   has `N_{k+1} < 2 N_k` (new library lemma `signatureCount_succ_le`: `N_{k+1} ≤ 2 N_k`);
   `pairObstructionDescent` (H10): `2 ≤ |𝒰| ≤ |Π|`, `𝒰` not realizing, every one-step peel realizing;
   `pairHandoffHubForces`: at the canonical separator `h` the ledger's vertex split, same-vertex
@@ -5299,3 +5299,36 @@ Node `[187]` ([179]/[180] Type B entry), branch `g-audit-pairTypeB`.  Accounting
   aggregate form.  Hub facts at `h`: they are constraints on paths through `h`, consistent with the
   handoff; the net-charge dichotomy (`d(h) < 3δ` or negative charge) is unchanged.  Remaining
   proposition unchanged: `PairObstructionHandoff` at the canonical returns, with the full ledger.
+
+### G audit: PairTypeBOutcome, third pass (H07 and G03 re-derived at the handoff)
+
+The global versions of keys 8353 and 8355 (some overloaded token anywhere; some deficit level of an
+order) are replaced by versions at the handoff's own objects; the global statements
+(`extOverloadedToken`, the per-order level existence) are no longer read by this residual.
+
+- **`pairHandoffHubCharge` (8353), H07 at `h`.**  Every pair of the obstruction family is free (no
+  blocker), so its old charge is `none` (`capacityCharge_none_of_family`) and, `extFree` being
+  empty, its extended charge is the port token of one of its own ports
+  (`extCharge_port_of_free`); that port is a selected excess port, so its centre is a high vertex.
+  Hence the charge passes the first separator `h` exactly for the pairs having a demand centred at
+  `h`; all others are charged at another centre.  `h`'s own tokens are its `d(h) − δ` excess ports
+  (proved: count of `{port ∈ 𝒫_exc : centre = h}`), and the number of pairs of the family charged to
+  them is at most `Σ_{p at h} ((|H| − 1) + [p triangular]·σ)`, from `newLoadBound`.
+  Test: the handoff is not contradicted; h's capacity `(d(h) − δ)·B` bounds the load on h, and combined
+  with the net-charge dichotomy of 8352 (`d(h) < 3δ` or negative charge) a non-negative charge gives
+  at most `2δ − 1` tokens at `h`.  Nothing forces any pair of 𝒰 to be charged at `h`.
+- **`pairHandoffCriticalCoordinate` (8355), G03 at `h`.**  Every coordinate of the minimal obstruction
+  is critical: for `π ∈ 𝒰`, the order exposing `π` last (the realizing order of `𝒰 ∖ {π}`, then `π`)
+  has `N_m = 2^m N_0` at level `m = |𝒰| − 1` and `N_{m+1} < 2 N_m` (`exists_critical_order`, uses
+  `signatureCount_congr`, `signatureCount_le_two_mul`).  The canonical members whose response
+  supports contain `h`, `a = nextFirst`, `b = nextSecond` exist (all three lie in `U`), so the
+  deficit at the coordinate `h` decides is exactly the deficit of the order exposing that member
+  last.  For an arbitrary order the deficit level need not be `h`'s coordinate; structurally, since
+  every member is critical, `𝒰` is a circuit of the response code (every peel realizes, no order of
+  the whole family does), and the deficit level of an order is whichever member it exposes last
+  among those that overlap the earlier ones.
+- **Combined with 8357 and 8352.**  At `h` the ledger gives the vertex split, the same-vertex and
+  endpoint switches, the fan and the chain; the net-charge dichotomy bounds `d(h)` or gives negative
+  charge; the load bound caps the pairs charged at `h`.  No contradiction with
+  `PairObstructionHandoff` results: it remains the open proposition (first separator `h ∈ U`,
+  `deg h > δ`, two next vertices in `U`, non-absorbing at `P₀`, escaping envelope).

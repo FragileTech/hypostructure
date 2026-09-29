@@ -172,9 +172,9 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .pairHandoffSupport) known]
     [FactKeys.Has (K .pairHandoffCharge) known]
     [FactKeys.Has (K .pairHandoffNetCharge) known]
-    [FactKeys.Has (K .pairHandoffFlowCut) known]
+    [FactKeys.Has (K .pairHandoffHubCharge) known]
     [FactKeys.Has (K .pairHandoffBoundaryType) known]
-    [FactKeys.Has (K .pairObstructionCountDeficit) known]
+    [FactKeys.Has (K .pairHandoffCriticalCoordinate) known]
     [FactKeys.Has (K .pairObstructionDescent) known]
     [FactKeys.Has (K .pairHandoffHubForces) known]
     [FactKeys.Has (K .independentPairFamily) known]
@@ -307,9 +307,9 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .pairHandoffSupport)).down,
       (history.get (K .pairHandoffCharge)).down,
       (history.get (K .pairHandoffNetCharge)).down,
-      (history.get (K .pairHandoffFlowCut)).down,
+      (history.get (K .pairHandoffHubCharge)).down,
       (history.get (K .pairHandoffBoundaryType)).down,
-      (history.get (K .pairObstructionCountDeficit)).down,
+      (history.get (K .pairHandoffCriticalCoordinate)).down,
       (history.get (K .pairObstructionDescent)).down,
       (history.get (K .pairHandoffHubForces)).down,
       pairSystemEarlyOutcome⟩,
@@ -480,9 +480,9 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .pairHandoffSupport) known]
     [FactKeys.Has (K .pairHandoffCharge) known]
     [FactKeys.Has (K .pairHandoffNetCharge) known]
-    [FactKeys.Has (K .pairHandoffFlowCut) known]
+    [FactKeys.Has (K .pairHandoffHubCharge) known]
     [FactKeys.Has (K .pairHandoffBoundaryType) known]
-    [FactKeys.Has (K .pairObstructionCountDeficit) known]
+    [FactKeys.Has (K .pairHandoffCriticalCoordinate) known]
     [FactKeys.Has (K .pairObstructionDescent) known]
     [FactKeys.Has (K .pairHandoffHubForces) known]
     [FactKeys.Has (K .dependentPairFamily) known]
@@ -623,9 +623,9 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .pairHandoffSupport)).down,
       (history.get (K .pairHandoffCharge)).down,
       (history.get (K .pairHandoffNetCharge)).down,
-      (history.get (K .pairHandoffFlowCut)).down,
+      (history.get (K .pairHandoffHubCharge)).down,
       (history.get (K .pairHandoffBoundaryType)).down,
-      (history.get (K .pairObstructionCountDeficit)).down,
+      (history.get (K .pairHandoffCriticalCoordinate)).down,
       (history.get (K .pairObstructionDescent)).down,
       (history.get (K .pairHandoffHubForces)).down,
       pairSystemEarlyOutcome⟩,

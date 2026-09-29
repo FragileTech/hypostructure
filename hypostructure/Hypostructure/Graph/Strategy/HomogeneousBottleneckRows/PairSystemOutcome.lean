@@ -169,25 +169,25 @@ obstruction, each fact derived from `K .pairHandoffSupport` and the ledger's own
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.pairHandoffFacts
     { Requires := [K .pairHandoffSupport, K .selection, K .minDegreeBaseline,
-        K .extFreeEmpty, K .extOverloadedToken, K .highCentreSplitForced,
+        K .extFreeEmpty, K .newLoadBound, K .highCentreSplitForced,
         K .sameVertexSwitchForcedPath, K .highEndpointSwitch, K .threeRouteFan,
         K .threeRouteChain]
-      Produces := [K .pairHandoffFlowCut, K .pairHandoffBoundaryType,
-        K .pairObstructionCountDeficit, K .pairObstructionDescent, K .pairHandoffHubForces]
+      Produces := [K .pairHandoffHubCharge, K .pairHandoffBoundaryType,
+        K .pairHandoffCriticalCoordinate, K .pairObstructionDescent, K .pairHandoffHubForces]
       requiresUnique := by key_fresh
       producesUnique := by key_fresh
       producesNonempty := by simp }
     (fun inputs =>
-      .cons (key := K .pairHandoffFlowCut)
-        ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffFlowCut_holds
+      .cons (key := K .pairHandoffHubCharge)
+        ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffHubCharge_holds
           (inputs.get (K .pairHandoffSupport)).down (inputs.get (K .extFreeEmpty)).down
-          (inputs.get (K .extOverloadedToken)).down⟩
+          (inputs.get (K .newLoadBound)).down⟩
         (.cons (key := K .pairHandoffBoundaryType)
           ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffBoundaryType_holds
             (inputs.get (K .selection)).down.1 (inputs.get (K .minDegreeBaseline)).down
             (inputs.get (K .pairHandoffSupport)).down⟩
-          (.cons (key := K .pairObstructionCountDeficit)
-            ⟨Graph.Contracts.Spine.PairHandoffFacts.pairObstructionCountDeficit_holds
+          (.cons (key := K .pairHandoffCriticalCoordinate)
+            ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffCriticalCoordinate_holds
               (inputs.get (K .pairHandoffSupport)).down⟩
             (.cons (key := K .pairObstructionDescent)
               ⟨Graph.Contracts.Spine.PairHandoffFacts.pairObstructionDescent_holds
