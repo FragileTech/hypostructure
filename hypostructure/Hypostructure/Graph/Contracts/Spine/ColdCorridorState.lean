@@ -109,10 +109,12 @@ theorem coldCorridorState_of_corridors (data : Parameters)
       let atom := Graph.ColdCorridor.rowAtom object support connected proper
       let baselineInvariant :=
         Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold
+      let targetInvariant :=
+        (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
       let selected := Graph.ColdCorridor.rowRepresentative baselineInvariant
-        object support connected proper
+        targetInvariant object support connected proper
       have selectedReading := Graph.ColdCorridor.rowRepresentative_reading
-        baselineInvariant object support connected proper
+        baselineInvariant targetInvariant object support connected proper
       have pieceSizeLe : atom.piece.internalVertexCount ≤ support.card := by
         let embedding : atom.piece.Internal →
             {vertex // vertex ∈ support} :=
@@ -137,7 +139,7 @@ theorem coldCorridorState_of_corridors (data : Parameters)
           selected.toPiece.internalVertexCount = selected.size := by simp
           _ ≤ atom.piece.internalVertexCount :=
             Graph.ColdCorridor.rowRepresentative_size_le baselineInvariant
-              object support connected proper
+              targetInvariant object support connected proper
           _ ≤ support.card := pieceSizeLe
           _ ≤ Graph.ColdCorridor.exchangeBound data.coldSignature := bounded
       have sourceBaseline :
@@ -154,11 +156,13 @@ theorem coldCorridorState_of_corridors (data : Parameters)
           canonical := selected.toPiece
           canonicalBounded := selectedBound
           sameProfile := selectedReading.1
-          baseline := selectedReading.2 atom.outside sourceBaseline
+          baseline := selectedReading.2.2 sourceBaseline
+          sameResponse := selectedReading.2.1
           record := record }
   have makeGerm_second : ∀ support bounded connected proper record,
       (makeGerm support bounded connected proper record).HasCanonicalSecond
-        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold) :=
+        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+        (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant :=
     fun _ _ _ _ _ => rfl
   have germExists : ∀ epsilon : ColdEligibleHalfEdge data object,
       ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
@@ -169,7 +173,8 @@ theorem coldCorridorState_of_corridors (data : Parameters)
           (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
           (presentationAt epsilon) (indexAt epsilon) germ ∧
         germ.HasCanonicalSecond
-          (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold) := by
+          (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+          (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant := by
     intro epsilon
     let corridor := corridorAt epsilon
     let presentation := presentationAt epsilon
@@ -255,7 +260,8 @@ theorem coldCorridorState_of_corridors (data : Parameters)
           (Graph.HasCycleWithLength data.LengthOK) object,
         germ.support = {epsilon.1.1, epsilon.1.2} ∧
           germ.HasCanonicalSecond
-            (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold) := by
+            (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+            (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant := by
     intro epsilon
     let selectedEpsilon : Selected := ⟨epsilon.1, epsilon.property.1⟩
     have selectedFacts :=

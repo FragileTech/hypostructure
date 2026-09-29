@@ -38,6 +38,23 @@ noncomputable instance instIncompatibleColdGermSomeRealizingSelection :
     exact selected.down.1 (germ.target_of_realizing
       (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant realizing)
 
+/-! ## Node `[156]`: G2 is empty at G
+
+`lem:cold-bounded-germ-trichotomy`, G2, read at G: "some compatible outside
+context distinguishes the two representatives".  The only compatible context of
+a germ's support in G is G's own surroundings `G − Z`, where the second
+representative carries G's retained target response
+(`BoundedGerm.sameResponse`), so no germ is distinguishing
+(`BoundedGerm.not_distinguishing`).  The `[154]` G2 yes-arm is therefore empty
+at G and is closed against the selection it is read on.  Lean improvement: the
+G2 arm is empty at G. -/
+noncomputable instance instIncompatibleColdGermSomeDistinguishingSelection :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .coldGermSomeDistinguishing) (K .selection) where
+  contradiction := fun _residual distinguished _selected => by
+    obtain ⟨germ, _active, distinguishing⟩ := distinguished.down
+    exact germ.not_distinguishing distinguishing
+
 /-! ## Node `[168]`, `lem:symmetric-pair-endpoint`
 
 The selected occurrence retained at `[163]` is one of the nine interior

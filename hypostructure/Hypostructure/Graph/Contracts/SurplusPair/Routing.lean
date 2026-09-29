@@ -826,11 +826,12 @@ theorem sameTokenBottleneckRouting_of_pattern
               (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
                 canonical (responseCoordinateSupport
                   secondResponseCoordinate)).boundaryDegreeProfile ∨
-            Graph.Response.ContextEquivalent (Graph.HasCycleWithLength data.LengthOK)
-              (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
-                canonical (responseCoordinateSupport firstResponseCoordinate))
-              (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
-                canonical (responseCoordinateSupport secondResponseCoordinate))) →
+            (Graph.HasCycleWithLength data.LengthOK
+                (Graph.ActualContext.actualGlue object canonical
+                  (responseCoordinateSupport firstResponseCoordinate)) ↔
+              Graph.HasCycleWithLength data.LengthOK
+                (Graph.ActualContext.actualGlue object canonical
+                  (responseCoordinateSupport secondResponseCoordinate)))) →
           SameTokenPatternPairUnresolvedStatement data object := by
       intro canonical selected alternative
       refine ⟨routing, routingEq, ?_⟩
@@ -867,23 +868,14 @@ theorem sameTokenBottleneckRouting_of_pattern
         let secondReading :=
           Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
             canonical (responseCoordinateSupport secondResponseCoordinate)
+        -- Stated about G, the test of exit (b) at equal profiles is whether G's own
+        -- surroundings `G − Z` separate the two readings; they never do
+        -- (`ActualContext.actualGlue_agree`), so the equal-profile pair is the
+        -- unresolved pair of `[144a]` with its readings agreeing in `G − Z`.
         by_cases profileEq :
             firstReading.boundaryDegreeProfile = secondReading.boundaryDegreeProfile
-        · by_cases equivalent : Graph.Response.ContextEquivalent
-              (Graph.HasCycleWithLength data.LengthOK) firstReading secondReading
-          · exact Or.inr (unresolvedOf canonical selected (Or.inr equivalent))
-          · apply Or.inl
-            refine declaredSparseSurplusExit_of_pairDefect data object active
-              responseFamily_subset_base ?_
-            refine ⟨firstResponseCoordinate, Finset.mem_insert_self _ _,
-              secondResponseCoordinate,
-              Finset.mem_insert_of_mem (Finset.mem_singleton_self _),
-              responseCoordinatesDifferent, canonical,
-              (by convert selected using 4), profileEq,
-              ?_, Graph.Response.targetDefect_of_not_contextEquivalent equivalent⟩
-            exact iff_of_false
-              (Graph.not_target_retainedGlue avoids canonical _)
-              (Graph.not_target_retainedGlue avoids canonical _)
+        · exact Or.inr (unresolvedOf canonical selected
+            (Or.inr (Graph.ActualContext.actualGlue_agree avoids canonical _ _)))
         · exact Or.inr (unresolvedOf canonical selected (Or.inl profileEq))
       by_cases firstResponded : ∃ coordinate, coordinate ∈
           capacity.activation.responseObstructions first.1
@@ -1649,11 +1641,14 @@ theorem sameTokenTypeBHandoff_of_pattern
 candidates -- the readings of G's piece at the canonical support `Z` of the
 two pattern coordinates -- are not replacement representatives of `Z`, because
 any one that were would be the compression exit (c) of G
-(`replacementSupport_of_retainedReading`), which G's survivor refutes. -/
+(`replacementSupport_of_retainedReading`; its target clause, no target cycle in
+`glue X' (G − Z)`, holds since the glued reading is a subgraph of G), which G's
+survivor refutes. -/
 theorem sameTokenReadingsNotReplacement_of_unresolved
     {data : Parameters} {object : Graph.FiniteObject.{u}}
     (unresolved : SameTokenPatternPairUnresolvedStatement data object)
-    (survivor : SparseSurplusSurvivorStatement data object) :
+    (survivor : SparseSurplusSurvivorStatement data object)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object) :
     SameTokenReadingsNotReplacementStatement data object := by
   obtain ⟨routing, routingSelected, _different, support, selected, _cases⟩ :=
     unresolved
@@ -1663,6 +1658,6 @@ theorem sameTokenReadingsNotReplacement_of_unresolved
     (Graph.CanonicalSupport.select?_mem_candidates selected)).2
   exact survivor (.compression support
     (Graph.replacementSupport_of_retainedReading (LengthOK := data.LengthOK)
-      object support retained connected proper profile baseline smaller))
+      object support retained avoids connected proper profile baseline smaller))
 
 end Hypostructure.Graph.Contracts.SurplusPair

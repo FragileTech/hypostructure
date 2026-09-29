@@ -110,113 +110,52 @@ theorem cycleRankConstraint_of_baseline (data : Parameters)
   rw [Nat.mul_sub_left_distrib]
   exact Nat.le_sub_of_add_le (by omega)
 
-/-- **Node `[13]`, `lem:replacement`.**  A target-complete compression of a
-proper atom would give a strictly smaller baseline object whose obstruction
-profile is contained in the original's; minimality gives that object the
-target, the shared outside context carries it back, and the reconstruction is
-isomorphic to the selected object, which avoids the target. -/
+/-- **Node `[13]`, `lem:replacement`**, stated about G.  A replacement `X'`
+of a proper support `Z` makes `G' = glue X' (G − Z)` a strictly smaller
+baseline object, so the selection's minimality gives `G'` a power-of-two
+cycle, which the replacement excludes. -/
 theorem replacementExclusion_of_selection
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation}
     (data : Parameters) (object : Graph.FiniteObject.{u})
-    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-    (state : BranchState object)
     (selection : SelectionStatement BranchState Presentation presentation data object) :
-    ReplacementExclusionStatement data object := by
-  let context :
-      Core.MinimalCounterexampleContext
-        (Strategy.Spine.problem BranchState Presentation presentation data)
-        (Graph.HasCycleWithLength data.LengthOK)
-        (Strategy.Spine.progress BranchState Presentation presentation data) :=
-    { G := object
-      baseline := baseline
-      state := state
-      avoids := selection.1
-      minimal := selection.2.sizeMinimal }
-  let targetInvariant : Core.TargetInvariant
-      (Graph.isomorphismEquivalenceWithPresentation
-        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-        Presentation presentation
-        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
-      (Graph.HasCycleWithLength data.LengthOK) := by
-    simpa [Graph.minimumDegreeIsomorphismSemantics] using
-      (Graph.minimumDegreeCycleTargetInvariant data.threshold BranchState
-        Presentation presentation data.LengthOK)
-  let profile :=
-    Graph.Strategy.InterfaceReplacement.profileWithPresentation
-      (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-      (BranchState := BranchState)
-      (baselineInvariant :=
-        Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
-      Presentation presentation
-      (T := Core.Target.ofPredicate _
-        (Graph.HasCycleWithLength data.LengthOK)) targetInvariant
-  intro support replacementSupport
-  rcases replacementSupport with
-    ⟨connected, proper, replacement, signatureEq, replacementBaseline, smaller,
-      obstructionLE⟩
-  let site :=
-    Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom
-      context.G support connected proper
-  let replacement' : profile.assembly.Replacement context.G site :=
-    { atom := replacement
-      compatible := trivial }
-  let strictReplacement : profile.StrictReplacement context site :=
-    { replacement := replacement'
-      signature_eq := congrArg ULift.up signatureEq
-      obstruction_le := by
-        intro outside _ _ replacementTarget
-        exact obstructionLE outside replacementTarget
-      baseline := replacementBaseline
-      smaller := smaller }
-  have replacementTarget : Graph.HasCycleWithLength data.LengthOK
-      (profile.assembly.replace strictReplacement.replacement) :=
-    context.target_of_smaller strictReplacement.smaller
-      strictReplacement.baseline
-  have sourceTarget : Graph.HasCycleWithLength data.LengthOK
-      (profile.assembly.assemble
-        (profile.assembly.atom context.G site)
-        (profile.assembly.context context.G site)) :=
-    strictReplacement.obstruction_le
-      (profile.assembly.context context.G site)
-      (profile.assembly.extractedCompatible context.G site)
-      strictReplacement.replacement.compatible replacementTarget
-  exact context.avoids
-    ((profile.targetInvariant.target_iff
-      (profile.assembly.reconstruct context.G site)).mp sourceTarget)
+    ReplacementExclusionStatement data object :=
+  Graph.Strategy.InterfaceReplacement.not_replacementSupport_of_minimal
+    (fun H smaller baseline => selection.2 H smaller baseline)
 
-/-- **Node `[11]`, `lem:degree-profile-fibres`** (tex 6088), at G's own
-boundaried pieces.  The paper's proof: "condition (a) in the definition of a
-target-complete quotient requires the quotient to preserve the boundary degree
-profile ... an identification of `X₁` with `X₂` would identify two different
-boundary-degree profiles, so it violates condition (a)".  Every admissible
-quotient of G's declared coordinates carries condition (a) as its `fibrewise`
-clause (`def:admissible-rank-quotient`, which requires target-completeness). -/
+/-- **Node `[11]`, `lem:degree-profile-fibres`** (tex 6088), at G's readings.
+The paper's proof: "condition (a) in the definition of a target-complete
+quotient requires the quotient to preserve the boundary degree profile ... an
+identification of `X₁` with `X₂` would identify two different boundary-degree
+profiles, so it violates condition (a)".  Every admissible quotient of G's
+declared coordinates carries condition (a) as its `fibrewise` clause
+(`def:admissible-rank-quotient`, which requires target-completeness). -/
 theorem degreeProfileFibres_holds (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     DegreeProfileFibresStatement data object :=
   fun _region quotient left right different identified =>
     different (quotient.fibrewise left right identified)
 
-/-- **Node `[12]`, `lem:context-universality`** (tex 6106), at G's own
-boundaried pieces, reading node `[11]`.  An identification made by an admissible
-quotient of G's declared coordinates lies in one boundary-degree fibre (node
-`[11]`, contrapositive) and, by condition (b) of target-completeness ("this is
-precisely the meaning of target-completeness"), has the same power-of-two-cycle
-response after gluing to every boundaried context: it is target-complete.  An
-identification that some context separates -- in particular one valid only at
-G's own outside context `G − X` -- has a distinguishing context and is not
-target-complete (target-defective). -/
-theorem targetCompleteContextUniversality_of_degreeProfileFibres (data : Parameters)
+/-- **Node `[12]`, `lem:context-universality`** (tex 6106), stated about G,
+reading node `[11]` and the selection.  Two readings an admissible quotient of
+G's declared coordinates identifies lie in one boundary-degree fibre (node
+`[11]`, contrapositive).  Their responses in G's own rest `G − Z` agree, and no
+reading of G at any support closes a power-of-two cycle in `G − Z`, because
+such a gluing is a subgraph of G, which avoids the target (the decided G-form
+of "no context separates them"). -/
+theorem targetCompleteContextUniversality_of_degreeProfileFibres
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation}
+    (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (fibres : DegreeProfileFibresStatement data object) :
+    (fibres : DegreeProfileFibresStatement data object)
+    (selection : SelectionStatement BranchState Presentation presentation data object) :
     TargetCompleteContextUniversalityStatement data object := by
   refine ⟨fun region quotient left right identified => ⟨?_, ?_⟩,
-    fun _support left right _actual notUniversal => ⟨?_, ?_⟩⟩
+    fun support reading => Graph.ActualContext.not_target_actualGlue selection.1
+      support reading⟩
   · by_contra different
     exact fibres region quotient left right different identified
-  · exact fun outside => quotient.contextUniversal left right identified outside
-  · exact Graph.Response.targetDefect_of_not_contextEquivalent notUniversal
-  · exact fun complete => notUniversal complete.contextEquivalent
+  · exact Graph.readings_agree_in_rest selection.1 quotient.support left right
 
 end Hypostructure.Graph.Contracts.Spine

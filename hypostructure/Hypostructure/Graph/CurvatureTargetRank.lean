@@ -9,35 +9,30 @@ curvature tests of an atom.  A subfamily survives when every admissible quotient
 that is functional on the declared family remains label-injective on it; `r_Ω`
 is the maximum cardinality among those finitely many surviving subfamilies.
 
-Every clause is the manuscript's, at the framework object the manuscript names.
+Every clause is the manuscript's, stated about G (`Graph.DeclaredQuotient`).
 
-* A quotient lives on a connected **determination support** `Z` that carries
-  the coordinates under discussion, and its realizations are the boundaried
-  graphs that can occupy `Z`'s place — `BoundaryPiece` at the support's own cut
-  interface, which is what `def:curvature-target-dependence` means by "a
-  realization means a `T`-boundaried support whose exact response profile maps to
-  the same quotient data `Q` under `q`".
-* `def:target-complete-quotient`: every identification the quotient makes
-  preserves (a) the boundary degree profile and (b) the target predicate after
-  gluing to every `T`-boundaried context.  Both are stated at
-  `BoundaryPiece.boundaryDegreeProfile` and at `glue` against every
-  `OutsideContext`, the framework's own gluing.
+* A quotient lives on a connected **determination support** `Z ⊆ V(G)` that
+  carries the coordinates under discussion, and the states it identifies are
+  G's own readings at `Z` (`SupportAtom.retainedPiece`), indexed by the vertex
+  set `X ⊆ V(G)` they keep.
+* `def:target-complete-quotient`: (a) identified readings lie in one
+  boundary-degree fibre (`DeclaredQuotient.fibrewise`); (b) no context
+  separates them — decided at G, since a reading glued into G's own rest
+  `G − Z` is a subgraph of G (`readings_agree_in_rest`).
 * `def:admissible-rank-quotient`, proper clause: at `Z ⊊ G` a rank-reducing
-  quotient supplies a strictly smaller proper representative.  The manuscript
-  says of it that "the five defining properties of a proper representative are
-  exactly the five hypotheses of the replacement lemma `lem:replacement` for
-  the support `Z`", so the clause *is*
-  `InterfaceReplacement.ReplacementSupport`, which is the hypothesis
-  `InterfaceReplacement.not_replacementSupport` refutes at a minimal
-  counterexample.
+  quotient supplies a strictly smaller proper representative.  Its defining
+  properties are the hypotheses of `lem:replacement` at `Z`, stated about G:
+  `InterfaceReplacement.ReplacementSupport` — a boundaried piece `X'` (not a
+  reading of G) with G's boundary-degree profile, the baseline and no target
+  cycle in `glue X' (G − Z)`, strictly smaller.
 * `def:admissible-rank-quotient`, closed clause: at `Z = G` a rank-reducing
   quotient supplies a strictly smaller admissible closed representative `H` —
-  finite, simple, meeting the baseline, with
-  `profile_∅(H) ⊆ profile_∅(G)`.  With an empty boundary the only context is
-  the empty one, so that inclusion is `Target H → Target G`, which is the
-  manuscript's own reading of it ("A power-of-two cycle in `H` would add the
-  corresponding empty-context target event to `profile_∅(H)`, impossible
-  because `profile_∅(G)` contains no such event").
+  finite, simple, meeting the baseline, with `profile_∅(H) ⊆ profile_∅(G)`.
+  With an empty boundary the only context is the empty one and `G` avoids the
+  target, so that inclusion says `H` has no target cycle.
+
+At a minimal G both representatives are refuted
+(`DeclaredQuotient.labelInjective_of_minimal`).
 
 Nothing here is specialized to one manuscript: the baseline and the target are
 parameters, and the module never mentions a window, a packing, or a numeral.

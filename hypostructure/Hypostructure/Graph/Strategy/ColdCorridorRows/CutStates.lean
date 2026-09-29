@@ -36,25 +36,24 @@ noncomputable instance instIncompatibleColdHeavyEntryTerminal :
 
 /-! ## Node `[153]`: the exact decision behind `lem:cold-corridor-first-failure` (ii)
 
-At G the paper's exclusion of (F2) (tex 7265-7270) is equivalent to (★): G's
-pinned cut states along each retained cold corridor are pairwise distinct up to
-the first failure (`Contracts.Spine.coldFirstFailureDefectAt_iff`).  The
-decision reads G's retained first-failure occurrence (`K .coldFirstFailureOccurrence`)
-and splits (★) / ¬(★) at G.  On the (★) arm (F2) is excluded and routing
-continues; on the ¬(★) arm the explicitly constructed first equal-state pair
-of G, with its separating path context and profile separation
+At G the paper's (F2) (tex 7265-7270) is decided: it never fires.  What `[153]`
+still splits is (★): G's pinned cut states along each retained cold corridor
+are pairwise distinct up to the first failure, or some retained corridor of G
+repeats a state first (an (F5) repeat with no earlier event).  The decision reads G's retained first-failure occurrence
+(`K .coldFirstFailureOccurrence`) and splits (★) / ¬(★) at G.  On the (★) arm
+routing continues; on the ¬(★) arm the explicitly constructed first equal-state
+pair of G, with the profile separation of G's two readings and the equal capped
+degrees of its glue vertices
 (`Contracts.Spine.coldRepeatedStateResidual_of_not_distinct`), is published as
-the returned residual `K .coldRepeatedStateResidual`.  Target avoidance
-(`K .selection`) and the dyadic target (`K .cubicBaseline`) are the two G
-facts the construction reads. -/
+the returned residual `K .coldRepeatedStateResidual`.  (F2) is not what either
+arm reads: it is decided at G on every corridor
+(`Contracts.Spine.not_coldFirstFailureDefectAt`). -/
 noncomputable def coldCutStatesDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger
       (Input BranchState Presentation presentation data) current known)
     [FactKeys.Has (K .coldFirstFailureOccurrence) known]
-    [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .cubicBaseline) known]
     (distinctFresh : K .coldCutStatesDistinct ∉ known)
     (residualFresh : K .coldRepeatedStateResidual ∉ known) :
     Decision (K .coldCutStatesDistinct) (K .coldRepeatedStateResidual) previous := by
@@ -67,10 +66,7 @@ noncomputable def coldCutStatesDichotomy
       .inl ⟨distinct⟩
     else
       .inr ⟨Contracts.Spine.coldRepeatedStateResidual_of_not_distinct
-        data.toParameters current.object
-        (Contracts.Spine.lengthOK_twoPow data.toParameters
-          (previous.get (K .cubicBaseline)).down.2.1.2.1)
-        (previous.get (K .selection)).down.1 distinct⟩)
+        data.toParameters current.object distinct⟩)
     distinctFresh residualFresh
 
 /-! ## Node `[162]`: the exact decision on the distinct-states arm

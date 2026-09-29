@@ -9,18 +9,19 @@ round node.  Each terminal is a framework closure (`closeIncompatible`) over
 the literal ledger of its arm, against the upstream fact the manuscript cites:
 
 * `[37]` against node `[12]` `K .targetCompleteContextUniversality`
-  (`lem:context-universality`; `lem:full-rank`, tex 9388): the certificate's
-  admissible quotient identifies only target-complete pairs, so no outside
-  context distinguishes an identified pair.
+  (`lem:context-universality`; `lem:full-rank`, tex 9388), stated about G: the
+  readings of G the certificate identifies agree in G's own rest `G − Z`, so
+  the defect arm of `[36]` is empty at G (Lean improvement).
 * `[39]` against node `[13]` `K .replacementExclusion` (`lem:replacement`,
   tex 9226 `cor:uncompressible`): the strictly smaller proper representative
   supplied by `def:admissible-rank-quotient` at a proper support is a
-  replacement of that support.
+  replacement of that support (G's boundary profile, the baseline and no
+  power-of-two cycle in `glue X' (G − Z)`).
 * `[42]` against node `[13]` (`lem:proper-smearing`): the support `Z ⊊ G` is
   proper, and its target-complete rank reduction is again such a replacement.
 * `[46]` against `K .selection` (`lem:no-silent-global-smearing`): the strictly
-  smaller admissible closed representative contradicts the selection's
-  minimality together with its target avoidance.
+  smaller admissible closed representative is a baseline graph with no
+  power-of-two cycle, against the selection's minimality.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -37,8 +38,8 @@ variable {data : Data.{u}}
 
 /-- **The terminal `[37]` closes against node `[12]`.**  The certificate's
 admissible quotient is a quotient of G's declared coordinates, so node `[12]`
-makes each pair it identifies target-complete; `K .contextDefect`'s
-distinguishing outside context contradicts that. -/
+makes every two readings it identifies agree in G's own rest `G − Z`;
+`K .contextDefect`'s separated pair contradicts that. -/
 noncomputable instance instIncompatibleContextUniversalityDefect :
     Incompatible (Input BranchState Presentation presentation data)
       (K .targetCompleteContextUniversality) (K .contextDefect) where
@@ -68,9 +69,8 @@ noncomputable instance instIncompatibleProperDelocalization :
 
 /-- **The terminal `[46]` closes against the selected object.**  The global
 barrier stores the surviving conclusion of `lem:no-silent-global-smearing`: a
-strictly smaller admissible closed representative.  Selection minimality puts
-the target in that representative, target transfer puts it in the selected
-object, and selection avoidance gives the contradiction. -/
+strictly smaller admissible closed representative with no power-of-two cycle.
+Selection minimality puts a power-of-two cycle in it. -/
 noncomputable instance instIncompatibleGlobalBarrier :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .globalBarrier) where

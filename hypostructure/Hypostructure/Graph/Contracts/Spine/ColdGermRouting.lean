@@ -32,61 +32,49 @@ theorem coldGermRealized_of_avoids (data : Parameters)
     avoids (germ.target_of_realizing
       (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant realizing)
 
-/-- **(G2) is target-defective.**  A distinguishing context makes the germ's
-identification not target-complete. -/
+/-- **(G2) is decided at G.**  The two representatives of every germ have the
+same target response in G's own surroundings `G − Z` (the germ's retained
+cut-state, `BoundedGerm.sameResponse`), the only compatible context of the
+support in G, so no germ is distinguishing.  Lean improvement: the G2 arm is
+empty at G. -/
 theorem coldGermDistinguished_holds (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     ColdGermDistinguishedStatement data object :=
-  fun germ _active Profile profile distinguishing =>
-    germ.not_targetComplete_of_distinguishing profile distinguishing
+  fun germ _active => germ.not_distinguishing
 
 /-- **(G3) never occurs** at node `[153]`'s extracted family.  A shortening
-neutral germ is a target-complete compression of a proper support, which
-`cor:uncompressible` forbids. -/
+germ, read at G, is a target-complete compression of a proper support (`E`
+glued into `G − Z` keeps the profile and the baseline, is smaller, and has G's
+target response there), which `cor:uncompressible` forbids. -/
 theorem coldGermSilent_of_uncompressible (data : Parameters)
     (object : Graph.FiniteObject.{u})
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (uncompressible : UncompressibleStatement data object) :
     ColdGermSilentStatement data object :=
-  fun germ _active shorter neutral =>
-    uncompressible germ.support
-      (germ.compressibleSupport_of_not_distinguishing shorter neutral.2)
+  fun germ _active shorter _neutral =>
+    germ.false_of_increment_neg
+      (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant avoids
+      uncompressible shorter
 
-/-- **Nodes `[154]`--`[156]`: every surviving length-changing germ is (G2).**
-(G1) is refuted by target avoidance and (G3) by uncompressibility, so every
-shortening germ is distinguishing and routed to the target-defect ledger. -/
+/-- **Nodes `[154]`--`[156]`: no length-changing germ survives at G.**  (G1) is
+refuted by target avoidance, (G2) is empty at G, and (G3) is a target-complete
+compression refuted by uncompressibility, so no configuration of the extracted
+family is shortening. -/
 theorem coldGermRouted_of_uncompressible (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (uncompressible : UncompressibleStatement data object) :
-    ColdGermRoutedStatement data object := by
-  let notRealizing : ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object,
-      ¬ germ.Realizing :=
-    fun germ realizing =>
-      avoids (germ.target_of_realizing
-        (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant realizing)
-  let notSilent : ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object,
-      germ.increment < 0 → ¬ germ.Neutral :=
-    fun germ shorter neutral =>
-      uncompressible germ.support
-          (germ.compressibleSupport_of_not_distinguishing shorter neutral.2)
-  exact fun germ _active shorter =>
-    have distinguishing :=
-      Graph.ColdCorridor.boundedGerm_not_survives notRealizing notSilent
-        germ shorter
-    ⟨distinguishing,
-      fun Profile profile =>
-        germ.not_targetComplete_of_distinguishing profile distinguishing,
-      Or.inl distinguishing⟩
+    ColdGermRoutedStatement data object :=
+  fun germ _active shorter =>
+    germ.false_of_increment_neg
+      (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant avoids
+      uncompressible shorter
 
 /-- **Node `[157]`, `lem:cold-same-interface-table` and
 `lem:cold-short-self-return-filter`.**  No table row is realizing, and a row
-is handed off or distinguishing (otherwise it compresses its own proper
-support); the short self-return exceptions are routed the same way; every row
-has increment `0`. -/
+is handed off (otherwise it compresses its own proper support at G; the
+distinguishing arm is empty at G); the short self-return exceptions are routed
+the same way; every row has increment `0`. -/
 theorem coldSameInterfaceTable_of_uncompressible (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
@@ -172,19 +160,19 @@ theorem neutralConfiguration_of_positive
     (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
   let Reading : Graph.CanonicalPiece germ.atom.interface → Prop :=
     fun candidate =>
-      Graph.CanonicalPiece.CutStateReading
+      Graph.CanonicalPiece.CutStateReadingAt
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK)
-          germ.piece candidate ∧
+          germ.piece germ.atom.outside candidate ∧
         (Graph.glue candidate.toPiece germ.atom.outside).edgeCount =
           (Graph.glue germ.piece germ.atom.outside).edgeCount
   have sourceCutState :
-      Graph.CanonicalPiece.CutStateReading
+      Graph.CanonicalPiece.CutStateReadingAt
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK)
-        germ.piece germ.piece.toCanonical :=
-    Graph.CanonicalPiece.cutStateReading_toCanonical
-      baselineInvariant targetInvariant germ.piece
+        germ.piece germ.atom.outside germ.piece.toCanonical :=
+    Graph.CanonicalPiece.cutStateReadingAt_toCanonical
+      baselineInvariant targetInvariant germ.piece germ.atom.outside
   have sourceEdgeCount :
       (Graph.glue germ.piece.toCanonical.toPiece germ.atom.outside).edgeCount =
         (Graph.glue germ.piece germ.atom.outside).edgeCount :=
@@ -224,12 +212,12 @@ theorem neutralConfiguration_of_positive
     have swappedBaseline :
         Graph.MinimumDegreeAtLeast data.threshold
           (Graph.glue canonical.toPiece germ.atom.outside) :=
-      cutState.2.2 germ.atom.outside sourceBaseline
+      cutState.2.2 sourceBaseline
     have swappedAvoids :
         ¬ Graph.HasCycleWithLength data.LengthOK
             (Graph.glue canonical.toPiece germ.atom.outside) := by
       intro hit
-      exact sourceAvoids ((cutState.2.1 germ.atom.outside).mp hit)
+      exact sourceAvoids (cutState.2.1.mp hit)
     have swappedSmaller :
         Graph.FiniteObject.LexicographicallySmaller
           (Graph.glue canonical.toPiece germ.atom.outside) object := by
@@ -286,10 +274,10 @@ theorem neutralConfiguration_of_positive
     · exact Or.inl rfl
   refine ⟨silent, germ, representative, ?_⟩
   change CanonicalActiveColdGerm data object germ ∧
-    (Graph.CanonicalPiece.CutStateReading
+    (Graph.CanonicalPiece.CutStateReadingAt
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK)
-        germ.piece representative ∧
+        germ.piece germ.atom.outside representative ∧
       (Graph.glue representative.toPiece germ.atom.outside).edgeCount =
         (Graph.glue germ.piece germ.atom.outside).edgeCount) ∧
     representative.size = germ.piece.internalVertexCount ∧

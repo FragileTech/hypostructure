@@ -24,7 +24,9 @@ universe u w
 continuation's residuals, the failed private-carrier rate retained at the
 entry of the route-8 continuation (`[187]`), the blocked-class overlap
 residual `[172a]`, the local cold-terminal exclusion of the realized
-package's silent cold configurations (`[157]`, retained at `[187]`), and the
+package's silent cold configurations (`[157]`, retained at `[187]`; its three
+other linear singletons carry `[154]`'s G2 yes-arm, empty at G, and are not
+outcomes), and the
 three returned residuals of the structural exhaustion at `[153]` (G's first
 equal-state pair), `[162]` (a long corridor of G through a heavy centre) and
 `[54]` (the configuration at G where the joint realization fails).  Each
@@ -34,16 +36,16 @@ abbrev SelectedNearCubicSurvivorBoundary (selected : EGInput.{u}) :=
   SelectedNetChargeBoundary selected ∨
     Route8RateFailsSubtypes selected ∨
       BlockedBarrierOverlapSubtypes selected ∨
-        ColdBranchClosedLinearSubtypes selected ∨
+        ColdBranchClosedOutcome_linearRealizedSilent selected ∨
         Node153ResidualSubtypes selected ∨
         Node162ResidualSubtypes selected ∨
         Node54ResidualSubtypes selected
 
-/-- The near-cubic branch either leaves through the paper's named
-target-defect exit or, after all sparse exits have been excluded, follows the
-surviving-cold/net-charge continuation. -/
+/-- The near-cubic branch, after all sparse exits have been excluded, follows
+the surviving-cold/net-charge continuation.  (G-only restatement: the paper's
+named target-defect exit `[187]` is closed at G -- exit (b), stated about G, is
+empty -- so it returns no residual.) -/
 abbrev SelectedNearCubicBoundary (selected : EGInput.{u}) :=
-  NearCubicTargetDefectOutcome selected ∨
-    SelectedNearCubicSurvivorBoundary selected
+  SelectedNearCubicSurvivorBoundary selected
 
 end HypostructureErdos64EG

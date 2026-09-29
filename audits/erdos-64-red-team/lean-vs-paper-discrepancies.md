@@ -4907,3 +4907,322 @@ the K=0 / hot-only reading, which the approved exact [50]/[53] supersedes.
 - **Where recorded.** The current `[54]` residual entry
   ([#residual-54](#residual-54), "Returned residuals") lists the facts carried
   at the `[53]`-active sites of these arms (tex 7843-7850).
+
+## G-repair restatement (R2: quotient, replacement, uncompressibility, Branch D) (2026-09-29)
+
+Every notion below is stated about G only. A reading of G at a support `Z` is
+`SupportAtom.retainedPiece G Z X` (indexed by `X ⊆ V(G)`); the only context is
+G's own rest `G − Z` (`SupportAtom.outside G Z`). A reading glued into `G − Z`
+is a subgraph of G (`ActualContext.not_target_actualGlue`), so
+`def:target-complete-quotient` (b) / `lem:context-universality` is **decided**
+at G (`Graph.readings_agree_in_rest`).
+
+### Replacement and compression (`lem:replacement`, `def:target-complete-compression`, `cor:uncompressible`; tex 6121-6150)
+
+- `ReplacementSupport` / `CompressibleSupport` (`Graph/InterfaceReplacement.lean`):
+  a proper connected support `Z` of G and a `∂Z`-boundaried piece `X'` (not a
+  reading of G) with (ii) `d_∂(X') = d_∂(G[Z])`, (iv) `glue X' (G − Z)` meets
+  the baseline (every vertex, interior ones included), (v) `glue X' (G − Z)`
+  strictly smaller than G, and (i)+(iii) no power-of-two cycle in
+  `glue X' (G − Z)` (the paper's own claim "G' has no power-of-two cycle",
+  derived there from (i),(iii); its only context is `Y = G − Z`). Former last
+  clause (obstruction-profile inclusion / equality against every
+  `∂Z`-boundaried context) removed: it quantified over contexts that are not
+  part of G. The two definitions have the same body, as in the paper ("a
+  smaller representative satisfying the hypotheses of `lem:replacement`").
+- `not_replacementSupport` (same signature) and the new
+  `not_replacementSupport_of_minimal`: minimality gives `glue X' (G − Z)` a
+  power-of-two cycle. Node `[13]` (`replacementExclusion_of_selection`) is this
+  lemma at the selection's minimality; node `[14]` is unchanged in shape.
+- Removed `strictReplacementOfReplacementSupportWithPresentation` (built a Core
+  `StrictReplacement` whose `obstruction_le` ranges over every outside context;
+  no other user).
+
+### Admissible and attempted quotients (`def:admissible-rank-quotient`, tex 6018-6050)
+
+- `DeclaredQuotient` / `AttemptedQuotient` (`Graph/DeclaredRankQuotient.lean`):
+  values are read on G's readings (`value : Finset V(G) → Label → Value`).
+  Field `contextUniversal` (∀ `OutsideContext`) removed — its G-form is the
+  decided `readings_agree_in_rest`; it is not a definition feeding any test.
+  `fibrewise` (condition (a)) is kept. Closed clause: a strictly smaller
+  baseline `H` with no power-of-two cycle (`profile_∅(H) ⊆ profile_∅(G) = ∅`).
+  An attempt's representative clauses are guarded by condition (a) only.
+- `AttemptedQuotient.route`: three arms, in the paper's order — (d) a profile
+  blocker between identified readings, (c) a replacement of a proper support,
+  the smaller closed representative at `Z = G`. **Lean improvement: the
+  context-separation (target-defect) arm is empty at G**; it is not an arm.
+- `DeclaredQuotient.labelInjective_of_minimal`: every admissible quotient of a
+  minimal G is label-injective (both representatives carry the target by
+  minimality). `AttemptedQuotient.fibre_of_minimal`: at a minimal G a
+  rank-reducing attempt always has a type-(d) profile blocker.
+- `Route8.Delocalization.false_of_minimal` (exit (6)): empty at a minimal G.
+- `[129]` (`BaselineSpineFamilySpec`) and `[131]` (`canonicalMixedDependenceQuotient`):
+  only the closed arm of their admissibility clause changed shape (no target
+  cycle in the representative); the proofs are adjusted in place.
+
+### Nodes `[11]`, `[12]` (tex 6088, 6106)
+
+- `[11]` `DegreeProfileFibresStatement`: realizations are G's readings at the
+  quotient support; profiles `Graph.readingProfile`.
+- `[12]` `TargetCompleteContextUniversalityStatement`: (1) identified readings
+  lie in one fibre and agree in `G − Z`; (2) no reading of G at any support
+  closes a power-of-two cycle in `G − Z` — the decided G-form of "an
+  identification valid only at `G − X` but not at every context is
+  target-defective" (no such identification exists at G). Row now reads
+  `K .selection` besides `K .degreeProfileFibres`.
+
+### Branch D `[36]`-`[46]` (tex 9204-9368)
+
+- `[36]` still runs as a test on the certificate of G, stated about G
+  (`CertificateContextUniversal`: identified readings agree in `G − Z`). It is
+  decided at G (`Contracts.Spine.contextUniversal_of_selection`). **Lean
+  improvement: `[36]`'s defect arm is empty at G**: `[37]` closes against
+  `[12]` through the existing `Incompatible` instance.
+- `[39]`, `[42]` close against `[13]` as before, with the G-form replacement.
+- `[45]` `GlobalBarrierStatement`: the closed representative has no
+  power-of-two cycle; `[46]` closes against the selection's minimality.
+## G-only restatement (R1: sparse surplus exits, [20a], [187] target defect, [125]→[144a], pair-code chain)
+
+g-repair, agent R1 (branch `g-repair-R1`, keys 7800–7849).  Every test in this cluster is
+stated about G; the only context of G at a support boundary `∂Z` is G's own surroundings
+`G − Z` (`Graph.ActualContext.actualGlue`).
+
+### Lean improvement: exit (b) of `[125]` is empty at G
+
+* Test (`def:named-surplus-exits` (b), `lem:context-universality`, tex 6106-6112): the paper's
+  target-defective identification is "valid in the actual context `G − X` but not in every
+  context".  Stated about G, the contexts are the contexts of G, and there is one: `G − Z`.
+  `Graph.ResidualTargetDefect` now reads: two distinct declared coordinates, one
+  boundary-degree fibre at their canonical support `Z`, and `G − Z` separates the two
+  readings (`¬ (Target (actualGlue G Z A) ↔ Target (actualGlue G Z B))`).
+* Decided at G: both glued readings are subgraphs of G, hence target-free
+  (`ActualContext.actualGlue_agree`), so `Graph.not_residualTargetDefect_of_avoids`.
+* Published fact `K .sparseTargetDefectEmpty` (idx 7800,
+  `SparseTargetDefectEmptyStatement`: every reading of G at every `Z` is target-free in
+  `G − Z`, and G's declared sparse family has no clause-(b) defect), produced by
+  `sparseTargetDefectEmptyRow` from `K .selection`.
+* The exit arm of `[125]` (both instances: the strict arm `[20]`, and the near-cubic arm)
+  is still run: `sparseSurplusSurvivorDichotomy` → `sparseSurplusExitRoutingRow`
+  ((a), (c), (d), (e) literal terminals; (b) → `K .sparseTargetDefectResidual`) →
+  `AtomicCT.runAndCloseIncompatible sparseTargetDefectEmptyRow` with the instance
+  `instIncompatibleSparseTargetDefectResidualSparseTargetDefectEmpty`
+  (`Assembly/NearCubic/Local.lean`, `selectedSparseExitClosed`).
+* Consequence: the residuals `Node20aOutcome` (`[20a]`) and `NearCubicTargetDefectOutcome`
+  (`[187]` near-cubic target defect) are unreachable and removed with their returns; the root
+  result `SelectedLedgerBoundaryResult` loses those two disjuncts (the theorem
+  `officialCounterexample_reaches_selectedLedgerBoundary` keeps its name and shape).
+
+### Exits (a), (c), (d), (e) stated about G
+
+* (a) an accepted cycle of G: G-actual, unchanged.
+* (c) `ReplacementSupport` in R2's G form (a piece `X'` with G's boundary profile at `Z`,
+  `glue X' (G − Z)` smaller, baseline, no target cycle).  `replacementSupport_of_retainedReading`
+  now takes `avoids` (the glued reading is a subgraph of G).
+* (d) `SparseSurplusExit.delocalization` now carries `noTarget : ¬ Target representative`
+  (the replacement of all of G, `G − Z = ∅`), matching R2's closed clause of
+  `DeclaredQuotient.localize`; `SparsePairDEResponseObstructionAt`'s whole-graph arm likewise.
+* (e) the open-port suppression cycle is a cycle certificate of G's suppressed graph:
+  G-actual, unchanged.
+
+### Consumers on the survivor arm, re-proved in G-only form
+
+* `[125]`→`[130]`/`[131]`: `not_pairResponseObstruction_of_survivor`,
+  `baselineSpineDemand_of_survivor`, `mixedSparseSpineDependence_of_baseline` (closed
+  representative read as `noTarget`); the determination valuation
+  (`SparsePairExactValuation`) reads the response in `G − Z` instead of every context.
+* Pair-code chain `[178]`→`[180]`: `pairChain_outcome` closes the target-defect outcomes of
+  `[179]`/`[180]` by `not_residualTargetDefect_of_avoids`; `PairCodeConfigurationStatement`
+  and `PairArmBStatement` drop the (B2) target-defect alternative (empty at G).
+* `[144]`: at equal profiles the G-form of the (b) test (does `G − Z` separate the pattern
+  readings?) is decided no, so the pair goes to `[144a]` (`sameTokenBottleneckRouting`).
+* `[144a]`: `SameTokenPatternPairUnresolvedStatement` second disjunct is agreement in
+  `G − Z` (was context equivalence); `SameTokenEqualCountsAt` likewise, and its path-length
+  equality (derived through single-edge contexts) is removed.
+
+### Removed (O-based or unreachable)
+
+* Keys (61): `sparseTargetDefectStructure`, `pairArmBDefect`, and the 59 `[20a]` witness keys
+  of `sparseExitWitnessFactsRow`, `sparseExitRealizedContextsRow`, `sparseExitBoundaryRow`,
+  `sparseExitCompressionRow`, `sparseExitDeletionRow`, `sparseExitCombinationRow`,
+  `sparseExitReadingsRow`, `sparseExitReadingsConsequencesRow`, `sparseExitPrivateSwitchRow`:
+  facts at `[125]`'s pinned witness and its separating context `O` (not part of G), reachable
+  only on the closed `[20a]`/`[187]` arms.  Indices are not reused.
+* Library (salvaged from g-only-A): `ReadingCounts`, `SingleEdgeContext`,
+  `TargetDefectStructure` modules; the abstract-context parts of `GluedReadingMaps`,
+  `ReadingProfiles`, `ReadingSpectrum`, `ReadingSpectrumArms`; `canonicalCoordinateResponse`.
+* Entry-prefix keys kept with G-only `Holds`: `K .specWitnessStructure` (witness triples:
+  canonical support structure, and no triple satisfies clause (b)) and
+  `K .everyWitnessSpectrumSplit` (every reading of every triple is target-free in `G − Z`).
+## G repair R4: the cold corridor `[145]`–`[157]`, `[153]`, and the `[178]` pair-code response
+
+Branch `g-repair-R4`.  Every test of the cluster is stated about G; the only
+compatible context of a support `Z` of G is G's own surroundings `G − Z`
+(`SupportAtom.outside`).  Codes against R2's G-form `CompressibleSupport`
+(`¬ Target (glue X' (G − Z))`).
+
+- **The second representative `E`** (`def:cold-bounded-germ`,
+  `def:cold-corridor-first-failure`): `rowRepresentative` is the
+  `Precedes`-least canonical piece with G's retained cut-state of the support
+  piece read in `G − Z` (`CanonicalPiece.CutStateReadingAt`: same
+  boundary-degree profile, same target response in `G − Z`, baseline of the
+  completion in `G − Z`).  The response clause is the paper's "after excluding
+  (F2), equality of cold corridor states is equality for every target-response
+  coordinate used by the local replacement", read at G where (F2) is decided.
+  `BoundedGerm` gains the field `sameResponse` (the retained response in
+  `G − Z`); `cutStateRepresentativeAt` / `CutStateReadingAt` are the G-forms in
+  `CanonicalRealization`.
+- **(F2)** `Corridor.FirstFailureDefect`: equal states and G's two readings of
+  `J_right` (retained `J_left`, piece `J_right`) differ in target truth in
+  `G − J_right`.  **Lean improvement: (F2) is empty at G**
+  (`Corridor.not_firstFailureDefect`: the retained reading is
+  `ActualContext.actualGlue`, the piece reconstructs G).  `[153]`'s
+  `coldFailureDefectRoute` now publishes "no segment carries (F2)"; the routing
+  no longer reads the sparse survivor.
+- **(F3)** `FirstFailureCompression.sameResponse`: the response is compared in
+  `G − J`; (F3) is a G-form `CompressibleSupport`, refuted by `[14]`.
+- **G2** `BoundedGerm.Distinguishing := ¬(Target (glue Q (G − Z)) ↔ Target (glue E (G − Z)))`.
+  **Lean improvement: G2 is empty at G** (`BoundedGerm.not_distinguishing`).
+  `coldGermDistinguished` publishes "no active germ is distinguishing"; the
+  `[154]` G2 yes-arm is closed against `K .selection`
+  (`instIncompatibleColdGermSomeDistinguishingSelection`).
+- **G3** (`lem:cold-bounded-germ-trichotomy`, `lem:replacement`): `X' = E`
+  glued into `G − Z` has the profile, the baseline (internal degrees
+  included), no target cycle and is strictly smaller:
+  `BoundedGerm.compressibleSupport_of_increment_neg`, refuted by `[14]`.
+  `coldGermRouted` now publishes "no active germ is shortening".
+- **Table rows**: `TableRow.admissible` reads the identification at G;
+  `row_closed` routes every non-handed-off row to a G-form compression.
+- **`[153]` residual** `ColdRepeatedStateSpecAt`: the (F2) clause, the two
+  `prefixContext` cycle clauses and the path context are removed (not G).  The
+  residual is still reached: G's first equal-state pair (an (F5) repeat with no
+  earlier event), the profile separation of G's two readings and the equal
+  capped degrees of its glue vertices.
+- **`[187]` cold-terminal singletons**: `linearDenseAtOrAbove`,
+  `linearDenseRateFailed`, `linearRealizedDistinguished` carry the empty G2
+  yes-arm; their returns are removed.  `linearRealizedSilent` is still reached.
+  (Update, root cleanup: the three subtypes, their `toGeneric` theorems and the
+  disjunction `ColdBranchClosedLinearSubtypes` are deleted, and the disjuncts are
+  dropped from `OtherReturnedOutcome` / `SelectedLedgerBoundaryResult`.)
+- **Removed (not G):** `Presentation.FirstFailureResponse`,
+  `contextEquivalent_of_state_eq`, `firstFailureResponse_of_not_contextEquivalent`,
+  `Corridor.not_targetComplete_of_firstFailureDefect`,
+  `Corridor.contextEquivalent_of_not_firstFailureDefect`,
+  `BoundedGerm.not_targetComplete_of_distinguishing`, `boundedGerm_not_survives`
+  (concluded the empty arm), `coldFirstFailureDefectAt_iff`,
+  `coldFailureDefect_excluded`, `coldFailureDefectRoutes_of_distinct`, the
+  `ColdEqualStates` path context (`pathContext`, `prefixContext`,
+  `prefix_targetDefect` and helpers), and the unused all-context swap lemmas
+  of `CanonicalRealization` (`glue_swap_baseline`, `glue_swap_vertexCount`,
+  `toCanonical_eq_or_precedes`, `swap_smaller_counterexample`,
+  `cutStateRepresentative_size_le`).  `CutStateReading`,
+  `cutStateRepresentative` and `glue_swap_target_iff` stay only for the
+  cross-cluster consumers `Route8Residual`, `TraceBasinAlternatives`.
+- **`[178]`** `SparsePairSkeletonModel.response`: the member's reading of
+  `X_π` on G's boundary `∂X_π` glued into `G − X_π` (`memberPiece`); the
+  labelled `(n,m)` class count is kept exactly.  Removed:
+  `PairResponseValue`, `pairResponseReading` and its simp lemmas (all-context
+  value, no users).
+
+## G-repair restatement (R3: Type A exits (1)–(7), the exit-(4) family, route 8) (2026-09-29)
+
+Every notion below is stated about G.  The only outside context of a support
+`Z` is G's own surroundings `G − Z` (`SupportAtom.outside G Z`); the readings of
+G at `Z` (`retainedBasinPiece`, `retainedReading`) glued there are subgraphs of
+G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
+(`route8UnifiedEmptyAtG`).  Branch based on R2 (414c637); R2's G-forms of
+`ReplacementSupport` / `CompressibleSupport` / `DeclaredQuotient` and R4's
+`cutStateRepresentativeAt` are used as published.
+
+### Route-8 carrier core: `Entry.Complete`, `α`, deletion witnesses (salvaged from C)
+
+- `Route8.Entry` / `PresentedEntry` carry the one actual context `actual`
+  (`SupportAtom.outside G B_u` for a graph-owned entry).  `Entry.Complete D`:
+  the restriction to `D` and the full reading have the same target truth in
+  `actual` (was: context-equivalent against every outside context).  The
+  essential core, `deletion_targetDefect` (now `¬ (T(glue ·) ↔ T(glue ·))` in
+  `actual`), `CarrierCoreFacts`, `TwoCarrierDeletionWitnesses` follow.
+- **Lean improvement: the essential core is empty at G.**
+  `PresentedEntry.ofTraceBasin_complete_of_avoids` (every carrier set is
+  complete at a target-avoiding G) and `ofTraceBasin_alpha_eq_zero`
+  (`α(ξ) = 0` for every graph-owned entry).
+- `retainedReading` is `cutStateRepresentativeAt … (G − B_u)` (R4's G-form);
+  `hasCycleWithLength_glue_of_retainedReading` is read at `G − B_u` only.
+
+### Trace-basin alternatives (`def:typeA-trace-basin`, tex 10695-10800)
+
+- (a) `TraceLocalTargetDefect`: distinguished in `G − B_u`.  **Decided false
+  at G** (`not_traceLocalTargetDefect`).  `exists_two_cutBoundary_of_traceLocalTargetDefect`
+  removed (it produced a distinguishing context that is not part of G; its
+  only consumer was the demand record).
+- (b) `TraceResponseQuotient`: completeness is read on G's readings of `B_u`
+  (`retainedReading`) in `G − B_u` (was: every realization, every profile-
+  compatible context).  **Decided at G**: `traceResponseQuotient_complete_of_avoids`;
+  **(b) occurs at every trace basin of a routed load of G**
+  (`exists_traceResponseQuotient_of_avoids`: forgetting the trace incidence of
+  the nondegenerate `T_u`).  Hence no basin of G is target-complete-minimal
+  (`not_targetCompleteMinimal_of_avoids`) and no routed load is a route-8
+  entry (`not_route8Entry_of_avoids`).
+- (c) `TraceDelocalization`: `not_traceDelocalization` now uses R2's
+  `Delocalization.false_of_minimal` (exit (6) is empty at a minimal G).
+- (d) switch absorption `DecoratedHandoff.Absorbed`: target-defective or
+  target-complete in `G − S_z` (the atom's outside).  Not decided at G: the
+  switch realization after the identification is not a reading of G.
+- `CanonicalDemandRecord`: the profile record (an event in a non-actual
+  context) is removed; the actual record is kept.  At G the implication
+  `(a) → record` holds because (a) is decided false.
+
+### Type A exits (`def:typeA-saturated-exits`, tex 10811)
+
+- Exits (1)–(3): unchanged (graph facts of G).
+- Exit (4), family Q1–Q5 (`def:typeA-exit4-family`): each target defect is read
+  in the support's own surroundings.  **Q1, Q2, Q3, Q5 are decided false at G**
+  (`Q1TargetDefect.false_of_avoids` … `Q5TargetDefect.false_of_avoids`); at G
+  every member of `Q_4(w)` is a Q4 member (`CanonicalMember.exists_q4_of_avoids`).
+  Q4 (the switch realization is not a reading of G) is not decided, so the
+  `[101]` test stays live.  The Q1/Q2 dichotomies and `ExitFourFreeAt` carry
+  the G-form completeness (one fibre and agreement in `G − Z`).
+- Exit (5), `[103]`/`[104]`: `TraceTargetCompleteCompression`'s completeness
+  clause is R2's G-form of `def:target-complete-compression`: the retained
+  reading `X'` has the basin's profile and `glue X' (G − B_u)` has no target
+  cycle.  `[104]` closes against `[14]` (`K .uncompressible`, R2 form) with
+  `X'`: profile, baseline, no target cycle, strictly smaller.
+- Exit (6), `[106]`: R2's closed representative (`¬ Target H`); the global
+  closure reads it directly.
+- Exit (7): unchanged apart from (d) above.
+
+### Route 8: `[113]`/`[348]` quotient-freeness and `[123]`
+
+- The derivation of `2 ≤ α(ξ)` on the quotient-free arm survives in G-form
+  (`route8Entry_smallCoreQuotient`: `α ≤ 1` and the cut parity give a G-form
+  trace-response quotient, refuting quotient-freeness).
+- **Lean improvement: `[123]`'s failed-rate arm is empty at G.**  On the
+  quotient-free arm, `α(ξ) = 0` at every unified entry, so the census leaves
+  `\tilde\Xi = ∅`; the descent's stage accounting gives `s·\tilde D_A = 0`;
+  `lem:typeA-unified-deficit` leaves `|R| ≤ s·|∂R| + F·s·T(n)`, and the
+  private-carrier rate `K .route8Rate` refutes it
+  (`Contracts.RouteEight.route8UnifiedEmptyAtG`,
+  `route8UnifiedEmptyAtG_contradiction`, row `route8UnifiedEmptyAtGRow`,
+  `Incompatible (K .route8Rate) (K .route8UnifiedEmptyAtG)`).  `[123]` is still
+  run as a test; its yes arm closes at `[124]` as before.  Nodes `[181]`,
+  `[183]`–`[186]` are not reached; the `[186]` returns
+  (`route8JointBalanceReturn`, `route8JointBalanceProductReturn`) are removed.
+  (Update, root cleanup: the disjunct `Route8JointBalanceOutcome_product` is
+  dropped from `SelectedRouteEightBoundary` and `SelectedLedgerBoundaryResult`;
+  `Residuals/Route8JointBalanceOutcome.lean` and the generic abbrev
+  `Route8JointBalanceOutcome` are deleted.)
+- `[348]` no arm (`Route8QuotientOutcome`) is reached at G: at G every unified
+  entry has a G-form trace-response quotient, so this arm is exactly
+  `\tilde\Xi ≠ ∅`.  The paper's step `(b) → exit (5)` ("when this quotient is
+  realized by a smaller connected representative, it is a target-complete
+  compression") constructs no representative; the residual carries
+  `¬ Route8QuotientFreeStatement` at G.
+- `Route8RateFailsOutcome`: decided before route 8 on G's numbers; unchanged.
+
+### Kept, not on any G path
+
+- `Route8Residual`: `compressibleSupport_of_foldRealization` /
+  `_triangleContraction`, `not_targetComplete_foldRealization`, the
+  `false_of_*` fold family and `DeclaredFamilyDeterminacy` keep their
+  all-context hypotheses (now also `avoids`, for R2's replacement form); they
+  have no consumer.
+- `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.

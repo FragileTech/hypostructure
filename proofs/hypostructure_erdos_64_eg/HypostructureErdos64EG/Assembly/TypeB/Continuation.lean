@@ -151,6 +151,7 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
     (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
       key_fresh)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh)
+    (emptyAtGFresh : K .route8UnifiedEmptyAtG ∉ known := by key_fresh)
     (unifiedTerminalFresh : K .route8UnifiedTwoCarrierExit ∉ known := by key_fresh)
     (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
     (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)

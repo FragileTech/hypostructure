@@ -23,8 +23,11 @@ The yes arm is the terminal `[42]`, `lem:proper-smearing`: *"Regard `Z` as a
 boundaried graph ... Since `Z ⊊ G`, it is a proper boundaried support.  If the
 dependence fails against some outside `∂Z`-context, it is target-defective.  If
 it succeeds against every outside context, it is a nontrivial target-complete
-compression of the proper support `Z`, forbidden by `cor:uncompressible`."*  The
-no arm is node `[43]`, whole-graph delocalization. -/
+compression of the proper support `Z`, forbidden by `cor:uncompressible`."*
+Stated about G, the first case is empty (no context of G separates two readings,
+node `[12]`), and the compression is a replacement `X'` of `Z` with G's
+boundary-degree profile, the baseline and no power-of-two cycle in
+`glue X' (G − Z)`.  The no arm is node `[43]`, whole-graph delocalization. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def delocalizationScopeDichotomy
     {current : Input BranchState Presentation presentation data}

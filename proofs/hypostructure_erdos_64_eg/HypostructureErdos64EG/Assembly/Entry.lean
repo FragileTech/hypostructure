@@ -17,7 +17,6 @@ import Hypostructure.Graph.Strategy.SpineRows.CycleCounting
 import Hypostructure.Graph.Strategy.SpineRows.LocalRigidity
 import Hypostructure.Graph.Strategy.SpineRows.JointHubs
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseSurplusExit
-import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseTargetDefectStructure
 import HypostructureErdos64EG.Assembly.Basic
 
 /-!

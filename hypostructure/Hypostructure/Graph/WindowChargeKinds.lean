@@ -641,7 +641,7 @@ theorem responseObstruction_targetDefect {LengthOK : Nat → Prop} {threshold : 
   rcases hor with hd | hr | ⟨_, rep, hlt, hb, hback⟩
   · exact ⟨attempt, determiners, hdet, hd⟩
   · exact (hrepl _ hr).elim
-  · exact (avoid (hback (minimal rep hlt hb))).elim
+  · exact (hback (minimal rep hlt hb)).elim
 
 
 end ClauseE

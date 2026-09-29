@@ -175,9 +175,10 @@ theorem branchCertificate_rankReducing {data : Parameters}
       ↑(remainderCurvatureTests object (canonicalWindowPacking data object)) :=
   (branchCertificate?_spec_of_eq_some data object eq).2.2.2.2.1.2.2.2.2.2.1
 
-/-- **Node `[36]`, the context-validity test**, at the one certificate of `G`:
-it is valid against every outside context, or some pair it identifies has a
-concrete distinguishing (target-defect) context. -/
+/-- **Node `[36]`, the context-validity test**, at the one certificate of `G`,
+stated about G: the readings it identifies agree in G's own rest `G − Z`, or
+some identified pair is separated there (the exact complement at the same
+certificate). -/
 theorem contextDefect_or_contextUniversal (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (dependence : BranchDependenceStatement data object) :
@@ -187,25 +188,36 @@ theorem contextDefect_or_contextUniversal (data : Parameters)
   by_cases universal : CertificateContextUniversal data certificate
   · exact .inr ⟨certificate, eq, universal⟩
   · refine .inl ⟨certificate, eq, ?_⟩
-    unfold CertificateContextUniversal at universal
-    push Not at universal
-    obtain ⟨left, right, identified, failure⟩ := universal
-    exact ⟨left, right, identified,
-      Graph.Response.targetDefect_of_not_contextEquivalent failure⟩
+    by_contra absent
+    exact universal fun left right identified => by
+      by_contra failure
+      exact absent ⟨left, right, identified, failure⟩
 
 /-- **The terminal `[37]` closes against node `[12]`** (`lem:context-universality`;
 `lem:full-rank`, tex 9388: "the first is excluded by the definition of
 target-completeness").  The certificate's quotient is an admissible rank
-quotient of G's declared coordinates at `R₀`, so node `[12]` makes every pair it
-identifies target-complete, and a target-complete pair has no distinguishing
-outside context. -/
+quotient of G's declared coordinates at `R₀`, so node `[12]` makes every two
+readings it identifies agree in `G − Z`.  (Lean improvement: `[36]`'s defect arm
+is empty at G.) -/
 theorem contextDefect_false_of_contextUniversality (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (universality : TargetCompleteContextUniversalityStatement data object)
     (defect : ContextDefectStatement data object) : False := by
-  obtain ⟨certificate, _eq, left, right, identified, targetDefect⟩ := defect
-  exact Graph.Response.notTargetComplete_of_targetDefect targetDefect
-    (universality.1 _ certificate.quotient left right identified)
+  obtain ⟨certificate, _eq, left, right, identified, separated⟩ := defect
+  exact separated (universality.1 _ certificate.quotient left right identified).2
+
+/-- **Node `[36]` is decided at G**: the certificate of `G` is valid in every
+context of G.  Its readings, glued into `G − Z`, are subgraphs of G. -/
+theorem contextUniversal_of_selection
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation}
+    (data : Parameters) (object : Graph.FiniteObject.{u})
+    (dependence : BranchDependenceStatement data object)
+    (selection : SelectionStatement BranchState Presentation presentation data object) :
+    ContextUniversalStatement data object := by
+  obtain ⟨certificate, eq, -⟩ := branchCertificate?_spec data object dependence
+  exact ⟨certificate, eq, fun left right _identified =>
+    Graph.readings_agree_in_rest selection.1 certificate.quotient.support left right⟩
 
 /-- **Node `[38]`: is the determination certified already at `C = R(P₀)`?**
 If the certificate's support lies in the remainder, it misses a window vertex of
@@ -282,7 +294,7 @@ theorem repairIdentity_of_globalDelocalization (data : Parameters)
 /-- **Node `[45]`, `lem:no-silent-global-smearing`.**  The certificate's
 whole-graph rank-reducing quotient has, by the closed clause of
 `def:admissible-rank-quotient`, a strictly smaller admissible closed
-representative. -/
+representative: a baseline graph with no power-of-two cycle. -/
 theorem globalBarrier_of_globalDelocalization (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (global : GlobalDelocalizationStatement data object) :
@@ -294,9 +306,10 @@ theorem globalBarrier_of_globalDelocalization (data : Parameters)
 
 /-- **The terminal `[39]`** (`lem:replacement`, node `[13]`; tex 9226
 `cor:uncompressible`).  The strictly smaller proper representative the
-certificate's admissible quotient supplies at `C = R(P₀)` is a one-way
-replacement of its support (`def:proper-quotient-representative` (a):
-`Π_T(X′) ⊆ Π_T(X)`), which node `[13]` excludes on G. -/
+certificate's admissible quotient supplies at `C = R(P₀)` is a replacement of
+its support — G's boundary-degree profile, the baseline and no power-of-two
+cycle in `glue X' (G − Z)`, strictly smaller — which node `[13]` excludes on
+G. -/
 theorem atomCompression_replacementExclusion_false (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (exclusion : ReplacementExclusionStatement data object)
@@ -316,9 +329,8 @@ theorem properDelocalization_replacementExclusion_false (data : Parameters)
   exact exclusion certificate.quotient.support replacement
 
 /-- **The terminal `[46]`** (`lem:no-silent-global-smearing`).  Selection
-minimality puts the target in the strictly smaller closed representative,
-target transfer puts it in the selected object, and selection avoidance gives
-the contradiction. -/
+minimality puts a power-of-two cycle in the strictly smaller closed baseline
+representative, which has none. -/
 theorem globalBarrier_selection_false
     (BranchState : Graph.FiniteObject.{u} → Type v)
     (Presentation : Type) (presentation : Presentation) (data : Parameters)
@@ -326,7 +338,7 @@ theorem globalBarrier_selection_false
     (selected : SelectionStatement BranchState Presentation presentation data object)
     (barrier : GlobalBarrierStatement data object) : False := by
   obtain ⟨_certificate, _eq, _covers, _reducing, representative, smaller,
-    representativeBaseline, transfer⟩ := barrier
-  exact selected.1 (transfer (selected.2 representative smaller representativeBaseline))
+    representativeBaseline, noTarget⟩ := barrier
+  exact noTarget (selected.2 representative smaller representativeBaseline)
 
 end Hypostructure.Graph.Contracts.Spine

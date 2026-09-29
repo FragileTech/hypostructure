@@ -424,24 +424,24 @@ theorem typeAPeeledSilentExcess
 
 /-! ## Exit `(5)`, node `[104]` -/
 
-/-- Node `[104]`: a target-complete proper-support compression of a selected
-trace basin at the terminal state is a compressible proper atom, which
-`cor:uncompressible` excludes. -/
+/-- Node `[104]`, stated about G: the exit-`(5)` compression of a selected
+trace basin at the terminal state is a piece `X'` (G's retained reading of
+`B_u`) with the basin's boundary-degree profile, the degree baseline once glued
+into `G − B_u`, no target cycle in `glue X' (G − B_u)`, and strictly smaller —
+the G-form hypotheses of `lem:replacement` (`CompressibleSupport`), which
+`cor:uncompressible` (node `[14]`) excludes. -/
 theorem typeAExitFive_contradiction
     (uncompressible : UncompressibleStatement data object)
     (exit : TypeAExitFiveStatement data object) : False := by
   obtain ⟨piece, _pinned, _receiver, _chosen, _state, _load, _eligible, basin,
     _selected, compression⟩ := exit
-  obtain ⟨retained, _retainedSubset, _changed, complete, connected, proper,
-    baseline, smaller⟩ := compression
-  apply uncompressible basin
-  refine ⟨connected, proper, ?_⟩
-  refine ⟨Graph.Route8.PresentedEntry.retainedReading object piece basin
+  obtain ⟨retained, _retainedSubset, _changed, profile, targetFree, connected,
+    proper, baseline, smaller⟩ := compression
+  exact uncompressible basin ⟨connected, proper,
+    Graph.Route8.PresentedEntry.retainedReading object piece basin
       data.threshold data.LengthOK
       (Graph.Route8.PresentedEntry.retainedBaseCoordinates object piece
-        retained), ?_, baseline, smaller, ?_⟩
-  · exact complete.profile_eq
-  · exact fun outside => complete.contextEquivalent outside
+        retained), profile, baseline, smaller, targetFree⟩
 
 /-! ## Exit `(6)`, node `[106]` -/
 
@@ -475,15 +475,15 @@ theorem typeAExitSixProper_contradiction
 /-- Node `[106]`, whole-graph scope: the strictly smaller closed representative
 contradicts the minimality of the selected counterexample. -/
 theorem typeAExitSixGlobal_contradiction
-    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (_avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (minimal : ∀ smaller : Graph.FiniteObject.{u},
       smaller.LexicographicallySmaller object →
       Graph.MinimumDegreeAtLeast data.threshold smaller →
       Graph.HasCycleWithLength data.LengthOK smaller)
     (exit : TypeAExitSixGlobalStatement data object) : False := by
   obtain ⟨_piece, _pinned, _receiver, _chosen, _delocalization, _found,
-    _covers, smaller, representativeBaseline, transfer⟩ := exit
-  exact avoids (transfer (minimal _ smaller representativeBaseline))
+    _covers, smaller, representativeBaseline, targetFree⟩ := exit
+  exact targetFree (minimal _ smaller representativeBaseline)
 
 /-! ## Node `[108]`: the decorated handoff envelope of exit `(7)` -/
 

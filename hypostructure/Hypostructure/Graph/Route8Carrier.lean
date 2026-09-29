@@ -10,7 +10,8 @@ oriented incidences leaving the piece's own support -- that its declared
 support uses.  Restricting the reading to a set `D` of carriers keeps exactly
 the coordinates whose carrier set is contained in `D`, and always keeps the
 labelled boundary itself.  `D` is *complete* when the restricted reading has
-the same target response as the full one against every outside context.
+the same target response as the full one in the entry's one actual context
+(G's surroundings `G − B_u`; G-only restatement of "every outside context").
 
 This module owns four things, and nothing else:
 
@@ -74,6 +75,11 @@ structure Entry (Target : FiniteObject.{u} → Prop) (Carrier : Type u) where
   car_subset : ∀ r ∈ coordinates, car r ⊆ carriers.toFinset
   /-- The boundaried reading retaining exactly a set of declared coordinates. -/
   state : Finset Coordinate → BoundaryPiece boundary
+  /-- The one outside context the reading is ever glued into: the actual
+  surroundings of the reading's support in its own ambient graph (for a
+  graph-owned entry, `SupportAtom.outside G B_u`, i.e. `G − B_u`).  No other
+  context is quantified. -/
+  actual : OutsideContext boundary
 
 namespace Entry
 
@@ -117,14 +123,19 @@ theorem retained_carriers :
     entry.restriction entry.carriers.toFinset = entry.full := by
   rw [restriction, retained_carriers, full]
 
-/-- **A target-complete carrier set.**  Restricting to `D` is invisible to the
-target against every outside context. -/
+/-- **A target-complete carrier set, read in the entry's actual surroundings.**
+Restricting to `D` is invisible to the target in the one context the reading is
+glued into, `entry.actual` (G − B_u for a graph-owned entry).
+
+G-only restatement: the paper's "against every outside context" ranged over
+contexts that are not part of G. -/
 def Complete (D : Finset Carrier) : Prop :=
-  Response.ContextEquivalent Target (entry.restriction D) entry.full
+  Target (glue (entry.restriction D) entry.actual) ↔
+    Target (glue entry.full entry.actual)
 
 /-- The whole supply is complete: it restricts nothing. -/
 theorem complete_carriers : entry.Complete entry.carriers.toFinset := by
-  intro outside
+  unfold Complete
   rw [restriction_carriers]
 
 /-- A carrier outside this entry's own supply is used by no declared
@@ -161,6 +172,17 @@ noncomputable def alpha : Nat :=
 
 theorem essentialCore_complete : entry.Complete entry.essentialCore :=
   entry.carrierProfile.core_complete
+
+/-- **An empty complete set empties the core**: the core is a minimum-cardinality
+complete set, so a complete `∅` gives `α(ξ) = 0`. -/
+theorem alpha_eq_zero_of_complete_empty (empty : entry.Complete ∅) :
+    entry.alpha = 0 := by
+  have minimumLe := entry.carrierProfile.minimumCard_le ∅ empty
+  have coreCard := entry.carrierProfile.core_card
+  change entry.essentialCore.card = entry.carrierProfile.minimumCard at coreCard
+  change entry.essentialCore.card = 0
+  rw [coreCard]
+  simpa using minimumLe
 
 /-- **`lem:typeA-carrier-cut-parity`, last step**:
 *"Each such crossing is recorded in the declared support of the corresponding
@@ -248,43 +270,42 @@ theorem essentialCore_subset_carriers :
   intro carrier member
   by_contra outside
   refine entry.essentialCore_erase_not_complete member ?_
-  intro context
   have same := entry.retained_erase_of_not_mem
     (D := entry.essentialCore) outside
   have rewritten :
       entry.restriction (entry.essentialCore.erase carrier) =
         entry.restriction entry.essentialCore := by
     rw [restriction, restriction, same]
+  unfold Complete
   rw [rewritten]
-  exact entry.essentialCore_complete context
+  exact entry.essentialCore_complete
 
-/-- **Deletion witnesses exist** (`lem:typeA-essential-deletion-witness`).
+/-- **Deletion witnesses exist** (`lem:typeA-essential-deletion-witness`),
+read in the entry's actual surroundings.
 
 For every essential carrier `c`, the `c`-deletion quotient of the core reading
-is not target-complete: some outside context separates the core reading from the
-one carrier `c` was deleted from.  Nothing is assumed -- the witness is forced by
-inclusion-minimality of the core and completeness of the core itself. -/
+is not target-complete: in `entry.actual` the core reading and the reading `c`
+was deleted from have different target truth.  Nothing is assumed -- it is
+forced by inclusion-minimality of the core and completeness of the core
+itself. -/
 theorem deletion_targetDefect {carrier : Carrier}
     (member : carrier ∈ entry.essentialCore) :
-    Response.TargetDefect Target
-      (entry.restriction (entry.essentialCore.erase carrier))
-      (entry.restriction entry.essentialCore) := by
-  refine Response.targetDefect_of_not_contextEquivalent ?_
+    ¬ (Target (glue (entry.restriction (entry.essentialCore.erase carrier))
+          entry.actual) ↔
+        Target (glue (entry.restriction entry.essentialCore) entry.actual)) := by
   intro equivalent
   refine entry.essentialCore_erase_not_complete member ?_
-  intro outside
-  exact (equivalent outside).trans (entry.essentialCore_complete outside)
+  exact equivalent.trans entry.essentialCore_complete
 
 /-- A deletion quotient really forgets a declared coordinate: if it retained the
-same coordinates it would be the same reading, and no context could separate
-them. -/
+same coordinates it would be the same reading, with the same target truth. -/
 theorem retained_erase_ne {carrier : Carrier}
     (member : carrier ∈ entry.essentialCore) :
     entry.retained (entry.essentialCore.erase carrier) ≠
       entry.retained entry.essentialCore := by
   intro same
-  obtain ⟨outside, separates⟩ := entry.deletion_targetDefect member
-  exact separates (by rw [restriction, restriction, same])
+  refine entry.deletion_targetDefect member ?_
+  rw [restriction, restriction, same]
 
 /-- **Deletion witnesses are declared, and their carrier support contains the
 deleted carrier** (`lem:typeA-deletion-witness-declared`).
@@ -316,9 +337,9 @@ def CarrierCoreFacts : Prop :=
   entry.Complete entry.essentialCore ∧
     entry.essentialCore ⊆ entry.carriers.toFinset ∧
       ∀ carrier ∈ entry.essentialCore,
-        Response.TargetDefect Target
-          (entry.restriction (entry.essentialCore.erase carrier))
-          (entry.restriction entry.essentialCore) ∧
+        ¬ (Target (glue (entry.restriction (entry.essentialCore.erase carrier))
+              entry.actual) ↔
+            Target (glue (entry.restriction entry.essentialCore) entry.actual)) ∧
         ∃ r ∈ entry.coordinates,
           entry.car r ⊆ entry.essentialCore ∧ carrier ∈ entry.car r
 

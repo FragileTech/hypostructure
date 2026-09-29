@@ -20,7 +20,10 @@ about G at those canonical objects:
   support `Z = select?(X_p ∪ X_q)` into three regions with their constraints
   (`SameTokenPairPartitionStatement`): (U1) a separating boundary count;
   (U2-free) equal counts and neither support on `∂Z`; (U2-shared) equal counts
-  and a boundary vertex in both supports.  The fourth region (U2-onesided:
+  and a boundary vertex in both supports (G-only restatement: the equal-count
+  readings agree in G's own surroundings `G − Z`; the former context
+  equivalence and the path-length equality it gave through single-edge
+  contexts read contexts that are not part of G and are removed).  The fourth region (U2-onesided:
   equal counts, one support on `∂Z` and no shared boundary vertex) is empty
   at G.
 
@@ -105,10 +108,9 @@ def SameTokenSeparatingAt (object : Graph.FiniteObject.{u})
             (Xq.filter fun w => ¬ object.graph.Adj b.1 w))))
 
 open Classical in
-/-- The equal-count region (U2) at `Z`: all boundary counts agree; every
-boundary vertex of `X_p` with a neighbour in `X_p` lies in `X_q` and
-conversely; the readings are context-equivalent; they have the same simple
-`a`–`b` path lengths between any two distinct boundary vertices; and either
+/-- The equal-count region (U2) at `Z`, stated about G: all boundary counts
+agree; every boundary vertex of `X_p` with a neighbour in `X_p` lies in `X_q`
+and conversely; the readings agree in G's own surroundings `G − Z`; and either
 (U2-free) neither support meets `∂Z`, every boundary vertex of `Z` lies
 outside `X_p ∪ X_q` and is a cut vertex of `Z`, and every neighbour of
 `X_p ∪ X_q` lies in `Z`, or (U2-shared) some boundary vertex lies in both
@@ -120,15 +122,8 @@ def SameTokenEqualCountsAt (data : Parameters) (object : Graph.FiniteObject.{u})
       ∀ w ∈ Xp, object.graph.Adj b.1 w → b.1 ∈ Xq) ∧
     (∀ b : (Strategy.InterfaceReplacement.SupportAtom.boundary object Z).Vertex, b.1 ∈ Xq →
       ∀ w ∈ Xq, object.graph.Adj b.1 w → b.1 ∈ Xp) ∧
-    Graph.Response.ContextEquivalent (Graph.HasCycleWithLength data.LengthOK)
-      (Strategy.InterfaceReplacement.SupportAtom.retainedPiece object Z Xp)
-      (Strategy.InterfaceReplacement.SupportAtom.retainedPiece object Z Xq) ∧
-    (∀ a b : (Strategy.InterfaceReplacement.SupportAtom.boundary object Z).Vertex, a ≠ b →
-      ∀ n : Nat,
-        (∃ p : (Strategy.InterfaceReplacement.SupportAtom.retainedPiece object Z Xp).graph.Walk
-            (.inl a) (.inl b), p.IsPath ∧ p.length = n) ↔
-        (∃ p : (Strategy.InterfaceReplacement.SupportAtom.retainedPiece object Z Xq).graph.Walk
-            (.inl a) (.inl b), p.IsPath ∧ p.length = n)) ∧
+    (Graph.HasCycleWithLength data.LengthOK (Graph.ActualContext.actualGlue object Z Xp) ↔
+      Graph.HasCycleWithLength data.LengthOK (Graph.ActualContext.actualGlue object Z Xq)) ∧
     (((∀ w ∈ Xp, w ∉ Strategy.InterfaceReplacement.SupportAtom.cutBoundary object Z) ∧
         (∀ w ∈ Xq, w ∉ Strategy.InterfaceReplacement.SupportAtom.cutBoundary object Z) ∧
         (∀ b : (Strategy.InterfaceReplacement.SupportAtom.boundary object Z).Vertex,

@@ -36,9 +36,10 @@ Every clause is built here from an object the framework already owns.
   boundaried over.
 * `r_π` is a base reading of `def:declared-coordinate-signature` at kind
   `sparseSurplus`, which is clause (D7)'s own name for *"sparse surplus-pair
-  response coordinates"*, with label `π`, support `X_π`, and value the exact
-  context-indexed target response of the embedded `X_π` piece.  The value is
-  graph-derived: no truth table or response bit is supplied by a caller.
+  response coordinates"*, with label `π` and support `X_π`.  Its value is read
+  inside G where it is consumed: the target response of G's reading at `X_π` in
+  G's own surroundings `G − X_π` (G-only restatement; no other boundaried
+  context is read).  No truth table or response bit is supplied by a caller.
 * The manuscript's closing sentence — each `r_π` viewed inside
   `ρ^ex_{∂X_Π}(X_Π)` by restriction — is `support_restrict_pairCoordinate`
   below, a proved equation between the declared support of the (D7) coordinate
@@ -61,8 +62,7 @@ variable {object : FiniteObject.{u}}
 
 /-- The declared coordinate alphabet the sparse branch presents: a coordinate of
 `def:declared-coordinate-signature` over the object's vertices, labelled by a
-pair of the schedule.  This is its finite index type; `pairResponseReading`
-below supplies the dependent value. -/
+pair of the schedule.  This is its finite index type. -/
 abbrev PairCoordinate (object : FiniteObject.{u}) :=
   DeclaredSignature.Coordinate object.Vertex
     (Finset (object.Vertex × object.Vertex))
@@ -155,57 +155,12 @@ and whose support is `X_π`.
 
 Its kind is clause (D7), which is `def:declared-coordinate-signature`'s own name
 for *"sparse surplus-pair response coordinates"*.  The finite index owns the
-kind, label and support; `pairResponseReading` pairs it with the exact
-`val_X(r_π)`. -/
+kind, label and support.  Its value is read inside G, where it is consumed:
+the response of G's reading at `X_π` in G's surroundings `G − X_π`
+(`SparsePairSkeletonModel.response`). -/
 def pairCoordinate (label : Finset (object.Vertex × object.Vertex))
     (support : Finset object.Vertex) : PairCoordinate object :=
   .base .sparseSurplus label support
-
-/-- The exact target-response datum of an embedded support: for every
-compatible outside context on its literal cut boundary, record whether gluing
-that context to the support realizes the target. -/
-abbrev PairResponseValue (Target : FiniteObject.{u} → Prop)
-    (object : FiniteObject.{u}) (support : Finset object.Vertex) :=
-  OutsideContext (SupportAtom.boundary object support) → Prop
-
-/-- **`val_X(r_π)`**, derived from the current graph.
-
-The label retains the two demands, the support is their canonical `X_π`, and
-the value is the full target response against every outside context.  Thus two
-readings have the same value exactly when no compatible context distinguishes
-their target behaviour; this is the datum consumed by context-universality. -/
-noncomputable def pairResponseReading
-    (Target : FiniteObject.{u} → Prop)
-    (label : Finset (object.Vertex × object.Vertex))
-    (support : Finset object.Vertex) :
-    DeclaredSignature.Reading object.Vertex
-      (Finset (object.Vertex × object.Vertex)) where
-  coordinate := pairCoordinate label support
-  Value := PairResponseValue Target object support
-  value := fun outside =>
-    Target (glue (SupportAtom.piece object support) outside)
-
-@[simp] theorem pairResponseReading_coordinate
-    (Target : FiniteObject.{u} → Prop)
-    (label : Finset (object.Vertex × object.Vertex))
-    (support : Finset object.Vertex) :
-    (pairResponseReading Target label support).coordinate =
-      pairCoordinate label support := rfl
-
-@[simp] theorem pairResponseReading_support
-    [DecidableEq object.Vertex]
-    (Target : FiniteObject.{u} → Prop)
-    (label : Finset (object.Vertex × object.Vertex))
-    (support : Finset object.Vertex) :
-    (pairResponseReading Target label support).support = support := rfl
-
-@[simp] theorem pairResponseReading_value
-    (Target : FiniteObject.{u} → Prop)
-    (label : Finset (object.Vertex × object.Vertex))
-    (support : Finset object.Vertex)
-    (outside : OutsideContext (SupportAtom.boundary object support)) :
-    (pairResponseReading Target label support).value outside ↔
-      Target (glue (SupportAtom.piece object support) outside) := Iff.rfl
 
 section DeclaredSupport
 

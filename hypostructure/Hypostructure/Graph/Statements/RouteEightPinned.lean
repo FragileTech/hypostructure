@@ -255,7 +255,7 @@ def Route8CarrierDeletionWitnesses : Prop :=
       data.LengthOK index).toEntry (Graph.HasCycleWithLength data.LengthOK)
     Graph.Route8.TwoCarrierDeletionWitnesses
       (Target := Graph.HasCycleWithLength data.LengthOK) entry.carriers
-      entry.coordinates entry.car entry.state
+      entry.coordinates entry.car entry.state entry.actual
       (Graph.Route8Census.entriesOfComponents object
         (canonicalWindowPacking data object)
         (route8SurvivorComponents data object) data.threshold

@@ -18,8 +18,7 @@ variable {data : Data.{u}}
 
 /-! Node `[153]`: `lem:cold-corridor-first-failure` on the literal
 surviving-cold residual -- (F1) and (F3) are excluded by their ledger facts,
-(F2) is a sparse exit (`K .coldFailureDefectRoute`, node `[422]`) excluded by
-the node-`[125]` survivor, and every other first failure
+(F2) is empty at G (`K .coldFailureDefectRoute`), and every other first failure
 is routed to (F5) or (F4)
 (`Contracts.Spine.coldFailureRouting_of_failures`). -/
 
@@ -27,8 +26,7 @@ is routed to (F5) or (F4)
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldFirstFailureRouting
     { Requires := [K .coldFirstFailureOccurrence, K .coldFailureCycle,
-        K .coldFailureCompression, K .coldFailureDefectRoute,
-        K .sparseSurplusSurvivor]
+        K .coldFailureCompression, K .coldFailureDefectRoute]
       Produces := [K .coldFailureRouting]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -40,8 +38,7 @@ is routed to (F5) or (F4)
           (inputs.get (K .coldFirstFailureOccurrence)).down
           (inputs.get (K .coldFailureCycle)).down
           (inputs.get (K .coldFailureCompression)).down
-          (inputs.get (K .coldFailureDefectRoute)).down
-          (inputs.get (K .sparseSurplusSurvivor)).down⟩
+          (inputs.get (K .coldFailureDefectRoute)).down⟩
         .nil)
 
 

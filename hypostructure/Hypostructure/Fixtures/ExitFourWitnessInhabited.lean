@@ -29,8 +29,9 @@ and the isolated vertex `9`.  At baseline `3` and discharge scale `4`:
 * the graph has exactly one triangle, `{6,7,8}`, and it lies inside the
   excess basin away from its cut boundary, so the basin's literal boundary
   response (all internal incidences forgotten) loses that triangle while the
-  basin itself keeps it.  A single outside context therefore distinguishes the
-  two readings: `Response.TargetDefect` for `HasCycleWithLength (· = 3)`.
+  basin itself keeps it.  The object's own surroundings of the basin therefore
+  distinguish the two readings for `HasCycleWithLength (· = 3)` (the G-form
+  Q2 defect; the fixture carries a target cycle, so it is not a counterexample).
 
 That is exactly the Q2 clause of `def:typeA-exit4-family`, so
 `ExitFour.witnessOfExcessTargetDefect` assembles a genuine
@@ -450,7 +451,7 @@ theorem basin_connected :
   · exact leftInside vertex inLeft
   · exact rightInside vertex (by simpa using inRight)
 
-/-! ## The two readings of the basin and one outside context -/
+/-! ## The two readings of the basin, read in G's own surroundings -/
 
 open Hypostructure.Graph.Strategy.InterfaceReplacement in
 noncomputable abbrev bdry : Boundary.{0} := SupportAtom.boundary fixture basin
@@ -462,12 +463,11 @@ open Hypostructure.Graph.Strategy.InterfaceReplacement in
 noncomputable abbrev rightPiece : BoundaryPiece bdry :=
   SupportAtom.piece fixture basin
 
-/-- The outside context that distinguishes the two readings: the empty one. -/
-noncomputable def emptyOutside : OutsideContext bdry where
-  Internal := Fin 0
-  internalVertices := inferInstance
-  graph := ⊥
-  decideAdj := Classical.decRel _
+open Hypostructure.Graph.Strategy.InterfaceReplacement in
+/-- The only outside context that is part of the fixture object: its own
+surroundings of the basin, `G − B(0)`. -/
+noncomputable abbrev actualOutside : OutsideContext bdry :=
+  SupportAtom.outside fixture basin
 
 open Hypostructure.Graph.Strategy.InterfaceReplacement in
 /-- Each triangle vertex lies in the basin, away from its cut boundary. -/
@@ -489,13 +489,13 @@ theorem triangle_internal (vertex : Fin 10)
 open Hypostructure.Graph.Strategy.InterfaceReplacement in
 noncomputable def rightVertex (vertex : Fin 10)
     (member : vertex ∈ ({6,7,8} : Finset (Fin 10))) :
-    GluedVertex rightPiece emptyOutside :=
+    GluedVertex rightPiece actualOutside :=
   Sum.inr (Sum.inl ⟨vertex, triangle_internal vertex member⟩)
 
-noncomputable def rightAmbient : GluedVertex rightPiece emptyOutside → Fin 10
+noncomputable def rightAmbient : GluedVertex rightPiece actualOutside → Fin 10
   | .inl boundaryVertex => boundaryVertex.1
   | .inr (.inl internal) => internal.1
-  | .inr (.inr nothing) => nothing.elim0
+  | .inr (.inr outsideVertex) => outsideVertex.1
 
 theorem rightVertex_inj {a b : Fin 10} {ha hb} (equal : rightVertex a ha = rightVertex b hb) :
     a = b := congrArg rightAmbient equal
@@ -506,13 +506,13 @@ theorem rightVertex_ne {a b : Fin 10} {ha hb} (distinct : ¬ a = b) :
 
 theorem right_adj {a b : Fin 10} (ha : a ∈ ({6,7,8} : Finset (Fin 10)))
     (hb : b ∈ ({6,7,8} : Finset (Fin 10))) (adjacent : fixtureGraph.Adj a b) :
-    (glue rightPiece emptyOutside).graph.Adj (rightVertex a ha) (rightVertex b hb) :=
-  (glueGraph_adj_iff rightPiece emptyOutside _ _).mpr
+    (glue rightPiece actualOutside).graph.Adj (rightVertex a ha) (rightVertex b hb) :=
+  (glueGraph_adj_iff rightPiece actualOutside _ _).mpr
     (Or.inl ⟨Sum.inr ⟨a, triangle_internal a ha⟩, Sum.inr ⟨b, triangle_internal b hb⟩,
       adjacent, rfl, rfl⟩)
 
 noncomputable def triangleWalk :
-    (glue rightPiece emptyOutside).graph.Walk
+    (glue rightPiece actualOutside).graph.Walk
       (rightVertex 6 (by decide)) (rightVertex 6 (by decide)) :=
   .cons (right_adj (b := 7) (by decide) (by decide) (by decide))
     (.cons (right_adj (a := 7) (b := 8) (by decide) (by decide) (by decide))
@@ -529,25 +529,34 @@ theorem triangleWalk_isCycle : triangleWalk.IsCycle := by
   · simp [triangleWalk]
     refine ⟨⟨?_, ?_⟩, ?_⟩ <;> exact rightVertex_ne (by decide)
 
+/-- G's piece at the basin, glued into `G − B(0)`, is the fixture object and
+carries its triangle. -/
 theorem right_has_cycle :
-    HasCycleWithLength LengthOK (glue rightPiece emptyOutside) :=
+    HasCycleWithLength LengthOK (glue rightPiece actualOutside) :=
   ⟨{ vertex := rightVertex 6 (by decide)
      walk := triangleWalk
      isCycle := triangleWalk_isCycle
      length_ok := by show triangleWalk.length = 3; rfl }⟩
 
-/-! ## The literal boundary response has no accepted cycle -/
+/-! ## The literal boundary response has no accepted cycle in `G − B(0)` -/
 
-noncomputable def ambient : GluedVertex leftPiece emptyOutside → Fin 10
+noncomputable def ambient : GluedVertex leftPiece actualOutside → Fin 10
   | .inl boundaryVertex => boundaryVertex.1
   | .inr (.inl internal) => internal.1
-  | .inr (.inr nothing) => nothing.elim0
+  | .inr (.inr outsideVertex) => outsideVertex.1
 
 open Hypostructure.Graph.Strategy.InterfaceReplacement in
 theorem ambient_pieceEmbedding (piecewise : bdry.Vertex ⊕ leftPiece.Internal) :
-    ambient (pieceEmbedding leftPiece emptyOutside piecewise) =
+    ambient (pieceEmbedding leftPiece actualOutside piecewise) =
       SupportAtom.pieceDecode fixture basin piecewise := by
   cases piecewise <;> rfl
+
+open Hypostructure.Graph.Strategy.InterfaceReplacement in
+theorem ambient_contextEmbedding
+    (contextwise : bdry.Vertex ⊕ actualOutside.Internal) :
+    ambient (contextEmbedding leftPiece actualOutside contextwise) =
+      SupportAtom.outsideDecode fixture basin contextwise := by
+  cases contextwise <;> rfl
 
 open Hypostructure.Graph.Strategy.InterfaceReplacement in
 theorem decode_mem_cutBoundary (piecewise : bdry.Vertex ⊕ leftPiece.Internal)
@@ -560,29 +569,45 @@ theorem decode_mem_cutBoundary (piecewise : bdry.Vertex ⊕ leftPiece.Internal)
   | inr internal => exact fun left => by simp at left
 
 open Hypostructure.Graph.Strategy.InterfaceReplacement in
+/-- A vertex of `G − B(0)` or of its cut boundary is not an interior basin
+vertex. -/
+theorem outsideDecode_not_interior
+    (contextwise : bdry.Vertex ⊕ actualOutside.Internal) :
+    SupportAtom.outsideDecode fixture basin contextwise ∉ basin ∨
+      SupportAtom.outsideDecode fixture basin contextwise ∈
+        SupportAtom.cutBoundary fixture basin := by
+  cases contextwise with
+  | inl boundaryVertex => exact Or.inr boundaryVertex.2
+  | inr outsideVertex => exact Or.inl outsideVertex.2
+
+open Hypostructure.Graph.Strategy.InterfaceReplacement in
 /-- Every edge of the glued boundary response is an ambient edge with an
-endpoint on the cut boundary: the internal incidences have been forgotten. -/
-theorem left_edge {x y : GluedVertex leftPiece emptyOutside}
-    (adjacent : (glue leftPiece emptyOutside).graph.Adj x y) :
+endpoint that is not an interior basin vertex: the internal incidences of the
+basin have been forgotten, and `G − B(0)` has none. -/
+theorem left_edge {x y : GluedVertex leftPiece actualOutside}
+    (adjacent : (glue leftPiece actualOutside).graph.Adj x y) :
     fixtureGraph.Adj (ambient x) (ambient y) ∧
-      (ambient x ∈ SupportAtom.cutBoundary fixture basin ∨
-        ambient y ∈ SupportAtom.cutBoundary fixture basin) := by
-  rcases (glueGraph_adj_iff leftPiece emptyOutside x y).mp adjacent with
-    ⟨s, t, owned, hs, ht⟩ | ⟨s, t, owned, -, -⟩
+      ((ambient x ∉ basin ∨ ambient x ∈ SupportAtom.cutBoundary fixture basin) ∨
+        (ambient y ∉ basin ∨ ambient y ∈ SupportAtom.cutBoundary fixture basin)) := by
+  rcases (glueGraph_adj_iff leftPiece actualOutside x y).mp adjacent with
+    ⟨s, t, owned, hs, ht⟩ | ⟨s, t, owned, hs, ht⟩
   · subst hs
     subst ht
     rw [ambient_pieceEmbedding, ambient_pieceEmbedding]
     refine ⟨owned.1, ?_⟩
     rcases owned.2.2 with side | side
     · rcases side with left | left | ⟨empty, -⟩
-      · exact Or.inl (decode_mem_cutBoundary s left)
-      · exact Or.inr (decode_mem_cutBoundary t left)
+      · exact Or.inl (Or.inr (decode_mem_cutBoundary s left))
+      · exact Or.inr (Or.inr (decode_mem_cutBoundary t left))
       · exact absurd empty (Finset.notMem_empty _)
     · rcases side with left | left | ⟨empty, -⟩
-      · exact Or.inr (decode_mem_cutBoundary t left)
-      · exact Or.inl (decode_mem_cutBoundary s left)
+      · exact Or.inr (Or.inr (decode_mem_cutBoundary t left))
+      · exact Or.inl (Or.inr (decode_mem_cutBoundary s left))
       · exact absurd empty (Finset.notMem_empty _)
-  · exact absurd owned (by simp [emptyOutside])
+  · subst hs
+    subst ht
+    rw [ambient_contextEmbedding, ambient_contextEmbedding]
+    exact ⟨owned, Or.inl (outsideDecode_not_interior s)⟩
 
 theorem unique_triangle : ∀ p q r : Fin 10, fixtureGraph.Adj p q →
     fixtureGraph.Adj q r → fixtureGraph.Adj r p →
@@ -590,7 +615,7 @@ theorem unique_triangle : ∀ p q r : Fin 10, fixtureGraph.Adj p q →
   decide
 
 theorem left_no_cycle :
-    ¬ HasCycleWithLength LengthOK (glue leftPiece emptyOutside) := by
+    ¬ HasCycleWithLength LengthOK (glue leftPiece actualOutside) := by
   rintro ⟨⟨start, walk, isCycle, lengthOK⟩⟩
   have length : walk.length = 3 := lengthOK
   clear isCycle
@@ -610,24 +635,30 @@ theorem left_no_cycle :
           obtain ⟨adj2, -⟩ := left_edge second
           obtain ⟨adj3, -⟩ := left_edge third
           obtain ⟨member1, member2⟩ := unique_triangle _ _ _ adj1 adj2 adj3
-          rcases cut with cut | cut
-          · exact (triangle_internal _ member1).2 cut
-          · exact (triangle_internal _ member2).2 cut
+          rcases cut with notInterior | notInterior
+          · rcases notInterior with outside | cut
+            · exact outside (triangle_internal _ member1).1
+            · exact (triangle_internal _ member1).2 cut
+          · rcases notInterior with outside | cut
+            · exact outside (triangle_internal _ member2).1
+            · exact (triangle_internal _ member2).2 cut
 
 /-! ## The exit-(4) witness -/
 
 open Hypostructure.Graph.Strategy.InterfaceReplacement in
+/-- Stated about the fixture object: G's own surroundings `G − B(0)`
+distinguish the basin's boundary response from the basin (the fixture object
+carries a target cycle, so it is not a counterexample; at a target-avoiding G
+this defect is decided false, `Q2TargetDefect.false_of_avoids`). -/
 theorem targetDefect :
-    Response.TargetDefect (HasCycleWithLength LengthOK)
-      (ExitFour.excessBoundaryResponse fixture support baseline dischargeScale 0 ∅)
-      (SupportAtom.piece fixture
-        (ExitFour.excessTraceSupport fixture support baseline dischargeScale 0 ∅)) :=
-  ⟨emptyOutside, fun equivalent => left_no_cycle (equivalent.mpr right_has_cycle)⟩
+    ¬ (HasCycleWithLength LengthOK (glue leftPiece actualOutside) ↔
+      HasCycleWithLength LengthOK (glue rightPiece actualOutside)) :=
+  fun equivalent => left_no_cycle (equivalent.mpr right_has_cycle)
 
 /-- **The compiled exit-(4) peeling witness.**  `def:typeA-exit4-peeling`: the
 quotient is the Q2 member of `def:typeA-exit4-family`, the two realizations are
-the basin's literal boundary response and the basin itself, and `emptyOutside`
-is the compatible outside context distinguishing their target predicates. -/
+the basin's literal boundary response and the basin itself, and the fixture's
+own surroundings `G − B(0)` distinguish their target predicates. -/
 noncomputable def witness :
     ExitFour.Witness (object := fixture) (HasCycleWithLength LengthOK) support baseline
       dischargeScale 0 ∅ :=

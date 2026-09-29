@@ -442,12 +442,37 @@ The rank quotient detects a dependence, but the overlap argument at node
 `[178]` uses the stronger graph statement in the manuscript: after fixing the
 baseline word and the edges outside the port returns, separated pair supports
 realize their response product in the actual fixed-edge skeleton class.  The
-following model records exactly that class and no abstract state carrier. -/
+following model records exactly that class and no abstract state carrier.
 
-/-- One graph-derived value of a sparse pair-response coordinate. -/
-structure SparsePairSkeletonResponse (LengthOK : Nat → Prop) where
-  boundary : Boundary.{u}
-  response : OutsideContext boundary → Prop
+Two ingredients are kept apart.  **The class count** ranges over the labelled
+graphs with G's canonical data (`n = |V(G)|`, `m = |E(G)|`, G's labelling, G's
+baseline word): it is an encoding bound whose published conclusion is an
+inequality about G's own quantities, and it is kept exactly.  **The response**
+of a member at `X_π` is read inside G: the member's reading of `X_π`, on G's
+boundary `∂X_π`, glued into G's own surroundings `G − X_π` (`memberPiece`) -- no
+boundaried context other than `G − X_π` is quantified. -/
+
+/-- One graph-derived value of a sparse pair-response coordinate: whether a
+member's reading of `X_π`, glued into G's surroundings `G − X_π`, carries a
+target cycle. -/
+abbrev SparsePairSkeletonResponse (_LengthOK : Nat → Prop) : Type := Prop
+
+/-- A member's reading of G's support `Z`, on G's own boundary `∂Z`: the
+vertices of G's piece at `Z` with the adjacency of `graph` (a labelled member of
+the skeleton class, pulled back to `V(G)`).  Glued into `G − Z` it is
+`glue X' (G − Z)` with `X'` the member's reading. -/
+noncomputable def memberPiece (object : FiniteObject.{u})
+    (graph : SimpleGraph object.Vertex) (support : Finset object.Vertex) :
+    BoundaryPiece (Strategy.InterfaceReplacement.SupportAtom.boundary object support) where
+  Internal := Strategy.InterfaceReplacement.SupportAtom.PieceInternal object support
+  internalVertices := by
+    letI : FinEnum object.Vertex := object.vertices
+    exact FinEnum.Subtype.finEnum fun vertex =>
+      vertex ∈ support ∧
+        vertex ∉ Strategy.InterfaceReplacement.SupportAtom.cutBoundary object support
+  graph := SimpleGraph.comap
+    (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object support) graph
+  decideAdj := Classical.decRel _
 
 /-- The exact skeleton response model for a nonempty subfamily of a declared
 pair schedule.  Every support is the canonical `X_π`; every state is read from
@@ -488,7 +513,8 @@ noncomputable def portReturns
   classical
   exact model.pairSet.biUnion activation.pairSeed
 
-/-- The exact all-context target response of `X_π` in a labelled skeleton. -/
+/-- The target response of `X_π` in a labelled skeleton, read in G's own
+surroundings: the member's reading of `X_π` glued into `G − X_π`. -/
 noncomputable def response
     {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
     {Coordinate Chord : Type u}
@@ -497,19 +523,12 @@ noncomputable def response
     (model : SparsePairSkeletonModel activation schedule)
     (member : model.Skeleton) (pair : {pair // pair ∈ model.pairSet}) :
     SparsePairSkeletonResponse LengthOK :=
-  let candidate : FiniteObject.{u} :=
-    { Vertex := object.Vertex
-      graph := member.1.graph.comap object.vertices.equiv
-      vertices := object.vertices
-      decideAdj := Classical.decRel _ }
-  let support := model.responseSupport pair
-  { boundary := Strategy.InterfaceReplacement.SupportAtom.boundary
-      candidate support
-    response := fun outside =>
-      HasCycleWithLength LengthOK
-        (glue
-          (Strategy.InterfaceReplacement.SupportAtom.piece candidate support)
-          outside) }
+  HasCycleWithLength LengthOK
+    (glue
+      (memberPiece object (member.1.graph.comap object.vertices.equiv)
+        (model.responseSupport pair))
+      (Strategy.InterfaceReplacement.SupportAtom.outside object
+        (model.responseSupport pair)))
 
 /-- The paper's conditioning datum: outside edges and the already realized
 baseline word.  Earlier pair responses are conditioned by `conditionalValues`,
@@ -656,8 +675,9 @@ admissible* rank quotient).  The attempt's quotient labels carry a value, and
 at every coordinate `c ∈ ℛ_Π` that value is G's own exact response data of `c`
 at the determination support `Z`: the boundary-degree profile of `c` read on
 G's piece at `Z` restricted to its declared support, and the target response of
-that reading against every `∂Z`-boundaried context
-(`canonicalCoordinateResponse`).  An identification of two coordinates by the
+that reading in G's own surroundings `G − Z` (`ActualContext.actualGlue`; G-only
+restatement: the former component was the response against every
+`∂Z`-boundaried context, which is not part of G).  An identification of two coordinates by the
 quotient therefore preserves both components, as a target-complete quotient
 must (`def:target-complete-quotient` (a), (b); `def:boundary-degree-profile`:
 "All target-response states in this paper are taken fibrewise over `𝐝_∂`").
@@ -670,14 +690,14 @@ def SparsePairExactValuation
     (attempt : AttemptedQuotient Baseline (Graph.HasCycleWithLength LengthOK)
       object (activation.pairFamily pairs) sparsePairCoordinateSupport) : Prop :=
   ∃ valuation : attempt.Label →
-      ((SupportAtom.boundary object attempt.support).Vertex → Nat) ×
-        (OutsideContext (SupportAtom.boundary object attempt.support) → Prop),
+      ((SupportAtom.boundary object attempt.support).Vertex → Nat) × Prop,
     ∀ coordinate ∈ activation.pairFamily pairs,
       valuation (attempt.label coordinate) =
         ((SupportAtom.retainedPiece object attempt.support
             (sparsePairCoordinateSupport coordinate)).boundaryDegreeProfile,
-          canonicalCoordinateResponse (Graph.HasCycleWithLength LengthOK) object
-            attempt.support (sparsePairCoordinateSupport coordinate))
+          Graph.HasCycleWithLength LengthOK
+            (ActualContext.actualGlue object attempt.support
+              (sparsePairCoordinateSupport coordinate)))
 
 /-- **An inclusion-minimal determination certificate of `r_π`**
 (`lem:sparse-pair-dependence-exit`, tex 4675-4684; `lem:target-rank-circuit`):
@@ -750,8 +770,9 @@ def SparsePairDEProfileObstructionAt
               (SupportAtom.retainedPiece object attempt.support
                 (sparsePairCoordinateSupport identified)).boundaryDegreeProfile
 
-/-- On two coordinates a determination identifies, G's canonical responses at
-the determination support agree: the valuation of the shared label is both. -/
+/-- On two coordinates a determination identifies, G's responses at the
+determination support, in G's own surroundings `G − Z`, agree: the valuation of
+the shared label is both. -/
 theorem SparsePairDetermination.canonicalResponse_eq_of_label_eq
     {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}} {Coordinate Chord : Type u}
@@ -767,10 +788,12 @@ theorem SparsePairDetermination.canonicalResponse_eq_of_label_eq
     (firstMem : first ∈ activation.pairFamily pairs)
     (secondMem : second ∈ activation.pairFamily pairs)
     (same : attempt.label first = attempt.label second) :
-    canonicalCoordinateResponse (Graph.HasCycleWithLength LengthOK) object
-        attempt.support (sparsePairCoordinateSupport first) =
-      canonicalCoordinateResponse (Graph.HasCycleWithLength LengthOK) object
-        attempt.support (sparsePairCoordinateSupport second) := by
+    Graph.HasCycleWithLength LengthOK
+        (ActualContext.actualGlue object attempt.support
+          (sparsePairCoordinateSupport first)) =
+      Graph.HasCycleWithLength LengthOK
+        (ActualContext.actualGlue object attempt.support
+          (sparsePairCoordinateSupport second)) := by
   obtain ⟨-, -, -, -, -, -, -, valuation, reads⟩ := determination
   exact (Prod.mk.inj ((reads first firstMem).symm.trans
     ((congrArg valuation same).trans (reads second secondMem)))).2
@@ -829,14 +852,15 @@ determination of `r_π`, one of the three events of the clause:
 
 * **target-defective quotient**: two of G's own coordinates
   `{r_π} ∪ determiners`, read on G's piece at their canonical support, lie in
-  one fibre, agree in G's actual context and are separated by another
-  boundaried context (`ResidualTargetDefect`, `lem:context-universality`);
+  one fibre and are separated by G's own surroundings `G − Z`
+  (`ResidualTargetDefect` stated about G, `lem:context-universality`; empty
+  at a target-avoiding G);
 * **target-complete compression / proper support dependence**: the
   determination support `Z` admits a target-complete proper replacement
   (`ReplacementSupport`, `cor:uncompressible`, `lem:proper-smearing`);
 * **whole-graph support dependence**: `Z` is all of G and a strictly smaller
-  admissible closed representative meets the baseline with its target
-  transferring back (`lem:no-silent-global-smearing`). -/
+  admissible closed representative meets the baseline with no target cycle
+  (`lem:no-silent-global-smearing`, stated about G: `glue X' (G − Z) = X'`). -/
 def SparsePairDEResponseObstructionAt
     {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}} {Coordinate Chord : Type u}
@@ -859,8 +883,7 @@ def SparsePairDEResponseObstructionAt
             ∃ representative : FiniteObject.{u},
               representative.LexicographicallySmaller object ∧
                 Baseline representative ∧
-                (Graph.HasCycleWithLength LengthOK representative →
-                  Graph.HasCycleWithLength LengthOK object)))
+                ¬ Graph.HasCycleWithLength LengthOK representative))
 
 /-- A concrete type-(d) or type-(e) obstruction carried by its actual pair in
 `Π`.  The pair is part of the local predicate, so this cannot be discharged by

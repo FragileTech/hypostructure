@@ -15,8 +15,6 @@ edges with both ends in `R`).
   readings have the same boundary-degree profile iff their counts agree
   (`profile_eq_iff_counts`), and equal profiles transfer retained boundary
   vertices (`mem_of_profile_eq`).
-* Readings whose retained set misses `∂Z` are context-equivalent on a
-  target-avoiding object (`target_transfer_of_boundaryFree`, `boundaryFree_U2`).
 * The spanning object of a subgraph loses the baseline at a tight endpoint of a
   deleted edge (`spanning_*_tight`); a non-injective declared quotient is
   refuted by minimality and the replacement exclusion
@@ -158,199 +156,7 @@ theorem exists_adj_of_connectedOn {X : Finset object.Vertex}
   | cons adj rest =>
     exact ⟨_, inside _ (by simp), adj⟩
 
-/-! ### Boundary-free readings: the response carries no information -/
-
-/-- The glued vertices that are retained internal vertices of the piece. -/
-def InRetained (Z R : Finset object.Vertex)
-    {O : OutsideContext (SupportAtom.boundary object Z)} :
-    GluedVertex (SupportAtom.retainedPiece object Z R) O → Prop
-  | .inr (.inl w) => w.1 ∈ R
-  | _ => False
-
-theorem pieceOwns_inRetained {Z R : Finset object.Vertex}
-    (free : ∀ w ∈ R, w ∉ SupportAtom.cutBoundary object Z)
-    {O : OutsideContext (SupportAtom.boundary object Z)}
-    {x y : GluedVertex (SupportAtom.retainedPiece object Z R) O}
-    (owns : PieceOwns (SupportAtom.retainedPiece object Z R) O x y) :
-    InRetained Z R x ∧ InRetained Z R y := by
-  obtain ⟨pl, pr, adj, rfl, rfl⟩ := owns
-  change (SimpleGraph.comap (SupportAtom.pieceDecode object Z) object.graph ⊓
-      SimpleGraph.comap (SupportAtom.pieceDecode object Z)
-        (SimpleGraph.fromRel fun left right => left ∈ R ∧ right ∈ R)).Adj _ _ at adj
-  rw [SimpleGraph.inf_adj, SimpleGraph.comap_adj, SimpleGraph.comap_adj,
-    SimpleGraph.fromRel_adj] at adj
-  obtain ⟨-, -, rel⟩ := adj
-  have both : SupportAtom.pieceDecode object Z pl ∈ R ∧
-      SupportAtom.pieceDecode object Z pr ∈ R := by
-    rcases rel with h | h
-    · exact h
-    · exact ⟨h.2, h.1⟩
-  constructor
-  · rcases pl with b | w
-    · exact absurd b.2 (free _ both.1)
-    · exact both.1
-  · rcases pr with b | w
-    · exact absurd b.2 (free _ both.2)
-    · exact both.2
-
-theorem contextOwns_not_inRetained {Z R : Finset object.Vertex}
-    {O : OutsideContext (SupportAtom.boundary object Z)}
-    {x y : GluedVertex (SupportAtom.retainedPiece object Z R) O}
-    (owns : ContextOwns (SupportAtom.retainedPiece object Z R) O x y) :
-    ¬ InRetained Z R x ∧ ¬ InRetained Z R y := by
-  obtain ⟨cl, cr, -, rfl, rfl⟩ := owns
-  constructor
-  · rcases cl with b | o <;> exact id
-  · rcases cr with b | o <;> exact id
-
-theorem inRetained_iff_of_adj {Z R : Finset object.Vertex}
-    (free : ∀ w ∈ R, w ∉ SupportAtom.cutBoundary object Z)
-    {O : OutsideContext (SupportAtom.boundary object Z)}
-    {x y : GluedVertex (SupportAtom.retainedPiece object Z R) O}
-    (adj : (glue (SupportAtom.retainedPiece object Z R) O).graph.Adj x y) :
-    (InRetained Z R x ↔ InRetained Z R y) := by
-  rcases (glueGraph_adj_iff _ O x y).1 adj with owns | owns
-  · obtain ⟨hx, hy⟩ := pieceOwns_inRetained free owns
-    exact iff_of_true hx hy
-  · obtain ⟨hx, hy⟩ := contextOwns_not_inRetained owns
-    exact iff_of_false hx hy
-
-theorem walk_inRetained {Z R : Finset object.Vertex}
-    (free : ∀ w ∈ R, w ∉ SupportAtom.cutBoundary object Z)
-    {O : OutsideContext (SupportAtom.boundary object Z)} :
-    ∀ {x y : GluedVertex (SupportAtom.retainedPiece object Z R) O}
-      (walk : (glue (SupportAtom.retainedPiece object Z R) O).graph.Walk x y),
-      ∀ v ∈ walk.support, (InRetained Z R v ↔ InRetained Z R x)
-  | _, _, .nil, v, hv => by
-      simp at hv
-      subst hv
-      exact Iff.rfl
-  | _, _, .cons adj rest, v, hv => by
-      rw [SimpleGraph.Walk.support_cons, List.mem_cons] at hv
-      rcases hv with rfl | hv
-      · exact Iff.rfl
-      · exact (walk_inRetained free rest v hv).trans (inRetained_iff_of_adj free adj).symm
-
-/-- The ambient vertex of a retained glued vertex. -/
-def inRetainedVertex (Z R : Finset object.Vertex)
-    {O : OutsideContext (SupportAtom.boundary object Z)} :
-    ∀ x : GluedVertex (SupportAtom.retainedPiece object Z R) O,
-      InRetained Z R x → object.Vertex
-  | .inl _, h => h.elim
-  | .inr (.inl w), _ => w.1
-  | .inr (.inr _), h => h.elim
-
-/-- Decode a retained glued vertex back to the ambient graph (default elsewhere). -/
-def retainedDecode (Z R : Finset object.Vertex)
-    {O : OutsideContext (SupportAtom.boundary object Z)} (default : object.Vertex) :
-    GluedVertex (SupportAtom.retainedPiece object Z R) O → object.Vertex
-  | .inl b => b.1
-  | .inr (.inl w) => w.1
-  | .inr (.inr _) => default
-
-/-- The retained part of any gluing embeds in the ambient graph. -/
-def retainedHom {Z R : Finset object.Vertex}
-    (free : ∀ w ∈ R, w ∉ SupportAtom.cutBoundary object Z)
-    {O : OutsideContext (SupportAtom.boundary object Z)} (default : object.Vertex) :
-    (glue (SupportAtom.retainedPiece object Z R) O).graph.induce
-        {x | InRetained Z R x} →g object.graph where
-  toFun x := retainedDecode Z R default x.1
-  map_rel' := by
-    rintro ⟨x, hx⟩ ⟨y, hy⟩ adj
-    have adj' : (glue (SupportAtom.retainedPiece object Z R) O).graph.Adj x y := adj
-    rcases (glueGraph_adj_iff _ O x y).1 adj' with owns | owns
-    · obtain ⟨pl, pr, padj, rfl, rfl⟩ := owns
-      have padj' := padj
-      change (SimpleGraph.comap (SupportAtom.pieceDecode object Z) object.graph ⊓
-        SimpleGraph.comap (SupportAtom.pieceDecode object Z)
-          (SimpleGraph.fromRel fun left right => left ∈ R ∧ right ∈ R)).Adj _ _ at padj'
-      rw [SimpleGraph.inf_adj, SimpleGraph.comap_adj] at padj'
-      rcases pl with b | w <;> rcases pr with b' | w' <;> exact padj'.1
-    · exact absurd hx (contextOwns_not_inRetained owns).1
-
-theorem retainedHom_injective {Z R : Finset object.Vertex}
-    (free : ∀ w ∈ R, w ∉ SupportAtom.cutBoundary object Z)
-    {O : OutsideContext (SupportAtom.boundary object Z)} (default : object.Vertex) :
-    Function.Injective (retainedHom free (O := O) default) := by
-  rintro ⟨x, hx⟩ ⟨y, hy⟩ h
-  rcases x with b | w | o <;> try exact absurd hx id
-  rcases y with b' | w' | o' <;> try exact absurd hy id
-  have h' : w.1 = w'.1 := h
-  have : w = w' := Subtype.ext h'
-  subst this
-  rfl
-
-/-- **Boundary-free readings see only the context** (vocabulary-free).  If a
-reading `R` of `Z` retains no vertex of `∂Z` and the ambient graph has no
-accepted cycle, then every accepted cycle of `R` glued to any context `O` is an
-accepted cycle of any other reading `R'` glued to `O`. -/
-theorem target_transfer_of_boundaryFree {LengthOK : Nat → Prop}
-    (avoids : ¬ HasCycleWithLength LengthOK object)
-    {Z R : Finset object.Vertex}
-    (free : ∀ w ∈ R, w ∉ SupportAtom.cutBoundary object Z)
-    (R' : Finset object.Vertex)
-    (O : OutsideContext (SupportAtom.boundary object Z))
-    (cycle : HasCycleWithLength LengthOK (glue (SupportAtom.retainedPiece object Z R) O)) :
-    HasCycleWithLength LengthOK (glue (SupportAtom.retainedPiece object Z R') O) := by
-  obtain ⟨c⟩ := cycle
-  by_cases start : InRetained Z R c.vertex
-  · -- the cycle lives in the retained internal vertices: it is a cycle of G
-    exfalso
-    let s : Set (glue (SupportAtom.retainedPiece object Z R) O).Vertex :=
-      {x | InRetained Z R x}
-    have allIn : ∀ v ∈ c.walk.support, v ∈ s := fun v hv =>
-      (walk_inRetained free c.walk v hv).2 start
-    let default : object.Vertex := inRetainedVertex Z R c.vertex start
-    have mapEq := SimpleGraph.Walk.map_induce c.walk allIn
-    have hind : (c.walk.induce s allIn).IsCycle := by
-      rw [← SimpleGraph.Walk.map_isCycle_iff_of_injective
-        (f := (SimpleGraph.Embedding.induce
-          (G := (glue (SupportAtom.retainedPiece object Z R) O).graph) s).toHom)
-        (SimpleGraph.Embedding.induce
-          (G := (glue (SupportAtom.retainedPiece object Z R) O).graph) s).injective, mapEq]
-      exact c.isCycle
-    have hlen : (c.walk.induce s allIn).length = c.walk.length := by
-      have := congrArg SimpleGraph.Walk.length mapEq
-      rwa [SimpleGraph.Walk.length_map] at this
-    exact avoids ⟨⟨_, (c.walk.induce s allIn).map (retainedHom free default),
-      hind.map (retainedHom_injective free default),
-      by convert c.length_ok using 1; exact (SimpleGraph.Walk.length_map _ _).trans hlen⟩⟩
-  · have edgesIn : ∀ e ∈ c.walk.edges,
-        e ∈ (glue (SupportAtom.retainedPiece object Z R') O).graph.edgeSet := by
-      intro e he
-      induction e using Sym2.ind with
-      | h a b =>
-        have adj := c.walk.adj_of_mem_edges he
-        have ha := c.walk.fst_mem_support_of_mem_edges he
-        rcases (glueGraph_adj_iff _ O a b).1 adj with owns | owns
-        · exact absurd ((walk_inRetained free c.walk a ha).1
-            (pieceOwns_inRetained free owns).1) start
-        · obtain ⟨cl, cr, cadj, h1, h2⟩ := owns
-          exact (glueGraph_adj_iff (SupportAtom.retainedPiece object Z R') O a b).2
-            (Or.inr ⟨cl, cr, cadj, h1, h2⟩)
-    exact ⟨⟨c.vertex, c.walk.transfer _ edgesIn, c.isCycle.transfer edgesIn,
-      by convert c.length_ok using 1; apply SimpleGraph.Walk.length_transfer⟩⟩
-
-/-- **Two boundary-free readings are context-equivalent and in one fibre**
-(vocabulary-free): when neither retained set meets `∂Z`, the two readings
-keep the same boundary-degree profile and are context-equivalent. -/
-theorem boundaryFree_U2 {LengthOK : Nat → Prop}
-    (avoids : ¬ HasCycleWithLength LengthOK object)
-    {Z R R' : Finset object.Vertex}
-    (free : ∀ w ∈ R, w ∉ SupportAtom.cutBoundary object Z)
-    (free' : ∀ w ∈ R', w ∉ SupportAtom.cutBoundary object Z) :
-    (SupportAtom.retainedPiece object Z R).boundaryDegreeProfile =
-        (SupportAtom.retainedPiece object Z R').boundaryDegreeProfile ∧
-      Response.ContextEquivalent (HasCycleWithLength LengthOK)
-        (SupportAtom.retainedPiece object Z R)
-        (SupportAtom.retainedPiece object Z R') := by
-  refine ⟨?_, fun O => ⟨target_transfer_of_boundaryFree avoids free R' O,
-    target_transfer_of_boundaryFree avoids free' R O⟩⟩
-  funext b
-  change (SupportAtom.retainedPiece object Z R).boundaryDegree b =
-    (SupportAtom.retainedPiece object Z R').boundaryDegree b
-  rw [retained_boundaryDegree_eq_zero Z R b (fun h => free _ h b.2),
-    retained_boundaryDegree_eq_zero Z R' b (fun h => free' _ h b.2)]
+/-! ### Boundary-free readings -/
 
 /-- The closed case: when `Z` is everything, `∂Z = ∅`, so every reading is
 boundary-free. -/
@@ -431,9 +237,9 @@ theorem declaredQuotient_reducing_false {Baseline Target : FiniteObject.{u} → 
     (avoids : ¬ Target object)
     (quotient : DeclaredQuotient Baseline Target object family coordinateSupport)
     (reducing : ¬ Set.InjOn quotient.label ↑family) : False := by
-  rcases quotient.localize reducing with r | ⟨H, sm, bl, tr⟩
+  rcases quotient.localize reducing with r | ⟨H, sm, bl, noTarget⟩
   · exact exclusion _ r
-  · exact avoids (tr (minimal H sm bl))
+  · exact noTarget (minimal H sm bl)
 
 /-- The exact reading count `c_R(b) = #{w ∈ Z : b ~ w, b ∈ R, w ∈ R}`. -/
 noncomputable def readingCount (Z R : Finset object.Vertex)
@@ -498,7 +304,6 @@ theorem swap_exact {k : Nat} (tightEndpoint : ∀ d : object.graph.Dart,
       rw [swapGraph, SimpleGraph.deleteEdges_adj] at h
       exact h.2 ⟨x, y, rfl, hx, hy, notP⟩
     exact spanning_not_baseline_of_tight le tightEndpoint adj drop
-
 
 /-- **Equal-count readings on disjoint supports collapse to the boundary-free configuration**
 (vocabulary-free input): with the transfer clause of equal counts, a connected support
@@ -685,7 +490,6 @@ theorem pairSupport_selected {Coordinate Chord : Type u}
       (SupportComponents.Connected.connectedOn_vertexFinset object connected))
   exact ⟨X, hX, by rw [hX]; rfl⟩
 
-
 end D
 
 section Onesided
@@ -806,7 +610,6 @@ theorem cycle_two_boundary {Z : Finset object.Vertex} {v : object.Vertex}
   exact List.disjoint_of_nodup_append nd t1 t2
 
 end Hypostructure.Graph.ReadingProfiles
-
 
 namespace Hypostructure.Graph.ReadingProfiles
 

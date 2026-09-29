@@ -19,6 +19,9 @@ variable (coordinates : Finset Coordinate)
 variable (car : Coordinate → Finset Carrier)
 variable (car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
 variable (state : Finset Coordinate → BoundaryPiece boundary)
+-- The one outside context the readings are glued into: the actual
+-- surroundings of the support (`G − B_u` for a graph-owned entry).
+variable (actual : OutsideContext boundary)
 
 /-- The declared coordinates retained by the carrier restriction to `D`. -/
 def retained (D : Finset Carrier) : Finset Coordinate :=
@@ -60,17 +63,18 @@ theorem retained_carrierSupply :
 omit car_subset
 
 /-- A carrier set is complete when its restriction is target-equivalent to the
-full reading against every outside context. -/
+full reading in the one actual context `actual` (G − B_u).  G-only restatement
+of "against every outside context". -/
 def Complete (D : Finset Carrier) : Prop :=
-  Response.ContextEquivalent Target
-    (restriction carrierSupply coordinates car state D) (state coordinates)
+  Target (glue (restriction carrierSupply coordinates car state D) actual) ↔
+    Target (glue (state coordinates) actual)
 
 include car_subset
 
 theorem complete_carrierSupply :
-    Complete (Target := Target) carrierSupply coordinates car state
+    Complete (Target := Target) carrierSupply coordinates car state actual
       carrierSupply.toFinset := by
-  intro outside
+  unfold Complete
   rw [restriction_carrierSupply (car_subset := car_subset)]
 
 theorem retained_erase_of_not_mem {D : Finset Carrier} {carrier : Carrier}
@@ -92,120 +96,117 @@ declared reading arguments. -/
 noncomputable def carrierProfile : EssentialCarrier.Profile.{u} where
   Carrier := Carrier
   schedule := carrierSupply
-  Complete := Complete (Target := Target) carrierSupply coordinates car state
+  Complete := Complete (Target := Target) carrierSupply coordinates car state actual
   completeDecidable := fun _ => Classical.propDecidable _
   fullComplete := complete_carrierSupply (Target := Target)
-    carrierSupply coordinates car (car_subset := car_subset) state
+    carrierSupply coordinates car (car_subset := car_subset) state actual
 
 /-- The canonical essential carrier core. -/
 noncomputable def essentialCore : Finset Carrier :=
   (carrierProfile (Target := Target) carrierSupply coordinates car
-    (car_subset := car_subset) state).core
+    (car_subset := car_subset) state actual).core
 
 theorem essentialCore_complete :
-    Complete (Target := Target) carrierSupply coordinates car state
+    Complete (Target := Target) carrierSupply coordinates car state actual
       (essentialCore (Target := Target) carrierSupply coordinates car
-        (car_subset := car_subset) state) :=
+        (car_subset := car_subset) state actual) :=
   (carrierProfile (Target := Target) carrierSupply coordinates car
-    (car_subset := car_subset) state).core_complete
+    (car_subset := car_subset) state actual).core_complete
 
 theorem essentialCore_erase_not_complete {carrier : Carrier}
     (member :
       carrier ∈
         essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state) :
-    ¬ Complete (Target := Target) carrierSupply coordinates car state
+          (car_subset := car_subset) state actual) :
+    ¬ Complete (Target := Target) carrierSupply coordinates car state actual
       ((essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state).erase
+          (car_subset := car_subset) state actual).erase
         carrier) := by
   letI : DecidableEq
       (carrierProfile (Target := Target) carrierSupply coordinates car
-        (car_subset := car_subset) state).Carrier :=
+        (car_subset := car_subset) state actual).Carrier :=
     ‹DecidableEq Carrier›
   exact (carrierProfile (Target := Target) carrierSupply coordinates car
-    (car_subset := car_subset) state)
+    (car_subset := car_subset) state actual)
     |>.erase_not_complete carrier member
 
 theorem essentialCore_subset_carrierSupply :
     essentialCore (Target := Target) carrierSupply coordinates car
-      (car_subset := car_subset) state ⊆
+      (car_subset := car_subset) state actual ⊆
       carrierSupply.toFinset := by
   intro carrier member
   by_contra outside
   refine essentialCore_erase_not_complete (Target := Target)
-    carrierSupply coordinates car (car_subset := car_subset) state member ?_
-  intro context
+    carrierSupply coordinates car (car_subset := car_subset) state actual member ?_
   have same := retained_erase_of_not_mem carrierSupply coordinates car
     (car_subset := car_subset)
     (D := essentialCore (Target := Target) carrierSupply coordinates car
-      (car_subset := car_subset) state)
+      (car_subset := car_subset) state actual)
     outside
   have rewritten :
       restriction carrierSupply coordinates car state
           ((essentialCore (Target := Target) carrierSupply coordinates car
-              (car_subset := car_subset) state).erase
+              (car_subset := car_subset) state actual).erase
             carrier) =
         restriction carrierSupply coordinates car state
           (essentialCore (Target := Target) carrierSupply coordinates car
-            (car_subset := car_subset) state) := by
+            (car_subset := car_subset) state actual) := by
     rw [restriction, restriction, same]
+  unfold Complete
   rw [rewritten]
   exact essentialCore_complete (Target := Target) carrierSupply coordinates car
-    (car_subset := car_subset) state context
+    (car_subset := car_subset) state actual
 
 theorem deletion_targetDefect {carrier : Carrier}
     (member :
       carrier ∈
         essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state) :
-    Response.TargetDefect Target
-      (restriction carrierSupply coordinates car state
-        ((essentialCore (Target := Target) carrierSupply coordinates car
-            (car_subset := car_subset) state).erase
-          carrier))
-      (restriction carrierSupply coordinates car state
-        (essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state)) := by
-  refine Response.targetDefect_of_not_contextEquivalent ?_
+          (car_subset := car_subset) state actual) :
+    ¬ (Target (glue (restriction carrierSupply coordinates car state
+          ((essentialCore (Target := Target) carrierSupply coordinates car
+              (car_subset := car_subset) state actual).erase
+            carrier)) actual) ↔
+      Target (glue (restriction carrierSupply coordinates car state
+          (essentialCore (Target := Target) carrierSupply coordinates car
+            (car_subset := car_subset) state actual)) actual)) := by
   intro equivalent
   refine essentialCore_erase_not_complete (Target := Target)
-    carrierSupply coordinates car (car_subset := car_subset) state member ?_
-  intro outside
-  exact (equivalent outside).trans
+    carrierSupply coordinates car (car_subset := car_subset) state actual member ?_
+  exact equivalent.trans
     (essentialCore_complete (Target := Target) carrierSupply coordinates car
-      (car_subset := car_subset) state outside)
+      (car_subset := car_subset) state actual)
 
 theorem retained_erase_ne {carrier : Carrier}
     (member :
       carrier ∈
         essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state) :
+          (car_subset := car_subset) state actual) :
     retained carrierSupply coordinates car
         ((essentialCore (Target := Target) carrierSupply coordinates car
-            (car_subset := car_subset) state).erase
+            (car_subset := car_subset) state actual).erase
           carrier) ≠
       retained carrierSupply coordinates car
         (essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state) := by
+          (car_subset := car_subset) state actual) := by
   intro same
-  obtain ⟨outside, separates⟩ := deletion_targetDefect (Target := Target)
-    carrierSupply coordinates car (car_subset := car_subset) state member
-  exact separates (by rw [restriction, restriction, same])
+  refine deletion_targetDefect (Target := Target)
+    carrierSupply coordinates car (car_subset := car_subset) state actual member ?_
+  rw [restriction, restriction, same]
 
 theorem exists_forgotten_coordinate {carrier : Carrier}
     (member :
       carrier ∈
         essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state) :
+          (car_subset := car_subset) state actual) :
     ∃ r ∈ coordinates,
       car r ⊆
         essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state ∧
+          (car_subset := car_subset) state actual ∧
       carrier ∈ car r := by
   classical
   by_contra missing
   simp only [not_exists, not_and] at missing
-  refine retained_erase_ne (Target := Target) carrierSupply coordinates car state
+  refine retained_erase_ne (Target := Target) carrierSupply coordinates car state actual
     (car_subset := car_subset) member (Finset.Subset.antisymm ?_ ?_)
   · exact retained_mono carrierSupply coordinates car (Finset.erase_subset _ _)
   · intro r inCore
@@ -225,18 +226,18 @@ theorem not_mem_retained_of_core_card_le_one {crossing : Finset Coordinate}
     (parity : ∀ r ∈ crossing, 2 ≤ (car r).card)
     (small :
       (essentialCore (Target := Target) carrierSupply coordinates car
-        (car_subset := car_subset) state).card ≤ 1)
+        (car_subset := car_subset) state actual).card ≤ 1)
     {r : Coordinate} (member : r ∈ crossing) :
     r ∉ retained carrierSupply coordinates car
       (essentialCore (Target := Target) carrierSupply coordinates car
-        (car_subset := car_subset) state) := by
+        (car_subset := car_subset) state actual) := by
   intro retainedMember
   rw [mem_retained] at retainedMember
   have two := parity r member
   have bounded :
       (car r).card ≤
         (essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state).card :=
+          (car_subset := car_subset) state actual).card :=
     Finset.card_le_card retainedMember.2
   omega
 
@@ -246,17 +247,17 @@ theorem retained_sdiff_eq_of_core_card_le_one {crossing : Finset Coordinate}
     (parity : ∀ r ∈ crossing, 2 ≤ (car r).card)
     (small :
       (essentialCore (Target := Target) carrierSupply coordinates car
-        (car_subset := car_subset) state).card ≤ 1) :
+        (car_subset := car_subset) state actual).card ≤ 1) :
     retained carrierSupply coordinates car
         (essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state) \ crossing =
+          (car_subset := car_subset) state actual) \ crossing =
       retained carrierSupply coordinates car
         (essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state) := by
+          (car_subset := car_subset) state actual) := by
   refine Finset.sdiff_eq_self_of_disjoint (Finset.disjoint_left.mpr ?_)
   intro r retainedMember member
   exact not_mem_retained_of_core_card_le_one (Target := Target)
-    carrierSupply coordinates car car_subset state parity small member
+    carrierSupply coordinates car car_subset state actual parity small member
     retainedMember
 
 /-- **Small-core collapse, raw carrier-core form.**
@@ -272,46 +273,47 @@ theorem smallCoreCollapse {crossing : Finset Coordinate} {Alternatives : Prop}
     (minimality :
       state (retained carrierSupply coordinates car
           (essentialCore (Target := Target) carrierSupply coordinates car
-            (car_subset := car_subset) state) \ crossing) =
+            (car_subset := car_subset) state actual) \ crossing) =
         restriction carrierSupply coordinates car state
           (essentialCore (Target := Target) carrierSupply coordinates car
-            (car_subset := car_subset) state) →
+            (car_subset := car_subset) state actual) →
       Alternatives)
     (small :
       (essentialCore (Target := Target) carrierSupply coordinates car
-        (car_subset := car_subset) state).card ≤ 1) :
+        (car_subset := car_subset) state actual).card ≤ 1) :
     Alternatives := by
   refine minimality ?_
   rw [retained_sdiff_eq_of_core_card_le_one (Target := Target)
-    carrierSupply coordinates car car_subset state parity small, restriction]
+    carrierSupply coordinates car car_subset state actual parity small, restriction]
 
 /-- The reusable theorem package for node `[114]`: the minimal carrier core is
 complete, lies in the declared carrier supply, and every core carrier has the
 forced deletion target-defect plus a declared forgotten coordinate using it. -/
 def CarrierCoreFacts : Prop :=
   let core := essentialCore (Target := Target) carrierSupply coordinates car
-    (car_subset := car_subset) state
-  Complete (Target := Target) carrierSupply coordinates car state core ∧
+    (car_subset := car_subset) state actual
+  Complete (Target := Target) carrierSupply coordinates car state actual core ∧
     core ⊆ carrierSupply.toFinset ∧
       ∀ carrier ∈ core,
-        Response.TargetDefect Target
-          (restriction carrierSupply coordinates car state (core.erase carrier))
-          (restriction carrierSupply coordinates car state core) ∧
+        ¬ (Target (glue (restriction carrierSupply coordinates car state
+              (core.erase carrier)) actual) ↔
+          Target (glue (restriction carrierSupply coordinates car state core)
+            actual)) ∧
         ∃ r ∈ coordinates, car r ⊆ core ∧ carrier ∈ car r
 
 theorem carrierCoreFacts :
     CarrierCoreFacts (Target := Target) carrierSupply coordinates car
-      car_subset state := by
+      car_subset state actual := by
   dsimp [CarrierCoreFacts]
   refine ⟨essentialCore_complete (Target := Target)
-      carrierSupply coordinates car (car_subset := car_subset) state,
+      carrierSupply coordinates car (car_subset := car_subset) state actual,
     essentialCore_subset_carrierSupply (Target := Target)
-      carrierSupply coordinates car car_subset state, ?_⟩
+      carrierSupply coordinates car car_subset state actual, ?_⟩
   intro carrier member
   exact ⟨deletion_targetDefect (Target := Target)
-      carrierSupply coordinates car (car_subset := car_subset) state member,
+      carrierSupply coordinates car (car_subset := car_subset) state actual member,
     exists_forgotten_coordinate (Target := Target)
-      carrierSupply coordinates car car_subset state member⟩
+      carrierSupply coordinates car car_subset state actual member⟩
 
 /-- The reusable theorem package for nodes `[115]`--`[116]`: every zero/one
 carrier core activates the selected trace-basin minimality alternatives once
@@ -322,21 +324,21 @@ def SmallCoreCollapseFacts : Prop :=
     (∀ r ∈ crossing, 2 ≤ (car r).card) →
     (state (retained carrierSupply coordinates car
         (essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state) \ crossing) =
+          (car_subset := car_subset) state actual) \ crossing) =
       restriction carrierSupply coordinates car state
         (essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state) →
+          (car_subset := car_subset) state actual) →
         Alternatives) →
     (essentialCore (Target := Target) carrierSupply coordinates car
-      (car_subset := car_subset) state).card ≤ 1 →
+      (car_subset := car_subset) state actual).card ≤ 1 →
     Alternatives
 
 theorem smallCoreCollapseFacts :
     SmallCoreCollapseFacts (Target := Target) carrierSupply coordinates car
-      car_subset state := by
+      car_subset state actual := by
   intro crossing Alternatives parity minimality small
   exact smallCoreCollapse (Target := Target) carrierSupply coordinates car
-    car_subset state parity minimality small
+    car_subset state actual parity minimality small
 
 end Core
 
@@ -608,6 +610,9 @@ variable (carrierSupply : Enumeration Carrier)
 variable (coordinates : Finset Coordinate) (car : Coordinate → Finset Carrier)
 variable (car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
 variable (state : Finset Coordinate → BoundaryPiece boundary)
+-- The one outside context the readings are glued into: the actual
+-- surroundings of the support (`G − B_u` for a graph-owned entry).
+variable (actual : OutsideContext boundary)
 
 /-- The node-`[118]` carrier-deletion witness package for one already selected
 two-carrier indexed core.  It contains no route-`8` collection carrier: the
@@ -618,10 +623,10 @@ def TwoCarrierDeletionWitnesses
     (threshold : Nat) (index : Index) : Prop :=
   IndexedTwoCarrierCore entries core threshold index ∧
     ∀ carrier ∈ core index,
-      Response.TargetDefect Target
-        (restriction carrierSupply coordinates car state
-          ((core index).erase carrier))
-        (restriction carrierSupply coordinates car state (core index)) ∧
+      ¬ (Target (glue (restriction carrierSupply coordinates car state
+            ((core index).erase carrier)) actual) ↔
+        Target (glue (restriction carrierSupply coordinates car state (core index))
+          actual)) ∧
       ∃ r ∈ coordinates, car r ⊆ core index ∧ carrier ∈ car r
 
 /-- The canonical deletion witnesses attached to a selected two-carrier core.
@@ -638,20 +643,20 @@ theorem twoCarrierDeletionWitnesses
     (core_eq :
       core index =
         essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state) :
+          (car_subset := car_subset) state actual) :
     TwoCarrierDeletionWitnesses (Target := Target) carrierSupply coordinates car
-      state entries core threshold index := by
+      state actual entries core threshold index := by
   refine ⟨two, ?_⟩
   intro carrier member
   have essentialMember :
       carrier ∈ essentialCore (Target := Target) carrierSupply coordinates car
-        (car_subset := car_subset) state := by
+        (car_subset := car_subset) state actual := by
     simpa [core_eq] using member
   have defect := deletion_targetDefect (Target := Target)
-    carrierSupply coordinates car (car_subset := car_subset) state
+    carrierSupply coordinates car (car_subset := car_subset) state actual
     essentialMember
   have declared := exists_forgotten_coordinate (Target := Target)
-    carrierSupply coordinates car car_subset state essentialMember
+    carrierSupply coordinates car car_subset state actual essentialMember
   refine ⟨?_, ?_⟩
   · simpa [core_eq] using defect
   · simpa [core_eq] using declared
@@ -666,17 +671,17 @@ def TwoCarrierDeletionWitnessFacts : Prop :=
       IndexedTwoCarrierCore entries core threshold index →
       core index =
         essentialCore (Target := Target) carrierSupply coordinates car
-          (car_subset := car_subset) state →
+          (car_subset := car_subset) state actual →
       TwoCarrierDeletionWitnesses (Target := Target) carrierSupply coordinates
-        car state entries core threshold index
+        car state actual entries core threshold index
 
 theorem twoCarrierDeletionWitnessFacts :
     TwoCarrierDeletionWitnessFacts (Target := Target) carrierSupply coordinates
-      car car_subset state := by
+      car car_subset state actual := by
   intro Index indexDec entries core threshold index two core_eq
   letI : DecidableEq Index := indexDec
   exact twoCarrierDeletionWitnesses (Target := Target) carrierSupply
-    coordinates car car_subset state entries core two core_eq
+    coordinates car car_subset state actual entries core two core_eq
 
 end TerminalTwoCarrier
 
@@ -691,6 +696,9 @@ variable (coordinates : Finset Coordinate)
 variable (car : Coordinate → Finset Carrier)
 variable (car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
 variable (state : Finset Coordinate → BoundaryPiece boundary)
+-- The one outside context the readings are glued into: the actual
+-- surroundings of the support (`G − B_u` for a graph-owned entry).
+variable (actual : OutsideContext boundary)
 
 /-- **`lem:typeA-unified-carriers`, the collapse-side contrapositive in raw
 carrier-core form.**
@@ -709,17 +717,17 @@ theorem two_le_essentialCore_card_of_alternatives_refuted
     (minimality :
       state (retained carrierSupply coordinates car
           (essentialCore (Target := Target) carrierSupply coordinates car
-            (car_subset := car_subset) state) \ crossing) =
+            (car_subset := car_subset) state actual) \ crossing) =
         restriction carrierSupply coordinates car state
           (essentialCore (Target := Target) carrierSupply coordinates car
-            (car_subset := car_subset) state) →
+            (car_subset := car_subset) state actual) →
       Alternatives)
     (refuted : ¬ Alternatives) :
     2 ≤ (essentialCore (Target := Target) carrierSupply coordinates car
-      (car_subset := car_subset) state).card := by
+      (car_subset := car_subset) state actual).card := by
   by_contra small
   exact refuted (smallCoreCollapse (Target := Target) carrierSupply coordinates
-    car car_subset state parity minimality (by omega))
+    car car_subset state actual parity minimality (by omega))
 
 end UnifiedSmallCoreBound
 

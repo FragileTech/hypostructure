@@ -76,11 +76,23 @@ def ExitFourFreeAt (data : Parameters) (object : Graph.FiniteObject.{u})
       ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
           data.threshold data.dischargeScale receiver package.outside peeled,
         witness.load = load) ∧
+    -- Stated about G: one boundary-degree fibre and the same target truth in
+    -- G's own surroundings `G − X`.
     ∀ pair : package.Q1OriginPair,
-      Graph.Response.TargetComplete Graph.BoundaryPiece.boundaryDegreeProfile
-        (Graph.HasCycleWithLength data.LengthOK)
-        (Graph.ExitFour.visibleResponsePiece pair.leftResponseCoordinate)
-        (Graph.ExitFour.visibleResponsePiece pair.rightResponseCoordinate)) ∨
+      (Graph.ExitFour.visibleResponsePiece
+          pair.leftResponseCoordinate).boundaryDegreeProfile =
+          (Graph.ExitFour.visibleResponsePiece
+            pair.rightResponseCoordinate).boundaryDegreeProfile ∧
+        (Graph.HasCycleWithLength data.LengthOK
+            (Graph.glue
+              (Graph.ExitFour.visibleResponsePiece pair.leftResponseCoordinate)
+              (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object
+                piece)) ↔
+          Graph.HasCycleWithLength data.LengthOK
+            (Graph.glue
+              (Graph.ExitFour.visibleResponsePiece pair.rightResponseCoordinate)
+              (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object
+                piece)))) ∨
   (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
       data.dischargeScale receiver peeled ∧
     ¬ ∃ witness : Graph.ExitFour.Witness
@@ -911,8 +923,7 @@ noncomputable abbrev TypeAExitSixGlobalStatement (data : Parameters)
           Classical.choose (delocalization.2.closedRepresentative covers)
         representative.LexicographicallySmaller object ∧
           Graph.MinimumDegreeAtLeast data.threshold representative ∧
-            (Graph.HasCycleWithLength data.LengthOK representative →
-              Graph.HasCycleWithLength data.LengthOK object)
+            ¬ Graph.HasCycleWithLength data.LengthOK representative
 
 /-- Node `[107]`, yes arm — exit `(7)` at the terminal state where exits
 `(4)`--`(6)` failed: an eligible load of the terminal receiver has a surviving

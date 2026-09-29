@@ -17,13 +17,21 @@ variable {receiver load : object.Vertex}
 example (datum : Q1TargetDefect Target support threshold scale receiver load) :
     (CanonicalMember.q1 datum).clause = ReceiverClause.visibleEntry := rfl
 
--- A Q1 datum must compare the two response pieces of its own selected pair.
--- An arbitrary target-defective graph replacement cannot occupy this field.
+-- A Q1 datum must compare the two response pieces of its own selected pair,
+-- read in G's own surroundings `G − X`.  An arbitrary target-defective graph
+-- replacement cannot occupy this field.
 example (datum : Q1TargetDefect Target support threshold scale receiver load) :
-    Response.TargetDefect Target
-      (visibleResponsePiece datum.pair.leftResponseCoordinate)
-      (visibleResponsePiece datum.pair.rightResponseCoordinate) :=
+    ¬ (Target (glue (visibleResponsePiece datum.pair.leftResponseCoordinate)
+        (Strategy.InterfaceReplacement.SupportAtom.outside object support)) ↔
+      Target (glue (visibleResponsePiece datum.pair.rightResponseCoordinate)
+        (Strategy.InterfaceReplacement.SupportAtom.outside object support))) :=
   datum.targetDefect
+
+-- Stated about G, a Q1 datum cannot occur at a target-avoiding G.
+example {L : Nat → Prop} (avoids : ¬ HasCycleWithLength L object)
+    (datum : Q1TargetDefect (HasCycleWithLength L) support threshold scale
+      receiver load) : False :=
+  datum.false_of_avoids avoids
 
 example (datum : Q5TargetDefect Target support threshold scale receiver load) :
     (CanonicalMember.q5 datum).clause = ReceiverClause.carrierDeletion := rfl
