@@ -176,9 +176,9 @@ theorem branchCertificate_rankReducing {data : Parameters}
   (branchCertificate?_spec_of_eq_some data object eq).2.2.2.2.1.2.2.2.2.2.1
 
 /-- **Node `[36]`, the context-validity test**, at the one certificate of `G`,
-stated about G: the readings it identifies agree in G's own rest `G − Z`, or
-some identified pair is separated there (the exact complement at the same
-certificate). -/
+stated about G: the pieces constructed from G that it identifies agree in G's
+own rest `G − Z`, or some identified pair is separated there (the exact
+complement at the same certificate). -/
 theorem contextDefect_or_contextUniversal (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (dependence : BranchDependenceStatement data object) :
@@ -197,8 +197,7 @@ theorem contextDefect_or_contextUniversal (data : Parameters)
 `lem:full-rank`, tex 9388: "the first is excluded by the definition of
 target-completeness").  The certificate's quotient is an admissible rank
 quotient of G's declared coordinates at `R₀`, so node `[12]` makes every two
-readings it identifies agree in `G − Z`.  (Lean improvement: `[36]`'s defect arm
-is empty at G.) -/
+constructed pieces it identifies agree in `G − Z`. -/
 theorem contextDefect_false_of_contextUniversality (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (universality : TargetCompleteContextUniversalityStatement data object)
@@ -207,17 +206,19 @@ theorem contextDefect_false_of_contextUniversality (data : Parameters)
   exact separated (universality.1 _ certificate.quotient left right identified).2
 
 /-- **Node `[36]` is decided at G**: the certificate of `G` is valid in every
-context of G.  Its readings, glued into `G − Z`, are subgraphs of G. -/
+context of G.  Its quotient is admissible, so condition (b) of
+`def:target-complete-quotient` holds at G for every two constructed pieces it
+identifies (`DeclaredQuotient.contextUniversal`). -/
 theorem contextUniversal_of_selection
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation}
     (data : Parameters) (object : Graph.FiniteObject.{u})
     (dependence : BranchDependenceStatement data object)
-    (selection : SelectionStatement BranchState Presentation presentation data object) :
+    (_selection : SelectionStatement BranchState Presentation presentation data object) :
     ContextUniversalStatement data object := by
   obtain ⟨certificate, eq, -⟩ := branchCertificate?_spec data object dependence
-  exact ⟨certificate, eq, fun left right _identified =>
-    Graph.readings_agree_in_rest selection.1 certificate.quotient.support left right⟩
+  exact ⟨certificate, eq, fun left right identified =>
+    certificate.quotient.contextUniversal left right identified⟩
 
 /-- **Node `[38]`: is the determination certified already at `C = R(P₀)`?**
 If the certificate's support lies in the remainder, it misses a window vertex of

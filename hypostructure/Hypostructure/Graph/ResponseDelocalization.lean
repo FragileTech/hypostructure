@@ -56,9 +56,10 @@ target-complete only after adjoining the larger connected support `Z ⊋ B_u`.
 
 The admissibility of the identification at `Z` is `DeclaredQuotient`: its
 `connected` field is the clause's *connected* support, its `carries` field is
-that `Z` carries the declared coordinate family, its `fibrewise` field is
-target-completeness (a) at `Z` (condition (b) is decided at G,
-`readings_agree_in_rest`), and its two
+that `Z` carries the declared coordinate family, its `fibrewise` and
+`contextUniversal` fields are target-completeness (a) and (b) at `Z` over the
+pieces constructed from G there (`GConstructedPiece`, read in `G − Z`), and its
+two
 representative fields are `def:admissible-rank-quotient`'s proper and closed
 clauses.  Nothing here re-derives them. -/
 structure Delocalization (Baseline Target : FiniteObject.{u} → Prop)

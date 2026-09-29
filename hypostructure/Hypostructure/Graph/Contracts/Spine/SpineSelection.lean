@@ -123,13 +123,13 @@ theorem replacementExclusion_of_selection
   Graph.Strategy.InterfaceReplacement.not_replacementSupport_of_minimal
     (fun H smaller baseline => selection.2 H smaller baseline)
 
-/-- **Node `[11]`, `lem:degree-profile-fibres`** (tex 6088), at G's readings.
-The paper's proof: "condition (a) in the definition of a target-complete
-quotient requires the quotient to preserve the boundary degree profile ... an
-identification of `X₁` with `X₂` would identify two different boundary-degree
-profiles, so it violates condition (a)".  Every admissible quotient of G's
-declared coordinates carries condition (a) as its `fibrewise` clause
-(`def:admissible-rank-quotient`, which requires target-completeness). -/
+/-- **Node `[11]`, `lem:degree-profile-fibres`** (tex 6088), at the pieces
+constructed from G.  The paper's proof: "condition (a) in the definition of a
+target-complete quotient requires the quotient to preserve the boundary degree
+profile ... an identification of `X₁` with `X₂` would identify two different
+boundary-degree profiles, so it violates condition (a)".  Every admissible
+quotient of G's declared coordinates carries condition (a) as its `fibrewise`
+clause (`def:admissible-rank-quotient`, which requires target-completeness). -/
 theorem degreeProfileFibres_holds (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     DegreeProfileFibresStatement data object :=
@@ -137,12 +137,13 @@ theorem degreeProfileFibres_holds (data : Parameters)
     different (quotient.fibrewise left right identified)
 
 /-- **Node `[12]`, `lem:context-universality`** (tex 6106), stated about G,
-reading node `[11]` and the selection.  Two readings an admissible quotient of
-G's declared coordinates identifies lie in one boundary-degree fibre (node
-`[11]`, contrapositive).  Their responses in G's own rest `G − Z` agree, and no
-reading of G at any support closes a power-of-two cycle in `G − Z`, because
-such a gluing is a subgraph of G, which avoids the target (the decided G-form
-of "no context separates them"). -/
+reading node `[11]` and the selection.  Two constructed pieces an admissible
+quotient of G's declared coordinates identifies lie in one boundary-degree
+fibre (node `[11]`, contrapositive) and have the same response in G's own rest
+`G − Z` (condition (b) of the admissible quotient,
+`DeclaredQuotient.contextUniversal`).  No reading of G at any support closes a
+power-of-two cycle in `G − Z`: such a gluing is a subgraph of G, which avoids
+the target. -/
 theorem targetCompleteContextUniversality_of_degreeProfileFibres
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation}
@@ -156,6 +157,6 @@ theorem targetCompleteContextUniversality_of_degreeProfileFibres
       support reading⟩
   · by_contra different
     exact fibres region quotient left right different identified
-  · exact Graph.readings_agree_in_rest selection.1 quotient.support left right
+  · exact quotient.contextUniversal left right identified
 
 end Hypostructure.Graph.Contracts.Spine

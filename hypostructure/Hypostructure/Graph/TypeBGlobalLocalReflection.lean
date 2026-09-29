@@ -120,10 +120,10 @@ structure GlobalLocalReflectionACE
       TypeBDirectCycle.DirectCycleFree object order LengthOK packing hub
   /-- Manuscript clause (d), stated about G.  Every rank-reducing
   identification attempted on the literal overlap-coordinate schedule is routed
-  by the declared response calculus over G's own readings: degree-profile
-  failure, a proper replacement, or a smaller closed representative.  The
-  contextual target-defect arm is empty at G (two readings of G agree in
-  `G − Z`, `readings_agree_in_rest`) and is not an arm. -/
+  by the declared response calculus over the pieces constructed from G at the
+  overlap support: degree-profile failure, a target defect in G's own rest
+  `G − Z` (two identified realizations separated there), a proper replacement,
+  or a smaller closed representative. -/
   replacementObstruction :
     ∀ attempt : AttemptedQuotient (TypeAB.Baseline presentation)
         presentation.Target object
@@ -134,9 +134,11 @@ structure GlobalLocalReflectionACE
       ¬ Set.InjOn attempt.label
         ↑(overlapCoordinateSchedule object threshold dischargeScale packing
           core assigned obstruction).toFinset →
-      (∃ first second : Finset object.Vertex, attempt.Identifies first second ∧
-          readingProfile object attempt.support first ≠
-            readingProfile object attempt.support second) ∨
+      (∃ first second, attempt.Identifies first second ∧
+          first.profile ≠ second.profile) ∨
+        (∃ first second, attempt.Identifies first second ∧
+          ¬ (first.targetOf presentation.Target ↔
+            second.targetOf presentation.Target)) ∨
         Strategy.InterfaceReplacement.ReplacementSupport
           (TypeAB.Baseline presentation) presentation.Target object
           attempt.support ∨

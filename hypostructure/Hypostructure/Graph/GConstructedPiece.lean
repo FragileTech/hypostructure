@@ -156,14 +156,33 @@ noncomputable def toPiece :
   | splice a b D => splicePiece object Z a b D
   | switch a a' b b' => edgePiece object Z (doubleSwitchGraph object a a' b b')
 
+/-- **G's response of a constructed piece to a target predicate**: the piece
+glued into G's own surroundings `G − Z` satisfies `Target`. -/
+def targetOf (Target : FiniteObject.{u} → Prop) (P : GConstructedPiece object Z) :
+    Prop :=
+  Target (glue P.toPiece (SupportAtom.outside object Z))
+
 /-- **G's target response of a constructed piece**: the piece glued into G's
 own surroundings `G − Z` carries an accepted cycle. -/
 def response (LengthOK : Nat → Prop) (P : GConstructedPiece object Z) : Prop :=
   HasCycleWithLength LengthOK (glue P.toPiece (SupportAtom.outside object Z))
 
+@[simp] theorem targetOf_hasCycle (LengthOK : Nat → Prop)
+    (P : GConstructedPiece object Z) :
+    P.targetOf (HasCycleWithLength LengthOK) = P.response LengthOK := rfl
+
 /-- The boundary-degree profile of a constructed piece. -/
 noncomputable abbrev profile (P : GConstructedPiece object Z) :=
   P.toPiece.boundaryDegreeProfile
+
+/-- **Two constructed pieces separated by G's surroundings**: one boundary-degree
+fibre, different target truth in `G − Z`.  This is the G-form of "two
+realizations in the same boundary-degree fibre and a compatible outside context
+distinguishing their target predicates" (`def:typeA-exit4-peeling`,
+`def:target-complete-quotient`). -/
+def Separated (Target : FiniteObject.{u} → Prop)
+    (P Q : GConstructedPiece object Z) : Prop :=
+  P.profile = Q.profile ∧ ¬ (P.targetOf Target ↔ Q.targetOf Target)
 
 @[simp] theorem toPiece_own :
     (own : GConstructedPiece object Z).toPiece = SupportAtom.piece object Z := rfl
@@ -285,6 +304,25 @@ theorem response_fold_of_minimal {L : Nat → Prop} {k : Nat} (two : 2 ≤ k)
     (fold keep remove different noCommon : GConstructedPiece object Z).response L :=
   minimal _ (fold_glue_smaller keep remove different)
     (fold_glue_baseline keep remove different noCommon two baseline)
+
+/-- **At a minimal target-avoiding G a fold and G's own piece are separated in
+`G − Z`**: one boundary-degree fibre, and the fold carries a target cycle there
+while G's piece does not. -/
+theorem separated_fold_own_of_minimal {L : Nat → Prop} {k : Nat} (two : 2 ≤ k)
+    (baseline : MinimumDegreeAtLeast k object)
+    (avoids : ¬ HasCycleWithLength L object)
+    (minimal : ∀ H : FiniteObject.{u}, H.LexicographicallySmaller object →
+      MinimumDegreeAtLeast k H → HasCycleWithLength L H)
+    (keep remove : SupportAtom.PieceInternal object Z)
+    (different : keep ≠ remove)
+    (noCommon : ∀ common : object.Vertex,
+      ¬ FiniteObject.IsCommonNeighbor keep.1 remove.1 common) :
+    (fold keep remove different noCommon : GConstructedPiece object Z).Separated
+      (HasCycleWithLength L) own :=
+  ⟨profile_fold keep remove different noCommon, fun same =>
+    not_response_own avoids
+      (same.mp (response_fold_of_minimal two baseline minimal keep remove
+        different noCommon))⟩
 
 /-- **The fold's target cycle lifts to G**: at a target-avoiding G, an accepted
 cycle of the fold glued into `G − Z` gives an accepted-length path of G between

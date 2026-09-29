@@ -268,15 +268,15 @@ theorem remainderSupport_ssubset_delocalizationSupport (data : Parameters)
     fun contained => outside fun vertex member => ?_⟩
   exact contained (by simp [delocalizationSupport, member])
 
-/-- **The readings of G a quotient identifies.**  `def:target-complete-quotient`
+/-- **The realizations a quotient identifies.**  `def:target-complete-quotient`
 governs exactly the pairs of states that carry the same quotient datum, which
-here is the same value at every declared raw curvature test; the states are G's
-readings at the quotient support `Z` (G's piece at `Z` restricted to `left`,
-resp. `right`). -/
+here is the same value at every declared raw curvature test; the states are the
+pieces constructed from G at the quotient support `Z`
+(`Graph.GConstructedPiece`). -/
 def Identified {data : Parameters} {object : Graph.FiniteObject.{u}}
     {packing : Finset (Finset object.Vertex)}
     (quotient : remainderQuotient data object packing)
-    (left right : Finset object.Vertex) : Prop :=
+    (left right : Graph.GConstructedPiece object quotient.support) : Prop :=
   ∀ test ∈ remainderCurvatureTests object packing,
     quotient.value left (quotient.label test) =
       quotient.value right (quotient.label test)
@@ -2686,27 +2686,27 @@ noncomputable abbrev CycleRankConstraintStatement (object : Graph.FiniteObject.{
   object.vertexCount + 2 ≤
     2 * (object.edgeCount + 1 - object.vertexCount)
 
-/-- **Two readings of G a quotient of G's region identifies.**  An admissible
+/-- **Two realizations a quotient of G's region identifies.**  An admissible
 rank quotient of the declared raw curvature coordinates of a region `X ⊆ V(G)`
 (`Graph.CurvatureQuotient`, the quotient system `r_Ω` is computed from,
-`def:admissible-rank-quotient`) identifies two of G's readings at its support
-`Z` (G's piece at `Z` restricted to `left`, resp. `right`) when it gives them
-the same value at every declared coordinate. -/
+`def:admissible-rank-quotient`) identifies two pieces constructed from G at its
+support `Z` (`Graph.GConstructedPiece`) when it gives them the same value at
+every declared coordinate. -/
 def QuotientIdentifies {data : Parameters} {object : Graph.FiniteObject.{u}}
     {region : Finset object.Vertex}
     (quotient : Graph.CurvatureQuotient (Graph.MinimumDegreeAtLeast data.threshold)
       (Graph.HasCycleWithLength data.LengthOK) object region)
-    (left right : Finset object.Vertex) : Prop :=
+    (left right : Graph.GConstructedPiece object quotient.support) : Prop :=
   ∀ test ∈ object.internalWedgeFamily region,
     quotient.value left (quotient.label test) =
       quotient.value right (quotient.label test)
 
-/-- Node `[11]`, `lem:degree-profile-fibres` (tex 6088), at G's readings: "if
+/-- Node `[11]`, `lem:degree-profile-fibres` (tex 6088), at G: "if
 `𝐝_∂(X₁) ≠ 𝐝_∂(X₂)`, then no target-complete quotient identifies `X₁` and
 `X₂`".  For every region `X ⊆ V(G)`, every admissible rank quotient of `X`'s
-declared coordinates on G, and every two readings of G at its support `Z ⊆ G`
-(on the boundary `∂Z` of G): readings in different boundary-degree fibres are
-not identified. -/
+declared coordinates on G, and every two pieces constructed from G at its
+support `Z` (on the boundary `∂Z` of G): realizations in different
+boundary-degree fibres are not identified. -/
 noncomputable abbrev DegreeProfileFibresStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
@@ -2715,9 +2715,8 @@ noncomputable abbrev DegreeProfileFibresStatement
     (quotient : Graph.CurvatureQuotient
       (Graph.MinimumDegreeAtLeast data.threshold)
       (Graph.HasCycleWithLength data.LengthOK) object region)
-    (left right : Finset object.Vertex),
-    Graph.readingProfile object quotient.support left ≠
-        Graph.readingProfile object quotient.support right →
+    (left right : Graph.GConstructedPiece object quotient.support),
+    left.profile ≠ right.profile →
       ¬ QuotientIdentifies quotient left right
 
 /-- Node `[12]`, `lem:context-universality` (tex 6106), stated about G.
@@ -2726,18 +2725,20 @@ noncomputable abbrev DegreeProfileFibresStatement
   `X`.  Then [they] have the same target response against every `T`-boundaried
   context": for every region `X ⊆ V(G)`, every admissible rank quotient of its
   declared coordinates on G with determination support `Z`, and every two
-  readings of G at `Z` that it identifies, the two readings lie in one
-  boundary-degree fibre (node `[11]`) and have the same power-of-two-cycle
-  response in G's own rest `G − Z` (`ActualContext.actualGlue`).
+  pieces constructed from G at `Z` that it identifies
+  (`Graph.GConstructedPiece`), the two lie in one boundary-degree fibre (node
+  `[11]`) and have the same power-of-two-cycle response in G's own rest `G − Z`.
 * "Consequently any identification valid only for the actual outside context
-  `G − X`, but not for all `T`-boundaried contexts, is target-defective": about
-  G there is no such identification — no reading of G at any support `Z`
-  closes a power-of-two cycle in `G − Z` (it is a subgraph of G), so no context
-  of G separates two readings.  This decided fact is what routes G at the
-  context-validity test `[36]`: its defect arm `[37]` is empty at G.
+  `G − X`, but not for all `T`-boundaried contexts, is target-defective": the
+  one context of G at `∂Z` is `G − Z`, and a reading of G glued there is a
+  subgraph of G, so it closes no power-of-two cycle.  The realizations that
+  can separate are the constructed pieces that are not subgraphs of G (folds,
+  swaps, splices, switches); an admissible quotient never identifies a
+  separated pair (first clause).
 
 (G-only restatement: the quantification over every `∂Z`-boundaried context
-spoke about contexts that are not part of G.) -/
+spoke about contexts that are not part of G; the realizations are the pieces
+constructed from G.) -/
 noncomputable abbrev TargetCompleteContextUniversalityStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
@@ -2746,14 +2747,10 @@ noncomputable abbrev TargetCompleteContextUniversalityStatement
     (quotient : Graph.CurvatureQuotient
       (Graph.MinimumDegreeAtLeast data.threshold)
       (Graph.HasCycleWithLength data.LengthOK) object region)
-    (left right : Finset object.Vertex),
+    (left right : Graph.GConstructedPiece object quotient.support),
     QuotientIdentifies quotient left right →
-      Graph.readingProfile object quotient.support left =
-          Graph.readingProfile object quotient.support right ∧
-        (Graph.HasCycleWithLength data.LengthOK
-            (Graph.ActualContext.actualGlue object quotient.support left) ↔
-          Graph.HasCycleWithLength data.LengthOK
-            (Graph.ActualContext.actualGlue object quotient.support right))) ∧
+      left.profile = right.profile ∧
+        (left.response data.LengthOK ↔ right.response data.LengthOK)) ∧
   (∀ support reading : Finset object.Vertex,
     ¬ Graph.HasCycleWithLength data.LengthOK
       (Graph.ActualContext.actualGlue object support reading))

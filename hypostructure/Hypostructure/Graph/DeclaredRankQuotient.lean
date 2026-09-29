@@ -2,6 +2,7 @@ import Hypostructure.Core.TargetRank
 import Hypostructure.Graph.SupportComponents
 import Hypostructure.Graph.InterfaceReplacement
 import Hypostructure.Graph.ActualContext
+import Hypostructure.Graph.GConstructedPiece
 
 /-!
 # `def:admissible-rank-quotient` at a declared coordinate family of G
@@ -16,19 +17,22 @@ support of a coordinate are parameters; nothing below knows what a coordinate
 is.
 
 **Everything is stated about G.**  A quotient lives on a connected support
-`Z ⊆ V(G)`.  The states it identifies are G's own readings at `Z`: for
-`X ⊆ V(G)`, the edge restriction `SupportAtom.retainedPiece G Z X` of G's piece
-at `Z` to `X`.  `def:target-complete-quotient` asks two things of an
-identification:
+`Z ⊆ V(G)`.  The states it identifies — its *realizations* — are the pieces
+constructed from G at `Z` (`GConstructedPiece G Z`: G's piece, its readings,
+the folds of two interior vertices with no common neighbour, transplants,
+rerouted swaps, splices and double switches), and the one context they are
+glued into is G's own rest `G − Z`.  `def:target-complete-quotient` asks two
+things of an identification:
 
-* (a) the two readings lie in one boundary-degree fibre
-  (`lem:degree-profile-fibres`) — a genuine test about G's readings, kept as the
-  quotient's `fibrewise` clause and as the guard of an attempt;
-* (b) no context separates them (`lem:context-universality`).  About G this is
-  **decided**: a reading of G glued into G's own rest `G − Z` is a subgraph of
-  G (`ActualContext.not_target_actualGlue`), so any two readings agree there
-  (`readings_agree_in_rest`).  The separation arm is empty at G and is not an
-  arm of the routing below.
+* (a) the two realizations lie in one boundary-degree fibre
+  (`lem:degree-profile-fibres`) — the quotient's `fibrewise` clause;
+* (b) `G − Z` does not separate them (`lem:context-universality`) — the
+  quotient's `contextUniversal` clause.  This is a genuine test: a reading of G
+  glued into `G − Z` is a subgraph of G (`readings_agree_in_rest`), but a fold
+  glued into `G − Z` is a strictly smaller baseline graph, which at a minimal G
+  carries a target cycle (`GConstructedPiece.separated_fold_own_of_minimal`).
+  An attempt that identifies two separated realizations is target-defective,
+  and that is an arm of the routing below.
 
 The representative an admissible rank reduction must supply is the paper's: a
 strictly smaller `∂Z`-boundaried piece `X'` — not a reading of G — with G's
@@ -77,15 +81,32 @@ theorem not_closedRepresentative_of_minimal {Baseline Target : FiniteObject.{u} 
   rintro ⟨representative, smaller, baseline, noTarget⟩
   exact noTarget (minimal representative smaller baseline)
 
+/-! ## Target-completeness at G -/
+
+/-- **`def:target-complete-quotient` at G** for a quotient whose values are read
+on the pieces constructed from G at `Z`: every two realizations it identifies
+lie in one boundary-degree fibre (a) and have the same target truth in G's own
+rest `G − Z` (b). -/
+def TargetCompleteAt (Target : FiniteObject.{u} → Prop)
+    {object : FiniteObject.{u}} {support : Finset object.Vertex}
+    {Coordinate : Type u} (family : Finset Coordinate)
+    {Label Value : Type (u + 1)} (label : Coordinate → Label)
+    (value : GConstructedPiece object support → Label → Value) : Prop :=
+  ∀ first second : GConstructedPiece object support,
+    (∀ coordinate ∈ family, value first (label coordinate) =
+      value second (label coordinate)) →
+    first.profile = second.profile ∧
+      (first.targetOf Target ↔ second.targetOf Target)
+
 /-! ## Attempted quotients -/
 
 /-- **A quotient the proof attempts on a declared coordinate family of G.**
 
-`def:admissible-rank-quotient` without assuming the attempt succeeds.  The
-states are G's readings at the support.  The two representative clauses are
-guarded by condition (a) of target-completeness — identified readings lie in
-one boundary-degree fibre; condition (b) holds at G outright
-(`readings_agree_in_rest`). -/
+`def:admissible-rank-quotient` without assuming the attempt succeeds.  Its
+realizations are the pieces constructed from G at the support.  The two
+representative clauses are guarded by target-completeness at G
+(`TargetCompleteAt`): identified realizations lie in one boundary-degree fibre
+and agree in `G − Z`. -/
 structure AttemptedQuotient (Baseline Target : FiniteObject.{u} → Prop)
     (object : FiniteObject.{u}) {Coordinate : Type u}
     (family : Finset Coordinate)
@@ -103,29 +124,22 @@ structure AttemptedQuotient (Baseline Target : FiniteObject.{u} → Prop)
   Value : Type (u + 1)
   /-- The quotient map on the declared coordinate labels. -/
   label : Coordinate → Label
-  /-- The value G's reading `retainedPiece object support X` gives at a
-  quotient label. -/
-  value : Finset object.Vertex → Label → Value
-  /-- `def:admissible-rank-quotient`, proper clause.  A rank-reducing quotient
-  at a proper support whose identifications stay in one boundary-degree fibre
-  is represented by a strictly smaller proper representative: the hypotheses
-  of `lem:replacement` at `Z`. -/
+  /-- The value a piece constructed from G at the support gives at a quotient
+  label. -/
+  value : GConstructedPiece object support → Label → Value
+  /-- `def:admissible-rank-quotient`, proper clause.  A rank-reducing
+  target-complete quotient at a proper support is represented by a strictly
+  smaller proper representative: the hypotheses of `lem:replacement` at `Z`. -/
   properRepresentative : (∃ vertex, vertex ∉ support) →
     ¬ Set.InjOn label ↑family →
-    (∀ first second : Finset object.Vertex,
-      (∀ coordinate ∈ family, value first (label coordinate) =
-        value second (label coordinate)) →
-      readingProfile object support first = readingProfile object support second) →
+    TargetCompleteAt Target family label value →
     ReplacementSupport Baseline Target object support
   /-- `def:admissible-rank-quotient`, closed clause.  Likewise at `Z = G`: a
   strictly smaller admissible closed representative, a baseline graph with no
   target cycle (`profile_∅(H) ⊆ profile_∅(G) = ∅`). -/
   closedRepresentative : (∀ vertex, vertex ∈ support) →
     ¬ Set.InjOn label ↑family →
-    (∀ first second : Finset object.Vertex,
-      (∀ coordinate ∈ family, value first (label coordinate) =
-        value second (label coordinate)) →
-      readingProfile object support first = readingProfile object support second) →
+    TargetCompleteAt Target family label value →
     ∃ representative : FiniteObject.{u},
       representative.LexicographicallySmaller object ∧
         Baseline representative ∧ ¬ Target representative
@@ -138,25 +152,25 @@ variable {family : Finset Coordinate}
 variable {coordinateSupport : Coordinate → Finset object.Vertex}
 
 /-- Read an attempted declared quotient through the rank calculus.  Its
-realizations are G's readings at the support. -/
+realizations are the pieces constructed from G at the support. -/
 def toRankQuotient
     (attempt : AttemptedQuotient Baseline Target object family coordinateSupport) :
     Core.TargetRank.RankQuotient.{u, u + 1} Coordinate where
   Label := attempt.Label
   Value := attempt.Value
-  Realization := ULift.{u + 1} (Finset object.Vertex)
+  Realization := ULift.{u + 1} (GConstructedPiece object attempt.support)
   label := attempt.label
-  value := fun reading => attempt.value reading.down
+  value := fun realization => attempt.value realization.down
 
 @[simp] theorem toRankQuotient_label
     (attempt : AttemptedQuotient Baseline Target object family coordinateSupport) :
     attempt.toRankQuotient.label = attempt.label := rfl
 
-/-- Two of G's readings at the support that the attempt does not separate on
-the declared family. -/
+/-- Two realizations at the support that the attempt does not separate on the
+declared family. -/
 def Identifies (attempt : AttemptedQuotient Baseline Target object family
       coordinateSupport)
-    (first second : Finset object.Vertex) : Prop :=
+    (first second : GConstructedPiece object attempt.support) : Prop :=
   ∀ coordinate ∈ family,
     attempt.value first (attempt.label coordinate) =
       attempt.value second (attempt.label coordinate)
@@ -167,59 +181,73 @@ A rank-reducing attempted determination falls into the cases the proofs of
 `lem:sparse-pair-dependence-exit`, `lem:mixed-sparse-spine-dependence` and
 `prop:sparse-entropy-sandwich-with-blockers` run through, in their order:
 
-1. it identifies two of G's readings with **different boundary degree
-   profiles**, which `lem:degree-profile-fibres` forbids a target-complete
-   quotient from doing — the offending boundary-degree entry is the blocker of
-   type (d);
-2. (the manuscript's context-separation case is empty at G: any two readings
-   agree in `G − Z`, `readings_agree_in_rest`);
+1. it identifies two realizations with **different boundary degree profiles**,
+   which `lem:degree-profile-fibres` forbids a target-complete quotient from
+   doing — the offending boundary-degree entry is the blocker of type (d);
+2. it identifies two realizations that **G's own rest `G − Z` separates**
+   (`lem:context-universality`) — the identification is target-defective;
 3. it is target-complete on a **proper** support, so admissibility supplies a
    replacement of that support — the exit of type (c);
 4. it is target-complete on the **whole graph**, so admissibility supplies a
    strictly smaller closed representative — the delocalization exit.
 
-Nothing is chosen: the split is the fibre test, then
+Nothing is chosen: the split is the fibre test, the separation test, then
 `SupportAtom.classifyScope` on the determination support. -/
 theorem route (attempt : AttemptedQuotient Baseline Target object family
       coordinateSupport)
     (reducing : ¬ Set.InjOn attempt.label ↑family) :
     (∃ first second, attempt.Identifies first second ∧
-        readingProfile object attempt.support first ≠
-          readingProfile object attempt.support second) ∨
+        first.profile ≠ second.profile) ∨
+      (∃ first second, attempt.Identifies first second ∧
+        ¬ (first.targetOf Target ↔ second.targetOf Target)) ∨
       ReplacementSupport Baseline Target object attempt.support ∨
       (∃ representative : FiniteObject.{u},
         representative.LexicographicallySmaller object ∧
           Baseline representative ∧ ¬ Target representative) := by
   classical
   by_cases fibrewise :
-      ∀ first second : Finset object.Vertex, attempt.Identifies first second →
-        readingProfile object attempt.support first =
-          readingProfile object attempt.support second
-  · match SupportAtom.classifyScope object attempt.support with
-    | .proper vertex outside =>
-        exact Or.inr (Or.inl
-          (attempt.properRepresentative ⟨vertex, outside⟩ reducing fibrewise))
-    | .closed covers =>
-        exact Or.inr (Or.inr
-          (attempt.closedRepresentative covers reducing fibrewise))
+      ∀ first second : GConstructedPiece object attempt.support,
+        attempt.Identifies first second → first.profile = second.profile
+  · by_cases universal :
+        ∀ first second : GConstructedPiece object attempt.support,
+          attempt.Identifies first second →
+            (first.targetOf Target ↔ second.targetOf Target)
+    · have complete : TargetCompleteAt Target family attempt.label attempt.value :=
+        fun first second identified =>
+          ⟨fibrewise first second identified, universal first second identified⟩
+      match SupportAtom.classifyScope object attempt.support with
+      | .proper vertex outside =>
+          exact Or.inr (Or.inr (Or.inl
+            (attempt.properRepresentative ⟨vertex, outside⟩ reducing complete)))
+      | .closed covers =>
+          exact Or.inr (Or.inr (Or.inr
+            (attempt.closedRepresentative covers reducing complete)))
+    · refine Or.inr (Or.inl ?_)
+      by_contra absent
+      exact universal fun first second identifies =>
+        Classical.byContradiction fun separated =>
+          absent ⟨first, second, identifies, separated⟩
   · refine Or.inl ?_
     by_contra absent
     exact fibrewise fun first second identifies =>
       Classical.byContradiction fun different =>
         absent ⟨first, second, identifies, different⟩
 
-/-- **At a minimal G a rank-reducing attempt has a type-(d) profile blocker.**
-Its replacement and closed-representative arms are refuted by minimality. -/
-theorem fibre_of_minimal (attempt : AttemptedQuotient Baseline Target object family
+/-- **At a minimal G a rank-reducing attempt has a type-(d) profile blocker or
+a target defect in `G − Z`.**  Its replacement and closed-representative arms
+are refuted by minimality. -/
+theorem defect_of_minimal (attempt : AttemptedQuotient Baseline Target object family
       coordinateSupport)
     (reducing : ¬ Set.InjOn attempt.label ↑family)
     (minimal : ∀ H : FiniteObject.{u}, H.LexicographicallySmaller object →
       Baseline H → Target H) :
-    ∃ first second, attempt.Identifies first second ∧
-      readingProfile object attempt.support first ≠
-        readingProfile object attempt.support second := by
-  rcases attempt.route reducing with blocker | replacement | closed
-  · exact blocker
+    (∃ first second, attempt.Identifies first second ∧
+        first.profile ≠ second.profile) ∨
+      (∃ first second, attempt.Identifies first second ∧
+        ¬ (first.targetOf Target ↔ second.targetOf Target)) := by
+  rcases attempt.route reducing with blocker | defect | replacement | closed
+  · exact Or.inl blocker
+  · exact Or.inr defect
   · exact absurd replacement (not_replacementSupport_of_minimal minimal _)
   · exact absurd closed (not_closedRepresentative_of_minimal minimal)
 
@@ -229,9 +257,10 @@ end AttemptedQuotient
 
 /-- **An admissible rank quotient of a declared coordinate family of G.**
 
-`def:admissible-rank-quotient` at G: identified readings lie in one
-boundary-degree fibre (condition (a), `fibrewise`); condition (b) is decided at
-G (`readings_agree_in_rest`); and a rank reduction is represented — at
+`def:admissible-rank-quotient` at G, with the pieces constructed from G at the
+support as realizations: identified realizations lie in one boundary-degree
+fibre (condition (a), `fibrewise`) and agree in G's own rest `G − Z`
+(condition (b), `contextUniversal`); and a rank reduction is represented — at
 `Z ⊊ G` by a replacement of `Z` (`ReplacementSupport`), at `Z = G` by a strictly
 smaller closed baseline graph with no target cycle. -/
 structure DeclaredQuotient (Baseline Target : FiniteObject.{u} → Prop)
@@ -250,15 +279,21 @@ structure DeclaredQuotient (Baseline Target : FiniteObject.{u} → Prop)
   Value : Type (u + 1)
   /-- The quotient map on the declared coordinate labels. -/
   label : Coordinate → Label
-  /-- The value G's reading `retainedPiece object support X` gives at a
-  quotient label. -/
-  value : Finset object.Vertex → Label → Value
-  /-- `def:target-complete-quotient` (a): two of G's readings carrying the same
+  /-- The value a piece constructed from G at the support gives at a quotient
+  label. -/
+  value : GConstructedPiece object support → Label → Value
+  /-- `def:target-complete-quotient` (a): two realizations carrying the same
   quotient data lie in the same boundary-degree fibre. -/
-  fibrewise : ∀ first second : Finset object.Vertex,
+  fibrewise : ∀ first second : GConstructedPiece object support,
     (∀ coordinate ∈ family, value first (label coordinate) =
       value second (label coordinate)) →
-    readingProfile object support first = readingProfile object support second
+    first.profile = second.profile
+  /-- `def:target-complete-quotient` (b), at G: two realizations carrying the
+  same quotient data have the same target truth in G's own rest `G − Z`. -/
+  contextUniversal : ∀ first second : GConstructedPiece object support,
+    (∀ coordinate ∈ family, value first (label coordinate) =
+      value second (label coordinate)) →
+    (first.targetOf Target ↔ second.targetOf Target)
   /-- `def:admissible-rank-quotient`, proper clause. -/
   properRepresentative : (∃ vertex, vertex ∉ support) →
     ¬ Set.InjOn label ↑family →
@@ -278,45 +313,46 @@ variable {family : Finset Coordinate}
 variable {coordinateSupport : Coordinate → Finset object.Vertex}
 
 /-- The rank calculus reads an admissible quotient through its labelling and its
-responses on G's readings at the support. -/
+responses on the pieces constructed from G at the support. -/
 def toRankQuotient
     (quotient : DeclaredQuotient Baseline Target object family coordinateSupport) :
     Core.TargetRank.RankQuotient.{u, u + 1} Coordinate where
   Label := quotient.Label
   Value := quotient.Value
-  Realization := ULift.{u + 1} (Finset object.Vertex)
+  Realization := ULift.{u + 1} (GConstructedPiece object quotient.support)
   label := quotient.label
-  value := fun reading => quotient.value reading.down
+  value := fun realization => quotient.value realization.down
 
 @[simp] theorem toRankQuotient_label
     (quotient : DeclaredQuotient Baseline Target object family coordinateSupport) :
     quotient.toRankQuotient.label = quotient.label := rfl
 
-/-- Two of G's readings at the support that the quotient identifies. -/
+/-- Two realizations at the support that the quotient identifies. -/
 def Identifies
     (quotient : DeclaredQuotient Baseline Target object family coordinateSupport)
-    (first second : Finset object.Vertex) : Prop :=
+    (first second : GConstructedPiece object quotient.support) : Prop :=
   ∀ coordinate ∈ family,
     quotient.value first (quotient.label coordinate) =
       quotient.value second (quotient.label coordinate)
 
 /-- **`lem:degree-profile-fibres` and `lem:context-universality`, at G.**  Two
-readings an admissible quotient identifies lie in one boundary-degree fibre
-(its clause (a)) and agree in `G − Z` (decided at G). -/
-theorem targetComplete_of_identified {LengthOK : Nat → Prop}
-    (quotient : DeclaredQuotient Baseline (HasCycleWithLength LengthOK) object family
-      coordinateSupport)
-    (avoids : ¬ HasCycleWithLength LengthOK object)
-    {first second : Finset object.Vertex}
+realizations an admissible quotient identifies lie in one boundary-degree fibre
+(its clause (a)) and agree in `G − Z` (its clause (b)). -/
+theorem targetComplete_of_identified
+    (quotient : DeclaredQuotient Baseline Target object family coordinateSupport)
+    {first second : GConstructedPiece object quotient.support}
     (identified : quotient.Identifies first second) :
-    readingProfile object quotient.support first =
-        readingProfile object quotient.support second ∧
-      (HasCycleWithLength LengthOK
-          (ActualContext.actualGlue object quotient.support first) ↔
-        HasCycleWithLength LengthOK
-          (ActualContext.actualGlue object quotient.support second)) :=
+    first.profile = second.profile ∧
+      (first.targetOf Target ↔ second.targetOf Target) :=
   ⟨quotient.fibrewise first second identified,
-    readings_agree_in_rest avoids quotient.support first second⟩
+    quotient.contextUniversal first second identified⟩
+
+/-- An admissible quotient is target-complete at G. -/
+theorem targetCompleteAt
+    (quotient : DeclaredQuotient Baseline Target object family coordinateSupport) :
+    TargetCompleteAt Target family quotient.label quotient.value :=
+  fun _first _second identified =>
+    quotient.targetComplete_of_identified identified
 
 /-- The admissible quotient, read as an attempt.  Its conditional representative
 clauses are its unconditional ones, so nothing is added. -/
@@ -330,9 +366,9 @@ def toAttempt
   Value := quotient.Value
   label := quotient.label
   value := quotient.value
-  properRepresentative proper reducing _fibrewise :=
+  properRepresentative proper reducing _complete :=
     quotient.properRepresentative proper reducing
-  closedRepresentative covers reducing _fibrewise :=
+  closedRepresentative covers reducing _complete :=
     quotient.closedRepresentative covers reducing
 
 /-- **`lem:curvature-dependence-routing` for an admissible quotient.**
