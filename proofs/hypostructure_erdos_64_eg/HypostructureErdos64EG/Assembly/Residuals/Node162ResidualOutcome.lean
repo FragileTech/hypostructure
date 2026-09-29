@@ -138,6 +138,7 @@ theorem node162Return_tauAtOrAbove
     [FactKeys.Has (K .coldFirstFailureOccurrence) known]
     [FactKeys.Has (K .coldCutStatesDistinct) known]
     [FactKeys.Has (K .coldDenseHeavyEntryResidual) known]
+    [FactKeys.Has (K .coldCorridorInducedRuns) known]
     (tau : DenseTauBlock_atOrAbove selected) :
     Node162ResidualOutcome_tauAtOrAbove selected :=
   ⟨node162Return history,
@@ -260,6 +261,7 @@ theorem node162Return_tauBelowRateFails
     [FactKeys.Has (K .coldFirstFailureOccurrence) known]
     [FactKeys.Has (K .coldCutStatesDistinct) known]
     [FactKeys.Has (K .coldDenseHeavyEntryResidual) known]
+    [FactKeys.Has (K .coldCorridorInducedRuns) known]
     (tau : DenseTauBlock_belowRateFails selected) :
     Node162ResidualOutcome_tauBelowRateFails selected :=
   ⟨node162Return history,
@@ -370,6 +372,7 @@ theorem node162SubtypesReturn
     [FactKeys.Has (K .coldFirstFailureOccurrence) known]
     [FactKeys.Has (K .coldCutStatesDistinct) known]
     [FactKeys.Has (K .coldDenseHeavyEntryResidual) known]
+    [FactKeys.Has (K .coldCorridorInducedRuns) known]
     (tau : DenseTauArm selected) :
     Node162ResidualSubtypes selected := by
   rcases tau with t | t

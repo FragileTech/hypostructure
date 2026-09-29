@@ -1,3 +1,4 @@
+import Hypostructure.Graph.CanonicalFamilyOrder
 import Hypostructure.Graph.Statements.Parameters
 import Hypostructure.Graph.Statements.CanonicalSurplus
 
@@ -463,11 +464,63 @@ theorem exists_maximal_windowFamilyRealized (data : Parameters)
               remainderStates data object (canonicalWindowPacking data object) :=
             Nat.mul_le_mul_right _ Nat.one_le_two_pow
 
+/-- The specification of the hot family: a subfamily of the fixed packing that is
+retained (or the empty family when nothing is retained) and of maximum size among
+the retained subfamilies. -/
+def HotFamilySpec (data : Parameters) (object : Graph.FiniteObject.{u})
+    (hot : Finset (Finset object.Vertex)) : Prop :=
+  hot ⊆ canonicalWindowPacking data object ∧
+    (WindowFamilyRealized data object hot ∨
+      (hot = ∅ ∧ ¬ WindowFamilyRealized data object ∅)) ∧
+    ∀ other : Finset (Finset object.Vertex),
+      other ⊆ canonicalWindowPacking data object →
+        WindowFamilyRealized data object other → other.card ≤ hot.card
+
+/-- **The lexicographically least maximal retained family.**  Among the families
+satisfying `HotFamilySpec` (finitely many, and at least one by
+`exists_maximal_windowFamilyRealized`), the one whose lexicographic key in G's
+vertex order (`lexFamilyKey`) is least.  The key is injective, so the family is
+determined by G alone. -/
+theorem exists_lexLeast_hotFamily (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    ∃ hot : Finset (Finset object.Vertex), HotFamilySpec data object hot ∧
+      ∀ other : Finset (Finset object.Vertex), HotFamilySpec data object other →
+        @Graph.lexFamilyKey _ object.vertices hot ≤
+          @Graph.lexFamilyKey _ object.vertices other := by
+  classical
+  obtain ⟨witness, hw⟩ := exists_maximal_windowFamilyRealized data object
+  let candidates := (canonicalWindowPacking data object).powerset.filter
+    (HotFamilySpec data object)
+  have nonempty : candidates.Nonempty := ⟨witness, by
+    simp only [candidates, Finset.mem_filter, Finset.mem_powerset]
+    exact ⟨hw.1, hw⟩⟩
+  obtain ⟨least, mem, minimal⟩ :=
+    @Graph.exists_lexLeast_family _ object.vertices candidates nonempty
+  simp only [candidates, Finset.mem_filter, Finset.mem_powerset] at mem
+  refine ⟨least, mem.2, fun other spec => minimal other ?_⟩
+  simp only [candidates, Finset.mem_filter, Finset.mem_powerset]
+  exact ⟨spec.1, spec⟩
+
 /-- `𝒫_hot`: the canonical maximal subfamily of the fixed packing retained in
-the canonical entropy comparison. -/
+the canonical entropy comparison, the lexicographically least such family in
+G's vertex order. -/
 noncomputable def canonicalHotWindows (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Finset (Finset object.Vertex) :=
-  Classical.choose (exists_maximal_windowFamilyRealized data object)
+  Classical.choose (exists_lexLeast_hotFamily data object)
+
+theorem canonicalHotWindows_spec (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    HotFamilySpec data object (canonicalHotWindows data object) :=
+  (Classical.choose_spec (exists_lexLeast_hotFamily data object)).1
+
+/-- The hot family is the least maximal retained family in G's lexicographic
+vertex order. -/
+theorem canonicalHotWindows_lexLeast (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (other : Finset (Finset object.Vertex)) (spec : HotFamilySpec data object other) :
+    @Graph.lexFamilyKey _ object.vertices (canonicalHotWindows data object) ≤
+      @Graph.lexFamilyKey _ object.vertices other :=
+  (Classical.choose_spec (exists_lexLeast_hotFamily data object)).2 other spec
 
 /-- `𝒫_cold`: the packed windows not retained in the comparison. -/
 noncomputable def canonicalColdWindows (data : Parameters)

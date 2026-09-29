@@ -23,6 +23,7 @@ import Hypostructure.Graph.Statements.LocalRigidity
 import Hypostructure.Graph.Statements.JointHubs
 import Hypostructure.Graph.Statements.HubLinks
 import Hypostructure.Graph.Statements.PairArms
+import Hypostructure.Graph.Statements.HeavyEntryCorridor
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1854,6 +1855,8 @@ inductive Key where
   | remainderPathBounds
   /-- Entry prefix (joint hubs): **Window-free geometry of `P₀`**: short induced walks in window-free sets; the hub-pair dichotomy; chords of long window-free paths and their residues (open at a hub, closed by an outside path); one chord per `13` vertices; the outside-return dichotomy; window-free connected sets have `≤ 1 + 2047(3 + σ_K)` vertices; the carrier position. -/
   | windowFreeGeometry
+  /-- `[162]` residual arm (idx 8500): **The retained cold corridors of G are induced paths whose runs in `R` are short**: two non-consecutive corridor vertices are not adjacent in G, and two corridor vertices joined by a walk inside `R = G - W(P0)` are at most `11` positions apart on the corridor (the corridor is a shortest path of its component `K`; `WindowFreeGeometry` of the canonical maximal packing). -/
+  | coldCorridorInducedRuns
   /-- Entry prefix (joint hubs): **Attachments to induced `P13`s**: a vertex off an induced `P13` of G has at most `7` neighbours on it, and every vertex of an induced `P13` has a neighbour off it. -/
   | inducedPathAttachment
   /-- Strict arm of `[19]`: **The orders the high-surplus closure excludes**: `8n ≤ 32(n − C⌈√n⌉ − 1) + 125(n − C⌈√n⌉ − 1)²`, and `n > C² + C + 1 + t` for every `t` with `125t² + 24t < 8(C² + C + 1)` (`C = C_sp`). -/
@@ -2840,6 +2843,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       RemainderPathBoundsStatement data.toParameters object
   | .windowFreeGeometry, object =>
       WindowFreeGeometryStatement data.toParameters object
+  | .coldCorridorInducedRuns, object =>
+      ColdCorridorInducedRunsStatement data.toParameters object
   | .inducedPathAttachment, object =>
       InducedPathAttachmentStatement object
   | .highSurplusOrder, object =>
@@ -3338,6 +3343,7 @@ def label : Key → String
   | .windowHubBounds => "windowHubBounds"
   | .remainderPathBounds => "remainderPathBounds"
   | .windowFreeGeometry => "windowFreeGeometry"
+  | .coldCorridorInducedRuns => "coldCorridorInducedRuns"
   | .inducedPathAttachment => "inducedPathAttachment"
   | .highSurplusOrder => "highSurplusOrder"
   | .windowChargeKinds => "windowChargeKinds"
@@ -3809,6 +3815,7 @@ example : label .hubWindowBudget = "hubWindowBudget" := rfl
 example : label .windowHubBounds = "windowHubBounds" := rfl
 example : label .remainderPathBounds = "remainderPathBounds" := rfl
 example : label .windowFreeGeometry = "windowFreeGeometry" := rfl
+example : label .coldCorridorInducedRuns = "coldCorridorInducedRuns" := rfl
 example : label .inducedPathAttachment = "inducedPathAttachment" := rfl
 example : label .highSurplusOrder = "highSurplusOrder" := rfl
 example : label .windowChargeKinds = "windowChargeKinds" := rfl
@@ -4275,6 +4282,7 @@ def idx : Key → Nat
   | .windowHubBounds => 7210
   | .remainderPathBounds => 7211
   | .windowFreeGeometry => 7212
+  | .coldCorridorInducedRuns => 8500
   | .inducedPathAttachment => 7213
   | .highSurplusOrder => 7214
   | .windowChargeKinds => 7215
@@ -4730,6 +4738,7 @@ def ofIdx : Nat → Key
   | 7210 => .windowHubBounds
   | 7211 => .remainderPathBounds
   | 7212 => .windowFreeGeometry
+  | 8500 => .coldCorridorInducedRuns
   | 7213 => .inducedPathAttachment
   | 7214 => .highSurplusOrder
   | 7215 => .windowChargeKinds
@@ -5713,6 +5722,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "remainderPathBounds") 7211
   | .windowFreeGeometry =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "windowFreeGeometry") 7212
+  | .coldCorridorInducedRuns =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldCorridorInducedRuns") 8500
   | .inducedPathAttachment =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "inducedPathAttachment") 7213
   | .highSurplusOrder =>

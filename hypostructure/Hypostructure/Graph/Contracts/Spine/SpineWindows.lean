@@ -232,7 +232,7 @@ theorem hotColdPartition_canonical (data : Parameters)
         ∀ other : Finset (Finset object.Vertex), other ⊆ packing →
           WindowFamilyRealized data object other →
             other.card ≤ hot.card :=
-    Classical.choose_spec (exists_maximal_windowFamilyRealized data object)
+    canonicalHotWindows_spec data object
   show IsHotColdWindowPartition data object packing hot cold
   refine ⟨packingFacts.1, packingFacts.2, ?_, hotFacts, ?_, ?_, ?_⟩
   · intro support window

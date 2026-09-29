@@ -5,6 +5,7 @@ import Hypostructure.Graph.Strategy.ColdCorridorRows.DenseTerminal
 import Hypostructure.Graph.Strategy.ColdCorridorRows.NeutralTerminal
 import Hypostructure.Graph.Strategy.ColdCorridorRows.TwoStrand
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
+import Hypostructure.Graph.Strategy.SpineRows.HeavyEntryCorridor
 import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
 import HypostructureErdos64EG.Assembly.NearCubic.Boundary
 import HypostructureErdos64EG.Assembly.NearCubic.ColdPass
@@ -42,7 +43,7 @@ noncomputable abbrev denseLinearKeys : FactKeys EGInput.{u} :=
     K .coldReturnCorridors, K .coldCorridorState,
     K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
     K .coldCutStatesDistinct, K .coldRepeatedStateResidual,
-    K .coldHeavyEntryTerminal, K .coldDenseHeavyEntryResidual,
+    K .coldHeavyEntryTerminal, K .coldDenseHeavyEntryResidual, K .coldCorridorInducedRuns,
     K .coldFailureCycle, K .coldFailureDefectRoute,
     K .coldFailureCompression, K .coldHandoffTransfer,
     K .coldFailureRouting, K .coldExchangeBound,
@@ -192,8 +193,12 @@ noncomputable def nearCubicDenseLinear
       match coldHeavyEntryDichotomy (data := spineData) distinct
           (by key_fresh) (by key_fresh) with
       | .right heavyHistory =>
+          -- G's retained corridors are induced paths whose runs in the remainder are
+          -- short: a fact of G on the residual arm.
+          let runs := (coldCorridorInducedRunsRow (data := spineData)).run heavyHistory
+            (by key_fresh)
           exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl
-            (node162SubtypesReturn heavyHistory tau))))))
+            (node162SubtypesReturn runs tau))))))
       | .left heavyTerminal =>
           let terminal :=
             (denseColdCorridorsTerminalRow (data := spineData)).run heavyTerminal
