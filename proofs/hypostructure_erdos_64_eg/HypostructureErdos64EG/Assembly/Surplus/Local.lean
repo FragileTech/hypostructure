@@ -716,6 +716,7 @@ noncomputable def selectedBottleneckDischarge
     (swapFreshKey : K .sameTokenSwap ∉ known := by key_fresh)
     (swapExactFresh : K .sameTokenSwapExact ∉ known := by key_fresh)
     (wholeFresh : K .sameTokenU2FreeWhole ∉ known := by key_fresh)
+    (seedCoverFresh : K .sameTokenSeedCover ∉ known := by key_fresh)
     (closedFresh : closed ∉ known := by key_fresh)
     [FactKeys.Has (K .activeSurplusFamily) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
@@ -802,7 +803,7 @@ noncomputable def selectedBottleneckDischarge
           K .homogeneousCapsFail :: known) ⊕
       ExactLedger EGInput.{u} selected
         (K .sameTokenUnresolvedDecided :: K .sameTokenReadingsExact :: K .sameTokenSwap ::
-          K .sameTokenSwapExact :: K .sameTokenU2FreeWhole ::
+          K .sameTokenSwapExact :: K .sameTokenU2FreeWhole :: K .sameTokenSeedCover ::
           K .sameTokenTransplantSize :: K .sameTokenTransplantDeficit ::
           K .sameTokenPairPartition :: K .sameTokenReadingsNotReplacement ::
           K .sameTokenPatternUnresolved :: K .typeBHandoffFails ::

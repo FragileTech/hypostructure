@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Contracts.Spine.SameTokenSwap
+import Hypostructure.Graph.Contracts.Spine.SameTokenSeedCover
 
 /-!
 # G's pattern pair, tested at G (`[144a]`, G audit S144a)
@@ -28,9 +29,10 @@ variable {data : Data.{u}}
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sameTokenSwap
     { Requires := [K .sameTokenPairPartition, K .noProperBaseline, K .selection,
-        K .minDegreeBaseline, K .vertexDeletionComponents, K .cubicBaseline]
+        K .minDegreeBaseline, K .vertexDeletionComponents, K .cubicBaseline,
+        K .activeSurplusFamily, K .hubCountBound]
       Produces := [K .sameTokenUnresolvedDecided, K .sameTokenReadingsExact, K .sameTokenSwap,
-        K .sameTokenSwapExact, K .sameTokenU2FreeWhole]
+        K .sameTokenSwapExact, K .sameTokenU2FreeWhole, K .sameTokenSeedCover]
       requiresUnique := by key_fresh
       producesUnique := by key_fresh
       producesNonempty := by simp }
@@ -66,6 +68,13 @@ variable {data : Data.{u}}
           (inputs.get (K .vertexDeletionComponents)).down
           (inputs.get (K .minDegreeBaseline)).down
           (inputs.get (K .cubicBaseline)).down.1.1⟩
-      .nil)))))
+      (.cons (key := K .sameTokenSeedCover)
+        ⟨Contracts.Spine.SameTokenSeedCover.sameTokenSeedCover_holds
+          (inputs.get (K .sameTokenPairPartition)).down
+          (inputs.get (K .selection)).down.1
+          (inputs.get (K .activeSurplusFamily)).down
+          (inputs.get (K .cubicBaseline)).down.1.1
+          (inputs.get (K .hubCountBound)).down⟩
+      .nil))))))
 
 end Hypostructure.Graph.Strategy.Spine

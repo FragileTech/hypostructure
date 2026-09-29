@@ -5381,3 +5381,36 @@ structural accounting is `audits/structural-accounting/Node144aOutcome.md`.
 **Lean improvement (not routed by the paper):** 8100 (test decided at G, resolved arm empty),
 8101 (readings are G or lose the baseline), 8102–8103 (the rerouted swap, its exact conditions,
 size relation, descent and response), 8104 (boundary-free configuration is the whole graph).
+
+### G audit: Node144aOutcome, second pass: the cubic cover by the canonical port paths (key 8105)
+
+`K .sameTokenSeedCover` (8105, `Graph/PortPathCover.lean`, `Graph/PathChords.lean`), published on the
+three handoff-fails subtypes.  **Lean improvement (not routed by the paper).**
+
+* **Seed = 2δ vertices + two canonical port paths.**  At G's canonical routing each pair seed is
+  `T ∪ P₁ ∪ P₂` with `|T| ≤ 2δ` (the two port supports `{x} ∪ N(x)∖{c}`) and `P_i` the support of
+  the canonical path of port `i`: a triangular port contributes its return `R_p`, a **shortest**
+  `x`–`c` path of `G − cx` (`FinitePathSelection.selectOfReachable_length_le`); an open port
+  contributes its suppression path `Q_p`, a simple `a_p`–`b_p` path of `G − x` with `|Q_p| + 1`
+  accepted.
+* **Chord facts of each path** (`PathChords`).  Every decomposition `w = p₁ ++ p₂ ++ p₃` with an
+  edge `uv` between the ends of `p₂` (`|p₂| ≥ 2`): the cycle `p₂ + uv` has length `|p₂| + 1`, which
+  is not accepted (G has no accepted cycle); a triangular `R_p` has no chord at all (`p₁ ++ uv ++ p₃`
+  is a shorter path in `G − cx`, so `R_p` is an induced path of `G − cx`); every interior vertex of
+  degree `3` has exactly one neighbour off the path's two edges at it (its stub).
+* **Cubic cover, whole-graph arm.**  If every degree-`3` vertex lies in both pair seeds
+  (`K .sameTokenU2FreeWhole`), the degree-`3` vertices of G lie in `T ∪ P₁ ∪ P₂` and in
+  `T' ∪ Q₁ ∪ Q₂`, and from `K .hubCountBound` (`5|H| + σ ≤ 2n`) each cover has
+  `3n ≤ 5(|T| + |P₁| + |P₂|)`: the two paths of one pair carry at least `3n/5 − 2δ` vertices.
+
+**Surviving chord pattern (nothing above closes the arm).**  Each interior cubic vertex of a port
+path has exactly one stub; the stub goes to (a) the other path of the pair, (b) a hub (a vertex of
+degree `≥ 4`; hubs are pairwise nonadjacent, so every neighbour of a hub is cubic and lies in the
+seeds), or (c) the same path, in which case it is a chord of unaccepted span, and never for a
+triangular `R_p`.  For an open `Q_p` (length `2^j − 1`, endpoints joined through the cubic `x`) a
+same-path chord of span `s` also has the shortcut `a_p`–`b_p` path of length `2^j − 1 − s + 1`,
+whose cycle through `x` must not be accepted; this second constraint is not in Lean (only the
+span-plus-one cycle is).  The pigeonhole on span lengths gives a chord of span `2^k − 1` only
+under an unbounded supply of same-path chords, and for a triangular pair there are none, so it
+does not fire; a contradiction would need the dyadic constraints between different paths (cross
+chords), which reduce to the open cubic case of the conjecture and are not derived here.

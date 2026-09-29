@@ -2,6 +2,7 @@ import Hypostructure.Graph.Statements.SameTokenPair
 import Hypostructure.Graph.RerouteSwap
 import Hypostructure.Graph.ReadingExactness
 import Hypostructure.Graph.U2FreeWhole
+import Hypostructure.Graph.PortPathCover
 
 /-!
 # Statements: G's pattern pair, tested at G (`[144a]`, G audit S144a)
@@ -252,5 +253,47 @@ noncomputable def SameTokenU2FreeWholeStatement (data : Parameters)
           ((∀ v, Graph.SupportComponents.Connected.ConnectedOn object (Z.erase v)) →
             ∀ v, v ∈ routing.capacity.activation.pairSeed routing.demands.first ∧
               v ∈ routing.capacity.activation.pairSeed routing.demands.second))
+
+
+/-- **A pair seed is at most `2δ` vertices and two canonical port paths.** -/
+def PairSeedCover (data : Parameters) (object : Graph.FiniteObject.{u})
+    (seed : Finset object.Vertex) : Prop := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact ∃ T P1 P2 : Finset object.Vertex, T.card ≤ 2 * data.threshold ∧
+    Graph.PortPathCover.PortPathSupport object data.LengthOK P1 ∧
+    Graph.PortPathCover.PortPathSupport object data.LengthOK P2 ∧ seed = T ∪ P1 ∪ P2
+
+/-- **Node `[144a]`: the pair seeds are covered by their canonical port paths.**
+At G's canonical routing each pair seed `T(p) ∪ Γ(p) ∪ T(p') ∪ Γ(p')` is at most
+`2δ` vertices and the supports of two canonical port paths (a triangular port's
+shortest return `R_p` in `G − cx`, an induced path with no chord; an open port's
+suppression path `Q_p`), each carrying its chord facts (every chord has an
+unaccepted span; every interior degree-`3` vertex has exactly one off-path
+edge).  So if every degree-`3` vertex of G lies in both pair seeds, the degree-`3`
+vertices of G are covered by at most four canonical port paths and `4δ` vertices,
+and (from `5|H| + σ ≤ 2n`) each pair's cover has `3n ≤ 5(|T| + |P₁| + |P₂|)`. -/
+noncomputable def SameTokenSeedCoverStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ routing, canonicalSameTokenRouting data object = some routing ∧
+    PairSeedCover data object
+        (routing.capacity.activation.pairSeed routing.demands.first) ∧
+      PairSeedCover data object
+        (routing.capacity.activation.pairSeed routing.demands.second) ∧
+      ((∀ v, object.degree v = 3 →
+          v ∈ routing.capacity.activation.pairSeed routing.demands.first ∧
+            v ∈ routing.capacity.activation.pairSeed routing.demands.second) →
+        ∀ v, object.degree v = 3 →
+          (by letI : DecidableEq object.Vertex := object.vertices.decEq
+              exact ∃ T P1 P2 T' Q1 Q2 : Finset object.Vertex,
+                T.card ≤ 2 * data.threshold ∧ T'.card ≤ 2 * data.threshold ∧
+                Graph.PortPathCover.PortPathSupport object data.LengthOK P1 ∧
+                Graph.PortPathCover.PortPathSupport object data.LengthOK P2 ∧
+                Graph.PortPathCover.PortPathSupport object data.LengthOK Q1 ∧
+                Graph.PortPathCover.PortPathSupport object data.LengthOK Q2 ∧
+                routing.capacity.activation.pairSeed routing.demands.first = T ∪ P1 ∪ P2 ∧
+                routing.capacity.activation.pairSeed routing.demands.second = T' ∪ Q1 ∪ Q2 ∧
+                v ∈ T ∪ P1 ∪ P2 ∧ v ∈ T' ∪ Q1 ∪ Q2 ∧
+                3 * object.vertexCount ≤ 5 * (T.card + P1.card + P2.card) ∧
+                3 * object.vertexCount ≤ 5 * (T'.card + Q1.card + Q2.card)))
 
 end Hypostructure.Graph.Strategy.Spine
