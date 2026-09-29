@@ -6798,6 +6798,72 @@ port the walk is a shortest `x`–`c` path of `G − cx` (`GeodesicAvoiding s(a,
 **Status.**  Nothing here closes the arm.  The Lean content is the geodesic facts in `PortWalk`
 (kind triangular) and the generic cycle lemmas of the third pass.
 
+### G audit: Node144aOutcome, fifth pass: two geodesic paths, bubbles and the ladder count (key 8107)
+
+**Retraction.**  The fourth-pass claims "at least `L - 7` hub pairs per run" and "`σ ≥ |H| = Ω(n)`
+with constant about `1/110`" are withdrawn (a free gap may be a hub lying on the walk itself); the
+paragraph above now says so.  The correct local statement is the window lemma.
+
+**Built in Lean (all vocabulary-free; no `sorry`; axioms `propext`, `Classical.choice`, `Quot.sound`).**
+
+* `Graph/LadderWindow.lean`: `window8` (eight consecutive rungs with steps in `{±2, ±3}`,
+  injective, pairwise sums `∉ {2, 6, 14}`, closure of the neighbours of the deep rungs: impossible;
+  `decide +kernel`).
+* `Graph/LadderRun.lean`: `RunHyp.run_exceptional` (twelve consecutive rung vertices of one walk
+  into the other force an exceptional vertex: a non-cubic vertex, an end of the second walk, or a
+  neighbour that is non-cubic, an end of the first walk, or off it).
+* `Graph/LadderCount.lean`: the matching step `nbrPos_le_two_of_match` (a vertex off a
+  `GeodesicHubAdj` walk has at most two neighbours on it, given `G[N(h)]` a matching),
+  `nbrPos_le_three`, `excPos_card_le`, `badSet_card_le` and `ladder_count`:
+  `⌊(|w₁| - 1)/24⌋ ≤ 8|X| + 6|U| + |ovDiv w₁ w₂| + 14`, where `ovDiv` counts the *meeting points*
+  (interior positions of `w₁` on `w₂` with a neighbour on `w₂` off `w₁`).
+* `Graph/TwoGeodesics.lean` (**generic**, any graph, any two paths `w₁`, `w₂` with
+  `GeodesicDetours` for their own end edges, neither using the other's end edge):
+  `common_iso` (L2: two common vertices are at the same distance on both paths, so the common part
+  is an isometry), `rung_offset` (L3: a rung `w₁ j — w₂ q` between vertices off the other path has
+  `| |j - t| - |q - p| | ≤ 1` for every common vertex `(t, p)`), `meeting_side` (L6: a meeting
+  point is next to an off position or is an end of `w₂`; a shared interior vertex sends every
+  neighbour off `w₂` to a vertex off `w₁`), `bubble_exc` (L4+L5: between consecutive common
+  vertices `t + 2 ≤ t'` some interior vertex is non-cubic or adjacent to a vertex of `S` off `w₁`),
+  `no_four_cycle`, `chain_bound`.  `induced_nbrs` (L1) is in `LadderRun`.
+  The proof of `bubble_exc` is: both ends of the bubble constrain the stub image `q_s` to
+  `| |q_s - p| - (s - t) | ≤ 1` and the same at the other end; hence the stub image stays inside the
+  bubble at offset within one of `s` (L4 is confirmed: a rung cannot leave its bubble, because the
+  shortcut `u → x_s → y` beats `w₂`'s own path from `u`); consecutive stubs have image steps in
+  `{2, 3}` (C4 and injectivity), so `π(t + k) ≥ t + 2k - 1`, which is impossible for a bubble of
+  length `d ≥ 3`; `d = 2` is the four-cycle `u x v y`.
+* `Graph/TwoGeodesicsCount.lean`: `ovDiv_card_le` (`|ovDiv| ≤ 2|Exc| + 4`), `excPos1_card_le`
+  (`|Exc| ≤ 4|X| + 3|U| + 6`), and `ladder_count_geo`:
+  `⌊(|w₁| - 1)/24⌋ ≤ 16|X| + 12|U| + 30`, with `ovDiv` absorbed.
+* `Graph/LadderBridge.lean`, `Graph/LadderG.lean`: at a finite object with `Cubic := (degree = 3)`:
+  `stub_of_degree_three`, `match_of_pairs` (from `NeighbourhoodPairs`, i.e. `K .neighbourhoodPairCount`),
+  `portWalk_tri` (a `PortWalk` whose ends are adjacent has the geodesic facts), `nbrPos_le_four`,
+  `ladderCounts_of` (both walks, `n ≤ |H| + |T| + |w₁| + |w₂| + 2`), `hubDegrees_of`
+  (`deg h ≤ |T| + 8` for hubs whose neighbours lie in the seed), `sigma_le_of_hubDegrees`
+  (`σ ≤ (|T| + 5)|H|`), `hubs_le_sigma` (`|H| ≤ σ`).
+
+**Published: `K .sameTokenLadderCount` (idx 8107)**, produced by `sameTokenSwapRow` (no new
+requirements).  For both pair seeds `T ∪ supp w₁ ∪ supp w₂` (`|T| ≤ 2δ`), `|H| ≤ σ`, and when both
+ports are triangular and neither walk uses the other's end edge (`EndEdgesFree`):
+if every degree-3 vertex lies in the seed, `⌊(|wᵢ| - 1)/24⌋ ≤ 16|H| + 12|T| + 30`,
+`n ≤ |H| + |T| + |w₁| + |w₂| + 2`, hence `n ≤ 769|H| + 577|T| + 1490`; if every neighbour of a hub
+lies in the seed, `σ ≤ (|T| + 5)|H|`.  With `|T| ≤ 6`: `|H| ≥ (n - 4952)/769` and `σ ≤ 11|H|`.
+The hand-derived `σ ≤ 3|H| + 18` is replaced by this Lean bound (`3|H| + 18` was not proved).
+
+**Joint test (no contradiction derived).**  In the whole-graph both-triangular `EndEdgesFree` arm the
+proved facts are `n ≤ 769|H| + 4952`, `|H| ≤ σ ≤ 11|H|`, and the ledger's `5|H| + σ ≤ 2n`,
+`2|B| + σ ≤ n`, `24σ + 465|B| ≤ 18n + 375|B|²`, `8n ≤ 32s + 125s²` (`s = n - σ`), the strict-surplus
+scale `σ > C_sp⌈√n⌉`, independence of the hubs and `|N(cubic) ∩ H| ≤ 2`.  All ledger inequalities on
+`σ` are upper bounds of the form `σ ≤ αn` with `α` a fixed rational; the new lower bound is
+`|H| ≥ (n - 4952)/769`.  These are compatible in the unknowns `(n, |H|, σ, |B|)`; no contradiction is
+derived, and no statement about G's shape is made.  The ladder count only uses the walk structure.
+
+**What remains open (exact).**  (a) The arm `EndEdgesFree` fails: one walk uses the other's end edge
+(then `a₁, b₁` are consecutive on `w₂`, or `a₂, b₂` on `w₁`), or not both ports are triangular (an open
+port's walk is not geodesic).  (b) In the `EndEdgesFree` both-triangular whole-graph arm, `|H| ≥ (n - 4952)/769`
+with `σ ≤ 11|H|` and every hub of degree `≤ |T| + 8 ≤ 14`: the cycles through hubs (the hub-pair pattern)
+are not constrained by any fact here.
+
 ### G audit: Route8RateFailsOutcome, sixth pass: windows joined through the remainder (keys 8266-8267); rebased on d85731a
 
 - **Rebase.** Merged `g-repair-base` (d85731a; `Route8JointBalanceOutcome` removed there, conflict resolved by taking that removal). `nearCubicResidualBKeys` now lists the sixteen keys this audit publishes on the failed-rate arm (the freshness hypotheses of the callers of `nearCubicRouteEightEntry`/`nearCubicRateFailedExit` were the missing piece). Checked against the refreshed validation build: `NearCubic/Spine.lean`, `NearCubic/ColdPass.lean`, `NearCubic/Survivor/Unrealized.lean`, `RouteEight/Residual.lean`, `RouteEight/Local.lean`, `Residuals.lean`, `Residuals/Route8RateFailsOutcome.lean` and every library, contract and row file of the audit pass.
