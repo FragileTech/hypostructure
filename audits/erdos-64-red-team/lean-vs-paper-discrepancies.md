@@ -5269,22 +5269,41 @@ exit-(5) datum.  The row is run on the residual arm in
 `selectedRouteEightUnifiedResidual` after the descent row
 (`route8PeelingDescent`, added to `Route8QuotientOutcome`, now 94 facts).
 
-**Closure tests (all negative).**  (i) The free arm's emptiness argument needs
-`\tilde\Xi = ∅`; here `|∂R| < δ|\tilde\Xi|` is the opposite bound.  (ii) The
-demand ledger: with `α = 0` no entry is pinned (no basin is
-target-complete-minimal, `not_route8Entry_of_avoids`), all entries are residual
-and `3Ñ ≤ e(R,W) + P_ext` is vacuous; no entry is trace-locally
-target-defective (`not_traceLocalTargetDefect`), so the canonical demand
-records are vacuous.  (iii) Fold realizations
-(`foldRealization_baseline_and_smaller`) are valid smaller pieces but carry a
-target cycle (minimality), so they are never target-complete.
+**Gap builds and closure tests against `|∂R| < δ·|Ξ̃|` (second pass).**
 
-**Still open (exact proposition at G).**  `route8UnifiedEntries data G ≠ ∅` with
-`|∂R| < δ·|route8UnifiedEntries data G|`, `α(ξ) = 0` at every entry and the
-facts above.  A contradiction needs a bound `δ·|\tilde\Xi| ≤ |∂R|` from a
-source other than private essential carriers (all empty at G), or a raw-target
-form of the paper's declared-algebra completeness that yields a smaller valid
-realization.
+1. *Entry-charge map / baseline-essential carriers* (`Route8BasinFoldPaths`,
+   `FoldCycleLift`).  Built: `cycle_lift` (an accepted cycle of a
+   fold of two internal vertices lifts to an accepted cycle of the source or an
+   accepted-length path between the folded vertices), `foldGlue_path_of_cycle`
+   (the fold's cycle, forced by minimality, gives an accepted path of G between
+   any two foldable interior vertices of the basin), and `two_crossing` (a path
+   with both ends in `X` that leaves `X` uses two distinct edges of the cut of
+   `X`, i.e. two edges of `∂R`).  Result: for every foldable pair, either an
+   accepted path inside `X`, or two distinct `∂R` edges on the path.  Not
+   closing: (a) nothing excludes the accepted path inside `X` (the window-free
+   geometry only bounds induced paths, not paths of length `2^k`); (b) the
+   `∂R` edges are not private: paths of different entries may reuse the same
+   edges without bound, so no injective attribution and no `δ|Ξ̃| ≤ |∂R|`.
+2. *Per-receiver load against capacity.*  At a saturated receiver
+   `|E(w)| = L(w) + 1 − s·q(w)` (payable set of size `s·q(w) − 1`), so
+   `|Ξ̃| = Σ_sat (L(w) + 1 − s·q(w))`, and `Σ q ≤ |∂R|`.  A bound
+   `δ|Ξ̃| ≤ |∂R|` is then exactly a bound of the total routed load by
+   `(s + 1/δ)|∂R|`, which is the negation of the rate; this is the content of
+   `lem:typeA-unified-deficit` already on the ledger.  Not closing: it is the
+   same inequality, not independent information.
+3. *Trace-path ear structure.*  `T_u` is a path in `B_u` from the load to the
+   receiver; routings of distinct loads share suffixes (a routing forest), so
+   the number of trace paths is not bounded by the number of receivers' ports.
+   Not closing.
+4. *Basin overlap.*  Distinct entries have distinct loads (a load determines its
+   piece and its receiver), so `Ξ̃` injects into the full-degree vertices of
+   `R`; overlap of basins is unconstrained.  Not closing.
+
+**Still open (exact proposition at G).**  `route8UnifiedEntries data G ≠ ∅`
+with `|∂R| < δ·|route8UnifiedEntries data G|` and `α(ξ) = 0` at every entry.
+A closure needs an injective (or bounded-multiplicity) assignment of `∂R` edges
+to entries: for the canonical fold path of an entry to leave `X`, and for at most
+`2/δ` entries to use any one `∂R` edge.  Nothing on the ledger gives either.
 
 **Shared edits.**  `SpineVocabulary.lean` (key 8150 and one import);
 `Residuals.lean` / `Route8QuotientOutcome.lean` (two facts added to the

@@ -146,6 +146,38 @@ abbrev Route8BasinFoldsCarryCycles (data : Parameters)
             (Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom object
               basin connected proper).decomposition.outside)
 
+/-- **The accepted path that a fold forces, and where it goes.**  For two
+interior vertices of the basin's piece that share no neighbour, the fold's
+cycle (minimality of G) lifts to an accepted-length path of G between them
+(`FoldCycleLift.foldGlue_path_of_cycle`).  Either the path stays in the entry's
+support `X`, or it leaves `X` and so uses two distinct edges of the cut of `X`
+(edges with exactly one endpoint in `X`, edges of the boundary of the
+remainder). -/
+abbrev Route8BasinFoldPaths (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (support basin : Finset object.Vertex) :
+    Prop :=
+  basin ⊆ support →
+  ∀ (connected : Graph.SupportComponents.Connected.ConnectedOn object basin)
+    (proper : ∃ vertex, vertex ∉ basin)
+    (keep remove :
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object
+        basin).Internal)
+    (different : keep ≠ remove),
+    (∀ x, ¬ ((Graph.Strategy.InterfaceReplacement.SupportAtom.piece object
+        basin).graph.Adj (.inr keep) x ∧
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object
+        basin).graph.Adj (.inr remove) x)) →
+      ∃ P : object.graph.Walk
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.pieceDecode object
+            basin (.inr keep))
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.pieceDecode object
+            basin (.inr remove)),
+        P.IsPath ∧ data.LengthOK P.length ∧
+          ((∀ x ∈ P.support, x ∈ support) ∨
+            ∃ e1 ∈ P.edges, ∃ e2 ∈ P.edges, e1 ≠ e2 ∧
+              e1 ∈ Graph.Route8.cutEdges object support ∧
+              e2 ∈ Graph.Route8.cutEdges object support)
+
 /-- **Node `[348]`, stated about G** (Lean improvement: the quotient test is
 decided at G).
 
@@ -181,6 +213,7 @@ noncomputable abbrev Route8QuotientEntriesAtGStatement (data : Parameters)
           Route8BasinRepresentative data object basin ∧
           Route8QuotientReadingsNotSmaller data object index.1 basin ∧
           Route8BasinFoldsCarryCycles data object basin ∧
+          Route8BasinFoldPaths data object index.1 basin ∧
           Route8SmallerRealizationsUndeclared data object index.1 basin
             index.2.1 index.2.2 ∧
           ¬ Graph.Route8.TraceBasin.TraceTargetCompleteCompression object

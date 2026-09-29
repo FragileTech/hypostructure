@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Contracts.RouteEight.EntryCensus
 import Hypostructure.Graph.Statements.Route8QuotientSize
+import Hypostructure.Graph.FoldCycleLift
 
 /-!
 # Contracts: the route-8 quotient test decided at G
@@ -119,6 +120,59 @@ theorem route8BasinFoldsCarryCycles (data : Parameters)
       basin data.threshold two connected proper keep remove different baseline
       noCommon
   exact ⟨foldBaseline, foldSmaller, minimality _ foldSmaller foldBaseline⟩
+
+/-- **The path a fold forces** (`FoldCycleLift.foldGlue_path_of_cycle` with the
+crossing lemma): the fold's cycle (minimality) lifts to an accepted path of G
+between the two folded vertices, which stays in the support or crosses its cut
+twice. -/
+theorem route8BasinFoldPaths (data : Parameters)
+    (object : FiniteObject.{u}) (two : 2 ≤ data.threshold)
+    (baseline : data.threshold ≤ object.minDegree)
+    (avoids : ¬ HasCycleWithLength data.LengthOK object)
+    (minimality : ∀ representative : FiniteObject.{u},
+      representative.LexicographicallySmaller object →
+      MinimumDegreeAtLeast data.threshold representative →
+      HasCycleWithLength data.LengthOK representative)
+    (support basin : Finset object.Vertex) :
+    Route8BasinFoldPaths data object support basin := by
+  classical
+  intro subset connected proper keep remove different noCommon
+  have cycles := route8BasinFoldsCarryCycles data object two baseline minimality
+    basin connected proper keep remove different noCommon
+  have pieceAvoids : ¬ HasCycleWithLength data.LengthOK
+      (glue (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+        (Strategy.InterfaceReplacement.SupportAtom.outside object basin)) :=
+    Strategy.InterfaceReplacement.not_target_glue_piece_outside avoids basin
+  obtain ⟨path, hpath, hlen⟩ := FoldCycleLift.foldGlue_path_of_cycle
+    (Strategy.InterfaceReplacement.SupportAtom.piece object basin) keep remove
+    different (Strategy.InterfaceReplacement.SupportAtom.outside object basin)
+    data.LengthOK pieceAvoids cycles.2.2
+  let iso := (Strategy.InterfaceReplacement.SupportAtom.decomposition object
+    basin).reconstructionIso
+  let P := path.map iso.toHom
+  have hP : P.IsPath := SimpleGraph.Walk.map_isPath_of_injective iso.injective hpath
+  have hPlen : P.length = path.length := SimpleGraph.Walk.length_map _ _
+  have keepIn : Strategy.InterfaceReplacement.SupportAtom.pieceDecode object
+      basin (.inr keep) ∈ support := subset keep.2.1
+  have removeIn : Strategy.InterfaceReplacement.SupportAtom.pieceDecode object
+      basin (.inr remove) ∈ support := subset remove.2.1
+  refine ⟨P, hP, hPlen ▸ hlen, ?_⟩
+  by_cases stays : ∀ x ∈ P.support, x ∈ support
+  · exact Or.inl stays
+  · right
+    push_neg at stays
+    obtain ⟨w, hw, hwS⟩ := stays
+    obtain ⟨e1, he1, e2, he2, hne, ⟨x1, hx1, y1, hy1, hxS1, hyS1⟩,
+      ⟨x2, hx2, y2, hy2, hxS2, hyS2⟩⟩ :=
+      FoldCycleLift.two_crossing object.graph (↑support : Set object.Vertex) P hP
+        keepIn removeIn hw hwS
+    refine ⟨e1, he1, e2, he2, hne, ?_, ?_⟩
+    · rw [Graph.Route8.mem_cutEdges]
+      exact ⟨by simpa using P.edges_subset_edgeSet he1,
+        x1, hx1, y1, hy1, hxS1, hyS1⟩
+    · rw [Graph.Route8.mem_cutEdges]
+      exact ⟨by simpa using P.edges_subset_edgeSet he2,
+        x2, hx2, y2, hy2, hxS2, hyS2⟩
 
 /-- **The declared `u`-supported algebra is empty at `α(ξ) = 0`**, at every
 realization and every outside context. -/
@@ -282,6 +336,8 @@ theorem route8QuotientEntriesAtG (data : Parameters)
       route8BasinRepresentative data object baseline avoids minimality basin,
       route8QuotientReadingsNotSmaller data object avoids minimality index.1 basin,
       route8BasinFoldsCarryCycles data object two baseline minimality basin,
+      route8BasinFoldPaths data object two baseline avoids minimality index.1
+        basin,
       route8SmallerRealizationsUndeclared data object minimality index.1 basin
         index.2.1 index.2.2 (by
           have selectedBasin : Graph.Route8Census.basin object data.threshold
