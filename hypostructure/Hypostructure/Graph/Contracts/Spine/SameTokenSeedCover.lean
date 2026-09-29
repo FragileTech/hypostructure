@@ -2,6 +2,8 @@ import Hypostructure.Graph.Statements.SameTokenSwap
 import Hypostructure.Graph.Contracts.Spine.SameTokenPair
 import Hypostructure.Graph.PortPathCover
 import Hypostructure.Graph.Statements.JointHubs
+import Hypostructure.Graph.Contracts.Spine.JointHubs
+import Hypostructure.Graph.Contracts.Spine.CycleCounting
 
 /-!
 # Contracts: the pair seeds are three-vertex supports and canonical port paths
@@ -414,6 +416,55 @@ theorem sameTokenPathInteractions_holds
     exact slack h y hbig big' hy
   have := base3 y
   omega
+
+/-- **The ladder count at one pair seed.** -/
+theorem pairLadderFacts
+    (routing : SameTokenRouting data object)
+    (routingEq : canonicalSameTokenRouting data object = some routing)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (family : ActiveSurplusFamilyStatement data object)
+    (threshold : data.threshold = 3)
+    (base : MinDegreeBaselineStatement data object)
+    (lengthLaw : ∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
+    {pair : Finset (object.Vertex × object.Vertex)}
+    (pairMem : pair = routing.demands.first ∨ pair = routing.demands.second) :
+    PairLadderFacts data object (routing.capacity.activation.pairSeed pair) := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  obtain ⟨T, a1, b1, a2, b2, w1, w2, hT, hw1, hw2, eP⟩ :=
+    pairSeedWalks routing routingEq avoids family threshold pairMem
+  have cyc := noCycle_form avoids
+  have ok4 : data.LengthOK 4 := (lengthLaw 4).2 ⟨⟨2, by omega⟩, by norm_num⟩
+  have ok8 : data.LengthOK 8 := (lengthLaw 8).2 ⟨⟨3, by omega⟩, by norm_num⟩
+  have ok16 : data.LengthOK 16 := (lengthLaw 16).2 ⟨⟨4, by omega⟩, by norm_num⟩
+  have pairs : Graph.CycleCounting.NeighbourhoodPairs object :=
+    Graph.CycleCounting.neighbourhoodPairs avoids ok4
+  have base3 : Graph.MinimumDegreeAtLeast 3 object :=
+    Contracts.Spine.JointHubs.base_of threshold base
+  have hle : (Graph.JointObject.hubs object).card ≤ object.degreeSurplus data.threshold := by
+    rw [threshold]; exact Graph.LadderG.hubs_le_sigma base3
+  refine ⟨T, a1, b1, a2, b2, w1, w2, hT, hw1, hw2, eP, hle, fun t1 t2 E => ?_⟩
+  refine ⟨fun cover => ?_, fun hubCover => ?_⟩
+  · have hc := Graph.LadderG.ladderCounts_of ok4 ok8 ok16 cyc pairs hw1 hw2 t1 t2 E T
+      (fun v hv => by have := cover v hv; rw [eP] at this; exact this)
+    exact ⟨hc, hc.linear⟩
+  · have hd := Graph.LadderG.hubDegrees_of ok4 ok8 ok16 cyc pairs hw1 hw2 t1 t2 T
+      (fun v hv y hy => by have := hubCover v hv y hy; rw [eP] at this; exact this)
+    rw [threshold]
+    exact Graph.LadderG.sigma_le_of_hubDegrees base3 hd
+
+/-- **The ladder count of the canonical port walks.** -/
+theorem sameTokenLadderCount_holds
+    (partition : SameTokenPairPartitionStatement data object)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (family : ActiveSurplusFamilyStatement data object)
+    (threshold : data.threshold = 3)
+    (base : MinDegreeBaselineStatement data object)
+    (lengthLaw : ∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length) :
+    SameTokenLadderCountStatement data object := by
+  obtain ⟨routing, routingEq, -⟩ := partition
+  exact ⟨routing, routingEq,
+    pairLadderFacts routing routingEq avoids family threshold base lengthLaw (Or.inl rfl),
+    pairLadderFacts routing routingEq avoids family threshold base lengthLaw (Or.inr rfl)⟩
 
 end PairWalks
 

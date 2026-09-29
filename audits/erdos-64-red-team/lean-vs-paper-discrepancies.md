@@ -6780,13 +6780,20 @@ port the walk is a shortest `x`–`c` path of `G − cx` (`GeodesicAvoiding s(a,
   two-rung cycle constraints shows every survivor is a slope-`±3` sheet (`σ(i) = c ± 3i`, up to the run
   ends), whose image leaves two free positions between consecutive images.  Free interior positions
   must be hub-pair vertices (their stub is a hub, a hub has at most two neighbours on a geodesic, hence
-  a consecutive pair), and distinct pairs need distinct hubs.  The minimum number of hub pairs for a run
-  of length `L` is `L − 7` for `L = 8..18` (search), so `|H| ≥ Σ_runs (L_r − 7)` and, counting runs
-  against the at most `3|H| + σ` stub exceptions, `σ ≥ |H| = Ω(n)` (constant roughly `1/110`).
-* Hence the small-`σ` whole-graph arm (both ports triangular) is empty only in the range
-  `σ < c n`, `c ≈ 1/110`; for `σ ≥ c n` the arm is not closed.  The hub-pair pattern then needs cycles
-  through hubs, whose lengths involve the (unbounded) offset between the hub's two pairs; this is the
-  same pairwise-avoidance form, satisfiable for small `N`.
+  a consecutive pair).  **Retraction (fifth pass).**  The earlier claim here that a run of length `L` needs
+  `L - 7` distinct hub pairs, hence `σ >= |H| = Ω(n)` with constant about `1/110`, is WRONG: the search that
+  produced it required each free position to belong to its own hub pair, but a free position may be a hub
+  that lies on the walk itself (or a hub shared between two free positions of one consecutive pair), so
+  free gaps are not charged to distinct hubs.  The correct free-gap statement is the window lemma
+  `LadderWindow.window8`: 8 consecutive rungs with steps in `{±2, ±3}`, injective, whose pairwise
+  cycle sums avoid `{2, 6, 14}` and whose deep-rung neighbours are closed, are impossible; hence every run
+  window of 8 rungs contains an exceptional vertex (`LadderRun.RunHyp.run_exceptional`: non-cubic
+  vertex, walk end, or a side neighbour off the walk that is non-cubic, an end, or off the other walk).
+  The count is `LadderCount.ladder_count`: `(ℓ1 - 1)/24 <= 8|X| + 6|U| + |Ov| + 14`, with `X` the
+  non-cubic vertices, `U` the cubic vertices off both walks and `Ov` the overlap of the two walks.
+  No `n/110` constant is claimed.
+* The small-`σ` conclusion therefore holds only through `ladder_count` and only as a bound on the
+  walk length in terms of `|X|`, `|U|`, `|Ov|`; see the fifth pass below for the instantiation at G.
 
 **Status.**  Nothing here closes the arm.  The Lean content is the geodesic facts in `PortWalk`
 (kind triangular) and the generic cycle lemmas of the third pass.

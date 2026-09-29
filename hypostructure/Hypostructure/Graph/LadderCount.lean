@@ -205,63 +205,86 @@ open Classical in
 noncomputable def ovSet (w1 : G.Walk a1 b1) (w2 : G.Walk a2 b2) : Finset ℕ :=
   (Finset.range w1.length).filter fun t => 0 < t ∧ w1.getVert t ∈ w2.support
 
+open Classical in
+/-- the interior indices of the first walk lying on the second and having a neighbour on the
+second walk outside the first (the *meeting points*: where the second walk leaves or enters
+the first) -/
+noncomputable def ovDiv (w1 : G.Walk a1 b1) (w2 : G.Walk a2 b2) : Finset ℕ :=
+  (Finset.range w1.length).filter fun t => 0 < t ∧ w1.getVert t ∈ w2.support ∧
+    ∃ y, y ≤ w2.length ∧ G.Adj (w1.getVert t) (w2.getVert y) ∧ w2.getVert y ∉ w1.support
+
 theorem badSet_card_le (H : CountHyp G LengthOK Cubic w1 w2) (X U : Finset V)
     (hX : ∀ z, ¬ Cubic z → z ∈ X)
     (hU : ∀ z, Cubic z → z ∉ w1.support → z ∉ w2.support → z ∈ U) :
-    (badSet Cubic w1 w2).card ≤ 4 * X.card + (ovSet w1 w2).card + 3 * U.card + 6 := by
+    (badSet Cubic w1 w2).card ≤ 4 * X.card + (ovDiv w1 w2).card + 3 * U.card + 6 := by
   classical
   let S2 : Finset V := X ∪ U ∪ {a2, b2}
   let S2' : Finset V := S2.filter (· ∉ w1.support)
   let B1 : Finset ℕ := (Finset.range (w1.length + 1)).filter fun t => ¬ Cubic (w1.getVert t)
-  have hsub : badSet Cubic w1 w2 ⊆ B1 ∪ ovSet w1 w2 ∪ S2'.biUnion (fun s => nbrPos w1 s) := by
+  have hsub : badSet Cubic w1 w2 ⊆ B1 ∪ ovDiv w1 w2 ∪ S2'.biUnion (fun s => nbrPos w1 s) := by
     intro t ht
     simp only [badSet, Finset.mem_filter, Finset.mem_range] at ht
     obtain ⟨htl, ht0, hclean⟩ := ht
-    simp only [Finset.mem_union, B1, ovSet, Finset.mem_filter, Finset.mem_range,
+    simp only [Finset.mem_union, B1, ovDiv, Finset.mem_filter, Finset.mem_range,
       Finset.mem_biUnion]
     by_cases hc : Cubic (w1.getVert t)
-    · by_cases hin : w1.getVert t ∈ w2.support
-      · left; right; exact ⟨htl, ht0, hin⟩
+    · have hpred : G.Adj (w1.getVert t) (w1.getVert (t - 1)) := by
+        have := w1.adj_getVert_succ (i := t - 1) (by omega)
+        have e : t - 1 + 1 = t := by omega
+        rw [e] at this
+        exact this.symm
+      have hsucc : G.Adj (w1.getVert t) (w1.getVert (t + 1)) := w1.adj_getVert_succ htl
+      have hpne : w1.getVert (t - 1) ≠ w1.getVert (t + 1) := by
+        intro h
+        have := getVert_inj H.hp1 (by omega) (by omega) h
+        omega
+      obtain ⟨s, hs_adj, hsp, hss, hall⟩ := H.stub _ hc _ _ hpred hsucc hpne
+      have hs_off : s ∉ w1.support := by
+        intro hs
+        rcases induced_nbrs H.hp1 H.det1 ht0 htl hs hs_adj with h | h
+        · exact hsp h
+        · exact hss h
+      by_cases hsS : s ∈ S2
       · right
-        have hpred : G.Adj (w1.getVert t) (w1.getVert (t - 1)) := by
-          have := w1.adj_getVert_succ (i := t - 1) (by omega)
-          have e : t - 1 + 1 = t := by omega
-          rw [e] at this
-          exact this.symm
-        have hsucc : G.Adj (w1.getVert t) (w1.getVert (t + 1)) := w1.adj_getVert_succ htl
-        have hpne : w1.getVert (t - 1) ≠ w1.getVert (t + 1) := by
-          intro h
-          have := getVert_inj H.hp1 (by omega) (by omega) h
-          omega
-        obtain ⟨s, hs_adj, hsp, hss, hall⟩ := H.stub _ hc _ _ hpred hsucc hpne
-        have hs_off : s ∉ w1.support := by
-          intro hs
-          rcases induced_nbrs H.hp1 H.det1 ht0 htl hs hs_adj with h | h
-          · exact hsp h
-          · exact hss h
         refine ⟨s, ?_, ?_⟩
-        · simp only [S2', S2, Finset.mem_filter, Finset.mem_union, Finset.mem_insert,
-            Finset.mem_singleton]
-          refine ⟨?_, hs_off⟩
-          by_cases hcs : Cubic s
-          · by_cases hs2 : s ∈ w2.support
-            · obtain ⟨y, hy, hyl⟩ := SimpleGraph.Walk.mem_support_iff_exists_getVert.1 hs2
-              by_cases hy0 : y = 0
-              · right; left
-                rw [← hy, hy0, SimpleGraph.Walk.getVert_zero]
-              · by_cases hyl' : y = w2.length
-                · right; right
-                  rw [← hy, hyl', SimpleGraph.Walk.getVert_length]
-                · exfalso
-                  apply hclean
-                  refine ⟨hc, hin, y, by omega, by omega, ?_, ?_, ?_⟩
-                  · rw [hy]; exact hs_adj
-                  · rw [hy]; exact hcs
-                  · rw [hy]; exact hs_off
-            · left; right; exact hU s hcs hs_off hs2
-          · left; left; exact hX s hcs
+        · simp only [S2', Finset.mem_filter]
+          exact ⟨hsS, hs_off⟩
         · simp only [nbrPos, Finset.mem_filter, Finset.mem_range]
           exact ⟨by omega, hs_adj.symm⟩
+      · have hcs : Cubic s := by
+          by_contra h
+          apply hsS
+          simp only [S2, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
+          exact Or.inl (Or.inl (hX s h))
+        have hs2 : s ∈ w2.support := by
+          by_contra h
+          apply hsS
+          simp only [S2, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
+          exact Or.inl (Or.inr (hU s hcs hs_off h))
+        obtain ⟨y, hy, hyl⟩ := SimpleGraph.Walk.mem_support_iff_exists_getVert.1 hs2
+        have hy0 : y ≠ 0 := by
+          intro h0
+          apply hsS
+          simp only [S2, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
+          right; left
+          rw [← hy, h0, SimpleGraph.Walk.getVert_zero]
+        have hyl' : y ≠ w2.length := by
+          intro h0
+          apply hsS
+          simp only [S2, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
+          right; right
+          rw [← hy, h0, SimpleGraph.Walk.getVert_length]
+        by_cases hin : w1.getVert t ∈ w2.support
+        · left; right
+          refine ⟨htl, ht0, hin, y, hyl, ?_, ?_⟩
+          · rw [hy]; exact hs_adj
+          · rw [hy]; exact hs_off
+        · exfalso
+          apply hclean
+          refine ⟨hc, hin, y, by omega, by omega, ?_, ?_, ?_⟩
+          · rw [hy]; exact hs_adj
+          · rw [hy]; exact hcs
+          · rw [hy]; exact hs_off
     · left; left; exact ⟨by omega, hc⟩
   have hB1 : B1.card ≤ X.card := by
     apply Finset.card_le_card_of_injOn (fun y => w1.getVert y)
@@ -288,12 +311,12 @@ theorem badSet_card_le (H : CountHyp G LengthOK Cubic w1 w2) (X U : Finset V)
         have h2 : ({a2, b2} : Finset V).card ≤ 2 := Finset.card_le_two
         omega
   calc (badSet Cubic w1 w2).card
-      ≤ (B1 ∪ ovSet w1 w2 ∪ S2'.biUnion (fun s => nbrPos w1 s)).card := Finset.card_le_card hsub
-    _ ≤ B1.card + (ovSet w1 w2).card + (S2'.biUnion (fun s => nbrPos w1 s)).card := by
-        have := Finset.card_union_le (B1 ∪ ovSet w1 w2) (S2'.biUnion (fun s => nbrPos w1 s))
-        have := Finset.card_union_le B1 (ovSet w1 w2)
+      ≤ (B1 ∪ ovDiv w1 w2 ∪ S2'.biUnion (fun s => nbrPos w1 s)).card := Finset.card_le_card hsub
+    _ ≤ B1.card + (ovDiv w1 w2).card + (S2'.biUnion (fun s => nbrPos w1 s)).card := by
+        have := Finset.card_union_le (B1 ∪ ovDiv w1 w2) (S2'.biUnion (fun s => nbrPos w1 s))
+        have := Finset.card_union_le B1 (ovDiv w1 w2)
         omega
-    _ ≤ 4 * X.card + (ovSet w1 w2).card + 3 * U.card + 6 := by omega
+    _ ≤ 4 * X.card + (ovDiv w1 w2).card + 3 * U.card + 6 := by omega
 
 
 /-- the properties of the exceptional position produced by a clean block -/
@@ -402,11 +425,11 @@ theorem rungs_close (H : CountHyp G LengthOK Cubic w1 w2) {p p' a a' : ℕ}
     omega
 
 /-- **The count.**  For the two geodesic walks with `X` the non-cubic vertices and `U` the cubic
-vertices off both walks: `⌊(|w₁| − 1)/24⌋ ≤ 8|X| + 6|U| + |{t : w₁.getVert t ∈ w₂}| + 14`. -/
+vertices off both walks: `⌊(|w₁| − 1)/24⌋ ≤ 8|X| + 6|U| + |ovDiv w₁ w₂| + 14`, `ovDiv` the meeting points (interior positions of `w₁` on `w₂` with a neighbour on `w₂` outside `w₁`). -/
 theorem ladder_count (H : CountHyp G LengthOK Cubic w1 w2) (X U : Finset V)
     (hX : ∀ z, ¬ Cubic z → z ∈ X)
     (hU : ∀ z, Cubic z → z ∉ w1.support → z ∉ w2.support → z ∈ U) :
-    (w1.length - 1) / 24 ≤ 8 * X.card + 6 * U.card + (ovSet w1 w2).card + 14 := by
+    (w1.length - 1) / 24 ≤ 8 * X.card + 6 * U.card + (ovDiv w1 w2).card + 14 := by
   classical
   set K := (w1.length - 1) / 24 with hK
   have hKlen : 24 * K + 1 ≤ w1.length ∨ K = 0 := by

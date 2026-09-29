@@ -40,7 +40,7 @@ theorem Node144aOutcome_windowHandoff.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `windowFails`: [139] token in 𝔗_W, yes arm; audited at [140]; handoff-fails arm of [144] (the paper error).
-The generic 87 common facts and 14 extra facts (101 facts in all). -/
+The generic 87 common facts and 15 extra facts (102 facts in all). -/
 abbrev Node144aOutcome_windowFails (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -70,7 +70,9 @@ abbrev Node144aOutcome_windowFails (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .sameTokenSeedCover selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sameTokenPathInteractions selected.object
+      erdosReceiverLoadProfile spineData .sameTokenPathInteractions selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenLadderCount selected.object
 
 /-- `Node144aOutcome_windowFails` is a case of the generic residual. -/
 theorem Node144aOutcome_windowFails.toGeneric {selected : EGInput.{u}}
@@ -96,7 +98,7 @@ theorem Node144aOutcome_remainderHandoff.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `remainderFails`: [139] no, [141] token in 𝔗_R, yes arm; audited at [142]; handoff-fails arm of [144] (the paper error).
-The generic 87 common facts and 15 extra facts (102 facts in all). -/
+The generic 87 common facts and 16 extra facts (103 facts in all). -/
 abbrev Node144aOutcome_remainderFails (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -128,7 +130,9 @@ abbrev Node144aOutcome_remainderFails (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .sameTokenSeedCover selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sameTokenPathInteractions selected.object
+      erdosReceiverLoadProfile spineData .sameTokenPathInteractions selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenLadderCount selected.object
 
 /-- `Node144aOutcome_remainderFails` is a case of the generic residual. -/
 theorem Node144aOutcome_remainderFails.toGeneric {selected : EGInput.{u}}
@@ -156,7 +160,7 @@ theorem Node144aOutcome_primitiveHandoff.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `primitiveFails`: [139] no, [141] no: the primitive class; audited at [143]; handoff-fails arm of [144] (the paper error).
-The generic 87 common facts and 16 extra facts (103 facts in all). -/
+The generic 87 common facts and 17 extra facts (104 facts in all). -/
 abbrev Node144aOutcome_primitiveFails (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -190,7 +194,9 @@ abbrev Node144aOutcome_primitiveFails (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .sameTokenSeedCover selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sameTokenPathInteractions selected.object
+      erdosReceiverLoadProfile spineData .sameTokenPathInteractions selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenLadderCount selected.object
 
 /-- `Node144aOutcome_primitiveFails` is a case of the generic residual. -/
 theorem Node144aOutcome_primitiveFails.toGeneric {selected : EGInput.{u}}
@@ -361,7 +367,8 @@ theorem node144aWindowFailsReturn
     [FactKeys.Has (K .sameTokenSwapExact) known]
     [FactKeys.Has (K .sameTokenU2FreeWhole) known]
     [FactKeys.Has (K .sameTokenSeedCover) known]
-    [FactKeys.Has (K .sameTokenPathInteractions) known] :
+    [FactKeys.Has (K .sameTokenPathInteractions) known]
+    [FactKeys.Has (K .sameTokenLadderCount) known] :
     Node144aOutcome_windowFails selected :=
   ⟨node144aReturn history,
     (history.get (K .windowClassOverload)).down,
@@ -377,7 +384,8 @@ theorem node144aWindowFailsReturn
     (history.get (K .sameTokenSwapExact)).down,
     (history.get (K .sameTokenU2FreeWhole)).down,
     (history.get (K .sameTokenSeedCover)).down,
-    (history.get (K .sameTokenPathInteractions)).down⟩
+    (history.get (K .sameTokenPathInteractions)).down,
+    (history.get (K .sameTokenLadderCount)).down⟩
 
 /-- The return of `Node144aOutcome_remainderHandoff`: one `get` per fact of its ledger. -/
 theorem node144aRemainderHandoffReturn
@@ -410,7 +418,8 @@ theorem node144aRemainderFailsReturn
     [FactKeys.Has (K .sameTokenSwapExact) known]
     [FactKeys.Has (K .sameTokenU2FreeWhole) known]
     [FactKeys.Has (K .sameTokenSeedCover) known]
-    [FactKeys.Has (K .sameTokenPathInteractions) known] :
+    [FactKeys.Has (K .sameTokenPathInteractions) known]
+    [FactKeys.Has (K .sameTokenLadderCount) known] :
     Node144aOutcome_remainderFails selected :=
   ⟨node144aReturn history,
     (history.get (K .windowClassAbsent)).down,
@@ -427,7 +436,8 @@ theorem node144aRemainderFailsReturn
     (history.get (K .sameTokenSwapExact)).down,
     (history.get (K .sameTokenU2FreeWhole)).down,
     (history.get (K .sameTokenSeedCover)).down,
-    (history.get (K .sameTokenPathInteractions)).down⟩
+    (history.get (K .sameTokenPathInteractions)).down,
+    (history.get (K .sameTokenLadderCount)).down⟩
 
 /-- The return of `Node144aOutcome_primitiveHandoff`: one `get` per fact of its ledger. -/
 theorem node144aPrimitiveHandoffReturn
@@ -463,7 +473,8 @@ theorem node144aPrimitiveFailsReturn
     [FactKeys.Has (K .sameTokenSwapExact) known]
     [FactKeys.Has (K .sameTokenU2FreeWhole) known]
     [FactKeys.Has (K .sameTokenSeedCover) known]
-    [FactKeys.Has (K .sameTokenPathInteractions) known] :
+    [FactKeys.Has (K .sameTokenPathInteractions) known]
+    [FactKeys.Has (K .sameTokenLadderCount) known] :
     Node144aOutcome_primitiveFails selected :=
   ⟨node144aReturn history,
     (history.get (K .windowClassAbsent)).down,
@@ -481,7 +492,8 @@ theorem node144aPrimitiveFailsReturn
     (history.get (K .sameTokenSwapExact)).down,
     (history.get (K .sameTokenU2FreeWhole)).down,
     (history.get (K .sameTokenSeedCover)).down,
-    (history.get (K .sameTokenPathInteractions)).down⟩
+    (history.get (K .sameTokenPathInteractions)).down,
+    (history.get (K .sameTokenLadderCount)).down⟩
 
 end Returns
 

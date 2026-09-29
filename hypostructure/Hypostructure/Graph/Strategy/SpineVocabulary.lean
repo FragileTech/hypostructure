@@ -2140,6 +2140,8 @@ inductive Key where
   | sameTokenSeedCover
   /-- Node `[144a]` (G audit S144a, Lean improvement): **the interactions of the canonical port paths**: the pair seeds are `T ∪ supp w₁ ∪ supp w₂` and `T' ∪ supp z₁ ∪ supp z₂` with canonical port walks (simple; every chord, hub and closing cycle length unaccepted; one stub per interior cubic vertex); two vertex-disjoint segments of two of the walks joined by two edges (a rung pair, parallel or crossed) close a cycle of length `|p₂| + |q₂| + 2`, which is not accepted (all six pairs of walks); at every cubic vertex interior to a `P`-walk and a `Q`-walk the two path edges of one and the two of the other share an edge; if every degree-`3` vertex lies in both pair seeds, every neighbour of a hub lies in both. -/
   | sameTokenPathInteractions
+  /-- Node `[144a]` (G audit S144a, Lean improvement): **the ladder count of the canonical port walks**: for both pair seeds `T ∪ supp w₁ ∪ supp w₂` (`|T| ≤ 2δ`), `|H| ≤ σ`, and when both ports are triangular (the walks are shortest paths of `G − e`) and neither walk uses the other's end edge: if every degree-`3` vertex lies in the seed, `⌊(|wᵢ| − 1)/24⌋ ≤ 16|H| + 12|T| + 30`, `n ≤ |H| + |T| + |w₁| + |w₂| + 2` and `n ≤ 769|H| + 577|T| + 1490`; if every neighbour of a hub lies in the seed, `σ ≤ (|T| + 5)|H|`. -/
+  | sameTokenLadderCount
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -3272,6 +3274,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SameTokenSeedCoverStatement data.toParameters object
   | .sameTokenPathInteractions, object =>
       SameTokenPathInteractionsStatement data.toParameters object
+  | .sameTokenLadderCount, object =>
+      SameTokenLadderCountStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3829,6 +3833,7 @@ def label : Key → String
   | .remainderCycleSpectrum => "remainderCycleSpectrum"
   | .sameTokenSeedCover => "sameTokenSeedCover"
   | .sameTokenPathInteractions => "sameTokenPathInteractions"
+  | .sameTokenLadderCount => "sameTokenLadderCount"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -4377,6 +4382,7 @@ example : label .stubDeficitIdentity = "stubDeficitIdentity" := rfl
 example : label .remainderCycleSpectrum = "remainderCycleSpectrum" := rfl
 example : label .sameTokenSeedCover = "sameTokenSeedCover" := rfl
 example : label .sameTokenPathInteractions = "sameTokenPathInteractions" := rfl
+example : label .sameTokenLadderCount = "sameTokenLadderCount" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4922,6 +4928,7 @@ def idx : Key → Nat
   | .remainderCycleSpectrum => 8551
   | .sameTokenSeedCover => 8105
   | .sameTokenPathInteractions => 8106
+  | .sameTokenLadderCount => 8107
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -5456,6 +5463,7 @@ def ofIdx : Nat → Key
   | 8551 => .remainderCycleSpectrum
   | 8105 => .sameTokenSeedCover
   | 8106 => .sameTokenPathInteractions
+  | 8107 => .sameTokenLadderCount
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -6613,6 +6621,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenSeedCover") 8105
   | .sameTokenPathInteractions =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenPathInteractions") 8106
+  | .sameTokenLadderCount =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenLadderCount") 8107
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000
