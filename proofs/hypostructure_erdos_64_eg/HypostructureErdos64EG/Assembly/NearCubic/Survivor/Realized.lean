@@ -1,5 +1,9 @@
 import Hypostructure.Graph.Strategy.ColdCorridorRows.AbsorbedGerm
+import Hypostructure.Graph.Strategy.ColdCorridorRows.CanonicalReplacement
 import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdFamilyClosure
+import Hypostructure.Graph.Strategy.ColdCorridorRows.MarkedGerm
+import Hypostructure.Graph.Strategy.ColdCorridorRows.NeutralTerminal
+import Hypostructure.Graph.Strategy.ColdCorridorRows.TwoStrand
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.DensityOrder
 import Hypostructure.Graph.Strategy.SpineRows.Route8RateFromColdBelow
@@ -23,6 +27,8 @@ open Hypostructure.Graph.Strategy.Spine
 universe u w
 
 set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxSize 200000 in
+set_option synthInstance.maxHeartbeats 4000000 in
 /-- **The realized-package arm of `[158]`.**  `[22]`--`[23]`, then `[146]`
 (`θ < 1/78`).  Its yes arm `[147]`: the route-8 private-carrier inequality
 `τ(θ) < 3/13` is `K .coldRoute8Below` read through `|∂R| ≤ 15p + σ_W`
@@ -134,8 +140,61 @@ noncomputable def Assembly.Internal.nearCubicRealized
                         (K .coldGermSomeDistinguishing) (K .selection)
                         (by key_fresh)).elimClosed (by infer_instance)).elim
                   | .right silentHistory =>
-                      exact Or.inr (Or.inr (Or.inr (Or.inl
-                        (coldBranchClosed_linearRealizedSilentReturn
-                          (nearCubicColdTable silentHistory)))))
+                      -- `[157]`, silent arm: G's silent extracted family has a
+                      -- neutral equal-length configuration (`[163]`, read as at
+                      -- `[176]`: no dense terminality on this arm).  Its genuine
+                      -- second strand is closed at `[167]`--`[168]`; the
+                      -- canonical-replacement arm `[165]`--`[166]` forces `Q = E`
+                      -- and is retained.
+                      let neutral :=
+                        (absorbedNeutralConfigurationRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          silentHistory (by key_fresh)
+                      let closed := nearCubicColdTable neutral
+                      match absorbedNeutralSymmetryDichotomy (data := spineData) closed
+                          (by key_fresh) (by key_fresh) with
+                      | .left canonicalHistory =>
+                          let swapped :=
+                            (canonicalReplacementSwapRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                              canonicalHistory (by key_fresh)
+                          let trivial :=
+                            (canonicalReplacementTrivialRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                              swapped (by key_fresh)
+                          -- `[169]`, `def:blocked-class`: on the trivial neutral
+                          -- residual G lies in the blocked class `B(P)` of the fixed
+                          -- packing, `card B(P) <= skeletonBudget`.  (On `[158]` yes
+                          -- its compression cap is `windowPackageRealized` itself:
+                          -- `blockedCompressionCap_iff_windowPackageRealized`.)
+                          -- `[157]`: the marked germ against the table's compression
+                          -- clause: not handed off, replacement not strictly smaller.
+                          let uncompressed : ExactLedger EGInput.{u} selected _ :=
+                            (coldMarkedGermUncompressedRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                              trivial (by key_fresh)
+                          exact Or.inr (Or.inr (Or.inr (Or.inl
+                            (coldBranchClosed_linearRealizedSilentReturn uncompressed))))
+                      | .right genuineHistory =>
+                          let survivor :=
+                            (twoStrandSurvivorRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run genuineHistory
+                              (by key_fresh)
+                          let stubbed :=
+                            (coldWindowStubStructureRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run survivor
+                              (by key_fresh)
+                          exact ((symmetricPairEndpointExclusionRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).runAndCloseIncompatible stubbed
+                              (K .coldTwoStrandSurvivor) (K .coldSymmetricPairExcluded)
+                              (by key_fresh) (by key_fresh)).elimClosed
+                                (by infer_instance) |>.elim
 
 end HypostructureErdos64EG

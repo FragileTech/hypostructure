@@ -5318,3 +5318,98 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
 - **Stubs to hubs (`K .route8HubStubs`, 8265).** `sum over windows of |N(v) ∩ H| <= sum_{h in H} deg h <= (delta+1)*sigma(G)`, `H` the vertices above the baseline.
 - **Exact remaining proposition at G (thin arm).** `|R| <= s*|dR| + F*s*T(n)` (equivalently the collection `Xi(X_A)` is empty with `[113]` yes, or the unified `|R| <= s*|dR| + F*s*T`), the net cap, the join `e + X + 2(order-1)p = delta*order*p + sigma_W`, `X + T < sigma_W + F*T`, `n < N0'` (`K .route8ThinSmall`), and the cycle constraint of `K .route8WindowRPathGap`. Root type: `Route8RateFailsOutcome` has 109 common facts.
 
+## G audit: ColdBranchClosedOutcome_linearRealizedSilent
+
+Report: `audits/structural-accounting/ColdBranchClosedOutcome_linearRealizedSilent.md`
+(structural accounting before x=7 ~=55 gap=25 n/a=1 nonG=0; after x=12 ~=56 gap=19 n/a=1 nonG=0; the report still lists blockedClassMember as carried, it is not).
+
+- **Defining failure.** `[154]` on the realized arm (`[158]` yes, `[146]` no, `[153]`
+  linear).  G1 (`Q` realizing) is a cycle in `glue Q (G-Z) = G`, closed against
+  `K .selection`; G2 is empty at G (`BoundedGerm.sameResponse`), so G always takes the
+  silent arm `K .coldGermNoneDistinguishing`; `K .coldGermRouted` / `K .coldBranchClosed`
+  exclude the shortening germs.  Both tests are decided at G; the residual is reached
+  only through the equal-length neutral germs.  No test on the path has an
+  other-graph witness conclusion (the scale-additivity dichotomy `[170]`, whose no-arm
+  is "two graph fibres witnessing the failure", was not entered; if it is used later it
+  must be restated in the aggregate form).
+- **Misrouting found.** The silent arm returned directly after `[157]`.  The manuscript
+  closes an equal-length silent germ through `[163]`, `[165]`--`[166]`, `[167]`--`[168]`.
+  The dense arm ran these; the realized arm did not, and the genuine second-strand arm
+  was left inside the residual although it is closed by the window stub structure.
+- **Fix (Lean improvement: the genuine second-strand arm is empty at G).**
+  `Assembly/NearCubic/Survivor/Realized.lean`, silent arm: `absorbedNeutralConfigurationRow`
+  (`K .coldAbsorbedNeutralConfiguration`; read as at `[176]`, no dense terminality) →
+  `nearCubicColdTable` → `absorbedNeutralSymmetryDichotomy`.  Genuine arm:
+  `twoStrandSurvivorRow`, `coldWindowStubStructureRow`, closed by
+  `symmetricPairEndpointExclusionRow`.  Canonical arm: `K .coldCanonicalNeutralConfiguration`,
+  `K .coldCanonicalReplacementSwap` (`E ≠ Q` gives a same-size refined-smaller
+  counterexample), `K .coldCanonicalReplacementTrivial` (`E = Q`), then the two facts below.
+- **New key 8400 `coldMarkedGermUncompressed`** (`Statements/ColdMarkedGerm.lean`,
+  `Contracts/Spine/ColdMarkedGerm.lean`, `Strategy/ColdCorridorRows/MarkedGerm.lean`;
+  requires `coldAbsorbedNeutralConfiguration`, `coldCanonicalReplacementTrivial`).
+  Exact statement: `∃ marked, markedNeutralGerm? data G = some marked ∧ |Q.support| ≤ M_cold
+  ∧ |E| = |Q| ∧ ¬ ColdEntersHandoffRegistry data G Q.support ∧ |V|(glue E (G−Z)) = |V|(G)
+  ∧ |E|(glue E (G−Z)) = |E|(G) ∧ ¬ (glue E (G−Z)).LexicographicallySmaller G`.
+  The support of every germ of the extracted family is subcubic
+  (`canonicalActiveColdGerm_support_subcubic`: candidates have a subcubic trace prefix, and
+  the germ support lies in it), hence meets no heavy (F4) centre.  This is the measurement
+  of the marked germ against the `admissible` clause of a table row
+  (`TableRow.admissible`, `def:admissible-rank-quotient`): the clause requires a strictly
+  smaller proper representative, and at the marked germ there is none.
+- **`K .blockedClassMember`** is a fact of G on this arm (`blockedClassRow`) but is not
+  carried: the row does not resolve in the concrete ledger of `nearCubicRealized`
+  (instance search on the deep known list).  Theorem
+  `blockedCompressionCap_iff_windowPackageRealized` (`Iff.rfl`) records that on `[158]`
+  yes the compression cap of `[171]` is `windowPackageRealized` itself, so the additive arm
+  of `[170]` cannot contradict; the dense closure uses the strict reverse
+  `windowPackageUnrealized`, absent here.
+- **Verified (chkG, no errors, after rebasing onto g-repair-val 5897292):**
+  `Statements/ColdMarkedGerm.lean`, `Contracts/Spine/ColdMarkedGerm.lean`,
+  `SpineVocabulary.lean`, `Strategy/ColdCorridorRows/MarkedGerm.lean`,
+  `Residuals/ColdBranchClosedOutcome.lean`, `NearCubic/Survivor/Realized.lean`
+  (needed `synthInstance.maxSize/maxHeartbeats` options, explicit row arguments and a
+  `ExactLedger EGInput selected _` ascription).
+- **Excision (pumping): the path splice is built; the region splice is not.**  New
+  vocabulary-free module `Graph/SpliceLift.lean` (kernel-checked, imported by
+  `Hypostructure.lean`):
+  `cycle_lift` / `splice_cycle_lift` (every cycle of `G'` = `G` minus the interior of a
+  path `p : a ⇝ b` (length >= 2) plus the edge `s(a,b)` is a cycle of `G` of the same length,
+  or lifts to a cycle of `G` of length `L + (|p| - 1)`); `spliceObject` (the excised finite
+  object, `vertexCount_spliceObject_lt`: strictly smaller); `excision_shift_hit` (if `G`
+  avoids the target and the excised object has an accepted cycle, `G` has a cycle of length
+  `L + q`, `LengthOK L`, `q = |p| - 1`); `excision_dichotomy` (F08 at G: for minimal `G`,
+  either the excised object fails the baseline, or `G` has a cycle of length `L + q` with
+  `LengthOK L` and NOT `LengthOK (L + q)`); `degree_spliceObject_of_no_deleted_neighbour`
+  and `excision_deficient` (the canonical deficient vertex: `a`, `b`, or a neighbour of a
+  deleted vertex).
+  Consequence for the (F5) repeat (`FirstFailureGermWitness`, `repeated`: `germ.support =
+  intervalSupport left right`, the corridor stretch from `head left` to `head right`): the
+  target side is exactly F08 (the shift `q = right - left - 1` is a G fact; the excision is
+  a smaller counterexample unless `G` has a cycle of length `2^k + q` that is not a power of
+  two; the exceptional shifts `q = 2^m - 2^k` are closed).  The baseline side is NOT met by a
+  path splice: a deleted corridor vertex with a neighbour outside the loop makes that
+  neighbour deficient (`excision_deficient`), so the valid replacement `X'` must excise the
+  whole region between the two equal cut states and identify the boundary vertices by label
+  (a multi-boundary splice), which needs the region lifting lemma and the profile bookkeeping
+  for identified states.  Not built.  The arithmetic cases (a), (b) of
+  `lem:cold-increment-arithmetic` need the loop repeated `j` times (other graphs), so they
+  are not G facts; the G fact is the single-excision statement above.
+  C11: the per-germ increment fact is `K .coldGermRouted` (`not increment < 0` for every
+  active germ) and `K .coldSameInterfaceTable` (`increment = 0` for rows); `E = Q` for the
+  marked germ.  H09: the count `|Occ| = |candidates| + loss`, `candidates <= |F| * denom`
+  and `9 |cubic| = |selected|` are conjuncts of `K .coldGermCandidates` /
+  `K .coldSelectedBranchExcess`; combined with `K .coldMassLinear` they bound `|F|` from
+  below, with no partner inequality on this arm.  Neither was published as a new key.
+- **Still open (exact proposition at G).** G's marked neutral equal-length germ `(Q, E)`,
+  `E = Q`, of the positive extracted family on the realized package: a subcubic (F5)
+  germ, not handed off, whose replacement has G's vertex and edge count, so `[157]`'s
+  compression has no constructed replacement there; the ledger of
+  `ColdBranchClosedOutcome_linearRealizedSilent`.  Tried and why it did not close: (1)
+  genuine second strand: closed at `[167]`--`[168]`; (2) size/refined swap: gives `E = Q`,
+  not a smaller graph; (3) blocked class + compression cap: the cap equals the
+  realization fact, no contradiction without `windowPackageUnrealized`; (4) table row
+  closure: the marked germ is not handed off and not a compression.  Remaining
+  accounting gaps at the marked germ (F08 period of the repeated state, C11 family
+  increments, H09 germ count against `coldMassLinear`) have no partner inequality on
+  this arm.
+- **Root type.** Unchanged (the subtype keeps its name; it carries 5 more facts).

@@ -11,6 +11,7 @@ import Hypostructure.Graph.Statements.TypeBLanes
 import Hypostructure.Graph.Statements.SurplusPairRouting
 import Hypostructure.Graph.Statements.SurplusPairCode
 import Hypostructure.Graph.Statements.ColdGerm
+import Hypostructure.Graph.Statements.ColdMarkedGerm
 import Hypostructure.Graph.Statements.SpineDominantType
 import Hypostructure.Graph.Statements.ColdResiduals
 import Hypostructure.Graph.Statements.DensityOrder
@@ -1777,6 +1778,8 @@ inductive Key where
   G's selected cold branch-excess family is empty and G has no ambient-cubic
   cold window. -/
   | coldSelectedFamilyEmpty
+  /-- Node `[157]`, the marked neutral equal-length germ of G measured against the compression clause of a table row: `|Q| ≤ M_cold`, `|E| = |Q|`, the support does not enter G's (F4) registry, and `glue E (G − Z)` has the vertex and edge count of G (not strictly smaller). -/
+  | coldMarkedGermUncompressed
   -- [20a] enrichment keys (6606-)
   /-- Node `[20a]`: **Edge–surplus identity**: `2m = δ·n + σ`. -/
   | edgeSurplusIdentity
@@ -2991,6 +2994,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       NeutralConfigurationStatement data.toParameters object
   | .coldSelectedFamilyEmpty, object =>
       ColdSelectedFamilyEmptyStatement data.toParameters object
+  | .coldMarkedGermUncompressed, object =>
+      ColdMarkedGermUncompressedStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -3464,6 +3469,7 @@ def label : Key → String
   | .typeAExitSevenEnvelope => "typeAExitSevenEnvelope"
   | .coldAbsorbedNeutralConfiguration => "coldAbsorbedNeutralConfiguration"
   | .coldSelectedFamilyEmpty => "coldSelectedFamilyEmpty"
+  | .coldMarkedGermUncompressed => "coldMarkedGermUncompressed"
 
 /-! ### Label pins
 
@@ -3951,6 +3957,7 @@ example : label .typeAExitSevenEnvelope = "typeAExitSevenEnvelope" := rfl
 example : label .coldAbsorbedNeutralConfiguration =
     "coldAbsorbedNeutralConfiguration" := rfl
 example : label .coldSelectedFamilyEmpty = "coldSelectedFamilyEmpty" := rfl
+example : label .coldMarkedGermUncompressed = "coldMarkedGermUncompressed" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -4433,6 +4440,7 @@ def idx : Key → Nat
   | .typeAExitSevenEnvelope => 2012
   | .coldAbsorbedNeutralConfiguration => 2700
   | .coldSelectedFamilyEmpty => 2701
+  | .coldMarkedGermUncompressed => 8400
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -4904,6 +4912,7 @@ def ofIdx : Nat → Key
   | 2012 => .typeAExitSevenEnvelope
   | 2700 => .coldAbsorbedNeutralConfiguration
   | 2701 => .coldSelectedFamilyEmpty
+  | 8400 => .coldMarkedGermUncompressed
   | _ => .selection
 
 set_option maxRecDepth 8192 in
@@ -5960,6 +5969,8 @@ def name : Key → Lean.Name
         "coldAbsorbedNeutralConfiguration") 2700
   | .coldSelectedFamilyEmpty =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldSelectedFamilyEmpty") 2701
+  | .coldMarkedGermUncompressed =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldMarkedGermUncompressed") 8400
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather
