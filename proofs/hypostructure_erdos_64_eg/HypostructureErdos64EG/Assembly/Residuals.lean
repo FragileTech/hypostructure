@@ -39,7 +39,7 @@ universe u w
 /-- **Node `[144a]`** (thm:main (ii), tex 347-353): the same-token Type B
 handoff of [144] on the strict-surplus survivor, or (the paper error at
 [144]) the unresolved same-label pattern pair.  The generic residual: the
-explicit conjunction of the 94 facts common to every path.  Its six distinct
+explicit conjunction of the 136 facts common to every path.  Its six distinct
 fact sets (the class arm of [139]/[141] times the arm of [144]'s handoff
 decision) are its subtypes in `Assembly/Residuals/Node144aOutcome.lean`. -/
 abbrev Node144aOutcome (selected : EGInput.{u}) : Prop :=
@@ -304,7 +304,17 @@ abbrev Node144aOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .sameTokenPatternSupports selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sameTokenPatternSwap selected.object
+      erdosReceiverLoadProfile spineData .sameTokenPatternSwap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenWalkWindows selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenWalkExchange selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenW0Escape selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenCrossingCount selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenHubCount selected.object
 
 /-- The return of the generic `Node144aOutcome`: one `get` per common fact.
 The subtypes' return theorems extend it with one `get` per extra fact. -/
@@ -441,7 +451,12 @@ theorem node144aReturn
     [FactKeys.Has (K .homogeneousCapsFail) known]
     [FactKeys.Has (K .bottleneckRouting) known]
     [FactKeys.Has (K .sameTokenPatternSupports) known]
-    [FactKeys.Has (K .sameTokenPatternSwap) known] :
+    [FactKeys.Has (K .sameTokenPatternSwap) known]
+    [FactKeys.Has (K .sameTokenWalkWindows) known]
+    [FactKeys.Has (K .sameTokenWalkExchange) known]
+    [FactKeys.Has (K .sameTokenW0Escape) known]
+    [FactKeys.Has (K .sameTokenCrossingCount) known]
+    [FactKeys.Has (K .sameTokenHubCount) known] :
     Node144aOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -573,7 +588,12 @@ theorem node144aReturn
     (history.get (K .homogeneousCapsFail)).down,
     (history.get (K .bottleneckRouting)).down,
     (history.get (K .sameTokenPatternSupports)).down,
-    (history.get (K .sameTokenPatternSwap)).down⟩
+    (history.get (K .sameTokenPatternSwap)).down,
+    (history.get (K .sameTokenWalkWindows)).down,
+    (history.get (K .sameTokenWalkExchange)).down,
+    (history.get (K .sameTokenW0Escape)).down,
+    (history.get (K .sameTokenCrossingCount)).down,
+    (history.get (K .sameTokenHubCount)).down⟩
 
 /-- **Node `[172a]`** (thm:main (iii), tex 354-358): the first failed
 conditional graph-count inequality of lem:scale-additivity on the dense-

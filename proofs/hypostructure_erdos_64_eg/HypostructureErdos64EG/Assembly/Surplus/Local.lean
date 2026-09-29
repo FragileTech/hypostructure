@@ -5,6 +5,8 @@ import Hypostructure.Graph.Strategy.SpineRows.SuppressedFamilyCriticalCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SameTokenBottleneckRouting
 import Hypostructure.Graph.Strategy.SpineRows.SameTokenPair
 import Hypostructure.Graph.Strategy.SpineRows.SameTokenSwap
+import Hypostructure.Graph.Strategy.SpineRows.SameTokenWalkWindows
+import Hypostructure.Graph.Strategy.SpineRows.SameTokenHubEscape
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SameTokenTypeBFanEntry
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.HomogeneousCapsClose
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.FibrePressure
@@ -722,6 +724,8 @@ noncomputable def selectedPairCodeChainDependent
                       exact (closedHistory.elimClosed (by infer_instance)).elim
 
 set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+set_option synthInstance.maxSize 2048 in
 /-- Node `[144]` on any ledger carrying the homogeneous bottleneck pattern
 published by the geometric audit `[140]`/`[142]`/`[143]`: decide the fixed caps.
 On the failing arm `lem:same-token-bottleneck-routing` routes the pattern to the
@@ -795,6 +799,12 @@ noncomputable def selectedBottleneckDischarge
     (fanEntryFresh : K .typeBFanEntry ∉ known := by key_fresh)
     (supportsFresh : K .sameTokenPatternSupports ∉ known := by key_fresh)
     (swapFresh : K .sameTokenPatternSwap ∉ known := by key_fresh)
+    (walkWindowsFresh : K .sameTokenWalkWindows ∉ known := by key_fresh)
+    (walkExchangeFresh : K .sameTokenWalkExchange ∉ known := by key_fresh)
+    (w0EscapeFresh : K .sameTokenW0Escape ∉ known := by key_fresh)
+    (crossingCountFresh : K .sameTokenCrossingCount ∉ known := by key_fresh)
+    (hubCountFresh : K .sameTokenHubCount ∉ known := by key_fresh)
+    (triArmFresh : K .sameTokenTriArmEmpty ∉ known := by key_fresh)
     (partitionFresh : K .sameTokenPairPartition ∉ known := by key_fresh)
     (transplantSizeFresh : K .sameTokenTransplantSize ∉ known := by key_fresh)
     (transplantDeficitFresh : K .sameTokenTransplantDeficit ∉ known := by key_fresh)
@@ -889,7 +899,9 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .windowPresent) known] :
     ExactLedger EGInput.{u} selected
-        (K .typeBFanEntry :: K .typeBHandoff :: K .sameTokenPatternSupports ::
+        (K .typeBFanEntry :: K .typeBHandoff ::
+          K .sameTokenW0Escape :: K .sameTokenCrossingCount :: K .sameTokenHubCount ::
+          K .sameTokenWalkWindows :: K .sameTokenWalkExchange :: K .sameTokenPatternSupports ::
           K .sameTokenPatternSwap :: K .bottleneckRouting ::
           K .homogeneousCapsFail :: known) ⊕
       ExactLedger EGInput.{u} selected
@@ -898,8 +910,11 @@ noncomputable def selectedBottleneckDischarge
           K .sameTokenPathInteractions :: K .sameTokenLadderCount ::
           K .sameTokenWalkAttachment :: K .sameTokenSeparatorExcluded ::
           K .sameTokenTransplantSize :: K .sameTokenTransplantDeficit ::
+          K .sameTokenTriArmEmpty ::
           K .sameTokenPairPartition :: K .sameTokenReadingsNotReplacement ::
           K .sameTokenPatternUnresolved :: K .typeBHandoffFails ::
+          K .sameTokenW0Escape :: K .sameTokenCrossingCount :: K .sameTokenHubCount ::
+          K .sameTokenWalkWindows :: K .sameTokenWalkExchange ::
           K .sameTokenPatternSupports :: K .sameTokenPatternSwap :: K .bottleneckRouting ::
           K .homogeneousCapsFail :: known) := by
   match homogeneousBottleneckDichotomy (data := spineData) history
@@ -917,7 +932,23 @@ noncomputable def selectedBottleneckDischarge
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run routed (by key_fresh)
-      match sameTokenHandoffDichotomy (data := spineData) supported
+      -- `[144a]` exchange attack (Lean improvement): the induced windows along
+      -- the canonical port walks and the exchange at `P₀`, at the earliest
+      -- position (the contract reads only the routing's existence, the cycle
+      -- avoidance, the active surplus family and `δ = 3`); no decision.
+      let windowed :=
+        (sameTokenWalkWindowsRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run supported (by key_fresh)
+      -- `[144a]` exchange attack (Lean improvement): the W0 escape, the crossings
+      -- and the hub count at the canonical port walks; same reads; no decision.
+      let escaped :=
+        (sameTokenHubEscapeRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run windowed (by key_fresh)
+      match sameTokenHandoffDichotomy (data := spineData) escaped
           (by key_fresh) (by key_fresh) with
       | .left handoffHistory =>
           let entered :=
@@ -946,6 +977,14 @@ noncomputable def selectedBottleneckDischarge
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run unresolved (by key_fresh)
+          -- `[144a]` exchange attack (Lean improvement): the triangular sub-arm
+          -- W ∧ Tri ∧ EndEdgesFree is empty at G; right after the partition, the
+          -- first key it reads.  No decision.
+          let triArm :=
+            (sameTokenTriArmRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run partitioned (by key_fresh)
           -- `[144a]` (G repair R5, Lean improvement): the transplants of the
           -- two pattern supports into `Z`, their conditions (i)--(iv), the size
           -- equality minimality gives, and their exact failure.  No decision:
@@ -954,7 +993,7 @@ noncomputable def selectedBottleneckDischarge
             (sameTokenTransplantRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run partitioned (by key_fresh)
+              (data := spineData)).run triArm (by key_fresh)
           -- `[144a]` (G audit S144a, Lean improvement): the entry test decided at
           -- G, the exact readings, the rerouted swaps of the two supports in both
           -- directions with their exact failure, and the boundary-free
