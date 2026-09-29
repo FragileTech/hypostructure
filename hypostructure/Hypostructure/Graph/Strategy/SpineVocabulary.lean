@@ -39,6 +39,7 @@ import Hypostructure.Graph.Statements.PairCorrelation
 import Hypostructure.Graph.Statements.Route8QuotientSize
 import Hypostructure.Graph.Statements.PairHandoffSupport
 import Hypostructure.Graph.Statements.PairHandoffFacts
+import Hypostructure.Graph.Statements.StubDeficit
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -2101,6 +2102,10 @@ inductive Key where
   | pairHandoffHubBalance
   /-- Nodes `[179]` → `[187]` (G audit): **the critical coordinate of the handoff read at G's own signature**: G's own responses are all negative; for the canonical member `π_h` whose support contains `h`, in the order exposing it last (earlier levels double, the last does not), G's own level signature has one or two realized extensions (a fibre of size one is a repetition of G's response at `π_h`). -/
   | pairHandoffFibreAtG
+  /-- Terminal `[54]` (`prop:entropy-high-theta`): **the stub-deficit identity at `R₀`**: `e(R₀,W) + exc(R₀) = σ(R₀) + def⁺(R₀)`, `2e(G[R₀]) + e(R₀,W) = δ|R₀| + σ(R₀)`, and the canonical assignment of the `def⁺(R₀)` deficit units to distinct boundary stubs by G's vertex order. -/
+  | stubDeficitIdentity
+  /-- Terminal `[54]`: **the cycle spectrum of `R₀`**: `G[R₀]` and every induced subgraph of it carry no cycle of an accepted length. -/
+  | remainderCycleSpectrum
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -3211,6 +3216,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairHandoffHubBalanceStatement data.toParameters object
   | .pairHandoffFibreAtG, object =>
       PairHandoffFibreAtGStatement data.toParameters object
+  | .stubDeficitIdentity, object =>
+      StubDeficitIdentityStatement data.toParameters object
+  | .remainderCycleSpectrum, object =>
+      RemainderCycleSpectrumStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3749,6 +3758,8 @@ def label : Key → String
   | .pairHandoffDemandEnds => "pairHandoffDemandEnds"
   | .pairHandoffHubBalance => "pairHandoffHubBalance"
   | .pairHandoffFibreAtG => "pairHandoffFibreAtG"
+  | .stubDeficitIdentity => "stubDeficitIdentity"
+  | .remainderCycleSpectrum => "remainderCycleSpectrum"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -4282,6 +4293,8 @@ example : label .pairHandoffHubForces = "pairHandoffHubForces" := rfl
 example : label .pairHandoffDemandEnds = "pairHandoffDemandEnds" := rfl
 example : label .pairHandoffHubBalance = "pairHandoffHubBalance" := rfl
 example : label .pairHandoffFibreAtG = "pairHandoffFibreAtG" := rfl
+example : label .stubDeficitIdentity = "stubDeficitIdentity" := rfl
+example : label .remainderCycleSpectrum = "remainderCycleSpectrum" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4812,6 +4825,8 @@ def idx : Key → Nat
   | .pairHandoffDemandEnds => 8358
   | .pairHandoffHubBalance => 8359
   | .pairHandoffFibreAtG => 8360
+  | .stubDeficitIdentity => 8550
+  | .remainderCycleSpectrum => 8551
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -5331,6 +5346,8 @@ def ofIdx : Nat → Key
   | 8358 => .pairHandoffDemandEnds
   | 8359 => .pairHandoffHubBalance
   | 8360 => .pairHandoffFibreAtG
+  | 8550 => .stubDeficitIdentity
+  | 8551 => .remainderCycleSpectrum
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -6462,6 +6479,10 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffHubBalance") 8359
   | .pairHandoffFibreAtG =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffFibreAtG") 8360
+  | .stubDeficitIdentity =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "stubDeficitIdentity") 8550
+  | .remainderCycleSpectrum =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "remainderCycleSpectrum") 8551
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

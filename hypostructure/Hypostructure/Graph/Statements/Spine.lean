@@ -2969,27 +2969,12 @@ noncomputable abbrev DensityCapStatement
       (data.threshold * object.vertexCount +
         data.surplusThreshold object.vertexCount) +
     data.densitySlack * (data.windowRate * data.separatedScaleCount object.vertexCount) *
-      data.surplusThreshold object.vertexCount) ∧
-  -- The high-entropy clause of `[24]` (`prop:p13-density`, tex 8491-8495,
-  -- 8530-8551): "when the joint comparison in the high-entropy branch of
-  -- `prop:two-budget` also holds", i.e. the window package of `P₀` together
-  -- with the `(1/d)·log₂ n` remainder bits per vertex of `R₀` is realized by
-  -- a canonical state map on `G`'s labelled skeleton class, the joint package
-  -- fits the skeleton budget -- `eq:feasibility`, whose solution is
-  -- `θ ≤ 0.01198542083… + o(1)`.  Cleared of the root `1/d`.
-  (∀ (State : Type u)
-      (stateOf : Graph.PackedWindowRealization.Skeleton
-        object.vertexCount object.edgeCount → State),
-    (2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-          object.windowPackingNumber data.windowOrder)) ^ data.entropyDenominator *
-        object.vertexCount ^
-          (object.remainderSupport (canonicalWindowPacking data object)).card ≤
-      Nat.card (Set.range stateOf) ^ data.entropyDenominator →
-    (2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-          object.windowPackingNumber data.windowOrder)) ^ data.entropyDenominator *
-        object.vertexCount ^
-          (object.remainderSupport (canonicalWindowPacking data object)).card ≤
-      Graph.skeletonBudget object ^ data.entropyDenominator)
+      data.surplusThreshold object.vertexCount)
+
+-- The high-entropy clause of `[24]` (`prop:p13-density`, tex 8491-8495, 8530-8551:
+-- a joint package realized by a state map on G's labelled class fits the skeleton
+-- budget) is the counting lemma `card_range_le_card_ambient`; in aggregate form it
+-- states no fact of G and is not carried.
 
 /-- Nodes `[25]`--`[27]`: the remainder of a maximal packing carries no
 window and no subgraph meeting the baseline (`sec:remainder`). -/

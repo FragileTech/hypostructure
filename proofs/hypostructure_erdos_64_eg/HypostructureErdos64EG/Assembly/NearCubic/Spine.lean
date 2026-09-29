@@ -19,6 +19,7 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8RateDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8BasinBurden
 import Hypostructure.Graph.Strategy.SpineRows.Route8RateFailsJoin
 import Hypostructure.Graph.Strategy.SpineRows.RouteEightNetDeficiencyCap
+import Hypostructure.Graph.Strategy.SpineRows.StubDeficit
 import Hypostructure.Graph.Strategy.SpineRows.StubSupply
 import Hypostructure.Graph.Strategy.SpineRows.TargetRankCircuit
 import Hypostructure.Graph.Strategy.SpineRows.WedgeSupply
@@ -72,7 +73,8 @@ arm whose route-8 rate is already decided. -/
 noncomputable abbrev nearCubicResidualBKeys : FactKeys EGInput.{u} :=
   [K .forcedCurvatureCost, K .remainderEntropyHigh, K .remainderEntropyLow,
     K .entropyPackageDemand, K .entropyCapActive, K .largeBudgetResidual,
-    K .entropyCapBound, K .entropyJointRealization, K .allColdEntropyResidual, K .localTypeCoordinateRepetitive,
+    K .entropyCapBound, K .entropyJointRealization, K .allColdEntropyResidual, K .stubDeficitIdentity,
+    K .remainderCycleSpectrum, K .localTypeCoordinateRepetitive,
     K .localTypeCoordinateNonrepetitive, K .dominantRootedType,
     K .dominantRootedWedgeType, K .dominantRootedTypeWedgeFree,
     K .independentObstructionTranslates, K .netDeficiencyCap] ++
@@ -860,7 +862,13 @@ noncomputable def nearCubicLargeBudgetColdRate
                   (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
           | .right residualHistory =>
               -- the configuration at G where the joint realization fails,
+              -- with the stub-deficit identity and the cycle spectrum of `R₀`,
               -- returned.
+              let residualHistory :=
+                (stubDeficitRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run residualHistory (by key_fresh)
               exact Or.inr (Or.inr (Or.inr (Or.inr
                 (node54SubtypesReturn_coldRate residualHistory lanePrefix))))
       | .right boundHistory =>
@@ -1061,7 +1069,13 @@ noncomputable def nearCubicLargeBudgetDenseRate
                   (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
           | .right residualHistory =>
               -- the configuration at G where the joint realization fails,
+              -- with the stub-deficit identity and the cycle spectrum of `R₀`,
               -- returned.
+              let residualHistory :=
+                (stubDeficitRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run residualHistory (by key_fresh)
               exact Or.inr (Or.inr (Or.inr (Or.inr
                 (Or.inr (Or.inr (Or.inr (Or.inr
                   (node54Return_unrealizedBothRates residualHistory))))))))
@@ -1268,7 +1282,13 @@ noncomputable def nearCubicLargeBudgetDensityCap
                   (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
           | .right residualHistory =>
               -- the configuration at G where the joint realization fails,
+              -- with the stub-deficit identity and the cycle spectrum of `R₀`,
               -- returned.
+              let residualHistory :=
+                (stubDeficitRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run residualHistory (by key_fresh)
               exact Or.inr (Or.inr (Or.inr (Or.inr
                 (node54SubtypesReturn_densityCap residualHistory lanePrefix))))
       | .right boundHistory =>
@@ -1471,7 +1491,13 @@ noncomputable def nearCubicLargeBudgetRateFailed
                   (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
           | .right residualHistory =>
               -- the configuration at G where the joint realization fails,
+              -- with the stub-deficit identity and the cycle spectrum of `R₀`,
               -- returned.
+              let residualHistory :=
+                (stubDeficitRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run residualHistory (by key_fresh)
               exact Or.inr (Or.inr (Or.inr (Or.inr
                 (Or.inr (Or.inr (Or.inr (Or.inl
                   (node54Return_unrealizedRateFailsBounded residualHistory))))))))

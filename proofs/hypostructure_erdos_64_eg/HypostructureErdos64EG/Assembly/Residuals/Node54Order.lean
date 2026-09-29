@@ -73,4 +73,18 @@ theorem boundedOrderSmall_lt_cutoff (object : Graph.FiniteObject.{u})
   by_contra notLt
   exact small ⟨by norm_num, by norm_num, not_lt.mp notLt⟩
 
+/-- **The order interval left at G on a bounded `[54]` arm, lower end.**  The
+packing is nonempty (`K .maximalPacking`) and `order·ν ≤ n` (`K .packingOrderBound`),
+so `windowOrder ≤ n` (`13 ≤ n`).  This is the whole lower bound on `n` the
+ledger of the three bounded subtypes carries. -/
+theorem windowOrder_le_vertexCount (object : Graph.FiniteObject.{u})
+    (packing : PackingOrderBoundStatement (spineData.{u}).toParameters object)
+    (maximal : MaximalPackingStatement (spineData.{u}).toParameters object) :
+    (spineData.{u}).toParameters.windowOrder ≤ object.vertexCount := by
+  have pos := maximal.1
+  have card := maximal.2.2.1
+  unfold PackingOrderBoundStatement at packing
+  rw [card] at packing
+  exact le_trans (Nat.le_mul_of_pos_right _ pos) packing
+
 end HypostructureErdos64EG
