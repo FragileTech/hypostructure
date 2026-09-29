@@ -89,4 +89,57 @@ theorem local_share_not_forced :
   simp
   decide
 
+
+/-- **A failed local share test is a repetition.**  If a layer has more surviving
+configurations than the share `F/W` allows, and at most `F + 1` states survive, then some
+surviving state `t` is shared by many configurations:
+`F·|X| < W·(F+1)·#{x : s x = t}`; and once the surviving configurations outnumber `F + 1`, two
+distinct configurations share a surviving state. -/
+theorem repetition_of_failed_share {X S : Type} [Fintype X] (s : X → S)
+    (survStates : Finset S) (F W : Nat) (hcard : survStates.card ≤ F + 1)
+    (failed : F * Fintype.card X <
+      W * (Finset.univ.filter fun x : X ↦ s x ∈ survStates).card) :
+    ∃ t ∈ survStates,
+      F * Fintype.card X < W * ((F + 1) * (Finset.univ.filter fun x : X ↦ s x = t).card) ∧
+      ((F + 1) < (Finset.univ.filter fun x : X ↦ s x ∈ survStates).card →
+        ∃ x x' : X, x ≠ x' ∧ s x = s x') := by
+  classical
+  set survivors := Finset.univ.filter fun x : X ↦ s x ∈ survStates with hsurv
+  have positive : 0 < survivors.card := by
+    by_contra zero
+    have : survivors.card = 0 := Nat.eq_zero_of_not_pos zero
+    rw [this, Nat.mul_zero] at failed
+    exact Nat.not_lt_zero _ failed
+  obtain ⟨witness, witnessMem⟩ := Finset.card_pos.1 positive
+  have statesNonempty : survStates.Nonempty :=
+    ⟨s witness, (Finset.mem_filter.1 witnessMem).2⟩
+  have maps : ∀ x ∈ survivors, s x ∈ survStates := fun x mem ↦ (Finset.mem_filter.1 mem).2
+  let fibre : S → Nat := fun t ↦ (survivors.filter fun x ↦ s x = t).card
+  obtain ⟨best, bestMem, bestMax⟩ := Finset.exists_max_image survStates fibre statesNonempty
+  have partition : survivors.card = ∑ t ∈ survStates, fibre t :=
+    Finset.card_eq_sum_card_fiberwise maps
+  have sumLe : ∑ t ∈ survStates, fibre t ≤ survStates.card * fibre best := by
+    have := Finset.sum_le_card_nsmul survStates fibre (fibre best) bestMax
+    simpa [smul_eq_mul] using this
+  have survivorsLe : survivors.card ≤ (F + 1) * fibre best :=
+    partition.le.trans (sumLe.trans (Nat.mul_le_mul_right _ hcard))
+  have fibreEq : fibre best = (Finset.univ.filter fun x : X ↦ s x = best).card := by
+    have same : survivors.filter (fun x ↦ s x = best) =
+        Finset.univ.filter fun x : X ↦ s x = best := by
+      ext x
+      simp only [hsurv, Finset.mem_filter, Finset.mem_univ, true_and]
+      constructor
+      · exact fun h ↦ h.2
+      · intro h
+        exact ⟨h ▸ bestMem, h⟩
+    exact congrArg Finset.card same
+  refine ⟨best, bestMem, ?_, ?_⟩
+  · rw [← fibreEq]
+    exact failed.trans_le (Nat.mul_le_mul_left _ survivorsLe)
+  · intro many
+    obtain ⟨x, _, x', _, differ, same⟩ :=
+      Finset.exists_ne_map_eq_of_card_lt_of_maps_to (s := survivors) (t := survStates)
+        (f := s) (lt_of_le_of_lt hcard many) maps
+    exact ⟨x, x', differ, same⟩
+
 end Hypostructure.Graph.LayeredFactorization

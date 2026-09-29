@@ -5338,3 +5338,45 @@ G's geometry not on the ledger. (iii) The local share test is not on the ledger.
 overlap of `c` with an earlier coordinate is derived, and the test of a forced overlap against
 `windowAttachmentGap` / `inducedPathAttachment` and accepted cycles was not run (there is no
 forced overlap to test).
+
+### `[172a]`: consuming the three alternatives (status)
+
+Built and checked (`Graph/LayeredFactorization.lean`): `repetition_of_failed_share`.  If a layer
+fails the local share test (`F·|X| < W·#{x : s x surviving}`) and at most `F + 1` states
+survive, then some surviving state `t` has `F·|X| < W·(F+1)·#{x : s x = t}`, and once the
+surviving configurations outnumber `F + 1` two distinct configurations share a surviving state:
+the correlation is a repetition, generically.
+
+What the definitions show about the region (read from `BarrierOverlapSystem.lean`,
+`TypeBDirectCycle.Presentation`, `WindowLabelCollision.attachmentLabel`), which changes the
+factorization data:
+- the conditional fibre `A_{d,q,c}` fixes the WHOLE outside record `d` (every edge not inside
+  the union of the window interiors), including the arms of the completion.  The free slots of
+  the fibre are the interior slots only, so `Reg(c)` as a graph ball always meets the outside
+  record; the split `X × Y` must be over interior slots (of the windows the completion can use).
+- the state at `c` reads: the labels `attachmentLabel presentation v` (adjacency between an
+  outside vertex and the window: outside-record slots, fixed in the fibre) and the choice of
+  `presentation` (a path through the window's support, i.e. interior slots).
+- the completion of length `2^j` may pass through other windows (`completionThroughWindow`,
+  "every window segment used by the completion"), so the interior slots read at `c` include the
+  interiors of every window within reach; two coordinates overlap exactly when they can read a
+  common window interior, and the reach of a coordinate of scale `2^j` is the windows within
+  `2^j + 1` of the root window.
+- the a-priori class carries the minimum-degree condition, which couples interior slots at
+  boundary vertices to the fixed outside slots (a degree constraint per vertex); it must be
+  carried in the layering.
+
+Not built: (i) a canonical least completion support with a locality theorem, (ii) the
+publication of the overlap at the first failing coordinate with the least-rank earlier
+coordinate, (iii) the canonical compression of `Reg(c)` by swapping G's configuration for the
+least configuration with the same surviving state.  Reasons on the record: for (iii), equality of
+the barrier state does not make the swapped graph a counterexample (it must also avoid every
+accepted cycle and keep minimum degree 3), so minimality is not reached from the repetition
+alone; the swap would have to be constructed and shown valid (the `RerouteSwap` /
+`Transplant` tools of g-audit-144a and the splice of g-audit-coldSilent are not in this branch).
+For (ii), `windowAttachmentGap` (`CrossGap`: outside connections between two placed windows at
+positions `i, i'` and `j, j'` of length `|i−i'|+2+|j−j'|` are not accepted) and
+`inducedPathAttachment` constrain outside paths of specific lengths; an overlap of two supports
+gives an outside connection of unspecified length (the supports are closed walks of length
+`2^j`, not paths), so the length arithmetic that would test it against `CrossGap` is the
+uncrossing (`lem:window-system-realizability`), which the paper does not establish.
