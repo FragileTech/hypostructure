@@ -5,6 +5,8 @@ import Hypostructure.Graph.GluedCrossingCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.Basic
 import Hypostructure.Graph.Contracts.SurplusPair.PairCode
 import Hypostructure.Graph.Contracts.SurplusPair.PairOverlap
+import Hypostructure.Graph.Contracts.Spine.PairHandoffSupport
+import Hypostructure.Graph.Contracts.Spine.PairHandoffFacts
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -130,24 +132,101 @@ alternative (v) supplies the graph-realized serial demand system. -/
 /-- Alternatives (i)--(iv) of node `[179]`: the target cycle and the sparse
 exit are excluded by the selection and survivor facts, so alternative (iv), the
 first-separator handoff of the retained obstruction at `P₀`, remains and enters
-the common Type B entry at its canonical support. -/
+the common Type B entry at its canonical support.  (G audit, `[187]`) The same handoff also
+publishes the exact shape and the ambient surplus of that one support
+(`K .pairHandoffSupport`, `K .pairHandoffCharge`, `K .pairHandoffNetCharge`). -/
 @[reducible] noncomputable def pairSystemEarlyTypeBEntryRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.pairSystemEarlyTypeBEntry
     { Requires := [K .pairSystemEarlyOutcome, K .selection,
-        K .sparseSurplusSurvivor, K .surplusAbove]
-      Produces := [K .typeBFanEntry]
+        K .sparseSurplusSurvivor, K .surplusAbove, K .portEndDegree]
+      Produces := [K .typeBFanEntry, K .pairHandoffSupport, K .pairHandoffCharge,
+        K .pairHandoffNetCharge]
+      requiresUnique := by key_fresh
+      producesUnique := by key_fresh
+      producesNonempty := by simp }
+    (fun inputs =>
+      let handoff :=
+        Graph.Contracts.SurplusPair.pairObstructionHandoff_of_pairSystemEarlyOutcome
+          (inputs.get (K .pairSystemEarlyOutcome)).down
+          (inputs.get (K .selection)).down.1
+          (inputs.get (K .sparseSurplusSurvivor)).down
+      .cons (key := K .typeBFanEntry)
+        ⟨Graph.Contracts.SurplusPair.typeBFanEntry_of_pairObstructionHandoff
+          (inputs.get (K .surplusAbove)).down handoff⟩
+        (.cons (key := K .pairHandoffSupport)
+          ⟨Graph.Contracts.Spine.PairHandoffSupport.pairHandoffSupport_holds handoff⟩
+          (.cons (key := K .pairHandoffCharge)
+            ⟨Graph.Contracts.Spine.PairHandoffSupport.pairHandoffCharge_holds
+              (inputs.get (K .portEndDegree)).down handoff⟩
+            (.cons (key := K .pairHandoffNetCharge)
+              ⟨Graph.Contracts.Spine.PairHandoffSupport.pairHandoffNetCharge_holds handoff⟩
+              .nil))))
+
+/-- Nodes `[179]` → `[187]` (G audit): the structure of G at the canonical handoff of its pair
+obstruction, each fact derived from `K .pairHandoffSupport` and the ledger's own facts. -/
+@[reducible] noncomputable def pairHandoffFactsRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairHandoffFacts
+    { Requires := [K .pairHandoffSupport, K .selection, K .minDegreeBaseline, K .portEndDegree,
+        K .extFreeEmpty, K .newLoadBound, K .highCentreSplitForced,
+        K .sameVertexSwitchForcedPath, K .highEndpointSwitch, K .threeRouteFan,
+        K .threeRouteChain]
+      Produces := [K .pairHandoffHubCharge, K .pairHandoffBoundaryType,
+        K .pairHandoffCriticalCoordinate, K .pairObstructionDescent, K .pairHandoffHubForces,
+        K .pairHandoffDemandEnds, K .pairHandoffFibreAtG]
+      requiresUnique := by key_fresh
+      producesUnique := by key_fresh
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairHandoffHubCharge)
+        ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffHubCharge_holds
+          (inputs.get (K .pairHandoffSupport)).down (inputs.get (K .extFreeEmpty)).down
+          (inputs.get (K .newLoadBound)).down⟩
+        (.cons (key := K .pairHandoffBoundaryType)
+          ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffBoundaryType_holds
+            (inputs.get (K .selection)).down.1 (inputs.get (K .minDegreeBaseline)).down
+            (inputs.get (K .pairHandoffSupport)).down⟩
+          (.cons (key := K .pairHandoffCriticalCoordinate)
+            ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffCriticalCoordinate_holds
+              (inputs.get (K .pairHandoffSupport)).down⟩
+            (.cons (key := K .pairObstructionDescent)
+              ⟨Graph.Contracts.Spine.PairHandoffFacts.pairObstructionDescent_holds
+                (inputs.get (K .pairHandoffSupport)).down⟩
+              (.cons (key := K .pairHandoffHubForces)
+                ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffHubForces_holds
+                  (inputs.get (K .pairHandoffSupport)).down
+                  (inputs.get (K .highCentreSplitForced)).down
+                  (inputs.get (K .sameVertexSwitchForcedPath)).down
+                  (inputs.get (K .highEndpointSwitch)).down
+                  (inputs.get (K .threeRouteFan)).down (inputs.get (K .threeRouteChain)).down⟩
+                (.cons (key := K .pairHandoffDemandEnds)
+                  ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffDemandEnds_holds
+                    (inputs.get (K .pairHandoffSupport)).down
+                    (inputs.get (K .portEndDegree)).down⟩
+                  (.cons (key := K .pairHandoffFibreAtG)
+                    ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffFibreAtG_holds
+                      (inputs.get (K .selection)).down.1
+                      (inputs.get (K .pairHandoffSupport)).down⟩
+                    .nil)))))))
+
+/-- Nodes `[179]` → `[187]` (G audit): the hub balance at the handoff, combining the net charge,
+the tokens of `h` and the hub facts. -/
+@[reducible] noncomputable def pairHandoffBalanceRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairHandoffBalance
+    { Requires := [K .pairHandoffSupport, K .pairHandoffHubCharge, K .pairHandoffNetCharge,
+        K .pairHandoffHubForces]
+      Produces := [K .pairHandoffHubBalance]
       requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      .cons (key := K .typeBFanEntry)
-        ⟨Graph.Contracts.SurplusPair.typeBFanEntry_of_pairObstructionHandoff
-          (inputs.get (K .surplusAbove)).down
-          (Graph.Contracts.SurplusPair.pairObstructionHandoff_of_pairSystemEarlyOutcome
-            (inputs.get (K .pairSystemEarlyOutcome)).down
-            (inputs.get (K .selection)).down.1
-            (inputs.get (K .sparseSurplusSurvivor)).down)⟩
+      .cons (key := K .pairHandoffHubBalance)
+        ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffHubBalance_holds
+          (inputs.get (K .pairHandoffSupport)).down (inputs.get (K .pairHandoffHubCharge)).down
+          (inputs.get (K .pairHandoffNetCharge)).down
+          (inputs.get (K .pairHandoffHubForces)).down⟩
         .nil)
 
 /-- Node `[180]`: test `lem:pair-system-increment-arithmetic`'s coverage on G's
@@ -239,26 +318,16 @@ corrected full-modulus arithmetic input exists. -/
           (inputs.get (K .pairIncrementNoEarlyOutcome)).down⟩
         .nil)
 
-/-- The periodic alternatives of node `[180]`: the sparse exit is excluded by
-the survivor fact, so the first-separator handoff of the serial system's own
-obstruction remains and enters the common Type B entry at its canonical
-support. -/
-@[reducible] noncomputable def pairIncrementEarlyTypeBEntryRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.pairIncrementEarlyTypeBEntry
-    { Requires := [K .pairIncrementEarlyOutcome, K .sparseSurplusSurvivor,
-        K .surplusAbove]
-      Produces := [K .typeBFanEntry]
-      requiresUnique := by key_fresh
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      .cons (key := K .typeBFanEntry)
-        ⟨Graph.Contracts.SurplusPair.typeBFanEntry_of_pairObstructionHandoff
-          (inputs.get (K .surplusAbove)).down
-          (Graph.Contracts.SurplusPair.pairObstructionHandoff_of_pairIncrementEarlyOutcome
-            (inputs.get (K .pairIncrementEarlyOutcome)).down
-            (inputs.get (K .sparseSurplusSurvivor)).down)⟩
-        .nil)
+/-- Node `[180]` (G audit, `[187]`; Lean improvement: `[180]`'s periodic alternatives are empty
+after `[179]`'s no-early arm).  The serial system is built on the canonical returns, and each
+periodic alternative of `[180]` is the same-named alternative of `[179]`'s early outcome at
+those returns (`not_pairIncrementEarly_of_noEarly`).  Hence `K .pairIncrementEarlyOutcome` is
+incompatible with `K .pairSystemNoEarlyOutcome`, and the periodic arm of `[180]` closes. -/
+noncomputable instance instIncompatiblePairSystemNoEarlyOutcomePairIncrementEarlyOutcome :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .pairSystemNoEarlyOutcome) (K .pairIncrementEarlyOutcome) where
+  contradiction := fun _current noEarly early =>
+    Graph.Contracts.Spine.PairHandoffSupport.not_pairIncrementEarly_of_noEarly
+      noEarly.down early.down
 
 end Hypostructure.Graph.Strategy.Spine

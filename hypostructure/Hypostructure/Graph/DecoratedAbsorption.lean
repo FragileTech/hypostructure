@@ -452,7 +452,7 @@ theorem exists_separation_of_traceSurvivingSeparator
           separation.nextLeft ∈ separation.left.path ∧
           separation.nextRight ∈ separation.right.path := by
   obtain ⟨family, _loadMember, leftLoad, rightLoad, leftMember, rightMember,
-    _distinct, separation, _leftPath, _rightPath, reading, surviving⟩ :=
+    _distinct, separation, _leftPath, _rightPath, surviving⟩ :=
     separated
   refine ⟨family.outside, separation,
     DecoratedHandoff.four_le_degree_of_surviving surviving,

@@ -1,7 +1,6 @@
 import HypostructureErdos64EG.Assembly.NetCharge.Boundary
 import HypostructureErdos64EG.Assembly.Residuals.ColdBranchClosedOutcome
 import HypostructureErdos64EG.Assembly.Residuals.Node54ResidualOutcome
-import HypostructureErdos64EG.Assembly.Residuals.Node162ResidualOutcome
 import HypostructureErdos64EG.Assembly.Residuals.BlockedBarrierOverlapOutcome
 import HypostructureErdos64EG.Assembly.Residuals.Route8RateFailsOutcome
 
@@ -26,19 +25,19 @@ entry of the route-8 continuation (`[187]`), the blocked-class overlap
 residual `[172a]`, the local cold-terminal exclusion of the realized
 package's silent cold configurations (`[157]`, retained at `[187]`; its three
 other linear singletons carry `[154]`'s G2 yes-arm, empty at G, and are not
-outcomes), and the
-three returned residuals of the structural exhaustion at `[153]` (G's first
-equal-state pair), `[162]` (a long corridor of G through a heavy centre) and
-`[54]` (the configuration at G where the joint realization fails).  Each
+outcomes; also the germs of `[153]`'s repeat on the dense arms), and the
+returned residual of the structural exhaustion at `[54]` (the configuration at
+G where the joint realization fails).  `[153]`'s first equal-state pair is not
+a residual: it is the repeat subcase of (F5) and continues into the germ
+routing.  (`[162]`, a long corridor of G through a heavy centre, is no longer
+returned: the pass needs no terminality of a heavy-entry corridor.)  Each
 residual is stated as the disjunction of its subtypes, one per distinct fact
 set of the ledger at its return. -/
 abbrev SelectedNearCubicSurvivorBoundary (selected : EGInput.{u}) :=
   SelectedNetChargeBoundary selected ∨
     Route8RateFailsSubtypes selected ∨
       BlockedBarrierOverlapSubtypes selected ∨
-        ColdBranchClosedOutcome_linearRealizedSilent selected ∨
-        Node153ResidualSubtypes selected ∨
-        Node162ResidualSubtypes selected ∨
+        ColdBranchClosedLinearSubtypes selected ∨
         Node54ResidualSubtypes selected
 
 /-- The near-cubic branch, after all sparse exits have been excluded, follows

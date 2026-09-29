@@ -1,3 +1,4 @@
+import Hypostructure.Graph.CanonicalLexFamily
 import Hypostructure.Graph.Statements.Parameters
 import Hypostructure.Graph.Statements.CanonicalSurplus
 
@@ -339,12 +340,32 @@ noncomputable def windowPackageBits (data : Parameters)
       Core.Finite.CertifiedTableAggregation.flatProduct data.windowBarrier.table ^
         data.separatedScaleCount object.vertexCount)
 
+/-- The maximum window packings of the object: the candidate set from which the
+manuscript fixes `P₀`. -/
+noncomputable def maximumWindowPackings (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Finset (Finset (Finset object.Vertex)) := by
+  classical
+  exact object.vertexFinset.powerset.powerset.filter fun packing =>
+    object.IsWindowPacking data.windowOrder packing ∧
+      packing.card = object.windowPackingNumber data.windowOrder
+
+theorem maximumWindowPackings_nonempty (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : (maximumWindowPackings data object).Nonempty := by
+  classical
+  obtain ⟨packing, valid, attains⟩ := object.exists_windowPacking_card_eq data.windowOrder
+  refine ⟨packing, ?_⟩
+  unfold maximumWindowPackings
+  rw [Finset.mem_filter, Finset.mem_powerset]
+  exact ⟨fun window _ => Finset.mem_powerset.2 fun vertex _ =>
+    object.mem_vertexFinset vertex, valid, attains⟩
+
 /-- The manuscript fixes one maximal packing before splitting it.  This is the
-canonical finite choice of that packing, hence every later key names the same
-family without transporting a witness outside the ledger. -/
+lexicographically least maximum window packing in G's own vertex order
+(`FiniteObject.lexLeast`), hence every later key names the same family, fixed
+by G's data alone. -/
 noncomputable def canonicalWindowPacking (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Finset (Finset object.Vertex) :=
-  Classical.choose (object.exists_windowPacking_card_eq data.windowOrder)
+  object.lexLeast (maximumWindowPackings data object)
 
 /-- **The canonical packing `P₀` is a maximum, hence maximal, window packing**
 (nodes `[15]`--`[17]`, tex 6573/6581): it is valid, it attains the packing
@@ -357,8 +378,15 @@ theorem canonicalWindowPacking_spec (data : Parameters)
       ∀ window : Finset object.Vertex,
         object.InducesWindow data.windowOrder window →
           ∃ member ∈ canonicalWindowPacking data object, ¬ Disjoint window member := by
-  have packingSpec := Classical.choose_spec
-    (object.exists_windowPacking_card_eq data.windowOrder)
+  classical
+  have member := object.lexLeast_mem (maximumWindowPackings data object)
+    (maximumWindowPackings_nonempty data object)
+  have packingSpec : object.IsWindowPacking data.windowOrder
+      (canonicalWindowPacking data object) ∧
+      (canonicalWindowPacking data object).card =
+        object.windowPackingNumber data.windowOrder := by
+    unfold maximumWindowPackings at member
+    exact (Finset.mem_filter.1 member).2
   exact ⟨packingSpec.1, packingSpec.2, fun window induces =>
     object.exists_mem_not_disjoint_of_card_eq data.windowOrder_pos
       packingSpec.1 packingSpec.2 induces⟩
@@ -463,11 +491,49 @@ theorem exists_maximal_windowFamilyRealized (data : Parameters)
               remainderStates data object (canonicalWindowPacking data object) :=
             Nat.mul_le_mul_right _ Nat.one_le_two_pow
 
-/-- `𝒫_hot`: the canonical maximal subfamily of the fixed packing retained in
-the canonical entropy comparison. -/
+/-- The maximal retained subfamilies of the fixed packing: the candidate set
+from which the canonical entropy comparison takes `𝒫_hot`. -/
+noncomputable def maximalRetainedFamilies (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Finset (Finset (Finset object.Vertex)) := by
+  classical
+  exact (canonicalWindowPacking data object).powerset.filter fun hot =>
+    (WindowFamilyRealized data object hot ∨
+        (hot = ∅ ∧ ¬ WindowFamilyRealized data object ∅)) ∧
+      ∀ other : Finset (Finset object.Vertex),
+        other ⊆ canonicalWindowPacking data object →
+          WindowFamilyRealized data object other → other.card ≤ hot.card
+
+theorem maximalRetainedFamilies_nonempty (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : (maximalRetainedFamilies data object).Nonempty := by
+  classical
+  obtain ⟨hot, subset, realized, maximal⟩ := exists_maximal_windowFamilyRealized data object
+  refine ⟨hot, ?_⟩
+  unfold maximalRetainedFamilies
+  rw [Finset.mem_filter, Finset.mem_powerset]
+  exact ⟨subset, realized, maximal⟩
+
+/-- `𝒫_hot`: the maximal subfamily of the fixed packing retained in the
+canonical entropy comparison, the lexicographically least such family in G's
+own vertex order (`FiniteObject.lexLeast`). -/
 noncomputable def canonicalHotWindows (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Finset (Finset object.Vertex) :=
-  Classical.choose (exists_maximal_windowFamilyRealized data object)
+  object.lexLeast (maximalRetainedFamilies data object)
+
+theorem canonicalHotWindows_spec (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    canonicalHotWindows data object ⊆ canonicalWindowPacking data object ∧
+      (WindowFamilyRealized data object (canonicalHotWindows data object) ∨
+        (canonicalHotWindows data object = ∅ ∧ ¬ WindowFamilyRealized data object ∅)) ∧
+      ∀ other : Finset (Finset object.Vertex),
+        other ⊆ canonicalWindowPacking data object →
+          WindowFamilyRealized data object other →
+            other.card ≤ (canonicalHotWindows data object).card := by
+  classical
+  have member := object.lexLeast_mem (maximalRetainedFamilies data object)
+    (maximalRetainedFamilies_nonempty data object)
+  unfold maximalRetainedFamilies at member
+  rw [Finset.mem_filter, Finset.mem_powerset] at member
+  exact ⟨member.1, member.2.1, member.2.2⟩
 
 /-- `𝒫_cold`: the packed windows not retained in the comparison. -/
 noncomputable def canonicalColdWindows (data : Parameters)
@@ -753,17 +819,54 @@ def BlockedSurvivingConditionalFibre (data : Parameters)
     IsBlockedSurvivingState data coordinate.2
       ((blockedAprioriBarrierCode data object member).2 coordinate)}
 
-/-- The denominator-cleared `F_{a,b}/W_{a,b}` estimate at one exposure
-coordinate, uniformly over every outside record and earlier prefix reached by a
-blocked member. -/
-def BlockedRelativeFibreBoundAt (data : Parameters)
+/-- The number of a-priori near-cubic graphs whose outside record and barrier states at all
+coordinates of encoding rank below `k` agree with those of some member of `𝓑(𝒫)`: the set
+`A_k` of `lem:blocked-graphs-compress`'s proof, fixed by G's canonical packing, class and
+coordinate order. -/
+noncomputable def blockedReachedCount (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (k : Nat) : Nat :=
+  Nat.card {candidate : blockedAprioriClassAt data object //
+    ∃ member : blockedClassAt data object,
+      (blockedAprioriBarrierCode data object candidate).1 =
+          (blockedBarrierCode data object member).1 ∧
+        ∀ other : blockedCoordinate data object,
+          blockedEncodingRank data object other < k →
+            (blockedAprioriBarrierCode data object candidate).2 other =
+              (blockedBarrierCode data object member).2 other}
+
+/-- **The aggregate `F_{a,b}/W_{a,b}` test at one exposure coordinate**, in the form the
+exposure product of `lem:blocked-graphs-compress` consumes: the class of graphs reached
+through the coordinate's state, times `W_{a,b}`, is at most `F_{a,b}` times the class reached
+before it.  A numerical statement about G's class; no record is chosen. -/
+def BlockedAggregateBoundAt (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (coordinate : blockedCoordinate data object) : Prop :=
-  ∀ member₀ : blockedClassAt data object,
-    blockedAprioriCountAt data coordinate.2 *
-        Nat.card (BlockedSurvivingConditionalFibre data object member₀ coordinate) ≤
-      blockedSurvivingCountAt data coordinate.2 *
-        Nat.card (BlockedAprioriConditionalFibre data object member₀ coordinate)
+  blockedAprioriCountAt data coordinate.2 *
+      blockedReachedCount data object (blockedEncodingRank data object coordinate + 1) ≤
+    blockedSurvivingCountAt data coordinate.2 *
+      blockedReachedCount data object (blockedEncodingRank data object coordinate)
+
+/-- The product of the registered a-priori carriers `W_{a,b}` over the coordinates of encoding
+rank below `r`. -/
+noncomputable def blockedPrefixAprioriCount (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (r : Nat) : Nat := by
+  classical
+  letI := data.windowBarrier.indexFintype
+  exact ∏ coordinate ∈ Finset.univ.filter
+      (fun coordinate : blockedCoordinate data object =>
+        blockedEncodingRank data object coordinate < r),
+    blockedAprioriCountAt data coordinate.2
+
+/-- The product of the registered surviving carriers `F_{a,b}` over the coordinates of
+encoding rank below `r`. -/
+noncomputable def blockedPrefixSurvivingCount (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (r : Nat) : Nat := by
+  classical
+  letI := data.windowBarrier.indexFintype
+  exact ∏ coordinate ∈ Finset.univ.filter
+      (fun coordinate : blockedCoordinate data object =>
+        blockedEncodingRank data object coordinate < r),
+    blockedSurvivingCountAt data coordinate.2
 
 /-- The unconditional conditional-state-fibre bound supplied by the certified
 flat-state carrier.  The extra `1` is the distinguished `none` state recording
@@ -787,11 +890,10 @@ def BlockedGraphFibreMonotonicityAt (data : Parameters)
     Nat.card (BlockedSurvivingConditionalFibre data object member₀ coordinate) ≤
       Nat.card (BlockedAprioriConditionalFibre data object member₀ coordinate)
 
-/-- **`lem:scale-additivity`, node `[170]`.**  Blockedness makes the selected
-member's state a surviving state, and at every exposure coordinate the
-surviving a-priori graph fibre has relative size at most
-`F_{a,b}/W_{a,b}`.  The ratio is cleared of division, so both graph
-multiplicities and the `W_{a,b}` denominator are retained. -/
+/-- **`lem:scale-additivity`, node `[170]`.**  Blockedness makes every member's state a
+surviving state, and at every exposure coordinate the aggregate cleared `F_{a,b}/W_{a,b}` test
+holds: `W_{a,b}·A_{k+1} ≤ F_{a,b}·A_k` for the classes `A_k` reached through the blocked
+records (`blockedReachedCount`). -/
 def BlockedScaleAdditivityStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   (∀ (member : blockedClassAt data object)
@@ -801,27 +903,23 @@ def BlockedScaleAdditivityStatement (data : Parameters)
   ∀ coordinate : blockedCoordinate data object,
     BlockedStateFibreBoundAt data object coordinate ∧
       BlockedGraphFibreMonotonicityAt data object coordinate ∧
-        BlockedRelativeFibreBoundAt data object coordinate
+        BlockedAggregateBoundAt data object coordinate
 
-/-- The literal negative arm of node `[170]`: the first exposure coordinate at
-which some fixed outside record and earlier prefix violates the cleared
-`F_{a,b}/W_{a,b}` bound, together with the two unconditional local fibre facts
-also retained by the positive arm. -/
+/-- The literal negative arm of node `[170]`: a numerical fact about G's class.  The first
+exposure coordinate at which the aggregate test fails,
+`F_{a,b}·A_k < W_{a,b}·A_{k+1}`, all earlier aggregate tests holding.  No record or member is
+chosen. -/
 def BlockedBarrierFailureStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  (∀ coordinate : blockedCoordinate data object,
-    BlockedStateFibreBoundAt data object coordinate ∧
-      BlockedGraphFibreMonotonicityAt data object coordinate) ∧
   ∃ coordinate : blockedCoordinate data object,
     (∀ other : blockedCoordinate data object,
       blockedEncodingRank data object other <
           blockedEncodingRank data object coordinate →
-        BlockedRelativeFibreBoundAt data object other) ∧
-    ∃ member₀ : blockedClassAt data object,
-      blockedSurvivingCountAt data coordinate.2 *
-          Nat.card (BlockedAprioriConditionalFibre data object member₀ coordinate) <
-        blockedAprioriCountAt data coordinate.2 *
-          Nat.card (BlockedSurvivingConditionalFibre data object member₀ coordinate)
+        BlockedAggregateBoundAt data object other) ∧
+    blockedSurvivingCountAt data coordinate.2 *
+        blockedReachedCount data object (blockedEncodingRank data object coordinate) <
+      blockedAprioriCountAt data coordinate.2 *
+        blockedReachedCount data object (blockedEncodingRank data object coordinate + 1)
 
 /-- The external-stub count of an ambient baseline-degree window.  For the
 Erdős presentation this evaluates to `15`; no numerical value is written into
@@ -1656,22 +1754,23 @@ noncomputable def ColdFirstFailureHandoffOccurrence (data : Parameters)
         ¬ ColdFirstFailureEvent data object corridor presentation index germ
           (ColdDeclaredHandoffSupport data object) earlier
 
-/-- The exact corridor consequence produced at node `[162]`: the retained
-corridor state from the incoming ledger, together with terminality of every
-corridor in that state. -/
+/-- The exact corridor consequence produced at node `[162]`: G's retained
+first-failure occurrence, in which every retained cold corridor is either
+terminal (the (F5) terminal subcase) or has a heavy handoff centre as its first
+failure (the (F4) event, routed by that first failure at `[175]`).
+
+The manuscript reads "every return corridor is terminal" from the bounded diameter
+of the pieces of `R`; that does not reach corridors of `G − X_cold`, and a heavy
+first failure needs no terminality: its germ is supported on the prefix up to the
+failure, and the neutral configuration of `[163]` is a germ of the subcubic
+extracted family, whose first failure is never a heavy handoff. -/
 noncomputable def DenseColdCorridorsTerminalStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  letI : FinEnum object.Vertex := object.vertices
-  let Eligible := ColdEligibleHalfEdge data object
-  exact ∃ state : ColdCorridorStateStatement data object,
-    let stateOne := Classical.choose_spec state
-    let componentAt := Classical.choose stateOne
-    let stateTwo := Classical.choose_spec stateOne
-    let corridorAt := Classical.choose stateTwo
-    ∀ epsilon : Eligible,
-      Graph.ColdCorridor.Corridor.TerminalCorridor
-        (corridorAt epsilon) data.coldSignature
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ occurrence : ColdFirstFailureOccurrenceData data object,
+    ∀ epsilon : ColdEligibleHalfEdge data object,
+      (coldOccurrenceCorridorAt data object occurrence epsilon).TerminalCorridor
+          data.coldSignature ∨
+        ColdFirstFailureHandoffOccurrence data object occurrence epsilon
 
 /-- `def:cold-corridor-first-failure`, at every selected half-edge owned by the
 current cold family.
@@ -2686,47 +2785,39 @@ noncomputable abbrev CycleRankConstraintStatement (object : Graph.FiniteObject.{
   object.vertexCount + 2 ≤
     2 * (object.edgeCount + 1 - object.vertexCount)
 
-/-- **Two readings of G a quotient of G's region identifies.**  An admissible
-rank quotient of the declared raw curvature coordinates of a region `X ⊆ V(G)`
-(`Graph.CurvatureQuotient`, the quotient system `r_Ω` is computed from,
-`def:admissible-rank-quotient`) identifies two of G's readings at its support
-`Z` (G's piece at `Z` restricted to `left`, resp. `right`) when it gives them
-the same value at every declared coordinate. -/
-def QuotientIdentifies {data : Parameters} {object : Graph.FiniteObject.{u}}
-    {region : Finset object.Vertex}
-    (quotient : Graph.CurvatureQuotient (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object region)
-    (left right : Finset object.Vertex) : Prop :=
-  ∀ test ∈ object.internalWedgeFamily region,
-    quotient.value left (quotient.label test) =
-      quotient.value right (quotient.label test)
+/-- **G's canonical quotient of its readings at a support `Z`.**  A reading `X`
+of G at `Z` (G's piece at `Z` restricted to `X`) is labelled by its
+boundary-degree profile and by its target response in G's own rest `G − Z`
+(`ActualContext.actualGlue`): the exact response data of
+`def:exact-response-profile` at G, as in `Graph.SparsePairExactValuation`.  The
+quotient identifies two readings when they carry the same label.  It is built
+from G alone: no abstract label or value type, no value map. -/
+noncomputable def canonicalReadingLabel (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (support reading : Finset object.Vertex) :=
+  (Graph.readingProfile object support reading,
+    Graph.HasCycleWithLength data.LengthOK
+      (Graph.ActualContext.actualGlue object support reading))
 
-/-- Node `[11]`, `lem:degree-profile-fibres` (tex 6088), at G's readings: "if
-`𝐝_∂(X₁) ≠ 𝐝_∂(X₂)`, then no target-complete quotient identifies `X₁` and
-`X₂`".  For every region `X ⊆ V(G)`, every admissible rank quotient of `X`'s
-declared coordinates on G, and every two readings of G at its support `Z ⊆ G`
-(on the boundary `∂Z` of G): readings in different boundary-degree fibres are
-not identified. -/
+/-- Node `[11]`, `lem:degree-profile-fibres` (tex 6088), at G's canonical
+quotient: "if `𝐝_∂(X₁) ≠ 𝐝_∂(X₂)`, then no target-complete quotient identifies
+`X₁` and `X₂`".  For every support `Z` of G and every two readings of G at `Z`,
+readings in different boundary-degree fibres carry different canonical labels. -/
 noncomputable abbrev DegreeProfileFibresStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  ∀ (region : Finset object.Vertex)
-    (quotient : Graph.CurvatureQuotient
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object region)
-    (left right : Finset object.Vertex),
-    Graph.readingProfile object quotient.support left ≠
-        Graph.readingProfile object quotient.support right →
-      ¬ QuotientIdentifies quotient left right
+  ∀ (support left right : Finset object.Vertex),
+    Graph.readingProfile object support left ≠
+        Graph.readingProfile object support right →
+      canonicalReadingLabel data object support left ≠
+        canonicalReadingLabel data object support right
 
 /-- Node `[12]`, `lem:context-universality` (tex 6106), stated about G.
 
 * "Suppose that two coordinates are identified in a target-complete quotient of
   `X`.  Then [they] have the same target response against every `T`-boundaried
-  context": for every region `X ⊆ V(G)`, every admissible rank quotient of its
-  declared coordinates on G with determination support `Z`, and every two
-  readings of G at `Z` that it identifies, the two readings lie in one
+  context": for every support `Z` of G and every two readings of G at `Z` that
+  G's canonical quotient identifies, the two readings lie in one
   boundary-degree fibre (node `[11]`) and have the same power-of-two-cycle
   response in G's own rest `G − Z` (`ActualContext.actualGlue`).
 * "Consequently any identification valid only for the actual outside context
@@ -2737,23 +2828,21 @@ noncomputable abbrev DegreeProfileFibresStatement
   context-validity test `[36]`: its defect arm `[37]` is empty at G.
 
 (G-only restatement: the quantification over every `∂Z`-boundaried context
-spoke about contexts that are not part of G.) -/
+spoke about contexts that are not part of G, and the quotient was an arbitrary
+`CurvatureQuotient` structure with free label and value types.) -/
 noncomputable abbrev TargetCompleteContextUniversalityStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  (∀ (region : Finset object.Vertex)
-    (quotient : Graph.CurvatureQuotient
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object region)
-    (left right : Finset object.Vertex),
-    QuotientIdentifies quotient left right →
-      Graph.readingProfile object quotient.support left =
-          Graph.readingProfile object quotient.support right ∧
+  (∀ (support left right : Finset object.Vertex),
+    canonicalReadingLabel data object support left =
+        canonicalReadingLabel data object support right →
+      Graph.readingProfile object support left =
+          Graph.readingProfile object support right ∧
         (Graph.HasCycleWithLength data.LengthOK
-            (Graph.ActualContext.actualGlue object quotient.support left) ↔
+            (Graph.ActualContext.actualGlue object support left) ↔
           Graph.HasCycleWithLength data.LengthOK
-            (Graph.ActualContext.actualGlue object quotient.support right))) ∧
+            (Graph.ActualContext.actualGlue object support right))) ∧
   (∀ support reading : Finset object.Vertex,
     ¬ Graph.HasCycleWithLength data.LengthOK
       (Graph.ActualContext.actualGlue object support reading))
@@ -2880,27 +2969,12 @@ noncomputable abbrev DensityCapStatement
       (data.threshold * object.vertexCount +
         data.surplusThreshold object.vertexCount) +
     data.densitySlack * (data.windowRate * data.separatedScaleCount object.vertexCount) *
-      data.surplusThreshold object.vertexCount) ∧
-  -- The high-entropy clause of `[24]` (`prop:p13-density`, tex 8491-8495,
-  -- 8530-8551): "when the joint comparison in the high-entropy branch of
-  -- `prop:two-budget` also holds", i.e. the window package of `P₀` together
-  -- with the `(1/d)·log₂ n` remainder bits per vertex of `R₀` is realized by
-  -- a canonical state map on `G`'s labelled skeleton class, the joint package
-  -- fits the skeleton budget -- `eq:feasibility`, whose solution is
-  -- `θ ≤ 0.01198542083… + o(1)`.  Cleared of the root `1/d`.
-  (∀ (State : Type u)
-      (stateOf : Graph.PackedWindowRealization.Skeleton
-        object.vertexCount object.edgeCount → State),
-    (2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-          object.windowPackingNumber data.windowOrder)) ^ data.entropyDenominator *
-        object.vertexCount ^
-          (object.remainderSupport (canonicalWindowPacking data object)).card ≤
-      Nat.card (Set.range stateOf) ^ data.entropyDenominator →
-    (2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-          object.windowPackingNumber data.windowOrder)) ^ data.entropyDenominator *
-        object.vertexCount ^
-          (object.remainderSupport (canonicalWindowPacking data object)).card ≤
-      Graph.skeletonBudget object ^ data.entropyDenominator)
+      data.surplusThreshold object.vertexCount)
+
+-- The high-entropy clause of `[24]` (`prop:p13-density`, tex 8491-8495, 8530-8551:
+-- a joint package realized by a state map on G's labelled class fits the skeleton
+-- budget) is the counting lemma `card_range_le_card_ambient`; in aggregate form it
+-- states no fact of G and is not carried.
 
 /-- Nodes `[25]`--`[27]`: the remainder of a maximal packing carries no
 window and no subgraph meeting the baseline (`sec:remainder`). -/

@@ -119,7 +119,7 @@ theorem boundedDensityOrder_of_densityCap (data : Parameters)
     BoundedDensityOrderStatement data object := by
   have lower := densityOrderLower_of_coldRoute8AtOrAbove data object above
   have cardinality := (canonicalWindowPacking_spec data object).2.1
-  have cap0 := densityCap.1
+  have cap0 : 2 * (data.windowRate * data.separatedScaleCount object.vertexCount * object.windowPackingNumber data.windowOrder) ≤ (Graph.dyadicScaleCount object + 1) * (data.threshold * object.vertexCount + data.surplusThreshold object.vertexCount) + data.densitySlack * (data.windowRate * data.separatedScaleCount object.vertexCount) * data.surplusThreshold object.vertexCount := densityCap
   rw [← cardinality, scaleCount] at cap0
   simp only [Graph.dyadicScaleCount] at cap0
   have cap : 2 * (data.windowRate * Nat.log2 object.vertexCount *

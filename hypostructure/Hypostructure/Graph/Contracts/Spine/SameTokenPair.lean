@@ -14,7 +14,10 @@ and the survivor (`K .sparseSurplusSurvivor`), which pin G's canonical routing;
 The mathematics is the vocabulary-free library (`Graph/ReadingProfiles.lean`,
 `Graph/ActualContext.lean`).  (G-only restatement: the equal-count readings
 agree in G's own surroundings `G − Z`; the former path-length equality through
-single-edge contexts is removed with those contexts.)
+single-edge contexts is removed with those contexts.)  The transplant facts
+(G repair R5) read the partition, `K .noProperBaseline`, the selection (G avoids
+the target and is minimal) and `K .minDegreeBaseline`; their mathematics is
+`Graph/Transplant.lean`.
 
 This module imports no strategy, row, or vocabulary module.
 -/
@@ -238,5 +241,87 @@ theorem sameTokenPairPartition_holds
       exact Or.inl ⟨pos, bR, ⟨w, wR, adj⟩, alt⟩
     · obtain ⟨bR, w, wR, adj⟩ := readingCount_pos pos
       exact Or.inr ⟨pos, bR, ⟨w, wR, adj⟩, alt⟩
+
+/-! ## G repair R5: the transplants of the pattern supports into `Z` -/
+
+/-- **The transplant conditions (i)--(iv) and the size equality at G**, for a
+`Y` with a vertex: G avoids the target and every strictly smaller baseline
+object has one. -/
+theorem sameTokenTransplantAt_holds
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
+    (Z Y : Finset object.Vertex) (nonempty : ∃ y, y ∈ Y) :
+    SameTokenTransplantAt data object Z Y := by
+  obtain ⟨y, hy⟩ := nonempty
+  have kept : ∃ v, ¬ Graph.Transplant.Removed object Z Y v := ⟨y, fun h => h.2.2 hy⟩
+  refine ⟨Graph.Transplant.transplant_internalVertexCount_le Z Y,
+    Graph.Transplant.transplant_linkageIncluded Z Y,
+    Graph.Transplant.transplant_profile_eq_iff Z Y,
+    Graph.Transplant.transplant_baseline_iff Z Y kept, fun base included =>
+      ⟨Graph.Transplant.transplant_size_eq avoids minimal Z Y base included, ?_⟩⟩
+  intro v vZ vb
+  by_contra vY
+  exact Graph.Transplant.transplant_fills_of_baseline avoids minimal Z Y base v ⟨vZ, vb, vY⟩
+
+/-- **The exact transplant at G**, for a `Y` with a vertex, from the selection
+and the baseline. -/
+theorem sameTokenTransplantExactAt_holds
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
+    (base : Graph.MinimumDegreeAtLeast data.threshold object)
+    (Z Y : Finset object.Vertex) (nonempty : ∃ y, y ∈ Y) :
+    SameTokenTransplantExactAt data object Z Y := by
+  obtain ⟨y, hy⟩ := nonempty
+  exact Graph.Transplant.transplant_exact avoids minimal base Z Y ⟨y, fun h => h.2.2 hy⟩
+
+/-- The two pattern supports of the partition each have a vertex. -/
+theorem partition_supports_nonempty (routing : SameTokenRouting data object)
+    (routingEq : canonicalSameTokenRouting data object = some routing)
+    (connected : object.graph.Connected) {Xp Xq : Finset object.Vertex}
+    (hXp : Xp = sameTokenPairSupport routing routing.demands.first)
+    (hXq : Xq = sameTokenPairSupport routing routing.demands.second) :
+    (∃ y, y ∈ Xp) ∧ ∃ y, y ∈ Xq := by
+  obtain ⟨p, -, -, hp, -⟩ := routing_support_two routing routingEq connected
+    (pair := routing.demands.first) (Or.inl rfl)
+  obtain ⟨q, -, -, hq, -⟩ := routing_support_two routing routingEq connected
+    (pair := routing.demands.second) (Or.inr rfl)
+  exact ⟨⟨p, by rw [hXp]; exact hp⟩, ⟨q, by rw [hXq]; exact hq⟩⟩
+
+/-- **Node `[144a]`: the transplants of G's pattern supports into `Z`, with the
+size equality**, from the partition (which pins `X_p`, `X_q`, `Z`),
+`K .noProperBaseline` and the selection. -/
+theorem sameTokenTransplantSize_holds
+    (partition : SameTokenPairPartitionStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H) :
+    SameTokenTransplantSizeStatement data object := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  obtain ⟨routing, routingEq, Xp, Xq, Z, hXp, hXq, -, -, -, selected, -⟩ := partition
+  obtain ⟨neP, neQ⟩ := partition_supports_nonempty routing routingEq noProper.2 hXp hXq
+  exact ⟨routing, routingEq, Xp, Xq, Z, hXp, hXq, selected,
+    sameTokenTransplantAt_holds avoids minimal Z Xq neQ,
+    sameTokenTransplantAt_holds avoids minimal Z Xp neP⟩
+
+/-- **Node `[144a]`: the exact failure of the transplants of G's pattern
+supports**, from the partition, `K .noProperBaseline`, the selection and the
+baseline. -/
+theorem sameTokenTransplantDeficit_holds
+    (partition : SameTokenPairPartitionStatement data object)
+    (noProper : NoProperBaselineStatement data object)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
+    (base : MinDegreeBaselineStatement data object) :
+    SameTokenTransplantDeficitStatement data object := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  obtain ⟨routing, routingEq, Xp, Xq, Z, hXp, hXq, -, -, -, selected, -⟩ := partition
+  obtain ⟨neP, neQ⟩ := partition_supports_nonempty routing routingEq noProper.2 hXp hXq
+  exact ⟨routing, routingEq, Xp, Xq, Z, hXp, hXq, selected,
+    sameTokenTransplantExactAt_holds avoids minimal base Z Xq neQ,
+    sameTokenTransplantExactAt_holds avoids minimal base Z Xp neP⟩
 
 end Hypostructure.Graph.Contracts.Spine.SameTokenPair
