@@ -5278,18 +5278,37 @@ Report: `audits/structural-accounting/ColdBranchClosedOutcome_linearRealizedSile
   `Residuals/ColdBranchClosedOutcome.lean`, `NearCubic/Survivor/Realized.lean`
   (needed `synthInstance.maxSize/maxHeartbeats` options, explicit row arguments and a
   `ExactLedger EGInput selected _` ascription).
-- **Excision (pumping) attempt, not built.**  The paper's `E` at an (F5) repeat is the
-  corridor with the loop between the two equal cut states removed.  Lean's `E` is the
-  `Precedes`-least piece with the germ's cut-state reading (`rowRepresentative`); the
-  excised piece would be a valid replacement only if it keeps the baseline and the target
-  response.  It is not a `Transplant` (R5): excision deletes `v_{l+1..r}` and adds the edge
-  `v_l v_{r+1}`, which is not an edge of G, so `cycle_transfer` does not apply; a cycle
-  through the new edge lifts to a cycle of G of length `L + p`, `p = r - l` the period.
-  Whether `L + p` can be a power of two is the arithmetic of `lem:cold-increment-arithmetic`
-  (case (a)/(b)) and needs a graph-level lifting lemma for spliced edges plus the profile
-  and degree bookkeeping for identified states; neither exists.  Consequently F08 (the
-  period as a G fact), C11 (increments; `E = Q` gives increment `0` only for the marked
-  germ) and H09 (germ count against `coldMassLinear`) were not built.
+- **Excision (pumping): the path splice is built; the region splice is not.**  New
+  vocabulary-free module `Graph/SpliceLift.lean` (kernel-checked, imported by
+  `Hypostructure.lean`):
+  `cycle_lift` / `splice_cycle_lift` (every cycle of `G'` = `G` minus the interior of a
+  path `p : a ⇝ b` (length >= 2) plus the edge `s(a,b)` is a cycle of `G` of the same length,
+  or lifts to a cycle of `G` of length `L + (|p| - 1)`); `spliceObject` (the excised finite
+  object, `vertexCount_spliceObject_lt`: strictly smaller); `excision_shift_hit` (if `G`
+  avoids the target and the excised object has an accepted cycle, `G` has a cycle of length
+  `L + q`, `LengthOK L`, `q = |p| - 1`); `excision_dichotomy` (F08 at G: for minimal `G`,
+  either the excised object fails the baseline, or `G` has a cycle of length `L + q` with
+  `LengthOK L` and NOT `LengthOK (L + q)`); `degree_spliceObject_of_no_deleted_neighbour`
+  and `excision_deficient` (the canonical deficient vertex: `a`, `b`, or a neighbour of a
+  deleted vertex).
+  Consequence for the (F5) repeat (`FirstFailureGermWitness`, `repeated`: `germ.support =
+  intervalSupport left right`, the corridor stretch from `head left` to `head right`): the
+  target side is exactly F08 (the shift `q = right - left - 1` is a G fact; the excision is
+  a smaller counterexample unless `G` has a cycle of length `2^k + q` that is not a power of
+  two; the exceptional shifts `q = 2^m - 2^k` are closed).  The baseline side is NOT met by a
+  path splice: a deleted corridor vertex with a neighbour outside the loop makes that
+  neighbour deficient (`excision_deficient`), so the valid replacement `X'` must excise the
+  whole region between the two equal cut states and identify the boundary vertices by label
+  (a multi-boundary splice), which needs the region lifting lemma and the profile bookkeeping
+  for identified states.  Not built.  The arithmetic cases (a), (b) of
+  `lem:cold-increment-arithmetic` need the loop repeated `j` times (other graphs), so they
+  are not G facts; the G fact is the single-excision statement above.
+  C11: the per-germ increment fact is `K .coldGermRouted` (`not increment < 0` for every
+  active germ) and `K .coldSameInterfaceTable` (`increment = 0` for rows); `E = Q` for the
+  marked germ.  H09: the count `|Occ| = |candidates| + loss`, `candidates <= |F| * denom`
+  and `9 |cubic| = |selected|` are conjuncts of `K .coldGermCandidates` /
+  `K .coldSelectedBranchExcess`; combined with `K .coldMassLinear` they bound `|F|` from
+  below, with no partner inequality on this arm.  Neither was published as a new key.
 - **Still open (exact proposition at G).** G's marked neutral equal-length germ `(Q, E)`,
   `E = Q`, of the positive extracted family on the realized package: a subcubic (F5)
   germ, not handed off, whose replacement has G's vertex and edge count, so `[157]`'s
