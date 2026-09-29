@@ -115,8 +115,6 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
-    [FactKeys.Has (K .pairArmAPattern) known]
-    [FactKeys.Has (K .pairArmARoleAlphabet) known]
     [FactKeys.Has (K .pairArmB) known]
     [FactKeys.Has (K .extFreeEmpty) known]
     [FactKeys.Has (K .extLoadSum) known]
@@ -174,6 +172,11 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .pairHandoffSupport) known]
     [FactKeys.Has (K .pairHandoffCharge) known]
     [FactKeys.Has (K .pairHandoffNetCharge) known]
+    [FactKeys.Has (K .pairHandoffFlowCut) known]
+    [FactKeys.Has (K .pairHandoffBoundaryType) known]
+    [FactKeys.Has (K .pairObstructionCountDeficit) known]
+    [FactKeys.Has (K .pairObstructionDescent) known]
+    [FactKeys.Has (K .pairHandoffHubForces) known]
     [FactKeys.Has (K .independentPairFamily) known]
     [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .freePairCodeUnrealized) known]
@@ -246,8 +249,6 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
       (history.get (K .highSurplusConfiguration)).down,
-      (history.get (K .pairArmAPattern)).down,
-      (history.get (K .pairArmARoleAlphabet)).down,
       (history.get (K .pairArmB)).down,
       (history.get (K .extFreeEmpty)).down,
       (history.get (K .extLoadSum)).down,
@@ -306,6 +307,11 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .pairHandoffSupport)).down,
       (history.get (K .pairHandoffCharge)).down,
       (history.get (K .pairHandoffNetCharge)).down,
+      (history.get (K .pairHandoffFlowCut)).down,
+      (history.get (K .pairHandoffBoundaryType)).down,
+      (history.get (K .pairObstructionCountDeficit)).down,
+      (history.get (K .pairObstructionDescent)).down,
+      (history.get (K .pairHandoffHubForces)).down,
       pairSystemEarlyOutcome⟩,
     (history.get (K .independentPairFamily)).down,
     (history.get (K .freePairCodeUnrealized)).down⟩
@@ -416,8 +422,6 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
-    [FactKeys.Has (K .pairArmAPattern) known]
-    [FactKeys.Has (K .pairArmARoleAlphabet) known]
     [FactKeys.Has (K .pairArmB) known]
     [FactKeys.Has (K .extFreeEmpty) known]
     [FactKeys.Has (K .extLoadSum) known]
@@ -476,6 +480,11 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .pairHandoffSupport) known]
     [FactKeys.Has (K .pairHandoffCharge) known]
     [FactKeys.Has (K .pairHandoffNetCharge) known]
+    [FactKeys.Has (K .pairHandoffFlowCut) known]
+    [FactKeys.Has (K .pairHandoffBoundaryType) known]
+    [FactKeys.Has (K .pairObstructionCountDeficit) known]
+    [FactKeys.Has (K .pairObstructionDescent) known]
+    [FactKeys.Has (K .pairHandoffHubForces) known]
     [FactKeys.Has (K .dependentPairFamily) known]
     [FactKeys.Has (K .pairDegreeProfileFibres) known]
     [FactKeys.Has (K .pairNoProfileObstruction) known]
@@ -556,8 +565,6 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .admissibleQuotientsLabelInjective)).down,
       (history.get (K .surplusAbove)).down,
       (history.get (K .highSurplusConfiguration)).down,
-      (history.get (K .pairArmAPattern)).down,
-      (history.get (K .pairArmARoleAlphabet)).down,
       (history.get (K .pairArmB)).down,
       (history.get (K .extFreeEmpty)).down,
       (history.get (K .extLoadSum)).down,
@@ -616,6 +623,11 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .pairHandoffSupport)).down,
       (history.get (K .pairHandoffCharge)).down,
       (history.get (K .pairHandoffNetCharge)).down,
+      (history.get (K .pairHandoffFlowCut)).down,
+      (history.get (K .pairHandoffBoundaryType)).down,
+      (history.get (K .pairObstructionCountDeficit)).down,
+      (history.get (K .pairObstructionDescent)).down,
+      (history.get (K .pairHandoffHubForces)).down,
       pairSystemEarlyOutcome⟩,
     (history.get (K .dependentPairFamily)).down,
     (history.get (K .pairDegreeProfileFibres)).down,

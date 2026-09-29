@@ -202,6 +202,11 @@ noncomputable def selectedPairCodeChainIndependent
     (handoffSupportFresh : K .pairHandoffSupport ∉ known := by key_fresh)
     (handoffChargeFresh : K .pairHandoffCharge ∉ known := by key_fresh)
     (handoffNetChargeFresh : K .pairHandoffNetCharge ∉ known := by key_fresh)
+    (pairHandoffFlowCutFresh : K .pairHandoffFlowCut ∉ known := by key_fresh)
+    (pairHandoffBoundaryTypeFresh : K .pairHandoffBoundaryType ∉ known := by key_fresh)
+    (pairObstructionCountDeficitFresh : K .pairObstructionCountDeficit ∉ known := by key_fresh)
+    (pairObstructionDescentFresh : K .pairObstructionDescent ∉ known := by key_fresh)
+    (pairHandoffHubForcesFresh : K .pairHandoffHubForces ∉ known := by key_fresh)
     (incrementFresh : K .pairIncrementCovered ∉ known := by key_fresh)
     (incrementFailsFresh : K .pairIncrementFails ∉ known := by key_fresh)
     (incrementEarlyFresh : K .pairIncrementEarlyOutcome ∉ known := by key_fresh)
@@ -334,7 +339,11 @@ noncomputable def selectedPairCodeChainIndependent
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run earlyHistory (by key_fresh)
               exact Or.inr (Or.inl (Or.inl
-                (pairTypeBIndependentSystemReturn typeBHistory)))
+                (pairTypeBIndependentSystemReturn
+                  ((pairHandoffFactsRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile)
+                    (data := spineData)).run typeBHistory (by key_fresh)))))
           | .right noEarlyHistory =>
               let serialHistory :=
                 (pairSerialDemandSystemRow (BranchState := BranchState)
@@ -448,6 +457,11 @@ noncomputable def selectedPairCodeChainDependent
     (handoffSupportFresh : K .pairHandoffSupport ∉ known := by key_fresh)
     (handoffChargeFresh : K .pairHandoffCharge ∉ known := by key_fresh)
     (handoffNetChargeFresh : K .pairHandoffNetCharge ∉ known := by key_fresh)
+    (pairHandoffFlowCutFresh : K .pairHandoffFlowCut ∉ known := by key_fresh)
+    (pairHandoffBoundaryTypeFresh : K .pairHandoffBoundaryType ∉ known := by key_fresh)
+    (pairObstructionCountDeficitFresh : K .pairObstructionCountDeficit ∉ known := by key_fresh)
+    (pairObstructionDescentFresh : K .pairObstructionDescent ∉ known := by key_fresh)
+    (pairHandoffHubForcesFresh : K .pairHandoffHubForces ∉ known := by key_fresh)
     (incrementFresh : K .pairIncrementCovered ∉ known := by key_fresh)
     (incrementFailsFresh : K .pairIncrementFails ∉ known := by key_fresh)
     (incrementEarlyFresh : K .pairIncrementEarlyOutcome ∉ known := by key_fresh)
@@ -590,7 +604,11 @@ noncomputable def selectedPairCodeChainDependent
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run earlyHistory (by key_fresh)
               exact Or.inr (Or.inl (Or.inr
-                (pairTypeBDependentSystemReturn typeBHistory)))
+                (pairTypeBDependentSystemReturn
+                  ((pairHandoffFactsRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile)
+                    (data := spineData)).run typeBHistory (by key_fresh)))))
           | .right noEarlyHistory =>
               let serialHistory :=
                 (pairSerialDemandSystemRow (BranchState := BranchState)

@@ -24,6 +24,7 @@ import Hypostructure.Graph.Statements.JointHubs
 import Hypostructure.Graph.Statements.HubLinks
 import Hypostructure.Graph.Statements.PairArms
 import Hypostructure.Graph.Statements.PairHandoffSupport
+import Hypostructure.Graph.Statements.PairHandoffFacts
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1913,6 +1914,16 @@ inductive Key where
   | pairHandoffCharge
   /-- Nodes `[179]` → `[187]` (G audit): **the net charge of that support** (`def:net-charge`): the core has one or two vertices, `(δ-1)|Y| ≤ def⁺(Y) ≤ δ|Y|`, and at the canonical envelope either the net charge is negative or `ω(H) < def⁺(Y)`, i.e. the centre has degree `< 3δ`. -/
   | pairHandoffNetCharge
+  /-- Nodes `[179]` → `[187]` (G audit): **flow-cut support of the capacity charge at the obstruction**: the extended charge sends every pair of the obstruction family to a token of G's canonical capacity, and when the pair-deficit coefficient is positive the canonical overloaded token and its charged pair set are a Hall violator (`load > M₀`). -/
+  | pairHandoffFlowCut
+  /-- Nodes `[179]` → `[187]` (G audit): **boundaried type of `G[U]`**: the boundary vertices of the overlap support `U`, the degree identity `e(U, G−U) + Σ_U d_U = δ|U| + σ(U)`, `σ(U) ≥ 1`, and the response of every reading of `U` glued into `G − U` (no accepted cycle). -/
+  | pairHandoffBoundaryType
+  /-- Nodes `[179]` → `[187]` (G audit): **fibre-size count of the obstruction**: for every exposure order of the obstruction family some level has strictly fewer than twice as many realized signatures as the level before. -/
+  | pairObstructionCountDeficit
+  /-- Nodes `[179]` → `[187]` (G audit): **demand descent of the obstruction**: `2 ≤ |𝒰| ≤ |Π|`, `𝒰` is not realizing, and peeling any one member leaves a realizing family. -/
+  | pairObstructionDescent
+  /-- Nodes `[179]` → `[187]` (G audit): **the ledger's hub facts at the handoff centre `h`**: the vertex split, the same-vertex switch, the endpoint switch at cubic neighbours, the length-3 fan and the chain `3, 3, 3`, instantiated at the canonical first separator. -/
+  | pairHandoffHubForces
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2905,6 +2916,16 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairHandoffChargeStatement data.toParameters object
   | .pairHandoffNetCharge, object =>
       PairHandoffNetChargeStatement data.toParameters object
+  | .pairHandoffFlowCut, object =>
+      PairHandoffFlowCutStatement data.toParameters object
+  | .pairHandoffBoundaryType, object =>
+      PairHandoffBoundaryTypeStatement data.toParameters object
+  | .pairObstructionCountDeficit, object =>
+      PairObstructionCountDeficitStatement data.toParameters object
+  | .pairObstructionDescent, object =>
+      PairObstructionDescentStatement data.toParameters object
+  | .pairHandoffHubForces, object =>
+      PairHandoffHubForcesStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3380,6 +3401,11 @@ def label : Key → String
   | .pairHandoffSupport => "pairHandoffSupport"
   | .pairHandoffCharge => "pairHandoffCharge"
   | .pairHandoffNetCharge => "pairHandoffNetCharge"
+  | .pairHandoffFlowCut => "pairHandoffFlowCut"
+  | .pairHandoffBoundaryType => "pairHandoffBoundaryType"
+  | .pairObstructionCountDeficit => "pairObstructionCountDeficit"
+  | .pairObstructionDescent => "pairObstructionDescent"
+  | .pairHandoffHubForces => "pairHandoffHubForces"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3854,6 +3880,11 @@ example : label .sparseTargetDefectEmpty = "sparseTargetDefectEmpty" := rfl
 example : label .pairHandoffSupport = "pairHandoffSupport" := rfl
 example : label .pairHandoffCharge = "pairHandoffCharge" := rfl
 example : label .pairHandoffNetCharge = "pairHandoffNetCharge" := rfl
+example : label .pairHandoffFlowCut = "pairHandoffFlowCut" := rfl
+example : label .pairHandoffBoundaryType = "pairHandoffBoundaryType" := rfl
+example : label .pairObstructionCountDeficit = "pairObstructionCountDeficit" := rfl
+example : label .pairObstructionDescent = "pairObstructionDescent" := rfl
+example : label .pairHandoffHubForces = "pairHandoffHubForces" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4323,6 +4354,11 @@ def idx : Key → Nat
   | .pairHandoffSupport => 8350
   | .pairHandoffCharge => 8351
   | .pairHandoffNetCharge => 8352
+  | .pairHandoffFlowCut => 8353
+  | .pairHandoffBoundaryType => 8354
+  | .pairObstructionCountDeficit => 8355
+  | .pairObstructionDescent => 8356
+  | .pairHandoffHubForces => 8357
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4781,6 +4817,11 @@ def ofIdx : Nat → Key
   | 8350 => .pairHandoffSupport
   | 8351 => .pairHandoffCharge
   | 8352 => .pairHandoffNetCharge
+  | 8353 => .pairHandoffFlowCut
+  | 8354 => .pairHandoffBoundaryType
+  | 8355 => .pairObstructionCountDeficit
+  | 8356 => .pairObstructionDescent
+  | 8357 => .pairHandoffHubForces
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -5795,6 +5836,16 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffCharge") 8351
   | .pairHandoffNetCharge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffNetCharge") 8352
+  | .pairHandoffFlowCut =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffFlowCut") 8353
+  | .pairHandoffBoundaryType =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffBoundaryType") 8354
+  | .pairObstructionCountDeficit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairObstructionCountDeficit") 8355
+  | .pairObstructionDescent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairObstructionDescent") 8356
+  | .pairHandoffHubForces =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffHubForces") 8357
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

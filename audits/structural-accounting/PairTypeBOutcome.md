@@ -8,7 +8,7 @@ Node `[187]` ([179]/[180] Type B entry), `Assembly/Residuals.lean` abbrev `PairT
 
 **Status counts before the G audit (Table 1, 88 coordinates):** `x` = 58, `~` = 12, `gap` = 12, `n/a` = 1, `nonG` = 5.
 
-**Status counts after the G audit:** `x` = 58, `~` = 13, `gap` = 11, `n/a` = 1, `nonG` = 5 (see the section 'After the G audit' at the end; H03 moves from `gap` to `~`).
+**Status counts after the G audit:** `x` = 58, `~` = 17, `gap` = 7, `n/a` = 1, `nonG` = 5 (see the section 'After the G audit' at the end; H03, H07, B06, G03 and H10 move from `gap` to `~`).
 
 **Headline findings** (details in the sections below):
 
@@ -418,3 +418,18 @@ None forced. Two observables sit at the edge of the register and were mapped to 
 **Table 1 after.** H03 `gap` -> `~` (facts 129-131). No other coordinate changed status; A11/B06 gain a partial contribution (129-131) but keep their `~`/`gap` marks (the boundaried type of G[U] is not built). G03 (conditional information) is still `gap`: the aggregate signature counts N_k are now the definition of `RealizingOrder` but no ledger fact counts them.
 
 **nonG items after.** 1 (minimality: legitimate by the current rule), 2/15, 9, 10 (conjunct 1), 11, 12, 64, 82, 101 (c),(d), 110, 124 (alternative (iii) `ReplacementSupport`, excluded through 101) remain; they are shared with other residuals (entry prefix, sparse-exit survivor) and are not repaired here. 125-128 are gone with the closed arm.
+
+
+### Second pass (gaps H07, B06, G03, H10 built; hub facts at h)
+
+Keys 8353-8357, published by `pairHandoffFactsRow` right after the early row (statements `Statements/PairHandoffFacts.lean`, contracts `Contracts/Spine/PairHandoffFacts.lean`; each choice is the `canonicalChoice` of its spec or fixed by G's data):
+
+| # | Key | Statement at G | Coordinates | Certificate |
+|---|---|---|---|---|
+| 132 | `pairHandoffFlowCut` (8353) | every pair of the obstruction family has an extended charge in the canonical capacity's tokens (integral flow); if the pair-deficit coefficient is positive the canonical overloaded token and its charged pair set are a Hall violator (`load > M0`) | H07~ H03~ | flow, cut |
+| 133 | `pairHandoffBoundaryType` (8354) | boundary vertices of U, `e(U,G-U)` as their deficit sum, `e(U,G-U) + sum_U d_U = delta|U| + sigma(U)`, `sigma(U) >= 1`, and the response of every reading of U glued into `G - U` has no accepted cycle | B06~ A11 A10 | decomposition, identity |
+| 134 | `pairObstructionCountDeficit` (8355) | for every exposure order of the obstruction family some level has `N_{k+1} < 2 N_k` (uses the new level bound `N_{k+1} <= 2 N_k`) | G03~ | bound |
+| 135 | `pairObstructionDescent` (8356) | `2 <= |U-family| <= |Pi|`, the family is not realizing, every one-step peel is realizing | H10~ | descent measure |
+| 136 | `pairHandoffHubForces` (8357) | at the canonical first separator h: vertex split forced, same-vertex switch, endpoint switch at cubic neighbours, length-3 fan and chain 3,3,3 | D07~ C06~ C07~ | classification |
+
+Also removed from this residual: facts `pairArmAPattern`, `pairArmARoleAlphabet` (vacuous on all four paths).

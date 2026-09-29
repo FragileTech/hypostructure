@@ -5273,3 +5273,29 @@ Node `[187]` ([179]/[180] Type B entry), branch `g-audit-pairTypeB`.  Accounting
   separator `h ∈ U` of degree `> δ` with two next vertices in `U`, non-absorbing at `P₀`, and
   escaping envelope; with the facts above and the whole ledger.  Not closed: none of the built facts
   is incompatible with it.
+
+### G audit: PairTypeBOutcome, second pass
+
+- **Vacuous facts removed from the residual.**  `K .pairArmAPattern` and `K .pairArmARoleAlphabet`
+  are implications whose hypothesis contains `DependentPairFamily` (refuted by `independentPairFamily`
+  on the independent paths) and, on the dependent paths, `BlockedPairEntropySandwich` (refuted by
+  `blockedPairCountFails`); they are true only vacuously on all four former paths.  They are no
+  longer conjuncts of `PairTypeBOutcome` nor read by its return theorem (they stay published
+  upstream for the other strict-surplus residuals).
+- **Built gaps** (keys 8353-8357, `pairHandoffFactsRow`, contracts in
+  `Contracts/Spine/PairHandoffFacts.lean`):
+  `pairHandoffFlowCut` (H07): every pair of the obstruction family is extended-charged to a token of
+  the canonical capacity; canonical overloaded token (Hall violator, `load > M₀`) when `K > 0`;
+  `pairHandoffBoundaryType` (B06): boundary vertices of `U`, `e(U, G−U) + Σ_U d_U = δ|U| + σ(U)`,
+  `σ(U) ≥ 1`, every reading of `U` glued into `G − U` has no accepted cycle;
+  `pairObstructionCountDeficit` (G03): for every exposure order of the obstruction family some level
+  has `N_{k+1} < 2 N_k` (new library lemma `signatureCount_succ_le`: `N_{k+1} ≤ 2 N_k`);
+  `pairObstructionDescent` (H10): `2 ≤ |𝒰| ≤ |Π|`, `𝒰` not realizing, every one-step peel realizing;
+  `pairHandoffHubForces`: at the canonical separator `h` the ledger's vertex split, same-vertex
+  switch, endpoint switch at cubic neighbours, length-3 fan and chain `3, 3, 3`.
+- **Tested against `PairObstructionHandoff`, not closed.**  Flow: nothing relates the overloaded
+  token to `h` or `𝒰`.  Boundary type: `U` may be all of `V(G)` (empty boundary), and `σ(U) ≥ 1` is
+  what the handoff already gives.  Count deficit and descent: they are the obstruction itself in
+  aggregate form.  Hub facts at `h`: they are constraints on paths through `h`, consistent with the
+  handoff; the net-charge dichotomy (`d(h) < 3δ` or negative charge) is unchanged.  Remaining
+  proposition unchanged: `PairObstructionHandoff` at the canonical returns, with the full ledger.

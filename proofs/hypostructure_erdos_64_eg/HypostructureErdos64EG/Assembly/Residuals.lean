@@ -1965,10 +1965,6 @@ abbrev PairTypeBOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .highSurplusConfiguration selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairArmAPattern selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairArmARoleAlphabet selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairArmB selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .extFreeEmpty selected.object ∧
@@ -2085,6 +2081,16 @@ abbrev PairTypeBOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairHandoffNetCharge selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffFlowCut selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffBoundaryType selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairObstructionCountDeficit selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairObstructionDescent selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairHandoffHubForces selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairSystemEarlyOutcome selected.object
 
 /-- The return of `PairTypeBOutcome` (arm `system`): one `get` per fact of
@@ -2158,8 +2164,6 @@ theorem pairTypeBSystemReturn
     [FactKeys.Has (K .admissibleQuotientsLabelInjective) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .highSurplusConfiguration) known]
-    [FactKeys.Has (K .pairArmAPattern) known]
-    [FactKeys.Has (K .pairArmARoleAlphabet) known]
     [FactKeys.Has (K .pairArmB) known]
     [FactKeys.Has (K .extFreeEmpty) known]
     [FactKeys.Has (K .extLoadSum) known]
@@ -2218,6 +2222,11 @@ theorem pairTypeBSystemReturn
     [FactKeys.Has (K .pairHandoffSupport) known]
     [FactKeys.Has (K .pairHandoffCharge) known]
     [FactKeys.Has (K .pairHandoffNetCharge) known]
+    [FactKeys.Has (K .pairHandoffFlowCut) known]
+    [FactKeys.Has (K .pairHandoffBoundaryType) known]
+    [FactKeys.Has (K .pairObstructionCountDeficit) known]
+    [FactKeys.Has (K .pairObstructionDescent) known]
+    [FactKeys.Has (K .pairHandoffHubForces) known]
     [FactKeys.Has (K .pairSystemEarlyOutcome) known] :
     PairTypeBOutcome selected :=
   ⟨(history.get (K .selection)).down,
@@ -2286,8 +2295,6 @@ theorem pairTypeBSystemReturn
     (history.get (K .admissibleQuotientsLabelInjective)).down,
     (history.get (K .surplusAbove)).down,
     (history.get (K .highSurplusConfiguration)).down,
-    (history.get (K .pairArmAPattern)).down,
-    (history.get (K .pairArmARoleAlphabet)).down,
     (history.get (K .pairArmB)).down,
     (history.get (K .extFreeEmpty)).down,
     (history.get (K .extLoadSum)).down,
@@ -2346,6 +2353,11 @@ theorem pairTypeBSystemReturn
     (history.get (K .pairHandoffSupport)).down,
     (history.get (K .pairHandoffCharge)).down,
     (history.get (K .pairHandoffNetCharge)).down,
+    (history.get (K .pairHandoffFlowCut)).down,
+    (history.get (K .pairHandoffBoundaryType)).down,
+    (history.get (K .pairObstructionCountDeficit)).down,
+    (history.get (K .pairObstructionDescent)).down,
+    (history.get (K .pairHandoffHubForces)).down,
     (history.get (K .pairSystemEarlyOutcome)).down⟩
 
 /-- **Node `[187] (Type B sublinear failure)`** (thm:main (vi), tex 369-378):

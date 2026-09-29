@@ -632,6 +632,52 @@ theorem signatureCount_eq
   letI : Fintype model.Skeleton := Fintype.ofFinite _
   rw [Nat.card_eq_card_toFinset, Set.toFinset_range]
 
+/-- **Each level has at most twice as many realized signatures as the one before**: a
+signature at level `length + 1` is determined by its restriction to level `length` and its last
+response, which is a proposition. -/
+theorem signatureCount_succ_le
+    {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
+    {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (family : Finset {pair // pair ∈ model.pairSet})
+    (order : Fin family.card ≃ {pair // pair ∈ family})
+    (length : Nat) (bound : length + 1 ≤ family.card) :
+    model.signatureCount (LengthOK := LengthOK) family order (length + 1) bound ≤
+      2 * model.signatureCount (LengthOK := LengthOK) family order length
+        (Nat.le_of_succ_le bound) := by
+  rw [signatureCount_eq, signatureCount_eq]
+  let low := Set.range (model.signature (LengthOK := LengthOK) family order length
+    (Nat.le_of_succ_le bound))
+  let high := Set.range (model.signature (LengthOK := LengthOK) family order (length + 1)
+    bound)
+  let project : high → low × Prop := fun x =>
+    ⟨⟨(x.1.1, fun i => x.1.2 i.castSucc), by
+      obtain ⟨member, memberEq⟩ := x.2
+      exact ⟨member, by rw [← memberEq]; rfl⟩⟩, x.1.2 (Fin.last length)⟩
+  have injective : Function.Injective project := by
+    rintro ⟨⟨b₁, f₁⟩, m₁⟩ ⟨⟨b₂, f₂⟩, m₂⟩ same
+    have lowEq := congrArg (fun y => y.1.1) same
+    have lastEq := congrArg Prod.snd same
+    simp only [project] at lowEq lastEq
+    have baseEq : b₁ = b₂ := congrArg Prod.fst lowEq
+    have restEq : (fun i : Fin length => f₁ i.castSucc) = fun i => f₂ i.castSucc :=
+      congrArg Prod.snd lowEq
+    apply Subtype.ext
+    apply Prod.ext baseEq
+    funext i
+    refine Fin.lastCases ?_ (fun j => ?_) i
+    · exact lastEq
+    · exact congrFun restEq j
+  haveI : Finite low := Set.finite_range _ |>.to_subtype
+  have bounded := Nat.card_le_card_of_injective project injective
+  rw [Nat.card_prod] at bounded
+  have prop : Nat.card Prop = 2 := by
+    rw [Nat.card_eq_fintype_card]; exact Fintype.card_prop
+  rw [prop] at bounded
+  exact bounded.trans (le_of_eq (Nat.mul_comm _ _))
+
 /-- An exposure order realizes one binary response coordinate at every step of every realized
 `(baseline word, prefix)` signature, **in the aggregate form the counting consumes**: the number
 of realized signatures doubles at every level, i.e. at the last level it is

@@ -6,6 +6,7 @@ import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.Basic
 import Hypostructure.Graph.Contracts.SurplusPair.PairCode
 import Hypostructure.Graph.Contracts.SurplusPair.PairOverlap
 import Hypostructure.Graph.Contracts.Spine.PairHandoffSupport
+import Hypostructure.Graph.Contracts.Spine.PairHandoffFacts
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -161,6 +162,44 @@ publishes the exact shape and the ambient surplus of that one support
             (.cons (key := K .pairHandoffNetCharge)
               ⟨Graph.Contracts.Spine.PairHandoffSupport.pairHandoffNetCharge_holds handoff⟩
               .nil))))
+
+/-- Nodes `[179]` → `[187]` (G audit): the structure of G at the canonical handoff of its pair
+obstruction, each fact derived from `K .pairHandoffSupport` and the ledger's own facts. -/
+@[reducible] noncomputable def pairHandoffFactsRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairHandoffFacts
+    { Requires := [K .pairHandoffSupport, K .selection, K .minDegreeBaseline,
+        K .extFreeEmpty, K .extOverloadedToken, K .highCentreSplitForced,
+        K .sameVertexSwitchForcedPath, K .highEndpointSwitch, K .threeRouteFan,
+        K .threeRouteChain]
+      Produces := [K .pairHandoffFlowCut, K .pairHandoffBoundaryType,
+        K .pairObstructionCountDeficit, K .pairObstructionDescent, K .pairHandoffHubForces]
+      requiresUnique := by key_fresh
+      producesUnique := by key_fresh
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairHandoffFlowCut)
+        ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffFlowCut_holds
+          (inputs.get (K .pairHandoffSupport)).down (inputs.get (K .extFreeEmpty)).down
+          (inputs.get (K .extOverloadedToken)).down⟩
+        (.cons (key := K .pairHandoffBoundaryType)
+          ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffBoundaryType_holds
+            (inputs.get (K .selection)).down.1 (inputs.get (K .minDegreeBaseline)).down
+            (inputs.get (K .pairHandoffSupport)).down⟩
+          (.cons (key := K .pairObstructionCountDeficit)
+            ⟨Graph.Contracts.Spine.PairHandoffFacts.pairObstructionCountDeficit_holds
+              (inputs.get (K .pairHandoffSupport)).down⟩
+            (.cons (key := K .pairObstructionDescent)
+              ⟨Graph.Contracts.Spine.PairHandoffFacts.pairObstructionDescent_holds
+                (inputs.get (K .pairHandoffSupport)).down⟩
+              (.cons (key := K .pairHandoffHubForces)
+                ⟨Graph.Contracts.Spine.PairHandoffFacts.pairHandoffHubForces_holds
+                  (inputs.get (K .pairHandoffSupport)).down
+                  (inputs.get (K .highCentreSplitForced)).down
+                  (inputs.get (K .sameVertexSwitchForcedPath)).down
+                  (inputs.get (K .highEndpointSwitch)).down
+                  (inputs.get (K .threeRouteFan)).down (inputs.get (K .threeRouteChain)).down⟩
+                .nil)))))
 
 /-- Node `[180]`: test `lem:pair-system-increment-arithmetic`'s coverage on G's
 canonical serial system, read from `K .pairSerialDemandSystem`.  The negative
