@@ -4,6 +4,7 @@ import Hypostructure.Graph.Strategy.SpineRows.SingleOpenPortSuppressionWitness
 import Hypostructure.Graph.Strategy.SpineRows.SuppressedFamilyCriticalCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SameTokenBottleneckRouting
 import Hypostructure.Graph.Strategy.SpineRows.SameTokenPair
+import Hypostructure.Graph.Strategy.SpineRows.SameTokenSwap
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SameTokenTypeBFanEntry
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.HomogeneousCapsClose
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.FibrePressure
@@ -708,6 +709,13 @@ noncomputable def selectedBottleneckDischarge
     (supportsFresh : K .sameTokenPatternSupports ∉ known := by key_fresh)
     (swapFresh : K .sameTokenPatternSwap ∉ known := by key_fresh)
     (partitionFresh : K .sameTokenPairPartition ∉ known := by key_fresh)
+    (transplantSizeFresh : K .sameTokenTransplantSize ∉ known := by key_fresh)
+    (transplantDeficitFresh : K .sameTokenTransplantDeficit ∉ known := by key_fresh)
+    (decidedFresh : K .sameTokenUnresolvedDecided ∉ known := by key_fresh)
+    (readingsExactFresh : K .sameTokenReadingsExact ∉ known := by key_fresh)
+    (swapFreshKey : K .sameTokenSwap ∉ known := by key_fresh)
+    (swapExactFresh : K .sameTokenSwapExact ∉ known := by key_fresh)
+    (wholeFresh : K .sameTokenU2FreeWhole ∉ known := by key_fresh)
     (closedFresh : closed ∉ known := by key_fresh)
     [FactKeys.Has (K .activeSurplusFamily) known]
     [FactKeys.Has (K .baselineSpineDemand) known]
@@ -793,7 +801,10 @@ noncomputable def selectedBottleneckDischarge
           K .sameTokenPatternSwap :: K .bottleneckRouting ::
           K .homogeneousCapsFail :: known) ⊕
       ExactLedger EGInput.{u} selected
-        (K .sameTokenPairPartition :: K .sameTokenReadingsNotReplacement ::
+        (K .sameTokenUnresolvedDecided :: K .sameTokenReadingsExact :: K .sameTokenSwap ::
+          K .sameTokenSwapExact :: K .sameTokenU2FreeWhole ::
+          K .sameTokenTransplantSize :: K .sameTokenTransplantDeficit ::
+          K .sameTokenPairPartition :: K .sameTokenReadingsNotReplacement ::
           K .sameTokenPatternUnresolved :: K .typeBHandoffFails ::
           K .sameTokenPatternSupports :: K .sameTokenPatternSwap :: K .bottleneckRouting ::
           K .homogeneousCapsFail :: known) := by
@@ -841,7 +852,25 @@ noncomputable def selectedBottleneckDischarge
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run unresolved (by key_fresh)
-          exact .inr partitioned
+          -- `[144a]` (G repair R5, Lean improvement): the transplants of the
+          -- two pattern supports into `Z`, their conditions (i)--(iv), the size
+          -- equality minimality gives, and their exact failure.  No decision:
+          -- the arm "both transplants valid" does not close at G.
+          let transplanted :=
+            (sameTokenTransplantRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run partitioned (by key_fresh)
+          -- `[144a]` (G audit S144a, Lean improvement): the entry test decided at
+          -- G, the exact readings, the rerouted swaps of the two supports in both
+          -- directions with their exact failure, and the boundary-free
+          -- configuration.  No decision: no arm closes at G.
+          let tested :=
+            (sameTokenSwapRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run transplanted (by key_fresh)
+          exact .inr tested
   | .right capsHistory =>
       -- The caps arm, closed at G: the audited pattern at G's overloading
       -- token refutes the caps at the same ledger.
