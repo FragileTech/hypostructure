@@ -23,6 +23,7 @@ import Hypostructure.Graph.Statements.LocalRigidity
 import Hypostructure.Graph.Statements.JointHubs
 import Hypostructure.Graph.Statements.HubLinks
 import Hypostructure.Graph.Statements.PairArms
+import Hypostructure.Graph.Statements.StubDeficit
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1905,6 +1906,10 @@ inductive Key where
   -- g-repair R1 keys (7800–7849)
   /-- Node `[125]`, clause (b) of `def:named-surplus-exits` stated about G (Lean improvement: exit (b) is empty at G): **every two readings of G agree in G's own surroundings `G − Z`** (both glued graphs are target-free subgraphs of G), so G's declared sparse family has no target-defective identification.  Published on `[125]`'s exit arm, where it closes the arm against `K .sparseTargetDefectResidual`. -/
   | sparseTargetDefectEmpty
+  /-- Terminal `[54]` (`prop:entropy-high-theta`): **the stub-deficit identity at `R₀`**: `e(R₀,W) + exc(R₀) = σ(R₀) + def⁺(R₀)`, `2e(G[R₀]) + e(R₀,W) = δ|R₀| + σ(R₀)`, and the canonical assignment of the `def⁺(R₀)` deficit units to distinct boundary stubs by G's vertex order. -/
+  | stubDeficitIdentity
+  /-- Terminal `[54]`: **the cycle spectrum of `R₀`**: `G[R₀]` and every induced subgraph of it carry no cycle of an accepted length. -/
+  | remainderCycleSpectrum
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2891,6 +2896,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   -- g-repair R1 keys
   | .sparseTargetDefectEmpty, object =>
       SparseTargetDefectEmptyStatement data.toParameters object
+  | .stubDeficitIdentity, object =>
+      StubDeficitIdentityStatement data.toParameters object
+  | .remainderCycleSpectrum, object =>
+      RemainderCycleSpectrumStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3363,6 +3372,8 @@ def label : Key → String
   | .pairArmARoleAlphabet => "pairArmARoleAlphabet"
   | .pairArmB => "pairArmB"
   | .sparseTargetDefectEmpty => "sparseTargetDefectEmpty"
+  | .stubDeficitIdentity => "stubDeficitIdentity"
+  | .remainderCycleSpectrum => "remainderCycleSpectrum"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3834,6 +3845,8 @@ example : label .pairArmAPattern = "pairArmAPattern" := rfl
 example : label .pairArmARoleAlphabet = "pairArmARoleAlphabet" := rfl
 example : label .pairArmB = "pairArmB" := rfl
 example : label .sparseTargetDefectEmpty = "sparseTargetDefectEmpty" := rfl
+example : label .stubDeficitIdentity = "stubDeficitIdentity" := rfl
+example : label .remainderCycleSpectrum = "remainderCycleSpectrum" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4300,6 +4313,8 @@ def idx : Key → Nat
   | .pairArmARoleAlphabet => 7235
   | .pairArmB => 7236
   | .sparseTargetDefectEmpty => 7800
+  | .stubDeficitIdentity => 8550
+  | .remainderCycleSpectrum => 8551
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4755,6 +4770,8 @@ def ofIdx : Nat → Key
   | 7235 => .pairArmARoleAlphabet
   | 7236 => .pairArmB
   | 7800 => .sparseTargetDefectEmpty
+  | 8550 => .stubDeficitIdentity
+  | 8551 => .remainderCycleSpectrum
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -5763,6 +5780,10 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmB") 7236
   | .sparseTargetDefectEmpty =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sparseTargetDefectEmpty") 7800
+  | .stubDeficitIdentity =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "stubDeficitIdentity") 8550
+  | .remainderCycleSpectrum =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "remainderCycleSpectrum") 8551
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

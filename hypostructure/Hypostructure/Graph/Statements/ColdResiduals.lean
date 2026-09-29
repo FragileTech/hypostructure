@@ -372,7 +372,10 @@ def EntropyJointRealizationStatement (data : Parameters)
 realization fails, constructed.**  At G's fixed packing `P₀` and remainder
 `R₀ = R(P₀)`:
 
-* the window package of `P₀` is not retained (`¬ WindowFamilyRealized P₀`);
+* the package of `P₀` overflows the labelled skeleton budget of G's class, in
+  aggregate form (no state map, no class member): `B < 2^{b_P·p}` or
+  `B < retainedCode P₀` (equivalent, with `lem:skeleton-dominates`, to
+  `¬ WindowFamilyRealized P₀`, `Contracts.Spine.unretained_package_overflow`);
 * the remainder glue on disjoint supports: `RS(R₀) · room ≤ B`, with
   `room = C(C(n,2) − C(|R₀|,2), m − e(G[R₀]))` the outer room of G at `R₀`;
 * the forced bits of `[48]`: `F ≤ c_Ω·r_Ω(R₀)`;
@@ -383,7 +386,10 @@ realization fails, constructed.**  At G's fixed packing `P₀` and remainder
   `¬ RS(R₀)·2^{rate·s·p₁₃}·2^F ≤ B`. -/
 def AllColdEntropyResidualStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ¬ WindowFamilyRealized data object (canonicalWindowPacking data object) ∧
+  (Graph.skeletonBudget object <
+      2 ^ (windowPackageBits data object * (canonicalWindowPacking data object).card) ∨
+    Graph.skeletonBudget object <
+      retainedCode data object (canonicalWindowPacking data object)) ∧
   remainderStates data object (canonicalWindowPacking data object) *
       remainderOuterRoom data object ≤ Graph.skeletonBudget object ∧
   remainderOuterRoom data object =

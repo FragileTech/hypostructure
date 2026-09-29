@@ -566,15 +566,7 @@ theorem densityCap_of_coldMassBounded (data : Parameters)
     (cubic : ColdAmbientCubicStatement data object)
     (split : HotColdWindowStatement data object) :
     DensityCapStatement data object := by
-  refine ⟨densityCapLinear_of_coldMassBounded data object fiveLeOrder mass bounded
-    cubic split, ?_⟩
-  intro State stateOf joint
-  refine joint.trans (Nat.pow_le_pow_left ?_ _)
-  have count : Nat.card (Graph.PackedWindowRealization.Skeleton
-      object.vertexCount object.edgeCount) = Graph.skeletonBudget object := by
-    simpa [Graph.skeletonBudget, Graph.edgeStratumCount] using
-      Graph.PackedWindowRealization.card_skeleton
-        object.vertexCount object.edgeCount
-  exact (Core.FiniteEntropy.card_range_le_card_ambient stateOf).trans_eq count
+  exact densityCapLinear_of_coldMassBounded data object fiveLeOrder mass bounded
+    cubic split
 
 end Hypostructure.Graph.Contracts.Spine

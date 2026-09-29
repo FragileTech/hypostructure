@@ -5296,7 +5296,11 @@ abbrev Node54ResidualOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .entropyCapActive selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .allColdEntropyResidual selected.object
+      erdosReceiverLoadProfile spineData .allColdEntropyResidual selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .stubDeficitIdentity selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .remainderCycleSpectrum selected.object
 
 /-- The return of `Node54ResidualOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -5392,7 +5396,9 @@ theorem node54Return
     [FactKeys.Has (K .remainderEntropyHigh) known]
     [FactKeys.Has (K .entropyPackageDemand) known]
     [FactKeys.Has (K .entropyCapActive) known]
-    [FactKeys.Has (K .allColdEntropyResidual) known] :
+    [FactKeys.Has (K .allColdEntropyResidual) known]
+    [FactKeys.Has (K .stubDeficitIdentity) known]
+    [FactKeys.Has (K .remainderCycleSpectrum) known] :
     Node54ResidualOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -5483,6 +5489,8 @@ theorem node54Return
     (history.get (K .remainderEntropyHigh)).down,
     (history.get (K .entropyPackageDemand)).down,
     (history.get (K .entropyCapActive)).down,
-    (history.get (K .allColdEntropyResidual)).down⟩
+    (history.get (K .allColdEntropyResidual)).down,
+    (history.get (K .stubDeficitIdentity)).down,
+    (history.get (K .remainderCycleSpectrum)).down⟩
 
 end HypostructureErdos64EG

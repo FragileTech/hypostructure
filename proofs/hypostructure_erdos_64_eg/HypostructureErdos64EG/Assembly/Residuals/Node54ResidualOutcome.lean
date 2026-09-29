@@ -142,6 +142,8 @@ theorem node54Return_realizedColdBelow
     [FactKeys.Has (K .entropyPackageDemand) known]
     [FactKeys.Has (K .entropyCapActive) known]
     [FactKeys.Has (K .allColdEntropyResidual) known]
+    [FactKeys.Has (K .stubDeficitIdentity) known]
+    [FactKeys.Has (K .remainderCycleSpectrum) known]
     [FactKeys.Has (K .route8Rate) known]
     (lanePrefix : Route8LanePrefixBlock_realizedColdBelow selected) :
     Node54ResidualOutcome_realizedColdBelow selected :=
@@ -274,6 +276,8 @@ theorem node54Return_realizedBounded
     [FactKeys.Has (K .entropyPackageDemand) known]
     [FactKeys.Has (K .entropyCapActive) known]
     [FactKeys.Has (K .allColdEntropyResidual) known]
+    [FactKeys.Has (K .stubDeficitIdentity) known]
+    [FactKeys.Has (K .remainderCycleSpectrum) known]
     (lanePrefix : Route8LanePrefixBlock_realizedColdAtOrAbove selected) :
     Node54ResidualOutcome_realizedBounded selected :=
   ⟨node54Return history,
@@ -410,6 +414,8 @@ theorem node54Return_unrealizedTauHighBounded
     [FactKeys.Has (K .entropyPackageDemand) known]
     [FactKeys.Has (K .entropyCapActive) known]
     [FactKeys.Has (K .allColdEntropyResidual) known]
+    [FactKeys.Has (K .stubDeficitIdentity) known]
+    [FactKeys.Has (K .remainderCycleSpectrum) known]
     (lanePrefix : Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove selected) :
     Node54ResidualOutcome_unrealizedTauHighBounded selected :=
   ⟨node54Return history,
@@ -547,6 +553,8 @@ theorem node54Return_unrealizedRateFailsBounded
     [FactKeys.Has (K .entropyPackageDemand) known]
     [FactKeys.Has (K .entropyCapActive) known]
     [FactKeys.Has (K .allColdEntropyResidual) known]
+    [FactKeys.Has (K .stubDeficitIdentity) known]
+    [FactKeys.Has (K .remainderCycleSpectrum) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
     [FactKeys.Has (K .route8RateFails) known]
@@ -681,6 +689,8 @@ theorem node54Return_unrealizedBothRates
     [FactKeys.Has (K .entropyPackageDemand) known]
     [FactKeys.Has (K .entropyCapActive) known]
     [FactKeys.Has (K .allColdEntropyResidual) known]
+    [FactKeys.Has (K .stubDeficitIdentity) known]
+    [FactKeys.Has (K .remainderCycleSpectrum) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
     [FactKeys.Has (K .route8Rate) known] :
@@ -794,6 +804,8 @@ theorem node54SubtypesReturn_coldRate
     [FactKeys.Has (K .entropyPackageDemand) known]
     [FactKeys.Has (K .entropyCapActive) known]
     [FactKeys.Has (K .allColdEntropyResidual) known]
+    [FactKeys.Has (K .stubDeficitIdentity) known]
+    [FactKeys.Has (K .remainderCycleSpectrum) known]
     [FactKeys.Has (K .route8Rate) known]
     (lanePrefix : ColdRateArm selected) :
     Node54ResidualSubtypes selected :=
@@ -893,6 +905,8 @@ theorem node54SubtypesReturn_densityCap
     [FactKeys.Has (K .entropyPackageDemand) known]
     [FactKeys.Has (K .entropyCapActive) known]
     [FactKeys.Has (K .allColdEntropyResidual) known]
+    [FactKeys.Has (K .stubDeficitIdentity) known]
+    [FactKeys.Has (K .remainderCycleSpectrum) known]
     (lanePrefix : DensityCapArm selected) :
     Node54ResidualSubtypes selected := by
   rcases lanePrefix with p | p
