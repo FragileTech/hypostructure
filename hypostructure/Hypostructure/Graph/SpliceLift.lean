@@ -392,4 +392,62 @@ theorem excision_deficient (G : FiniteObject.{u}) {a b : G.Vertex}
   rw [degree_spliceObject_of_no_deleted_neighbour G a b D v hv va vb hno]
   exact hG.trans (FiniteObject.minDegree_le_degree G v)
 
+open Classical in
+open Hypostructure.Graph in
+/-- A kept vertex other than `a`, `b` with a neighbour in `D` strictly loses degree. -/
+theorem degree_spliceObject_lt (G : FiniteObject.{u}) (a b : G.Vertex)
+    (D : Finset G.Vertex) (w : G.Vertex) (hw : w ∈ G.vertexFinset.filter (fun v => v ∉ D))
+    (wa : w ≠ a) (wb : w ≠ b) (hD : ∃ x ∈ D, G.graph.Adj w x) :
+    (spliceObject G a b D).degree ⟨w, hw⟩ < G.degree w := by
+  unfold spliceObject
+  rw [FiniteObject.degree_eq_ncard_neighborSet, FiniteObject.degree_eq_ncard_neighborSet]
+  have hwD : w ∉ D := (Finset.mem_filter.1 hw).2
+  have hset : ((FiniteObject.of (splice G.graph a b (D : Set G.Vertex)) G.vertices
+      (fun _ _ => Classical.propDecidable _)).induce
+      (G.vertexFinset.filter (fun v => v ∉ D))).graph.neighborSet ⟨w, hw⟩ =
+      (fun x : {x // x ∈ G.vertexFinset.filter (fun v => v ∉ D)} => x.1) ⁻¹'
+        (G.graph.neighborSet w \ (D : Set G.Vertex)) := by
+    ext x
+    simp only [SimpleGraph.mem_neighborSet, Set.mem_preimage, Set.mem_diff]
+    change (splice G.graph a b (D : Set G.Vertex)).Adj w x.1 ↔
+      G.graph.Adj w x.1 ∧ x.1 ∉ (D : Set G.Vertex)
+    constructor
+    · rintro (⟨h, _, hx⟩ | ⟨h, _⟩)
+      · exact ⟨h, hx⟩
+      · rcases Sym2.eq_iff.1 h with ⟨e, _⟩ | ⟨e, _⟩
+        · exact absurd e wa
+        · exact absurd e wb
+    · rintro ⟨h, hx⟩
+      exact Or.inl ⟨h, hwD, hx⟩
+  rw [hset]
+  have hsub : G.graph.neighborSet w \ (D : Set G.Vertex) ⊆ Set.range
+      (fun x : {x // x ∈ G.vertexFinset.filter (fun v => v ∉ D)} => x.1) := by
+    intro x hx
+    exact ⟨⟨x, Finset.mem_filter.2 ⟨by simp [FiniteObject.vertexFinset], hx.2⟩⟩, rfl⟩
+  refine lt_of_eq_of_lt
+    (Set.ncard_preimage_of_injective_subset_range Subtype.val_injective hsub) ?_
+  obtain ⟨x, hxD, hx⟩ := hD
+  apply Set.ncard_lt_ncard
+  · refine ⟨Set.diff_subset, fun h => ?_⟩
+    have := h hx
+    exact this.2 hxD
+  · letI : FinEnum G.Vertex := G.vertices
+    exact Set.toFinite _
+
+open Classical in
+open Hypostructure.Graph in
+/-- **The degree side of the excision, exactly.**  If a kept vertex `w ∉ {a, b}` of degree at
+most `t` in `G` has a neighbour in the deleted set `D`, the excised object misses the
+baseline `t`. -/
+theorem not_baseline_of_external (G : FiniteObject.{u}) (a b : G.Vertex)
+    (D : Finset G.Vertex) (t : Nat) (w : G.Vertex)
+    (hw : w ∈ G.vertexFinset.filter (fun v => v ∉ D))
+    (wa : w ≠ a) (wb : w ≠ b) (hD : ∃ x ∈ D, G.graph.Adj w x) (deg : G.degree w ≤ t) :
+    ¬ MinimumDegreeAtLeast t (spliceObject G a b D) := by
+  intro h
+  have h1 := degree_spliceObject_lt G a b D w hw wa wb hD
+  have h2 := FiniteObject.minDegree_le_degree (spliceObject G a b D) ⟨w, hw⟩
+  unfold MinimumDegreeAtLeast at h
+  omega
+
 end Hypostructure.Graph.SpliceLift
