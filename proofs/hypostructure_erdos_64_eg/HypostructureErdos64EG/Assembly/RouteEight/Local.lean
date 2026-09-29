@@ -8,6 +8,8 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8PeelingDescent
 import Hypostructure.Graph.Strategy.SpineRows.Route8QuotientDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8QuotientEntriesAtG
 import Hypostructure.Graph.Strategy.SpineRows.Route8BlobStructure
+import Hypostructure.Graph.Strategy.SpineRows.Route8PackingExchange
+import Hypostructure.Graph.Strategy.SpineRows.Route8ArmCap
 import Hypostructure.Graph.Strategy.SpineRows.Route8StageOutcomeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8TwoCarrierExit
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedDeficit
@@ -262,6 +264,14 @@ noncomputable def selectedRouteEightUnifiedResidual
     (pieceWindowAttachmentFresh : K .route8PieceWindowAttachment ∉ known := by key_fresh)
     (pieceChainCycleFresh : K .route8PieceChainCycle ∉ known := by key_fresh)
     (piecewiseRateFresh : K .route8PiecewiseRate ∉ known := by key_fresh)
+    (packingExchangeFresh : K .route8PackingExchange ∉ known := by key_fresh)
+    (armExchangeFresh : K .route8ArmExchange ∉ known := by key_fresh)
+    (fullArmLandingCapFresh : K .route8FullArmLandingCap ∉ known := by key_fresh)
+    (hubPieceMassFresh : K .route8HubPieceMass ∉ known := by key_fresh)
+    (netCapExcessFresh : K .route8NetCapExcess ∉ known := by key_fresh)
+    (cleanLandingRulesFresh : K .route8CleanLandingRules ∉ known := by key_fresh)
+    (cleanLandingCapFresh : K .route8CleanLandingCap ∉ known := by key_fresh)
+    (armClosureResidualFresh : K .route8ArmClosureResidual ∉ known := by key_fresh)
     (canonicalFormFresh : K .typeBSublinearCanonicalForm ∉ known := by
       key_fresh)
     (absorbedSubsetFresh : K .groupedAbsorbedCoreSubset ∉ known := by
@@ -477,6 +487,28 @@ noncomputable def selectedRouteEightUnifiedResidual
           g_traceIntoAbsorbedStructure (by key_fresh)
       exact Or.inl (typeBSublinearProductReturn arms arm.1 arm.2)
   | .left sublinearHistory =>
+      -- Packing exchange at `P₀` (keys 9800--9802) and the hub-piece mass (key 9803), on
+      -- the common prefix of `Route8QuotientOutcome` and `Route8JointBalanceOutcome`.
+      let packingExchange :=
+        (route8PackingExchangeRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          sublinearHistory (by key_fresh)
+      let armExchange :=
+        (route8ArmExchangeRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          packingExchange (by key_fresh)
+      let fullArmLandingCap :=
+        (route8FullArmLandingCapRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          armExchange (by key_fresh)
+      let hubPieceMass :=
+        (route8HubPieceMassRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          fullArmLandingCap (by key_fresh)
       -- Blob structure on the rate arm (keys 9900--9902), on the common prefix of
       -- `Route8QuotientOutcome` and `Route8JointBalanceOutcome`: the pieces of `R`
       -- against the windows of `P₀`, and the rate `K .route8Rate` over the pieces.
@@ -484,7 +516,7 @@ noncomputable def selectedRouteEightUnifiedResidual
         (route8PieceWindowAttachmentRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          sublinearHistory (by key_fresh)
+          hubPieceMass (by key_fresh)
       let pieceChainCycle :=
         (route8PieceChainCycleRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -495,11 +527,33 @@ noncomputable def selectedRouteEightUnifiedResidual
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           pieceChainCycle (by key_fresh)
+      -- Net-cap excess, clean landings and the arm-closure residual (keys 9804--9807),
+      -- after key 9902 which they read.
+      let netCapExcess :=
+        (route8NetCapExcessRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          piecewiseRate (by key_fresh)
+      let cleanLandingRules :=
+        (route8CleanLandingRulesRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          netCapExcess (by key_fresh)
+      let cleanLandingCap :=
+        (route8CleanLandingCapRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          cleanLandingRules (by key_fresh)
+      let armClosureResidual :=
+        (route8ArmClosureResidualRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          cleanLandingCap (by key_fresh)
       let unifiedDeficit :=
         (route8UnifiedDeficitRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          piecewiseRate (by key_fresh)
+          armClosureResidual (by key_fresh)
       -- Route 8 read on the pieces constructed from G: fold pairs of the
       -- selected basins are exit-(4) peels, and complete carrier sets hold
       -- every fold pair (idx 8700).

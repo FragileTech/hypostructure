@@ -141,6 +141,9 @@ noncomputable abbrev typeAExitFiveToEightKeys : FactKeys EGInput.{u} :=
     K .route8UnpaidWitnessFree,
     K .route8QuotientEntriesAtG,
     K .route8PieceWindowAttachment, K .route8PieceChainCycle, K .route8PiecewiseRate,
+    K .route8PackingExchange, K .route8ArmExchange, K .route8FullArmLandingCap,
+    K .route8HubPieceMass, K .route8NetCapExcess, K .route8CleanLandingRules,
+    K .route8CleanLandingCap, K .route8ArmClosureResidual,
     K .typeAExitSevenSwitch,
     K .typeAExitSevenEnvelope,
     K .typeBAbsorbedCharge]

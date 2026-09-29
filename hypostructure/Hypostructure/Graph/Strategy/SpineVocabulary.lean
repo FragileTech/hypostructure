@@ -40,6 +40,9 @@ import Hypostructure.Graph.Statements.BlockedOverlapG
 import Hypostructure.Graph.Statements.PairCorrelation
 import Hypostructure.Graph.Statements.Route8QuotientSize
 import Hypostructure.Graph.Statements.Route8BlobStructure
+import Hypostructure.Graph.Statements.Route8PackingExchange
+import Hypostructure.Graph.Statements.Route8HubPieceMass
+import Hypostructure.Graph.Statements.Route8ArmCap
 import Hypostructure.Graph.Statements.PairHandoffSupport
 import Hypostructure.Graph.Statements.PairHandoffFacts
 import Hypostructure.Graph.Statements.StubDeficit
@@ -1685,6 +1688,36 @@ inductive Key where
   `δ·slack < Σ_X (δ|X| − (δs+1)E(X))` over the canonical pieces, and the heavy pieces
   (`(δs+1)E(X) < δ|X|`) are nonempty. -/
   | route8PiecewiseRate
+  /-- Key `9800` (packing exchange, rate arm): for every `Q ⊆ P₀` and every window packing `W`
+  of G whose members lie in `(⋃ Q) ∪ R`, `|W| ≤ |Q|` (`W ∪ (P₀ \ Q)` is a packing). -/
+  | route8PackingExchange
+  /-- Key `9801` (packing exchange, rate arm): at a window of `P₀`, two disjoint arms in `R`
+  (induced paths ending at `x ~ p i`, `y ~ p j`) with disjoint runs of positions ending at `i`,
+  `j`, of complementary sizes, whose only arm–run edges are `x p i`, `y p j`, do not exist. -/
+  | route8ArmExchange
+  /-- Key `9802` (packing exchange, rate arm): two arms on `order − 1` vertices in `R` landing
+  at distinct positions of one window of `P₀`, each meeting its landing vertex only at its end,
+  intersect. -/
+  | route8FullArmLandingCap
+  /-- Key `9803` (hub-piece mass, rate arm): over the negative hub pieces `X` of `R`,
+  `m(X) = |X| + s·σ_X − s·def⁺(X) ≤ F·s·σ_X`, and `Σ m(X) ≤ F·s·Σ σ_X ≤ F·s·σ(G)`. -/
+  | route8HubPieceMass
+  /-- Key `9804` (net-cap excess, rate arm): under `SufficientlyLargeForNetCap`,
+  `L + s·δ·slack < (δs+1)·(|R| − s·|∂R|)` (keys `222` and `9902`); at `spineData`,
+  `13(|R| − 4|∂R|) > 60p + 384T + K`. -/
+  | route8NetCapExcess
+  /-- Key `9805` (clean landings, rate arm): on a placed window of `P₀`, long landings of
+  distinct pieces share a position or occupy `{0,1}` or `{W−2,W−1}`; two clean landings at one
+  position `e` with `a + b ≥ W − 1` exclude a third piece's clean landing with a run avoiding
+  `e`. -/
+  | route8CleanLandingRules
+  /-- Key `9806` (clean landings, rate arm): `Λ(P) ≤ (δ−1) + σ_P` per placed window of `P₀`,
+  and `Σ_P Λ(P) ≤ (δ−1)·p + σ_W` for every placement system. -/
+  | route8CleanLandingCap
+  /-- Key `9807` (arm-closure residual, rate arm): for every placement system and every `c`,
+  `L + s·δ·slack − c·((δ−1)p + σ_W) < Σ_{δ(X)>0} (a·δ(X) − c·ν(X))`; at `spineData`, `c = 30`:
+  `384T + K − 30σ_W < Σ_{δ(X)>0} (13δ(X) − 30ν(X))`. -/
+  | route8ArmClosureResidual
   -- Type B sublinear audit keys (8300–8349)
   /-- G audit of `TypeBSublinearOutcome`, `prop:typeB-bridge-sublinear`: **the
   tested hypotheses in G's canonical form** -- every existential is pinned to a
@@ -2927,6 +2960,22 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8PieceChainCycleStatement data.toParameters object
   | .route8PiecewiseRate, object =>
       Route8PiecewiseRateStatement data.toParameters object
+  | .route8PackingExchange, object =>
+      Route8PackingExchangeStatement data.toParameters object
+  | .route8ArmExchange, object =>
+      Route8ArmExchangeStatement data.toParameters object
+  | .route8FullArmLandingCap, object =>
+      Route8FullArmLandingCapStatement data.toParameters object
+  | .route8HubPieceMass, object =>
+      Route8HubPieceMassStatement data.toParameters object
+  | .route8NetCapExcess, object =>
+      Route8NetCapExcessStatement data.toParameters object
+  | .route8CleanLandingRules, object =>
+      Route8CleanLandingRulesStatement data.toParameters object
+  | .route8CleanLandingCap, object =>
+      Route8CleanLandingCapStatement data.toParameters object
+  | .route8ArmClosureResidual, object =>
+      Route8ArmClosureResidualStatement data.toParameters object
   | .typeBSublinearCanonicalForm, object =>
       TypeBSublinearCanonicalFormStatement data.toParameters object
   | .groupedAbsorbedCoreSubset, object =>
@@ -3667,6 +3716,14 @@ def label : Key → String
   | .route8PieceWindowAttachment => "route8PieceWindowAttachment"
   | .route8PieceChainCycle => "route8PieceChainCycle"
   | .route8PiecewiseRate => "route8PiecewiseRate"
+  | .route8PackingExchange => "route8PackingExchange"
+  | .route8ArmExchange => "route8ArmExchange"
+  | .route8FullArmLandingCap => "route8FullArmLandingCap"
+  | .route8HubPieceMass => "route8HubPieceMass"
+  | .route8NetCapExcess => "route8NetCapExcess"
+  | .route8CleanLandingRules => "route8CleanLandingRules"
+  | .route8CleanLandingCap => "route8CleanLandingCap"
+  | .route8ArmClosureResidual => "route8ArmClosureResidual"
   | .typeBSublinearCanonicalForm => "typeBSublinearCanonicalForm"
   | .groupedAbsorbedCoreSubset => "groupedAbsorbedCoreSubset"
   | .typeBSublinearFailureArms => "typeBSublinearFailureArms"
@@ -4226,6 +4283,14 @@ example : label .route8QuotientEntriesAtG = "route8QuotientEntriesAtG" := rfl
 example : label .route8PieceWindowAttachment = "route8PieceWindowAttachment" := rfl
 example : label .route8PieceChainCycle = "route8PieceChainCycle" := rfl
 example : label .route8PiecewiseRate = "route8PiecewiseRate" := rfl
+example : label .route8PackingExchange = "route8PackingExchange" := rfl
+example : label .route8ArmExchange = "route8ArmExchange" := rfl
+example : label .route8FullArmLandingCap = "route8FullArmLandingCap" := rfl
+example : label .route8HubPieceMass = "route8HubPieceMass" := rfl
+example : label .route8NetCapExcess = "route8NetCapExcess" := rfl
+example : label .route8CleanLandingRules = "route8CleanLandingRules" := rfl
+example : label .route8CleanLandingCap = "route8CleanLandingCap" := rfl
+example : label .route8ArmClosureResidual = "route8ArmClosureResidual" := rfl
 example : label .typeBSublinearCanonicalForm = "typeBSublinearCanonicalForm" := rfl
 example : label .groupedAbsorbedCoreSubset = "groupedAbsorbedCoreSubset" := rfl
 example : label .typeBSublinearFailureArms = "typeBSublinearFailureArms" := rfl
@@ -4767,6 +4832,14 @@ def idx : Key → Nat
   | .route8PieceWindowAttachment => 9900
   | .route8PieceChainCycle => 9901
   | .route8PiecewiseRate => 9902
+  | .route8PackingExchange => 9800
+  | .route8ArmExchange => 9801
+  | .route8FullArmLandingCap => 9802
+  | .route8HubPieceMass => 9803
+  | .route8NetCapExcess => 9804
+  | .route8CleanLandingRules => 9805
+  | .route8CleanLandingCap => 9806
+  | .route8ArmClosureResidual => 9807
   | .typeBSublinearCanonicalForm => 8300
   | .groupedAbsorbedCoreSubset => 8301
   | .typeBSublinearFailureArms => 8302
@@ -5304,6 +5377,14 @@ def ofIdx : Nat → Key
   | 9900 => .route8PieceWindowAttachment
   | 9901 => .route8PieceChainCycle
   | 9902 => .route8PiecewiseRate
+  | 9800 => .route8PackingExchange
+  | 9801 => .route8ArmExchange
+  | 9802 => .route8FullArmLandingCap
+  | 9803 => .route8HubPieceMass
+  | 9804 => .route8NetCapExcess
+  | 9805 => .route8CleanLandingRules
+  | 9806 => .route8CleanLandingCap
+  | 9807 => .route8ArmClosureResidual
   | 8300 => .typeBSublinearCanonicalForm
   | 8301 => .groupedAbsorbedCoreSubset
   | 8302 => .typeBSublinearFailureArms
@@ -6292,6 +6373,22 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8PieceChainCycle") 9901
   | .route8PiecewiseRate =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8PiecewiseRate") 9902
+  | .route8PackingExchange =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8PackingExchange") 9800
+  | .route8ArmExchange =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8ArmExchange") 9801
+  | .route8FullArmLandingCap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8FullArmLandingCap") 9802
+  | .route8HubPieceMass =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8HubPieceMass") 9803
+  | .route8NetCapExcess =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8NetCapExcess") 9804
+  | .route8CleanLandingRules =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8CleanLandingRules") 9805
+  | .route8CleanLandingCap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8CleanLandingCap") 9806
+  | .route8ArmClosureResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8ArmClosureResidual") 9807
   | .typeBSublinearCanonicalForm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBSublinearCanonicalForm") 8300
   | .groupedAbsorbedCoreSubset =>

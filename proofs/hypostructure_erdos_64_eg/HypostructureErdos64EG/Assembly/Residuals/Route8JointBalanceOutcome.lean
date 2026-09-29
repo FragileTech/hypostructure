@@ -191,6 +191,14 @@ theorem route8JointBalanceProductReturn
     [FactKeys.Has (K .route8PieceWindowAttachment) known]
     [FactKeys.Has (K .route8PieceChainCycle) known]
     [FactKeys.Has (K .route8PiecewiseRate) known]
+    [FactKeys.Has (K .route8PackingExchange) known]
+    [FactKeys.Has (K .route8ArmExchange) known]
+    [FactKeys.Has (K .route8FullArmLandingCap) known]
+    [FactKeys.Has (K .route8HubPieceMass) known]
+    [FactKeys.Has (K .route8NetCapExcess) known]
+    [FactKeys.Has (K .route8CleanLandingRules) known]
+    [FactKeys.Has (K .route8CleanLandingCap) known]
+    [FactKeys.Has (K .route8ArmClosureResidual) known]
     (entry : Route8LaneEntry selected)
     (continuation : NetChargeContinuation selected) :
     Route8JointBalanceOutcome_product selected :=
