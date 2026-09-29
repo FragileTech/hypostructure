@@ -61,7 +61,7 @@ Status legend: `x` accounted; `~` partially accounted; `gap` present at G but un
 | C08 | Induced paths and hereditary exclusion | Presence of an induced path or membership in a path-free class. | x | 13, 14, 77, 47, 49, 48 | witness; exclusion; bound | T06 T07 | - |
 | C09 | Packing number of a fixed pattern | Maximum disjoint family of pattern copies. | x | 14, 17, 67 | bound; decomposition | T06 | - |
 | C10 | Structure of a packing remainder | Graph left after deleting a maximal packed family. | x | 77, 47, 51, 41, 80, 87, 48 | exclusion; bound; decomposition | T06 T13 | - |
-| C11 | Serial corridors and path increments | Ordered path alternatives with base lengths and increments. | ~ | 88, 89, 90, 91 | classification (ordered corridor segments, first repeat, right <= stateBound) | T08 T09 | Ordered corridor with first-failure position is certified. Missing: path-length increments, i.e. base length |C_eps| up to left and the increment (right - left) as lengths, combined with the accepted set (LengthOK) and returnAvoidance; certificate = identity on lengths. |
+| C11 | Serial corridors and path increments | Ordered path alternatives with base lengths and increments. | ~ | 88, 89, 90, 91 | classification (ordered corridor segments, first repeat, right <= stateBound) | T08 T09 | Ordered corridor with first-failure position is certified. Missing: path-length increments, i.e. base length \|C_eps\| up to left and the increment (right - left) as lengths, combined with the accepted set (LengthOK) and returnAvoidance; certificate = identity on lengths. |
 | C12 | Endpoint and attachment constraints | Allowed external contacts at path endpoints and interiors. | x | 39, 38, 49, 40, 7 | identity; bound; classification | T07 | - |
 | C13 | Simultaneous path realizability | Joint disjointness, endpoint compatibility, and simplicity. | x | 20, 37, 39, 36 | exclusion | T08 T10 | - |
 
@@ -113,7 +113,7 @@ Status legend: `x` accounted; `~` partially accounted; `gap` present at G but un
 |---|---|---|---|---|---|---|---|
 | G01 | Size of a labelled graph class | Count at fixed order, size, degree data, or decomposition. | x | 68, 92, 98, 70, 71 | identity; bound | T12 | - |
 | G02 | Number of legal local states | Cardinality of attachment, interface, or neighborhood types. | x | 39, 89, 67, 38 | bound (stateBound, interfaceWidth, bits per window); classification (legal labels) | T12 T17 | Also touched (nonG, not counted): 15 `localAlgebra`, 66 `barrierEnumeration`, 2 `cubicBaseline` parameter conjuncts |
-| G03 | Conditional information of local tests | Logarithm of conditional fibre sizes. | x | 67, 71, 72, 70 | bound (rate*scales <= bits; rate*|hot| <= allowance) | T12 | - |
+| G03 | Conditional information of local tests | Logarithm of conditional fibre sizes. | x | 67, 71, 72, 70 | bound (rate*scales <= bits; rate*\|hot\| <= allowance) | T12 | - |
 | G04 | Dominant or repetitive local type | Largest fibre in a finite partition. | x | 72, 69, 91, 71 | bound; witness (repeated state) | T12 | - |
 | G05 | Additivity versus correlation | Joint state count compared with conditional products. | x | 67, 92, 70, 98, 99 | identity (family.card = bits*nu); bound | T12 | - |
 | G06 | Injective reconstruction from local data | Map from decomposition states to labelled graphs. | x | 63, 67, 68 | exclusion (label-injective); bound (range <= budget) | T12 T15 | - |
@@ -146,18 +146,6 @@ Status legend: `x` accounted; `~` partially accounted; `gap` present at G but un
 | I04 | Small-order residual | Finite orders outside an asymptotic argument. | ~ | 100, 99 | exclusion (n < N0) on the realized arm only | T12 T17 | The cutoff n < N0 is certified on the realized arm only, with no finite enumeration/verifier of the orders below N0 (N0 is not computed). On the two dense arms the asymptotic 'sufficiently large n' is replaced by the exact inequality coldMassLinear, so no small-order residual is recorded there. |
 | I05 | Reproducible computational certificate | Input schema, generator, verifier, and semantic theorem. | nonG | - | - | T17 | Touched only by parameter-only facts: cubicBaseline's parameter conjuncts (window rate = binaryRateFloor of the barrier table, label census), localAlgebra (399-label census) and barrierEnumeration (safe/flat counts of the registered table). None mentions G. G-constructed replacement: the audited window rate and label census stated at G's windows, i.e. windowAttachmentGap's labels of P0 placed in G with the rate read from the table by a verified generator (input schema, generator, verifier, semantic theorem linking to G's windows). |
 | I06 | External structure theorem | Exact hypotheses and conclusion of an imported result. | x | 2 | implication stated at G and at every induced subgraph of G (the HSS closure law): min deg >= 3 and induced-P13-free implies an accepted cycle | T18 | - |
-
-## Table 2 — Facts of the residual → structural coordinates
-
-
-## Table 2 - Facts of the residual to structural coordinates
-
-Coordinates ending in `~` are partial in Table 1. `[nonG, not counted]` lists coordinates only touched through an object outside G.
-
-
-## Table 2 - Facts of the residual to structural coordinates
-
-Coordinates ending in `~` are partial in Table 1. `[nonG, not counted]` lists coordinates only touched through an object outside G.
 
 
 ## Table 2 - Facts of the residual to structural coordinates
@@ -269,11 +257,11 @@ Coordinates ending in `~` are partial in Table 1. `[nonG, not counted]` lists co
 
 ## 4. Gaps ranked (joint check)
 
-Ranking: number of existing facts (from the 100) that would be combined with the coordinate once it is measured; ties broken by pair-level relevance. Both `gap` rows (C07, H10) and all 16 `~` rows are ranked, plus the `~` and `gap` reasons. Technique codes T01-T19 as in the register.
+Ranking: number of existing facts (from the 100) that would be combined with the coordinate once it is measured; ties broken by pair-level relevance. Both `gap` rows (C07, H10) and all 16 `~` rows are ranked (18 rows: the 2 gaps and 16 partials). Technique codes T01-T19 as in the register.
 
-| Rank | Coordinate | Status | Why present at G (fact or canonical object) | Missing observable and certificate | Technique | Existing facts it would combine with (count) |
+| Rank | Coordinate | Status | Present at G / what is already certified | Missing observable and certificate | Technique | Existing facts it would combine with (count) |
 |---|---|---|---|---|---|---|
-| 1 | C11 | ~ | Ordered corridor with first-failure position is certified. | corridor base length and length increment right-left against LengthOK; identity on lengths: |C_eps| up to left and up to right, and the increment, against the accepted set | T08+T09 | 15: 4 `returnAvoidance`, 34 `cutVertexBlockPaths`, 56 `lowEdgeParity`, 29 `starCycleConstraint`, 30 `meetingCycleConstraint`, 47 `remainderPathBounds`, 89 `coldCorridorState`, 91 `coldRepeatedStateResidual`, 90 `coldFirstFailureOccurrence`, 88 `coldReturnCorridors`, 22 `sameVertexSwitchForcedPath`, 19 `twoSwitchForcedPath`, 20 `crossSwitchFamily`, 36 `threeRouteFan`, 37 `threeRouteChain` |
+| 1 | C11 | ~ | Ordered corridor with first-failure position is certified. | corridor base length and length increment right-left against LengthOK; identity on lengths: \|C_eps\| up to left and up to right, and the increment, against the accepted set | T08+T09 | 15: 4 `returnAvoidance`, 34 `cutVertexBlockPaths`, 56 `lowEdgeParity`, 29 `starCycleConstraint`, 30 `meetingCycleConstraint`, 47 `remainderPathBounds`, 89 `coldCorridorState`, 91 `coldRepeatedStateResidual`, 90 `coldFirstFailureOccurrence`, 88 `coldReturnCorridors`, 22 `sameVertexSwitchForcedPath`, 19 `twoSwitchForcedPath`, 20 `crossSwitchFamily`, 36 `threeRouteFan`, 37 `threeRouteChain` |
 | 2 | A11 | ~ | Boundary degree deficit is quantified at the remainder R and its pieces. | boundary-degree deficit at the cut of J_right for each of the two readings; identity/bound: def(boundary J_right; reading) for left and right readings, and their difference | T05+T13 | 14: 78 `boundaryDemand`, 79 `stubSupply`, 80 `wedgeSupply`, 24 `remainderDeficiencyBelowCut`, 87 `netChargeLocalization`, 74 `coldStubExcess`, 76 `coldSelectedBranchExcess`, 88 `coldReturnCorridors`, 91 `coldRepeatedStateResidual`, 9 `degreeProfileFibres`, 40 `portEndDegree`, 27 `singleBoundaryShape`, 95 `coldMassLinear`, 64 `surplusAtOrBelow` |
 | 3 | E06 | ~ | Fact degreeProfileFibres says that for admissible target-complete quotients, different boundary-degree profiles are never identified. | quotient distinguishability of the cold cut-state map on (left,right); certificate: the cold cut-state map is an admissible functional target-complete quotient of the readings of J_right (classification), or an exhibited G-Z response on which the two readings differ (witness) | T05+T16 | 13: 9 `degreeProfileFibres`, 10 `targetCompleteContextUniversality`, 63 `admissibleQuotientsLabelInjective`, 89 `coldCorridorState`, 91 `coldRepeatedStateResidual`, 90 `coldFirstFailureOccurrence`, 11 `replacementExclusion`, 12 `uncompressible`, 67 `windowPackageSeparated`, 81 `curvatureTargetRank`, 83 `targetRankCircuit`, 23 `specWitnessStructure`, 16 `everyWitnessSpectrumSplit` |
 | 4 | B07 | ~ | Agreement/disagreement of two boundaried readings in every compatible context is certified only as a uniform negative (no reading glued into G-Z gives an accepted cycle) and for admissible quotients. | response of the two readings of J_right in G-Z (the swap of G at Z=J_right and its canonical degree deficit); identity: canonical degree deficit of the swap of G at Z=J_right and its cycle-length response in G-Z | T05+T10 | 11: 9 `degreeProfileFibres`, 10 `targetCompleteContextUniversality`, 16 `everyWitnessSpectrumSplit`, 23 `specWitnessStructure`, 63 `admissibleQuotientsLabelInjective`, 91 `coldRepeatedStateResidual`, 89 `coldCorridorState`, 11 `replacementExclusion`, 12 `uncompressible`, 18 `noSuppressionChordViolation`, 4 `returnAvoidance` |
@@ -283,12 +271,12 @@ Ranking: number of existing facts (from the 100) that would be combined with the
 | 8 | D09 | ~ | Compatibility of gluing is certified as the negative (no accepted cycle) in G-Z. | realizability/uniqueness of the canonical second representative E glued into G-Z; classification: E realized (or excluded) as a piece of G-Z with the retained cut-state read | T05+T16 | 9: 10 `targetCompleteContextUniversality`, 16 `everyWitnessSpectrumSplit`, 89 `coldCorridorState`, 23 `specWitnessStructure`, 91 `coldRepeatedStateResidual`, 11 `replacementExclusion`, 12 `uncompressible`, 18 `noSuppressionChordViolation`, 86 `bridgeless` |
 | 9 | F08 | ~ | The first repetition of the boundary response is certified. | periodicity of the response under the increment right-left; identity: response of the corridor is invariant under the increment (period), or its failure | T09+T12 | 9: 4 `returnAvoidance`, 34 `cutVertexBlockPaths`, 56 `lowEdgeParity`, 89 `coldCorridorState`, 91 `coldRepeatedStateResidual`, 90 `coldFirstFailureOccurrence`, 47 `remainderPathBounds`, 29 `starCycleConstraint`, 30 `meetingCycleConstraint` |
 | 10 | B04 | ~ | Disjoint-path structure is certified only at single vertices h (star, meeting, fan, chain) and per corridor entry. | Menger number between head(left), head(right) and cold boundary stubs; bound: number of internally disjoint paths | T08+T10 | 8: 29 `starCycleConstraint`, 30 `meetingCycleConstraint`, 20 `crossSwitchFamily`, 36 `threeRouteFan`, 37 `threeRouteChain`, 88 `coldReturnCorridors`, 32 `vertexDeletionComponents`, 34 `cutVertexBlockPaths` |
-| 11 | H07 | ~ | A cut inequality and a Hall-type count are certified; no integral flow assigning cold stubs (supply) to deficits (demand) through the cold-window/outside incidence network is on the ledger.. | integral flow cold stubs -> deficits over the cold-window/outside incidence network; identity: integral flow (or Hall matching) with value >= demand | T14 | 6: 25 `windowCutCapacity`, 44 `closedClasses`, 88 `coldReturnCorridors`, 76 `coldSelectedBranchExcess`, 78 `boundaryDemand`, 74 `coldStubExcess` |
+| 11 | H07 | ~ | A cut inequality and a Hall-type count are certified; no integral flow assigning cold stubs (supply) to deficits (demand) through the cold-window/outside incidence network is on the ledger. | integral flow cold stubs -> deficits over the cold-window/outside incidence network; identity: integral flow (or Hall matching) with value >= demand | T14 | 6: 25 `windowCutCapacity`, 44 `closedClasses`, 88 `coldReturnCorridors`, 76 `coldSelectedBranchExcess`, 78 `boundaryDemand`, 74 `coldStubExcess` |
 | 12 | D05 | ~ | The overlap of cold germ supports (the F5 germ family, with cross-window exchanges) enters coldMassLinear only through the constant overlapBound. | intersection graph of cold germ supports; classification of overlaps (constant overlapBound attained/bounded) | T10+T15 | 6: 95 `coldMassLinear`, 76 `coldSelectedBranchExcess`, 44 `closedClasses`, 67 `windowPackageSeparated`, 89 `coldCorridorState`, 88 `coldReturnCorridors` |
 | 13 | D06 | ~ | Minimal connected support is certified for clause-(b) witnesses of G and replacement supports. | minimality of the interval support of the failing pair; exclusion: no smaller connected support carries the failure | T10 | 6: 23 `specWitnessStructure`, 11 `replacementExclusion`, 12 `uncompressible`, 89 `coldCorridorState`, 90 `coldFirstFailureOccurrence`, 91 `coldRepeatedStateResidual` |
-| 14 | E07 | ~ | Canonical choices are constructed (canonical witness, lexicographically selected corridor, Precedes-least representative, canonical support), but no secondary order/descent statement on equal-size decompositions is on the ledger (selection's third-coordinate refinedMinimal is a nonG clause).. | secondary order/descent on canonical choices; bound: strict descent in the canonical order | T16 | 5: 91 `coldRepeatedStateResidual`, 89 `coldCorridorState`, 23 `specWitnessStructure`, 69 `hotColdPartition`, 14 `maximalPacking` |
+| 14 | E07 | ~ | Canonical choices are constructed (canonical witness, lexicographically selected corridor, Precedes-least representative, canonical support), but no secondary order/descent statement on equal-size decompositions is on the ledger (selection's third-coordinate refinedMinimal is a nonG clause). | secondary order/descent on canonical choices; bound: strict descent in the canonical order | T16 | 5: 91 `coldRepeatedStateResidual`, 89 `coldCorridorState`, 23 `specWitnessStructure`, 69 `hotColdPartition`, 14 `maximalPacking` |
 | 15 | A04 | ~ | Minimum degree is exact (=3 on tight endpoints). | maximum degree d_max(G) <= 3+T(n) at corridor heads; bound | T01 | 4: 64 `surplusAtOrBelow`, 7 `tightEndpoint`, 6 `slackIndependent`, 91 `coldRepeatedStateResidual` |
-| 16 | E08 | ~ | A peeling order of R exists (remainderPathBounds last clause) but no removable unit preserving a residual invariant (cold demand, state) along the corridor is certified.. | removable unit preserving a residual invariant; bound: one-unit peel preserving cold mass | T19 | 3: 47 `remainderPathBounds`, 90 `coldFirstFailureOccurrence`, 95 `coldMassLinear` |
+| 16 | E08 | ~ | A peeling order of R exists (remainderPathBounds last clause) but no removable unit preserving a residual invariant (cold demand, state) along the corridor is certified. | removable unit preserving a residual invariant; bound: one-unit peel preserving cold mass | T19 | 3: 47 `remainderPathBounds`, 90 `coldFirstFailureOccurrence`, 95 `coldMassLinear` |
 | 17 | C06 | ~ | Ears are certified only as suppression/return paths at single edges and per-stub corridors. | ear decomposition of G / outside component; classification | T04+T08 | 3: 18 `noSuppressionChordViolation`, 88 `coldReturnCorridors`, 86 `bridgeless` |
 | 18 | I04 | ~ | The cutoff n < N0 is certified on the realized arm only, with no finite enumeration/verifier of the orders below N0 (N0 is not computed). | enumeration of orders n < N0 on the realized arm; finite verifier | T17 | 2: 100 `realizedOrderSmall`, 99 `realizedDensityOrder` |
 
@@ -312,7 +300,7 @@ Reading of the ranking: the top of the list clusters into two groups that a clos
 ## 6. Cross-check results
 
 1. Every coordinate code in Table 2 has status x or ~ in Table 1 and lists that fact: **pass** (Table 2 is generated as the inversion of Table 1, and checked in both directions).
-2. Every x or ~ in Table 1 cites at least one Table-2 row: **pass** (80 x/~ rows, each with 3 to 11 facts, all fact numbers valid).
+2. Every x or ~ in Table 1 cites at least one Table-2 row: **pass** (80 x/~ rows, each with at least one fact (1 to 11), all fact numbers valid).
 3. Every Table-2 row accounts for at least one coordinate or is labelled bookkeeping: **pass for 98 of 100 rows; rows 15 (`localAlgebra`) and 66 (`barrierEnumeration`) account for no coordinate by construction** (nonG-only rows; they are not bookkeeping, they are the two facts the G-only rule excludes; their replacement is recorded in section 5). Rows 1, 2 and 65 are partly nonG and earn coordinates only through their G conjuncts (C03/I06/C03,E04,E05,E09). No pure bookkeeping row exists.
 4. No fact counted twice for the same demand in different currencies: **pass, with three same-currency redundancies flagged (not currency conflicts).** (a) Fact 78 `boundaryDemand` restates facts 24 `remainderDeficiencyBelowCut` and 25 `windowCutCapacity` (def+(R) <= e(R,W) <= 15 nu + sigma_W): one demand, one currency (edges/deficiency); on A10/A11/H06 it is counted through the same chain, and stubSupply (79) spends it against T(n). (b) Facts 93 `denseDeficiencyAtOrAbove` and 96 `denseDeficiencyBelow` are complements and 92 / 98 (`windowPackageUnrealized` / `Realized`) are complements: never both in one arm, listed together on G09/H09/G05/I03 only because the union spans the arms. (c) Fact 85 `forcedCurvatureCost` is fact 80's (`wedgeSupply`) demand floor with fact 84's rank substituted (H01, A09, F02): the same wedge demand priced once in cost units c_Omega, not a second demand. The currencies used are distinct: edges/degree (A, B), lengths (C), local states/bits (G), charge/surplus (H), cold stubs (B09/D04/G07/H06); no demand is charged to two of them.
 
@@ -341,18 +329,23 @@ Reading of the ranking: the top of the list clusters into two groups that a clos
 | T19 | Peeling and finite descent | Remove one certified unit while preserving a decreasing invariant. |
 
 
-## After the G audit (re-accounting)
+## Correction and after-audit note (G audit)
 
-The residual no longer exists.  Its defining failure was routing: the ¬(★) arm of
-`[153]` (G's first repeated cut state, the (F5) repeat subcase) stopped where
-`lem:cold-corridor-first-failure` continues into the germ routing.  It now runs the
-germ path (`[154]` G1/G2/G3, `[157]`) and is returned inside `[187]`
-(`ColdBranchClosedOutcome`, subtypes `..._linearDenseAtOrAbove_repeated` and
-`..._linearDenseRateFailed_repeated`, which carry `K .coldRepeatedStateResidual`
-as one more fact of the same ledger); on the realized arm no consumer reads (★),
-so the split is removed.  No new fact was added and no coordinate changed: the
-gaps above (2 `gap`, 16 `~`) concern the upstream ledger that `[187]` inherits
-and are `[187]`'s to close.  The `nonG` items (`selection` clause ii,
-`cubicBaseline` parameter conjuncts, `localAlgebra`, `sparseSurplusSurvivor`
-exit (d), `barrierEnumeration`) are upstream generic facts common to every
-residual and are not on this residual's own path.
+- `selection` clause (ii) (minimality over strictly smaller graphs) is legitimate
+  minimality, not `nonG` (coordinator ruling).  Read fact 1 and coordinate E01
+  as `x`, not `nonG`; the remaining `nonG` items are `cubicBaseline` parameter
+  conjuncts, `localAlgebra`, `sparseSurplusSurvivor` exit (d) and
+  `barrierEnumeration`.
+- The residual no longer exists.  Its defining failure was routing: the ¬(★)
+  arm of `[153]` (G's first repeated cut state, the (F5) repeat subcase) stopped
+  where `lem:cold-corridor-first-failure` continues into the germ routing.  It
+  now runs the germ path (`[154]`, `[157]`) and is returned inside `[187]`
+  (`ColdBranchClosedOutcome_linearDense{AtOrAbove,RateFailed}_repeated`, carrying
+  `K .coldRepeatedStateResidual`); on the realized arm no consumer reads (★),
+  so the split is removed.  The ranked gaps above (C11, A11, E06, B07, C07) concern
+  the upstream ledger `[187]` inherits.
+- Canonical choices upstream of every cold fact: the fixed maximum packing `P₀`
+  (`canonicalWindowPacking`) and the hot family (`canonicalHotWindows`) were
+  `Classical.choose` of an existence proof.  They are now the lexicographically
+  least such family in G's vertex order (`FiniteObject.lexLeast`,
+  `Graph/CanonicalLexFamily.lean`).

@@ -1,3 +1,4 @@
+import Hypostructure.Graph.CanonicalLexFamily
 import Hypostructure.Graph.Statements.Parameters
 import Hypostructure.Graph.Statements.CanonicalSurplus
 
@@ -339,12 +340,32 @@ noncomputable def windowPackageBits (data : Parameters)
       Core.Finite.CertifiedTableAggregation.flatProduct data.windowBarrier.table ^
         data.separatedScaleCount object.vertexCount)
 
+/-- The maximum window packings of the object: the candidate set from which the
+manuscript fixes `P₀`. -/
+noncomputable def maximumWindowPackings (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Finset (Finset (Finset object.Vertex)) := by
+  classical
+  exact object.vertexFinset.powerset.powerset.filter fun packing =>
+    object.IsWindowPacking data.windowOrder packing ∧
+      packing.card = object.windowPackingNumber data.windowOrder
+
+theorem maximumWindowPackings_nonempty (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : (maximumWindowPackings data object).Nonempty := by
+  classical
+  obtain ⟨packing, valid, attains⟩ := object.exists_windowPacking_card_eq data.windowOrder
+  refine ⟨packing, ?_⟩
+  unfold maximumWindowPackings
+  rw [Finset.mem_filter, Finset.mem_powerset]
+  exact ⟨fun window _ => Finset.mem_powerset.2 fun vertex _ =>
+    object.mem_vertexFinset vertex, valid, attains⟩
+
 /-- The manuscript fixes one maximal packing before splitting it.  This is the
-canonical finite choice of that packing, hence every later key names the same
-family without transporting a witness outside the ledger. -/
+lexicographically least maximum window packing in G's own vertex order
+(`FiniteObject.lexLeast`), hence every later key names the same family, fixed
+by G's data alone. -/
 noncomputable def canonicalWindowPacking (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Finset (Finset object.Vertex) :=
-  Classical.choose (object.exists_windowPacking_card_eq data.windowOrder)
+  object.lexLeast (maximumWindowPackings data object)
 
 /-- **The canonical packing `P₀` is a maximum, hence maximal, window packing**
 (nodes `[15]`--`[17]`, tex 6573/6581): it is valid, it attains the packing
@@ -357,8 +378,15 @@ theorem canonicalWindowPacking_spec (data : Parameters)
       ∀ window : Finset object.Vertex,
         object.InducesWindow data.windowOrder window →
           ∃ member ∈ canonicalWindowPacking data object, ¬ Disjoint window member := by
-  have packingSpec := Classical.choose_spec
-    (object.exists_windowPacking_card_eq data.windowOrder)
+  classical
+  have member := object.lexLeast_mem (maximumWindowPackings data object)
+    (maximumWindowPackings_nonempty data object)
+  have packingSpec : object.IsWindowPacking data.windowOrder
+      (canonicalWindowPacking data object) ∧
+      (canonicalWindowPacking data object).card =
+        object.windowPackingNumber data.windowOrder := by
+    unfold maximumWindowPackings at member
+    exact (Finset.mem_filter.1 member).2
   exact ⟨packingSpec.1, packingSpec.2, fun window induces =>
     object.exists_mem_not_disjoint_of_card_eq data.windowOrder_pos
       packingSpec.1 packingSpec.2 induces⟩
@@ -463,11 +491,49 @@ theorem exists_maximal_windowFamilyRealized (data : Parameters)
               remainderStates data object (canonicalWindowPacking data object) :=
             Nat.mul_le_mul_right _ Nat.one_le_two_pow
 
-/-- `𝒫_hot`: the canonical maximal subfamily of the fixed packing retained in
-the canonical entropy comparison. -/
+/-- The maximal retained subfamilies of the fixed packing: the candidate set
+from which the canonical entropy comparison takes `𝒫_hot`. -/
+noncomputable def maximalRetainedFamilies (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Finset (Finset (Finset object.Vertex)) := by
+  classical
+  exact (canonicalWindowPacking data object).powerset.filter fun hot =>
+    (WindowFamilyRealized data object hot ∨
+        (hot = ∅ ∧ ¬ WindowFamilyRealized data object ∅)) ∧
+      ∀ other : Finset (Finset object.Vertex),
+        other ⊆ canonicalWindowPacking data object →
+          WindowFamilyRealized data object other → other.card ≤ hot.card
+
+theorem maximalRetainedFamilies_nonempty (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : (maximalRetainedFamilies data object).Nonempty := by
+  classical
+  obtain ⟨hot, subset, realized, maximal⟩ := exists_maximal_windowFamilyRealized data object
+  refine ⟨hot, ?_⟩
+  unfold maximalRetainedFamilies
+  rw [Finset.mem_filter, Finset.mem_powerset]
+  exact ⟨subset, realized, maximal⟩
+
+/-- `𝒫_hot`: the maximal subfamily of the fixed packing retained in the
+canonical entropy comparison, the lexicographically least such family in G's
+own vertex order (`FiniteObject.lexLeast`). -/
 noncomputable def canonicalHotWindows (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Finset (Finset object.Vertex) :=
-  Classical.choose (exists_maximal_windowFamilyRealized data object)
+  object.lexLeast (maximalRetainedFamilies data object)
+
+theorem canonicalHotWindows_spec (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    canonicalHotWindows data object ⊆ canonicalWindowPacking data object ∧
+      (WindowFamilyRealized data object (canonicalHotWindows data object) ∨
+        (canonicalHotWindows data object = ∅ ∧ ¬ WindowFamilyRealized data object ∅)) ∧
+      ∀ other : Finset (Finset object.Vertex),
+        other ⊆ canonicalWindowPacking data object →
+          WindowFamilyRealized data object other →
+            other.card ≤ (canonicalHotWindows data object).card := by
+  classical
+  have member := object.lexLeast_mem (maximalRetainedFamilies data object)
+    (maximalRetainedFamilies_nonempty data object)
+  unfold maximalRetainedFamilies at member
+  rw [Finset.mem_filter, Finset.mem_powerset] at member
+  exact ⟨member.1, member.2.1, member.2.2⟩
 
 /-- `𝒫_cold`: the packed windows not retained in the comparison. -/
 noncomputable def canonicalColdWindows (data : Parameters)

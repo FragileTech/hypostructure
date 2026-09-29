@@ -5283,3 +5283,21 @@ terminality claim for the dense residual (bounded diameter of the boundaried
 pieces of `R`) does not reach corridors of `G - X_cold`, so a dense ¬(★) repeat
 germ is a germ the table `[157]` must exclude, which is exactly the content of
 `[187]`.
+
+**Canonical hot family and packing (added to the `[153]` audit).**
+`canonicalWindowPacking` and `canonicalHotWindows` were `Classical.choose` of
+existence proofs, so not fixed by G's data.  New module
+`Hypostructure/Graph/CanonicalLexFamily.lean`: a vertex set is the increasing
+list of its `FinEnum` numbers (G's declared scan order), a family the increasing
+list of its members' lists; the key is injective, hence
+`FiniteObject.lexLeast` (unique least member of a candidate set) is a function of
+G alone.  `canonicalWindowPacking` = `lexLeast` of the maximum window packings
+(`maximumWindowPackings`); `canonicalHotWindows` = `lexLeast` of the maximal
+retained subfamilies of it (`maximalRetainedFamilies`).  Specs are unchanged in
+shape (`canonicalWindowPacking_spec`, new `canonicalHotWindows_spec`);
+consumers that read `Classical.choose_spec` directly (`Rate.lean`,
+`PairSchedule.lean`, `SpineWindows.lean`) now use them, and
+`hotColdPartition_canonical` goes through `isHotColdWindowPartition_of` over
+opaque families.  Facts reading the two families do so by name, so they are
+unchanged; `exists_maximal_windowFamilyRealized` is kept as the nonemptiness
+witness.
