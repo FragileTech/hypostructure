@@ -89,4 +89,24 @@ theorem coldMarkedGermUncompressed_of_trivial (data : Parameters)
     exact absurd (subcubic _ vertexSupport) (Nat.not_le.mpr high)
   · exact Graph.FiniteObject.not_lexicographicallySmaller_of_isomorphic iso
 
+open Classical in
+/-- **F08 at the marked germ.**  `excision_dichotomy` at every path spanning the marked germ's
+support, from the selection (no accepted cycle; minimality for the baseline). -/
+theorem coldMarkedGermStretchExcision_of_neutral (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (neutral : NeutralConfigurationStatement data object)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ X : Graph.FiniteObject.{u}, X.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold X →
+      Graph.HasCycleWithLength data.LengthOK X) :
+    ColdMarkedGermStretchExcisionStatement data object := by
+  obtain ⟨marked, markedEq, _⟩ := markedNeutralGerm?_spec_of_neutral data object neutral
+  refine ⟨marked, markedEq, ?_⟩
+  intro a b p hp hlen _support
+  exact Graph.SpliceLift.excision_dichotomy object p hp hlen
+    (object.vertexFinset.filter (fun v => v ∈ Graph.SpliceLift.interior p))
+    (fun v => by simp [Graph.FiniteObject.vertexFinset]) data.LengthOK avoids
+    (Graph.MinimumDegreeAtLeast data.threshold)
+    (fun X hb hs => minimal X hs hb)
+
 end Hypostructure.Graph.Contracts.Spine

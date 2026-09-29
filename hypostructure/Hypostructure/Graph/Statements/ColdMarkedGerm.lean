@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Statements.ColdGerm
+import Hypostructure.Graph.SpliceLift
 
 /-!
 # Statements: the marked neutral germ measured at G, node `[157]`
@@ -40,5 +41,24 @@ noncomputable def ColdMarkedGermUncompressedStatement (data : Parameters)
       object.edgeCount ∧
     ¬ (Graph.glue marked.2.toPiece marked.1.atom.outside).LexicographicallySmaller
       object
+
+open Classical in
+/-- **F08 at the marked germ: the excision of any path of G spanning its support.**  For every
+path `p : a ⇝ b` of G of length at least `2` whose vertex set is the marked germ's support (the
+corridor stretch `intervalSupport left right` of an (F5) repeat is one), with `D` its interior:
+the excised object (`D` deleted, `a b` joined, strictly smaller) either misses the baseline, or
+G has a cycle of length `L + q` with `L` accepted, `L + q` not accepted, and `q = |p| - 1` the
+shift of the excised stretch. -/
+noncomputable def ColdMarkedGermStretchExcisionStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ marked, markedNeutralGerm? data object = some marked ∧
+    ∀ (a b : object.Vertex) (p : object.graph.Walk a b), p.IsPath → 2 ≤ p.length →
+      (∀ v, v ∈ p.support ↔ v ∈ marked.1.support) →
+      ¬ Graph.MinimumDegreeAtLeast data.threshold
+          (Graph.SpliceLift.spliceObject object a b
+            (object.vertexFinset.filter (fun v => v ∈ Graph.SpliceLift.interior p))) ∨
+        ∃ (L : Nat) (y : object.Vertex) (d : object.graph.Walk y y),
+          data.LengthOK L ∧ ¬ data.LengthOK (L + (p.length - 1)) ∧ d.IsCycle ∧
+            d.length = L + (p.length - 1)
 
 end Hypostructure.Graph.Strategy.Spine
