@@ -346,6 +346,59 @@ theorem route8SupplyLtEntries (data : Parameters) (object : FiniteObject.{u})
   have scaled := Nat.mul_le_mul_left data.threshold bound
   nlinarith
 
+/-- **`prop:typeA-route8-carrier-reduction` at G**: if every unified entry had at
+least `δ` private baseline-essential carriers, the private carrier sets would be
+pairwise disjoint subsets of `∂R`, giving `δ·|Ξ̃| ≤ |∂R|`; so `|∂R| < δ·|Ξ̃|`
+produces a two-support entry. -/
+theorem route8TwoSupportEntryExists (data : Parameters)
+    (object : FiniteObject.{u})
+    (cutSubset : ∀ index ∈ route8UnifiedEntries data object,
+      Graph.Route8.cutEdges object index.1 ⊆
+        Graph.Route8Census.supply object (canonicalWindowPacking data object))
+    (bound : (Route8Census.supply object (canonicalWindowPacking data object)).card <
+      data.threshold * (route8UnifiedEntries data object).card) :
+    Route8TwoSupportEntryExists data object := by
+  classical
+  by_contra none
+  push_neg at none
+  set entries := route8UnifiedEntries data object with hentries
+  have big : ∀ index ∈ entries,
+      data.threshold ≤ (route8EntryPrivateCarriers data object index).card :=
+    fun index mem => by
+      have := none index mem
+      omega
+  have disjoint : ∀ x ∈ entries, ∀ y ∈ entries, x ≠ y →
+      Disjoint (route8EntryPrivateCarriers data object x)
+        (route8EntryPrivateCarriers data object y) := by
+    intro x hx y hy hxy
+    rw [Finset.disjoint_left]
+    intro e ex ey
+    have exC : e ∈ route8EntryCarrierSet data object x := by
+      unfold route8EntryPrivateCarriers at ex
+      exact (Finset.mem_sdiff.mp ex).1
+    have eyC : e ∈ route8EntryCarrierSet data object y := by
+      unfold route8EntryPrivateCarriers at ey
+      exact (Finset.mem_sdiff.mp ey).1
+    unfold route8EntryPrivateCarriers at ex
+    exact (Finset.mem_sdiff.mp ex).2
+      (Finset.mem_biUnion.mpr ⟨y, Finset.mem_erase.mpr ⟨hxy.symm, hy⟩, eyC⟩)
+  have subset : entries.biUnion (route8EntryPrivateCarriers data object) ⊆
+      Route8Census.supply object (canonicalWindowPacking data object) := by
+    intro e he
+    obtain ⟨index, mem, ePriv⟩ := Finset.mem_biUnion.mp he
+    unfold route8EntryPrivateCarriers at ePriv
+    have eC := (Finset.mem_sdiff.mp ePriv).1
+    unfold route8EntryCarrierSet at eC
+    exact cutSubset index mem (Finset.mem_filter.mp eC).1
+  have card := Finset.card_biUnion disjoint
+  have le := Finset.card_le_card subset
+  have lower : data.threshold * entries.card ≤
+      ∑ index ∈ entries, (route8EntryPrivateCarriers data object index).card := by
+    calc data.threshold * entries.card = ∑ _index ∈ entries, data.threshold := by
+          rw [Finset.sum_const, smul_eq_mul, Nat.mul_comm]
+      _ ≤ _ := Finset.sum_le_sum big
+  omega
+
 /-- **Node `[348]`, stated about G**: the quotient test is decided at G. -/
 theorem route8QuotientEntriesAtG (data : Parameters)
     (object : FiniteObject.{u})
@@ -407,7 +460,17 @@ theorem route8QuotientEntriesAtG (data : Parameters)
         cutSubset complete.1 receiverIn receiverInBasin,
       route8InsidePathBound data object three baseline pathBounds index.1
         (by rw [pieceEq]; exact object.pieceSupport_subset _ component) zero⟩
-  refine ⟨?_, route8SupplyLtEntries data object descent deficit rate, ?_⟩
+  have entryCut : ∀ index ∈ route8UnifiedEntries data object,
+      Graph.Route8.cutEdges object index.1 ⊆
+        Graph.Route8Census.supply object (canonicalWindowPacking data object) := by
+    intro index indexMem
+    obtain ⟨component, _componentMem, pieceEq, _receiverMem, _loadMem⟩ :=
+      mem_entriesOfComponents.mp indexMem
+    rw [pieceEq]
+    exact Graph.Route8Census.cutEdges_piece_subset object
+      (canonicalWindowPacking data object) component
+  have supplyLt := route8SupplyLtEntries data object descent deficit rate
+  refine ⟨?_, supplyLt, route8TwoSupportEntryExists data object entryCut supplyLt, ?_⟩
   · constructor
     · intro free
       apply Finset.eq_empty_of_forall_notMem

@@ -205,6 +205,38 @@ abbrev Route8InsidePathBound (object : Graph.FiniteObject.{u})
   ∀ {a b : object.Vertex} (P : object.graph.Walk a b), P.IsPath →
     (∀ x ∈ P.support, x ∈ support) → P.length ≤ 6141
 
+/-- **The baseline-essential carriers of an indexed entry** (`def:typeA-route8-carriers`
+at G): the edges of the cut of the entry's piece that meet its selected basin.
+At G the piece is cubic and the target-essential core is empty, so these are the
+incidences of the basin that cannot be dropped without breaking the degree
+baseline; all lie in `∂R`. -/
+noncomputable def route8EntryCarrierSet (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (index : Graph.Route8Census.Index object) : Finset (Sym2 object.Vertex) := by
+  letI : DecidableEq object.Vertex := Graph.Route8.vertexDecEq object
+  classical
+  exact (Graph.Route8.cutEdges object index.1).filter fun e =>
+    ∃ v ∈ e, v ∈ Graph.Route8Census.basin object data.threshold index
+
+/-- **The private carriers of an entry** inside the unified collection: carriers
+that are carriers of no other entry (`π(ξ)` of `def:typeA-route8-carriers`). -/
+noncomputable def route8EntryPrivateCarriers (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (index : Graph.Route8Census.Index object) : Finset (Sym2 object.Vertex) := by
+  letI : DecidableEq object.Vertex := Graph.Route8.vertexDecEq object
+  classical
+  exact SDiff.sdiff (route8EntryCarrierSet data object index)
+    (((route8UnifiedEntries data object).erase index).biUnion
+      (route8EntryCarrierSet data object))
+
+/-- **`prop:typeA-route8-carrier-reduction` at G**: the unified collection has a
+two-support entry, one with fewer than `δ` private baseline-essential carriers.
+(Otherwise the disjoint private carrier sets give `δ·|Ξ̃| ≤ |∂R|`.) -/
+abbrev Route8TwoSupportEntryExists (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ index ∈ route8UnifiedEntries data object,
+    (route8EntryPrivateCarriers data object index).card + 1 ≤ data.threshold
+
 /-- **Node `[348]`, stated about G** (Lean improvement: the quotient test is
 decided at G).
 
@@ -228,6 +260,7 @@ noncomputable abbrev Route8QuotientEntriesAtGStatement (data : Parameters)
       route8UnifiedEntries data object = ∅) ∧
     (Graph.Route8Census.supply object (canonicalWindowPacking data object)).card <
       data.threshold * (route8UnifiedEntries data object).card ∧
+    Route8TwoSupportEntryExists data object ∧
     ∀ index ∈ route8UnifiedEntries data object,
       ((Graph.Route8Census.presented object data.threshold data.LengthOK
         index).toEntry (Graph.HasCycleWithLength data.LengthOK)).alpha = 0 ∧

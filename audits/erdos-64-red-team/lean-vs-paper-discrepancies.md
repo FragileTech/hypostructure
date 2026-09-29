@@ -5328,12 +5328,57 @@ exit-(5) datum.  The row is run on the residual arm in
   `k ≤ 12`; (ii) the carriers give one charge per entry into the receiver's
   ports, with unbounded multiplicity.
 
-**Still open (exact proposition at G).**  `route8UnifiedEntries data G ≠ ∅`
-with `|∂R| < δ·|route8UnifiedEntries data G|` and `α(ξ) = 0` at every entry.
-Closure needs (a) exclusion of an accepted path of length `2^k`, `k ≤ 12`,
-between two interior vertices of a hub-free piece with no common neighbour, or
-its inside cycles; and (b) `Σ_{ξ} 1 ≤ |∂R|/δ`, i.e. `δ·|E(w)|` bounded by the
-ports of `w` on average.
+**Fourth pass: the paper's carrier-privacy chain, formalized at G.**  The paper's
+route is `def:typeA-route8-carriers` (essential incidences `𝒞_ess(ξ)`, private
+incidences `π(ξ)`), `lem:typeA-carrier-cut-parity` (a mixed event crosses `∂X`
+twice), `lem:typeA-one-terminal-collapse` (`α ≥ 2`),
+`prop:typeA-route8-carrier-reduction` (no two-support entry gives
+`3N ≤ Σ|∂_E X|`), then `lem:typeA-essential-deletion-witness`,
+`lem:typeA-deletion-witness-declared`, `lem:typeA-two-carrier-deletion-canonical`,
+`lem:typeA-carrier-deletion-exit`, `thm:typeA-two-carrier-nogo` (a two-support
+entry has an exit-(4) deletion quotient).
+
+- *Cut parity at G* is `FoldCycleLift.two_crossing` (a path with both ends in
+  `X` that leaves `X` crosses its cut twice), applied to the fold path
+  (`Route8BasinFoldPaths`); the paper's "inside `X` is a power-of-two cycle of
+  the target-safe `X`" (`lem:typeA-internal-quotient-mixed`) has no G-form: the
+  inside event is a cycle of the fold of `X`, an accepted-length path of G
+  (`Route8InsidePathBound`: `k ≤ 12`), not a cycle of G.
+- *Carrier reduction at G* is built: `route8EntryCarrierSet` (cut edges of the
+  piece meeting the selected basin: the baseline-essential carriers, all in
+  `∂R`), `route8EntryPrivateCarriers` (carriers of no other entry), and
+  `Route8TwoSupportEntryExists` / `route8TwoSupportEntryExists`: the private
+  carrier sets of distinct entries are disjoint subsets of `∂R`, so if every
+  entry had `≥ δ` private carriers then `δ|Ξ̃| ≤ |∂R|`; with
+  `|∂R| < δ|Ξ̃|` some unified entry has fewer than `δ` private carriers.  This
+  is a conjunct of key 8150.  (Per-vertex caps bound the incidences per
+  vertex, not the number of entries whose basin contains a vertex; the privacy
+  count above is the multiplicity control the paper uses, and it is what
+  produces the two-support entry.)
+- *No G-form: the deletion chain.*  `lem:typeA-essential-deletion-witness` needs
+  the target-essential core `𝒞_ess(ξ)` (inclusion-minimal set whose restriction
+  is target-complete against realizations in an outside context).  At G with
+  realizations restricted to G's readings the core is empty
+  (`α = 0`); the baseline-essential carriers are not target-essential and give
+  no distinguishing realization.  `lem:typeA-carrier-deletion-exit` (each
+  deletion quotient of a two-support entry is target-defective, i.e. exit
+  (4)) is therefore vacuous at G, where `TraceLocalTargetDefect` is decided
+  false.  The exact step returned open: **the G-form of target-completeness /
+  exit (4) must quantify over G-constructed valid realizations (folds and
+  contractions of G's piece), not only over G's readings.  With folds included,
+  every quotient that a smaller valid fold realizes is distinguished from G's
+  piece in `G − B_u` (minimality gives the fold an accepted cycle), so each
+  such entry is an exit-(4) entry and is peeled; the core becomes nonempty
+  through the fold paths and cut parity applies.**  That change of the
+  definitions of `QuotientRealization` / `TraceLocalTargetDefect` re-routes
+  the whole route-8 ledger and belongs to the exit-(4) family, not to this
+  residual.
+
+**Still open (exact proposition at G).**  A two-support entry `ξ₀` exists
+(`Route8TwoSupportEntryExists`), with `|∂R| < δ·|route8UnifiedEntries data G|`,
+`α(ξ₀) = 0` and no exit-(4) witness at `ξ₀` in the readings-only sense.  Its
+exclusion is `thm:typeA-two-carrier-nogo`, whose only missing ingredient is the
+fold-inclusive G-form of exit (4) stated above.
 
 **Shared edits.**  `SpineVocabulary.lean` (key 8150 and one import);
 `Residuals.lean` / `Route8QuotientOutcome.lean` (two facts added to the
