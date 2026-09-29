@@ -68,7 +68,7 @@ import Hypostructure.Graph.SparsePairLedger
 import Hypostructure.Graph.SameTokenBlockerRoles
 import Hypostructure.Graph.ObjectCapacityLedger
 import Hypostructure.Graph.NamedSurplusExits
-import Hypostructure.Graph.TargetDefectStructure
+import Hypostructure.Graph.GluedCycleSides
 import Hypostructure.Graph.SparseEntropySandwich
 import Hypostructure.Graph.BlockedClass
 import Hypostructure.Graph.CanonicalRealization

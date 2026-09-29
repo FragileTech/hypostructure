@@ -199,17 +199,16 @@ theorem windowPackageSeparated_of_maximalPacking
   · intro declared _functional
     by_contra reducing
     rcases declared.localize reducing with replacement |
-      ⟨representative, smaller, baseline, transfer⟩
+      ⟨representative, smaller, baseline, noTarget⟩
     · exact noReplacement declared.support replacement
-    · exact selected.1 (transfer (selected.2 representative smaller baseline))
+    · exact noTarget (selected.2 representative smaller baseline)
   · intro _baselineIndependent
     intro declared _functional
     by_contra reducing
     rcases declared.localize reducing with replacement |
-      ⟨representative, smaller, baselineObject, transfer⟩
+      ⟨representative, smaller, baselineObject, noTarget⟩
     · exact noReplacement declared.support replacement
-    · exact selected.1
-        (transfer (selected.2 representative smaller baselineObject))
+    · exact noTarget (selected.2 representative smaller baselineObject)
 
 /-- **Node `[22]`, `def:cold-window-ledger`.**  The canonical maximal packing
 splits into the canonical hot family (a maximal realized subfamily, or empty)

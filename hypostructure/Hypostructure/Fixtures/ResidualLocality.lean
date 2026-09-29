@@ -13,8 +13,11 @@ caller-chosen attempted quotient and arbitrary boundaried pieces; a disjoint
 1. A family with at most one coordinate has no clause-(b) defect.
 2. The former vacuity construction used two coordinates with the same (empty)
    declared support.  Two coordinates with equal supports have the same
-   reading on G's piece, so no context separates them: that construction no
-   longer yields clause (b), on any object.
+   reading on G's piece, so G's own surroundings do not separate them: that
+   construction no longer yields clause (b), on any object.
+3. Stated about G (g-repair), clause (b) asks G's own surroundings `G − Z` to
+   separate two readings of G; at a target-avoiding G it is empty
+   (`not_residualTargetDefect_of_avoids`).
 -/
 
 namespace Hypostructure.Fixtures.ResidualLocality
@@ -42,7 +45,7 @@ theorem not_residualTargetDefect_of_supports_eq
     (constant : ∀ coordinate ∈ family, coordinateSupport coordinate = common) :
     ¬ ResidualTargetDefect Target object family coordinateSupport := by
   rintro ⟨first, firstMem, second, secondMem, _different, support, _selected,
-    _profile, _actual, outside, separated⟩
+    _profile, separated⟩
   rw [constant first firstMem, constant second secondMem] at separated
   exact separated Iff.rfl
 
@@ -54,5 +57,14 @@ example (Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u}) :
       (fun _ => ∅) :=
   not_residualTargetDefect_of_supports_eq Target object _ ∅ _
     (fun _ _ => rfl)
+
+/-- (3) At a target-avoiding object, clause (b) is empty for every family. -/
+example {LengthOK : Nat → Prop} (object : FiniteObject.{u})
+    (avoids : ¬ HasCycleWithLength LengthOK object)
+    {Coordinate : Type} (family : Finset Coordinate)
+    (coordinateSupport : Coordinate → Finset object.Vertex) :
+    ¬ ResidualTargetDefect (HasCycleWithLength LengthOK) object family
+      coordinateSupport :=
+  not_residualTargetDefect_of_avoids avoids family coordinateSupport
 
 end Hypostructure.Fixtures.ResidualLocality

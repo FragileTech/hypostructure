@@ -69,6 +69,16 @@ theorem not_target_actualGlue {L : Nat → Prop} {object : FiniteObject.{u}}
   obtain ⟨hom, injective⟩ := actualGlue_hom object Z X
   exact avoids (hasCycleWithLength_of_hom hom injective cycle)
 
+/-- **Two readings of G always agree in G's own surroundings `G − Z`**: on a
+target-avoiding `G`, both actual gluings are target-free, so their target
+responses in `G − Z` coincide.  This is the G-form of context equivalence:
+the only context of G at `∂Z` is `G − Z`. -/
+theorem actualGlue_agree {L : Nat → Prop} {object : FiniteObject.{u}}
+    (avoids : ¬ HasCycleWithLength L object) (Z X Y : Finset object.Vertex) :
+    HasCycleWithLength L (actualGlue object Z X) ↔
+      HasCycleWithLength L (actualGlue object Z Y) :=
+  iff_of_false (not_target_actualGlue avoids Z X) (not_target_actualGlue avoids Z Y)
+
 end ActualGlue
 
 section Swap
@@ -231,6 +241,19 @@ noncomputable def swapProperSubgraph {Z X : Finset object.Vertex}
       · exact absurd (swap_card_lt object deleted) (by omega)
       · exact FiniteObject.lexicographicallySmaller_of_vertexCount_eq_edgeCount_lt eq
           (swap_edgeCount_lt object dropped)
+
+/-- **A proper swap of a minimal target-avoiding `G` fails the baseline**: it is a
+proper subgraph of `G` (hence lexicographically smaller and target-free), so if
+it kept the baseline, minimality would give it a target cycle. -/
+theorem not_baseline_swap_of_minimal {L : Nat → Prop}
+    {Baseline : FiniteObject.{u} → Prop} {object : FiniteObject.{u}}
+    (avoids : ¬ HasCycleWithLength L object)
+    (minimal : ∀ H : FiniteObject.{u}, H.LexicographicallySmaller object →
+      Baseline H → HasCycleWithLength L H)
+    {Z X : Finset object.Vertex} (proper : SwapProper object Z X) :
+    ¬ Baseline (swap object Z X) := fun baseline =>
+  not_target_swap avoids Z X
+    (minimal _ (swapProperSubgraph object proper).decreases baseline)
 
 /-- The degree of a kept vertex in the swap: its kept `G`-neighbours. -/
 theorem swap_degree_eq {Z X : Finset object.Vertex} (v : (swap object Z X).Vertex) :

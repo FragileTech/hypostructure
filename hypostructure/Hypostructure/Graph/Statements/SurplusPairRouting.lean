@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Statements.CanonicalSameToken
+import Hypostructure.Graph.ActualContext
 
 /-!
 # Statements: node `[144]`, `lem:same-token-bottleneck-routing`, at G
@@ -45,13 +46,16 @@ noncomputable abbrev TypeBHandoffFailsStatement
 
 /-- **Node `[144a]`, the residual of the open construction at `[144]`**
 (`lem:same-token-bottleneck-routing`, parallel and cubic-first-separator cases,
-tex 5585-5620; see `lean-vs-paper-discrepancies.md#open-constructions`).  The
-response coordinates `r_p ≠ r_q` of the two equal-label pattern edges of G's
-canonical routing, read on G's piece at the canonical support `Z` of their
-supports: the readings lie in different boundary-degree fibres, or they are
-context-equivalent (target-complete).  The paper claims both cases are sparse
-exits (tex 5589, 5594); neither is established, and the pair is carried by the
-open leaf `[144a]`. -/
+tex 5585-5620; see `lean-vs-paper-discrepancies.md#open-constructions`), stated
+about G.  The response coordinates `r_p ≠ r_q` of the two equal-label pattern
+edges of G's canonical routing, read on G's piece at the canonical support `Z`
+of their supports: the readings lie in different boundary-degree fibres, or
+they agree in G's own surroundings `G − Z` (target-complete, stated about G:
+the only context of G at `∂Z` is `G − Z`).  The paper claims both cases are
+sparse exits (tex 5589, 5594); neither is established, and the pair is carried
+by the open leaf `[144a]`.  (G-only restatement: the former second disjunct was
+context equivalence against every `∂Z`-boundaried context, which is not part of
+G; at a target-avoiding G the G-form holds for every pair.) -/
 noncomputable abbrev SameTokenPatternPairUnresolvedStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
@@ -69,11 +73,12 @@ noncomputable abbrev SameTokenPatternPairUnresolvedStatement
               support (Graph.DeclaredSignature.Coordinate.support first)).boundaryDegreeProfile ≠
             (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
               support (Graph.DeclaredSignature.Coordinate.support second)).boundaryDegreeProfile ∨
-          Graph.Response.ContextEquivalent (Graph.HasCycleWithLength data.LengthOK)
-            (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
-              support (Graph.DeclaredSignature.Coordinate.support first))
-            (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
-              support (Graph.DeclaredSignature.Coordinate.support second)))
+          (Graph.HasCycleWithLength data.LengthOK
+              (Graph.ActualContext.actualGlue object support
+                (Graph.DeclaredSignature.Coordinate.support first)) ↔
+            Graph.HasCycleWithLength data.LengthOK
+              (Graph.ActualContext.actualGlue object support
+                (Graph.DeclaredSignature.Coordinate.support second))))
 
 /-- **Node `[144a]`, the explicit replacement candidates of tex 5594 at G.**
 At G's canonical routing and the canonical support `Z` of the two pattern

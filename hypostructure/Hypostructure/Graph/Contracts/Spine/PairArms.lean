@@ -7,8 +7,9 @@ import Hypostructure.Graph.Contracts.Spine.JointHubs
 Proof-agnostic contract lemmas for `Statements/PairArms.lean`.  Hypotheses are ledger facts:
 the selection's avoidance, the presentation laws, the baseline, `[8]`, `[9]`, `[10]`, the
 return avoidance, the replacement exclusion, `K .surplusAbove`, `K .highEndpointSwitch`,
-G's canonical capacity presentation, and on `[20a]` the pinned target-defect residual and the
-structure of every `Spec` witness.  One contract per statement: `<statement>_holds`.
+and G's canonical capacity presentation.  (G-only restatement: the former `[20a]` contract
+`pairArmBDefect_holds`, at the pinned witness of exit (b), is removed with the `[20a]` exit,
+which is empty at G.)  One contract per statement: `<statement>_holds`.
 
 This module imports no strategy, row, or vocabulary module.
 -/
@@ -248,19 +249,12 @@ theorem pairArmB_holds (three : data.threshold = 3)
           (∀ v ∈ routes.forward.support,
             v ∈ returns.overlap.system.overlapSupport returns.overlap.family) →
           (∀ v ∈ routes.forward.support, v ∉ routes.backward.support) →
-          routes.forward.length = 0 ∧ routes.backward.length = 0) ∧
-        (∀ w : SparseTargetDefectWitness data object, w.Spec →
-          ¬ ∃ r₁ ∈ returns.obstructionCoordinates, ∃ r₂ ∈ returns.obstructionCoordinates,
-            w.first = Sum.inr (Sum.inl r₁) ∧ w.second = Sum.inr (Sum.inl r₂))) ∨
+          routes.forward.length = 0 ∧ routes.backward.length = 0)) ∨
       (∃ serial, canonicalPairSerialSystem data object = some serial ∧
         canonicalPairDemandReturns data object = some serial.returns ∧
         ¬ Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK) object
           serial.returns.obstructionCoordinates pairCoordinateSupport ∧
         ¬ PairObstructionHandoff data object serial.returns ∧
-        (∀ w : SparseTargetDefectWitness data object, w.Spec →
-          ¬ ∃ r₁ ∈ serial.returns.obstructionCoordinates,
-            ∃ r₂ ∈ serial.returns.obstructionCoordinates,
-            w.first = Sum.inr (Sum.inl r₁) ∧ w.second = Sum.inr (Sum.inl r₂)) ∧
         (∀ choice : Fin serial.cells → Nat, (∀ i, choice i ∈ serial.lengths i) →
           ∀ offset ∈ serial.offsets,
             ¬ data.LengthOK (serial.closing + (∑ i, choice i) + offset)))) := by
@@ -270,13 +264,11 @@ theorem pairArmB_holds (three : data.threshold = 3)
     | factorization system hs fails => exact Or.inl ⟨system, hs, fails⟩
     | systemRealizability returns hr fails =>
         obtain ⟨nd, nh, ns, routes⟩ := realizabilityFails_content returns fails
-        exact Or.inr (Or.inl ⟨returns, hr, nd, nh, ns, routes,
-          fun w spec => spec_not_both_obstruction returns nd spec⟩)
+        exact Or.inr (Or.inl ⟨returns, hr, nd, nh, ns, routes⟩)
     | incrementArithmetic serial hs fails =>
         obtain ⟨nd, nh⟩ := incrementFails_content serial fails
         exact Or.inr (Or.inr ⟨serial, hs,
           Contracts.SurplusPair.canonicalPairDemandReturns_of_serial hs, nd, nh,
-          fun w spec => spec_not_both_obstruction serial.returns nd spec,
           fun choice mem offset offMem =>
             serial_lengths_not_accepted serial avoid choice mem offset offMem⟩)
   refine ⟨fun arm => ?_, hB1, fun {returns} hr handoff => ?_, fun {returns} fails routes inside =>
@@ -284,15 +276,12 @@ theorem pairArmB_holds (three : data.threshold = 3)
     fun {returns} fails => ?_, fun {serial} _hs => ?_⟩
   · obtain ⟨ff, out⟩ := arm
     refine ⟨Contracts.SurplusPair.pairOverlapSystem_of_firstFailure ff noProper, ?_⟩
-    rcases out with r | ⟨returns, hr, d⟩ | ⟨⟨returns, hr, h⟩, fan⟩
+    rcases out with r | ⟨⟨returns, hr, h⟩, fan⟩
     · rcases hB1 r with i | ⟨returns, hr, nd, -⟩ | ⟨serial, -, hr, nd, -⟩
       · exact Or.inl i
-      · exact Or.inr ⟨returns, hr, Or.inr (Or.inl nd)⟩
-      · exact Or.inr ⟨serial.returns, hr, Or.inr (Or.inl nd)⟩
-    · obtain ⟨w'', spec, r₁, m₁, r₂, m₂, ne, h₁, h₂, -, -, -, card⟩ :=
-        specWitness_of_obstructionDefect returns d
-      exact Or.inr ⟨returns, hr, Or.inl ⟨w'', spec, r₁, m₁, r₂, m₂, ne, h₁, h₂, card⟩⟩
-    · exact Or.inr ⟨returns, hr, Or.inr (Or.inr ⟨h, fan⟩)⟩
+      · exact Or.inr ⟨returns, hr, Or.inl nd⟩
+      · exact Or.inr ⟨serial.returns, hr, Or.inl nd⟩
+    · exact Or.inr ⟨returns, hr, Or.inr ⟨h, fan⟩⟩
   · obtain ⟨routes, split, envelope, hs, he, -, -, deg, -, nc, ne, a₁, a₂, m, m₁, m₂, esc⟩ :=
       handoff_structure handoff
     refine ⟨Contracts.SurplusPair.typeBFanEntry_of_pairObstructionHandoff above
@@ -324,36 +313,5 @@ theorem pairArmB_holds (three : data.threshold = 3)
     have := switch serial.returns.leftDemand.1 serial.returns.leftDemand.2 (by rw [three]; exact c₁)
       (by rw [three]; exact p₁) serial.returns.leftDemand_adj
     exact this
-
-open Classical in
-set_option maxHeartbeats 800000 in
-theorem pairArmBDefect_holds (three : data.threshold = 3)
-    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (law : ∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length)
-    (baseline : MinDegreeBaselineStatement data object)
-    (noProper : NoProperBaselineStatement data object)
-    (tight : TightEndpointStatement data object)
-    (ret : ReturnAvoidanceStatement data object)
-    (switch : HighEndpointSwitchStatement data object)
-    (residual : SparseTargetDefectResidualStatement data object)
-    (specStruct : SpecWitnessStructureStatement data object) :
-    PairArmBDefectStatement data object := by
-  intro returns _hr defect
-  obtain ⟨w'', spec, r₁, m₁, r₂, m₂, ne, h₁, h₂, sel, sub, conn, card⟩ :=
-    specWitness_of_obstructionDefect returns defect
-  refine ⟨residual, w'', spec, ⟨r₁, m₁, r₂, m₂, ne, h₁, h₂, sel, sub, conn, card⟩,
-    specStruct w'' spec, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
-  · exact Contracts.Spine.SparseExitResidual.pathSpectrumSplit_of_spec law avoid spec
-  · exact Contracts.Spine.SparseExitResidual.positiveSupportBoundaryTwo_of_spec avoid spec
-  · exact Contracts.Spine.SparseExitResidual.supportCutEdgesTwo_of_spec avoid spec
-  · exact Contracts.Spine.SparseExitResidual.boundaryLowInsideVertex_of_spec three baseline
-      noProper avoid spec
-  · exact Contracts.Spine.SparseExitResidual.outsideLowVertex_of_spec three baseline
-      noProper avoid spec
-  · exact Contracts.Spine.SparseExitReadings.witnessActiveLabels_of_spec avoid spec
-  · exact Contracts.Spine.SparseExitReadings.twoBoundaryAllActive_of_spec avoid spec
-  · exact Contracts.Spine.SparseExitReadings.spectrumArmOneRefined_of_spec law avoid ret spec
-  · exact Contracts.Spine.SparseExitReadings.privateEdgeSwitch_of_spec baseline tight switch
-      avoid spec
 
 end Hypostructure.Graph.Contracts.Spine.PairArms

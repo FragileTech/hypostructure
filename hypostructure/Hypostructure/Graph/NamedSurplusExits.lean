@@ -5,6 +5,7 @@ import Hypostructure.Graph.InterfaceReplacement
 import Hypostructure.Graph.SparsePortActivation
 import Hypostructure.Graph.ExcessPortFamily
 import Hypostructure.Graph.CanonicalSupportSelection
+import Hypostructure.Graph.ActualContext
 
 /-!
 # The named sparse-surplus exits
@@ -31,12 +32,16 @@ published on one arm, and `SurvivesSparseExits` is published on the other.  In
 particular, this declaration does not claim that selection or replacement
 alone rules out target defects, delocalizations, or suppression chords.
 
-Clause (b) is stated at the residual's declared coordinate family: two distinct
-coordinates, read on G's own piece at the canonical connected support of their
-union (`ResidualTargetDefect`), agree in G's actual outside context and are
-separated by another boundaried context.  An identification of arbitrary
-boundaried pieces, or a quotient with caller-chosen values, is not an exit of G:
-such data made the former clause hold on every graph with a vertex.
+Every clause is stated about G (G-only restatement, `g-repair`).  Clause (b)
+is stated at the residual's declared coordinate family: two distinct
+coordinates, read on G's own piece at the canonical connected support `Z` of
+their union (`ResidualTargetDefect`), lie in one boundary-degree fibre and are
+separated by a context **of G**.  The only context of G at `∂Z` is G's own
+surroundings `G − Z`, and every reading of G's piece glued there is a subgraph
+of G (`ActualContext.actualGlue_hom`), so on a target-avoiding G two readings
+always agree there (`ActualContext.actualGlue_agree`): clause (b) is empty at
+G (`not_residualTargetDefect_of_avoids`).  This is a correct closure of the
+arm, not a vacuity: the paper's test, stated about G, is decided at G.
 -/
 
 namespace Hypostructure.Graph
@@ -55,54 +60,45 @@ family of the residual: each coordinate is read as G's own piece at the
 canonical connected support `Z` of the two coordinates' union, restricted to the
 coordinate's declared support (`SupportAtom.retainedPiece`), on the unchanged
 boundary `∂Z`.  Nothing is caller-chosen: no attempted label or value map, no
-boundary piece that is not a piece of G. -/
+boundary piece that is not a piece of G.  Stated about G, "every `T`-boundaried
+context" is every context of G at `∂Z`, and G has exactly one: its own
+surroundings `G − Z`.  So the G-form of the defect is that `G − Z` separates the
+two readings (`ResidualTargetDefect`), which never happens at a target-avoiding
+G (`not_residualTargetDefect_of_avoids`). -/
 
 /-- Gluing G's actual outside context `G - Z` to any edge restriction of G's
-own piece at `Z` is a subgraph of G. -/
+own piece at `Z` is a subgraph of G (`ActualContext.actualGlue_hom`). -/
 theorem retainedGlue_hom (object : FiniteObject.{u})
     (support retained : Finset object.Vertex) :
     ∃ hom : (glue (SupportAtom.retainedPiece object support retained)
         (SupportAtom.outside object support)).graph →g object.graph,
-      Function.Injective hom := by
-  classical
-  have le : glueGraph (SupportAtom.retainedPiece object support retained)
-      (SupportAtom.outside object support) ≤
-      glueGraph (SupportAtom.piece object support)
-        (SupportAtom.outside object support) := by
-    apply glueGraph_mono (piece := SupportAtom.piece object support)
-      (SupportAtom.outside object support)
-    intro left right adjacent
-    exact adjacent.1
-  let iso := (SupportAtom.decomposition object support).reconstructionIso
-  refine ⟨iso.toHom.comp (SimpleGraph.Hom.ofLE le), ?_⟩
-  intro left right equal
-  exact iso.injective equal
+      Function.Injective hom :=
+  ActualContext.actualGlue_hom object support retained
 
 /-- On a target-avoiding object no retained reading glued to its actual outside
-context is target-positive. -/
+context is target-positive (`ActualContext.not_target_actualGlue`). -/
 theorem not_target_retainedGlue {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}}
     (avoids : ¬ HasCycleWithLength LengthOK object)
     (support retained : Finset object.Vertex) :
     ¬ HasCycleWithLength LengthOK
       (glue (SupportAtom.retainedPiece object support retained)
-        (SupportAtom.outside object support)) := by
-  intro cycle
-  obtain ⟨hom, injective⟩ := retainedGlue_hom object support retained
-  exact avoids (hasCycleWithLength_of_hom hom injective cycle)
+        (SupportAtom.outside object support)) :=
+  ActualContext.not_target_actualGlue avoids support retained
 
 /-- **A retained reading of G's piece is an explicit replacement candidate**
 (`lem:replacement` with `def:proper-quotient-representative`, the
-representative `Z'` that exit (c) needs): replacing G's piece at a connected
-proper support `Z` by its reading restricted to `retained` is a
+representative `Z'` that exit (c) needs), stated about G: replacing G's piece at
+a connected proper support `Z` by its reading restricted to `retained` is a
 `ReplacementSupport` of `Z` as soon as the reading keeps the piece's
-boundary-degree profile, the glued graph keeps the baseline, and it is
-lexicographically smaller.  The target transfer is automatic: the reading is a
-subgraph of the piece, so a cycle after gluing any context survives in the
-piece glued to that context. -/
+boundary-degree profile, the glued graph `glue X' (G − Z)` keeps the baseline,
+and it is lexicographically smaller.  Its target clause -- no target cycle in
+`glue X' (G − Z)` -- is automatic on a target-avoiding G: the glued graph is a
+subgraph of G (`ActualContext.not_target_actualGlue`). -/
 theorem replacementSupport_of_retainedReading {Baseline : FiniteObject.{u} → Prop}
     {LengthOK : Nat → Prop} (object : FiniteObject.{u})
     (support retained : Finset object.Vertex)
+    (avoids : ¬ HasCycleWithLength LengthOK object)
     (connected : SupportComponents.Connected.ConnectedOn object support)
     (proper : ∃ vertex, vertex ∉ support)
     (profile : (SupportAtom.retainedPiece object support retained).boundaryDegreeProfile =
@@ -111,37 +107,20 @@ theorem replacementSupport_of_retainedReading {Baseline : FiniteObject.{u} → P
       (SupportAtom.outside object support)))
     (smaller : (glue (SupportAtom.retainedPiece object support retained)
       (SupportAtom.outside object support)).LexicographicallySmaller object) :
-    ReplacementSupport Baseline (HasCycleWithLength LengthOK) object support := by
-  refine ⟨connected, proper, SupportAtom.retainedPiece object support retained,
-    profile, baseline, smaller, ?_⟩
-  intro outside cycle
-  have le : glueGraph (SupportAtom.retainedPiece object support retained) outside ≤
-      glueGraph (SupportAtom.piece object support) outside := by
-    apply glueGraph_mono (piece := SupportAtom.piece object support) outside
-    intro left right adjacent
-    exact adjacent.1
-  exact hasCycleWithLength_of_hom
-    (left := glue (SupportAtom.retainedPiece object support retained) outside)
-    (right := glue (SupportAtom.piece object support) outside)
-    (SimpleGraph.Hom.ofLE le) (fun _ _ equal => equal) cycle
+    ReplacementSupport Baseline (HasCycleWithLength LengthOK) object support :=
+  ⟨connected, proper, SupportAtom.retainedPiece object support retained,
+    profile, baseline, smaller, ActualContext.not_target_actualGlue avoids support retained⟩
 
-/-- **The canonical response of a declared coordinate of G at a support `Z`**
-(`def:declared-coordinate-signature`, `val_X(r)`): the coordinate read on G's
-own piece at `Z` restricted to its declared support (`retainedPiece`), on the
-unchanged boundary `∂Z`, tested against every `∂Z`-boundaried context.  It is
-the only response a blocker or an exit may read: no caller-chosen label or
-value enters. -/
-def canonicalCoordinateResponse (Target : FiniteObject.{u} → Prop)
-    (object : FiniteObject.{u}) (support carried : Finset object.Vertex) :
-    OutsideContext (SupportAtom.boundary object support) → Prop :=
-  fun outside => Target (glue (SupportAtom.retainedPiece object support carried) outside)
-
-/-- **Clause (b) at G's declared family** (`lem:context-universality`,
-tex 6106-6112; `def:target-complete-compression`, tex 6138): two distinct
-declared coordinates of the family, read on G's own piece at the canonical
-connected support `Z` of their union, lie in one boundary-degree fibre, agree
-in G's actual outside context `G - Z`, and are separated by some
-`∂Z`-boundaried context. -/
+/-- **Clause (b) at G's declared family, stated about G**
+(`lem:context-universality`, tex 6106-6112; `def:target-complete-compression`,
+tex 6138): two distinct declared coordinates of the family, read on G's own
+piece at the canonical connected support `Z` of their union, lie in one
+boundary-degree fibre and are separated by a context of G.  The paper's
+defect is an identification valid in G's actual outside context but not in
+every context; the only context of G at `∂Z` is G's own surroundings `G − Z`
+(`ActualContext.actualGlue`), so stated about G the defect is that `G − Z`
+separates the two readings.  (G-only restatement: the former clause asked for
+an arbitrary `∂Z`-boundaried context, which is not part of G.) -/
 def ResidualTargetDefect (Target : FiniteObject.{u} → Prop)
     (object : FiniteObject.{u}) {Coordinate : Type w}
     (family : Finset Coordinate)
@@ -155,15 +134,20 @@ def ResidualTargetDefect (Target : FiniteObject.{u} → Prop)
           (coordinateSupport first)).boundaryDegreeProfile =
         (SupportAtom.retainedPiece object support
           (coordinateSupport second)).boundaryDegreeProfile ∧
-      (canonicalCoordinateResponse Target object support (coordinateSupport first)
-          (SupportAtom.outside object support) ↔
-        canonicalCoordinateResponse Target object support (coordinateSupport second)
-          (SupportAtom.outside object support)) ∧
-      ∃ outside : OutsideContext (SupportAtom.boundary object support),
-        ¬ (canonicalCoordinateResponse Target object support
-              (coordinateSupport first) outside ↔
-            canonicalCoordinateResponse Target object support
-              (coordinateSupport second) outside)
+      ¬ (Target (ActualContext.actualGlue object support (coordinateSupport first)) ↔
+          Target (ActualContext.actualGlue object support (coordinateSupport second)))
+
+/-- **Exit (b) is empty at a target-avoiding G** (Lean improvement: the test of
+clause (b), stated about G, is decided at G): two readings of G always agree
+in G's own surroundings `G − Z` (`ActualContext.actualGlue_agree`). -/
+theorem not_residualTargetDefect_of_avoids {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} (avoids : ¬ HasCycleWithLength LengthOK object)
+    {Coordinate : Type w} (family : Finset Coordinate)
+    (coordinateSupport : Coordinate → Finset object.Vertex) :
+    ¬ ResidualTargetDefect (HasCycleWithLength LengthOK) object family
+      coordinateSupport := by
+  rintro ⟨first, -, second, -, -, support, -, -, separated⟩
+  exact separated (ActualContext.actualGlue_agree avoids support _ _)
 
 /-- The boundary-profile companion of clause (b) (`lem:degree-profile-fibres`,
 tex 6088): two distinct declared coordinates of the family whose readings on
@@ -209,12 +193,12 @@ theorem ResidualTargetDefect.map {Target : FiniteObject.{u} → Prop}
     (defect : ResidualTargetDefect Target object family coordinateSupport) :
     ResidualTargetDefect Target object family' coordinateSupport' := by
   obtain ⟨first, firstMem, second, secondMem, different, support, selected,
-    profile, actual, separated⟩ := defect
+    profile, separated⟩ := defect
   refine ⟨embed first, maps first firstMem, embed second, maps second secondMem,
     fun equal => different (injective first firstMem second secondMem equal),
     support, ?_⟩
   rw [supports first firstMem, supports second secondMem]
-  exact ⟨selected, profile, actual, separated⟩
+  exact ⟨selected, profile, separated⟩
 
 /-- **A sparse surplus exit** of `def:named-surplus-exits` (tex 2754-2772), at
 the residual's declared coordinate family. -/
@@ -225,19 +209,27 @@ inductive SparseSurplusExit (Baseline Target : FiniteObject.{u} → Prop)
   /-- (a) a direct dyadic contradiction: an accepted cycle. -/
   | dyadic (cycle : Graph.HasCycleWithLength LengthOK object)
   /-- (b) a target-defective quotient, as `lem:context-universality` defines
-  it, among the family's own coordinates read on G's own pieces. -/
+  it, among the family's own coordinates read on G's own pieces, stated about
+  G: G's own surroundings `G − Z` separate them.  Empty at a target-avoiding G
+  (`not_residualTargetDefect_of_avoids`). -/
   | targetDefect
       (defect : ResidualTargetDefect Target object family coordinateSupport)
   /-- (c) a nontrivial target-complete compression of a proper atom, recorded
-  at the one-way `ReplacementSupport` strength used by `lem:replacement`. -/
+  at the `ReplacementSupport` strength used by `lem:replacement`: a piece `X'`
+  with G's boundary-degree profile at `Z`, `glue X' (G − Z)` strictly smaller,
+  with the baseline and no target cycle (`ReplacementSupport` in its G form). -/
   | compression (support : Finset object.Vertex)
       (replacement : ReplacementSupport Baseline Target object support)
-  /-- (d) a proper or global delocalization coordinate: a strictly smaller
-  representative meeting the baseline whose target transfers back. -/
+  /-- (d) a proper or global delocalization coordinate, stated about G: the
+  replacement of the whole of G (`Z = V(G)`, so `G − Z = ∅`) by a strictly
+  smaller representative `X'` meeting the baseline with no target cycle in
+  `glue X' (G − Z) = X'` (the closed clause of the G-form admissible
+  quotient, `DeclaredQuotient.localize`).  Minimality of G refutes it.  (G-only
+  restatement: the former last field compared `X'`'s target with G's.) -/
   | delocalization (representative : FiniteObject.{u})
       (smaller : representative.LexicographicallySmaller object)
       (baseline : Baseline representative)
-      (transfer : Target representative → Target object)
+      (noTarget : ¬ Target representative)
   /-- (e) an open-port suppression cycle whose chord set violates the arithmetic
   conclusion of `lem:suppressed-family-critical-cycle`: the lifted length
   `2^j + |𝒮|` is accepted, where that lemma concludes it is not. -/

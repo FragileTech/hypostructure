@@ -8,7 +8,6 @@ import Hypostructure.Graph.Strategy.SpineRows.WindowPackage
 import Hypostructure.Graph.Strategy.BranchDClosure
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.FibrePressure
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseSurplusExit
-import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseTargetDefectStructure
 import Hypostructure.Graph.Strategy.SurplusRows
 import HypostructureErdos64EG.Assembly.Basic
 
@@ -82,30 +81,36 @@ noncomputable def selectedNearCubicNode21
 functions.  Their arguments and results are exact-ledger indices, so the
 strict and near-cubic cursors cannot be accidentally exchanged. -/
 
-/-- **The named sparse exit of `[20]`** (`def:named-surplus-exits`): the exit
-arm of the enclosing sparse-exit classification routes the literal exit forms
-to the attempted-quotient target-defect payload and its structure.  Written
-once for the strict arm and the at-or-below arm. -/
-noncomputable def selectedSparseTargetDefectExit
+/-- **The named sparse exit of `[20]` is closed at G** (`def:named-surplus-exits`,
+stated about G; Lean improvement: exit (b) is empty at G): the exit arm of the
+enclosing sparse-exit classification routes the literal exit forms -- (a), (c),
+(d), (e) are literal terminals -- to the target-defect payload of clause (b),
+and clause (b), stated about G, asks G's own surroundings `G − Z` to separate
+two readings of G, which always agree there.  The emptiness fact
+`K .sparseTargetDefectEmpty` is published and closes the arm against the
+payload through `AtomicCT.runAndCloseIncompatible`.  Written once for the strict
+arm (`[20a]`) and the at-or-below arm (`[187]`'s near-cubic target defect). -/
+theorem selectedSparseExitClosed
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .sparsePairExit) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .replacementExclusion) known]
     (fresh : List.Disjoint
-      [K .sparseTargetDefectResidual, K .sparseTargetDefectStructure] known := by
+      [K .sparseTargetDefectResidual, K .sparseTargetDefectEmpty, closed] known := by
         key_fresh) :
-    ExactLedger EGInput.{u} selected
-      (K .sparseTargetDefectStructure :: K .sparseTargetDefectResidual :: known) :=
+    False :=
   let targetDefect :=
     (sparseSurplusExitRoutingRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
-  (sparseTargetDefectStructureRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-    targetDefect (by key_fresh)
+  (AtomicCT.runAndCloseIncompatible
+    (sparseTargetDefectEmptyRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData))
+    targetDefect (K .sparseTargetDefectResidual) (K .sparseTargetDefectEmpty)
+    (by key_fresh) (by key_fresh)).elimClosed (by infer_instance)
 
 /-! Node `[20]`, the strict (non-near-cubic) surplus branch, run node by node
 along the Part X/XI diagram on the literal `K .surplusAbove` ledger:
