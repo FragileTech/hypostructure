@@ -188,6 +188,7 @@ import Hypostructure.Core.Contract
 import Hypostructure.Graph.FinitePathSelection
 import Hypostructure.Graph.InterfaceReplacement
 import Hypostructure.Graph.SpliceLift
+import Hypostructure.Graph.SpliceRoute
 import Hypostructure.Graph.DoubleSuppress
 
 -- Core routing modules included in the root build closure.
