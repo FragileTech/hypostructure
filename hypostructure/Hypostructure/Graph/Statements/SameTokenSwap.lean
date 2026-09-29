@@ -2,6 +2,7 @@ import Hypostructure.Graph.Statements.SameTokenPair
 import Hypostructure.Graph.RerouteSwap
 import Hypostructure.Graph.ReadingExactness
 import Hypostructure.Graph.U2FreeWhole
+import Hypostructure.Graph.PortPathCover
 
 /-!
 # Statements: G's pattern pair, tested at G (`[144a]`, G audit S144a)
@@ -252,5 +253,91 @@ noncomputable def SameTokenU2FreeWholeStatement (data : Parameters)
           ((∀ v, Graph.SupportComponents.Connected.ConnectedOn object (Z.erase v)) →
             ∀ v, v ∈ routing.capacity.activation.pairSeed routing.demands.first ∧
               v ∈ routing.capacity.activation.pairSeed routing.demands.second))
+
+
+/-- **A pair seed is at most `2δ` vertices and two canonical port paths.** -/
+def PairSeedCover (data : Parameters) (object : Graph.FiniteObject.{u})
+    (seed : Finset object.Vertex) : Prop := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact ∃ T P1 P2 : Finset object.Vertex, T.card ≤ 2 * data.threshold ∧
+    Graph.PortPathCover.PortPathSupport object data.LengthOK P1 ∧
+    Graph.PortPathCover.PortPathSupport object data.LengthOK P2 ∧ seed = T ∪ P1 ∪ P2
+
+/-- **Node `[144a]`: the pair seeds are covered by their canonical port paths.**
+At G's canonical routing each pair seed `T(p) ∪ Γ(p) ∪ T(p') ∪ Γ(p')` is at most
+`2δ` vertices and the supports of two canonical port paths (a triangular port's
+shortest return `R_p` in `G − cx`, an induced path with no chord; an open port's
+suppression path `Q_p`), each carrying its chord facts (every chord has an
+unaccepted span; every interior degree-`3` vertex has exactly one off-path
+edge).  So if every degree-`3` vertex of G lies in both pair seeds, the degree-`3`
+vertices of G are covered by at most four canonical port paths and `4δ` vertices,
+and (from `5|H| + σ ≤ 2n`) each pair's cover has `3n ≤ 5(|T| + |P₁| + |P₂|)`. -/
+noncomputable def SameTokenSeedCoverStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ routing, canonicalSameTokenRouting data object = some routing ∧
+    PairSeedCover data object
+        (routing.capacity.activation.pairSeed routing.demands.first) ∧
+      PairSeedCover data object
+        (routing.capacity.activation.pairSeed routing.demands.second) ∧
+      ((∀ v, object.degree v = 3 →
+          v ∈ routing.capacity.activation.pairSeed routing.demands.first ∧
+            v ∈ routing.capacity.activation.pairSeed routing.demands.second) →
+        ∀ v, object.degree v = 3 →
+          (by letI : DecidableEq object.Vertex := object.vertices.decEq
+              exact ∃ T P1 P2 T' Q1 Q2 : Finset object.Vertex,
+                T.card ≤ 2 * data.threshold ∧ T'.card ≤ 2 * data.threshold ∧
+                Graph.PortPathCover.PortPathSupport object data.LengthOK P1 ∧
+                Graph.PortPathCover.PortPathSupport object data.LengthOK P2 ∧
+                Graph.PortPathCover.PortPathSupport object data.LengthOK Q1 ∧
+                Graph.PortPathCover.PortPathSupport object data.LengthOK Q2 ∧
+                routing.capacity.activation.pairSeed routing.demands.first = T ∪ P1 ∪ P2 ∧
+                routing.capacity.activation.pairSeed routing.demands.second = T' ∪ Q1 ∪ Q2 ∧
+                v ∈ T ∪ P1 ∪ P2 ∧ v ∈ T' ∪ Q1 ∪ Q2 ∧
+                3 * object.vertexCount ≤ 5 * (T.card + P1.card + P2.card) ∧
+                3 * object.vertexCount ≤ 5 * (T'.card + Q1.card + Q2.card)))
+
+
+/-- **Node `[144a]`: the interactions of the canonical port paths.**  At G's canonical
+routing the two pair seeds are `T ∪ supp w₁ ∪ supp w₂` and `T' ∪ supp z₁ ∪ supp z₂`
+with `w_i`, `z_j` canonical port walks (`PortWalk`: simple, every chord, hub and
+closing cycle length unaccepted, one stub per interior cubic vertex), and
+
+* any two segments of two of these walks that are vertex-disjoint and joined by two
+  edges (a *rung pair*, parallel or crossed) close a cycle of length
+  `|p₂| + |q₂| + 2`, which is not accepted (`RungCycles`; for all six pairs of walks);
+* at every cubic vertex interior to two of the walks, the two path edges of one
+  walk and the two of the other share an edge (`ShareEdge`; for the four P/Q pairs);
+* if every degree-`3` vertex lies in both pair seeds, every neighbour of a hub
+  (a vertex of degree `≠ 3`) lies in both pair seeds. -/
+noncomputable def SameTokenPathInteractionsStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ routing, canonicalSameTokenRouting data object = some routing ∧
+    (by letI : DecidableEq object.Vertex := object.vertices.decEq
+        exact ∃ (T T' : Finset object.Vertex) (a1 b1 a2 b2 c1 d1 c2 d2 : object.Vertex)
+          (w1 : object.graph.Walk a1 b1) (w2 : object.graph.Walk a2 b2)
+          (z1 : object.graph.Walk c1 d1) (z2 : object.graph.Walk c2 d2),
+          T.card ≤ 2 * data.threshold ∧ T'.card ≤ 2 * data.threshold ∧
+          Graph.PortPathCover.PortWalk object data.LengthOK w1 ∧
+          Graph.PortPathCover.PortWalk object data.LengthOK w2 ∧
+          Graph.PortPathCover.PortWalk object data.LengthOK z1 ∧
+          Graph.PortPathCover.PortWalk object data.LengthOK z2 ∧
+          routing.capacity.activation.pairSeed routing.demands.first =
+            T ∪ w1.support.toFinset ∪ w2.support.toFinset ∧
+          routing.capacity.activation.pairSeed routing.demands.second =
+            T' ∪ z1.support.toFinset ∪ z2.support.toFinset ∧
+          Graph.PathChords.RungCycles data.LengthOK w1 w2 ∧
+          Graph.PathChords.RungCycles data.LengthOK z1 z2 ∧
+          Graph.PathChords.RungCycles data.LengthOK w1 z1 ∧
+          Graph.PathChords.RungCycles data.LengthOK w1 z2 ∧
+          Graph.PathChords.RungCycles data.LengthOK w2 z1 ∧
+          Graph.PathChords.RungCycles data.LengthOK w2 z2 ∧
+          Graph.PathChords.ShareEdge w1 z1 ∧ Graph.PathChords.ShareEdge w1 z2 ∧
+          Graph.PathChords.ShareEdge w2 z1 ∧ Graph.PathChords.ShareEdge w2 z2 ∧
+          ((∀ v, object.degree v = 3 →
+              v ∈ routing.capacity.activation.pairSeed routing.demands.first ∧
+                v ∈ routing.capacity.activation.pairSeed routing.demands.second) →
+            ∀ h, object.degree h ≠ 3 → ∀ y, object.graph.Adj h y →
+              y ∈ routing.capacity.activation.pairSeed routing.demands.first ∧
+                y ∈ routing.capacity.activation.pairSeed routing.demands.second))
 
 end Hypostructure.Graph.Strategy.Spine

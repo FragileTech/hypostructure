@@ -274,6 +274,9 @@ noncomputable def selectedRouteEightUnifiedResidual
     (loadFlowValueFresh : K .loadFlowValue ∉ known := by key_fresh)
     (coverFlowValueFresh : K .coverFlowValue ∉ known := by key_fresh)
     (pieceSizeProfileFresh : K .pieceSizeProfile ∉ known := by key_fresh)
+    (bridgePieceMassDichotomyFresh : K .bridgePieceMassDichotomy ∉ known := by key_fresh)
+    (traceIntoCentreStructureFresh : K .traceIntoCentreStructure ∉ known := by key_fresh)
+    (traceIntoAbsorbedStructureFresh : K .traceIntoAbsorbedStructure ∉ known := by key_fresh)
     [FactKeys.Has (K .barrierCap) known]
     [FactKeys.Has (K .barrierEnumeration) known]
     [FactKeys.Has (K .boundaryDemand) known]
@@ -382,7 +385,7 @@ noncomputable def selectedRouteEightUnifiedResidual
       (by key_fresh) (by key_fresh) with
   | .right residualHistory =>
       -- G audit: the failed hypotheses are published in G's canonical form
-      -- (keys 8300--8313) before the residual is returned.
+      -- (keys 8300--8316) before the residual is returned.
       let canonical :=
         (typeBSublinearCanonicalFormRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -448,11 +451,26 @@ noncomputable def selectedRouteEightUnifiedResidual
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           g_coverFlowValue (by key_fresh)
+      let g_bridgePieceMassDichotomy :=
+        (bridgePieceMassDichotomyRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          g_pieceSizeProfile (by key_fresh)
+      let g_traceIntoCentreStructure :=
+        (traceIntoCentreStructureRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          g_bridgePieceMassDichotomy (by key_fresh)
+      let g_traceIntoAbsorbedStructure :=
+        (traceIntoAbsorbedStructureRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          g_traceIntoCentreStructure (by key_fresh)
       let arms :=
         (typeBSublinearFailureArmsRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          g_pieceSizeProfile (by key_fresh)
+          g_traceIntoAbsorbedStructure (by key_fresh)
       exact Or.inl (typeBSublinearProductReturn arms arm.1 arm.2)
   | .left sublinearHistory =>
       let unifiedDeficit :=

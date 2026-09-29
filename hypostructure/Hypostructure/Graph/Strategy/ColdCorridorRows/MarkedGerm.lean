@@ -62,4 +62,84 @@ so the selection's minimality gives either a baseline failure or a cycle of G of
           (fun X small base => (inputs.get (K .selection)).down.2 X small base)⟩
         .nil)
 
+/-! ## Node `[157]`: the incidence structure of the marked germ's stretch
+
+The stretch is subcubic (candidate germs) and G meets the baseline, so each interior vertex of
+a spanning path has degree exactly `t`: its two path neighbours and `t - 2` extra neighbours,
+each a pendant or a chord. -/
+@[reducible] noncomputable def coldMarkedGermStretchIncidenceRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldMarkedGermStretchIncidence
+    { Requires := [K .coldAbsorbedNeutralConfiguration, K .minDegreeBaseline]
+      Produces := [K .coldMarkedGermStretchIncidence]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .coldMarkedGermStretchIncidence)
+        ⟨Contracts.Spine.coldMarkedGermStretchIncidence_of_neutral data.toParameters
+          inputs.current.object
+          (inputs.get (K .coldAbsorbedNeutralConfiguration)).down
+          (inputs.get (K .minDegreeBaseline)).down⟩
+        .nil)
+
+/-! ## Node `[157]`, F08 at every adjacent interior pair
+
+The suppression of a cubic edge `u v` (`Graph.DoubleSuppress.pair_suppression_dichotomy`):
+delete `u v`, add `pl x` and `y q`.  Every degree is preserved and the result is smaller by
+two, so minimality gives a cycle of G of length `Lk + j`, `j ∈ {1,2}`, unless a triangle or
+`C4` obstruction holds. -/
+@[reducible] noncomputable def coldMarkedGermPairSuppressionRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldMarkedGermPairSuppression
+    { Requires := [K .coldAbsorbedNeutralConfiguration, K .minDegreeBaseline, K .selection]
+      Produces := [K .coldMarkedGermPairSuppression]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .coldMarkedGermPairSuppression)
+        ⟨Contracts.Spine.coldMarkedGermPairSuppression_of_neutral data.toParameters
+          inputs.current.object
+          (inputs.get (K .coldAbsorbedNeutralConfiguration)).down
+          (inputs.get (K .minDegreeBaseline)).down
+          (inputs.get (K .selection)).down.1
+          (fun X small base => (inputs.get (K .selection)).down.2 X small base)⟩
+        .nil)
+
+/-! ## Node `[157]`: the Mersenne paths of the suppressed pairs, and the chord spans -/
+@[reducible] noncomputable def coldMarkedGermPairMersenneRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldMarkedGermPairMersenne
+    { Requires := [K .coldAbsorbedNeutralConfiguration, K .minDegreeBaseline, K .selection]
+      Produces := [K .coldMarkedGermPairMersenne]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .coldMarkedGermPairMersenne)
+        ⟨Contracts.Spine.coldMarkedGermPairMersenne_of_neutral data.toParameters
+          inputs.current.object
+          (inputs.get (K .coldAbsorbedNeutralConfiguration)).down
+          (inputs.get (K .minDegreeBaseline)).down
+          (inputs.get (K .selection)).down.1
+          (fun X small base => (inputs.get (K .selection)).down.2 X small base)⟩
+        .nil)
+
+@[reducible] noncomputable def coldMarkedGermChordSpanRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldMarkedGermChordSpan
+    { Requires := [K .coldAbsorbedNeutralConfiguration, K .selection]
+      Produces := [K .coldMarkedGermChordSpan]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .coldMarkedGermChordSpan)
+        ⟨Contracts.Spine.coldMarkedGermChordSpan_of_neutral data.toParameters
+          inputs.current.object
+          (inputs.get (K .coldAbsorbedNeutralConfiguration)).down
+          (inputs.get (K .selection)).down.1⟩
+        .nil)
+
 end Hypostructure.Graph.Strategy.Spine

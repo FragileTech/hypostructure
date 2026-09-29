@@ -109,4 +109,131 @@ theorem coldMarkedGermStretchExcision_of_neutral (data : Parameters)
     (Graph.MinimumDegreeAtLeast data.threshold)
     (fun X hb hs => minimal X hs hb)
 
+/-- **The incidence structure of the marked germ's stretch.** -/
+theorem coldMarkedGermStretchIncidence_of_neutral (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (neutral : NeutralConfigurationStatement data object)
+    (baseline : Graph.MinimumDegreeAtLeast data.threshold object) :
+    ColdMarkedGermStretchIncidenceStatement data object := by
+  classical
+  obtain ⟨marked, markedEq, spec⟩ := markedNeutralGerm?_spec_of_neutral data object neutral
+  refine ⟨marked, markedEq, ?_⟩
+  have spec' := spec
+  unfold MarkedNeutralGermSpec NeutralEqualLengthTerminalConfigurationAt at spec'
+  obtain ⟨active, _⟩ := spec'
+  have subcubic := canonicalActiveColdGerm_support_subcubic data object marked.1 active
+  intro a b p hp hsupp i hi0 hilt
+  have hmem : p.getVert i ∈ marked.1.support :=
+    (hsupp _).1 (p.getVert_mem_support i)
+  have hle := subcubic _ hmem
+  have hge : data.threshold ≤ object.degree (p.getVert i) :=
+    baseline.trans (Graph.FiniteObject.minDegree_le_degree object _)
+  have hdeg : object.degree (p.getVert i) = data.threshold := le_antisymm hle hge
+  refine ⟨hdeg, ?_⟩
+  letI : FinEnum object.Vertex := object.vertices
+  have hpred : object.graph.Adj (p.getVert i) (p.getVert (i - 1)) := by
+    have := p.adj_getVert_succ (i := i - 1) (by omega)
+    have e : i - 1 + 1 = i := by omega
+    rw [e] at this
+    exact this.symm
+  have hsucc : object.graph.Adj (p.getVert i) (p.getVert (i + 1)) :=
+    p.adj_getVert_succ (i := i) hilt
+  have hne : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
+    intro h
+    have := hp.getVert_injOn (by simp; omega) (by simp; omega) h
+    omega
+  have hsub : ({p.getVert (i - 1), p.getVert (i + 1)} : Set object.Vertex) ⊆
+      object.graph.neighborSet (p.getVert i) := by
+    intro x hx
+    rcases hx with rfl | rfl
+    · exact hpred
+    · exact hsucc
+  rw [Set.ncard_sdiff hsub (Set.toFinite _), ← Graph.FiniteObject.degree_eq_ncard_neighborSet,
+    hdeg, Set.ncard_pair hne]
+
+open Classical in
+/-- **F08 at every adjacent interior pair of the marked germ's stretch.** -/
+theorem coldMarkedGermPairSuppression_of_neutral (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (neutral : NeutralConfigurationStatement data object)
+    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ X : Graph.FiniteObject.{u}, X.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold X →
+      Graph.HasCycleWithLength data.LengthOK X) :
+    ColdMarkedGermPairSuppressionStatement data object := by
+  obtain ⟨marked, markedEq, _⟩ := markedNeutralGerm?_spec_of_neutral data object neutral
+  refine ⟨marked, markedEq, ?_⟩
+  intro a b p hp _support i hi0 hi x y nu nv hxp hxv hyq hyu
+  by_cases hn1 : object.graph.Adj (p.getVert (i - 1)) x
+  · exact Or.inl (Or.inl hn1)
+  by_cases hn2 : object.graph.Adj y (p.getVert (i + 2))
+  · exact Or.inl (Or.inr (Or.inl hn2))
+  by_cases hne : s(p.getVert (i - 1), x) = s(y, p.getVert (i + 2))
+  · exact Or.inl (Or.inr (Or.inr hne))
+  right
+  have hpv : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
+    intro h
+    have := hp.getVert_injOn (by simp; omega) (by simp; omega) h
+    omega
+  have hqu : p.getVert (i + 2) ≠ p.getVert i := by
+    intro h
+    have := hp.getVert_injOn (by simp; omega) (by simp; omega) h
+    omega
+  let cfg : Graph.DoubleSuppress.Config object.graph :=
+    { u := p.getVert i, v := p.getVert (i + 1), pl := p.getVert (i - 1), x := x, y := y,
+      q := p.getVert (i + 2), nu := nu, nv := nv, hpx := hxp.symm, hpv := hpv,
+      hxv := hxv, hyq := hyq, hyu := hyu, hqu := hqu, hn1 := hn1, hn2 := hn2, hne := hne }
+  exact Graph.DoubleSuppress.pair_suppression_dichotomy object cfg data.threshold baseline
+    data.LengthOK avoids (fun X hb hs => minimal X hs hb)
+
+open Classical in
+/-- **The Mersenne paths of every suppressed pair of the marked germ's stretch.** -/
+theorem coldMarkedGermPairMersenne_of_neutral (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (neutral : NeutralConfigurationStatement data object)
+    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimal : ∀ X : Graph.FiniteObject.{u}, X.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold X →
+      Graph.HasCycleWithLength data.LengthOK X) :
+    ColdMarkedGermPairMersenneStatement data object := by
+  obtain ⟨marked, markedEq, _⟩ := markedNeutralGerm?_spec_of_neutral data object neutral
+  refine ⟨marked, markedEq, ?_⟩
+  intro a b p hp _support i hi0 hi x y nu nv hxp hxv hyq hyu
+  by_cases hn1 : object.graph.Adj (p.getVert (i - 1)) x
+  · exact Or.inl (Or.inl hn1)
+  by_cases hn2 : object.graph.Adj y (p.getVert (i + 2))
+  · exact Or.inl (Or.inr (Or.inl hn2))
+  by_cases hne : s(p.getVert (i - 1), x) = s(y, p.getVert (i + 2))
+  · exact Or.inl (Or.inr (Or.inr hne))
+  right
+  have hpv : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
+    intro h
+    have := hp.getVert_injOn (by simp; omega) (by simp; omega) h
+    omega
+  have hqu : p.getVert (i + 2) ≠ p.getVert i := by
+    intro h
+    have := hp.getVert_injOn (by simp; omega) (by simp; omega) h
+    omega
+  let cfg : Graph.DoubleSuppress.Config object.graph :=
+    { u := p.getVert i, v := p.getVert (i + 1), pl := p.getVert (i - 1), x := x, y := y,
+      q := p.getVert (i + 2), nu := nu, nv := nv, hpx := hxp.symm, hpv := hpv,
+      hxv := hxv, hyq := hyq, hyu := hyu, hqu := hqu, hn1 := hn1, hn2 := hn2, hne := hne }
+  exact Graph.PairRoute.pair_route object cfg data.threshold baseline
+    data.LengthOK avoids (fun X hb hs => minimal X hs hb)
+
+open Classical in
+/-- **A chord of the stretch closes a non-accepted cycle of length span + 1.** -/
+theorem coldMarkedGermChordSpan_of_neutral (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (neutral : NeutralConfigurationStatement data object)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object) :
+    ColdMarkedGermChordSpanStatement data object := by
+  obtain ⟨marked, markedEq, _⟩ := markedNeutralGerm?_spec_of_neutral data object neutral
+  refine ⟨marked, markedEq, ?_⟩
+  intro a b p hp _support w1 w2 h2 h1 hadj hlen hok
+  obtain ⟨d, hd, hl⟩ := Graph.PairRoute.chord_cycle p hp h2 h1 hadj hlen
+  exact avoids ⟨⟨w2, d, hd, hl ▸ hok⟩⟩
+
 end Hypostructure.Graph.Contracts.Spine
