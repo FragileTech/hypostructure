@@ -12,9 +12,9 @@ residuals").  Each node is an exact decision at G's pinned objects:
 * `[153]` (`lem:cold-corridor-first-failure` (ii), tex 7265-7270): G's cut
   states along each retained cold corridor are pairwise distinct up to the
   first failure (`ColdCutStatesDistinctStatement`), or the explicitly
-  constructed first equal-state pair of one retained corridor of G, with its
-  separating path context and its boundary-degree separation
-  (`ColdRepeatedStateResidualStatement`);
+  constructed first equal-state pair of one retained corridor of G, with the
+  boundary-degree separation of G's two readings and the equal capped degrees
+  of its glue vertices (`ColdRepeatedStateResidualStatement`);
 * `[162]` (`lem:dense-cold-pass`, tex 7692-7694), on the distinct-states arm:
   every retained corridor of G whose first failure is a heavy centre strictly
   before its terminal segment is still terminal
@@ -96,7 +96,7 @@ abbrev ColdRepeatWitness.right {data : Parameters} {object : Graph.FiniteObject.
     (coldOccurrenceCorridorAt data object witness.occurrence witness.epsilon).Segment :=
   witness.2.2.2
 
-/-- **The configuration of `[153]`'s residual at a witness.**
+/-- **The configuration of `[153]`'s residual at a witness**, read at G.
 
 On G's retained corridor `C_ε` (`coldOccurrenceCorridorAt`, in its outside
 component of `G − X_cold`, length `|C_ε| = inside.length`), with G's pinned cut
@@ -105,23 +105,23 @@ states (`coldCutStateSequence`):
 * `left < right` with equal states, and no equal pair before `right` (the
   first equal-state pair);
 * no (F1)--(F5) event at any segment before `right`;
-* the (F2) clause at `right` (so `right` is `ε`'s first failure, and it is
-  (F2));
-* the separating context `prefixContext right` (a path of `2^(right+2) − right`
-  edges with fresh interior, glued at `head right` and at the entry foot): with
-  `piece J_right` it closes an accepted cycle, with `retainedPiece J_right
-  J_left` it closes none, and the two readings have different boundary-degree
-  profiles on `∂J_right`;
-* the excision data of the pair: the glue vertices `head left` and
-  `head right` carry the same boundary-degree entry of the cut state, i.e. the
-  same G-degree capped at the signature bound `D`; the excised replacement of
-  `piece J_right` is `retainedPiece J_right J_left`, the reading above. -/
+* G's two readings of `J_right` on `∂J_right` -- the retained `J_left` reading
+  and `J_right` itself -- have different boundary-degree profiles;
+* the glue vertices `head left` and `head right` carry the same
+  boundary-degree entry of the cut state, i.e. the same G-degree capped at the
+  signature bound `D`.
+
+(F2) does not fire at `right`: it is decided at G
+(`Graph.ColdCorridor.Corridor.not_firstFailureDefect`), so the first failure at
+`right` is the (F5) repeat and the pair is the repeat subcase of the
+first-failure exchange.  No outside context other than G's own surroundings is
+read. -/
 def ColdRepeatedStateSpecAt (data : Parameters) (object : Graph.FiniteObject.{u})
     (occurrence : ColdFirstFailureOccurrenceData data object)
     (epsilon : ColdEligibleHalfEdge data object)
     (left right : (coldOccurrenceCorridorAt data object occurrence epsilon).Segment) :
     Prop :=
-  ∃ outside : Graph.ColdCorridor.IsOutsideComponent object
+  ∃ _outside : Graph.ColdCorridor.IsOutsideComponent object
       (coldCorridorWindows data object)
       (coldOccurrenceComponentAt data object occurrence epsilon),
     left.1 < right.1 ∧
@@ -144,26 +144,6 @@ def ColdRepeatedStateSpecAt (data : Parameters) (object : Graph.FiniteObject.{u}
           (coldOccurrenceIndexAt data object occurrence epsilon)
           (coldOccurrenceIncidence data object occurrence epsilon)
           (ColdDeclaredHandoffSupport data object) earlier) ∧
-    ColdFirstFailureDefectAt data object
-      (coldOccurrenceCorridorAt data object occurrence epsilon)
-      (coldOccurrencePresentationAt data object occurrence epsilon)
-      (coldOccurrenceIndexAt data object occurrence epsilon) right ∧
-    Graph.HasCycleWithLength data.LengthOK
-      (Graph.glue
-        (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object
-          ((coldOccurrenceCorridorAt data object occurrence epsilon).prefixSupport
-            right.1))
-        (Graph.ColdEqualStates.prefixContext outside
-          (coldOccurrenceCorridorAt data object occurrence epsilon) right)) ∧
-    ¬ Graph.HasCycleWithLength data.LengthOK
-      (Graph.glue
-        (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
-          ((coldOccurrenceCorridorAt data object occurrence epsilon).prefixSupport
-            right.1)
-          ((coldOccurrenceCorridorAt data object occurrence epsilon).prefixSupport
-            left.1))
-        (Graph.ColdEqualStates.prefixContext outside
-          (coldOccurrenceCorridorAt data object occurrence epsilon) right)) ∧
     (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
         ((coldOccurrenceCorridorAt data object occurrence epsilon).prefixSupport
           right.1)

@@ -20,12 +20,14 @@ variable {data : Data.{u}}
 `lem:cold-increment-arithmetic`
 
 Every length-changing cold bounded germ of the current residual is hit-realized
-(G1, refuted by the selection's target avoidance), hit-distinguished (G2, a
-target-defective identification, routed to the target-defect ledger), or silent
-(G3, a target-complete compression of a proper support, refuted by
-`cor:uncompressible`).  The increment arithmetic clauses are the framework's
-`ColdIncrementArithmetic` lemmas.  The routed conclusion `K .coldGermRouted` is
-G2 for every surviving length-changing germ. -/
+(G1, refuted by the selection's target avoidance), hit-distinguished (G2), or
+silent (G3).  Read at G, G2 is empty: the two representatives have the same
+target response in G's own surroundings `G − Z` (`K .coldGermDistinguished`,
+Lean improvement: the G2 arm is empty at G).  G3 is a target-complete
+compression of a proper support read at G, refuted by `cor:uncompressible`.
+The increment arithmetic clauses are the framework's `ColdIncrementArithmetic`
+lemmas.  The routed conclusion `K .coldGermRouted` is that no length-changing
+germ of the extracted family survives. -/
 @[reducible] noncomputable def coldGermTrichotomyRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldGermTrichotomy
@@ -46,7 +48,7 @@ G2 for every surviving length-changing germ. -/
             inputs.current.object⟩
           (.cons (key := K .coldGermSilent)
             ⟨Contracts.Spine.coldGermSilent_of_uncompressible data.toParameters
-              inputs.current.object uncompressible⟩
+              inputs.current.object avoids uncompressible⟩
             (.cons (key := K .coldGermRouted)
               ⟨Contracts.Spine.coldGermRouted_of_uncompressible data.toParameters
                 inputs.current.object avoids uncompressible⟩
@@ -56,9 +58,10 @@ G2 for every surviving length-changing germ. -/
 `lem:cold-short-self-return-filter`
 
 Every row of the finite same-interface table is routed: no row is realizing, and
-a row is handed off or distinguishing (a row that is neither is a compression of
-its own proper support, excluded at `[14]`); the short self-return exceptions
-survive their smear and are routed the same way; and the table is finite. -/
+a row is handed off (a row that is not handed off is, at G, a compression of its
+own proper support by `glue E (G − Z)`, excluded at `[14]`; the distinguishing
+arm is empty at G); the short self-return exceptions survive their smear and
+are routed the same way; and the table is finite. -/
 @[reducible] noncomputable def coldSameInterfaceTableRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldSameInterfaceTable
@@ -154,7 +157,10 @@ noncomputable def coldGermRealizationDichotomy
 
 /-- **Node `[154]`, second binary test on the no-G1 arm (G2).**  Is some active
 configuration hit-distinguished?  The no-arm is its literal negation: every
-active configuration is silent (G3 or the equal-length table, `[157]`). -/
+active configuration is silent (G3 or the equal-length table, `[157]`).  Read at
+G the test is decided: its yes-arm is empty
+(`instIncompatibleColdGermSomeDistinguishingSelection`), and the caller closes
+it through Core's closure boundary. -/
 noncomputable def coldGermDistinctionDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}

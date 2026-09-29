@@ -125,13 +125,14 @@ noncomputable def Assembly.Internal.nearCubicRealized
                     (absorbedGermFanDataRow (data := spineData)).run split
                       (by key_fresh)
                   let unhit := nearCubicColdNoHit family
+                  -- `[154]` second test (G2) is decided at G: its yes-arm is
+                  -- empty (Lean improvement), closed against the selection.
                   match coldGermDistinctionDichotomy (data := spineData) unhit
                       (by key_fresh) (by key_fresh) with
                   | .left distinguishedHistory =>
-                      exact Or.inr (Or.inr (Or.inr (Or.inl
-                        (Or.inr (Or.inr (Or.inl
-                          (coldBranchClosed_linearRealizedDistinguishedReturn
-                            (nearCubicColdTable distinguishedHistory))))))))
+                      exact ((closeIncompatible distinguishedHistory
+                        (K .coldGermSomeDistinguishing) (K .selection)
+                        (by key_fresh)).elimClosed (by infer_instance)).elim
                   | .right silentHistory =>
                       exact Or.inr (Or.inr (Or.inr (Or.inl
                         (Or.inr (Or.inr (Or.inr

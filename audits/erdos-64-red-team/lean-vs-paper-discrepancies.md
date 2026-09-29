@@ -4907,3 +4907,71 @@ the K=0 / hot-only reading, which the approved exact [50]/[53] supersedes.
 - **Where recorded.** The current `[54]` residual entry
   ([#residual-54](#residual-54), "Returned residuals") lists the facts carried
   at the `[53]`-active sites of these arms (tex 7843-7850).
+
+## G repair R4: the cold corridor `[145]`–`[157]`, `[153]`, and the `[178]` pair-code response
+
+Branch `g-repair-R4`.  Every test of the cluster is stated about G; the only
+compatible context of a support `Z` of G is G's own surroundings `G − Z`
+(`SupportAtom.outside`).  Codes against R2's G-form `CompressibleSupport`
+(`¬ Target (glue X' (G − Z))`).
+
+- **The second representative `E`** (`def:cold-bounded-germ`,
+  `def:cold-corridor-first-failure`): `rowRepresentative` is the
+  `Precedes`-least canonical piece with G's retained cut-state of the support
+  piece read in `G − Z` (`CanonicalPiece.CutStateReadingAt`: same
+  boundary-degree profile, same target response in `G − Z`, baseline of the
+  completion in `G − Z`).  The response clause is the paper's "after excluding
+  (F2), equality of cold corridor states is equality for every target-response
+  coordinate used by the local replacement", read at G where (F2) is decided.
+  `BoundedGerm` gains the field `sameResponse` (the retained response in
+  `G − Z`); `cutStateRepresentativeAt` / `CutStateReadingAt` are the G-forms in
+  `CanonicalRealization`.
+- **(F2)** `Corridor.FirstFailureDefect`: equal states and G's two readings of
+  `J_right` (retained `J_left`, piece `J_right`) differ in target truth in
+  `G − J_right`.  **Lean improvement: (F2) is empty at G**
+  (`Corridor.not_firstFailureDefect`: the retained reading is
+  `ActualContext.actualGlue`, the piece reconstructs G).  `[153]`'s
+  `coldFailureDefectRoute` now publishes "no segment carries (F2)"; the routing
+  no longer reads the sparse survivor.
+- **(F3)** `FirstFailureCompression.sameResponse`: the response is compared in
+  `G − J`; (F3) is a G-form `CompressibleSupport`, refuted by `[14]`.
+- **G2** `BoundedGerm.Distinguishing := ¬(Target (glue Q (G − Z)) ↔ Target (glue E (G − Z)))`.
+  **Lean improvement: G2 is empty at G** (`BoundedGerm.not_distinguishing`).
+  `coldGermDistinguished` publishes "no active germ is distinguishing"; the
+  `[154]` G2 yes-arm is closed against `K .selection`
+  (`instIncompatibleColdGermSomeDistinguishingSelection`).
+- **G3** (`lem:cold-bounded-germ-trichotomy`, `lem:replacement`): `X' = E`
+  glued into `G − Z` has the profile, the baseline (internal degrees
+  included), no target cycle and is strictly smaller:
+  `BoundedGerm.compressibleSupport_of_increment_neg`, refuted by `[14]`.
+  `coldGermRouted` now publishes "no active germ is shortening".
+- **Table rows**: `TableRow.admissible` reads the identification at G;
+  `row_closed` routes every non-handed-off row to a G-form compression.
+- **`[153]` residual** `ColdRepeatedStateSpecAt`: the (F2) clause, the two
+  `prefixContext` cycle clauses and the path context are removed (not G).  The
+  residual is still reached: G's first equal-state pair (an (F5) repeat with no
+  earlier event), the profile separation of G's two readings and the equal
+  capped degrees of its glue vertices.
+- **`[187]` cold-terminal singletons**: `linearDenseAtOrAbove`,
+  `linearDenseRateFailed`, `linearRealizedDistinguished` carry the empty G2
+  yes-arm; their returns are removed, the subtypes are kept only because the
+  protected root type lists them.  `linearRealizedSilent` is still reached.
+- **Removed (not G):** `Presentation.FirstFailureResponse`,
+  `contextEquivalent_of_state_eq`, `firstFailureResponse_of_not_contextEquivalent`,
+  `Corridor.not_targetComplete_of_firstFailureDefect`,
+  `Corridor.contextEquivalent_of_not_firstFailureDefect`,
+  `BoundedGerm.not_targetComplete_of_distinguishing`, `boundedGerm_not_survives`
+  (concluded the empty arm), `coldFirstFailureDefectAt_iff`,
+  `coldFailureDefect_excluded`, `coldFailureDefectRoutes_of_distinct`, the
+  `ColdEqualStates` path context (`pathContext`, `prefixContext`,
+  `prefix_targetDefect` and helpers), and the unused all-context swap lemmas
+  of `CanonicalRealization` (`glue_swap_baseline`, `glue_swap_vertexCount`,
+  `toCanonical_eq_or_precedes`, `swap_smaller_counterexample`,
+  `cutStateRepresentative_size_le`).  `CutStateReading`,
+  `cutStateRepresentative` and `glue_swap_target_iff` stay only for the
+  cross-cluster consumers `Route8Residual`, `TraceBasinAlternatives`.
+- **`[178]`** `SparsePairSkeletonModel.response`: the member's reading of
+  `X_π` on G's boundary `∂X_π` glued into `G − X_π` (`memberPiece`); the
+  labelled `(n,m)` class count is kept exactly.  Removed:
+  `PairResponseValue`, `pairResponseReading` and its simp lemmas (all-context
+  value, no users).

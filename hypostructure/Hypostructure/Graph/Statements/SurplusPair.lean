@@ -489,7 +489,10 @@ noncomputable def PairOverlapFirstFailure.portReturns
 The current fixed-`(n,m)` skeleton class is encoded by the edges outside all
 port-return supports, the already-realized baseline word, and the pair
 coordinates exposed before the first failed extension.  `response` is the
-literal all-context target response of `X_π` in each labelled skeleton.
+target response of `X_π` in each labelled skeleton, read inside G: the
+member's reading of `X_π`, on G's boundary `∂X_π`, glued into G's own
+surroundings `G − X_π` (`Graph.SparsePairSkeletonModel.response`).  The class
+count over the skeletons is G's labelled `(n,m)` class and is kept exactly.
 `jointStates U` is the set `𝒮(U)` realized in that conditional fibre.
 
 The final fields identify the entire canonical prefix through the first failed

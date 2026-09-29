@@ -377,11 +377,11 @@ theorem denseColdCorridorsTerminal_of_distinct (data : Parameters)
       exact (coldFailureCycle_of_avoids data object avoids occurrenceData epsilon
         first cycle).elim
   | defect defect =>
-      exact (coldFailureDefect_excluded data object distinct occurrenceData epsilon
-        first minimal defect).elim
+      exact (coldFailureDefectRoutes_of_avoids data object avoids occurrenceData
+        epsilon first defect).elim
   | compression compression =>
-      exact (coldFailureCompression_of_uncompressible data object uncompressible
-        occurrenceData epsilon first compression).elim
+      exact (coldFailureCompression_of_uncompressible data object avoids
+        uncompressible occurrenceData epsilon first compression).elim
   | handoff handoff =>
       by_cases before : first.1 <
           (coldOccurrenceCorridorAt data object occurrenceData epsilon).inside.1.length
@@ -448,8 +448,8 @@ theorem coldBranchClosed_of_routing (data : Parameters)
     (table : ColdSameInterfaceTableStatement data object) :
     ColdBranchClosedStatement data object := by
   refine ⟨?_, ?_, ?_⟩
-  · rintro ⟨germ, active, shorter, notDistinguishing⟩
-    exact notDistinguishing (routed germ active shorter).1
+  · rintro ⟨germ, active, shorter, _notDistinguishing⟩
+    exact routed germ active shorter
   · rintro ⟨row, notHandoff, notDistinguishing⟩
     rcases (table.1 row).2 with handoff | distinguishing
     · exact notHandoff handoff

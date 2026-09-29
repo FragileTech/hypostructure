@@ -178,8 +178,9 @@ a first failure (`K .coldFirstFailureOccurrence`).  The paper's (ii) (tex
 retained corridor are pairwise distinct up to the first failure; the decision
 `coldCutStatesDichotomy` splits it.  The (★) arm is returned as a ledger on
 which routing continues; the ¬(★) arm returns the explicitly constructed
-residual `K .coldRepeatedStateResidual` (G's first equal-state pair, its
-separating path context and its profile separation).
+residual `K .coldRepeatedStateResidual` (G's first equal-state pair, the
+profile separation of G's two readings and the equal capped degrees of its glue
+vertices).  (F2) is decided at G on both arms (`K .coldFailureDefectRoute`).
 
 `arm` names the path into `[153]` (one of its three linear arms; the absorbed
 lane is not entered, `[173]`'s no-arm being closed against `K .route8Rate`);
