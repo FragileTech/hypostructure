@@ -73,6 +73,7 @@ noncomputable def selectedTypeBHighSurplusContinuation
     (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known := by key_fresh)
     (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by key_fresh)
     (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known := by key_fresh)
+    (foldPeelsFresh : K .route8FoldPeels ∉ known := by key_fresh)
     (quotientFreeFresh : K .route8QuotientFree ∉ known := by key_fresh)
     (quotientResidualFresh : K .route8QuotientResidual ∉ known := by key_fresh)
     (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known := by key_fresh)

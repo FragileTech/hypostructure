@@ -905,6 +905,61 @@ noncomputable abbrev Route8PeelingDescentStatement
     data.threshold data.dischargeScale (route8StageSlack data object)
     data.LengthOK (route8DescentChain data object)
 
+/-- **Route 8 read on the pieces constructed from G** (idx 8700).  At every
+unified entry `ξ = (X,w,u)` with selected trace basin `B_u`, the realizations
+of the declared trace-response state are the pieces constructed from G at
+`B_u` (`Graph.GConstructedPiece`), read in G's own surroundings `G − B_u`:
+
+1. every two distinct interior vertices of `B_u` with no common neighbour in G
+   fold to such a piece, which makes alternative (a) of `def:typeA-trace-basin`
+   occur (the fold glued into `G − B_u` is a strictly smaller baseline graph,
+   hence carries a target cycle), so the load `u` carries its canonical
+   exit-`(4)` witness (Q3) at the empty peeling;
+2. a nonempty essential core means the declared family determines the target
+   over the constructed pieces (`Route8.Entry.Determined`);
+3. every target-complete carrier set holds every such fold pair: some retained
+   declared coordinate has one of the two folded vertices in its support;
+4. `thm:typeA-two-carrier-nogo` run at G: a two-support entry (at most `δ − 1`
+   private essential incidences) with a nonempty essential core is an
+   exit-`(4)` peel (Q5): the core's minimality gives a constructed realization
+   of the deleted restriction separated from the full reading in `G − B_u`. -/
+noncomputable abbrev Route8FoldPeelsStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  ∀ index ∈ route8UnifiedEntries data object,
+    let basin := Graph.Route8Census.basin object data.threshold index
+    let entry := (Graph.Route8Census.presented object data.threshold
+      data.LengthOK index).toEntry (Graph.HasCycleWithLength data.LengthOK)
+    (∀ keep remove :
+        Graph.Strategy.InterfaceReplacement.SupportAtom.PieceInternal object basin,
+      keep ≠ remove →
+      (∀ common, ¬ object.IsCommonNeighbor keep.1 remove.1 common) →
+        Graph.Route8.TraceBasin.TraceLocalTargetDefect object index.1
+            data.threshold data.LengthOK index.2.1 index.2.2 basin ∧
+          ∃ witness : Graph.ExitFour.Witness
+              (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold
+              data.dischargeScale index.2.1 ∅,
+            witness.load = index.2.2) ∧
+      (1 ≤ entry.alpha → entry.Determined) ∧
+      (∀ D : Finset (Sym2 object.Vertex), entry.Complete D →
+        ∀ keep remove :
+          Graph.Strategy.InterfaceReplacement.SupportAtom.PieceInternal object basin,
+        keep ≠ remove →
+        (∀ common, ¬ object.IsCommonNeighbor keep.1 remove.1 common) →
+          ∃ coordinate ∈ entry.retained D,
+            keep.1 ∈ Graph.Route8.PresentedEntry.traceDeclaredSupport object index.1
+                data.threshold index.2.1 index.2.2 coordinate ∨
+              remove.1 ∈ Graph.Route8.PresentedEntry.traceDeclaredSupport object
+                index.1 data.threshold index.2.1 index.2.2 coordinate) ∧
+      (Graph.Route8.IndexedTwoCarrierCore (route8UnifiedEntries data object)
+          (Graph.Route8Census.core object data.threshold data.LengthOK)
+          (data.threshold - 1) index →
+        1 ≤ entry.alpha →
+          ∃ witness : Graph.ExitFour.Witness
+              (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold
+              data.dischargeScale index.2.1 ∅,
+            witness.load = index.2.2)
+
 /-- The component collection `𝒳_A` of node `[111]` (a definition node,
 `def:typeA-large-budget-deficit`): the canonical pieces all of whose saturated
 receivers survive in the route-`8` residual.  "`𝒳_A` carries `D_A(𝒳_A)`" is

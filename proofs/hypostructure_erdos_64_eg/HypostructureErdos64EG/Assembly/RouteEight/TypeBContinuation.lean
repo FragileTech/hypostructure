@@ -130,6 +130,7 @@ noncomputable def selectedTypeBRoute8Continuation
     (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by
       key_fresh)
     (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known := by key_fresh)
+    (foldPeelsFresh : K .route8FoldPeels ∉ known := by key_fresh)
     (quotientFreeFresh : K .route8QuotientFree ∉ known := by key_fresh)
     (quotientResidualFresh : K .route8QuotientResidual ∉ known := by
       key_fresh)
@@ -304,6 +305,7 @@ noncomputable def selectedTypeBRoute8Entry
     (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by
       key_fresh)
     (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known := by key_fresh)
+    (foldPeelsFresh : K .route8FoldPeels ∉ known := by key_fresh)
     (quotientFreeFresh : K .route8QuotientFree ∉ known := by key_fresh)
     (quotientResidualFresh : K .route8QuotientResidual ∉ known := by
       key_fresh)

@@ -72,6 +72,7 @@ noncomputable def selectedTypeBDecoratedContinuation
     (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known)
     (sublinearResidualFresh : K .typeBSublinearResidual ∉ known)
     (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known)
+    (foldPeelsFresh : K .route8FoldPeels ∉ known := by key_fresh)
     (quotientFreeFresh : K .route8QuotientFree ∉ known)
     (quotientResidualFresh : K .route8QuotientResidual ∉ known)
     (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known)

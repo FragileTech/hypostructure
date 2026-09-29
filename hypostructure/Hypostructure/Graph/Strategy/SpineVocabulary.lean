@@ -1626,7 +1626,6 @@ inductive Key where
   /-- Node `[181]`, yes: some unpaid entry of a maximal demand ledger has no
   exit-`(4)` witness. -/
   | route8UnpaidWitnessFree
-  -- R3 keys (7900–7949): route 8 and Type A stated about G
   -- F5 keys
   /-- Node `[175]`, no arm: every selected corridor meets a high-degree
   vertex. -/
@@ -1900,6 +1899,9 @@ inductive Key where
   -- g-repair R1 keys (7800–7849)
   /-- Node `[125]`, clause (b) of `def:named-surplus-exits` stated about G (Lean improvement: exit (b) is empty at G): **every two readings of G agree in G's own surroundings `G − Z`** (both glued graphs are target-free subgraphs of G), so G's declared sparse family has no target-defective identification.  Published on `[125]`'s exit arm, where it closes the arm against `K .sparseTargetDefectResidual`. -/
   | sparseTargetDefectEmpty
+  -- g-pieces-constructed keys (8700–8799)
+  /-- Route 8 read on the pieces constructed from G: at every unified entry a fold pair of the selected basin (two interior vertices with no common neighbour) makes alternative (a) occur and the load an exit-`(4)` peel (Q3); a nonempty essential core means the declared family determines the target; every complete carrier set holds every fold pair. -/
+  | route8FoldPeels
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2656,7 +2658,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8UnpaidTwoCarrierStatement data.toParameters object
   | .route8UnpaidWitnessFree, object =>
       Route8UnpaidWitnessFreeStatement data.toParameters object
-  -- R3 keys
   -- F5 keys
   | .coldNoPositiveGerm, object =>
       ColdNoPositiveGermStatement data.toParameters object
@@ -2884,6 +2885,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   -- g-repair R1 keys
   | .sparseTargetDefectEmpty, object =>
       SparseTargetDefectEmptyStatement data.toParameters object
+  -- g-pieces-constructed keys
+  | .route8FoldPeels, object =>
+      Route8FoldPeelsStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3237,7 +3241,6 @@ def label : Key → String
   | .route8StageRate => "route8StageRate"
   | .route8UnpaidTwoCarrier => "route8UnpaidTwoCarrier"
   | .route8UnpaidWitnessFree => "route8UnpaidWitnessFree"
-  -- R3 keys
   -- F5 keys
   | .coldNoPositiveGerm => "coldNoPositiveGerm"
   -- SD keys (final pass)
@@ -3355,6 +3358,7 @@ def label : Key → String
   | .pairArmARoleAlphabet => "pairArmARoleAlphabet"
   | .pairArmB => "pairArmB"
   | .sparseTargetDefectEmpty => "sparseTargetDefectEmpty"
+  | .route8FoldPeels => "route8FoldPeels"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3825,6 +3829,7 @@ example : label .pairArmAPattern = "pairArmAPattern" := rfl
 example : label .pairArmARoleAlphabet = "pairArmARoleAlphabet" := rfl
 example : label .pairArmB = "pairArmB" := rfl
 example : label .sparseTargetDefectEmpty = "sparseTargetDefectEmpty" := rfl
+example : label .route8FoldPeels = "route8FoldPeels" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4172,7 +4177,6 @@ def idx : Key → Nat
   | .route8StageRate => 1402
   | .route8UnpaidTwoCarrier => 1403
   | .route8UnpaidWitnessFree => 1404
-  -- R3 keys
   -- F5 keys
   | .coldNoPositiveGerm => 1800
   -- SD keys (final pass)
@@ -4290,6 +4294,7 @@ def idx : Key → Nat
   | .pairArmARoleAlphabet => 7235
   | .pairArmB => 7236
   | .sparseTargetDefectEmpty => 7800
+  | .route8FoldPeels => 8700
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4626,7 +4631,6 @@ def ofIdx : Nat → Key
   | 1402 => .route8StageRate
   | 1403 => .route8UnpaidTwoCarrier
   | 1404 => .route8UnpaidWitnessFree
-  -- R3 keys
   -- F5 keys
   | 1800 => .coldNoPositiveGerm
   -- SD keys (final pass)
@@ -4744,6 +4748,7 @@ def ofIdx : Nat → Key
   | 7235 => .pairArmARoleAlphabet
   | 7236 => .pairArmB
   | 7800 => .sparseTargetDefectEmpty
+  | 8700 => .route8FoldPeels
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -5523,7 +5528,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnpaidTwoCarrier") 1403
   | .route8UnpaidWitnessFree =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnpaidWitnessFree") 1404
-  -- R3 keys
   -- F5 keys
   | .coldNoPositiveGerm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldNoPositiveGerm") 1800
@@ -5750,6 +5754,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmB") 7236
   | .sparseTargetDefectEmpty =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sparseTargetDefectEmpty") 7800
+  | .route8FoldPeels =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8FoldPeels") 8700
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

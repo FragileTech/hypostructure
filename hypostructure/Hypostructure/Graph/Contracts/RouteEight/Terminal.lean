@@ -65,7 +65,7 @@ theorem exitFour_of_deletionWitnesses (LengthOK : Nat → Prop)
     (selected : Route8.TraceBasin.select? object index.1 threshold index.2.1
         index.2.2 = some (Route8Census.basin object threshold index))
     (alphaAtLeast : letI := Route8.vertexDecEq object
-      2 ≤ ((Route8Census.presented object threshold LengthOK index).toEntry
+      1 ≤ ((Route8Census.presented object threshold LengthOK index).toEntry
         (HasCycleWithLength LengthOK)).alpha) :
     ∃ witness : ExitFour.Witness (HasCycleWithLength LengthOK) index.1
         threshold scale index.2.1 ∅,
@@ -86,7 +86,7 @@ theorem exitFour_of_deletionWitnesses (LengthOK : Nat → Prop)
     rw [Finset.nonempty_iff_ne_empty]
     intro empty
     have zero : entry.essentialCore.card = 0 := by rw [empty]; simp
-    change 2 ≤ entry.essentialCore.card at alphaAtLeast
+    change 1 ≤ entry.essentialCore.card at alphaAtLeast
     omega
   obtain ⟨carrier, carrierMem⟩ := coreNonempty
   have deletionWitnesses := deletion
@@ -178,7 +178,50 @@ theorem twoCarrier_exitFour (LengthOK : Nat → Prop)
     scale canonical negative indexMem
     (twoCarrier_deletionWitnesses LengthOK object packing components threshold
       scale twoCarrier)
-    selected alphaAtLeast
+    selected (le_trans (by decide) alphaAtLeast)
+
+/-- **`thm:typeA-two-carrier-nogo`, run at G**: a two-support entry of a
+canonical negative zero-surplus collection with selected basin and a nonempty
+essential core is an exit-`(4)` peel.  The core's minimality gives a
+realization of the deleted restriction (a piece constructed from G at `B_u`)
+separated from the full reading in `G − B_u`
+(`Route8.Entry.exists_deletion_witness`), and the two-support condition places
+the deletion quotient in `𝒬₄(w)` (Q5). -/
+theorem twoCarrier_exitFour_of_core (LengthOK : Nat → Prop)
+    (object : FiniteObject.{u}) (packing : Finset (Finset object.Vertex))
+    (components : Finset (SupportComponents.Connected.Component object
+      (object.remainderSupport packing)))
+    (threshold scale : Nat)
+    (canonical : components ⊆
+      object.canonicalPieces (object.remainderSupport packing))
+    (negative : ∀ component ∈ components,
+      object.NegativeNetCharge
+          (object.pieceSupport (object.remainderSupport packing) component)
+          threshold scale ∧
+        object.ambientSurplus
+          (object.pieceSupport (object.remainderSupport packing) component)
+          threshold = 0)
+    {index : Route8Census.Index object}
+    (indexMem : index ∈ Route8Census.entriesOfComponents object packing
+      components threshold scale)
+    (twoCarrier : letI := Route8.vertexDecEq object
+      Route8.IndexedTwoCarrierCore
+        (Route8Census.entriesOfComponents object packing components threshold
+          scale)
+        (Route8Census.core object threshold LengthOK) (threshold - 1) index)
+    (selected : Route8.TraceBasin.select? object index.1 threshold index.2.1
+        index.2.2 = some (Route8Census.basin object threshold index))
+    (coreNonempty : letI := Route8.vertexDecEq object
+      1 ≤ ((Route8Census.presented object threshold LengthOK index).toEntry
+        (HasCycleWithLength LengthOK)).alpha) :
+    ∃ witness : ExitFour.Witness (HasCycleWithLength LengthOK) index.1
+        threshold scale index.2.1 ∅,
+      witness.load = index.2.2 :=
+  exitFour_of_deletionWitnesses LengthOK object packing components threshold
+    scale canonical negative indexMem
+    (twoCarrier_deletionWitnesses LengthOK object packing components threshold
+      scale twoCarrier)
+    selected coreNonempty
 
 /-- The unified collection is a canonical collection of negative zero-surplus
 components (`def:typeA-unified-negative`). -/

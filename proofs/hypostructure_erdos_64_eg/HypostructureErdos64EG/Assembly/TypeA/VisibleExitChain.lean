@@ -73,6 +73,7 @@ noncomputable abbrev typeAVisibleExitKeys : FactKeys EGInput.{u} :=
     K .typeBSublinearLedger,
     K .typeBSublinearResidual,
     K .route8UnifiedDeficit,
+    K .route8FoldPeels,
     K .route8QuotientFree,
     K .route8QuotientResidual,
     K .route8UnifiedEntryCensus,

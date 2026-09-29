@@ -10,6 +10,7 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8StageOutcomeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8TwoCarrierExit
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedDeficit
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedEntryCensus
+import Hypostructure.Graph.Strategy.SpineRows.Route8FoldPeels
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedVisibleOverload
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedVisibleResidual
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnpaidExitFourDichotomy
@@ -221,6 +222,7 @@ noncomputable def selectedRouteEightUnifiedResidual
     (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by
       key_fresh)
     (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known := by key_fresh)
+    (foldPeelsFresh : K .route8FoldPeels ∉ known := by key_fresh)
     (quotientFreeFresh : K .route8QuotientFree ∉ known := by key_fresh)
     (quotientResidualFresh : K .route8QuotientResidual ∉ known := by
       key_fresh)
@@ -367,7 +369,15 @@ noncomputable def selectedRouteEightUnifiedResidual
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           sublinearHistory (by key_fresh)
-      match route8QuotientDichotomy (data := spineData) unifiedDeficit
+      -- Route 8 read on the pieces constructed from G: fold pairs of the
+      -- selected basins are exit-(4) peels, and complete carrier sets hold
+      -- every fold pair (idx 8700).
+      let foldPeels :=
+        (route8FoldPeelsRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          unifiedDeficit (by key_fresh)
+      match route8QuotientDichotomy (data := spineData) foldPeels
           (by key_fresh) (by key_fresh) with
       | .right residualHistory =>
           -- `[348]` → `[187]`: `thm:main` returns the failure of route-8

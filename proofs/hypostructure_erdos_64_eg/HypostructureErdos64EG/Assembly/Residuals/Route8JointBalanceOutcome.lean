@@ -171,6 +171,7 @@ theorem route8JointBalanceProductReturn
     [FactKeys.Has (K .route8ExtractedEntryCensus) known]
     [FactKeys.Has (K .typeBSublinearLedger) known]
     [FactKeys.Has (K .route8UnifiedDeficit) known]
+    [FactKeys.Has (K .route8FoldPeels) known]
     [FactKeys.Has (K .route8QuotientFree) known]
     [FactKeys.Has (K .route8UnifiedEntryCensus) known]
     [FactKeys.Has (K .route8PeelingDescent) known]

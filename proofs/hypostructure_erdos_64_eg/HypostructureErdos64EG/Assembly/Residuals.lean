@@ -1787,6 +1787,8 @@ abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8UnifiedDeficit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8FoldPeels selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8QuotientFree selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8UnifiedEntryCensus selected.object ∧
@@ -1936,6 +1938,7 @@ theorem route8JointBalanceReturn
     [FactKeys.Has (K .route8ExtractedEntryCensus) known]
     [FactKeys.Has (K .typeBSublinearLedger) known]
     [FactKeys.Has (K .route8UnifiedDeficit) known]
+    [FactKeys.Has (K .route8FoldPeels) known]
     [FactKeys.Has (K .route8QuotientFree) known]
     [FactKeys.Has (K .route8UnifiedEntryCensus) known]
     [FactKeys.Has (K .route8PeelingDescent) known]
@@ -2065,6 +2068,7 @@ theorem route8JointBalanceReturn
     (history.get (K .route8ExtractedEntryCensus)).down,
     (history.get (K .typeBSublinearLedger)).down,
     (history.get (K .route8UnifiedDeficit)).down,
+    (history.get (K .route8FoldPeels)).down,
     (history.get (K .route8QuotientFree)).down,
     (history.get (K .route8UnifiedEntryCensus)).down,
     (history.get (K .route8PeelingDescent)).down,
@@ -3548,6 +3552,8 @@ abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8UnifiedDeficit selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8FoldPeels selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8QuotientResidual selected.object
 
 /-- The return of `Route8QuotientOutcome`: one `get` per fact of
@@ -3667,6 +3673,7 @@ theorem route8QuotientReturn
     [FactKeys.Has (K .route8ExtractedEntryCensus) known]
     [FactKeys.Has (K .typeBSublinearLedger) known]
     [FactKeys.Has (K .route8UnifiedDeficit) known]
+    [FactKeys.Has (K .route8FoldPeels) known]
     [FactKeys.Has (K .route8QuotientResidual) known] :
     Route8QuotientOutcome selected :=
   ⟨(history.get (K .selection)).down,
@@ -3781,6 +3788,7 @@ theorem route8QuotientReturn
     (history.get (K .route8ExtractedEntryCensus)).down,
     (history.get (K .typeBSublinearLedger)).down,
     (history.get (K .route8UnifiedDeficit)).down,
+    (history.get (K .route8FoldPeels)).down,
     (history.get (K .route8QuotientResidual)).down⟩
 
 /-- **Node `[187] (private-carrier rate failure)`** (thm:main (vi), tex
