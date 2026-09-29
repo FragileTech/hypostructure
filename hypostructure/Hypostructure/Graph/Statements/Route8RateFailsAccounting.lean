@@ -1,6 +1,7 @@
 import Hypostructure.Graph.Statements.Route8RateFailsFlow
 import Hypostructure.Graph.OrdinaryDeficiencyReserve
 import Hypostructure.Graph.Statements.RouteEight
+import Hypostructure.Graph.StubDeficit
 
 /-!
 # Statements: the stub-deficit identity, the window/deficit dichotomy, the entry count
@@ -20,7 +21,7 @@ universe u
 /-- `exc(X) = Σ_{v∈X} max{0, d_X(v) − δ}`: the internal degree above the baseline. -/
 noncomputable def remainderInternalExcess (object : Graph.FiniteObject.{u})
     (support : Finset object.Vertex) (threshold : Nat) : Nat :=
-  ∑ vertex ∈ support, (object.internalDegree support vertex - threshold)
+  object.internalExcess support threshold
 
 /-- **The stub-deficit identity at G.**  Each cut incidence `(v, w)` is charged to
 the deficit unit `(v, j)` of `v` (`FiniteObject.positiveDeficiencyUnits`), or is

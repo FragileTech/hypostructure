@@ -22,19 +22,16 @@ theorem boundaryIncidence_add_excess (object : FiniteObject.{u})
         remainderInternalExcess object support threshold =
       object.positiveDeficiency support threshold +
         object.ambientSurplus support threshold := by
-  unfold FiniteObject.boundaryIncidence FiniteObject.positiveDeficiency
-    FiniteObject.ambientSurplus remainderInternalExcess
-  rw [← Finset.sum_add_distrib, ← Finset.sum_add_distrib]
-  refine Finset.sum_congr rfl fun vertex _ => ?_
-  have := object.internalDegree_le_degree support vertex
-  have := baseline vertex
-  omega
+  -- The generic identity is `Graph/StubDeficit.lean`'s (single proof; dedup
+  -- g-audit-int with g-audit-54's `K .stubDeficitIdentity`).
+  unfold remainderInternalExcess
+  rw [object.boundaryIncidence_add_internalExcess support threshold baseline, Nat.add_comm]
 
 theorem excess_le_surplus (object : FiniteObject.{u})
     (support : Finset object.Vertex) (threshold : Nat) :
     remainderInternalExcess object support threshold ≤
       object.ambientSurplus support threshold := by
-  unfold FiniteObject.ambientSurplus remainderInternalExcess
+  unfold FiniteObject.ambientSurplus remainderInternalExcess FiniteObject.internalExcess
   refine Finset.sum_le_sum fun vertex _ => ?_
   have := object.internalDegree_le_degree support vertex
   omega
