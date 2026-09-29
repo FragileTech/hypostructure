@@ -5226,3 +5226,115 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
   all-context hypotheses (now also `avoids`, for R2's replacement form); they
   have no consumer.
 - `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.
+
+## Pieces constructed from G (branch g-pieces-constructed, idx 8700–8799) (2026-09-29)
+
+**User decision (binding): "everything is pieces built from G".**  The G repair
+restated the target-completeness / quotient / exit-(4) / route-8 notions about
+G with G's own surroundings `G − Z` as the only context — kept.  It also
+restricted the *realizations* (the pieces that may occupy `Z`) to G's readings;
+a reading glued into `G − Z` is a subgraph of G, so those notions became
+vacuous at G.  The realizations are now the **pieces constructed from G**.
+
+### The family `GConstructedPiece G Z` (`Graph/GConstructedPiece.lean`)
+
+`own` (G[Z]), `reading X` (`SupportAtom.retainedPiece`), `fold keep remove`
+(two interior vertices with no common neighbour in G identified,
+`identifyInternal`; triangle-free edge contractions included), `transplant Y`
+(`Transplant.transplant`), `swap P Q` (`RerouteSwap.swapPiece`), `splice a b D`
+(excision of `D` with the shortcut `a b`, `SpliceLift.splice` read on `∂Z`),
+`switch a a' b b'` (proper double-edge switch, else G).  `toPiece`, `response L`
+(`glue P (G − Z)` has an accepted cycle), `targetOf`, `profile`, `Separated`.
+Construction sources copied verbatim from g-audit-int (FoldCycleLift from r8q,
+Transplant/RerouteSwap from 144a, SpliceLift from coldSilent).  Facts: own,
+readings, transplants, linkage-included swaps are target-free in `G − Z`; a
+fold keeps the profile, is strictly smaller with the baseline once glued, hence
+carries a target cycle at a minimal G, which lifts to an accepted-length path of
+G between the folded vertices.
+
+### Re-defined notions (realizations: constructed pieces; context: `G − Z`)
+
+- `AttemptedQuotient` / `DeclaredQuotient` (`DeclaredRankQuotient.lean`):
+  `value : GConstructedPiece G Z → Label → Value`; `Identifies` on constructed
+  pieces; `TargetCompleteAt` (fibre + agreement in `G − Z`) guards the
+  representative clauses; `DeclaredQuotient.contextUniversal` restored as a
+  field (condition (b)); `AttemptedQuotient.route` has four arms again
+  (profile blocker, **target defect in `G − Z`**, replacement, closed
+  representative); `defect_of_minimal` replaces `fibre_of_minimal`.
+- `[11]` `DegreeProfileFibresStatement`, `[12]`
+  `TargetCompleteContextUniversalityStatement`, `[36]`
+  `CertificateContextUniversal` / `[37]` `ContextDefectStatement`: over
+  constructed pieces.  `[36]` is still decided yes — now by admissibility
+  (`contextUniversal`), not by the subgraph argument; `[37]` still closes
+  against `[12]`.
+- Type B global–local reflection clause (d): target-defect arm restored.
+- `Route8.Entry`: realization family (`Realization`, `realize`, `Realizes`,
+  antitone).  `Complete D` := every realization of `ρ|_D` has the full reading's
+  target truth in `G − B_u`; `Determined` := the whole supply is complete; the
+  core is selected against `CoreComplete := Complete ∨ ¬ Determined` (empty when
+  undetermined).  Deletion witnesses are constructed realizations
+  (`exists_deletion_witness`).  `Route8CarrierCore`'s raw duplicate of the
+  core was removed; `TwoCarrierDeletionWitnesses` is stated over an `Entry`.
+- `PresentedEntry.ofTraceBasin`: realizations `GConstructedPiece G B_u`,
+  `Realizes := QuotientRealization` of the forgetting quotient, which now also
+  keeps the labelled boundary itself (every restriction keeps it).
+- (a) `TraceLocalTargetDefect`, (b) `TraceResponseQuotient` completeness, Q2,
+  Q3, Q5: over constructed realizations.  Q1 compares the two readings of two
+  declared coordinates (readings by definition): kept, still decided false.
+- Demand records (`CanonicalDemandRecord`): the defect's constructed
+  realization and event; actual corridor record, or the event is internal to
+  the realization, or it avoids the realization's interior (the two cases the
+  manuscript excludes through `lem:typeA-internal-quotient-mixed`, explicit at
+  G).
+- `[178]`: `SparsePairSkeletonModel.gSignature` — G's own response of every
+  constructed piece at `X_π` in `G − X_π`; `memberPiece = edgePiece`.
+
+### Status of the earlier closures
+
+- **"route-8 core empty, α = 0"** (`ofTraceBasin_alpha_eq_zero`): **invalid,
+  removed.**  α = 0 now holds only at undetermined entries and at boundary-only
+  basins (`ofTraceBasin_alpha_eq_zero_of_cutBoundary`).  A fold pair not held by
+  the coordinates `D` retains makes `D` incomplete
+  (`ofTraceBasin_not_complete_of_foldPair`); complete sets hold every fold pair.
+- **"[123] failed-rate arm empty"** (`route8UnifiedEmptyAtG`, key 7900):
+  **invalid, removed** (key, row, contract, freshness params).  `[123]`'s no
+  arm runs `[181]`, `[183]`–`[186]` again.
+- **"Route8JointBalance closed"**: **reopened.  ROOT TYPE CHANGE:**
+  `Route8JointBalanceOutcome_product` is restored as a disjunct of
+  `SelectedRouteEightBoundary` and of `SelectedLedgerBoundaryResult`
+  (`Residuals/Route8JointBalanceOutcome.lean`, `route8JointBalanceReturn`,
+  `route8JointBalanceProductReturn`); the root theorem keeps its name and form.
+- **"Q1–Q3/Q5 false at G"**: Q1 still false (declared-coordinate readings);
+  **Q2, Q3, Q5 reopen as live tests**; `exists_q4_of_avoids` removed.  At a
+  minimal G a fold pair of the basin is a Q3 defect
+  (`traceLocalTargetDefect_of_foldPair`), and where (a) is absent every two
+  interior basin vertices have a common neighbour in G.
+- **"exit (b) empty"** (`ResidualTargetDefect`): **still closed** — its two
+  realizations are the readings of two declared coordinates, readings of G by
+  definition.
+- **"cold G2 empty"** (`BoundedGerm.not_distinguishing`): its second
+  representative `E` is the `Precedes`-least piece *with G's response in
+  `G − Z`* (`CutStateReadingAt`), so G2 is empty by the choice of `E`, the
+  readings-only pattern.  Under the decision `E` must be the constructed
+  excision of the repeated segment (`GConstructedPiece.splice`), and G2 is the
+  live test `¬ (Q.response ↔ (splice a b D).response)` in `G − Z`.  Not
+  re-derived on this branch (it rebuilds `[154]`, the G3 compression and the
+  table rows; the excision dichotomy is g-audit-coldSilent's SpliceLift);
+  the three cold singletons are not restored here.
+
+### New fact (Type A, idx 8700): `K .route8FoldPeels`
+
+`Route8FoldPeelsStatement` (row `route8FoldPeelsRow`, Requires `selection`,
+`cubicBaseline`), run after the unified deficit on the route-8 residual path, so
+`[348]` and `[186]` carry it: at every unified entry, (1) a fold pair of the
+selected basin makes (a) occur and the load an exit-`(4)` peel (Q3); (2) a
+nonempty core means the declared family determines the target; (3) every
+complete carrier set holds every fold pair; (4) `thm:typeA-two-carrier-nogo`
+run at G: a two-support entry with a nonempty core is an exit-`(4)` peel (Q5,
+`twoCarrier_exitFour_of_core`).
+
+### Route 8 does not close
+
+`[124]` now closes non-vacuously (the Q5 witness is a constructed realization).
+`[123]`'s failed-rate arm returns the `[186]` joint balance (open in the
+manuscript) and `[348]` returns the quotient residual.

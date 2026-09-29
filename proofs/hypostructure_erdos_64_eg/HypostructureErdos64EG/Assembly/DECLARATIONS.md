@@ -70,6 +70,8 @@ is in [Final.lean](Final.lean); the generic returned residuals are stated in
 | `blockedBarrierOverlapReturn` | theorem | [Residuals.lean:550](Residuals.lean#L550) |
 | `PairConditionalFactorizationOutcome` | abbrev | [Residuals.lean:703](Residuals.lean#L703) |
 | `pairConditionalFactorizationReturn` | theorem | [Residuals.lean:775](Residuals.lean#L775) |
+| `Route8JointBalanceOutcome` | abbrev | [Residuals.lean:1564](Residuals.lean#L1564) |
+| `route8JointBalanceReturn` | theorem | [Residuals.lean:1826](Residuals.lean#L1826) |
 | `PairTypeBOutcome` | abbrev | [Residuals.lean:1186](Residuals.lean#L1186) |
 | `pairTypeBSystemReturn` | theorem | [Residuals.lean:1276](Residuals.lean#L1276) |
 | `pairTypeBIncrementReturn` | theorem | [Residuals.lean:1361](Residuals.lean#L1361) |
@@ -286,6 +288,9 @@ is in [Final.lean](Final.lean); the generic returned residuals are stated in
 | `TypeALane` | abbrev | [Residuals/Route8Blocks.lean:848](Residuals/Route8Blocks.lean#L848) |
 | `TypeBHighSurplusLane` | abbrev | [Residuals/Route8Blocks.lean:853](Residuals/Route8Blocks.lean#L853) |
 | `NetChargeContinuation` | abbrev | [Residuals/Route8Blocks.lean:859](Residuals/Route8Blocks.lean#L859) |
+| `Route8JointBalanceOutcome_product` | abbrev | [Residuals/Route8JointBalanceOutcome.lean:46](Residuals/Route8JointBalanceOutcome.lean#L46) |
+| `Route8JointBalanceOutcome_product.toGeneric` | theorem | [Residuals/Route8JointBalanceOutcome.lean:50](Residuals/Route8JointBalanceOutcome.lean#L50) |
+| `route8JointBalanceProductReturn` | theorem | [Residuals/Route8JointBalanceOutcome.lean:59](Residuals/Route8JointBalanceOutcome.lean#L59) |
 | `Route8QuotientOutcome_product` | abbrev | [Residuals/Route8QuotientOutcome.lean:43](Residuals/Route8QuotientOutcome.lean#L43) |
 | `Route8QuotientOutcome_product.toGeneric` | theorem | [Residuals/Route8QuotientOutcome.lean:47](Residuals/Route8QuotientOutcome.lean#L47) |
 | `route8QuotientProductReturn` | theorem | [Residuals/Route8QuotientOutcome.lean:56](Residuals/Route8QuotientOutcome.lean#L56) |
