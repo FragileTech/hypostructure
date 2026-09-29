@@ -405,3 +405,9 @@ New generic facts: #99 `route8BasinBurden` (hoisted from the route-8 ledger; `s*
 
 Table 1 delta: H06 `~` -> `x` (entry count combined with join, deficit and the [113] test). Final counts: x 49, ~ 29, gap 6 (C07, D07, E07, E08, G04, H10), n/a 4, nonG 0.
 
+## Fourth pass (keys 8259-8263): the negations of the three closers
+
+New generic facts: #103 `route8CoreEmpty` (every census core is empty at a target-avoiding G: alpha = 0; H06 E03; identity), #104 `route8StrongRate` (the strong rate s|dR| + F*s*T < |R|, under which [113] yes gives a two-carrier entry without the 3/13 rate, or the thin remainder |R| <= s|dR| + F*s*T; H06 A10 H08; classification with quantities), #105 `route8ThinIsolation` (net cap + thin remainder + join: X + T < sigma_W + F*T; A10 B05 H05; bound), #106 `route8WindowStub` (exact stub count per window, sums X and |dR|, attached remainder vertices |dR| <= delta*|A| + sigma(R); A10 B05 A11; identity + bound), #107 `route8ThinSmall` (thin remainder + density cap: the order is below the thin cutoff N0'; G08 A10; bound).
+
+Counts unchanged: x 49, ~ 29, gap 6 (C07, D07, E07, E08, G04, H10), n/a 4, nonG 0.
+

@@ -3,6 +3,7 @@ import Hypostructure.Graph.Contracts.RouteEight.RateFailsJoin
 import Hypostructure.Graph.Contracts.RouteEight.RateFailsPiece
 import Hypostructure.Graph.Contracts.RouteEight.RateFailsFlow
 import Hypostructure.Graph.Contracts.RouteEight.RateFailsAccounting
+import Hypostructure.Graph.Contracts.RouteEight.RateFailsRoute
 
 /-!
 # The failed private-carrier rate against the exact window join at G
@@ -185,6 +186,101 @@ universe u v
         ⟨Graph.Contracts.RouteEight.route8EntryLowerBound data.toParameters
           inputs.current.object
           (inputs.get (K .route8BasinBurden)).down
+          (inputs.get (K .route8RateFailsJoin)).down⟩ .nil)
+    0 0
+
+/-- Every route-8 census core is empty at G. -/
+@[reducible] noncomputable def route8CoreEmptyRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8CoreEmpty
+    { Requires := [K .selection]
+      Produces := [K .route8CoreEmpty]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8CoreEmpty)
+        ⟨Graph.Contracts.RouteEight.route8CoreEmpty data.toParameters
+          inputs.current.object (inputs.get (K .selection)).down.1⟩ .nil)
+    0 0
+
+/-- The strong rate or the thin remainder. -/
+@[reducible] noncomputable def route8StrongRateRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8StrongRate
+    { Requires := [K .route8BasinBurden, K .selection, K .cubicBaseline]
+      Produces := [K .route8StrongRate]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8StrongRate)
+        ⟨Graph.Contracts.RouteEight.route8StrongRate data.toParameters
+          inputs.current.object inputs.current.baseline
+          (by have := (inputs.get (K .cubicBaseline)).down.1.2.1; omega)
+          (inputs.get (K .selection)).down.1
+          (inputs.get (K .route8BasinBurden)).down⟩ .nil)
+    0 0
+
+/-- The thin remainder isolates the windows. -/
+@[reducible] noncomputable def route8ThinIsolationRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8ThinIsolation
+    { Requires := [K .netDeficiencyCap, K .route8RateFailsJoin]
+      Produces := [K .route8ThinIsolation]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8ThinIsolation)
+        ⟨Graph.Contracts.RouteEight.route8ThinIsolation data.toParameters
+          inputs.current.object
+          (inputs.get (K .netDeficiencyCap)).down
+          (inputs.get (K .route8RateFailsJoin)).down⟩ .nil)
+    0 0
+
+/-- The exact stub count of each window and its distribution. -/
+@[reducible] noncomputable def route8WindowStubRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8WindowStub
+    { Requires := [K .route8RateFailsJoin]
+      Produces := [K .route8WindowStub]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8WindowStub)
+        ⟨Graph.Contracts.RouteEight.route8WindowStub data.toParameters
+          inputs.current.object inputs.current.baseline⟩ .nil)
+    0 0
+
+/-- The thin remainder forces a small order. -/
+@[reducible] noncomputable def route8ThinSmallRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8ThinSmall
+    { Requires := [K .route8RateFailsJoin, K .densityCap, K .surplusAtOrBelow, K .cubicBaseline]
+      Produces := [K .route8ThinSmall]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8ThinSmall)
+        ⟨Graph.Contracts.RouteEight.route8ThinSmall data.toParameters
+          inputs.current.object inputs.current.baseline
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
+          ((inputs.get (K .cubicBaseline)).down.2.2.2.2.2.1 inputs.current.object.vertexCount)
+          (inputs.get (K .surplusAtOrBelow)).down
+          (inputs.get (K .densityCap)).down
           (inputs.get (K .route8RateFailsJoin)).down⟩ .nil)
     0 0
 

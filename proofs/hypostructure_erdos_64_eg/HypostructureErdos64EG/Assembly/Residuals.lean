@@ -3527,10 +3527,11 @@ theorem route8QuotientReturn
 /-- **Node `[187] (private-carrier rate failure)`** (thm:main (vi), tex
 369-378): failure of the exact private-carrier rate at the entry of the
 route-8 continuation.  The explicit conjunction of every fact on its maximal
-ledger (102 common facts: the 92 earlier ones and the G-audit facts
+ledger (107 common facts: the 92 earlier ones and the G-audit facts
 `route8RateFailsJoin`, `route8RateFailsPiece`, `route8RateFailsCrossBound`,
 `route8RateFailsFlow`, `route8CarrierInjection`, `route8RateExactSlack`,
-`route8BasinBurden`, `route8StubDeficit`, `route8DeficitVsStubs`, `route8EntryLowerBound`). -/
+`route8BasinBurden`, `route8StubDeficit`, `route8DeficitVsStubs`, `route8EntryLowerBound`, `route8CoreEmpty`,
+`route8StrongRate`, `route8ThinIsolation`, `route8WindowStub`, `route8ThinSmall`). -/
 abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -3735,7 +3736,17 @@ abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8DeficitVsStubs selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8EntryLowerBound selected.object
+      erdosReceiverLoadProfile spineData .route8EntryLowerBound selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8CoreEmpty selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8StrongRate selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8ThinIsolation selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8WindowStub selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8ThinSmall selected.object
 
 /-- The return of `Route8RateFailsOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -3843,7 +3854,12 @@ theorem route8RateFailsReturn
     [FactKeys.Has (K .route8BasinBurden) known]
     [FactKeys.Has (K .route8StubDeficit) known]
     [FactKeys.Has (K .route8DeficitVsStubs) known]
-    [FactKeys.Has (K .route8EntryLowerBound) known] :
+    [FactKeys.Has (K .route8EntryLowerBound) known]
+    [FactKeys.Has (K .route8CoreEmpty) known]
+    [FactKeys.Has (K .route8StrongRate) known]
+    [FactKeys.Has (K .route8ThinIsolation) known]
+    [FactKeys.Has (K .route8WindowStub) known]
+    [FactKeys.Has (K .route8ThinSmall) known] :
     Route8RateFailsOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -3946,7 +3962,12 @@ theorem route8RateFailsReturn
     (history.get (K .route8BasinBurden)).down,
     (history.get (K .route8StubDeficit)).down,
     (history.get (K .route8DeficitVsStubs)).down,
-    (history.get (K .route8EntryLowerBound)).down⟩
+    (history.get (K .route8EntryLowerBound)).down,
+    (history.get (K .route8CoreEmpty)).down,
+    (history.get (K .route8StrongRate)).down,
+    (history.get (K .route8ThinIsolation)).down,
+    (history.get (K .route8WindowStub)).down,
+    (history.get (K .route8ThinSmall)).down⟩
 
 /-- **Node `[187] (local cold-terminal exclusion)`** (thm:main (vi), tex
 369-378): the local cold-terminal exclusion of thm:cold-branch-quantitative-

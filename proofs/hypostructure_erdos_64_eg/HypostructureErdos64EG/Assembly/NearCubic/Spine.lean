@@ -413,7 +413,8 @@ noncomputable def nearCubicRouteEightEntry
         K .route8RateFailsPiece :: K .route8RateFailsCrossBound ::
         K .route8RateFailsFlow :: K .route8CarrierInjection :: K .route8RateExactSlack ::
         K .route8BasinBurden :: K .route8StubDeficit :: K .route8DeficitVsStubs ::
-        K .route8EntryLowerBound ::
+        K .route8EntryLowerBound :: K .route8CoreEmpty :: K .route8StrongRate ::
+        K .route8ThinIsolation :: K .route8WindowStub :: K .route8ThinSmall ::
         netChargeContinuationKeys.{u}) known := by
         key_fresh)
     [FactKeys.Has (K .barrierCap) known]
@@ -486,7 +487,27 @@ noncomputable def nearCubicRouteEightEntry
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)).run
         versus (by key_fresh)
-      Or.inr (Or.inl (route8RateFailsSubtypesReturn_routeEightEntry entried arm.1 arm.2))
+      let coreEmpty := (route8CoreEmptyRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        entried (by key_fresh)
+      let strongRate := (route8StrongRateRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        coreEmpty (by key_fresh)
+      let thinIso := (route8ThinIsolationRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        strongRate (by key_fresh)
+      let windowStub := (route8WindowStubRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        thinIso (by key_fresh)
+      let thinSmall := (route8ThinSmallRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        windowStub (by key_fresh)
+      Or.inr (Or.inl (route8RateFailsSubtypesReturn_routeEightEntry thinSmall arm.1 arm.2))
 
 set_option maxHeartbeats 8000000 in
 /-- The route-8 continuation `[57]`--`[124]` on the `[162]` arm entered from
@@ -511,6 +532,11 @@ noncomputable def nearCubicRateFailedExit
     (stubFresh : K .route8StubDeficit ∉ known := by key_fresh)
     (versusFresh : K .route8DeficitVsStubs ∉ known := by key_fresh)
     (entryFresh : K .route8EntryLowerBound ∉ known := by key_fresh)
+    (coreEmptyFresh : K .route8CoreEmpty ∉ known := by key_fresh)
+    (strongFresh : K .route8StrongRate ∉ known := by key_fresh)
+    (thinIsoFresh : K .route8ThinIsolation ∉ known := by key_fresh)
+    (windowStubFresh : K .route8WindowStub ∉ known := by key_fresh)
+    (thinSmallFresh : K .route8ThinSmall ∉ known := by key_fresh)
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
     [FactKeys.Has (K .boundedDensityOrder) known]
@@ -648,7 +674,27 @@ noncomputable def nearCubicRateFailedExit
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     versus (by key_fresh)
-  Or.inr (Or.inl (route8RateFailsSubtypesReturn_rateFailedExit entried entropy))
+  let coreEmpty := (route8CoreEmptyRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    entried (by key_fresh)
+  let strongRate := (route8StrongRateRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    coreEmpty (by key_fresh)
+  let thinIso := (route8ThinIsolationRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    strongRate (by key_fresh)
+  let windowStub := (route8WindowStubRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    thinIso (by key_fresh)
+  let thinSmall := (route8ThinSmallRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    windowStub (by key_fresh)
+  Or.inr (Or.inl (route8RateFailsSubtypesReturn_rateFailedExit thinSmall entropy))
 
 set_option maxHeartbeats 8000000 in
 /-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[147]` arm (`θ < 1/78`): `[56]` reads the strict cap from `K .coldRoute8Below`,

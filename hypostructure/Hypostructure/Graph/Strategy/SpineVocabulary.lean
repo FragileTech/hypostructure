@@ -17,6 +17,7 @@ import Hypostructure.Graph.Statements.DensityOrder
 import Hypostructure.Graph.Statements.Route8RateFailsJoin
 import Hypostructure.Graph.Statements.Route8RateFailsFlow
 import Hypostructure.Graph.Statements.Route8RateFailsAccounting
+import Hypostructure.Graph.Statements.Route8RateFailsRoute
 import Hypostructure.Graph.Statements.SparseExitResidual
 import Hypostructure.Graph.Statements.SparseExitReadings
 import Hypostructure.Graph.Statements.SwitchForcedPaths
@@ -1719,6 +1720,16 @@ inductive Key where
   | route8DeficitVsStubs
   /-- G audit `Route8RateFailsOutcome` (idx 8258): the route-8 entries against the large-budget deficit test: `N_basin ≥ D_A`, and either the test holds with `|R| + s(X + 2(order−1)p) ≤ N_basin + s(δ·order·p + σ_W) + slack` or `D_A + s|∂R| + slack < |R|`. -/
   | route8EntryLowerBound
+  /-- G audit `Route8RateFailsOutcome` (idx 8259): every route-8 census core is empty at G (`α(ξ) = 0`), so an entry is a two-carrier entry as soon as it exists. -/
+  | route8CoreEmpty
+  /-- G audit `Route8RateFailsOutcome` (idx 8260): the strong rate `s|∂R| + F·s·T < |R|` (then `[113]` yes gives a two-carrier entry without the `3/13` rate) or the thin remainder `|R| ≤ s|∂R| + F·s·T`. -/
+  | route8StrongRate
+  /-- G audit `Route8RateFailsOutcome` (idx 8261): under the net cap the thin remainder forces `X + T < σ_W + F·T` (windows isolated). -/
+  | route8ThinIsolation
+  /-- G audit `Route8RateFailsOutcome` (idx 8262): exact stub count per window (`exits_R + exits_W + 2(order−1) = δ·order + σ(P)`), its sums `X` and `|∂R|`, and the attached remainder vertices. -/
+  | route8WindowStub
+  /-- G audit `Route8RateFailsOutcome` (idx 8263): the thin remainder forces the order below the thin cutoff `N₀'` (`DensityOrderBound` at `A' = δ(order + sβ)`, `D' = δs(1+F)`). -/
+  | route8ThinSmall
   /-- Node `[24]` on `[146]` no, size test yes: `N₀ ≤ n` at the `[24]` cutoff. -/
   | boundedOrderLarge
   /-- Node `[24]` on `[146]` no, size test no: G has fewer than `N₀` vertices (exact complement). -/
@@ -2761,6 +2772,16 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8DeficitVsStubsStatement data.toParameters object
   | .route8EntryLowerBound, object =>
       Route8EntryLowerBoundStatement data.toParameters object
+  | .route8CoreEmpty, object =>
+      Route8CoreEmptyStatement data.toParameters object
+  | .route8StrongRate, object =>
+      Route8StrongRateStatement data.toParameters object
+  | .route8ThinIsolation, object =>
+      Route8ThinIsolationStatement data.toParameters object
+  | .route8WindowStub, object =>
+      Route8WindowStubStatement data.toParameters object
+  | .route8ThinSmall, object =>
+      Route8ThinSmallStatement data.toParameters object
   | .boundedOrderLarge, object =>
       BoundedOrderLargeStatement data.toParameters object
   | .boundedOrderSmall, object =>
@@ -3325,6 +3346,11 @@ def label : Key → String
   | .route8StubDeficit => "route8StubDeficit"
   | .route8DeficitVsStubs => "route8DeficitVsStubs"
   | .route8EntryLowerBound => "route8EntryLowerBound"
+  | .route8CoreEmpty => "route8CoreEmpty"
+  | .route8StrongRate => "route8StrongRate"
+  | .route8ThinIsolation => "route8ThinIsolation"
+  | .route8WindowStub => "route8WindowStub"
+  | .route8ThinSmall => "route8ThinSmall"
   | .boundedOrderLarge => "boundedOrderLarge"
   | .boundedOrderSmall => "boundedOrderSmall"
   -- [20a] enrichment keys
@@ -3809,6 +3835,11 @@ example : label .route8RateExactSlack = "route8RateExactSlack" := rfl
 example : label .route8StubDeficit = "route8StubDeficit" := rfl
 example : label .route8DeficitVsStubs = "route8DeficitVsStubs" := rfl
 example : label .route8EntryLowerBound = "route8EntryLowerBound" := rfl
+example : label .route8CoreEmpty = "route8CoreEmpty" := rfl
+example : label .route8StrongRate = "route8StrongRate" := rfl
+example : label .route8ThinIsolation = "route8ThinIsolation" := rfl
+example : label .route8WindowStub = "route8WindowStub" := rfl
+example : label .route8ThinSmall = "route8ThinSmall" := rfl
 example : label .boundedOrderLarge = "boundedOrderLarge" := rfl
 example : label .boundedOrderSmall = "boundedOrderSmall" := rfl
 example : label .edgeSurplusIdentity = "edgeSurplusIdentity" := rfl
@@ -4280,6 +4311,11 @@ def idx : Key → Nat
   | .route8StubDeficit => 8256
   | .route8DeficitVsStubs => 8257
   | .route8EntryLowerBound => 8258
+  | .route8CoreEmpty => 8259
+  | .route8StrongRate => 8260
+  | .route8ThinIsolation => 8261
+  | .route8WindowStub => 8262
+  | .route8ThinSmall => 8263
   | .boundedOrderLarge => 6604
   | .boundedOrderSmall => 6605
   -- [20a] enrichment keys
@@ -4744,6 +4780,11 @@ def ofIdx : Nat → Key
   | 8256 => .route8StubDeficit
   | 8257 => .route8DeficitVsStubs
   | 8258 => .route8EntryLowerBound
+  | 8259 => .route8CoreEmpty
+  | 8260 => .route8StrongRate
+  | 8261 => .route8ThinIsolation
+  | 8262 => .route8WindowStub
+  | 8263 => .route8ThinSmall
   | 6604 => .boundedOrderLarge
   | 6605 => .boundedOrderSmall
   -- [20a] enrichment keys
@@ -5688,6 +5729,16 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8DeficitVsStubs") 8257
   | .route8EntryLowerBound =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8EntryLowerBound") 8258
+  | .route8CoreEmpty =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8CoreEmpty") 8259
+  | .route8StrongRate =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8StrongRate") 8260
+  | .route8ThinIsolation =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8ThinIsolation") 8261
+  | .route8WindowStub =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8WindowStub") 8262
+  | .route8ThinSmall =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8ThinSmall") 8263
   | .boundedOrderLarge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "boundedOrderLarge") 6604
   | .boundedOrderSmall =>
