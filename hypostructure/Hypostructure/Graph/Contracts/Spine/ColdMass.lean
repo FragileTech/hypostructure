@@ -405,8 +405,8 @@ theorem coldBranchClosed_of_routing (data : Parameters)
     (table : ColdSameInterfaceTableStatement data object) :
     ColdBranchClosedStatement data object := by
   refine ⟨?_, ?_, ?_⟩
-  · rintro ⟨germ, active, shorter, _notDistinguishing⟩
-    exact routed germ active shorter
+  · rintro ⟨germ, active, shorter, notDistinguishing⟩
+    exact notDistinguishing (routed germ active shorter)
   · rintro ⟨row, notHandoff, notDistinguishing⟩
     rcases (table.1 row).2 with handoff | distinguishing
     · exact notHandoff handoff

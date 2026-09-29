@@ -132,14 +132,15 @@ noncomputable def Assembly.Internal.nearCubicRealized
                 (absorbedGermFanDataRow (data := spineData)).run split
                   (by key_fresh)
               let unhit := nearCubicColdNoHit family
-              -- `[154]` second test (G2) is decided at G: its yes-arm is
-              -- empty (Lean improvement), closed against the selection.
+              -- `[154]` second test (G2), read on the constructed second
+              -- representative `E` in `G − Z`: its yes-arm returns `[187]`.
               match coldGermDistinctionDichotomy (data := spineData) unhit
                   (by key_fresh) (by key_fresh) with
               | .left distinguishedHistory =>
-                  exact ((closeIncompatible distinguishedHistory
-                    (K .coldGermSomeDistinguishing) (K .selection)
-                    (by key_fresh)).elimClosed (by infer_instance)).elim
+                  exact Or.inr (Or.inr (Or.inr (Or.inl
+                    (Or.inr (Or.inr (Or.inr (Or.inl
+                      (coldBranchClosed_linearRealizedDistinguishedReturn
+                        (nearCubicColdTable distinguishedHistory)))))))))
               | .right silentHistory =>
                   -- `[157]`, silent arm: G's silent extracted family has a
                   -- neutral equal-length configuration (`[163]`, read as at

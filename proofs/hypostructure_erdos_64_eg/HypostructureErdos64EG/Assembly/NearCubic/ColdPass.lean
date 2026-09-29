@@ -299,7 +299,7 @@ noncomputable def nearCubicColdNoHit
 same-interface table** (`lem:cold-bounded-germ-trichotomy`,
 `lem:cold-same-interface-table`), and the local cold-terminal exclusion of
 `thm:cold-branch-quantitative-closure`. -/
--- EG-NODE [156] G2: target defect, exit (4), or handoff
+-- EG-NODE [156] G2: target defect, exit (4), or handoff (read on the constructed E; returned at [187])
 -- EG-NODE [157] G3 or same-interface table: compression
 noncomputable def nearCubicColdTable
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
@@ -307,6 +307,8 @@ noncomputable def nearCubicColdTable
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .coldGermCandidates) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .minDegreeBaseline) known]
     (fresh : List.Disjoint
       [K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
         K .coldGermRouted, K .coldSameInterfaceTable, K .coldBranchClosed]

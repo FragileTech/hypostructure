@@ -32,15 +32,24 @@ theorem coldGermRealized_of_avoids (data : Parameters)
     avoids (germ.target_of_realizing
       (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant realizing)
 
-/-- **(G2) is decided at G.**  The two representatives of every germ have the
-same target response in G's own surroundings `G − Z` (the germ's retained
-cut-state, `BoundedGerm.sameResponse`), the only compatible context of the
-support in G, so no germ is distinguishing.  Lean improvement: the G2 arm is
-empty at G. -/
-theorem coldGermDistinguished_holds (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
+/-- **(G2) read at G on the constructed second representative.**  The test is
+the target response of `E` (a piece constructed from G at the support) in G's own
+surroundings `G − Z`, and at the minimal G every fold of two interior vertices of
+the support that share no neighbour distinguishes. -/
+theorem coldGermDistinguished_of_minimal (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (two : 2 ≤ data.threshold)
+    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+    (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold H →
+        Graph.HasCycleWithLength data.LengthOK H) :
     ColdGermDistinguishedStatement data object :=
-  fun germ _active => germ.not_distinguishing
+  fun germ _active =>
+    ⟨germ.distinguishingAt_iff_response avoids germ.canonical,
+      fun keep remove different noCommon =>
+        germ.distinguishingAt_fold avoids two baseline minimal keep remove
+          different noCommon⟩
 
 /-- **(G3) never occurs** at node `[153]`'s extracted family.  A shortening
 germ, read at G, is a target-complete compression of a proper support (`E`
@@ -51,29 +60,29 @@ theorem coldGermSilent_of_uncompressible (data : Parameters)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (uncompressible : UncompressibleStatement data object) :
     ColdGermSilentStatement data object :=
-  fun germ _active shorter _neutral =>
+  fun germ _active shorter neutral =>
     germ.false_of_increment_neg
       (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant avoids
-      uncompressible shorter
+      uncompressible shorter neutral.2
 
-/-- **Nodes `[154]`--`[156]`: no length-changing germ survives at G.**  (G1) is
-refuted by target avoidance, (G2) is empty at G, and (G3) is a target-complete
-compression refuted by uncompressibility, so no configuration of the extracted
-family is shortening. -/
+/-- **Nodes `[154]`--`[156]`: every shortening germ is hit-distinguished at G.**
+(G1) is refuted by target avoidance and (G3) is a target-complete compression
+refuted by uncompressibility, so a shortening configuration of the extracted
+family is (G2). -/
 theorem coldGermRouted_of_uncompressible (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (uncompressible : UncompressibleStatement data object) :
     ColdGermRoutedStatement data object :=
   fun germ _active shorter =>
-    germ.false_of_increment_neg
+    germ.distinguishing_of_increment_neg
       (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant avoids
       uncompressible shorter
 
 /-- **Node `[157]`, `lem:cold-same-interface-table` and
 `lem:cold-short-self-return-filter`.**  No table row is realizing, and a row
-is handed off (otherwise it compresses its own proper support at G; the
-distinguishing arm is empty at G); the short self-return exceptions are routed
+is handed off or distinguishing (otherwise it compresses its own proper support
+at G); the short self-return exceptions are routed
 the same way; every row has increment `0`. -/
 theorem coldSameInterfaceTable_of_uncompressible (data : Parameters)
     (object : Graph.FiniteObject.{u})

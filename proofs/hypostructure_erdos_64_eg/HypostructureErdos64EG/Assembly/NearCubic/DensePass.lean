@@ -66,8 +66,8 @@ set_option maxHeartbeats 8000000 in
 normalization) because every return corridor of the dense residual is terminal:
 the boundaried pieces of `R` are induced-`P₁₃`-free and subcubic, hence of
 bounded diameter.  The first failures, the extracted family and `[154]` run as
-on the spine; G1 closes at `[155]`.  G2 is empty at G (`[156]`, closed
-against the selection).  On the silent arm `[157]` the only outcome not
+on the spine; G1 closes at `[155]`.  G2 (`[156]`) is read on the
+constructed second representative and its yes-arm returns `[187]`.  On the silent arm `[157]` the only outcome not
 refuted by a ledger fact is the neutral equal-length terminal configuration
 `[163]`, a symmetry (`lem:neutral-germ-symmetry`): its canonical-replacement
 arm `[165]`--`[166]` enters the blocked class `[169]`, and its genuine
@@ -196,21 +196,23 @@ noncomputable def nearCubicDenseLinear
       let family :=
         (absorbedGermFanDataRow (data := spineData)).run split (by key_fresh)
       let unhit := nearCubicColdNoHit family
-      -- `[154]` second test (G2) is decided at G: its yes-arm is empty (Lean
-      -- improvement), closed against the selection.
+      -- `[154]` second test (G2), read on the constructed second
+      -- representative `E` in `G − Z`: its yes-arm returns `[187]` on the
+      -- repeat arm.
       match coldGermDistinctionDichotomy (data := spineData) unhit
           (by key_fresh) (by key_fresh) with
       | .left distinguishedHistory =>
-          exact ((closeIncompatible distinguishedHistory
-            (K .coldGermSomeDistinguishing) (K .selection)
-            (by key_fresh)).elimClosed (by infer_instance)).elim
+          exact Or.inr (Or.inr (Or.inr (Or.inl
+            (Or.inr (Or.inr (Or.inr (Or.inr
+              (coldBranchClosed_denseRepeatedDistinguishedReturn
+                (nearCubicColdTable distinguishedHistory) tau))))))))
       | .right silentHistory =>
           -- `[157]` on the repeat germ: the local cold-terminal exclusion `[187]`,
           -- with the equal-state pair as one more fact of the ledger.
           exact Or.inr (Or.inr (Or.inr (Or.inl
-            (Or.inr
+            (Or.inr (Or.inl
               (coldBranchClosed_denseRepeatedReturn
-                (nearCubicColdTable silentHistory) tau)))))
+                (nearCubicColdTable silentHistory) tau))))))
   | .inl distinct =>
       -- `[162]` on the (★) arm: the heavy entry of every retained corridor is read
       -- within `Q_cold` states, a fact of G; a corridor whose first failure is a heavy
@@ -230,14 +232,15 @@ noncomputable def nearCubicDenseLinear
         (absorbedGermFanDataRow (data := spineData)).run split
           (by key_fresh)
       let unhit := nearCubicColdNoHit family
-      -- `[154]` second test (G2) is decided at G: its yes-arm is empty
-      -- (Lean improvement), closed against the selection.
+      -- `[154]` second test (G2), read on the constructed second
+      -- representative `E` in `G − Z`: its yes-arm returns `[187]`.
       match coldGermDistinctionDichotomy (data := spineData) unhit
           (by key_fresh) (by key_fresh) with
       | .left distinguishedHistory =>
-          exact ((closeIncompatible distinguishedHistory
-            (K .coldGermSomeDistinguishing) (K .selection)
-            (by key_fresh)).elimClosed (by infer_instance)).elim
+          exact Or.inr (Or.inr (Or.inr (Or.inl
+            (Or.inr (Or.inr (Or.inl
+              (coldBranchClosed_denseDistinguishedReturn
+                (nearCubicColdTable distinguishedHistory) tau)))))))
       | .right silentHistory =>
           let neutralConfiguration :=
             (neutralEqualLengthTerminalRow (data := spineData)).run silentHistory

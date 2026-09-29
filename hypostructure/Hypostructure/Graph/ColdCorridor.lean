@@ -1397,13 +1397,15 @@ interfaces `x, y` and two same-interface `x`-`y` representatives `Q[x,y]` and
 `P₁₃`-window labels, and target-response profile."*
 
 The first three fields are the support, whose own boundary piece is `Q[x,y]`;
-`canonical` is the second representative `E`; `sameProfile` is the inherited
-boundary-degree profile; `baseline` and `sameResponse` are the retained
-cut-state of `E` read in G's own surroundings `G − Z` (the support atom's
-outside, the only context of the support in G): the completion keeps the
-baseline and has the target response of `Q[x,y]` there; and `record` is the
+`canonical` is the second representative `E`, a piece constructed from G at
+the support (`GConstructedPiece`, user decision "everything is pieces built from
+G"); `sameProfile` is the inherited boundary-degree profile; `baseline` is the
+retained baseline of `E` read in G's own surroundings `G − Z` (the support
+atom's outside, the only context of the support in G); and `record` is the
 finite same-interface table record containing the window labels and
-target-response profile.  The increment `δ := |E| − |Q[x,y]|` is derived below
+target-response profile.  `E` does *not* carry G's target response in `G − Z`:
+whether the two representatives agree there is the G2 test
+(`Distinguishing`), decided by G, not by the choice of `E`.  The increment `δ := |E| − |Q[x,y]|` is derived below
 rather than stored, so no germ may declare a length change it does not have.
 
 The germ says nothing about `δ`: `def:cold-bounded-germ` is the common
@@ -1411,7 +1413,8 @@ definition of the equal-length rows of the table and the length-changing germs
 of `lem:cold-bounded-germ-trichotomy`, and `TableRow` below is exactly this
 structure with the equal-length clause added. -/
 structure BoundedGerm (S : DeclaredSignature)
-    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u}) where
+    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u}) :
+    Type (u + 1) where
   /-- The bounded support the germ occupies. -/
   support : Finset object.Vertex
   /-- `M_cold` is part of the definition of a bounded configuration, rather
@@ -1419,27 +1422,20 @@ structure BoundedGerm (S : DeclaredSignature)
   bounded : support.card ≤ exchangeBound S
   connected : Graph.SupportComponents.Connected.ConnectedOn object support
   proper : ∃ vertex, vertex ∉ support
-  /-- `E`: the second same-interface representative. -/
-  canonical : BoundaryPiece (rowAtom object support connected proper).interface
+  /-- `E`: the second same-interface representative, a piece constructed from
+  G at the support. -/
+  canonical : GConstructedPiece object support
   /-- The second representative is bounded by the same fixed cut-state
   constant as the actual exchange support. -/
-  canonicalBounded : canonical.internalVertexCount ≤ exchangeBound S
+  canonicalBounded : canonical.toPiece.internalVertexCount ≤ exchangeBound S
   /-- The inherited boundary-degree profile is shared. -/
   sameProfile :
-    canonical.boundaryDegreeProfile =
+    canonical.toPiece.boundaryDegreeProfile =
       (rowAtom object support connected proper).piece.boundaryDegreeProfile
   /-- The replacement, glued into G's surroundings `G − Z`, meets the standing
   baseline. -/
   baseline :
-    Baseline (glue canonical (rowAtom object support connected proper).outside)
-  /-- **The retained target response, read in G.**  `E` carries the target
-  response of `Q[x,y]` in G's own surroundings `G − Z`: the cut-state of
-  `def:cold-corridor-first-failure` retains "the same exact target-response
-  coordinates", and at G they are read in `G − Z`. -/
-  sameResponse :
-    Target (glue canonical (rowAtom object support connected proper).outside) ↔
-      Target (glue (rowAtom object support connected proper).piece
-        (rowAtom object support connected proper).outside)
+    Baseline (glue canonical.toPiece (rowAtom object support connected proper).outside)
   /-- **(T1)--(T4), carried.**  `def:cold-bounded-germ`: the germ "also carries
   the inherited boundary degree profile, `P₁₃`-window labels, and target-response
   profile".  Carried, and nothing more: `Record` is exactly that tuple, and
@@ -1461,6 +1457,11 @@ variable (germ : BoundedGerm S Baseline Target object)
     BoundaryPiece germ.atom.interface :=
   germ.atom.piece
 
+/-- `E` read as a boundary piece: the constructed second representative. -/
+@[reducible] noncomputable def second :
+    BoundaryPiece germ.atom.interface :=
+  germ.canonical.toPiece
+
 /-- **G1, hit-realized**: the germ's own compatible completion realizes the
 target.  `lem:cold-bounded-germ-trichotomy`'s first case is that "Some
 compatible live completion and window offset close a power-of-two cycle", and the
@@ -1476,17 +1477,10 @@ support's only compatible context is G's own surroundings `G − Z`
 target truth there. -/
 def Distinguishing : Prop :=
   ¬ (Target (glue germ.piece germ.atom.outside) ↔
-    Target (glue germ.canonical germ.atom.outside))
+    Target (glue germ.second germ.atom.outside))
 
 /-- **G3, silent**: neither realizing nor distinguishing. -/
 def Neutral : Prop := ¬ germ.Realizing ∧ ¬ germ.Distinguishing
-
-/-- **G2 is empty at G.**  The two representatives have the same target
-response in `G − Z`: `E` carries G's retained response there
-(`sameResponse`).  Lean improvement: the G2 arm of
-`lem:cold-bounded-germ-trichotomy` is empty at G. -/
-theorem not_distinguishing : ¬ germ.Distinguishing :=
-  fun distinguishing => distinguishing germ.sameResponse.symm
 
 /-- **`def:cold-bounded-germ`'s increment `δ := |E| − |Q[x,y]|`.**
 
@@ -1495,7 +1489,7 @@ theorem not_distinguishing : ¬ germ.Distinguishing :=
 increment is their difference in internal size, taken in `Int` so that the
 manuscript's sign is available and no truncation hides a length change. -/
 noncomputable def increment : Int :=
-  (germ.canonical.internalVertexCount : Int) -
+  (germ.second.internalVertexCount : Int) -
     (germ.piece.internalVertexCount : Int)
 
 /-- **Length-changing**, `δ ≠ 0`; its negation is the equal-length case. -/
@@ -1504,7 +1498,7 @@ def LengthChanging : Prop := germ.increment ≠ 0
 /-- `δ = 0` is exactly the equal-length clause of `def:cold-bounded-germ`. -/
 theorem increment_eq_zero_iff :
     germ.increment = 0 ↔
-      germ.canonical.internalVertexCount = germ.piece.internalVertexCount := by
+      germ.second.internalVertexCount = germ.piece.internalVertexCount := by
   unfold increment
   omega
 
@@ -1517,7 +1511,7 @@ are exactly the rows of `def:cold-same-interface-table`.  This is
 the finite same-interface cold table". -/
 theorem not_lengthChanging_iff :
     ¬ germ.LengthChanging ↔
-      germ.canonical.internalVertexCount = germ.piece.internalVertexCount := by
+      germ.second.internalVertexCount = germ.piece.internalVertexCount := by
   rw [LengthChanging, not_not]
   exact germ.increment_eq_zero_iff
 
@@ -1543,14 +1537,6 @@ theorem target_of_realizing
     (realizing : germ.Realizing) : Target object :=
   (targetInvariant.iff_of_iso ⟨germ.atom.reconstructionIso⟩).mp realizing
 
-/-- **At G every germ is silent (G3).**  G1 would give G the target it avoids,
-and G2 is empty at G (`not_distinguishing`). -/
-theorem neutral_of_avoids
-    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
-    (avoids : ¬ Target object) : germ.Neutral :=
-  ⟨fun realizing => avoids (germ.target_of_realizing targetInvariant realizing),
-    germ.not_distinguishing⟩
-
 /-- The shorter representative, glued back into the germ's own outside context,
 is strictly smaller than the ambient object.
 
@@ -1560,11 +1546,11 @@ internal vertices gives a strictly smaller graph, and the germ's own completion
 is the object up to the decomposition's reconstruction isomorphism. -/
 theorem lexicographicallySmaller_of_increment_neg
     (shorter : germ.increment < 0) :
-    (glue germ.canonical germ.atom.outside).LexicographicallySmaller object := by
+    (glue germ.second germ.atom.outside).LexicographicallySmaller object := by
   have internal :
-      germ.canonical.internalVertexCount < germ.atom.piece.internalVertexCount := by
+      germ.second.internalVertexCount < germ.atom.piece.internalVertexCount := by
     unfold increment at shorter
-    change (germ.canonical.internalVertexCount : Int) -
+    change (germ.second.internalVertexCount : Int) -
       (germ.atom.piece.internalVertexCount : Int) < 0 at shorter
     omega
   refine (FiniteObject.lexicographicallySmaller_congr_right
@@ -1584,17 +1570,18 @@ replacement is `X' = E` glued into G's own surroundings `G − Z`
 (`def:target-complete-compression`, the hypotheses of `lem:replacement`): it
 keeps the boundary-degree profile (`sameProfile`), its completion keeps the
 baseline (`baseline`, internal degrees included), it has G's target response in
-`G − Z` (`sameResponse`), so no target cycle when G avoids the target, and it
-is strictly smaller (the increment's sign). -/
+`G − Z` because the germ is silent (not `Distinguishing`), so no target cycle
+when G avoids the target, and it is strictly smaller (the increment's sign). -/
 theorem compressibleSupport_of_increment_neg
     (targetInvariant : FiniteObject.IsomorphismInvariant Target)
-    (avoids : ¬ Target object) (shorter : germ.increment < 0) :
+    (avoids : ¬ Target object) (shorter : germ.increment < 0)
+    (silent : ¬ germ.Distinguishing) :
     Strategy.InterfaceReplacement.CompressibleSupport Baseline Target object
       germ.support :=
-  ⟨germ.connected, germ.proper, germ.canonical, germ.sameProfile, germ.baseline,
+  ⟨germ.connected, germ.proper, germ.second, germ.sameProfile, germ.baseline,
     germ.lexicographicallySmaller_of_increment_neg shorter,
     fun hit => avoids (germ.target_of_realizing targetInvariant
-      (germ.sameResponse.mp hit))⟩
+      ((Classical.not_not.mp silent).mpr hit))⟩
 
 /-- **G3 is refuted at G** by `cor:uncompressible`: no proper support of G
 admits a target-complete compression. -/
@@ -1603,9 +1590,21 @@ theorem false_of_increment_neg
     (avoids : ¬ Target object)
     (uncompressible : ∀ support : Finset object.Vertex,
       ¬ Strategy.InterfaceReplacement.CompressibleSupport Baseline Target object support)
-    (shorter : germ.increment < 0) : False :=
+    (shorter : germ.increment < 0) (silent : ¬ germ.Distinguishing) : False :=
   uncompressible germ.support
-    (germ.compressibleSupport_of_increment_neg targetInvariant avoids shorter)
+    (germ.compressibleSupport_of_increment_neg targetInvariant avoids shorter silent)
+
+/-- **A shortening germ is hit-distinguished at G** (G2): G3 is refuted by
+`cor:uncompressible`, so the shorter constructed representative `E` glued into
+`G − Z` must disagree with G's own (target-free) completion there. -/
+theorem distinguishing_of_increment_neg
+    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
+    (avoids : ¬ Target object)
+    (uncompressible : ∀ support : Finset object.Vertex,
+      ¬ Strategy.InterfaceReplacement.CompressibleSupport Baseline Target object support)
+    (shorter : germ.increment < 0) : germ.Distinguishing :=
+  Classical.byContradiction fun silent =>
+    germ.false_of_increment_neg targetInvariant avoids uncompressible shorter silent
 
 end BoundedGerm
 
@@ -1626,19 +1625,19 @@ admissible only when the identification has a strictly smaller proper
 representative in the sense of `def:proper-quotient-representative`. -/
 structure TableRow (S : DeclaredSignature)
     (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
-    (Handoff : Finset object.Vertex → Prop)
+    (Handoff : Finset object.Vertex → Prop) : Type (u + 1)
     extends BoundedGerm S Baseline Target object where
   /-- `def:cold-bounded-germ`, the equal-length case `δ = 0`. -/
   equalLength :
-    canonical.internalVertexCount =
+    canonical.toPiece.internalVertexCount =
       (rowAtom object support connected proper).piece.internalVertexCount
   /-- `def:admissible-rank-quotient` at a row that was not handed off, read at
   G. -/
   admissible : ¬ Handoff support →
     (Target (glue (rowAtom object support connected proper).piece
         (rowAtom object support connected proper).outside) ↔
-      Target (glue canonical (rowAtom object support connected proper).outside)) →
-    (glue canonical (rowAtom object support connected proper).outside).LexicographicallySmaller
+      Target (glue canonical.toPiece (rowAtom object support connected proper).outside)) →
+    (glue canonical.toPiece (rowAtom object support connected proper).outside).LexicographicallySmaller
       object
 
 namespace TableRow
@@ -1652,21 +1651,22 @@ theorem increment_eq_zero : row.increment = 0 :=
   row.toBoundedGerm.increment_eq_zero_iff.mpr row.equalLength
 
 /-- **A row that is not handed off is a target-complete compression of its own
-proper support at G.**  Its two representatives are identified at G
-(`sameResponse`), so `def:admissible-rank-quotient` supplies the strictly
+proper support at G.**  When it is silent (not `Distinguishing`) its two
+representatives are identified at G, so `def:admissible-rank-quotient` supplies the strictly
 smaller proper representative `glue E (G − Z)`; it keeps the boundary-degree
 profile and the baseline and has G's target response in `G − Z`.  This is the
 equal-length descent. -/
 theorem compressibleSupport_of_not_handoff
     (targetInvariant : FiniteObject.IsomorphismInvariant Target)
     (avoids : ¬ Target object)
-    (notHandoff : ¬ Handoff row.support) :
+    (notHandoff : ¬ Handoff row.support)
+    (silent : ¬ row.Distinguishing) :
     Strategy.InterfaceReplacement.CompressibleSupport Baseline Target object
       row.support :=
-  ⟨row.connected, row.proper, row.canonical, row.sameProfile, row.baseline,
-    row.admissible notHandoff row.sameResponse.symm,
+  ⟨row.connected, row.proper, row.canonical.toPiece, row.sameProfile, row.baseline,
+    row.admissible notHandoff (Classical.not_not.mp silent),
     fun hit => avoids (row.toBoundedGerm.target_of_realizing targetInvariant
-      (row.sameResponse.mp hit))⟩
+      ((Classical.not_not.mp silent).mpr hit))⟩
 
 end TableRow
 
@@ -1751,8 +1751,8 @@ carries and nothing else: it avoids the target, and no proper support of it
 admits a target-complete compression (`cor:uncompressible`, read at G).  A
 realizing row would hand the object the target it avoids; a row that is not
 handed off is a compression of its own support by `glue E (G − Z)`
-(`TableRow.compressibleSupport_of_not_handoff`).  The distinguishing arm is
-empty at G (`BoundedGerm.not_distinguishing`), so every row is handed off. -/
+(`TableRow.compressibleSupport_of_not_handoff`), so every row is handed off or
+distinguishing (G2, read on the constructed second representative). -/
 theorem row_closed {S : DeclaredSignature} {Baseline Target : FiniteObject.{u} → Prop}
     {Handoff : Finset object.Vertex → Prop}
     (targetInvariant : FiniteObject.IsomorphismInvariant Target)
@@ -1767,8 +1767,11 @@ theorem row_closed {S : DeclaredSignature} {Baseline Target : FiniteObject.{u} �
     ?_⟩
   by_cases handoff : Handoff row.support
   · exact Or.inl handoff
-  · exact (uncompressible row.support
-      (row.compressibleSupport_of_not_handoff targetInvariant avoids handoff)).elim
+  · by_cases distinguishing : row.Distinguishing
+    · exact Or.inr distinguishing
+    · exact (uncompressible row.support
+        (row.compressibleSupport_of_not_handoff targetInvariant avoids handoff
+          distinguishing)).elim
 
 /-- **`lem:cold-same-interface-table`, at a short exceptional self-return.**
 

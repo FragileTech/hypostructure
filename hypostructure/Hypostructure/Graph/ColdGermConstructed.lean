@@ -6,14 +6,11 @@ import Hypostructure.Graph.GConstructedPiece
 
 `lem:cold-bounded-germ-trichotomy` (G2, *hit-distinguished*): "some compatible outside
 context distinguishes the two representatives by target truth value".  The context
-stays G's own surroundings `G − Z`.  `BoundedGerm.Distinguishing` reads the test on the
-germ's second representative `E = germ.canonical`, which the germ carries with G's
-retained target response in `G − Z` (`BoundedGerm.sameResponse`, the cut-state reading
-`CanonicalPiece.CutStateReadingAt`), so `BoundedGerm.not_distinguishing` is true by
-construction of `E`, not by a property of G.
-
-With the realizations being the pieces constructed from G at the germ's support
-(`GConstructedPiece object germ.support`), the test is `DistinguishingAt`:
+stays G's own surroundings `G − Z`, and the second representative `E = germ.canonical`
+is a piece constructed from G at the germ's support (`GConstructedPiece`; the G repair's
+cut-state reading, which carried G's response by construction and made G2 empty, is
+withdrawn).  `DistinguishingAt germ P` is the test at any constructed piece `P`;
+`germ.Distinguishing` is the test at `E` (`distinguishing_iff_at`).
 
 * it is exactly the target response of the constructed piece in `G − Z`
   (`distinguishingAt_iff_response`), since `Q[x,y]` glued into `G − Z` is G;
@@ -40,6 +37,10 @@ at the germ's support have different target truth in G's own surroundings `G −
 def DistinguishingAt (P : GConstructedPiece object germ.support) : Prop :=
   ¬ (Target (glue germ.piece germ.atom.outside) ↔
     Target (glue P.toPiece germ.atom.outside))
+
+/-- G2 at the germ's own second representative is `DistinguishingAt` at `E`. -/
+theorem distinguishing_iff_at : germ.Distinguishing ↔ germ.DistinguishingAt germ.canonical :=
+  Iff.rfl
 
 /-- **At a target-avoiding G, G2 at a constructed piece is its target response in
 `G − Z`.** -/
