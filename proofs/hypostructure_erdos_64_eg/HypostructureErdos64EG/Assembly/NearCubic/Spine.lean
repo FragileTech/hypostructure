@@ -82,7 +82,8 @@ noncomputable abbrev nearCubicResidualBKeys : FactKeys EGInput.{u} :=
     K .route8StubDeficit, K .route8DeficitVsStubs, K .route8EntryLowerBound,
     K .route8CoreEmpty, K .route8StrongRate, K .route8ThinIsolation,
     K .route8WindowStub, K .route8ThinSmall, K .route8WindowRPathGap,
-    K .route8HubStubs, K .route8WindowSelfRPathGap, K .route8PieceBoundary] ++
+    K .route8HubStubs, K .route8WindowSelfRPathGap, K .route8PieceBoundary,
+    K .route8WindowPieceRank, K .route8AchievableLengths] ++
     netChargeContinuationKeys
 
 /-- Branch D, nodes `[36]`--`[46]`, on the literal ledger returned by node
@@ -424,6 +425,7 @@ noncomputable def nearCubicRouteEightEntry
         K .route8ThinIsolation :: K .route8WindowStub :: K .route8ThinSmall ::
         K .route8WindowRPathGap :: K .route8HubStubs ::
         K .route8WindowSelfRPathGap :: K .route8PieceBoundary ::
+        K .route8WindowPieceRank :: K .route8AchievableLengths ::
         netChargeContinuationKeys.{u}) known := by
         key_fresh)
     [FactKeys.Has (K .barrierCap) known]
@@ -532,7 +534,15 @@ noncomputable def nearCubicRouteEightEntry
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)).run
         selfGap (by key_fresh)
-      Or.inr (Or.inl (route8RateFailsSubtypesReturn_routeEightEntry pieceCut arm.1 arm.2))
+      let pieceRank := (route8WindowPieceRankRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        pieceCut (by key_fresh)
+      let achievable := (route8AchievableLengthsRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        pieceRank (by key_fresh)
+      Or.inr (Or.inl (route8RateFailsSubtypesReturn_routeEightEntry achievable arm.1 arm.2))
 
 set_option maxHeartbeats 8000000 in
 /-- The route-8 continuation `[57]`--`[124]` on the `[162]` arm entered from
@@ -566,6 +576,8 @@ noncomputable def nearCubicRateFailedExit
     (hubFresh : K .route8HubStubs ∉ known := by key_fresh)
     (selfGapFresh : K .route8WindowSelfRPathGap ∉ known := by key_fresh)
     (pieceCutFresh : K .route8PieceBoundary ∉ known := by key_fresh)
+    (pieceRankFresh : K .route8WindowPieceRank ∉ known := by key_fresh)
+    (achievableFresh : K .route8AchievableLengths ∉ known := by key_fresh)
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
     [FactKeys.Has (K .boundedDensityOrder) known]
@@ -739,7 +751,15 @@ noncomputable def nearCubicRateFailedExit
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     selfGap (by key_fresh)
-  Or.inr (Or.inl (route8RateFailsSubtypesReturn_rateFailedExit pieceCut entropy))
+  let pieceRank := (route8WindowPieceRankRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    pieceCut (by key_fresh)
+  let achievable := (route8AchievableLengthsRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    pieceRank (by key_fresh)
+  Or.inr (Or.inl (route8RateFailsSubtypesReturn_rateFailedExit achievable entropy))
 
 set_option maxHeartbeats 8000000 in
 /-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[147]` arm (`θ < 1/78`): `[56]` reads the strict cap from `K .coldRoute8Below`,

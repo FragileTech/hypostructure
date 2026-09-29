@@ -419,3 +419,7 @@ The defining failure changes: `K .route8Rate` is now `Route8Census.StrongRate` (
 
 New generic facts: #110 `route8WindowSelfRPathGap` (a remainder path joining two stubs of one window closes a cycle of length |i-i'| + |r| + 2 that is not a power of two; C01 C05 D03; obstruction), #111 `route8PieceBoundary` (every canonical piece of G[R] has at least two boundary edges, and 2*#pieces <= |dR|; B01 B02 B05; bound). Counts: x 49, ~ 29, gap 6, n/a 4, nonG 0 (B01 stays `~`: the pieces are counted and bounded below, still no per-piece upper bound).
 
+## Seventh pass (keys 8268-8269): cycle rank of the window-piece graph, achievable lengths
+
+New generic facts: #112 `route8WindowPieceRank` (cycle rank of the stub multigraph B of windows and pieces: beta*p + sigma_W <= 2*(e(R,W) - (p + #pieces)) + 2p + X; B01 B05 A10; bound), #113 `route8AchievableLengths` (the path-length set of a piece between two stubs is nonempty and below the piece size; the cycle-length sumsets of B, one window one piece and two windows two pieces, avoid the powers of two; C01 C05 B01; witness + obstruction). Counts: x 49, ~ 29, gap 6, n/a 4, nonG 0.
+
