@@ -40,7 +40,7 @@ theorem Node144aOutcome_windowHandoff.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `windowFails`: [139] token in 𝔗_W, yes arm; audited at [140]; handoff-fails arm of [144] (the paper error).
-The generic 87 common facts and 5 extra facts (92 facts in all). -/
+The generic 87 common facts and 7 extra facts (94 facts in all). -/
 abbrev Node144aOutcome_windowFails (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -52,7 +52,11 @@ abbrev Node144aOutcome_windowFails (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .sameTokenReadingsNotReplacement selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sameTokenPairPartition selected.object
+      erdosReceiverLoadProfile spineData .sameTokenPairPartition selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenTransplantSize selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenTransplantDeficit selected.object
 
 /-- `Node144aOutcome_windowFails` is a case of the generic residual. -/
 theorem Node144aOutcome_windowFails.toGeneric {selected : EGInput.{u}}
@@ -78,7 +82,7 @@ theorem Node144aOutcome_remainderHandoff.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `remainderFails`: [139] no, [141] token in 𝔗_R, yes arm; audited at [142]; handoff-fails arm of [144] (the paper error).
-The generic 87 common facts and 6 extra facts (93 facts in all). -/
+The generic 87 common facts and 8 extra facts (95 facts in all). -/
 abbrev Node144aOutcome_remainderFails (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -92,7 +96,11 @@ abbrev Node144aOutcome_remainderFails (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .sameTokenReadingsNotReplacement selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sameTokenPairPartition selected.object
+      erdosReceiverLoadProfile spineData .sameTokenPairPartition selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenTransplantSize selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenTransplantDeficit selected.object
 
 /-- `Node144aOutcome_remainderFails` is a case of the generic residual. -/
 theorem Node144aOutcome_remainderFails.toGeneric {selected : EGInput.{u}}
@@ -120,7 +128,7 @@ theorem Node144aOutcome_primitiveHandoff.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `primitiveFails`: [139] no, [141] no: the primitive class; audited at [143]; handoff-fails arm of [144] (the paper error).
-The generic 87 common facts and 7 extra facts (94 facts in all). -/
+The generic 87 common facts and 9 extra facts (96 facts in all). -/
 abbrev Node144aOutcome_primitiveFails (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -136,7 +144,11 @@ abbrev Node144aOutcome_primitiveFails (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .sameTokenReadingsNotReplacement selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sameTokenPairPartition selected.object
+      erdosReceiverLoadProfile spineData .sameTokenPairPartition selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenTransplantSize selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .sameTokenTransplantDeficit selected.object
 
 /-- `Node144aOutcome_primitiveFails` is a case of the generic residual. -/
 theorem Node144aOutcome_primitiveFails.toGeneric {selected : EGInput.{u}}
@@ -298,14 +310,18 @@ theorem node144aWindowFailsReturn
     [FactKeys.Has (K .typeBHandoffFails) known]
     [FactKeys.Has (K .sameTokenPatternUnresolved) known]
     [FactKeys.Has (K .sameTokenReadingsNotReplacement) known]
-    [FactKeys.Has (K .sameTokenPairPartition) known] :
+    [FactKeys.Has (K .sameTokenPairPartition) known]
+    [FactKeys.Has (K .sameTokenTransplantSize) known]
+    [FactKeys.Has (K .sameTokenTransplantDeficit) known] :
     Node144aOutcome_windowFails selected :=
   ⟨node144aReturn history,
     (history.get (K .windowClassOverload)).down,
     (history.get (K .typeBHandoffFails)).down,
     (history.get (K .sameTokenPatternUnresolved)).down,
     (history.get (K .sameTokenReadingsNotReplacement)).down,
-    (history.get (K .sameTokenPairPartition)).down⟩
+    (history.get (K .sameTokenPairPartition)).down,
+    (history.get (K .sameTokenTransplantSize)).down,
+    (history.get (K .sameTokenTransplantDeficit)).down⟩
 
 /-- The return of `Node144aOutcome_remainderHandoff`: one `get` per fact of its ledger. -/
 theorem node144aRemainderHandoffReturn
@@ -329,7 +345,9 @@ theorem node144aRemainderFailsReturn
     [FactKeys.Has (K .typeBHandoffFails) known]
     [FactKeys.Has (K .sameTokenPatternUnresolved) known]
     [FactKeys.Has (K .sameTokenReadingsNotReplacement) known]
-    [FactKeys.Has (K .sameTokenPairPartition) known] :
+    [FactKeys.Has (K .sameTokenPairPartition) known]
+    [FactKeys.Has (K .sameTokenTransplantSize) known]
+    [FactKeys.Has (K .sameTokenTransplantDeficit) known] :
     Node144aOutcome_remainderFails selected :=
   ⟨node144aReturn history,
     (history.get (K .windowClassAbsent)).down,
@@ -337,7 +355,9 @@ theorem node144aRemainderFailsReturn
     (history.get (K .typeBHandoffFails)).down,
     (history.get (K .sameTokenPatternUnresolved)).down,
     (history.get (K .sameTokenReadingsNotReplacement)).down,
-    (history.get (K .sameTokenPairPartition)).down⟩
+    (history.get (K .sameTokenPairPartition)).down,
+    (history.get (K .sameTokenTransplantSize)).down,
+    (history.get (K .sameTokenTransplantDeficit)).down⟩
 
 /-- The return of `Node144aOutcome_primitiveHandoff`: one `get` per fact of its ledger. -/
 theorem node144aPrimitiveHandoffReturn
@@ -364,7 +384,9 @@ theorem node144aPrimitiveFailsReturn
     [FactKeys.Has (K .typeBHandoffFails) known]
     [FactKeys.Has (K .sameTokenPatternUnresolved) known]
     [FactKeys.Has (K .sameTokenReadingsNotReplacement) known]
-    [FactKeys.Has (K .sameTokenPairPartition) known] :
+    [FactKeys.Has (K .sameTokenPairPartition) known]
+    [FactKeys.Has (K .sameTokenTransplantSize) known]
+    [FactKeys.Has (K .sameTokenTransplantDeficit) known] :
     Node144aOutcome_primitiveFails selected :=
   ⟨node144aReturn history,
     (history.get (K .windowClassAbsent)).down,
@@ -373,7 +395,9 @@ theorem node144aPrimitiveFailsReturn
     (history.get (K .typeBHandoffFails)).down,
     (history.get (K .sameTokenPatternUnresolved)).down,
     (history.get (K .sameTokenReadingsNotReplacement)).down,
-    (history.get (K .sameTokenPairPartition)).down⟩
+    (history.get (K .sameTokenPairPartition)).down,
+    (history.get (K .sameTokenTransplantSize)).down,
+    (history.get (K .sameTokenTransplantDeficit)).down⟩
 
 end Returns
 
