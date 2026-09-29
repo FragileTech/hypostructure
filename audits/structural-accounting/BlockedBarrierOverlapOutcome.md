@@ -12,16 +12,16 @@ Worktree `/home/guillem/hs-wt-S172a`, branch `g-audit-172a`, uncommitted edits i
 
 | x | ~ | gap | n/a | nonG |
 |---|---|---|---|---|
-| 65 | 18 | 3 | 2 | 0 |
+| 66 | 18 | 2 | 2 | 0 |
 
-Gaps: G04, G06, H04. n/a: A08, I04. No coordinate is nonG. (Previous report: 62 / 19 / 4 / 2 / 1.)
+Gaps: G06, H04. n/a: A08, I04. No coordinate is nonG. (Original report: 62 / 19 / 4 / 2 / 1.) Final commit 3d95809: fact 120 lost its class-quantified first conjunct and fact 121 gained the largest-state-fibre bound (G04 built).
 
 Changes against the previous report: D05 `~` to `x` (125); D06 `nonG` to `~` (122, 125); F06 `gap` to `~` (121); G03 `~` to `x` (120-124); G05 `~` to `x` (120, 122-124); G01, H09, H05, G09, I03, B01, B08, C01, C03, C13, D02, I02 gain citations. Arm rows renumbered 121-123 to 126-128.
 
 ### Headline answers on the changed facts
 
-- **120 `blockedBarrierOverlap`**: the failing clause (first coordinate with `F_c*A_k < W_c*A_{k+1}`, earlier ones passing) is a count of G's class, determined by P0, B(P0), the near-cubic class and the coordinate order: about G. The first conjunct (`forall coordinate, BlockedStateFibreBoundAt and BlockedGraphFibreMonotonicityAt`) quantifies `forall member0 : blockedClassAt`, i.e. per-member fibre bounds for arbitrary members of B(P0) (labelled skeletons on V(G)); G is one of them (119, 121), but the conclusion is not about G alone. It is class quantification with a non-G conclusion, so it is **not credited** anywhere (in particular it does not earn G04). This is a partly-nonG conjunct inside an otherwise G fact; no Table 1 coordinate depends only on it, so the nonG count is 0.
-- **121 `blockedOwnRecord`**: about G (`own.1.1 = objectSkeletonMember G`; surviving state at every coordinate; `1 <= |S fibre| <= |A fibre|` at G's own record).
+- **120 `blockedBarrierOverlap`**: fully about G. After the final commit it is only the first failing aggregate coordinate (earlier ones pass, `F_c*A_k < W_c*A_{k+1}`), a count of G's class; the class-quantified fibre conjunct is gone.
+- **121 `blockedOwnRecord`**: about G (`own` = objectSkeletonMember G; surviving state at every coordinate; `1 <= |S| <= |A|`; and the conditional fibre of the barrier code at own has at most F+1 elements at every coordinate, so G04 is built).
 - **122 `blockedFailureSlack`**, **123 `blockedPrefixCompression`**, **124 `blockedFailingSetCarries`**: numerical facts about G's class and the package rate (`windowPackageBits`, `canonicalWindowPacking`): about G.
 - **125 `blockedOverlapSupport`**: for `own` = G's skeleton, constructions on G's graph (completion supports, closed walks in G, connectivity in G): about G.
 - `K .blockedScaleAdditive` is not a fact of this residual (it is the positive arm of node [170], a decision input); it does not appear in the conjunction.
@@ -129,8 +129,8 @@ Criterion for `x`: a Table-2 fact about G (cited) gives the coordinate's observa
 |---|---|---|---|---|---|---|---|
 | G01 | Size of a labelled graph class | Count at fixed order, size, degree data, or decomposition. | x | 68, 69, 71, 119, 120, 121, 122, 123, 124 | identity, bound, witness | T12 T15 T16 | Class B(P0) is counted through the budget bound (119), the joint package inequality (69, 71) and the reached counts A_k: 1 <= |B(P0)| <= A_{k+1} (122), |B|*prod W <= |A|*prod F on passing prefixes (123) and the failing-set inequality against the a-priori class (124). All counts are numerical facts about G's canonical class (n, m, delta, P0 positions), no member witness. |
 | G02 | Number of legal local states | Cardinality of attachment, interface, or neighborhood types. | x | 15, 42, 66, 67, 85 | identity, classification, decomposition | T07 T11 T12 T17 | none at this residual's canonical objects (P0, R, hot/cold, B(P0)) |
-| G03 | Conditional information of local tests | Logarithm of conditional fibre sizes. | x | 67, 71, 73, 120, 121, 122, 123, 124 | decomposition, bound | T12 | Conditional information is measured as the ratios A_{k+1}/A_k of reached classes against F_{a,b}/W_{a,b} at every coordinate (120, 122, 123), summed over the failing set against the package bits (124), plus 1 <= |S fibre| <= |A fibre| at G's own record (121). The per-record fibre sizes at G are only certified qualitatively (121); the class-level state-fibre bound F+1 is the uncredited first conjunct of 120 (see G04). |
-| G04 | Dominant or repetitive local type | Largest fibre in a finite partition. | gap | none | none | none used | Present at G: the barrier code of G's skeleton takes values in Option(label triple) with the distinguished absent-completion state 'none' (IsBlockedSurvivingState none = True), so the state fibres of each coordinate form a finite partition on B(P0). No fact bounds the largest state fibre. Missing: size of the largest fibre (in particular of 'none') of the barrier code at each coordinate, T12, certificate: bound. |
+| G03 | Conditional information of local tests | Logarithm of conditional fibre sizes. | x | 67, 71, 73, 120, 121, 122, 123, 124 | decomposition, bound | T12 | Conditional information is measured as the ratios A_{k+1}/A_k of reached classes against F_{a,b}/W_{a,b} at every coordinate (120, 122, 123), summed over the failing set against the package bits (124), plus 1 <= |S fibre| <= |A fibre| at G's own record (121). The per-record fibre sizes at G are only certified qualitatively (121); the state-fibre bound F+1 at G's own record is in 121 (G04). |
+| G04 | Dominant or repetitive local type | Largest fibre in a finite partition. | x | 121 | bound | T12 | Fact 121 bounds the barrier states realized at G's own record (the conditional fibre of the barrier code at own = G's skeleton) by F_{a,b}+1 at every coordinate, the same F_{a,b} that enters the failing inequality (120, 122), the prefix counting (123) and the failing-set inequality (124). Not measured: the fibre of the absent state `none` separately, and fibres at other members. |
 | G05 | Additivity versus correlation | Joint state count compared with conditional products. | x | 67, 69, 120, 122, 123, 124 | decomposition, bound, obstruction | T12 T15 | none at this residual's canonical objects: the additivity test W*A_{k+1} <= F*A_k is stated at G's class (120), located as the first failure (122), propagated over passing prefixes (123) and combined with the joint package rate 2^(bits*|P0|) (69, 124). |
 | G06 | Injective reconstruction from local data | Map from decomposition states to labelled graphs. | gap | none | none | none used | Present at G: blockedBarrierCode (lem:blocked-graphs-compress) is defined on B(P0), and G lies in B(P0) (119); its injectivity (reconstruction of the labelled skeleton from outside edges plus barrier states, in the order blockedEncodingRank) is not a fact. Missing: injectivity of the code on B(P0) (or an exact multiplicity), T15, certificate: identity/injection. |
 | G07 | Resource multiplicity and double counting | Demands charged to each vertex, edge, token, or incidence. | x | 26, 33, 35, 61, 75, 76, 78, 91, 103 | identity, bound, decomposition | T01 T05 T06 T08 T15 | none at this residual's canonical objects (P0, R, hot/cold, B(P0)) |
@@ -289,8 +289,8 @@ Columns as in the template. Arm rows: 126 arm A only; 127 and 128 arm B only. Th
 | 117 | `coldCanonicalReplacementSwap` | 408 | If the marked representative E differs from Q, gluing E into the retained outside gives a baseline target-avoiding graph with the same n and m and a strict predecessor. | yes | E07, D08, D09, E01, I02, H10 | replacement | unconsumed within [172a] (terminal residual) |
 | 118 | `coldCanonicalReplacementTrivial` | 409 | The marked configuration has trivial canonical replacement E = Q. | yes | E07, I02, H10 | identity | read by 119 (residual hypothesis of blocked-class membership, per its docstring) |
 | 119 | `blockedClassMember` | 238 | G's own labelled skeleton (G transported to Fin n) has min degree >= 3, contains every window of P0 at its position, has no accepted cycle through a window, and card of the blocked class B(P0) on V(G) with m edges is <= skeletonBudget. | yes | G01, C12, D01, I02, C08 | witness | read by 121, 122, 124, 125 (own = objectSkeletonMember G; the class blockedClassAt) |
-| 120 | `blockedBarrierOverlap` | 321 | Aggregate failure of G's class: at the first exposure coordinate c (rank k) F_c * A_k < W_c * A_{k+1} with all earlier aggregate tests holding, where A_k = blockedReachedCount k (a-priori near-cubic graphs sharing outside record and earlier states with some member of B(P0)); no member witness. Plus the class-level conjunct: for every coordinate and every member0 of B(P0), state fibre <= F+1 and surviving fibre <= a-priori fibre. | yes for the failing clause (a numerical fact about G's class, determined by G's packing, class and coordinate order). Partly no for the first conjunct: `forall member0 : blockedClassAt` states per-member fibre bounds for arbitrary members of B(P0) (G is one, by 119/121); it is NOT credited on its own (its G-instance is only what 121 states for own = G's skeleton). No coordinate depends only on it. | G01, G03, G05, H09 | obstruction | terminal (the residual's defining failure); read by 122, 123, 124 through the shared aggregate test BlockedAggregateBoundAt |
-| 121 | `blockedOwnRecord` | 8600 | G's own skeleton is a member `own` of B(P0) (own = objectSkeletonMember G); its barrier state is a surviving state at every coordinate; and at every coordinate 1 <= \|S fibre(own)\| <= \|A fibre(own)\| (G lies in its own conditional fibres). | yes | G03 (~ sub-object: qualitative), G01, D02, I02, F06 (~) | witness, bound | unconsumed within [172a] (terminal residual) |
+| 120 | `blockedBarrierOverlap` | 321 | Aggregate failure of G's class: at the first exposure coordinate c (rank k) F_c * A_k < W_c * A_{k+1} with all earlier aggregate tests holding, where A_k = blockedReachedCount k. No member witness and no other conjunct. | yes: a numerical fact about G's class, determined by G's packing, class and coordinate order | G01, G03, G05, H09 | obstruction | terminal (the residual's defining failure); read by 122, 123, 124 through the shared aggregate test BlockedAggregateBoundAt |
+| 121 | `blockedOwnRecord` | 8600 | G's own skeleton is a member `own` of B(P0) (own = objectSkeletonMember G); its barrier state is a surviving state at every coordinate; and at every coordinate 1 <= \|S fibre(own)\| <= \|A fibre(own)\| (G lies in its own conditional fibres). Also, at every coordinate, the conditional fibre of the barrier code at own has at most F+1 elements (largest barrier-state fibre at G's record). | yes | G03 (~ sub-object: qualitative), G01, G04, D02, I02, F06 (~) | witness, bound | unconsumed within [172a] (terminal residual) |
 | 122 | `blockedFailureSlack` | 8601 | At the first failing coordinate c (rank k): F_c*A_k < W_c*A_{k+1}, A_{k+1} <= A_k, 1 <= \|B(P0)\| <= A_{k+1}, and F_c < W_c; all earlier coordinates pass the aggregate test. | yes | G01, G03, G05, H09, D06 (~) | bound, obstruction | unconsumed within [172a] (terminal residual) |
 | 123 | `blockedPrefixCompression` | 8602 | At every coordinate all of whose predecessors pass the aggregate test: \|B(P0)\| * prod_{pred} W <= \|A-class\| * prod_{pred} F (the exposure counting of lem:blocked-graphs-compress on the passing prefix). | yes | G01, G03, G05, H09 | bound | unconsumed within [172a] (terminal residual) |
 | 124 | `blockedFailingSetCarries` | 8603 | With Phi the set of coordinates whose aggregate test fails: \|B(P0)\| * 2^(windowPackageBits*\|P0\|) * prod_Phi F <= \|A-class\| * prod_Phi W, so the package saving over the class bound is carried by Phi. | yes | G05, G03, G01, G09, H05, H09, I03 | bound | unconsumed within [172a] (terminal residual) |
@@ -300,7 +300,7 @@ Columns as in the template. Arm rows: 126 arm A only; 127 and 128 arm B only. Th
 | 128 | `route8RateFails` | 265 | ARM B. Not Rate: (delta*s + 1)*e(R,W) + delta*slack >= delta*\|R\| with slack = bridgeMass*discharge*T(n), i.e. the private-carrier rate tau < 3/13 fails. | yes | H09, H05 | bound | routing at [160] (rate reading fails) |
 ## Gaps ranked (joint check, gaps and `~`)
 
-Ranking = number of existing Table-2 facts that would be combined with the coordinate once measured. Coordinates that are `gap`: G06, G04, H04. The rest of the list is `~`.
+Ranking = number of existing Table-2 facts that would be combined with the coordinate once measured. Coordinates that are `gap`: G06, H04. The rest of the list is `~`.
 
 1. **G06 (gap): injective reconstruction from local data (barrier code on B(P0))** (17 facts)
    - Why present at G: `blockedBarrierCode` is defined on B(P0) and G lies in it (119, 121); the encoding is (outside edge set, Option-valued states in `blockedEncodingRank` order). The reached class `A_k` (120) is defined by agreement with a member's code on the first k coordinates, so the multiplicity of the code is exactly what relates A_k to |B(P0)| and to the outside-record count. No fact states injectivity or a multiplicity.
@@ -314,11 +314,6 @@ Ranking = number of existing Table-2 facts that would be combined with the coord
    - Technique: T10 (uncrossing, minimal obstruction), T12.
    - Combines with: 14, 23, 39, 47, 48, 49, 70, 78, 80, 103, 119, 120, 122, 125.
 
-3. **G04 (gap): dominant or repetitive local type (largest barrier-state fibre, in particular the absent state)** (13 facts; tie with H04)
-   - Why present at G: the barrier code of G's skeleton takes Option-valued states; `none` (absent completion) is a surviving state with no cost in `blockedSurvivingCountAt`, so the state fibres form a partition of B(P0). The only bound on the largest state fibre (`<= F+1`) is the class-quantified first conjunct of 120, which is not credited; 121 gives only `1 <= |S| <= |A|` at G's own record.
-   - Missing observable and certificate: size of the largest state fibre (especially `none`) at each coordinate as a G fact, e.g. the state-fibre bound instantiated at G's own record. Certificate: bound.
-   - Technique: T12.
-   - Combines with: 15, 66, 67, 68, 69, 71, 73, 119, 120, 121, 122, 126, 127.
 
 3. **H04 (gap, arm B): feasibility of the local discharge on R (with H02/H03 and H06/H07)** (13 facts)
    - Why present at G: arm B is the strict cap `K .denseDeficiencyBelow` that hands R to `prop:negative-net-charge` ([57]-[62]); with `route8RateFails` the residual sits in 3/13 <= tau < 1/4. Suppliers (stubs 82, wedges 83, window cut 25, carriers 26) and deficits (24) are certified, but no transfer scheme, no negative piece (89 is conditional), no private-carrier assignment (128 is the negation of Rate).
@@ -340,25 +335,22 @@ Ranking = number of existing Table-2 facts that would be combined with the coord
 
 ### Gaps relevant to the deficiency / rate split ([160])
 
-- Facts 126 (arm A), 127 and 128 (arm B) are inequalities in (n, |P0|, |R|, e(R,W), T(n)). They meet the fibre failure only through |P0|: it enters `2^(windowPackageBits*|P0|)` (69), which fact 124 puts on the left of the failing-set inequality against `skeletonBudget`-side counts. The missing bridge is G06 (the outside-record count) plus G04, which turn 124 into a bound on |P0| that arms A and B can be tested against.
+- Facts 126 (arm A), 127 and 128 (arm B) are inequalities in (n, |P0|, |R|, e(R,W), T(n)). They meet the fibre failure only through |P0|: it enters `2^(windowPackageBits*|P0|)` (69), which fact 124 puts on the left of the failing-set inequality against `skeletonBudget`-side counts. The missing bridge is G06 (the outside-record count), which turns 124 into a bound on |P0| that arms A and B can be tested against.
 - Arm A (126) is only the negation of the strict cap; its margin is not measured. Arm B (127 + 128): H04, H02/H03 and H06/H07 above are the unmeasured structure.
 - The split gives no evidence about which coordinate fails; the failing coordinate (122) is independent of tau in the ledger.
 
 ## Non-G facts
 
-No fact is wholly nonG and no Table 1 coordinate is nonG.
+No fact is nonG, wholly or partly, and no Table 1 coordinate is nonG. Fact 120 (no member quantifier after the final commit) and facts 121-125 are stated at G's own skeleton or as numerical facts about G's class.
 
-| Fact | Non-G object | Treatment / G-constructed replacement |
-|---|---|---|
-| 120 `blockedBarrierOverlap`, first conjunct only | `forall member0 : blockedClassAt` (arbitrary members of B(P0)) in `BlockedStateFibreBoundAt` and `BlockedGraphFibreMonotonicityAt`; conclusion is a per-member fibre bound | Not credited to any coordinate. Replacement: the same two bounds at `own` = `objectSkeletonMember G` (121 already gives `1 <= |S| <= |A|` there); the missing G fact is `|state fibre(own)| <= F+1` (G04). The failing clause of 120 is G-only and is credited. |
 
 Checked and kept as G-only: 1, 9, 10, 16, 23, 98, 112 (readings in G - Z), 11, 12, 99, 117 (swaps glued into G's own rest), 107, 108, 110-113 (germs of G's family), 63, 67 (quotients declared on G), 68 (class count in G's n, m), 119 (G's own skeleton; class cardinality is a parameter count), 121-125 (constructions at `own` = G's skeleton or numerical facts about G's class).
 
 ## Cross-check results
 
-1. **Every coordinate code in Table 2 is `x` or `~` in Table 1 and lists that fact: PASS** (checked programmatically over all 128 rows; 0 offenders).
-2. **Every `x` or `~` in Table 1 cites at least one Table-2 row, and each cited row lists the code: PASS** (65 x, 18 ~; 0 empty, 0 mismatches).
-3. **Every Table-2 row accounts for at least one coordinate or is bookkeeping: PASS.** All 128 rows carry >= 1 code; none is labelled bookkeeping (row 2 partly, but keeps C04, A04, I06). Row 120 keeps G01, G03, G05, H09 through its failing clause only.
+1. **Every coordinate code in Table 2 is `x` or `~` in Table 1 and lists that fact: PASS** (re-checked programmatically over all 128 rows after the G04 edit; 0 offenders).
+2. **Every `x` or `~` in Table 1 cites at least one Table-2 row, and each cited row lists the code: PASS** (66 x, 18 ~; 0 empty, 0 mismatches).
+3. **Every Table-2 row accounts for at least one coordinate or is bookkeeping: PASS.** All 128 rows carry >= 1 code; none is labelled bookkeeping (row 2 partly, but keeps C04, A04, I06). Row 120 keeps G01, G03, G05, H09.
 4. **No fact counted twice for the same demand in different currencies: PASS**, with the same-currency overlaps to be counted once: def+(R) <= e(R,W) <= capacity is published by 24 and 25, again in 81, 82, 83, 88; 76 = 75 scaled; 109 contains 96; 126 and 127 are complementary arms. New overlaps: 122 (failure slack) repeats the failing inequality of 120 and adds monotonicity and F < W; 123 and 124 are the same exposure counting on the passing prefix and on the failing set (complementary sets, one product each); 121 and 125 are at `own` = G's skeleton and measure different objects (fibres vs supports). None is a cross-currency double count.
 
 ## Outside the register
