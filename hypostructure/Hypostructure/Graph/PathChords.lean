@@ -486,6 +486,129 @@ theorem rungCycles_of_avoids {LengthOK : Nat → Prop} {a₁ b₁ a₂ b₂ : V}
     · intro y hy; simpa using hy
     · intro y hy; simpa using hy
 
+
 end Connectors
+
+/-! ## Geodesic paths: detours, hubs, rung bandwidth -/
+
+section Geodesic
+
+variable {V : Type u} {H : SimpleGraph V}
+
+/-- **`w` is a shortest path avoiding the edge `e`**: it avoids `e`, and no simple
+path of `H` avoiding `e` between its ends is shorter. -/
+def GeodesicAvoiding (e : Sym2 V) {a b : V} (w : H.Walk a b) : Prop :=
+  (∀ ε ∈ w.edges, ε ≠ e) ∧
+    ∀ q : H.Walk a b, q.IsPath → (∀ ε ∈ q.edges, ε ≠ e) → w.length ≤ q.length
+
+/-- **Every segment of `w` is at most as long as any detour avoiding `e`.** -/
+def GeodesicDetours (e : Sym2 V) {a b : V} (w : H.Walk a b) : Prop :=
+  ∀ (u v : V) (p1 : H.Walk a u) (p2 : H.Walk u v) (p3 : H.Walk v b) (r : H.Walk u v),
+    w = p1.append (p2.append p3) → (∀ ε ∈ r.edges, ε ≠ e) → p2.length ≤ r.length
+
+theorem geodesicDetours {e : Sym2 V} {a b : V} {w : H.Walk a b} (g : GeodesicAvoiding e w) :
+    GeodesicDetours e w := by
+  classical
+  intro u v p1 p2 p3 r heq hr
+  let W : H.Walk a b := p1.append (r.append p3)
+  have wedges : ∀ ε ∈ W.edges, ε ≠ e := by
+    intro ε hε
+    simp only [W, SimpleGraph.Walk.edges_append, List.mem_append] at hε
+    rcases hε with h | h | h
+    · exact g.1 ε (by rw [heq]; simp [SimpleGraph.Walk.edges_append, h])
+    · exact hr ε h
+    · exact g.1 ε (by rw [heq]; simp [SimpleGraph.Walk.edges_append, h])
+  have hb := g.2 W.bypass W.bypass_isPath
+    (fun ε hε => wedges ε (SimpleGraph.Walk.edges_bypass_subset_edges W hε))
+  have hle := SimpleGraph.Walk.length_bypass_le_length W
+  have hw : w.length = p1.length + p2.length + p3.length := by
+    rw [heq]; simp [SimpleGraph.Walk.length_append]; omega
+  have hW : W.length = p1.length + r.length + p3.length := by
+    simp [W, SimpleGraph.Walk.length_append]; omega
+  omega
+
+/-- For two distinct vertices of a walk, one occurs before the other: `w` splits as
+`p₁ ++ p₂ ++ p₃` with `p₂` from one to the other. -/
+theorem exists_decomp_pair [DecidableEq V] {a b : V} (w : H.Walk a b) {u v : V}
+    (hu : u ∈ w.support) (hv : v ∈ w.support) :
+    (∃ (p1 : H.Walk a u) (p2 : H.Walk u v) (p3 : H.Walk v b),
+        w = p1.append (p2.append p3)) ∨
+      ∃ (p1 : H.Walk a v) (p2 : H.Walk v u) (p3 : H.Walk u b),
+        w = p1.append (p2.append p3) := by
+  have hsplit := w.take_spec hu
+  have hv' : v ∈ (w.takeUntil u hu).support ∨ v ∈ (w.dropUntil u hu).support := by
+    rw [← SimpleGraph.Walk.mem_support_append_iff, hsplit]; exact hv
+  rcases hv' with h | h
+  · right
+    have h2 := (w.takeUntil u hu).take_spec h
+    refine ⟨(w.takeUntil u hu).takeUntil v h, (w.takeUntil u hu).dropUntil v h,
+      w.dropUntil u hu, ?_⟩
+    conv_lhs => rw [← hsplit, ← h2]
+    simp [SimpleGraph.Walk.append_assoc]
+  · left
+    have h2 := (w.dropUntil u hu).take_spec h
+    refine ⟨w.takeUntil u hu, (w.dropUntil u hu).takeUntil v h,
+      (w.dropUntil u hu).dropUntil v h, ?_⟩
+    conv_lhs => rw [← hsplit, ← h2]
+
+/-- **Neighbours of an outside vertex on a geodesic path are adjacent**: if `h` is
+off `w`, adjacent to two distinct vertices `u`, `v` of `w`, and the quadrilateral
+length is not accepted, then `u` and `v` are consecutive on `w` (so adjacent).
+Here the avoided edge is `e = s(a, b)`, the pair of ends of `w`. -/
+def GeodesicHubAdj (LengthOK : Nat → Prop) {a b : V} (w : H.Walk a b) : Prop :=
+  LengthOK 4 → ∀ (h u v : V), h ∉ w.support → u ∈ w.support → v ∈ w.support → u ≠ v →
+    H.Adj u h → H.Adj h v → H.Adj u v
+
+theorem geodesicHubAdj_of {LengthOK : Nat → Prop} {a b : V} (w : H.Walk a b)
+    (hp : w.IsPath) (g : GeodesicAvoiding s(a, b) w)
+    (avoids : ¬ ∃ (c : V) (cy : H.Walk c c), cy.IsCycle ∧ LengthOK cy.length) :
+    GeodesicHubAdj LengthOK w := by
+  classical
+  intro ok4 h u v hh hu hv huv huh hhv
+  have det := geodesicDetours g
+  have hub := hubCycles_of_avoids w hp avoids
+  have hne : ∀ z : V, s(z, h) ≠ s(a, b) := by
+    intro z hz
+    rw [Sym2.eq_iff] at hz
+    rcases hz with ⟨-, rfl⟩ | ⟨-, rfl⟩
+    · exact hh w.end_mem_support
+    · exact hh w.start_mem_support
+  have hne' : ∀ z : V, s(h, z) ≠ s(a, b) := fun z => by
+    rw [Sym2.eq_swap]; exact hne z
+  have core : ∀ (x y : V) (p1 : H.Walk a x) (p2 : H.Walk x y) (p3 : H.Walk y b),
+      w = p1.append (p2.append p3) → x ≠ y → H.Adj x h → H.Adj h y → H.Adj x y := by
+    intro x y p1 p2 p3 heq hxy hxh hhy
+    have long : 1 ≤ p2.length := by
+      by_contra short
+      have : p2.length = 0 := by omega
+      exact hxy (SimpleGraph.Walk.eq_of_length_eq_zero this)
+    let r : H.Walk x y := SimpleGraph.Walk.cons hxh (SimpleGraph.Walk.cons hhy .nil)
+    have hrE : ∀ ε ∈ r.edges, ε ≠ s(a, b) := by
+      intro ε hε
+      simp only [r, SimpleGraph.Walk.edges_cons, SimpleGraph.Walk.edges_nil, List.mem_cons,
+        List.not_mem_nil, or_false] at hε
+      rcases hε with rfl | rfl
+      · exact hne x
+      · exact hne' y
+    have span := det x y p1 p2 p3 r heq hrE
+    have not2 : p2.length ≠ 2 := by
+      intro h2
+      exact hub x y p1 p2 p3 h heq long hh hxh hhy (by rw [h2]; exact ok4)
+    have hlen : p2.length = 1 := by simp [r] at span; omega
+    cases p2 with
+    | nil => simp at long
+    | cons hadj q =>
+      have hq0 : q.length = 0 := by
+        have := hlen
+        simp only [SimpleGraph.Walk.length_cons] at this
+        omega
+      have hq := SimpleGraph.Walk.eq_of_length_eq_zero hq0
+      subst hq
+      exact hadj
+  rcases exists_decomp_pair w hu hv with ⟨p1, p2, p3, heq⟩ | ⟨p1, p2, p3, heq⟩
+  · exact core u v p1 p2 p3 heq huv huh hhv
+  · exact (core v u p1 p2 p3 heq huv.symm hhv.symm huh.symm).symm
+
+end Geodesic
 
 end Hypostructure.Graph.PathChords

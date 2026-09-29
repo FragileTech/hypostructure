@@ -5452,3 +5452,48 @@ model, and it does not derive a contradiction at G.
 **Not derived.**  A forced number of rungs: stubs go to rungs, hubs, same-path chords and `T`;
 hub edges number `3|H| + σ` with `|H| ≤ σ` and `σ` bounded above only by `2n − 5|H|`, so rungs
 are forced only when `σ` is small (roughly `σ < 3n/20`).  The arm stays open.
+
+### G audit: Node144aOutcome, fourth pass: the ladder lemma (result: false as posed; geodesic facts added)
+
+**The ladder lemma as posed cannot be proved, and its density form is false.**
+
+* *Two-rung cycles alone are not enough.*  Pairwise avoidance of `|i − i′| + |σ(i) − σ(i′)| + 2 ∈
+  {4, 8, 16, …}` is satisfiable by permutations of `{0, …, N − 1}` for `N = 4, 7, 8, …, 39`
+  (computer search; e.g. `N = 4`: `[1, 3, 0, 2]`).  Any proof must use cycles with four or more rungs.
+* *Density form is false: the slope-3 ladder.*  Take `P = (p_i)` and `Q = (q_j)` with rungs
+  `p_i q_{3i}`.  It is planar; its bounded faces are the 6-cycles between consecutive rungs, and every
+  cycle is the boundary of a chain of `k` consecutive faces, of length `6k − 2(k − 1) = 4k + 2`.  No
+  cycle has length `2^k` (`k ≥ 2`).  Here all of `P` carries rungs, and the other two thirds of `Q`
+  carry the third edge (in G: a hub pair).  So no lemma of the form "two paths with `≥ c·L` rungs contain
+  a `2^k` cycle" holds, for any `c ≤ 1`, without using the hubs that serve the unmatched vertices.
+* *Perfect-matching form.*  No solution for `N = 2..16` (all cycles, search), and none for `N = 2..39`
+  if consecutive rung displacements are at most `3`.  Not proved for all `N`; sheets of a permutation
+  far apart on `P` and close on `Q` give cycle lengths `D + O(1)` that a local argument cannot reach.
+
+**Geodesic strengthening (Lean, `Graph/PathChords.lean`, `PortWalk` of key 8106).**  For a triangular
+port the walk is a shortest `x`–`c` path of `G − cx` (`GeodesicAvoiding s(a, b) w`).  Then
+* `GeodesicDetours`: every segment `p₂ : u ⇝ v` of `w` is at most as long as any walk `u ⇝ v` avoiding
+  `cx`.  With a detour `c – v – u – d` through two rungs and a `P`-edge: consecutive rung displacement
+  `≤ 3`; with a single edge: `w` is induced (no chord but the port edge).
+* `GeodesicHubAdj`: if `LengthOK 4`, two neighbours of a vertex `h` off `w` on `w` are adjacent
+  (consecutive).  With `K .neighbourhoodPairCount` (`G[N(h)]` is a matching) a hub off `w` has at most
+  two neighbours on `w`.
+
+**Consequences, derived by hand and by finite computation (not in Lean).**
+* Hub degree: in the whole-graph arm with both ports of a pair triangular, a hub off both walks has
+  `d(h) ≤ 4 + |N(h) ∩ T|`, a hub on a walk at most `3` neighbours on it, so `σ ≤ 3|H| + 18`.
+* Runs of matched (rung) vertices: a run of `L` consecutive rung vertices of one walk into the other
+  geodesic walk has displacements in `{±2, ±3}`; a computer search over all such runs with the
+  two-rung cycle constraints shows every survivor is a slope-`±3` sheet (`σ(i) = c ± 3i`, up to the run
+  ends), whose image leaves two free positions between consecutive images.  Free interior positions
+  must be hub-pair vertices (their stub is a hub, a hub has at most two neighbours on a geodesic, hence
+  a consecutive pair), and distinct pairs need distinct hubs.  The minimum number of hub pairs for a run
+  of length `L` is `L − 7` for `L = 8..18` (search), so `|H| ≥ Σ_runs (L_r − 7)` and, counting runs
+  against the at most `3|H| + σ` stub exceptions, `σ ≥ |H| = Ω(n)` (constant roughly `1/110`).
+* Hence the small-`σ` whole-graph arm (both ports triangular) is empty only in the range
+  `σ < c n`, `c ≈ 1/110`; for `σ ≥ c n` the arm is not closed.  The hub-pair pattern then needs cycles
+  through hubs, whose lengths involve the (unbounded) offset between the hub's two pairs; this is the
+  same pairwise-avoidance form, satisfiable for small `N`.
+
+**Status.**  Nothing here closes the arm.  The Lean content is the geodesic facts in `PortWalk`
+(kind triangular) and the generic cycle lemmas of the third pass.
