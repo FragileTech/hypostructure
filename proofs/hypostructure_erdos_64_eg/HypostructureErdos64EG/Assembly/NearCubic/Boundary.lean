@@ -1,7 +1,6 @@
 import HypostructureErdos64EG.Assembly.NetCharge.Boundary
 import HypostructureErdos64EG.Assembly.Residuals.ColdBranchClosedOutcome
 import HypostructureErdos64EG.Assembly.Residuals.Node54ResidualOutcome
-import HypostructureErdos64EG.Assembly.Residuals.Node162ResidualOutcome
 import HypostructureErdos64EG.Assembly.Residuals.BlockedBarrierOverlapOutcome
 import HypostructureErdos64EG.Assembly.Residuals.Route8RateFailsOutcome
 
@@ -25,9 +24,10 @@ continuation's residuals, the failed private-carrier rate retained at the
 entry of the route-8 continuation (`[187]`), the blocked-class overlap
 residual `[172a]`, the local cold-terminal exclusion of the realized
 package's silent cold configurations (`[157]`, retained at `[187]`), and the
-three returned residuals of the structural exhaustion at `[153]` (G's first
-equal-state pair), `[162]` (a long corridor of G through a heavy centre) and
-`[54]` (the configuration at G where the joint realization fails).  Each
+two returned residuals of the structural exhaustion at `[153]` (G's first
+equal-state pair) and `[54]` (the configuration at G where the joint
+realization fails).  (`[162]`, a long corridor of G through a heavy centre, is
+no longer returned: the pass needs no terminality of a heavy-entry corridor.)  Each
 residual is stated as the disjunction of its subtypes, one per distinct fact
 set of the ledger at its return. -/
 abbrev SelectedNearCubicSurvivorBoundary (selected : EGInput.{u}) :=
@@ -36,7 +36,6 @@ abbrev SelectedNearCubicSurvivorBoundary (selected : EGInput.{u}) :=
       BlockedBarrierOverlapSubtypes selected ∨
         ColdBranchClosedLinearSubtypes selected ∨
         Node153ResidualSubtypes selected ∨
-        Node162ResidualSubtypes selected ∨
         Node54ResidualSubtypes selected
 
 /-- The near-cubic branch, after all sparse exits have been excluded, follows

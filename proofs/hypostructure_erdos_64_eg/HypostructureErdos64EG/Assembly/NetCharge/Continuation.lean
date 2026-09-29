@@ -38,7 +38,7 @@ noncomputable abbrev netChargeContinuationKeys : FactKeys EGInput.{u} :=
     K .coldCorridorState,
     K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
     K .coldCutStatesDistinct, K .coldRepeatedStateResidual,
-    K .coldHeavyEntryTerminal, K .coldDenseHeavyEntryResidual,
+    K .coldHeavyEntryTerminal,
     K .coldFailureRouting, K .coldFailureCycle,
     K .coldFailureDefectRoute, K .coldFailureCompression,
     K .coldHandoffTransfer, K .coldExchangeBound,

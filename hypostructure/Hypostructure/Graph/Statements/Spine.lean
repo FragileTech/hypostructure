@@ -1709,22 +1709,23 @@ noncomputable def ColdFirstFailureHandoffOccurrence (data : Parameters)
         ¬ ColdFirstFailureEvent data object corridor presentation index germ
           (ColdDeclaredHandoffSupport data object) earlier
 
-/-- The exact corridor consequence produced at node `[162]`: the retained
-corridor state from the incoming ledger, together with terminality of every
-corridor in that state. -/
+/-- The exact corridor consequence produced at node `[162]`: G's retained
+first-failure occurrence, in which every retained cold corridor is either
+terminal (the (F5) terminal subcase) or has a heavy handoff centre as its first
+failure (the (F4) event, routed by that first failure at `[175]`).
+
+The manuscript reads "every return corridor is terminal" from the bounded diameter
+of the pieces of `R`; that does not reach corridors of `G − X_cold`, and a heavy
+first failure needs no terminality: its germ is supported on the prefix up to the
+failure, and the neutral configuration of `[163]` is a germ of the subcubic
+extracted family, whose first failure is never a heavy handoff. -/
 noncomputable def DenseColdCorridorsTerminalStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  letI : FinEnum object.Vertex := object.vertices
-  let Eligible := ColdEligibleHalfEdge data object
-  exact ∃ state : ColdCorridorStateStatement data object,
-    let stateOne := Classical.choose_spec state
-    let componentAt := Classical.choose stateOne
-    let stateTwo := Classical.choose_spec stateOne
-    let corridorAt := Classical.choose stateTwo
-    ∀ epsilon : Eligible,
-      Graph.ColdCorridor.Corridor.TerminalCorridor
-        (corridorAt epsilon) data.coldSignature
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ occurrence : ColdFirstFailureOccurrenceData data object,
+    ∀ epsilon : ColdEligibleHalfEdge data object,
+      (coldOccurrenceCorridorAt data object occurrence epsilon).TerminalCorridor
+          data.coldSignature ∨
+        ColdFirstFailureHandoffOccurrence data object occurrence epsilon
 
 /-- `def:cold-corridor-first-failure`, at every selected half-edge owned by the
 current cold family.

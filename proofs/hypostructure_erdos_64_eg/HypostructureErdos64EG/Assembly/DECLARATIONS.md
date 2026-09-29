@@ -85,8 +85,6 @@ is in [Final.lean](Final.lean); the generic returned residuals are stated in
 | `coldBranchClosedReturn` | theorem | [Residuals.lean:2297](Residuals.lean#L2297) |
 | `Node153ResidualOutcome` | abbrev | [Residuals.lean:2422](Residuals.lean#L2422) |
 | `node153Return` | theorem | [Residuals.lean:2512](Residuals.lean#L2512) |
-| `Node162ResidualOutcome` | abbrev | [Residuals.lean:2607](Residuals.lean#L2607) |
-| `node162Return` | theorem | [Residuals.lean:2705](Residuals.lean#L2705) |
 | `Node54ResidualOutcome` | abbrev | [Residuals.lean:2808](Residuals.lean#L2808) |
 | `node54Return` | theorem | [Residuals.lean:2894](Residuals.lean#L2894) |
 | `DenseTauBlock_atOrAbove` | abbrev | [Residuals/ArmBlocks.lean:31](Residuals/ArmBlocks.lean#L31) |
@@ -174,14 +172,6 @@ is in [Final.lean](Final.lean); the generic returned residuals are stated in
 | `DenseTauArm.node153Arm` | theorem | [Residuals/Node153ResidualOutcome.lean:374](Residuals/Node153ResidualOutcome.lean#L374) |
 | `node153SubtypesReturn` | theorem | [Residuals/Node153ResidualOutcome.lean:388](Residuals/Node153ResidualOutcome.lean#L388) |
 | `Node153ResidualSubtypes.toGeneric` | theorem | [Residuals/Node153ResidualOutcome.lean:442](Residuals/Node153ResidualOutcome.lean#L442) |
-| `Node162ResidualOutcome_tauAtOrAbove` | abbrev | [Residuals/Node162ResidualOutcome.lean:30](Residuals/Node162ResidualOutcome.lean#L30) |
-| `Node162ResidualOutcome_tauAtOrAbove.toGeneric` | theorem | [Residuals/Node162ResidualOutcome.lean:35](Residuals/Node162ResidualOutcome.lean#L35) |
-| `node162Return_tauAtOrAbove` | theorem | [Residuals/Node162ResidualOutcome.lean:43](Residuals/Node162ResidualOutcome.lean#L43) |
-| `Node162ResidualOutcome_tauBelowRateFails` | abbrev | [Residuals/Node162ResidualOutcome.lean:102](Residuals/Node162ResidualOutcome.lean#L102) |
-| `Node162ResidualOutcome_tauBelowRateFails.toGeneric` | theorem | [Residuals/Node162ResidualOutcome.lean:109](Residuals/Node162ResidualOutcome.lean#L109) |
-| `node162Return_tauBelowRateFails` | theorem | [Residuals/Node162ResidualOutcome.lean:117](Residuals/Node162ResidualOutcome.lean#L117) |
-| `Node162ResidualSubtypes` | abbrev | [Residuals/Node162ResidualOutcome.lean:174](Residuals/Node162ResidualOutcome.lean#L174) |
-| `node162SubtypesReturn` | theorem | [Residuals/Node162ResidualOutcome.lean:179](Residuals/Node162ResidualOutcome.lean#L179) |
 | `Node54ResidualOutcome_realizedColdBelow` | abbrev | [Residuals/Node54ResidualOutcome.lean:31](Residuals/Node54ResidualOutcome.lean#L31) |
 | `Node54ResidualOutcome_realizedColdBelow.toGeneric` | theorem | [Residuals/Node54ResidualOutcome.lean:42](Residuals/Node54ResidualOutcome.lean#L42) |
 | `node54Return_realizedColdBelow` | theorem | [Residuals/Node54ResidualOutcome.lean:51](Residuals/Node54ResidualOutcome.lean#L51) |
