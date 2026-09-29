@@ -62,8 +62,8 @@ noncomputable def selectedNearCubicBranch
       exact selectedNearCubicSurvivorBranch survivorHistory
 
 /-- Node `[187]` collects only the other literal selected-root outcomes, each
-with every fact of its ledger at its return (`Assembly/Residuals/`): the four
-pair Type B subtypes, the Type B sublinear failure and the route-`8` quotient
+with every fact of its ledger at its return (`Assembly/Residuals/`): the two
+pair Type B subtypes (system arm; the increment arm is empty at G), the Type B sublinear failure and the route-`8` quotient
 failure `[348]` as products of their arm blocks, the eleven private-carrier
 rate failure subtypes, and the local cold-terminal exclusion as its four
 linear-arm singletons (its absorbed-germ product is not entered: `[173]`'s
@@ -72,9 +72,7 @@ own source key and is not `[144a]`.  (G-only restatement: the near-cubic target
 defect of `[187]` is closed at G -- exit (b), stated about G, is empty.) -/
 abbrev OtherReturnedOutcome (selected : EGInput.{u}) :=
   (PairTypeBOutcome_independentSystem selected ∨
-    PairTypeBOutcome_independentIncrement selected ∨
-    PairTypeBOutcome_dependentSystem selected ∨
-    PairTypeBOutcome_dependentIncrement selected) ∨
+    PairTypeBOutcome_dependentSystem selected) ∨
   TypeBSublinearOutcome_product selected ∨
   Route8QuotientOutcome_product selected ∨
   (Route8RateFailsOutcome_realized_highEntropy selected ∨

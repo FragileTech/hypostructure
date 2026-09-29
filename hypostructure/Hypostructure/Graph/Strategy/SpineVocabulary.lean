@@ -23,6 +23,7 @@ import Hypostructure.Graph.Statements.LocalRigidity
 import Hypostructure.Graph.Statements.JointHubs
 import Hypostructure.Graph.Statements.HubLinks
 import Hypostructure.Graph.Statements.PairArms
+import Hypostructure.Graph.Statements.PairHandoffSupport
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1905,6 +1906,13 @@ inductive Key where
   -- g-repair R1 keys (7800–7849)
   /-- Node `[125]`, clause (b) of `def:named-surplus-exits` stated about G (Lean improvement: exit (b) is empty at G): **every two readings of G agree in G's own surroundings `G − Z`** (both glued graphs are target-free subgraphs of G), so G's declared sparse family has no target-defective identification.  Published on `[125]`'s exit arm, where it closes the arm against `K .sparseTargetDefectResidual`. -/
   | sparseTargetDefectEmpty
+  -- g-audit PairTypeBOutcome keys (8350–8399)
+  /-- Nodes `[179]`/`[180]` → `[187]` (G audit): **the Type B support of G's pair-obstruction handoff, exactly**: on G's canonical pair returns the canonical obstruction support is `(Y, H) = ({d_p.2, d_q.2}, {h})` with `h` the canonical first separator of the obstruction's routes; `H` is nonempty and consists of high centres, and the whole support lies in the obstruction's overlap support `U`.  Published with `K .typeBFanEntry` by the `[179]`/`[180]` early rows. -/
+  | pairHandoffSupport
+  /-- Nodes `[179]`/`[180]` → `[187]` (G audit): **the ambient surplus of that support**: the core ends are cubic port ends (`σ(Y) = 0`), `Y ∩ H = ∅`, and `ω(H) = d_G(h) - δ ≥ 1` for the one centre `h`. -/
+  | pairHandoffCharge
+  /-- Nodes `[179]` → `[187]` (G audit): **the net charge of that support** (`def:net-charge`): the core has one or two vertices, `(δ-1)|Y| ≤ def⁺(Y) ≤ δ|Y|`, and at the canonical envelope either the net charge is negative or `ω(H) < def⁺(Y)`, i.e. the centre has degree `< 3δ`. -/
+  | pairHandoffNetCharge
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2891,6 +2899,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   -- g-repair R1 keys
   | .sparseTargetDefectEmpty, object =>
       SparseTargetDefectEmptyStatement data.toParameters object
+  | .pairHandoffSupport, object =>
+      PairHandoffSupportStatement data.toParameters object
+  | .pairHandoffCharge, object =>
+      PairHandoffChargeStatement data.toParameters object
+  | .pairHandoffNetCharge, object =>
+      PairHandoffNetChargeStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -3363,6 +3377,9 @@ def label : Key → String
   | .pairArmARoleAlphabet => "pairArmARoleAlphabet"
   | .pairArmB => "pairArmB"
   | .sparseTargetDefectEmpty => "sparseTargetDefectEmpty"
+  | .pairHandoffSupport => "pairHandoffSupport"
+  | .pairHandoffCharge => "pairHandoffCharge"
+  | .pairHandoffNetCharge => "pairHandoffNetCharge"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3834,6 +3851,9 @@ example : label .pairArmAPattern = "pairArmAPattern" := rfl
 example : label .pairArmARoleAlphabet = "pairArmARoleAlphabet" := rfl
 example : label .pairArmB = "pairArmB" := rfl
 example : label .sparseTargetDefectEmpty = "sparseTargetDefectEmpty" := rfl
+example : label .pairHandoffSupport = "pairHandoffSupport" := rfl
+example : label .pairHandoffCharge = "pairHandoffCharge" := rfl
+example : label .pairHandoffNetCharge = "pairHandoffNetCharge" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -4300,6 +4320,9 @@ def idx : Key → Nat
   | .pairArmARoleAlphabet => 7235
   | .pairArmB => 7236
   | .sparseTargetDefectEmpty => 7800
+  | .pairHandoffSupport => 8350
+  | .pairHandoffCharge => 8351
+  | .pairHandoffNetCharge => 8352
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -4755,6 +4778,9 @@ def ofIdx : Nat → Key
   | 7235 => .pairArmARoleAlphabet
   | 7236 => .pairArmB
   | 7800 => .sparseTargetDefectEmpty
+  | 8350 => .pairHandoffSupport
+  | 8351 => .pairHandoffCharge
+  | 8352 => .pairHandoffNetCharge
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -5763,6 +5789,12 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmB") 7236
   | .sparseTargetDefectEmpty =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sparseTargetDefectEmpty") 7800
+  | .pairHandoffSupport =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffSupport") 8350
+  | .pairHandoffCharge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffCharge") 8351
+  | .pairHandoffNetCharge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairHandoffNetCharge") 8352
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

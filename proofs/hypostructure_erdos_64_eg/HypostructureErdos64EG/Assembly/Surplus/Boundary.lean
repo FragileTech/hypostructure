@@ -28,9 +28,7 @@ abbrev StrictSurplusBoundaryResult (selected : EGInput.{u}) : Prop :=
     Node144aOutcome_primitiveHandoff selected ∨
     Node144aOutcome_primitiveFails selected) ∨
   (PairTypeBOutcome_independentSystem selected ∨
-      PairTypeBOutcome_independentIncrement selected ∨
-      PairTypeBOutcome_dependentSystem selected ∨
-      PairTypeBOutcome_dependentIncrement selected) ∨
+      PairTypeBOutcome_dependentSystem selected) ∨
     (PairConditionalFactorizationOutcome_freeFactorizationFails selected ∨
       PairConditionalFactorizationOutcome_freeRealizabilityFails selected ∨
       PairConditionalFactorizationOutcome_freeIncrementFails selected ∨

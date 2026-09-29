@@ -669,8 +669,11 @@ The first clause is the paper's product-code assertion for a family whose
 response supports are pairwise separated.  The second is its componentwise
 form: if a family is split into two nonempty blocks with no cross-overlap, an
 admissible exposure order in each block concatenates to one for their union.
-Both clauses speak through `realizingOrder`, hence through existential witnesses
-in the literal fixed-`(n,m)` skeleton fibre.  They do not replace graph
+Both clauses speak through `realizingOrder`, which is the aggregate the encoding bound counts
+(G audit, `[187]`): the number of realized `(baseline word, prefix)` signatures of G's labelled
+`(n,m)` class doubles at every level of the exposure order.  No member of the class (possibly not
+G) is a witness: a failure is the numerical inequality
+`N_{|family|} < 2 ^ |family| * N_0` about G's class count.  They do not replace graph
 realization by rank-label injectivity. -/
 abbrev ConditionalFactorization {data : Parameters}
     {object : Graph.FiniteObject.{u}}

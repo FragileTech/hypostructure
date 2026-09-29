@@ -5222,3 +5222,54 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
   all-context hypotheses (now also `avoids`, for R2's replacement form); they
   have no consumer.
 - `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.
+
+## G audit: PairTypeBOutcome
+
+Node `[187]` ([179]/[180] Type B entry), branch `g-audit-pairTypeB`.  Accounting report:
+`audits/structural-accounting/PairTypeBOutcome.md`.
+
+- **Defining failure.**  The free-pair (or blocked-pair) entropy count fails at G, giving the first
+  failed extension, the minimal connected overlap obstruction `𝒰` on `U`, and its demands `d_p`,
+  `d_q` with returns.  `[179]`'s early outcome then has alternatives (i) target cycle, (ii) target
+  defect, (iii) compression excluded by the selection, `actualGlue_agree` and the sparse survivor,
+  so only (iv), `PairObstructionHandoff`, reaches the Type B entry.  The test is about G, decided
+  at G, and the arm is reached only through (iv) (not through a trivially true disjunct).
+- **Lean improvement: `[180]`'s periodic alternatives are empty after `[179]`'s no-early arm.**
+  `PairIncrementEarlyOutcome serial` is constructor by constructor `PairSystemEarlyOutcome
+  serial.returns`, and `canonicalPairDemandReturns = some serial.returns`
+  (`canonicalPairDemandReturns_of_serial`), so `K .pairIncrementEarlyOutcome` contradicts
+  `K .pairSystemNoEarlyOutcome` (`Contracts/Spine/PairHandoffSupport.lean`,
+  `not_pairIncrementEarly_of_noEarly`; `Incompatible` instance in
+  `Strategy/HomogeneousBottleneckRows/PairSystemOutcome.lean`).  The arm is closed at `[180]`
+  through `closeIncompatible` in `Assembly/Surplus/Local.lean`.  **Root type change:** the four
+  subtypes of `PairTypeBOutcome` are now two (`independentSystem`, `dependentSystem`); the generic
+  residual ends in `pairSystemEarlyOutcome` without a disjunction; `pairTypeBIncrementReturn`,
+  `PairTypeBOutcome_independentIncrement`, `PairTypeBOutcome_dependentIncrement` and
+  `pairIncrementEarlyTypeBEntryRow` are removed; `OtherReturnedOutcome` (Final.lean) and
+  `StrictSurplusBoundaryResult` (Surplus/Boundary.lean) list two pair Type B subtypes.
+- **New G facts** (keys 8350-8352, published with `K .typeBFanEntry` by
+  `pairSystemEarlyTypeBEntryRow`, statements in `Statements/PairHandoffSupport.lean`, contracts
+  `Contracts/Spine/PairHandoffSupport.lean`):
+  `pairHandoffSupport` (8350): the canonical support of the obstruction's handoff is `(Y, H) =
+  ({d_p.2, d_q.2}, {h})`, `h` the canonical first separator, `H` nonempty and high, `Y ∪ H ⊆ U`;
+  `pairHandoffCharge` (8351): `σ(Y) = 0`, `Y ∩ H = ∅`, `ω(H) = d(h) - δ ≥ 1`;
+  `pairHandoffNetCharge` (8352): `1 ≤ |Y| ≤ 2`, `(δ-1)|Y| ≤ def⁺(Y) ≤ δ|Y|`, and the envelope's
+  charge is negative, or `ω(H) < def⁺(Y)` (so `d(h) < 3δ`).
+- **Class quantification removed (user correction).**  `SparsePairSkeletonModel.RealizingOrder` was
+  'for every reference skeleton, at least two conditional values', so the obstruction
+  (`¬ RealizingOrder`) named a class member, possibly not G, that fails.  It is now the aggregate
+  the counting consumes: `N_{|F|} = 2^{|F|} N_0` for the realized (baseline word, prefix)
+  signature counts of G's labelled `(n, m)` class (`signature`, `signatureCount`,
+  `signatureCount_eq` in `Graph/SparseEntropySandwich.lean`); the obstruction is the numerical
+  inequality `N_{|F|} < 2^{|F|} N_0`, derived from the first failed extension in
+  `Contracts/SurplusPair/PairOverlap.lean` (`|Baseline| 2^{|F|} ≤ N_{|F|} ≤ |Skeleton|`).  Shared
+  with the `PairConditionalFactorizationOutcome` residual (same definitions).
+- **Not repaired here (shared upstream nonG facts, reported):** `degreeProfileFibres`,
+  `targetCompleteContextUniversality` (conjunct 1), `admissibleQuotientsLabelInjective`,
+  `responseObstructionTargetDefect`, `baselineSpineDemand` (abstract quotient/label data),
+  `replacementExclusion`/`uncompressible`, `sparseSurplusSurvivor` (c), (d) and the `compression`
+  constructor of `PairSystemEarlyOutcome` (R2 replacement form).
+- **Still open.**  `PairObstructionHandoff` at G's canonical pair returns: the canonical first
+  separator `h ∈ U` of degree `> δ` with two next vertices in `U`, non-absorbing at `P₀`, and
+  escaping envelope; with the facts above and the whole ledger.  Not closed: none of the built facts
+  is incompatible with it.

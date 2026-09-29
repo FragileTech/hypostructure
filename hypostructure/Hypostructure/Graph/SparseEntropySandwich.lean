@@ -582,8 +582,63 @@ def conditionalValues
           model.response (LengthOK := LengthOK) reference (order earlier).1) ∧
       model.response (LengthOK := LengthOK) candidate (order index).1 = state}
 
-/-- An exposure order realizes one binary response coordinate at every step of
-every realized `(baseline word, prefix)` signature. -/
+/-- The signature of a member of the skeleton class at level `length` of an exposure order: its
+baseline word and its responses at the first `length` coordinates of the order. -/
+noncomputable def signature
+    {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
+    {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (family : Finset {pair // pair ∈ model.pairSet})
+    (order : Fin family.card ≃ {pair // pair ∈ family})
+    (length : Nat) (bound : length ≤ family.card) (member : model.Skeleton) :
+    ({coordinate // coordinate ∈ model.baselineFamily} → Bool) ×
+      (Fin length → SparsePairSkeletonResponse LengthOK) :=
+  (model.baseline.response member.1, fun index =>
+    model.response (LengthOK := LengthOK) member (order (Fin.castLE bound index)).1)
+
+/-- The number of `(baseline word, first `length` responses)` signatures realized by the
+skeleton class: the aggregate the encoding bound counts. -/
+noncomputable def signatureCount
+    {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
+    {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (family : Finset {pair // pair ∈ model.pairSet})
+    (order : Fin family.card ≃ {pair // pair ∈ family})
+    (length : Nat) (bound : length ≤ family.card) : Nat := by
+  classical
+  haveI : Fintype model.Skeleton := Fintype.ofFinite _
+  exact (Finset.univ.image
+    (model.signature (LengthOK := LengthOK) family order length bound)).card
+
+/-- The number of realized signatures is the cardinality of the range of the signature map. -/
+theorem signatureCount_eq
+    {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
+    {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (family : Finset {pair // pair ∈ model.pairSet})
+    (order : Fin family.card ≃ {pair // pair ∈ family})
+    (length : Nat) (bound : length ≤ family.card) :
+    model.signatureCount (LengthOK := LengthOK) family order length bound =
+      Nat.card (Set.range
+        (model.signature (LengthOK := LengthOK) family order length bound)) := by
+  classical
+  unfold signatureCount
+  letI : Fintype model.Skeleton := Fintype.ofFinite _
+  rw [Nat.card_eq_card_toFinset, Set.toFinset_range]
+
+/-- An exposure order realizes one binary response coordinate at every step of every realized
+`(baseline word, prefix)` signature, **in the aggregate form the counting consumes**: the number
+of realized signatures doubles at every level, i.e. at the last level it is
+`2 ^ |family|` times the number of realized baseline words.  (Each level has at most twice as
+many signatures as the one before, so equality forces every realized signature to carry both
+responses; a failure is the numerical inequality `N_{|family|} < 2 ^ |family| * N_0` about G's
+labelled `(n, m)` class, not a member of the class that fails.) -/
 def RealizingOrder
     {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
     {Coordinate Chord : Type u}
@@ -592,9 +647,9 @@ def RealizingOrder
     (model : SparsePairSkeletonModel activation schedule)
     (family : Finset {pair // pair ∈ model.pairSet}) : Prop :=
   ∃ order : Fin family.card ≃ {pair // pair ∈ family},
-    ∀ reference : model.Skeleton, ∀ index : Fin family.card,
-      2 ≤ Nat.card (model.conditionalValues (LengthOK := LengthOK)
-        family order reference index)
+    model.signatureCount (LengthOK := LengthOK) family order family.card le_rfl =
+      2 ^ family.card *
+        model.signatureCount (LengthOK := LengthOK) family order 0 (Nat.zero_le _)
 
 def Overlaps
     {object : FiniteObject.{u}} {Coordinate Chord : Type u}
