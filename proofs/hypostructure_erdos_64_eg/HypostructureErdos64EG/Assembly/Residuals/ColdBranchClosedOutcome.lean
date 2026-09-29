@@ -4,24 +4,23 @@ import HypostructureErdos64EG.Assembly.Residuals.ArmBlocks
 # Assembly: the `ColdBranchClosedOutcome` residual, split by fact set
 
 `ColdBranchClosedOutcome` ([187], local cold-terminal exclusion) is reached
-along 4 root paths, on the [153] linear cold-mass arm, each its own subtype.
+at G along one root path, the [153] linear cold-mass arm of the realized
+package with a silent germ family: the singleton `linearRealizedSilent`.
 The 100 paths through the absorbed-germ residual `[174]`--`[177]` (formerly
 the product `ColdBranchClosedOutcome_product`) are not entered: `[173]`'s
 no-arm is closed at the node against the private-carrier rate `K .route8Rate`
 (`instIncompatibleExactCollisionFailsRoute8Rate`).
 
-Every block lists every key of its arm as an explicit `Holds` conjunct, and
-every return theorem reads each fact with one `ExactLedger.get`.
+The singleton lists every key of its arm as an explicit `Holds` conjunct, and
+its return theorem reads each fact with one `ExactLedger.get`.
 
-G repair (R4): three of the four singletons carry the `[154]` G2 yes-arm
-`K .coldGermSomeDistinguishing`.  Read at G that arm is empty (the two
-representatives of every germ have the same target response in `G − Z`), and
-it is closed at `[154]` against the selection
-(`instIncompatibleColdGermSomeDistinguishingSelection`).  Their returns are
-removed; the three subtypes `linearDenseAtOrAbove`, `linearDenseRateFailed`
-and `linearRealizedDistinguished` are unreachable and are kept only because
-the protected root type (`Assembly/Final.lean`, `OtherReturnedOutcome`) lists
-them.  Only `linearRealizedSilent` is still reached.
+G repair (R4): the three former singletons `linearDenseAtOrAbove`,
+`linearDenseRateFailed` and `linearRealizedDistinguished` carried the `[154]`
+G2 yes-arm `K .coldGermSomeDistinguishing`.  Read at G that arm is empty (the
+two representatives of every germ have the same target response in `G − Z`),
+and it is closed at `[154]` against the selection
+(`instIncompatibleColdGermSomeDistinguishingSelection`).  They are unreachable
+at G and are removed, together with their place in the root result type.
 -/
 
 namespace HypostructureErdos64EG
@@ -32,89 +31,6 @@ open Hypostructure.Core.Strategy
 open Hypostructure.Graph.Strategy.Spine
 
 universe u
-/-- **`[187]` (local cold-terminal exclusion), singleton `linearDenseAtOrAbove`**
-(89 facts): [153] linear cold mass through `nearCubicDenseLinear` after `nearCubicDensePassAtOrAbove`: [158] unrealized, [160] tau at or above 1/4, [146] theta at or above, [162] heavy entry, [154] none realizing / some distinguishing. -/
-abbrev ColdBranchClosedOutcome_linearDenseAtOrAbove (selected : EGInput.{u}) : Prop :=
-  ColdBranchClosedOutcome selected ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermFamilyPositive selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermNoneRealizing selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermSomeDistinguishing selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldHeavyEntryTerminal selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldMassLinear selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldRoute8AtOrAbove selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .denseColdCorridorsTerminal selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .denseDeficiencyAtOrAbove selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageUnrealized selected.object
-
-theorem ColdBranchClosedOutcome_linearDenseAtOrAbove.toGeneric {selected : EGInput.{u}}
-    (h : ColdBranchClosedOutcome_linearDenseAtOrAbove selected) :
-    ColdBranchClosedOutcome selected :=
-  h.1
-
-/-- **`[187]` (local cold-terminal exclusion), singleton `linearDenseRateFailed`**
-(90 facts): [153] linear cold mass through `nearCubicDenseLinear` after `nearCubicDensePassRateFailed`: [158] unrealized, [160] tau below 1/4 and route-8 rate failing, [146] theta at or above, [162] heavy entry, [154] none realizing / some distinguishing. -/
-abbrev ColdBranchClosedOutcome_linearDenseRateFailed (selected : EGInput.{u}) : Prop :=
-  ColdBranchClosedOutcome selected ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermFamilyPositive selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermNoneRealizing selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermSomeDistinguishing selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldHeavyEntryTerminal selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldMassLinear selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldRoute8AtOrAbove selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .denseColdCorridorsTerminal selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .denseDeficiencyBelow selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8RateFails selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageUnrealized selected.object
-
-theorem ColdBranchClosedOutcome_linearDenseRateFailed.toGeneric {selected : EGInput.{u}}
-    (h : ColdBranchClosedOutcome_linearDenseRateFailed selected) :
-    ColdBranchClosedOutcome selected :=
-  h.1
-
-/-- **`[187]` (local cold-terminal exclusion), singleton `linearRealizedDistinguished`**
-(88 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / some distinguishing. -/
-abbrev ColdBranchClosedOutcome_linearRealizedDistinguished (selected : EGInput.{u}) : Prop :=
-  ColdBranchClosedOutcome selected ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermFamilyPositive selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermNoneRealizing selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldGermSomeDistinguishing selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldMassLinear selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldRoute8AtOrAbove selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .windowPackageRealized selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
-
-theorem ColdBranchClosedOutcome_linearRealizedDistinguished.toGeneric {selected : EGInput.{u}}
-    (h : ColdBranchClosedOutcome_linearRealizedDistinguished selected) :
-    ColdBranchClosedOutcome selected :=
-  h.1
 
 /-- **`[187]` (local cold-terminal exclusion), singleton `linearRealizedSilent`**
 (88 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing. -/
@@ -270,14 +186,5 @@ theorem coldBranchClosed_linearRealizedSilentReturn
     (history.get (K .windowPackageRealized)).down,
     (history.get (K .realizedDensityOrder)).down,
     (history.get (K .realizedOrderSmall)).down⟩
-
-/-- The four linear-arm singletons of the residual `[187]` (local
-cold-terminal exclusion), returned on the `[153]` linear arm of the near-cubic
-survivor. -/
-abbrev ColdBranchClosedLinearSubtypes (selected : EGInput.{u}) : Prop :=
-  ColdBranchClosedOutcome_linearDenseAtOrAbove selected ∨
-  ColdBranchClosedOutcome_linearDenseRateFailed selected ∨
-  ColdBranchClosedOutcome_linearRealizedDistinguished selected ∨
-  ColdBranchClosedOutcome_linearRealizedSilent selected
 
 end HypostructureErdos64EG
