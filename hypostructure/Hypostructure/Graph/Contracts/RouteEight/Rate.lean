@@ -26,8 +26,7 @@ theorem route8RateFromColdBelow (data : Parameters) (object : FiniteObject.{u})
     Route8RateStatement data object := by
   set packing := canonicalWindowPacking data object with hpack
   have valid : object.IsWindowPacking data.windowOrder packing :=
-    (Classical.choose_spec
-      (object.exists_windowPacking_card_eq data.windowOrder)).1
+    (canonicalWindowPacking_spec data object).1
   have baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex :=
     degree_ge_of_minDegree data object baseline
   -- `lem:surplus-aware-window-stub`'s capacity link, read off the object
