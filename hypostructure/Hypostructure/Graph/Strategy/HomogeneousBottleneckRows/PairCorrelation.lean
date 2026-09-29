@@ -60,4 +60,25 @@ coverage is exactly the Type B handoff or the serial system. -/
           (inputs.get (K .replacementExclusion)).down⟩
         .nil)
 
+/-- **Node `[180]`, the full-modulus arithmetic of G's canonical serial system.**
+
+The canonical full-modulus data of the serial system (frequent increments, their
+gcd, the canonical smear, the Frobenius-filled central range) cannot satisfy every
+arithmetic test at G: it would realize a power of two, an accepted cycle. -/
+@[reducible] noncomputable def pairFullModulusRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairFullModulus
+    { Requires := [K .pairSerialDemandSystem, K .selection, K .cubicBaseline]
+      Produces := [K .pairFullModulus]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairFullModulus)
+        ⟨Graph.Contracts.SurplusPair.pairFullModulus_of_serial
+          (inputs.get (K .pairSerialDemandSystem)).down
+          (inputs.get (K .selection)).down.1
+          (inputs.get (K .cubicBaseline)).down.2.1.2.1⟩
+        .nil)
+
 end Hypostructure.Graph.Strategy.Spine

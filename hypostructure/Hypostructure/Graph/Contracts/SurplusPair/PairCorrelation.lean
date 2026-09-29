@@ -57,9 +57,26 @@ theorem correlationProfile_of_system (system : PairOverlapSystem data object) :
       exact Nat.lt_of_not_ge system.first.firstFailure.failedNext
     rw [zero, ← pow_add, add_comm]
     exact lt_of_le_of_lt top small
-  exact ⟨system.failedFamily_card, zero, fun k _ => step k, top, mass,
+  refine ⟨⟨system.failedFamily_card, zero, fun k _ => step k, top, mass,
     Graph.SparsePairSkeletonModel.exists_first_nonbranching P
-      system.failedFamily.card (fun k _ => (step k).2) failure⟩
+      system.failedFamily.card (fun k _ => (step k).2) failure⟩, ?_, ?_⟩
+  · have real := system.first.firstFailure.realizedThrough
+      system.first.firstFailure.index le_rfl
+    have cardEq := system.failedFamily_card
+    have : system.first.baselineFamily.card + system.failedFamily.card - 1 =
+        system.first.baselineFamily.card + system.first.firstFailure.index := by omega
+    rw [this]
+    exact real
+  · intro k hk
+    have w := Graph.SparsePairSkeletonModel.weighted_deficiency_le P
+      system.failedFamily.card (fun k _ => (step k).1) (fun k _ => (step k).2) k hk
+    rw [zero] at w
+    have pos : 1 ≤ system.failedFamily.card := by omega
+    calc _ ≤ 2 ^ (system.failedFamily.card - 1) * 2 ^ system.first.baselineFamily.card := w
+      _ = _ := by
+        rw [← pow_add]
+        congr 1
+        omega
 
 /-- Node `[178]`: G's canonical overlap system carries the correlation profile. -/
 theorem pairCorrelation_of_overlapSystem

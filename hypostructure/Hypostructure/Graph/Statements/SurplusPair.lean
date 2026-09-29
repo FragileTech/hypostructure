@@ -570,33 +570,6 @@ abbrev Skeleton {data : Parameters} {object : Graph.FiniteObject.{u}}
     (system : PairOverlapSystem data object) :=
   system.toSkeletonModel.Skeleton
 
-noncomputable def response {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (system : PairOverlapSystem data object) (member : system.Skeleton)
-    (pair : {pair // pair ∈ system.first.pairSet}) : PairResponseState data :=
-  system.toSkeletonModel.response (LengthOK := data.LengthOK) member pair
-
-noncomputable def outsideCode {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (system : PairOverlapSystem data object) (member : system.Skeleton) :=
-  system.toSkeletonModel.outsideCode member
-
-def conditionalFibre {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (system : PairOverlapSystem data object) (reference : system.Skeleton) :
-    Set system.Skeleton :=
-  system.toSkeletonModel.conditionalFibre reference
-
-def conditionalValues {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (system : PairOverlapSystem data object)
-    (family : Finset {pair // pair ∈ system.first.pairSet})
-    (order : Fin family.card ≃ {pair // pair ∈ family})
-    (reference : system.Skeleton) (index : Fin family.card) :
-    Set (PairResponseState data) :=
-  system.toSkeletonModel.conditionalValues (LengthOK := data.LengthOK)
-    family order reference index
-
 /-- **Aggregate realization** of a family of pair coordinates: some exposure
 order doubles the count of realized `(baseline word, exposed prefix)`
 signatures at every step (`Graph.SparsePairSkeletonModel.CountRealizing`).  This
@@ -633,30 +606,6 @@ noncomputable def overlapSupport {data : Parameters}
     (family : Finset {pair // pair ∈ system.first.pairSet}) :
     Finset object.Vertex :=
   system.toSkeletonModel.responseSupportUnion family
-
-/-- A relevant conditional skeleton fibre after a finite set of pair
-coordinates has already been exposed.  The candidate must remain in the
-system's literal baseline/outside fibre and must agree with the reference
-skeleton on every exposed exact response. -/
-def refinedFibre {data : Parameters} {object : Graph.FiniteObject.{u}}
-    (system : PairOverlapSystem data object)
-    (exposed : Finset {pair // pair ∈ system.first.pairSet})
-    (reference : system.Skeleton) : Set system.Skeleton :=
-  {candidate | candidate ∈ system.conditionalFibre reference ∧
-    ∀ pair, pair ∈ exposed →
-      system.response candidate pair = system.response reference pair}
-
-/-- The exact response values of one pair coordinate that are graph-realized
-in a relevant conditional fibre.  This is a range of actual fixed-`(n,m)`
-skeletons, not the label set of a rank quotient. -/
-def fibreValues {data : Parameters} {object : Graph.FiniteObject.{u}}
-    (system : PairOverlapSystem data object)
-    (exposed : Finset {pair // pair ∈ system.first.pairSet})
-    (reference : system.Skeleton)
-    (pair : {pair // pair ∈ system.first.pairSet}) :
-    Set (PairResponseState data) :=
-  {state | ∃ candidate, candidate ∈ system.refinedFibre exposed reference ∧
-    system.response candidate pair = state}
 
 /-- The manuscript's geometric separation condition for a family of pair
 coordinates: no two distinct members meet outside the port-return supports of
@@ -814,8 +763,7 @@ structure FactorizesAt {data : Parameters} {object : Graph.FiniteObject.{u}}
 minimal obstruction.**
 
 Lean improvement: the manuscript's test quantifies over every separated family
-of the pair set and every split of every family
-(`Graph.SparsePairSkeletonModel.ConditionalFactorization`).  The proof of
+of the pair set and every split of every family.  The proof of
 `lem:pair-failure-overlap` consumes only the two clauses at the one family
 `obstructionFamily`, and this is what is decided.  The retained negation is
 therefore a statement about G's canonical minimal obstruction

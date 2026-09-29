@@ -502,17 +502,6 @@ abbrev Skeleton
     (_model : SparsePairSkeletonModel activation schedule) :=
   PackedWindowRealization.Skeleton object.vertexCount object.edgeCount
 
-/-- The literal union of the selected port-return seeds fixed by
-`def:pair-overlap-system`. -/
-noncomputable def portReturns
-    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
-    {activation : object.DemandActivation Coordinate Chord}
-    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
-    (model : SparsePairSkeletonModel activation schedule) :
-    Finset object.Vertex := by
-  classical
-  exact model.pairSet.biUnion activation.pairSeed
-
 /-- The target response of `X_π` in a labelled skeleton, read in G's own
 surroundings: the member's reading of `X_π` glued into `G − X_π`. -/
 noncomputable def response
@@ -529,72 +518,6 @@ noncomputable def response
         (model.responseSupport pair))
       (Strategy.InterfaceReplacement.SupportAtom.outside object
         (model.responseSupport pair)))
-
-/-- The paper's conditioning datum: outside edges and the already realized
-baseline word.  Earlier pair responses are conditioned by `conditionalValues`,
-not hidden in this code. -/
-noncomputable def outsideCode
-    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
-    {activation : object.DemandActivation Coordinate Chord}
-    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
-    (model : SparsePairSkeletonModel activation schedule)
-    (member : model.Skeleton) :
-    Finset (Sym2 (Fin object.vertexCount)) ×
-      ({coordinate // coordinate ∈ model.baselineFamily} → Bool) :=
-  (BarrierSystem.outsideEdges member.1
-      (model.portReturns.map object.vertices.equiv.toEmbedding),
-    model.baseline.response member.1)
-
-def conditionalFibre
-    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
-    {activation : object.DemandActivation Coordinate Chord}
-    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
-    (model : SparsePairSkeletonModel activation schedule)
-    (reference : model.Skeleton) : Set model.Skeleton :=
-  {candidate | model.outsideCode candidate = model.outsideCode reference}
-
-/-- Exact response values realized after the earlier coordinates in `order`
-have been exposed, among skeletons carrying the reference's baseline word.
-
-The candidates are conditioned on the realized baseline word and on the
-exposed prefix only — not on the outside edges of the reference.  Conditioning
-on outside edges made the predicate depend on the reference's own edges among
-the connector vertices of a support: a reference with a power-of-two cycle
-there has one response on its whole fibre, so the ∀-reference branching
-condition was false for every model with two connector vertices in some
-support.  The `[178]` entropy count
-(`HomogeneousBottleneckRows`) doubles the number of realized
-`(baseline word, prefix)` signatures, which is exactly this set. -/
-def conditionalValues
-    {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
-    {Coordinate Chord : Type u}
-    {activation : object.DemandActivation Coordinate Chord}
-    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
-    (model : SparsePairSkeletonModel activation schedule)
-    (family : Finset {pair // pair ∈ model.pairSet})
-    (order : Fin family.card ≃ {pair // pair ∈ family})
-    (reference : model.Skeleton) (index : Fin family.card) :
-    Set (SparsePairSkeletonResponse LengthOK) :=
-  {state | ∃ candidate : model.Skeleton,
-    model.baseline.response candidate.1 = model.baseline.response reference.1 ∧
-      (∀ earlier : Fin family.card, earlier.1 < index.1 →
-        model.response (LengthOK := LengthOK) candidate (order earlier).1 =
-          model.response (LengthOK := LengthOK) reference (order earlier).1) ∧
-      model.response (LengthOK := LengthOK) candidate (order index).1 = state}
-
-/-- An exposure order realizes one binary response coordinate at every step of
-every realized `(baseline word, prefix)` signature. -/
-def RealizingOrder
-    {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
-    {Coordinate Chord : Type u}
-    {activation : object.DemandActivation Coordinate Chord}
-    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
-    (model : SparsePairSkeletonModel activation schedule)
-    (family : Finset {pair // pair ∈ model.pairSet}) : Prop :=
-  ∃ order : Fin family.card ≃ {pair // pair ∈ family},
-    ∀ reference : model.Skeleton, ∀ index : Fin family.card,
-      2 ≤ Nat.card (model.conditionalValues (LengthOK := LengthOK)
-        family order reference index)
 
 def Overlaps
     {object : FiniteObject.{u}} {Coordinate Chord : Type u}
@@ -636,27 +559,6 @@ noncomputable def responseSupportUnion
     Finset object.Vertex := by
   classical
   exact family.biUnion model.responseSupport
-
-/-- The paper's conditional-factorization theorem on actual skeletons.  The
-second clause is the component-concatenation step used to prove connectedness
-of a minimal obstruction. -/
-structure ConditionalFactorization
-    {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
-    {Coordinate Chord : Type u}
-    {activation : object.DemandActivation Coordinate Chord}
-    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
-    (model : SparsePairSkeletonModel activation schedule) : Prop where
-  separated : ∀ family, model.PairwiseSeparated family →
-    model.RealizingOrder (LengthOK := LengthOK) family
-  concatenate : ∀ left right,
-    left.Nonempty → right.Nonempty → Disjoint left right →
-      (∀ leftPair, leftPair ∈ left → ∀ rightPair, rightPair ∈ right →
-        ¬ model.Overlaps leftPair rightPair) →
-      model.RealizingOrder (LengthOK := LengthOK) left →
-        model.RealizingOrder (LengthOK := LengthOK) right →
-          model.RealizingOrder (LengthOK := LengthOK)
-            (model.familyUnion left right)
-
 
 end SparsePairSkeletonModel
 

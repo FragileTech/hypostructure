@@ -149,4 +149,36 @@ theorem pairCoverage_of_demandReturns
       ⟨not_pairSerialArithmetic_of_avoids avoids lengthOK_iff serialSelected,
         pairIncrementOutcome_iff_handoff avoids lengthOK_iff repl serialSelected⟩⟩
 
+/-- Node `[180]`: at G's canonical serial system the full-modulus arithmetic built
+from the serial system's own increments (Frobenius filling of the central range)
+does not hold: it would realize a power of two, an accepted cycle of G. -/
+theorem pairFullModulus_of_serial
+    (serial : PairSerialDemandSystemStatement data object)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (lengthOK_iff : ∀ length, data.LengthOK length ↔
+      Core.DyadicLength.PowerOfTwoLength length) :
+    PairFullModulusStatement data object := by
+  obtain ⟨serial, selected⟩ := serial
+  refine ⟨serial, selected, fun arithmetic => ?_⟩
+  obtain ⟨exponent, realized⟩ := arithmetic.exists_pow_realized
+  let cycle := Classical.choice realized
+  have threeLe : 3 ≤ 2 ^ exponent := by
+    rw [← cycle.length_eq]
+    exact cycle.isCycle.three_le_length
+  have exponentLower : 2 ≤ exponent := by
+    by_contra lower
+    have cases : exponent = 0 ∨ exponent = 1 := by omega
+    rcases cases with zero | one
+    · have powerEq : 2 ^ exponent = 1 := by simp [zero]
+      omega
+    · have powerEq : 2 ^ exponent = 2 := by simp [one]
+      omega
+  have accepted : data.LengthOK (2 ^ exponent) :=
+    (lengthOK_iff (2 ^ exponent)).2
+      (Core.DyadicLength.powerOfTwoLength_of_exists ⟨exponent, exponentLower, rfl⟩)
+  exact avoids ⟨{ vertex := cycle.vertex
+                  walk := cycle.walk
+                  isCycle := cycle.isCycle
+                  length_ok := by simpa [cycle.length_eq] using accepted }⟩
+
 end Hypostructure.Graph.Contracts.SurplusPair

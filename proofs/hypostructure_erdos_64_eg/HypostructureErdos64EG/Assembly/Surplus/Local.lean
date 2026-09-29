@@ -191,6 +191,7 @@ noncomputable def selectedPairCodeChainIndependent
     (systemFresh : K .pairOverlapSystem ∉ known := by key_fresh)
     (correlationFresh : K .pairCorrelation ∉ known := by key_fresh)
     (coverageFresh : K .pairCoverage ∉ known := by key_fresh)
+    (fullModulusFresh : K .pairFullModulus ∉ known := by key_fresh)
     (factorizationFresh : K .pairConditionalFactorization ∉ known := by key_fresh)
     (factorizationFailsFresh : K .pairFactorizationFails ∉ known := by key_fresh)
     (residualFresh : K .pairConditionalFactorizationResidual ∉ known := by key_fresh)
@@ -351,8 +352,13 @@ noncomputable def selectedPairCodeChainIndependent
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run noEarlyHistory (by key_fresh)
+              let fullModulus :=
+                (pairFullModulusRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  serialHistory (by key_fresh)
               match pairIncrementCoveredDichotomy (data := spineData)
-                  serialHistory (by key_fresh) (by key_fresh) with
+                  fullModulus (by key_fresh) (by key_fresh) with
               | .right failsHistory =>
                   let residualHistory :=
                     (pairIncrementResidualRow (BranchState := BranchState)
@@ -449,6 +455,7 @@ noncomputable def selectedPairCodeChainDependent
     (systemFresh : K .pairOverlapSystem ∉ known := by key_fresh)
     (correlationFresh : K .pairCorrelation ∉ known := by key_fresh)
     (coverageFresh : K .pairCoverage ∉ known := by key_fresh)
+    (fullModulusFresh : K .pairFullModulus ∉ known := by key_fresh)
     (factorizationFresh : K .pairConditionalFactorization ∉ known := by key_fresh)
     (factorizationFailsFresh : K .pairFactorizationFails ∉ known := by key_fresh)
     (residualFresh : K .pairConditionalFactorizationResidual ∉ known := by key_fresh)
@@ -619,8 +626,13 @@ noncomputable def selectedPairCodeChainDependent
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run noEarlyHistory (by key_fresh)
+              let fullModulus :=
+                (pairFullModulusRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  serialHistory (by key_fresh)
               match pairIncrementCoveredDichotomy (data := spineData)
-                  serialHistory (by key_fresh) (by key_fresh) with
+                  fullModulus (by key_fresh) (by key_fresh) with
               | .right failsHistory =>
                   let residualHistory :=
                     (pairIncrementResidualRow (BranchState := BranchState)

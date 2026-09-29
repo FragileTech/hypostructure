@@ -1611,6 +1611,9 @@ inductive Key where
   serial system on those returns; the arithmetic input does not exist; the
   increment outcome is the Type B handoff of the serial returns. -/
   | pairCoverage
+  /-- Node `[180]`, the full-modulus arithmetic of G's canonical serial system: its
+  canonical Frobenius-filled data does not satisfy all of `FullModulusArithmetic`. -/
+  | pairFullModulus
   -- F1 keys
   /-- Node `[86]`: the Type A support `X₀`, `s·def⁺(X₀) < |V(X₀)|`. -/
   | typeASupport
@@ -2656,6 +2659,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairCorrelationStatement data.toParameters object
   | .pairCoverage, object =>
       PairCoverageStatement data.toParameters object
+  | .pairFullModulus, object =>
+      PairFullModulusStatement data.toParameters object
   -- F1 keys
   | .typeASupport, object =>
       TypeASupportStatement data.toParameters object
@@ -3250,6 +3255,7 @@ def label : Key → String
   | .pairIncrementNoEarlyOutcome => "pairIncrementNoEarlyOutcome"
   | .pairCorrelation => "pairCorrelation"
   | .pairCoverage => "pairCoverage"
+  | .pairFullModulus => "pairFullModulus"
   -- SP keys
   -- F1 keys
   | .typeASupport => "typeASupport"
@@ -3729,6 +3735,7 @@ example : label .pairIncrementFails = "pairIncrementFails" := rfl
 example : label .pairIncrementNoEarlyOutcome = "pairIncrementNoEarlyOutcome" := rfl
 example : label .pairCorrelation = "pairCorrelation" := rfl
 example : label .pairCoverage = "pairCoverage" := rfl
+example : label .pairFullModulus = "pairFullModulus" := rfl
 -- SP keys
 -- F1 keys
 example : label .typeASupport = "typeASupport" := rfl
@@ -4191,6 +4198,7 @@ def idx : Key → Nat
   | .pairIncrementNoEarlyOutcome => 1608
   | .pairCorrelation => 8200
   | .pairCoverage => 8201
+  | .pairFullModulus => 8202
   -- SP keys
   -- F1 keys
   | .typeASupport => 1000
@@ -4648,6 +4656,7 @@ def ofIdx : Nat → Key
   | 1608 => .pairIncrementNoEarlyOutcome
   | 8200 => .pairCorrelation
   | 8201 => .pairCoverage
+  | 8202 => .pairFullModulus
   -- SP keys
   -- F1 keys
   | 1000 => .typeASupport
@@ -5540,6 +5549,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairCorrelation") 8200
   | .pairCoverage =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairCoverage") 8201
+  | .pairFullModulus =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairFullModulus") 8202
   -- SP keys
   -- F1 keys
   | .typeASupport =>

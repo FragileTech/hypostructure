@@ -359,7 +359,9 @@ abbrev PairConditionalFactorizationOutcome_freeIncrementFails (selected : EGInpu
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairIncrementFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairCoverage selected.object
+      erdosReceiverLoadProfile spineData .pairCoverage selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairFullModulus selected.object
 
 theorem PairConditionalFactorizationOutcome_freeIncrementFails.toGeneric {selected : EGInput.{u}}
     (outcome : PairConditionalFactorizationOutcome_freeIncrementFails selected) :
@@ -490,6 +492,7 @@ theorem pairConditionalFactorizationReturn_freeIncrementFails
     [FactKeys.Has (K .pairConditionalFactorizationResidual) known]
     [FactKeys.Has (K .pairCorrelation) known]
     [FactKeys.Has (K .pairCoverage) known]
+    [FactKeys.Has (K .pairFullModulus) known]
     [FactKeys.Has (K .independentPairFamily) known]
     [FactKeys.Has (K .freePairCountFails) known]
     [FactKeys.Has (K .freePairCodeUnrealized) known]
@@ -511,7 +514,8 @@ theorem pairConditionalFactorizationReturn_freeIncrementFails
     (history.get (K .pairSystemNoEarlyOutcome)).down,
     (history.get (K .pairSerialDemandSystem)).down,
     (history.get (K .pairIncrementFails)).down,
-    (history.get (K .pairCoverage)).down⟩
+    (history.get (K .pairCoverage)).down,
+    (history.get (K .pairFullModulus)).down⟩
 
 /-- **Node `[182]`, blocked side, factorizationFails**: `[130]` blocked arm (no (d)/(e) blocker), `[132]` no sparse exit, `[134]`--`[137]` token ledger, `[137]` blocked-side count fails; `[178]` conditional factorization fails.
 The generic residual and the 12 extra facts of this ledger (87 facts). -/
@@ -940,7 +944,9 @@ abbrev PairConditionalFactorizationOutcome_blockedIncrementFails (selected : EGI
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .pairIncrementFails selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .pairCoverage selected.object
+      erdosReceiverLoadProfile spineData .pairCoverage selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .pairFullModulus selected.object
 
 theorem PairConditionalFactorizationOutcome_blockedIncrementFails.toGeneric {selected : EGInput.{u}}
     (outcome : PairConditionalFactorizationOutcome_blockedIncrementFails selected) :
@@ -1072,6 +1078,7 @@ theorem pairConditionalFactorizationReturn_blockedIncrementFails
     [FactKeys.Has (K .pairConditionalFactorizationResidual) known]
     [FactKeys.Has (K .pairCorrelation) known]
     [FactKeys.Has (K .pairCoverage) known]
+    [FactKeys.Has (K .pairFullModulus) known]
     [FactKeys.Has (K .dependentPairFamily) known]
     [FactKeys.Has (K .pairDegreeProfileFibres) known]
     [FactKeys.Has (K .pairNoProfileObstruction) known]
@@ -1110,6 +1117,7 @@ theorem pairConditionalFactorizationReturn_blockedIncrementFails
     (history.get (K .pairSystemNoEarlyOutcome)).down,
     (history.get (K .pairSerialDemandSystem)).down,
     (history.get (K .pairIncrementFails)).down,
-    (history.get (K .pairCoverage)).down⟩
+    (history.get (K .pairCoverage)).down,
+    (history.get (K .pairFullModulus)).down⟩
 
 end HypostructureErdos64EG

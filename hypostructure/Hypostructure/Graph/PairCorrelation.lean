@@ -300,4 +300,100 @@ theorem not_countRealizing_of_class_lt
     family.card
   omega
 
+/-- **Aggregate realization is the top-level doubling** `P_t = 2^t P_0`: the form
+`P_{|family|} = 2^{|family|} · P_0` (each level has at most twice as many
+signatures as the one before, so equality at the top forces doubling at every
+level) is equivalent to `CountRealizing`.  Any other statement of the aggregate
+test is this one. -/
+theorem countRealizing_iff_top_doubling (family : Finset {pair // pair ∈ model.pairSet}) :
+    CountRealizing LengthOK model family ↔
+      ∃ order : Fin family.card ≃ {pair // pair ∈ family},
+        signatureCount (LengthOK := LengthOK) model family order family.card =
+          2 ^ family.card * signatureCount (LengthOK := LengthOK) model family order 0 := by
+  constructor
+  · rintro ⟨order, doubling⟩
+    refine ⟨order, ?_⟩
+    have bound : ∀ k < family.card,
+        signatureCount (LengthOK := LengthOK) model family order (k + 1) ≤
+          2 * signatureCount (LengthOK := LengthOK) model family order k :=
+      fun k _ => signatureCount_succ_le model family order k
+    have identity := two_pow_mul_eq_add_mass
+      (signatureCount (LengthOK := LengthOK) model family order) family.card bound
+    have massZero : mass (signatureCount (LengthOK := LengthOK) model family order)
+        family.card = 0 := by
+      unfold mass
+      apply Finset.sum_eq_zero
+      intro k hk
+      have kLt := Finset.mem_range.mp hk
+      have : deficiency (signatureCount (LengthOK := LengthOK) model family order) k = 0 := by
+        unfold deficiency
+        rw [doubling k kLt]
+        omega
+      simp [this]
+    omega
+  · rintro ⟨order, top⟩
+    refine ⟨order, fun k hk => ?_⟩
+    have bound : ∀ k < family.card,
+        signatureCount (LengthOK := LengthOK) model family order (k + 1) ≤
+          2 * signatureCount (LengthOK := LengthOK) model family order k :=
+      fun k _ => signatureCount_succ_le model family order k
+    have identity := two_pow_mul_eq_add_mass
+      (signatureCount (LengthOK := LengthOK) model family order) family.card bound
+    have massZero : mass (signatureCount (LengthOK := LengthOK) model family order)
+        family.card = 0 := by omega
+    have term : 2 ^ (family.card - 1 - k) *
+        deficiency (signatureCount (LengthOK := LengthOK) model family order) k = 0 := by
+      have := Finset.sum_eq_zero_iff.mp massZero k (Finset.mem_range.mpr hk)
+      exact this
+    have defZero : deficiency (signatureCount (LengthOK := LengthOK) model family order) k = 0 := by
+      rcases Nat.mul_eq_zero.mp term with h | h
+      · exact absurd h (by positivity)
+      · exact h
+    have le := bound k hk
+    unfold deficiency at defZero
+    omega
+
+/-- The mass of any profile obeys `mass ≤ Σ 2^{t-1-k} · 2 P_k`: the deficiency
+`2 P_k − P_{k+1}` is at most `2 P_k`. -/
+theorem mass_le_weighted_sum (P : Nat → Nat) (t : Nat) :
+    mass P t ≤ ∑ k ∈ Finset.range t, 2 ^ (t - 1 - k) * (2 * P k) := by
+  unfold mass
+  apply Finset.sum_le_sum
+  intro k _
+  apply Nat.mul_le_mul_left
+  unfold deficiency
+  omega
+
+/-- Each level of a doubling profile has at most `2^k P_0` signatures. -/
+theorem le_pow_mul_zero (P : Nat → Nat) (t : Nat) (bound : ∀ k < t, P (k + 1) ≤ 2 * P k) :
+    ∀ k ≤ t, P k ≤ 2 ^ k * P 0 := by
+  intro k
+  induction k with
+  | zero => intro _; simp
+  | succ k ih =>
+      intro hk
+      have := ih (Nat.le_of_succ_le hk)
+      have := bound k (Nat.lt_of_succ_le hk)
+      calc P (k + 1) ≤ 2 * P k := ‹_›
+        _ ≤ 2 * (2 ^ k * P 0) := Nat.mul_le_mul_left _ (ih (Nat.le_of_succ_le hk))
+        _ = 2 ^ (k + 1) * P 0 := by ring
+
+/-- **No channel of correlation exceeds one maximal step.**  The weighted deficiency of a
+single step `k < t` is at most `2^t P_0`: a step contributes at most the whole gap
+`2^t P_0 − P_t`'s scale, so one correlated step can carry the entire mass. -/
+theorem weighted_deficiency_le (P : Nat → Nat) (t : Nat)
+    (mono : ∀ k < t, P k ≤ P (k + 1)) (bound : ∀ k < t, P (k + 1) ≤ 2 * P k) (k : Nat)
+    (hk : k < t) : 2 ^ (t - 1 - k) * deficiency P k ≤ 2 ^ (t - 1) * P 0 := by
+  have hP := le_pow_mul_zero P t bound k hk.le
+  have hd : deficiency P k ≤ 2 ^ k * P 0 := by
+    unfold deficiency
+    have := mono k hk
+    omega
+  calc 2 ^ (t - 1 - k) * deficiency P k ≤ 2 ^ (t - 1 - k) * (2 ^ k * P 0) :=
+        Nat.mul_le_mul_left _ hd
+    _ = 2 ^ (t - 1) * P 0 := by
+        rw [← mul_assoc, ← pow_add]
+        congr 2
+        omega
+
 end Hypostructure.Graph.SparsePairSkeletonModel

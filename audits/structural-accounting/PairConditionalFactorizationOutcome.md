@@ -389,3 +389,13 @@ other-graph witness").**  `[178]`: fixed, see above (aggregate count).
 `conditionalValues`, `RealizingOrder`, model-level `ConditionalFactorization`,
 `PairOverlapSystem.conditionalValues/refinedFibre/fibreValues`) have no
 consumer.
+
+### Follow-up (deduplication, full modulus, correlation bounds)
+
+New fact `pairFullModulus` (8202, increment subtypes): canonical Frobenius-filled
+full-modulus data of the serial system, `¬ FullModulusArithmetic`; F08 is now built as
+data (frequent increments, gcd modulus, canonical smear, central range) and tested;
+it does not close `[180]` (see register).  `pairCorrelation` gains the per-step bound
+`2^{t-1-k} (2P_k − P_{k+1}) ≤ 2^{b+t-1}` and `2^{b+t-1} ≤ |class|`: one correlated
+step can carry the whole gap.  Statuses: F08 gap -> ~ (data built, periodic class not
+constructed); G03, G05 x; F06 gap (no uncrossing).  Member-based definitions deleted.
