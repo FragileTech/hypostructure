@@ -219,7 +219,9 @@ noncomputable def SameTokenSwapExactStatement (data : Parameters)
 supports force the whole graph.**  If neither support meets `∂Z` and the
 gluings of the transplants of `X_q` and of `X_p` into `G − Z` keep the baseline,
 then `X_p = X_q = Z`, `∂Z = ∅`, `Z` is every vertex of G, and every vertex of G
-outside a pair seed is a cut vertex of G. -/
+outside a pair seed is a cut vertex of G, hence (vertex-deletion shape of G) of
+even degree at least `4`; so every degree-`3` vertex lies in both pair seeds,
+and if G has no cut vertex both pair seeds are all of `V(G)`. -/
 noncomputable def SameTokenU2FreeWholeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop := by
   letI : DecidableEq object.Vertex := object.vertices.decEq
@@ -239,6 +241,16 @@ noncomputable def SameTokenU2FreeWholeStatement (data : Parameters)
           (∀ v, v ∈ Z → v ∉ routing.capacity.activation.pairSeed routing.demands.first →
             ¬ Graph.SupportComponents.Connected.ConnectedOn object (Z.erase v)) ∧
           (∀ v, v ∈ Z → v ∉ routing.capacity.activation.pairSeed routing.demands.second →
-            ¬ Graph.SupportComponents.Connected.ConnectedOn object (Z.erase v)))
+            ¬ Graph.SupportComponents.Connected.ConnectedOn object (Z.erase v)) ∧
+          (∀ v, v ∉ routing.capacity.activation.pairSeed routing.demands.first →
+            Even (object.degree v) ∧ 4 ≤ object.degree v) ∧
+          (∀ v, v ∉ routing.capacity.activation.pairSeed routing.demands.second →
+            Even (object.degree v) ∧ 4 ≤ object.degree v) ∧
+          (∀ v, object.degree v = 3 →
+            v ∈ routing.capacity.activation.pairSeed routing.demands.first ∧
+              v ∈ routing.capacity.activation.pairSeed routing.demands.second) ∧
+          ((∀ v, Graph.SupportComponents.Connected.ConnectedOn object (Z.erase v)) →
+            ∀ v, v ∈ routing.capacity.activation.pairSeed routing.demands.first ∧
+              v ∈ routing.capacity.activation.pairSeed routing.demands.second))
 
 end Hypostructure.Graph.Strategy.Spine

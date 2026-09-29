@@ -5346,15 +5346,28 @@ structural accounting is `audits/structural-accounting/Node144aOutcome.md`.
   (`Graph/U2FreeWhole.lean`).  If neither support meets `∂Z` and the glued transplants of `X_q`
   and `X_p` keep the baseline, then `X_p = X_q = Z`, `∂Z = ∅`, `Z = V(G)` (Steiner minimality
   `select_no_smaller`, G connected), and every vertex outside a pair seed is a cut vertex of G
-  (`select_nonseed_cut`).
+  (`select_nonseed_cut`).  Strengthened in the block-structure pass (`Graph/WholeBlocks.lean`): with
+  `K .vertexDeletionComponents` a cut vertex of G has even degree, so degree at least `4`
+  (minimum degree `3`).  Hence in this configuration every vertex outside a pair seed has even
+  degree `≥ 4`; every degree-`3` vertex lies in both pair seeds `T(p) ∪ Γ(p) ∪ T(q) ∪ Γ(q)`;
+  and if G has no cut vertex, both pair seeds are all of `V(G)`.  The row now also reads
+  `K .vertexDeletionComponents`, `K .minDegreeBaseline`, `K .cubicBaseline`.
 
 ### What was tried against the arms (no arm closes)
 
 * **U2-free, both transplants valid.**  The configuration is `X_p = X_q = Z = V(G)`; there the
   swaps are trivially valid (`P = Q = Z`), so no contradiction is derived from the swap conditions.
   The exit (d) route would need a strictly smaller representative, which does not exist here.
-  Remaining proposition at G: the two pair supports both equal `V(G)`, every vertex of G outside
-  the pair seeds a cut vertex of G.
+  Remaining proposition at G: the two pair supports both equal `V(G)`; every vertex of G outside
+  the pair seeds is a cut vertex of even degree `≥ 4`; every degree-`3` vertex lies in both pair
+  seeds.  Informal block-structure test, not a Lean fact (leaf blocks of the block-cut tree, `δ ≥ 3` inside a leaf block,
+  `bridgeless`, minimality of a leaf block with one cut vertex): every non-cut vertex, in
+  particular every vertex of a leaf block other than its cut vertex, lies in both seeds, and a
+  leaf block has at least three of them.  No contradiction is derived: the seeds contain the
+  return paths `R_p`, `R_q` (`PortReturn` witnesses of unbounded length), so the ledger has no
+  size bound on a seed below `n`; a leaf block cannot be replaced by a smaller piece of the same
+  boundary degree at its cut vertex without a target cycle (`K4` contains `C4`).  The no-cut-vertex
+  case forces `V(G) ⊆ seed_p ∩ seed_q`, which is not refuted by a ledger fact either.
 * **U1 and U2-shared.**  The swap profile identity is a count of *interior* neighbours,
   `n_Q(b) = n_P(b)`; U1 and the equal-count region are statements about contacts `c_Y(b)`,
   which also count `∂Z`-neighbours, so neither implies nor refutes it.  The remaining proposition

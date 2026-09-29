@@ -28,7 +28,7 @@ variable {data : Data.{u}}
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sameTokenSwap
     { Requires := [K .sameTokenPairPartition, K .noProperBaseline, K .selection,
-        K .minDegreeBaseline]
+        K .minDegreeBaseline, K .vertexDeletionComponents, K .cubicBaseline]
       Produces := [K .sameTokenUnresolvedDecided, K .sameTokenReadingsExact, K .sameTokenSwap,
         K .sameTokenSwapExact, K .sameTokenU2FreeWhole]
       requiresUnique := by key_fresh
@@ -62,7 +62,10 @@ variable {data : Data.{u}}
           (inputs.get (K .sameTokenPairPartition)).down
           (inputs.get (K .noProperBaseline)).down
           (inputs.get (K .selection)).down.1
-          (fun H smaller base => (inputs.get (K .selection)).down.2.sizeMinimal H smaller base)⟩
+          (fun H smaller base => (inputs.get (K .selection)).down.2.sizeMinimal H smaller base)
+          (inputs.get (K .vertexDeletionComponents)).down
+          (inputs.get (K .minDegreeBaseline)).down
+          (inputs.get (K .cubicBaseline)).down.1.1⟩
       .nil)))))
 
 end Hypostructure.Graph.Strategy.Spine

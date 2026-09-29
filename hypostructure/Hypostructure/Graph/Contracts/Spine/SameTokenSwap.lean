@@ -1,5 +1,7 @@
 import Hypostructure.Graph.Statements.SameTokenSwap
 import Hypostructure.Graph.Contracts.Spine.SameTokenPair
+import Hypostructure.Graph.WholeBlocks
+import Hypostructure.Graph.Statements.CycleCounting
 
 /-!
 # Contracts: G's pattern pair, tested at G (`[144a]`, G audit S144a)
@@ -162,13 +164,17 @@ theorem sameTokenSwapExact_holds
       (Graph.RerouteSwap.swap_size_le avoids minimal Z Xq Xp b2 i2)⟩
 
 /-- **Boundary-free configuration: valid transplants of both supports force the
-whole graph.** -/
+whole graph, and the vertex-deletion shape of G then gives even degree at least
+`4` outside the pair seeds.** -/
 theorem sameTokenU2FreeWhole_holds
     (partition : SameTokenPairPartitionStatement data object)
     (noProper : NoProperBaselineStatement data object)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (minimal : ∀ H : Graph.FiniteObject.{u}, H.LexicographicallySmaller object →
-      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H) :
+      Graph.MinimumDegreeAtLeast data.threshold H → Graph.HasCycleWithLength data.LengthOK H)
+    (shape : VertexDeletionComponentsStatement object)
+    (base : MinDegreeBaselineStatement data object)
+    (threshold : data.threshold = 3) :
     SameTokenU2FreeWholeStatement data object := by
   letI : DecidableEq object.Vertex := object.vertices.decEq
   obtain ⟨routing, routingEq, Xp, Xq, Z, hXp, hXq, -, selP, selQ, selected, pZ, qZ, -⟩ :=
@@ -176,6 +182,9 @@ theorem sameTokenU2FreeWhole_holds
   obtain ⟨⟨p, hp⟩, -⟩ := partition_supports_nonempty routing routingEq noProper.2 hXp hXq
   have connP : Graph.SupportComponents.Connected.ConnectedOn object Xp :=
     (CanonicalSupport.mem_candidates_iff.1 (CanonicalSupport.select?_mem_candidates selP)).2
+  have base3 : ∀ v, 3 ≤ object.degree v := fun v => by
+    have := le_trans base (object.minDegree_le_degree v)
+    omega
   refine ⟨routing, routingEq, Xp, Xq, Z, ⟨hXp, hXq, selected⟩,
     fun freeP freeQ baseQ baseP => ?_⟩
   have fillP := Graph.Transplant.transplant_fills_of_baseline avoids minimal Z Xp baseP
@@ -184,14 +193,31 @@ theorem sameTokenU2FreeWhole_holds
     freeP freeQ
     (fun v vZ vb => by by_contra vP; exact fillP v ⟨vZ, vb, vP⟩)
     (fun v vZ vb => by by_contra vQ; exact fillQ v ⟨vZ, vb, vQ⟩) ⟨p, hp⟩
-  refine ⟨eqP, eqQ, noCut, univ, ?_, ?_⟩
-  · intro v vZ vSeed
+  have cutP : ∀ v, v ∈ Z → v ∉ routing.capacity.activation.pairSeed routing.demands.first →
+      ¬ Graph.SupportComponents.Connected.ConnectedOn object (Z.erase v) := by
+    intro v vZ vSeed
     have := ReadingProfiles.select_nonseed_cut selP (eqP ▸ vZ) vSeed
     rw [eqP] at this
     convert this
-  · intro v vZ vSeed
+  have cutQ : ∀ v, v ∈ Z → v ∉ routing.capacity.activation.pairSeed routing.demands.second →
+      ¬ Graph.SupportComponents.Connected.ConnectedOn object (Z.erase v) := by
+    intro v vZ vSeed
     have := ReadingProfiles.select_nonseed_cut selQ (eqQ ▸ vZ) vSeed
     rw [eqQ] at this
     convert this
+  have evP : ∀ v, v ∉ routing.capacity.activation.pairSeed routing.demands.first →
+      Even (object.degree v) ∧ 4 ≤ object.degree v := fun v hv =>
+    Graph.WholeBlocks.cut_even_degree shape base3 univ (cutP v (univ v) hv)
+  have evQ : ∀ v, v ∉ routing.capacity.activation.pairSeed routing.demands.second →
+      Even (object.degree v) ∧ 4 ≤ object.degree v := fun v hv =>
+    Graph.WholeBlocks.cut_even_degree shape base3 univ (cutQ v (univ v) hv)
+  refine ⟨eqP, eqQ, noCut, univ, cutP, cutQ, evP, evQ, ?_, ?_⟩
+  · intro v h3
+    refine ⟨by_contra fun hv => ?_, by_contra fun hv => ?_⟩
+    · have := evP v hv; omega
+    · have := evQ v hv; omega
+  · intro hall v
+    refine ⟨by_contra fun hv => cutP v (univ v) hv (hall v),
+      by_contra fun hv => cutQ v (univ v) hv (hall v)⟩
 
 end Hypostructure.Graph.Contracts.Spine.SameTokenSwap

@@ -163,6 +163,7 @@ import Hypostructure.Graph.Transplant
 import Hypostructure.Graph.ReadingExactness
 import Hypostructure.Graph.RerouteSwap
 import Hypostructure.Graph.U2FreeWhole
+import Hypostructure.Graph.WholeBlocks
 import Hypostructure.Graph.AnchoredReturnCompletion
 import Hypostructure.Graph.WindowCurvatureAlgebra
 import Hypostructure.Graph.WindowCurvatureEnumeration
