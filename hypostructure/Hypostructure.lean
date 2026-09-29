@@ -190,6 +190,7 @@ import Hypostructure.Graph.InterfaceReplacement
 import Hypostructure.Graph.SpliceLift
 import Hypostructure.Graph.SpliceRoute
 import Hypostructure.Graph.DoubleSuppress
+import Hypostructure.Graph.PairRoute
 
 -- Core routing modules included in the root build closure.
 import Hypostructure.Core.DependentOwnerGlueCapacity

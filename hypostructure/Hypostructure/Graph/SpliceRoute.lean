@@ -80,7 +80,7 @@ theorem cycle_lift_route {G G' : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp :
     (hiso : ∀ v ∈ p.support, v ≠ a → v ≠ b → ∀ y, ¬ G'.Adj v y)
     {x : V} (c : G'.Walk x x) (hc : c.IsCycle) :
     ∃ (y : V) (d : G.Walk y y), d.IsCycle ∧
-      (∀ e ∈ d.edges, e ∈ c.edges ∨ e ∈ p.edges) ∧
+      (∀ e ∈ d.edges, e ∈ c.edges ∨ (s(a, b) ∈ c.edges ∧ e ∈ p.edges)) ∧
       (∀ e ∈ c.edges, e ≠ s(a, b) → e ∈ d.edges) ∧
       (s(a, b) ∈ c.edges →
         (∀ e ∈ p.edges, e ∈ d.edges) ∧ d.length + 1 = c.length + p.length) ∧
@@ -154,8 +154,8 @@ theorem cycle_lift_route {G G' : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp :
       · intro e he
         rw [Walk.edges_cons, Walk.edges_append, List.mem_cons, List.mem_append] at he
         rcases he with h | h | h
-        · exact Or.inr (by rw [Walk.edges_cons, List.mem_cons]; exact Or.inl h)
-        · exact Or.inr (by rw [Walk.edges_cons, List.mem_cons]; exact Or.inr h)
+        · exact Or.inr ⟨hab, by rw [Walk.edges_cons, List.mem_cons]; exact Or.inl h⟩
+        · exact Or.inr ⟨hab, by rw [Walk.edges_cons, List.mem_cons]; exact Or.inr h⟩
         · rw [hre] at h
           exact Or.inl ((hcedges e).2 (Or.inr h))
       · intro e he hne
@@ -193,7 +193,7 @@ theorem splice_cycle_route {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : 
     (hlen : 2 ≤ p.length) (D : Set V) (hD : ∀ v, v ∈ D ↔ v ∈ interior p) {x : V}
     (c : (splice G a b D).Walk x x) (hc : c.IsCycle) :
     ∃ (y : V) (d : G.Walk y y), d.IsCycle ∧
-      (∀ e ∈ d.edges, e ∈ c.edges ∨ e ∈ p.edges) ∧
+      (∀ e ∈ d.edges, e ∈ c.edges ∨ (s(a, b) ∈ c.edges ∧ e ∈ p.edges)) ∧
       (∀ e ∈ c.edges, e ≠ s(a, b) → e ∈ d.edges) ∧
       (s(a, b) ∈ c.edges →
         (∀ e ∈ p.edges, e ∈ d.edges) ∧ d.length + 1 = c.length + p.length) ∧
@@ -228,7 +228,7 @@ theorem multiSplice_cycle_route {G : SimpleGraph V} :
     ∀ (L : List (Shortcut G)), RouteCompatible L → ∀ {x : V}
       (c : (multiSplice G L).Walk x x), c.IsCycle →
       ∃ (y : V) (d : G.Walk y y), d.IsCycle ∧
-        (∀ e ∈ d.edges, e ∈ c.edges ∨ ∃ s ∈ L, e ∈ s.p.edges) ∧
+        (∀ e ∈ d.edges, e ∈ c.edges ∨ ∃ s ∈ L, s(s.a, s.b) ∈ c.edges ∧ e ∈ s.p.edges) ∧
         (∀ e ∈ c.edges, (∀ s ∈ L, e ≠ s(s.a, s.b)) → e ∈ d.edges) ∧
         (∀ s ∈ L, s(s.a, s.b) ∈ c.edges → ∀ e ∈ s.p.edges, e ∈ d.edges) ∧
         d.length = c.length +
@@ -261,11 +261,15 @@ theorem multiSplice_cycle_route {G : SimpleGraph V} :
     rw [hep] at r1 r3
     refine ⟨y, d, hd, ?_, ?_, ?_, ?_⟩
     · intro e he
-      rcases q1 e he with h | ⟨t, ht, h⟩
-      · rcases r1 e h with h' | h'
+      rcases q1 e he with h | ⟨t, ht, hu, h⟩
+      · rcases r1 e h with h' | ⟨h1, h2⟩
         · exact Or.inl h'
-        · exact Or.inr ⟨s, List.mem_cons_self, h'⟩
-      · exact Or.inr ⟨t, List.mem_cons_of_mem _ ht, h⟩
+        · exact Or.inr ⟨s, List.mem_cons_self, h1, h2⟩
+      · have hu' : s(t.a, t.b) ∈ c.edges := by
+          rcases r1 _ hu with h' | ⟨_, h'⟩
+          · exact h'
+          · exact absurd h' (hpair'.1 t ht).2.1
+        exact Or.inr ⟨t, List.mem_cons_of_mem _ ht, hu', h⟩
     · intro e he hne
       have hne1 : e ≠ s(s.a, s.b) := hne s List.mem_cons_self
       exact q2 e (r2 e he hne1) (fun t ht => hne t (List.mem_cons_of_mem _ ht))
@@ -282,7 +286,7 @@ theorem multiSplice_cycle_route {G : SimpleGraph V} :
         rw [decide_eq_decide]
         constructor
         · intro h
-          rcases r1 _ h with h' | h'
+          rcases r1 _ h with h' | ⟨_, h'⟩
           · exact h'
           · exact absurd h' (hpair'.1 t ht).2.1
         · intro h
@@ -300,5 +304,44 @@ theorem multiSplice_cycle_route {G : SimpleGraph V} :
       · have hl : d1.length = c.length := r4 hin
         rw [List.filter_cons_of_neg (by simpa using hin)]
         omega
+
+open Classical in
+/-- `d` is a lift of `c` through the shortcuts `L`, with its route. -/
+def RouteLift {G : SimpleGraph V} (L : List (Shortcut G)) {x y : V}
+    (c : (multiSplice G L).Walk x x) (d : G.Walk y y) : Prop :=
+  (∀ e ∈ d.edges, e ∈ c.edges ∨ ∃ s ∈ L, s(s.a, s.b) ∈ c.edges ∧ e ∈ s.p.edges) ∧
+  (∀ e ∈ c.edges, (∀ s ∈ L, e ≠ s(s.a, s.b)) → e ∈ d.edges) ∧
+  (∀ s ∈ L, s(s.a, s.b) ∈ c.edges → ∀ e ∈ s.p.edges, e ∈ d.edges) ∧
+  d.length = c.length +
+    (((L.filter fun s => decide (s(s.a, s.b) ∈ c.edges)).map Shortcut.shift).sum)
+
+open Classical in
+theorem multiSplice_route_lift {G : SimpleGraph V} (L : List (Shortcut G))
+    (hL : RouteCompatible L) {x : V} (c : (multiSplice G L).Walk x x) (hc : c.IsCycle) :
+    ∃ (y : V) (d : G.Walk y y), d.IsCycle ∧ RouteLift L c d := by
+  obtain ⟨y, d, hd, r1, r2, r3, r4⟩ := multiSplice_cycle_route L hL c hc
+  exact ⟨y, d, hd, r1, r2, r3, r4⟩
+
+open Classical in
+open Hypostructure.Graph in
+/-- **Excision with routes.**  `G` minimal target-avoiding; `L` route-compatible; the multiply
+excised object keeps the baseline.  Then it has an accepted cycle `c`, which lifts to a
+non-accepted cycle `d` of `G` with its route. -/
+theorem multi_excision_route (G : FiniteObject.{u}) (L : List (Shortcut G.graph))
+    (hL : RouteCompatible L) (v : G.Vertex) (hv : v ∈ delSet L)
+    (LengthOK : Nat → Prop) (avoids : ¬ HasCycleWithLength LengthOK G)
+    (Baseline : FiniteObject.{u} → Prop)
+    (minimal : ∀ X : FiniteObject.{u}, Baseline X → X.LexicographicallySmaller G →
+      HasCycleWithLength LengthOK X)
+    (hb : Baseline (multiSpliceObject G L)) :
+    ∃ (x : G.Vertex) (c : (multiSplice G.graph L).Walk x x), c.IsCycle ∧ LengthOK c.length ∧
+      ∃ (y : G.Vertex) (d : G.graph.Walk y y), d.IsCycle ∧ ¬ LengthOK d.length ∧
+        RouteLift L c d := by
+  have small : (multiSpliceObject G L).LexicographicallySmaller G :=
+    FiniteObject.lexicographicallySmaller_of_vertexCount_lt
+      (vertexCount_multiSpliceObject_lt G L v hv)
+  obtain ⟨x, c, hc, hok⟩ := cycle_of_multiSpliceObject G L LengthOK (minimal _ hb small)
+  obtain ⟨y, d, hd, hr⟩ := multiSplice_route_lift L hL c hc
+  exact ⟨x, c, hc, hok, y, d, hd, fun hok' => avoids ⟨⟨y, d, hd, hok'⟩⟩, hr⟩
 
 end Hypostructure.Graph.SpliceLift
