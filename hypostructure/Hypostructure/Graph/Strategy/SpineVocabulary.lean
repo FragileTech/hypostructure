@@ -11,6 +11,7 @@ import Hypostructure.Graph.Statements.TypeBLanes
 import Hypostructure.Graph.Statements.TypeBSublinearCanonical
 import Hypostructure.Graph.Statements.TypeBSublinearGaps
 import Hypostructure.Graph.Statements.TypeBSublinearFlow
+import Hypostructure.Graph.Statements.TypeBSublinearLanding
 import Hypostructure.Graph.Statements.SurplusPairRouting
 import Hypostructure.Graph.Statements.SurplusPairCode
 import Hypostructure.Graph.Statements.ColdGerm
@@ -1694,6 +1695,18 @@ inductive Key where
   of the remainder**: pieces partition `R(P₀)`, each has a receiver, and their
   number is at most `def⁺(R(P₀))`. -/
   | pieceSizeProfile
+  /-- G audit of `TypeBSublinearOutcome` (gap H05, corrected bound): **a canonical
+  piece either has a trace into a centre, a saturated non-centre receiver, or
+  `|Y| ≤ s·def⁺(Y) + σ(Y)`** (the surplus costs `c = 1` per unit). -/
+  | bridgePieceMassDichotomy
+  /-- G audit of `TypeBSublinearOutcome` (gap H04, arm A): **what a trace into a
+  centre forces**: the centre is a high receiver with two cubic window
+  neighbours. -/
+  | traceIntoCentreStructure
+  /-- G audit of `TypeBSublinearOutcome` (gap H04, arm B): **what a trace into the
+  absorbed core forces**: a cubic vertex adjacent to a high grouped centre lying in
+  the packed windows. -/
+  | traceIntoAbsorbedStructure
   -- F5 keys
   /-- Node `[175]`, no arm: every selected corridor meets a high-degree
   vertex. -/
@@ -2754,6 +2767,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       CoverFlowValueStatement data.toParameters object
   | .pieceSizeProfile, object =>
       PieceSizeProfileStatement data.toParameters object
+  | .bridgePieceMassDichotomy, object =>
+      BridgePieceMassDichotomyStatement data.toParameters object
+  | .traceIntoCentreStructure, object =>
+      TraceIntoCentreStructureStatement data.toParameters object
+  | .traceIntoAbsorbedStructure, object =>
+      TraceIntoAbsorbedStructureStatement data.toParameters object
   -- F5 keys
   | .coldNoPositiveGerm, object =>
       ColdNoPositiveGermStatement data.toParameters object
@@ -3350,6 +3369,9 @@ def label : Key → String
   | .loadFlowValue => "loadFlowValue"
   | .coverFlowValue => "coverFlowValue"
   | .pieceSizeProfile => "pieceSizeProfile"
+  | .bridgePieceMassDichotomy => "bridgePieceMassDichotomy"
+  | .traceIntoCentreStructure => "traceIntoCentreStructure"
+  | .traceIntoAbsorbedStructure => "traceIntoAbsorbedStructure"
   -- F5 keys
   | .coldNoPositiveGerm => "coldNoPositiveGerm"
   -- SD keys (final pass)
@@ -3840,6 +3862,9 @@ example : label .saturatedReceiverBasin = "saturatedReceiverBasin" := rfl
 example : label .loadFlowValue = "loadFlowValue" := rfl
 example : label .coverFlowValue = "coverFlowValue" := rfl
 example : label .pieceSizeProfile = "pieceSizeProfile" := rfl
+example : label .bridgePieceMassDichotomy = "bridgePieceMassDichotomy" := rfl
+example : label .traceIntoCentreStructure = "traceIntoCentreStructure" := rfl
+example : label .traceIntoAbsorbedStructure = "traceIntoAbsorbedStructure" := rfl
 -- F5 keys
 example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
 -- SD keys (final pass)
@@ -4315,6 +4340,9 @@ def idx : Key → Nat
   | .loadFlowValue => 8311
   | .coverFlowValue => 8312
   | .pieceSizeProfile => 8313
+  | .bridgePieceMassDichotomy => 8314
+  | .traceIntoCentreStructure => 8315
+  | .traceIntoAbsorbedStructure => 8316
   -- F5 keys
   | .coldNoPositiveGerm => 1800
   -- SD keys (final pass)
@@ -4784,6 +4812,9 @@ def ofIdx : Nat → Key
   | 8311 => .loadFlowValue
   | 8312 => .coverFlowValue
   | 8313 => .pieceSizeProfile
+  | 8314 => .bridgePieceMassDichotomy
+  | 8315 => .traceIntoCentreStructure
+  | 8316 => .traceIntoAbsorbedStructure
   -- F5 keys
   | 1800 => .coldNoPositiveGerm
   -- SD keys (final pass)
@@ -5711,6 +5742,12 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coverFlowValue") 8312
   | .pieceSizeProfile =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "pieceSizeProfile") 8313
+  | .bridgePieceMassDichotomy =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "bridgePieceMassDichotomy") 8314
+  | .traceIntoCentreStructure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "traceIntoCentreStructure") 8315
+  | .traceIntoAbsorbedStructure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "traceIntoAbsorbedStructure") 8316
   -- F5 keys
   | .coldNoPositiveGerm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldNoPositiveGerm") 1800

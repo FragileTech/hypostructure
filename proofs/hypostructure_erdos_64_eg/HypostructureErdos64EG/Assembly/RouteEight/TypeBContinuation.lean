@@ -157,6 +157,9 @@ noncomputable def selectedTypeBRoute8Continuation
     (loadFlowValueFresh : K .loadFlowValue ∉ known := by key_fresh)
     (coverFlowValueFresh : K .coverFlowValue ∉ known := by key_fresh)
     (pieceSizeProfileFresh : K .pieceSizeProfile ∉ known := by key_fresh)
+    (bridgePieceMassDichotomyFresh : K .bridgePieceMassDichotomy ∉ known := by key_fresh)
+    (traceIntoCentreStructureFresh : K .traceIntoCentreStructure ∉ known := by key_fresh)
+    (traceIntoAbsorbedStructureFresh : K .traceIntoAbsorbedStructure ∉ known := by key_fresh)
     (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
       key_fresh)
@@ -346,6 +349,9 @@ noncomputable def selectedTypeBRoute8Entry
     (loadFlowValueFresh : K .loadFlowValue ∉ known := by key_fresh)
     (coverFlowValueFresh : K .coverFlowValue ∉ known := by key_fresh)
     (pieceSizeProfileFresh : K .pieceSizeProfile ∉ known := by key_fresh)
+    (bridgePieceMassDichotomyFresh : K .bridgePieceMassDichotomy ∉ known := by key_fresh)
+    (traceIntoCentreStructureFresh : K .traceIntoCentreStructure ∉ known := by key_fresh)
+    (traceIntoAbsorbedStructureFresh : K .traceIntoAbsorbedStructure ∉ known := by key_fresh)
     (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
       key_fresh)

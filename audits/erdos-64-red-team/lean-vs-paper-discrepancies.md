@@ -5223,7 +5223,7 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
   have no consumer.
 - `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.
 
-## G audit: TypeBSublinearOutcome (keys 8300–8313, 2026-09-29)
+## G audit: TypeBSublinearOutcome (keys 8300–8316, 2026-09-29)
 
 Residual: `TypeBSublinearOutcome` (node `[187]`, thm:main (vi)), the negative arm of
 `typeBSublinearDichotomy`; it retains `¬ TypeBSublinearHypotheses data G`
@@ -5276,6 +5276,37 @@ Residual: `TypeBSublinearOutcome` (node `[187]`, thm:main (vi)), the negative ar
     per handoff piece, `#unpaid ≤ 2·#handoff pieces`, `unpaid = ∅ → cover`.
   - 8313 `pieceSizeProfile` (B01): pieces partition R(P₀), every piece has a receiver,
     `#pieces ≤ def⁺(R(P₀))`.
+- **Third pass (8314–8316; `Statements/TypeBSublinearLanding.lean`,
+  `Contracts/TypeB/SublinearLanding.lean`):**
+  - 8314 `bridgePieceMassDichotomy` (H05, corrected bound): a canonical piece has a
+    trace into a centre, or a saturated non-centre receiver, or
+    `|Y| ≤ s·def⁺(Y) + σ(Y)`. The exact constant is `c = 1` on `σ`: the piece is the
+    flat vertices, the non-centre receivers (both paid by 8311 against
+    `s·Σ missingPorts ≤ s·def⁺`) and the centres, and each centre carries at least one
+    unit of `σ`. There is no per-receiver bound `1+L ≤ 4q + cσ`: a saturated receiver
+    with a large basin is not excluded by any ledger fact (the Type A lemma is a test,
+    its failure being exits (4)–(7)); the aggregate form is what holds.
+    Tested against arm A: the third disjunct together with negative charge
+    (`s·def⁺ < |Y| + s·σ`) gives `−σ ≤ s·def⁺ − |Y| < s·σ`, consistent, so it does not
+    refute arm A; it bounds the negative part by `s·σ(Y)`.
+  - 8315 `traceIntoCentreStructure` (H04, arm A): a trace into a centre `c` means `c`
+    is a high receiver (internal degree below the baseline), the trace is a path of the
+    piece with baseline interior, and `c` has two distinct cubic neighbours in the
+    packed windows (`highCentreNormalForm`).
+  - 8316 `traceIntoAbsorbedStructure` (H04, arm B): a trace into the absorbed core
+    lands on a cubic vertex of the piece adjacent to a high grouped centre that lies
+    outside the piece, in the packed windows.
+  - Which landing occurs is fixed by G's vertex order (`traceReceiver?` is the first
+    traceable receiver in `orderedVertices`); it is not decided by any ledger fact.
+- **Key 8256** (`e(R,W)+exc(R)=σ(R)+def⁺(R)`, branch `g-audit-r8rate`) is not copied.
+  At merge it combines with: 8309 (`def⁺(piece) = Σ ports`, with
+  `Σ_pieces def⁺ = def⁺(R(P₀))` from `sum_positiveDeficiency_canonicalPieces`), 8313
+  (`#pieces ≤ def⁺(R(P₀))`), 8312 (`#unpaid ≤ 2·#handoff pieces`, hence
+  `≤ 2·def⁺(R(P₀))`), 8314 (summed over pieces: `|R| ≤ s·def⁺(R)+σ(R)` off the two
+  landing arms, with `def⁺(R) = e(R,W)+exc(R)−σ(R)`), and 8315/8316 (each landing
+  consumes window stubs counted in `e(R,W)`). The stub facts `windowPositionStubs`,
+  `windowAttachmentGap`, `inducedPathAttachment` count the same incidences at the
+  window side.
 - **Status: still open.** Remaining proposition at G: 8302's arms with the numerical
   form now fixed: (A) a flat vertex of a positive-surplus piece whose canonical trace
   lands on a centre, or a non-centre receiver with `s·q ≤ L` (basin of ≥ `s·q` full
