@@ -84,7 +84,6 @@ noncomputable abbrev typeADischargedRetestKeys : FactKeys EGInput.{u} :=
     K .route8UnpaidWitnessFree,
     K .route8UnifiedEmptyAtG,
     K .route8QuotientEntriesAtG,
-    K .typeAExitFourSwitchCycle,
     K .typeAExitSevenSwitch,
     K .highCentreNormalForm,
     K .sameCenterOpenPortCompatibility,

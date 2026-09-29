@@ -134,6 +134,8 @@ noncomputable def selectedSparseSurplusActivation
         key_fresh)
 
 set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+set_option synthInstance.maxSize 2048 in
 /-- Nodes `[178]`--`[180]`, the pair-code chain entered from the free side of `[131]` (node `[130]`'s independent arm): on
 any ledger that carries the node-`[178]` first failure
 `K .pairOverlapFirstFailure` and every key of that entry arm.  Each paper test is a `Decision`; each
@@ -421,6 +423,8 @@ noncomputable def selectedPairCodeChainIndependent
                       exact (closedHistory.elimClosed (by infer_instance)).elim
 
 set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+set_option synthInstance.maxSize 2048 in
 /-- Nodes `[178]`--`[180]`, the pair-code chain entered from the free side of `[137]` (node `[130]`'s dependent arm): on
 any ledger that carries the node-`[178]` first failure
 `K .pairOverlapFirstFailure` and every key of that entry arm.  Each paper test is a `Decision`; each

@@ -105,7 +105,8 @@ theorem route8RateFailsCrossBound (data : Parameters) (object : FiniteObject.{u}
     le_trans (object.ambientSurplus_le_degreeSurplus _ data.threshold baselineAll)
       ceiling
   have cardinality := (canonicalWindowPacking_spec data object).2.1
-  have cap0 := densityCap.1
+  have cap0 := densityCap
+  unfold DensityCapStatement at cap0
   rw [← cardinality, scaleCount] at cap0
   simp only [Graph.dyadicScaleCount] at cap0
   have lower0 := join.2

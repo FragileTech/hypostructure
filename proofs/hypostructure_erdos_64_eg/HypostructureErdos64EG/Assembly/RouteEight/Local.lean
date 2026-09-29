@@ -380,8 +380,8 @@ noncomputable def selectedRouteEightUnifiedResidual
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run descended (by key_fresh)
-          exact Or.inr (Or.inl
-            (route8QuotientProductReturn entriesAtG arm.1 arm.2))
+          exact Or.inr
+            (route8QuotientProductReturn entriesAtG arm.1 arm.2)
       | .left quotientFreeHistory =>
           let census :=
             (route8UnifiedEntryCensusRow (BranchState := BranchState)

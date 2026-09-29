@@ -317,7 +317,8 @@ theorem route8ThinSmall (data : Parameters) (object : FiniteObject.{u})
     omega
   have lower := thin_arith (δ := data.threshold) remainder thin he windowSurplus
   have cardinality := (canonicalWindowPacking_spec data object).2.1
-  have cap0 := densityCap.1
+  have cap0 := densityCap
+  unfold DensityCapStatement at cap0
   rw [← cardinality, scaleCount] at cap0
   simp only [Graph.dyadicScaleCount] at cap0
   have cap : 2 * (data.windowRate * Nat.log2 object.vertexCount *

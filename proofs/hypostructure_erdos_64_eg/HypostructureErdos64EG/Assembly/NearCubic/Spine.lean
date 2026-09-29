@@ -77,7 +77,16 @@ noncomputable abbrev nearCubicResidualBKeys : FactKeys EGInput.{u} :=
     K .remainderCycleSpectrum, K .localTypeCoordinateRepetitive,
     K .localTypeCoordinateNonrepetitive, K .dominantRootedType,
     K .dominantRootedWedgeType, K .dominantRootedTypeWedgeFree,
-    K .independentObstructionTranslates, K .netDeficiencyCap] ++
+    K .independentObstructionTranslates, K .netDeficiencyCap,
+    -- G audit of `Route8RateFailsOutcome` (g-audit-r8rate): facts published on
+    -- the failed-rate arm (integration g-audit-int: reserved here, as
+    -- `nearCubicRouteEightEntry` and `nearCubicRateFailedExit` require).
+    K .route8RateFailsJoin, K .route8RateFailsPiece, K .route8RateFailsCrossBound,
+    K .route8RateFailsFlow, K .route8CarrierInjection, K .route8RateExactSlack,
+    K .route8StubDeficit, K .route8DeficitVsStubs, K .route8EntryLowerBound,
+    K .route8CoreEmpty, K .route8StrongRate, K .route8ThinIsolation,
+    K .route8WindowStub, K .route8ThinSmall, K .route8WindowRPathGap,
+    K .route8HubStubs] ++
     netChargeContinuationKeys
 
 /-- Branch D, nodes `[36]`--`[46]`, on the literal ledger returned by node
