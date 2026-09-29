@@ -33,7 +33,7 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **`[187]` (local cold-terminal exclusion), singleton `linearRealizedSilent`**
-(88 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing. -/
+(94 facts): [153] linear cold mass in `nearCubicRealized`: [158] realized, [146] theta at or above, [154] none realizing / none distinguishing; [157]/[163] G's silent family has a neutral equal-length configuration (`coldAbsorbedNeutralConfiguration`) whose genuine second strand is closed at [167]--[168], so the canonical-replacement arm holds (`coldCanonicalNeutralConfiguration`), and [165]--[166] force `Q = E` (`coldCanonicalReplacementSwap`, `coldCanonicalReplacementTrivial`); [157] the marked germ is not handed off and its replacement is not strictly smaller (`coldMarkedGermUncompressed`); [169] G lies in the blocked class (`blockedClassMember`). -/
 abbrev ColdBranchClosedOutcome_linearRealizedSilent (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -51,7 +51,30 @@ abbrev ColdBranchClosedOutcome_linearRealizedSilent (selected : EGInput.{u}) : P
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .realizedDensityOrder selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object
+      erdosReceiverLoadProfile spineData .realizedOrderSmall selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldAbsorbedNeutralConfiguration selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldCanonicalNeutralConfiguration selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldCanonicalReplacementSwap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldCanonicalReplacementTrivial selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldMarkedGermUncompressed selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .blockedClassMember selected.object
+
+/-- On the realized arm `[158]` yes, the terminal consequence of `[171]`
+(`K .blockedCompressionCap`) is the realization fact `K .windowPackageRealized`
+itself, so the additive arm of `[170]` cannot contradict it: the dense arm's
+closure pairs the cap with the strict reverse `K .windowPackageUnrealized`, which
+is absent here. -/
+theorem blockedCompressionCap_iff_windowPackageRealized (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    BlockedCompressionCapStatement data object ↔
+      WindowPackageRealizedStatement data object :=
+  Iff.rfl
 
 theorem ColdBranchClosedOutcome_linearRealizedSilent.toGeneric {selected : EGInput.{u}}
     (h : ColdBranchClosedOutcome_linearRealizedSilent selected) :
@@ -176,6 +199,12 @@ theorem coldBranchClosed_linearRealizedSilentReturn
     [FactKeys.Has (K .windowPackageRealized) known]
     [FactKeys.Has (K .realizedDensityOrder) known]
     [FactKeys.Has (K .realizedOrderSmall) known]
+    [FactKeys.Has (K .coldAbsorbedNeutralConfiguration) known]
+    [FactKeys.Has (K .coldCanonicalNeutralConfiguration) known]
+    [FactKeys.Has (K .coldCanonicalReplacementSwap) known]
+    [FactKeys.Has (K .coldCanonicalReplacementTrivial) known]
+    [FactKeys.Has (K .coldMarkedGermUncompressed) known]
+    [FactKeys.Has (K .blockedClassMember) known]
     : ColdBranchClosedOutcome_linearRealizedSilent selected :=
   ⟨coldBranchClosedReturn history,
     (history.get (K .coldGermFamilyPositive)).down,
@@ -185,6 +214,12 @@ theorem coldBranchClosed_linearRealizedSilentReturn
     (history.get (K .coldRoute8AtOrAbove)).down,
     (history.get (K .windowPackageRealized)).down,
     (history.get (K .realizedDensityOrder)).down,
-    (history.get (K .realizedOrderSmall)).down⟩
+    (history.get (K .realizedOrderSmall)).down,
+    (history.get (K .coldAbsorbedNeutralConfiguration)).down,
+    (history.get (K .coldCanonicalNeutralConfiguration)).down,
+    (history.get (K .coldCanonicalReplacementSwap)).down,
+    (history.get (K .coldCanonicalReplacementTrivial)).down,
+    (history.get (K .coldMarkedGermUncompressed)).down,
+    (history.get (K .blockedClassMember)).down⟩
 
 end HypostructureErdos64EG

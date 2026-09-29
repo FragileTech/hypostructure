@@ -1,5 +1,9 @@
 import Hypostructure.Graph.Strategy.ColdCorridorRows.AbsorbedGerm
+import Hypostructure.Graph.Strategy.ColdCorridorRows.CanonicalReplacement
 import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdFamilyClosure
+import Hypostructure.Graph.Strategy.ColdCorridorRows.MarkedGerm
+import Hypostructure.Graph.Strategy.ColdCorridorRows.NeutralTerminal
+import Hypostructure.Graph.Strategy.ColdCorridorRows.TwoStrand
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.DensityOrder
 import Hypostructure.Graph.Strategy.SpineRows.Route8RateFromColdBelow
@@ -134,8 +138,54 @@ noncomputable def Assembly.Internal.nearCubicRealized
                         (K .coldGermSomeDistinguishing) (K .selection)
                         (by key_fresh)).elimClosed (by infer_instance)).elim
                   | .right silentHistory =>
-                      exact Or.inr (Or.inr (Or.inr (Or.inl
-                        (coldBranchClosed_linearRealizedSilentReturn
-                          (nearCubicColdTable silentHistory)))))
+                      -- `[157]`, silent arm: G's silent extracted family has a
+                      -- neutral equal-length configuration (`[163]`, read as at
+                      -- `[176]`: no dense terminality on this arm).  Its genuine
+                      -- second strand is closed at `[167]`--`[168]`; the
+                      -- canonical-replacement arm `[165]`--`[166]` forces `Q = E`
+                      -- and is retained.
+                      let neutral :=
+                        (absorbedNeutralConfigurationRow (data := spineData)).run
+                          silentHistory (by key_fresh)
+                      let closed := nearCubicColdTable neutral
+                      match absorbedNeutralSymmetryDichotomy (data := spineData) closed
+                          (by key_fresh) (by key_fresh) with
+                      | .left canonicalHistory =>
+                          let swapped :=
+                            (canonicalReplacementSwapRow (data := spineData)).run
+                              canonicalHistory (by key_fresh)
+                          let trivial :=
+                            (canonicalReplacementTrivialRow (data := spineData)).run
+                              swapped (by key_fresh)
+                          -- `[169]`, `def:blocked-class`: on the trivial neutral
+                          -- residual G lies in the blocked class `B(P)` of the fixed
+                          -- packing, `card B(P) <= skeletonBudget`.  (On `[158]` yes
+                          -- its compression cap is `windowPackageRealized` itself:
+                          -- `blockedCompressionCap_iff_windowPackageRealized`.)
+                          -- `[157]`: the marked germ against the table's compression
+                          -- clause: not handed off, replacement not strictly smaller.
+                          let uncompressed :=
+                            (coldMarkedGermUncompressedRow (data := spineData)).run
+                              trivial (by key_fresh)
+                          let blocked :=
+                            (blockedClassRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run uncompressed (by key_fresh)
+                          exact Or.inr (Or.inr (Or.inr (Or.inl
+                            (Or.inr (Or.inr (Or.inr
+                              (coldBranchClosed_linearRealizedSilentReturn blocked)))))))
+                      | .right genuineHistory =>
+                          let survivor :=
+                            (twoStrandSurvivorRow (data := spineData)).run genuineHistory
+                              (by key_fresh)
+                          let stubbed :=
+                            (coldWindowStubStructureRow (data := spineData)).run survivor
+                              (by key_fresh)
+                          exact ((symmetricPairEndpointExclusionRow
+                            (data := spineData)).runAndCloseIncompatible stubbed
+                              (K .coldTwoStrandSurvivor) (K .coldSymmetricPairExcluded)
+                              (by key_fresh) (by key_fresh)).elimClosed
+                                (by infer_instance) |>.elim
 
 end HypostructureErdos64EG

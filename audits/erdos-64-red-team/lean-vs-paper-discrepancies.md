@@ -5226,3 +5226,65 @@ G.  Node labels, test order and decisions are the paper's.  Key: idx 7900
   all-context hypotheses (now also `avoids`, for R2's replacement form); they
   have no consumer.
 - `TypeBGlobalLocalReflection` clause (d): R2's three-arm route over readings.
+
+## G audit: ColdBranchClosedOutcome_linearRealizedSilent
+
+Report: `audits/structural-accounting/ColdBranchClosedOutcome_linearRealizedSilent.md`
+(structural accounting before x=7 ~=55 gap=25 n/a=1 nonG=0; after x=12 ~=56 gap=19 n/a=1 nonG=0).
+
+- **Defining failure.** `[154]` on the realized arm (`[158]` yes, `[146]` no, `[153]`
+  linear).  G1 (`Q` realizing) is a cycle in `glue Q (G-Z) = G`, closed against
+  `K .selection`; G2 is empty at G (`BoundedGerm.sameResponse`), so G always takes the
+  silent arm `K .coldGermNoneDistinguishing`; `K .coldGermRouted` / `K .coldBranchClosed`
+  exclude the shortening germs.  Both tests are decided at G; the residual is reached
+  only through the equal-length neutral germs.  No test on the path has an
+  other-graph witness conclusion (the scale-additivity dichotomy `[170]`, whose no-arm
+  is "two graph fibres witnessing the failure", was not entered; if it is used later it
+  must be restated in the aggregate form).
+- **Misrouting found.** The silent arm returned directly after `[157]`.  The manuscript
+  closes an equal-length silent germ through `[163]`, `[165]`--`[166]`, `[167]`--`[168]`.
+  The dense arm ran these; the realized arm did not, and the genuine second-strand arm
+  was left inside the residual although it is closed by the window stub structure.
+- **Fix (Lean improvement: the genuine second-strand arm is empty at G).**
+  `Assembly/NearCubic/Survivor/Realized.lean`, silent arm: `absorbedNeutralConfigurationRow`
+  (`K .coldAbsorbedNeutralConfiguration`; read as at `[176]`, no dense terminality) →
+  `nearCubicColdTable` → `absorbedNeutralSymmetryDichotomy`.  Genuine arm:
+  `twoStrandSurvivorRow`, `coldWindowStubStructureRow`, closed by
+  `symmetricPairEndpointExclusionRow`.  Canonical arm: `K .coldCanonicalNeutralConfiguration`,
+  `K .coldCanonicalReplacementSwap` (`E ≠ Q` gives a same-size refined-smaller
+  counterexample), `K .coldCanonicalReplacementTrivial` (`E = Q`), then the two facts below.
+- **New key 8400 `coldMarkedGermUncompressed`** (`Statements/ColdMarkedGerm.lean`,
+  `Contracts/Spine/ColdMarkedGerm.lean`, `Strategy/ColdCorridorRows/MarkedGerm.lean`;
+  requires `coldAbsorbedNeutralConfiguration`, `coldCanonicalReplacementTrivial`).
+  Exact statement: `∃ marked, markedNeutralGerm? data G = some marked ∧ |Q.support| ≤ M_cold
+  ∧ |E| = |Q| ∧ ¬ ColdEntersHandoffRegistry data G Q.support ∧ |V|(glue E (G−Z)) = |V|(G)
+  ∧ |E|(glue E (G−Z)) = |E|(G) ∧ ¬ (glue E (G−Z)).LexicographicallySmaller G`.
+  The support of every germ of the extracted family is subcubic
+  (`canonicalActiveColdGerm_support_subcubic`: candidates have a subcubic trace prefix, and
+  the germ support lies in it), hence meets no heavy (F4) centre.  This is the measurement
+  of the marked germ against the `admissible` clause of a table row
+  (`TableRow.admissible`, `def:admissible-rank-quotient`): the clause requires a strictly
+  smaller proper representative, and at the marked germ there is none.
+- **`K .blockedClassMember` hoisted** to this arm (`[169]`, `blockedClassRow`; needs only
+  `selection`, `hotColdPartition`).  Theorem `blockedCompressionCap_iff_windowPackageRealized`
+  (`Iff.rfl`): on `[158]` yes the compression cap of `[171]` is `windowPackageRealized`
+  itself, so the additive arm of `[170]` cannot contradict; the dense closure uses the
+  strict reverse `windowPackageUnrealized`, absent here.
+- **Verified.** `Statements/ColdMarkedGerm.lean`, `Contracts/Spine/ColdMarkedGerm.lean`
+  (chkG, no errors); `ColdBranchClosedOutcome.lean` (chkG emit, no errors).  Not
+  kernel-checked in this worktree (validation build was being rebuilt): `SpineVocabulary.lean`
+  (7 mechanical entries for 8400), `Strategy/ColdCorridorRows/MarkedGerm.lean`,
+  `NearCubic/Survivor/Realized.lean` (the final wiring).
+- **Still open (exact proposition at G).** G's marked neutral equal-length germ `(Q, E)`,
+  `E = Q`, of the positive extracted family on the realized package: a subcubic (F5)
+  germ, not handed off, whose replacement has G's vertex and edge count, so `[157]`'s
+  compression has no constructed replacement there; the ledger of
+  `ColdBranchClosedOutcome_linearRealizedSilent`.  Tried and why it did not close: (1)
+  genuine second strand: closed at `[167]`--`[168]`; (2) size/refined swap: gives `E = Q`,
+  not a smaller graph; (3) blocked class + compression cap: the cap equals the
+  realization fact, no contradiction without `windowPackageUnrealized`; (4) table row
+  closure: the marked germ is not handed off and not a compression.  Remaining
+  accounting gaps at the marked germ (F08 period of the repeated state, C11 family
+  increments, H09 germ count against `coldMassLinear`) have no partner inequality on
+  this arm.
+- **Root type.** Unchanged (the subtype keeps its name; it carries 4 + 2 more facts).
