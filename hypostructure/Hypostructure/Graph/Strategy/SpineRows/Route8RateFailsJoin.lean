@@ -2,6 +2,7 @@ import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Contracts.RouteEight.RateFailsJoin
 import Hypostructure.Graph.Contracts.RouteEight.RateFailsPiece
 import Hypostructure.Graph.Contracts.RouteEight.RateFailsFlow
+import Hypostructure.Graph.Contracts.RouteEight.RateFailsAccounting
 
 /-!
 # The failed private-carrier rate against the exact window join at G
@@ -129,6 +130,62 @@ universe u v
         ⟨Graph.Contracts.RouteEight.route8RateExactSlack data.toParameters
           inputs.current.object
           (inputs.get (K .route8RateFails)).down⟩ .nil)
+    0 0
+
+/-- The stub-deficit identity at G. -/
+@[reducible] noncomputable def route8StubDeficitRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8StubDeficit
+    { Requires := [K .route8RateFailsJoin, K .cubicBaseline]
+      Produces := [K .route8StubDeficit]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8StubDeficit)
+        ⟨Graph.Contracts.RouteEight.route8StubDeficit data.toParameters
+          inputs.current.object inputs.current.baseline
+          (inputs.get (K .route8RateFailsJoin)).down⟩ .nil)
+    0 0
+
+/-- The deficit against the window stubs, or the isolated windows. -/
+@[reducible] noncomputable def route8DeficitVsStubsRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8DeficitVsStubs
+    { Requires := [K .route8StubDeficit, K .cubicBaseline]
+      Produces := [K .route8DeficitVsStubs]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8DeficitVsStubs)
+        ⟨Graph.Contracts.RouteEight.route8DeficitVsStubs data.toParameters
+          inputs.current.object
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
+          (inputs.get (K .route8StubDeficit)).down⟩ .nil)
+    0 0
+
+/-- The route-8 entries against the large-budget deficit test. -/
+@[reducible] noncomputable def route8EntryLowerBoundRow
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8EntryLowerBound
+    { Requires := [K .route8BasinBurden, K .route8RateFailsJoin]
+      Produces := [K .route8EntryLowerBound]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .route8EntryLowerBound)
+        ⟨Graph.Contracts.RouteEight.route8EntryLowerBound data.toParameters
+          inputs.current.object
+          (inputs.get (K .route8BasinBurden)).down
+          (inputs.get (K .route8RateFailsJoin)).down⟩ .nil)
     0 0
 
 end Hypostructure.Graph.Strategy.Spine

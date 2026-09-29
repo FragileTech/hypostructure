@@ -16,6 +16,7 @@ import Hypostructure.Graph.Statements.ColdResiduals
 import Hypostructure.Graph.Statements.DensityOrder
 import Hypostructure.Graph.Statements.Route8RateFailsJoin
 import Hypostructure.Graph.Statements.Route8RateFailsFlow
+import Hypostructure.Graph.Statements.Route8RateFailsAccounting
 import Hypostructure.Graph.Statements.SparseExitResidual
 import Hypostructure.Graph.Statements.SparseExitReadings
 import Hypostructure.Graph.Statements.SwitchForcedPaths
@@ -1712,6 +1713,12 @@ inductive Key where
   | route8CarrierInjection
   /-- G audit `Route8RateFailsOutcome` (idx 8255, `H08`): the rate at G's exact `σ(G)` next to the ceiling version: exact rate holds strictly inside the failed ceiling rate, or the exact rate fails. -/
   | route8RateExactSlack
+  /-- G audit `Route8RateFailsOutcome` (idx 8256): the stub-deficit identity `e(R,W) + exc(R) = σ(R) + def⁺(R)`, the injection of deficit units into cut incidences, and `def⁺(R) + X + σ(R) + 2(order−1)p = δ·order·p + σ_W + exc(R)`. -/
+  | route8StubDeficit
+  /-- G audit `Route8RateFailsOutcome` (idx 8257): the deficit reaches the window stub capacity (then `X + σ(R) ≤ σ_W + exc`, `d ≤ βp + σ_W`) or falls short of it (then `σ_W + exc < X + σ(R)`). -/
+  | route8DeficitVsStubs
+  /-- G audit `Route8RateFailsOutcome` (idx 8258): the route-8 entries against the large-budget deficit test: `N_basin ≥ D_A`, and either the test holds with `|R| + s(X + 2(order−1)p) ≤ N_basin + s(δ·order·p + σ_W) + slack` or `D_A + s|∂R| + slack < |R|`. -/
+  | route8EntryLowerBound
   /-- Node `[24]` on `[146]` no, size test yes: `N₀ ≤ n` at the `[24]` cutoff. -/
   | boundedOrderLarge
   /-- Node `[24]` on `[146]` no, size test no: G has fewer than `N₀` vertices (exact complement). -/
@@ -2748,6 +2755,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8CarrierInjectionStatement data.toParameters object
   | .route8RateExactSlack, object =>
       Route8RateExactSlackStatement data.toParameters object
+  | .route8StubDeficit, object =>
+      Route8StubDeficitStatement data.toParameters object
+  | .route8DeficitVsStubs, object =>
+      Route8DeficitVsStubsStatement data.toParameters object
+  | .route8EntryLowerBound, object =>
+      Route8EntryLowerBoundStatement data.toParameters object
   | .boundedOrderLarge, object =>
       BoundedOrderLargeStatement data.toParameters object
   | .boundedOrderSmall, object =>
@@ -3309,6 +3322,9 @@ def label : Key → String
   | .route8RateFailsFlow => "route8RateFailsFlow"
   | .route8CarrierInjection => "route8CarrierInjection"
   | .route8RateExactSlack => "route8RateExactSlack"
+  | .route8StubDeficit => "route8StubDeficit"
+  | .route8DeficitVsStubs => "route8DeficitVsStubs"
+  | .route8EntryLowerBound => "route8EntryLowerBound"
   | .boundedOrderLarge => "boundedOrderLarge"
   | .boundedOrderSmall => "boundedOrderSmall"
   -- [20a] enrichment keys
@@ -3790,6 +3806,9 @@ example : label .route8RateFailsCrossBound = "route8RateFailsCrossBound" := rfl
 example : label .route8RateFailsFlow = "route8RateFailsFlow" := rfl
 example : label .route8CarrierInjection = "route8CarrierInjection" := rfl
 example : label .route8RateExactSlack = "route8RateExactSlack" := rfl
+example : label .route8StubDeficit = "route8StubDeficit" := rfl
+example : label .route8DeficitVsStubs = "route8DeficitVsStubs" := rfl
+example : label .route8EntryLowerBound = "route8EntryLowerBound" := rfl
 example : label .boundedOrderLarge = "boundedOrderLarge" := rfl
 example : label .boundedOrderSmall = "boundedOrderSmall" := rfl
 example : label .edgeSurplusIdentity = "edgeSurplusIdentity" := rfl
@@ -4258,6 +4277,9 @@ def idx : Key → Nat
   | .route8RateFailsFlow => 8253
   | .route8CarrierInjection => 8254
   | .route8RateExactSlack => 8255
+  | .route8StubDeficit => 8256
+  | .route8DeficitVsStubs => 8257
+  | .route8EntryLowerBound => 8258
   | .boundedOrderLarge => 6604
   | .boundedOrderSmall => 6605
   -- [20a] enrichment keys
@@ -4719,6 +4741,9 @@ def ofIdx : Nat → Key
   | 8253 => .route8RateFailsFlow
   | 8254 => .route8CarrierInjection
   | 8255 => .route8RateExactSlack
+  | 8256 => .route8StubDeficit
+  | 8257 => .route8DeficitVsStubs
+  | 8258 => .route8EntryLowerBound
   | 6604 => .boundedOrderLarge
   | 6605 => .boundedOrderSmall
   -- [20a] enrichment keys
@@ -5657,6 +5682,12 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8CarrierInjection") 8254
   | .route8RateExactSlack =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8RateExactSlack") 8255
+  | .route8StubDeficit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8StubDeficit") 8256
+  | .route8DeficitVsStubs =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8DeficitVsStubs") 8257
+  | .route8EntryLowerBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8EntryLowerBound") 8258
   | .boundedOrderLarge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "boundedOrderLarge") 6604
   | .boundedOrderSmall =>
