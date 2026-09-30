@@ -1,10 +1,10 @@
 # Structural accounting: `PairConditionalFactorizationOutcome` (node [182])
 
-> Status (2026-09-30): **Current in its generic ledger; one subtype fact missing; not affected by today's keys.** The generic `PairConditionalFactorizationOutcome` has 120 facts, as in this report's follow-up (119 + `pairCorrelation`). Subtype extras (+3/+8/+12/+12/+17/+21) match, except `K .pairUncrossing` (register, "follow-up 2 (uncrossing, repetition)"), a conjunct of the realizability subtypes that this report does not account. Checked by comparing the keys of this report (Table 2 rows and addenda) with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`; the accounting itself was not re-run.
+> Coverage: the generic `PairConditionalFactorizationOutcome` has 120 facts, as in the section "Rows read at the canonical obstruction `F₀`" (119 + `pairCorrelation`). Subtype extras (+3/+8/+12/+12/+17/+21) match, except `K .pairUncrossing` (register, "follow-up 2 (uncrossing, repetition)"), a conjunct of the realizability subtypes that this report does not account. Fact list compared with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`.
 
 **Defining failure.** The first failed coverage implication of the pair-code chain [178]/[179]/[180] on the strict-surplus branch (sigma above the scale threshold), at G's canonical objects: after the entropy count fails at the canonical realization of the spine code (free side: [131] `freePairCountFails`; blocked side: [137] `blockedPairCountFails`), the retained residual is one of (a) [178] the canonical overlap system does not satisfy conditional factorization (the product-code realization of separated pair supports fails in the fixed-(n,m) skeleton fibre), (b) [179] the canonical return system has no realizability outcome (no target cycle, target defect, compression or Type B handoff, and no serial system), (c) [180] the canonical serial system has no increment outcome (no full-modulus arithmetic input and no periodic routed outcome).
 
-**Facts.** The Lean abbrev has **119** conjuncts (generic residual, all six subtypes); the register section "Node [182]" and the docstring in `Residuals/PairConditionalFactorizationOutcome.lean` still say 75 (drift, see "Outside the register"). Six subtypes add extras (22 distinct keys, 3 to 18 facts each): 141 distinct keys in Table 2.
+**Facts.** The Lean abbrev has **119** conjuncts (generic residual, all six subtypes; with `pairCorrelation` the generic residual has 120, see Coverage). Six subtypes add extras (22 distinct keys, 3 to 18 facts each): 141 distinct keys in Table 2.
 
 **Status counts (88 coordinates, generic residual 119 facts; subtype extras noted in the cells):** x = 65, ~ = 18, gap = 2, n/a = 3, nonG = 0 (no coordinate is touched only by nonG facts). Facts marked nonG in Table 2: 3 (9 degreeProfileFibres, 10 targetCompleteContextUniversality, 64 admissibleQuotientsLabelInjective).
 
@@ -340,64 +340,49 @@ Borderline items kept as G: 11, 12 (negated existence of a smaller replacement p
 
 ## Outside the register
 
-- Doc/Lean drift: the register section "Node [182]" and the file docstring of `Residuals/PairConditionalFactorizationOutcome.lean` say the generic residual has 75 facts; the abbrev in `Assembly/Residuals.lean` has 119 conjuncts (its own docstring says 62). The subtype counts 78/81/84/87/90/93 in the register are stale against 119 + 3/6/9/12/15/18 extras (e.g. `freePairCountFails` is now generic, fact 111, no longer a free-only extra).
 - Class-member response: the [178] test ranges over members of the labelled (n,m) skeleton class with G-boundary pull-back. The observable "response state of a member at X_pi in the context G - X_pi" is not a register coordinate; it is the object on which G03/G05/D09 fail. If treated strictly as G-only, the G-constructed reformulation is G's own swap at X_pi (`ActualContext.swap`) with its canonical degree deficit, on which `actualGlue_agree` already decides the response at G.
-- Concurrent edits: during the audit another process left uncommitted changes in this worktree (`Statements/SurplusPair.lean`, `Contracts/SurplusPair/PairOverlap.lean`, untracked `Contracts/SurplusPair/PairCoverage.lean`) that introduce `IsCanonicalObstruction`, `obstructionFamily` and `FactorizesAt`, i.e. a conditional-factorization test decided at G's canonical minimal obstruction. All statements above were read from the committed state of branch g-audit-182 (the old `ConditionalFactorization`, quantified over every separated family and every disjoint split); facts 122, 123, D06, F03, G03 and G05 would change if that edit lands (the test becomes a statement at one canonical family, which raises D06/F03 to measured, but the fibre sizes G03/G05 stay unmeasured).
 - Fact 69 `pairArmB` and 100 `pairCodeConfiguration` are routing/classification conjunctions over the residual's own upstream facts; they account for coordinates only through the clauses listed, and their universal clauses over all `returns` are not canonical-object statements.
 
-## After the G audit (re-run of the accounting on the result)
+## Rows read at the canonical obstruction `F₀` (keys 8200-8202)
 
-State of branch `g-audit-182` after the repair (register section "G audit:
-PairConditionalFactorizationOutcome").  Tables 1 and 2 above were read from the
-committed state before the repair; the changes are:
+This section gives the Lean statements of rows 9, 10, 118, 122-124 and of the keys
+8200-8202, and the resulting statuses; for these rows and coordinates it takes precedence
+over the entries of Tables 1 and 2 above (register section "G audit:
+PairConditionalFactorizationOutcome").
 
-**Facts changed (Table 2 rows).**
+**Facts (Table 2 rows).**
 
-| # | Fact | Before | After |
-|---|---|---|---|
-| 9 | `degreeProfileFibres` | `nonG` (arbitrary `CurvatureQuotient`) | about G: canonical quotient `canonicalReadingLabel` (readingProfile, response in `actualGlue`) |
-| 10 | `targetCompleteContextUniversality` | first clause `nonG` | about G: same canonical quotient; second clause unchanged |
-| 118 | `pairOverlapSystem` (`failedFamily_obstruction`) | `¬ RealizingOrder` = a reference class member with a singleton conditional value set (other-graph witness) | `¬ CountRealizing`: for every exposure order some step has `P_{k+1} < 2 P_k` (a count over G's class, no member) |
-| 122 | `pairFactorizationFails` | `¬` class-level factorization over all families | `¬ FactorizesAt F₀`, F₀ = G's canonical minimal obstruction; exact shape `not_conditionalFactorization_iff` |
-| 123, 124 | `pairConditionalFactorization`, `pairFailureOverlap` | positive arm of the class-level test | positive arm of the F₀-test; `family` of `PairFailureOverlap` is `obstructionFamily` |
-| new | `pairCorrelation` (8200, generic) | — | correlation profile: `P_0 = 2^b`, `P_k ≤ P_{k+1} ≤ 2P_k`, `P_t ≤ |class|`, `2^{b+t} ≤ |class| + mass`, first non-branching index `k*` |
-| new | `pairCoverage` (8201, realizability/increment subtypes) | — | coverage of `[179]`/`[180]` decided at G: handoff or serial (`[179]`), no arithmetic input and handoff (`[180]`) |
+| # | Fact | Lean statement |
+|---|---|---|
+| 9 | `degreeProfileFibres` | about G: canonical quotient `canonicalReadingLabel` (readingProfile, response in `actualGlue`) |
+| 10 | `targetCompleteContextUniversality` | about G: same canonical quotient in the first clause; second clause as in Table 2 |
+| 118 | `pairOverlapSystem` (`failedFamily_obstruction`) | `¬ CountRealizing`: for every exposure order some step has `P_{k+1} < 2 P_k` (a count over G's class, no member) |
+| 122 | `pairFactorizationFails` | `¬ FactorizesAt F₀`, F₀ = G's canonical minimal obstruction; exact shape `not_conditionalFactorization_iff` |
+| 123, 124 | `pairConditionalFactorization`, `pairFailureOverlap` | positive arm of the F₀-test; `family` of `PairFailureOverlap` is `obstructionFamily` |
+| 8200 | `pairCorrelation` (generic) | correlation profile: `P_0 = 2^b`, `P_k ≤ P_{k+1} ≤ 2P_k`, `P_t ≤ |class|`, `2^{b+t} ≤ |class| + mass`, first non-branching index `k*`; per-step bound `2^{t-1-k} (2P_k − P_{k+1}) ≤ 2^{b+t-1}` and `2^{b+t-1} ≤ |class|` (one correlated step can carry the whole gap) |
+| 8201 | `pairCoverage` (realizability/increment subtypes) | coverage of `[179]`/`[180]` decided at G: handoff or serial (`[179]`), no arithmetic input and handoff (`[180]`) |
+| 8202 | `pairFullModulus` (increment subtypes) | canonical Frobenius-filled full-modulus data of the serial system, `¬ FullModulusArithmetic` (frequent increments, gcd modulus, canonical smear, central range); it does not close `[180]` (see register) |
 
-**Status changes (generic residual, 88 coordinates).**
+**Statuses (generic residual, 88 coordinates).**
 
-| Code | Before | After | Reason |
-|---|---|---|---|
-| G03 | ~ | x | `pairCorrelation` gives the exact signature counts `P_k` (log2 conditional fibre sizes as ratios `P_{k+1}/P_k`) along the canonical order, combined with `skeletonBudget`, `baselineFamily` and the first-failure index in one identity |
-| G05 | ~ | x | `2^{b+t} ≤ |class| + mass`: the joint count compared with the conditional products, the deficit being the correlation mass; first non-branching index `k*` |
-| D06 | ~ | ~ | `F₀` is now a canonical generic object (unique by cardinality then colex rank) with exact shape on failure; size, support and connectedness measured against `ℓ_ret`, `D_sp` still missing |
-| F03 | ~ | ~ | same: the minimal dependent subfamily `F₀` is canonical, its size/support unmeasured |
-| D09 | ~ | ~ | decided at `F₀` in aggregate form; no decision of the reconstruction test itself |
-| F06 | gap | gap | the relation among the coordinates of `F₀` is exactly the correlation at `k*`; the repair network is not constructed (would need the uncrossing of the overlap support) |
-| F08 | gap | gap | built: coverage reduces `[180]` to the Type B handoff and shows the arithmetic input cannot exist at G; not built: the full-modulus data (needs `lem:serial-system-sumset`, Frobenius filling, not formalized); the periodic class is not constructed |
-| C04, C11 | ~ | ~ | as F08 |
-| C07 | ~ | ~ | unchanged |
+| Code | Status | Reason |
+|---|---|---|
+| G03 | x | `pairCorrelation` gives the exact signature counts `P_k` (log2 conditional fibre sizes as ratios `P_{k+1}/P_k`) along the canonical order, combined with `skeletonBudget`, `baselineFamily` and the first-failure index in one identity |
+| G05 | x | `2^{b+t} ≤ |class| + mass`: the joint count compared with the conditional products, the deficit being the correlation mass; first non-branching index `k*` |
+| D06 | ~ | `F₀` is a canonical generic object (unique by cardinality then colex rank) with exact shape on failure; size, support and connectedness measured against `ℓ_ret`, `D_sp` missing |
+| F03 | ~ | same: the minimal dependent subfamily `F₀` is canonical, its size/support unmeasured |
+| D09 | ~ | decided at `F₀` in aggregate form; no decision of the reconstruction test itself |
+| F06 | gap | the relation among the coordinates of `F₀` is exactly the correlation at `k*`; the repair network is not constructed (it needs the uncrossing of the overlap support) |
+| F08 | ~ | full-modulus data built as data and tested (8202); coverage reduces `[180]` to the Type B handoff and shows the arithmetic input cannot exist at G; the periodic class is not constructed |
+| C04, C11 | ~ | as F08 |
+| C07 | ~ | as in Table 1 |
 
-Totals for the generic residual after the repair: x = 67, ~ = 16, gap = 2, n/a = 3,
-nonG = 0 among facts 9 and 10 (fact 64 `admissibleQuotientsLabelInjective`
-remains `nonG`, not in this audit's order).  Total facts of the generic residual:
-120 (`pairCorrelation` added); `pairCoverage` adds one extra fact to each of the
-four realizability/increment subtypes.
+Totals for the generic residual: x = 67, ~ = 17, gap = 1, n/a = 3, nonG = 0
+(fact 64 `admissibleQuotientsLabelInjective` is a nonG fact).  Total facts of the generic residual: 120 (119 +
+`pairCorrelation`); `pairCoverage` adds one extra fact to each of the four
+realizability/increment subtypes and `pairFullModulus` one to each increment subtype.
 
 **Class-member check (the rule "a test whose conclusion is a class member is an
-other-graph witness").**  `[178]`: fixed, see above (aggregate count).
-`[179]`, `[180]`: the failures conclude that no outcome object of G exists
-(`¬ Nonempty`), not a class member.  The class enters only inside
-`signatureCount`.  Remaining member-based definitions (`response`,
-`conditionalValues`, `RealizingOrder`, model-level `ConditionalFactorization`,
-`PairOverlapSystem.conditionalValues/refinedFibre/fibreValues`) have no
-consumer.
-
-### Follow-up (deduplication, full modulus, correlation bounds)
-
-New fact `pairFullModulus` (8202, increment subtypes): canonical Frobenius-filled
-full-modulus data of the serial system, `¬ FullModulusArithmetic`; F08 is now built as
-data (frequent increments, gcd modulus, canonical smear, central range) and tested;
-it does not close `[180]` (see register).  `pairCorrelation` gains the per-step bound
-`2^{t-1-k} (2P_k − P_{k+1}) ≤ 2^{b+t-1}` and `2^{b+t-1} ≤ |class|`: one correlated
-step can carry the whole gap.  Statuses: F08 gap -> ~ (data built, periodic class not
-constructed); G03, G05 x; F06 gap (no uncrossing).  Member-based definitions deleted.
+other-graph witness").**  `[178]`: the test is an aggregate count (row 118), not a class
+member.  `[179]`, `[180]`: the failures conclude that no outcome object of G exists
+(`¬ Nonempty`), not a class member.  The class enters only inside `signatureCount`.

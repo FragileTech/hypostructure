@@ -1,13 +1,13 @@
 # Structural accounting: `BlockedBarrierOverlapOutcome` (node [172a]), final state
 
-> Status (2026-09-30): **Current.** The Lean ledger equals this report's fact list: generic `BlockedBarrierOverlapOutcome` 125 facts, `_DeficiencyAtOrAbove` +1, `_DeficiencyBelowRateFails` +2 (128 keys, same set). None of today's keys (9800-9807, 9850-9855, 9900-9902, 9975-9980, 9990-9991) is on this residual. Checked by comparing the keys of this report (Table 2 rows and addenda) with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`; the accounting itself was not re-run.
+> Coverage: the fact list of this report equals the Lean ledger: generic `BlockedBarrierOverlapOutcome` 125 facts, `_DeficiencyAtOrAbove` +1, `_DeficiencyBelowRateFails` +2 (128 keys, same set). Keys 9800-9807, 9850-9855, 9900-9902, 9975-9980, 9990-9991 are not on this residual. Fact list compared with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`.
 
 Worktree `/home/guillem/hs-wt-S172a`, branch `g-audit-172a`, uncommitted edits included. Recomputed from scratch on the exact `Holds` / Statement propositions (`Graph/Statements/Spine.lean`, `BlockedFailureG.lean`, `BlockedOverlapG.lean`, `Strategy/SpineVocabulary.lean`). Read-only.
 
 ## Header
 
 - **Residual**: `BlockedBarrierOverlapOutcome` (generic; `Assembly/Residuals.lean` l.582) with the subtypes of `Assembly/Residuals/BlockedBarrierOverlapOutcome.lean`: `_DeficiencyAtOrAbove` (generic + `K .denseDeficiencyAtOrAbove`, arm A) and `_DeficiencyBelowRateFails` (generic + `K .denseDeficiencyBelow` + `K .route8RateFails`, arm B).
-- **Fact count** (from the conjunction, confirmed by the template script: 125 keys): generic **125** facts (Table 2 rows 1-125); arm A adds row 126 (**126** facts); arm B adds rows 127, 128 (**127** facts). Table 2 has 128 rows. The docstrings ("99 common", "94 / 95 / 96") are stale against the code.
+- **Fact count** (from the conjunction, confirmed by the template script: 125 keys): generic **125** facts (Table 2 rows 1-125); arm A adds row 126 (**126** facts); arm B adds rows 127, 128 (**127** facts). Table 2 has 128 rows.
 - **Defining failure**: at G's fixed maximal packing P0 the joint window package is not realized by the labelled skeleton class (`skeletonBudget < 2^(windowPackageBits*|P0|)`, fact 69), and on the dense-packing branch the aggregate test of `lem:scale-additivity` fails at G's class: at the first exposure coordinate c (window of P0, dyadic scale, barrier row (a,b); rank k in `blockedEncodingRank`), all earlier coordinates pass and `F_c * A_k < W_c * A_{k+1}`, where `A_k = blockedReachedCount k` (facts 120, 122). It is a numerical statement about G's class; it names no record and no member. The `[160]` split only records how the dense residual entered `[162]`: net-deficiency cap violated (tau >= 1/4, fact 126) or holding with the private-carrier rate failing (3/13 <= tau < 1/4, facts 127 + 128).
 
 ### Status counts (Table 1, 88 coordinates)
@@ -22,7 +22,7 @@ Changes against the previous report: D05 `~` to `x` (125); D06 `nonG` to `~` (12
 
 ### Headline answers on the changed facts
 
-- **120 `blockedBarrierOverlap`**: fully about G. After the final commit it is only the first failing aggregate coordinate (earlier ones pass, `F_c*A_k < W_c*A_{k+1}`), a count of G's class; the class-quantified fibre conjunct is gone.
+- **120 `blockedBarrierOverlap`**: fully about G. It is the first failing aggregate coordinate (earlier ones pass, `F_c*A_k < W_c*A_{k+1}`), a count of G's class; it has no class-quantified fibre conjunct.
 - **121 `blockedOwnRecord`**: about G (`own` = objectSkeletonMember G; surviving state at every coordinate; `1 <= |S| <= |A|`; and the conditional fibre of the barrier code at own has at most F+1 elements at every coordinate, so G04 is built).
 - **122 `blockedFailureSlack`**, **123 `blockedPrefixCompression`**, **124 `blockedFailingSetCarries`**: numerical facts about G's class and the package rate (`windowPackageBits`, `canonicalWindowPacking`): about G.
 - **125 `blockedOverlapSupport`**: for `own` = G's skeleton, constructions on G's graph (completion supports, closed walks in G, connectivity in G): about G.
@@ -358,4 +358,3 @@ Checked and kept as G-only: 1, 9, 10, 16, 23, 98, 112 (readings in G - Z), 11, 1
 ## Outside the register
 
 - The encoding order `blockedEncodingRank` (scale major, window, barrier row minor), the reached-class counts `A_k = blockedReachedCount k`, and the dyadic scale family `separatedScaleCount` index the G03/G05/G06 accounting but fit no separate coordinate. Nothing was forced into a row.
-- Fact-count discrepancy (bookkeeping): docstrings state 94 / 99 common and 95 / 96 per arm; the code has 125 common, 126 (arm A), 127 (arm B).

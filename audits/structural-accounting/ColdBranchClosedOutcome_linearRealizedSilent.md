@@ -1,14 +1,14 @@
 # Structural accounting: `ColdBranchClosedOutcome_linearRealizedSilent`
 
-> Status (2026-09-30): **Current except one row; not affected by today's keys.** The generic `ColdBranchClosedOutcome` now has 105 facts, not 106: `K .coldCutStatesDistinct` is no longer a conjunct (register, "G audit: Node153ResidualOutcome"), so its Table 2 row is stale. The 18 subtype facts of `linearRealizedSilent` match. The residual group now has 8 subtypes (this report covers `linearRealizedSilent` only). Checked by comparing the keys of this report (Table 2 rows and addenda) with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`; the accounting itself was not re-run.
+> Coverage: the generic `ColdBranchClosedOutcome` has 105 facts, all in Table 2; the Table 2 row `K .coldCutStatesDistinct` is not a conjunct of the generic abbrev (it is a conjunct of the subtypes `linearDenseAtOrAbove` and `linearDenseRateFailed` only) and is to be read as outside the generic ledger. The 18 subtype facts of `linearRealizedSilent` match. The residual group has 8 subtypes; this report covers `linearRealizedSilent`. Fact list compared with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`.
 
 **Defining failure.** `[154]` (bounded configuration trichotomy) on the realized-package arm (`[158]` yes, `[146]` no, `[153]` linear): G1 is a power-of-two cycle in `glue Q (G-Z) = G` (closed against `K .selection`), G2 is empty at G (`Q`, `E` have the same target response in `G-Z`), so G always takes the silent arm `K .coldGermNoneDistinguishing`. The residual is the ledger at the silent return: the extracted family of G is positive, every active germ is neutral (`not Realizing`, `not Distinguishing`), no active germ is shortening (`K .coldGermRouted`) and the finite table is closed (`K .coldBranchClosed`). What remains at the marked germ of the family is its equal-length neutral configuration `(Q, E)`. In the source (`to_formalize/erdos_64_proof.tex`, Part XI, `[154]`--`[157]`, tex 7674-7700) the manuscript says `[154]` has no terminal residual: G3 or the same-interface table gives a compression at `[157]`. Both tests are decided at G: G1/G2 are empty at G (decided), G3 (shortening) is closed at G; the equal-length silent germs are the remaining case, which the manuscript routes through the neutral symmetry `[163]`, `[165]`--`[168]` (`lem:neutral-germ-symmetry`, `lem:refined-minimality-swap`, `lem:two-strand-check`, `lem:symmetric-pair-endpoint`).
 
-**Misrouting found.** Before this pass the silent arm returned the residual straight after `[157]`, without running the neutral chain `[163]`--`[168]` that the dense arm runs (`nearCubicDenseLinear`) and that the row `absorbedNeutralConfigurationRow` supplies without dense terminality. That is, the genuine second strand arm (`[167]`--`[168]`) was left open in the residual although it is closed by the window stub structure.
+**Neutral chain on the silent arm.** After `[157]` the silent arm runs the neutral chain `[163]`--`[168]`, as the dense arm does (`nearCubicDenseLinear`); the row `absorbedNeutralConfigurationRow` supplies it without dense terminality, and the second strand arm (`[167]`--`[168]`) is closed by the window stub structure.
 
-**Facts.** 106 generic prefix facts (`ColdBranchClosedOutcome`) + 8 arm facts (before) = 114; after this pass 124 (10 added: `coldAbsorbedNeutralConfiguration`, `coldCanonicalNeutralConfiguration`, `coldCanonicalReplacementSwap`, `coldCanonicalReplacementTrivial`, `blockedClassMember` are existing keys; `coldMarkedGermUncompressed` (8400), `coldMarkedGermStretchExcision` (8401), `coldMarkedGermStretchIncidence` (8402), `coldMarkedGermPairSuppression` (8403), `coldMarkedGermPairMersenne` (8404), `coldMarkedGermChordSpan` (8405) are the new keys). The register's older count "74 generic + 8" is stale.
+**Facts.** Table 2 has 124 rows: 106 generic prefix rows (the 105 facts of `ColdBranchClosedOutcome` and the row `K .coldCutStatesDistinct`, see Coverage), 8 arm facts, and 10 neutral-chain facts (`coldAbsorbedNeutralConfiguration`, `coldCanonicalNeutralConfiguration`, `coldCanonicalReplacementSwap`, `coldCanonicalReplacementTrivial`, `blockedClassMember`, `coldMarkedGermUncompressed` (8400), `coldMarkedGermStretchExcision` (8401), `coldMarkedGermStretchIncidence` (8402), `coldMarkedGermPairSuppression` (8403), `coldMarkedGermPairMersenne` (8404), `coldMarkedGermChordSpan` (8405)).
 
-**Status counts.** before: x=7, ~=55, gap=25, n/a=1, nonG=0. after: x=15, ~=53, gap=19, n/a=1, nonG=0.
+**Status counts.** x=15, ~=53, gap=19, n/a=1, nonG=0.
 
 Method note. Table 2 statements of the 106 shared-prefix facts are the one-line statements of the discrepancy register (checked against `Statements/Spine.lean` for all cold-chain keys `coldReturnCorridors`..`coldBranchClosed`, the six-fact G1/G2/G3 block, the four neutral facts and the eight arm facts, which were read as Lean propositions). The prefix facts outside the cold chain are marked from the register statements; the coordinates listed for them are the coordinates their observable belongs to, and they were not re-derived from the propositions here (they are the shared entry prefix common to all residuals and are `~` at this residual: none of them is combined with the marked neutral germ).
 
@@ -278,7 +278,7 @@ Columns: Code | Property | Observable | Status | Accounting facts (Table-2 numbe
 | 123 | `coldMarkedGermPairMersenne` | 8404 | (see Statements/Spine.lean) | yes | C01,C03,C04,C13,D10 | witness (Mersenne path around each suppressed pair, or double cycle) | returned |
 | 124 | `coldMarkedGermChordSpan` | 8405 | (see Statements/Spine.lean) | yes | C03,C08,C12 | exclusion (chord closes a non-accepted cycle of length span+1) | returned |
 
-Facts 107-114 are the arm facts; 115-124 are the ten added by this pass. The statement of row 119 is `ColdMarkedGermUncompressedStatement` (Statements/ColdMarkedGerm.lean).
+Facts 107-114 are the arm facts; 115-124 are the ten neutral-chain facts. The statement of row 119 is `ColdMarkedGermUncompressedStatement` (Statements/ColdMarkedGerm.lean).
 
 ## Gaps ranked (facts they would combine with, technique)
 
@@ -291,7 +291,7 @@ Ranking by the number of existing facts each would be combined with:
 
 ## Non-G facts
 
-None on this residual. The earlier non-G items on the path (the G2 yes-arm `K .coldGermSomeDistinguishing`, the `[153]` context clauses) were removed before this pass (register: "G repair R4"); `ColdSameInterfaceTableStatement`, `ColdGermRoutedStatement`, `ColdGermSilentStatement` are stated at `glue E (G-Z)` and read `G-Z` only. One caveat recorded for follow-up, not a fact of this residual: `Graph.ColdCorridor.TableRow.admissible` is a structure field (a hypothesis of a row), which `row_closed` spends at G; it is a G-form use.
+None on this residual. The G2 yes-arm `K .coldGermSomeDistinguishing` is not on this path and the `[153]` context clauses are not facts of this residual; `ColdSameInterfaceTableStatement`, `ColdGermRoutedStatement`, `ColdGermSilentStatement` are stated at `glue E (G-Z)` and read `G-Z` only. One caveat, not a fact of this residual: `Graph.ColdCorridor.TableRow.admissible` is a structure field (a hypothesis of a row), which `row_closed` spends at G; it is a G-form use.
 
 ## Cross-check results
 

@@ -1,6 +1,6 @@
 # Structural accounting: `Node54ResidualOutcome`
 
-> Status (2026-09-30): **Current.** The Lean ledger equals this report's fact list with its second-pass addendum: generic `Node54ResidualOutcome` 92 facts (90 in Table 2 + `stubDeficitIdentity`, `remainderCycleSpectrum`, keys 8550-8551), and the 14 subtype extras of rows 91-104 (subtypes +3/+6/+7/+8/+3). None of today's keys is on this residual. Checked by comparing the keys of this report (Table 2 rows and addenda) with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`; the accounting itself was not re-run.
+> Coverage: the fact list of this report with its second-pass addendum equals the Lean ledger: generic `Node54ResidualOutcome` 92 facts (90 in Table 2 + `stubDeficitIdentity`, `remainderCycleSpectrum`, keys 8550-8551), and the 14 subtype extras of rows 91-104 (subtypes +3/+6/+7/+8/+3). Fact list compared with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`.
 
 Residual: `Node54ResidualOutcome` (node [54], prop:entropy-high-theta, tex 9921), `Assembly/Residuals.lean` line 5119, with its five subtypes in `Assembly/Residuals/Node54ResidualOutcome.lean`. Worktree `/home/guillem/hs-wt-S54`, branch `g-audit-54`. Read-only: no Lean edited, no build.
 
@@ -13,10 +13,10 @@ Residual: `Node54ResidualOutcome` (node [54], prop:entropy-high-theta, tex 9921)
 - `realizedColdBelow` (3 extras): window package realized (2^{b_P p} <= B) and theta < 1/78 in the exact cold-route-8 form, with the private-carrier rate reading. No size test.
 - `realizedBounded` (6 extras): package realized, theta >= 1/78, cold mass bounded, [24]'s density cap, the combined density-order bound, and the size test n < N0 (N0 = 2^235 per register).
 - `unrealizedTauHighBounded` (7 extras): package not realized (B < 2^{b_P p}), tau(theta) >= 1/4, theta >= 1/78, cold mass bounded, density cap, combined bound, n < N0.
-- `unrealizedRateFailsBounded` (8 extras in the Lean abbrev; its docstring says 6): package not realized, tau < 1/4, private-carrier rate fails, theta >= 1/78, cold mass bounded, density cap, combined bound, n < N0.
+- `unrealizedRateFailsBounded` (8 extras): package not realized, tau < 1/4, private-carrier rate fails, theta >= 1/78, cold mass bounded, density cap, combined bound, n < N0.
 - `unrealizedBothRates` (3 extras): package not realized, tau < 1/4, private-carrier rate holds. No size test.
 
-**Fact count.** The generic abbrev `Node54ResidualOutcome` is a conjunction of **90** `Holds` conjuncts (counted by the template script and by reading the abbrev). The task, the Lean docstring header of `Node54ResidualOutcome.lean` and the register all say 64 (docstring of the abbrev says 52); these counts are stale: the abbrev has absorbed the hoisted entry-prefix facts, the cycle-counting, port-local and port-joint facts. All 90 are marked. Extra facts: 14 distinct keys over the five subtypes (91-104 below). Subtype fact totals in Lean: 93, 96, 97, 98, 93.
+**Fact count.** The generic abbrev `Node54ResidualOutcome` is a conjunction of **90** `Holds` conjuncts (counted by the template script and by reading the abbrev). The abbrev contains the hoisted entry-prefix facts, the cycle-counting, port-local and port-joint facts. All 90 are marked. Extra facts: 14 distinct keys over the five subtypes (91-104 below). Subtype fact totals in Lean: 93, 96, 97, 98, 93.
 
 **Status counts, Table 1 (88 coordinates, generic residual):** x = 37, ~ = 40, gap = 3, n/a = 5, nonG = 3 (total 88).
 
@@ -384,14 +384,12 @@ Ranking key: number of existing facts (generic rows plus subtype extras) whose s
 
 ## Discrepancies found while reading (not structural)
 
-- Fact counts: abbrev docstring says 52 common facts, file header and register say 64, the abbrev conjunction has 90.
-- `unrealizedRateFailsBounded` docstring says 6 extra facts; the abbrev has 8 (99, 103, 104, 94, 95, 96, 101, 102). `unrealizedTauHighBounded` docstring says 52+7; actual 90+7.
 - `realizedOrderSmall` / `boundedOrderSmall` are `not SufficientlyLargeForDensityOrder`, a three-way disjunction (margin A < 2r, 0 < delta, cutoff <= n negated); the register reads them as n < N0.
 
-## After (g-audit-54)
+## Order cutoff (facts 98/102)
 
-No fact was added to the ledger; the status counts of Table 1 are unchanged (x 37 / ~ 40 / gap 3 / n/a 5 / nonG 3).  G08/I04/D10 stay `~`: the cutoff behind facts 98/102 is now `max(2^176, (13096·C_sp + 2)^2)` (bounded arm: same formula with the `[24]` coefficient), `Graph.densityOrderCutoff` with the log floor `⌊3A/(2(2r−A))⌋ + 1` and the scale `⌊3·coef·C/((2r−A)·δ)⌋ + 1`, and `Assembly/Residuals/Node54Order.lean` reads 98/102 as `n < N₀` at `spineData`.  Gap 1 (a lower bound on `n`) is unchanged: no G fact bounds `n` below.
+Status counts of Table 1: x 37 / ~ 40 / gap 3 / n/a 5 / nonG 3.  G08/I04/D10 are `~`: the cutoff behind facts 98/102 is `max(2^176, (13096·C_sp + 2)^2)` (bounded arm: same formula with the `[24]` coefficient), `Graph.densityOrderCutoff` with the log floor `⌊3A/(2(2r−A))⌋ + 1` and the scale `⌊3·coef·C/((2r−A)·δ)⌋ + 1`, and `Assembly/Residuals/Node54Order.lean` reads 98/102 as `n < N₀` at `spineData`.  Gap 1 (a lower bound on `n`) is open: no G fact bounds `n` below.
 
-## After, second pass (keys 8550-8551)
+## Facts 105-106 (keys 8550-8551)
 
-Added facts 105 `stubDeficitIdentity` (8550) and 106 `remainderCycleSpectrum` (8551) to the generic residual.  Coordinates moved: A10 (incidence between two regions: `e(R0,W)` identity with `exc`, `def+`, `sigma_R`), A11 (boundary degree deficit: deficit units assigned to stubs), A05 (excess above the baseline: `exc(R0)`), H03/H04/H07 partially (flow-cut identity with a canonical integral assignment; still no connected negative support), C03 (accepted-length cycles excluded in `G[R0]`; quantitative spectrum still absent), D09 (handshake fixes `e(G[R0])`).  Unchanged: gap 1 (no lower bound on n beyond `13 <= n`), C06, H10, I02.  Minimality (`selection` clause 2, `replacementExclusion`, `uncompressible`) is legitimate and is not nonG; E01/E05/E07 are `x`, not `nonG`.  Facts 69 `skeletonDominates` clause 2 and 96 `densityCap` clause 2 (class quantification): 96's clause 2 is removed (counting lemma, no fact of G); 90's conjunct 1 is restated in aggregate form.
+Facts 105 `stubDeficitIdentity` (8550) and 106 `remainderCycleSpectrum` (8551) are generic facts of the residual.  Coordinates they account for: A10 (incidence between two regions: `e(R0,W)` identity with `exc`, `def+`, `sigma_R`), A11 (boundary degree deficit: deficit units assigned to stubs), A05 (excess above the baseline: `exc(R0)`), H03/H04/H07 partially (flow-cut identity with a canonical integral assignment; still no connected negative support), C03 (accepted-length cycles excluded in `G[R0]`; quantitative spectrum still absent), D09 (handshake fixes `e(G[R0])`).  Open: gap 1 (no lower bound on n beyond `13 <= n`), C06, H10, I02.  Minimality (`selection` clause 2, `replacementExclusion`, `uncompressible`) is legitimate and is not nonG; E01/E05/E07 are `x`, not `nonG`.  Fact 69 `skeletonDominates` clause 2 is a class quantification; fact 96 `densityCap` has no class-quantified clause (the class count is a counting lemma, not a fact of G); 90's conjunct 1 is in aggregate form.

@@ -1,21 +1,19 @@
 # Structural accounting: `PairTypeBOutcome`
 
-> Status (2026-09-30): **Current for the two returned subtypes; not affected by today's keys.** The generic `PairTypeBOutcome` has 133 facts, all accounted here (Table 2 rows and the four passes). Only two subtypes are returned now, `independentSystem` (+2) and `dependentSystem` (+11), whose extras are listed in "Arm keys and subtype-only keys". The increment arm is empty at G, so rows 125-128 (`pairSerialDemandSystem`, `pairSystemNoEarlyOutcome`, `pairIncrementCovered`, `pairIncrementEarlyOutcome`) and the arm-A rows (`pairArmAPattern`, `pairArmARoleAlphabet`) are no longer on the residual. Checked by comparing the keys of this report (Table 2 rows and addenda) with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`; the accounting itself was not re-run.
+> Coverage: the generic `PairTypeBOutcome` has 133 facts, all accounted here (Table 2 rows and the sections at the end). The root returns two subtypes, `independentSystem` (+2) and `dependentSystem` (+11), whose extras are listed in "Arm keys and subtype-only keys". The increment arm is empty at G, so rows 125-128 (`pairSerialDemandSystem`, `pairSystemNoEarlyOutcome`, `pairIncrementCovered`, `pairIncrementEarlyOutcome`) and the arm-A rows (`pairArmAPattern`, `pairArmARoleAlphabet`) are not facts of the returned subtypes. Fact list compared with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`.
 
 Node `[187]` ([179]/[180] Type B entry), `Assembly/Residuals.lean` abbrev `PairTypeBOutcome` (thm:main (vi)). Worktree `/home/guillem/hs-wt-SPTB`, branch `g-audit-pairTypeB`. Read-only analysis; no Lean edited, no build run.
 
-**Defining failure.** At G's canonical objects the free-pair entropy count fails (fact 111: `2^(|spine|+|R_Pi|) > skeletonBudget(G)`), giving the canonical first failed extension (113), the minimal connected overlap obstruction (120) and its two demands d_p, d_q with returns (121). The [179]/[180] coverage test yields an early outcome (124, or 128 on the increment arm) in which alternatives (i) target cycle (excluded by selection, fact 1), (ii) target-defective quotient (empty at a target-avoiding G: `not_residualTargetDefect_of_avoids`, facts 10/16/82/101(b)) and (iii) compression (excluded only by the nonG facts 11/12/101(c)) are excluded, so the sole surviving alternative is `PairObstructionHandoff` (Statements/CanonicalPairHandoff.lean): two routes of maximal common prefix inside U = the overlap support of the minimal obstruction, first separator h with deg h > 3 and two entry arms into the core {d_p,d_q}, envelope escaping at P0. That is `TypeBFanEntryStatement` (123) on its `[179]/[180]` lane (Statements/TypeBLanes.lean), i.e. G enters node [65] Type B at `canonicalPairObstructionSupport`. Every later judgement is relative to (U, d_p, d_q, h, P0, the canonical capacity charge).
+**Defining failure.** At G's canonical objects the free-pair entropy count fails (fact 111: `2^(|spine|+|R_Pi|) > skeletonBudget(G)`), giving the canonical first failed extension (113), the minimal connected overlap obstruction (120) and its two demands d_p, d_q with returns (121). The [179]/[180] coverage test yields an early outcome (124) in which alternatives (i) target cycle (excluded by selection, fact 1), (ii) target-defective quotient (empty at a target-avoiding G: `not_residualTargetDefect_of_avoids`, facts 10/16/82/101(b)) and (iii) compression (excluded only by the nonG facts 11/12/101(c)) are excluded, so the sole surviving alternative is `PairObstructionHandoff` (Statements/CanonicalPairHandoff.lean): two routes of maximal common prefix inside U = the overlap support of the minimal obstruction, first separator h with deg h > 3 and two entry arms into the core {d_p,d_q}, envelope escaping at P0. That is `TypeBFanEntryStatement` (123) on its `[179]/[180]` lane (Statements/TypeBLanes.lean), i.e. G enters node [65] Type B at `canonicalPairObstructionSupport`. Every later judgement is relative to (U, d_p, d_q, h, P0, the canonical capacity charge).
 
-**Facts on the residual:** 128 rows (123 common conjuncts, then the arm keys: system arm = 124; increment arm = 125, 126, 127, 128). The docstrings of `Residuals.lean` / `Residuals/PairTypeBOutcome.lean` say '91 common' / '84 common' / '37 common' facts; the abbrev itself lists 123 common keys, so those counts are stale (bookkeeping only).
+**Table 2:** 128 rows (123 common conjuncts, the system arm key 124, and the increment-arm keys 125-128, which are empty at G, see Coverage), and rows 129-139 in the sections "Handoff facts" at the end.
 
-**Status counts before the G audit (Table 1, 88 coordinates):** `x` = 58, `~` = 12, `gap` = 12, `n/a` = 1, `nonG` = 5.
-
-**Status counts after the G audit:** `x` = 58, `~` = 17, `gap` = 7, `n/a` = 1, `nonG` = 5 (see the section 'After the G audit' at the end; H03, H07, B06, G03 and H10 move from `gap` to `~`).
+**Status counts (Table 1, 88 coordinates, rows 1-139):** `x` = 58, `~` = 17, `gap` = 7, `n/a` = 1, `nonG` = 5 (H03, H07, B06, G03 and H10 are `~` by rows 129-136; see the sections at the end).
 
 **Headline findings** (details in the sections below):
 
 1. *nonG facts on the path*: 1 (minimality clause), 2/15 (registered-parameter tables), 9, 10 (conjunct 1), 11, 12, 64 (abstract quotients / arbitrary replacement piece X'), 82 (existential AttemptedQuotient), 101 (clauses (c),(d)), 110 (existentially chosen Coordinate type and family), 124/128 (alternative (iii) carries an arbitrary ReplacementSupport), 127 (PairSerialArithmetic free data). Alternative (iii) is currently excluded in Lean by `replacementExclusion` (nonG) or `sparseSurplusSurvivor` (clause (c) nonG): the G-constructed exclusion (swap of G at Z and its canonical degree deficit) is not a ledger fact.
-2. *Increment arm is inconsistent*: `PairIncrementEarlyOutcome serial` maps constructor by constructor (targetDefect, compression, typeB) onto `PairSystemEarlyOutcome serial.returns`, and `canonicalPairDemandReturns = some serial.returns` (`canonicalPairDemandReturns_of_serial`); so facts 125 and 128 contradict each other at G. Read from the definitions, not machine-checked here.
+2. *Increment arm is empty at G*: `PairIncrementEarlyOutcome serial` maps constructor by constructor (targetDefect, compression, typeB) onto `PairSystemEarlyOutcome serial.returns`, and `canonicalPairDemandReturns = some serial.returns` (`canonicalPairDemandReturns_of_serial`); so facts 125 and 128 contradict each other at G (`not_pairIncrementEarly_of_noEarly`, `Contracts/Spine/PairHandoffSupport.lean`).
 3. *Facts 67 and 68 are vacuous on every ledger path* reaching this residual: their hypothesis contains `DependentPairFamilyStatement`, contradicted on the independent paths by `independentPairFamily` (same canonical activation) and, on the dependent paths, contains `BlockedPairEntropySandwichStatement`, contradicted by `blockedPairCountFails`.
 4. *Top gap* by number of facts it would combine with: H07 flow-cut support of the capacity charge (22), H03 connected negative support at the Type B lane (21), B06 boundaried type of the obstruction support U (17).
 
@@ -296,11 +294,11 @@ Coordinate marks: plain = accounted at G (`x`-level); `~` = partial; `!` = touch
 | 128 | `pairIncrementEarlyOutcome` | 418 | Canonical serial system has Nonempty (PairIncrementEarlyOutcome): (ii) defect, (iii) compression, (iv) handoff at serial.returns | yes for (ii),(iv); (iii) carries arbitrary X' (nonG) | bookkeeping | bookkeeping: constructor-by-constructor subset of 124 (same returns), unit rule | end of increment arm |
 ## Arm keys and subtype-only keys
 
-The four subtypes in `Assembly/Residuals/PairTypeBOutcome.lean` are the generic residual plus extra keys. Their extras are listed here because they fix which alternatives of facts 67/68/100 are live. They are not among the 128 rows.
+The two subtypes in `Assembly/Residuals/PairTypeBOutcome.lean` (`independentSystem`, `dependentSystem`) are the generic residual plus extra keys. Their extras are listed here because they fix which alternatives of facts 67/68/100 are live. They are not among the 128 rows.
 
 | Subtype | Extra keys | Statement at G | About G only? |
 |---|---|---|---|
-| independentSystem / independentIncrement | `independentPairFamily` | exists canonical activation with NO blocked pair (not HasSparsePairBlocker) on the full schedule | yes |
+| independentSystem | `independentPairFamily` | exists canonical activation with NO blocked pair (not HasSparsePairBlocker) on the full schedule | yes |
 | independent* | `freePairCodeUnrealized` | at the canonical activation, spine family and baseline realization: no blocker on codeSchedule, |codeSchedule| = C(sigma,2), NOT 2^(|spine|+|Pi|) <= skeletonBudget, Pi nonempty | yes |
 | dependent* | `dependentPairFamily` | same activation, some scheduled pair has a blocker (Pi_blk nonempty) | yes |
 | dependent* | `pairDegreeProfileFibres` | for every AttemptedQuotient of the pair family and SparsePairDetermination: identified coordinates lie in one boundary-degree fibre | no: forall AttemptedQuotient (free label data, ReplacementSupport field) |
@@ -308,7 +306,7 @@ The four subtypes in `Assembly/Residuals/PairTypeBOutcome.lean` are the generic 
 | dependent* | `blockedPairNoExit` | not (DeclaredSparseSurplusExit): none of exits (a)-(e) | mixed: as fact 101 ((c),(d) nonG) |
 | dependent* | `canonicalBlockerRoute`, `canonicalPairLedger`, `capacityTokenLedger` | survivor and a blocked pair with canonical blocker; blocked/unblocked partition identities; canonical capacity and its ledger spec | yes (survivor part mixed) |
 | dependent* | `blockedPairEntropySetup`, `blockedPairCountFails`, `blockedPairCodeUnrealized` | |codeSchedule| = C(sigma,2); NOT 2^(|spine| + |free side|) <= skeletonBudget; free side nonempty | yes |
-| *System / *Increment | arm keys 124 / 125-128 | as Table 2 | see rows |
+| *System | arm key 124 | as Table 2 | see rows |
 
 ## Gaps ranked
 
@@ -402,48 +400,46 @@ None forced. Two observables sit at the edge of the register and were mapped to 
 | T19 | Peeling and finite descent | Remove one certified unit while preserving a decreasing invariant. |
 
 
-## After the G audit (branch `g-audit-pairTypeB`)
+## Handoff facts (rows 129-131) and the closed increment arm
 
-**What changed on the residual.**
-
-1. *The `[180]` increment arm is closed (Lean improvement: `[180]`'s periodic alternatives are empty after `[179]`'s no-early arm).* Facts 125, 126, 127 and 128 (`pairSystemNoEarlyOutcome`, `pairSerialDemandSystem`, `pairIncrementCovered`, `pairIncrementEarlyOutcome`) are no longer on any residual: `K .pairIncrementEarlyOutcome` is incompatible with `K .pairSystemNoEarlyOutcome` (`not_pairIncrementEarly_of_noEarly`), and the row `pairIncrementEarlyTypeBEntryRow` is removed. Subtypes `independentIncrement` and `dependentIncrement` are gone; the fact 127 nonG item (free fields of `PairSerialArithmetic`) leaves the residual. The generic residual ends with fact 124 as a plain conjunct (`pairSystemEarlyOutcome`, no disjunction).
-2. *New G facts (Table 2 rows 129-131), published with `K .typeBFanEntry` by the `[179]` early row:*
+1. *The `[180]` increment arm is empty at G (Lean improvement: `[180]`'s periodic alternatives are empty after `[179]`'s no-early arm).* Facts 125, 126, 127 and 128 (`pairSystemNoEarlyOutcome`, `pairSerialDemandSystem`, `pairIncrementCovered`, `pairIncrementEarlyOutcome`) are on no returned residual: `K .pairIncrementEarlyOutcome` is incompatible with `K .pairSystemNoEarlyOutcome` (`not_pairIncrementEarly_of_noEarly`). The root returns the subtypes `independentSystem` and `dependentSystem` only; the fact 127 nonG item (free fields of `PairSerialArithmetic`) is not on the residual. The generic residual ends with fact 124 as a plain conjunct (`pairSystemEarlyOutcome`, no disjunction).
+2. *G facts (Table 2 rows 129-131), published with `K .typeBFanEntry` by the `[179]` early row:*
 
 | # | Key | idx | Statement at G | About G only? | Coordinates accounted | Certificate type | Consumed by |
 |---|---|---|---|---|---|---|---|
 | 129 | `pairHandoffSupport` | 8350 | canonical support of the obstruction handoff is (Y,H) = ({d_p.2,d_q.2},{h}), h the canonical first separator; H nonempty and high; Y and H lie in the overlap support U | yes | B06~ D07~ H03~ | decomposition | 130, 131 (and the Type B lane test) |
 | 130 | `pairHandoffCharge` | 8351 | core ends are cubic port ends (sigma(Y)=0), Y and H disjoint, omega(H)=d(h)-delta >= 1 | yes | A05 A11 H03~ | identity, bound | 131 |
-| 131 | `pairHandoffNetCharge` | 8352 | 1<=|Y|<=2; (delta-1)|Y| <= def+(Y) <= delta|Y|; envelope negative charge, or omega(H) < def+(Y) so d(h) < 3 delta | yes | H03~ A11 | bound (exact dichotomy) | Type B lane certificate cap (not yet routed) |
+| 131 | `pairHandoffNetCharge` | 8352 | 1<=|Y|<=2; (delta-1)|Y| <= def+(Y) <= delta|Y|; envelope negative charge, or omega(H) < def+(Y) so d(h) < 3 delta | yes | H03~ A11 | bound (exact dichotomy) | Type B lane certificate cap (not routed) |
 
-3. *Class quantification removed from the obstruction (user correction).* `RealizingOrder` was 'for every reference skeleton and every step, at least two conditional values', so `not RealizingOrder` (the obstruction of facts 118-120, and `not ConditionalFactorization`) asserted a class member, possibly not G, that fails. It is restated in the aggregate form the counting consumes: the number of realized (baseline word, prefix) signatures of G's labelled (n,m) class doubles at every level (`N_{|F|} = 2^{|F|} N_0`); a failure is the numerical inequality `N_{|F|} < 2^{|F|} N_0` about G's class count. The derivation of the obstruction from the first failed extension (fact 113) now goes `|Baseline| 2^{|F|} <= N_{|F|} <= |Skeleton|` directly (`Contracts/SurplusPair/PairOverlap.lean`).
+3. *The obstruction is an aggregate count, not a class member.* `RealizingOrder` (the obstruction of facts 118-120, and `not ConditionalFactorization`) is stated in the aggregate form the counting consumes: the number of realized (baseline word, prefix) signatures of G's labelled (n,m) class doubles at every level (`N_{|F|} = 2^{|F|} N_0`); a failure is the numerical inequality `N_{|F|} < 2^{|F|} N_0` about G's class count. The derivation of the obstruction from the first failed extension (fact 113) goes `|Baseline| 2^{|F|} <= N_{|F|} <= |Skeleton|` directly (`Contracts/SurplusPair/PairOverlap.lean`).
 
-**Table 1 after.** H03 `gap` -> `~` (facts 129-131). No other coordinate changed status; A11/B06 gain a partial contribution (129-131) but keep their `~`/`gap` marks (the boundaried type of G[U] is not built). G03 (conditional information) is still `gap`: the aggregate signature counts N_k are now the definition of `RealizingOrder` but no ledger fact counts them.
+**Table 1 contribution of rows 129-131.** H03 `~` (facts 129-131). A11/B06 have a partial contribution (129-131) and their `~`/`gap` marks from Table 1 (the boundaried type of G[U] is not built). The aggregate signature counts N_k are the definition of `RealizingOrder`; G03 (conditional information) is `~` by row 134 (below).
 
-**nonG items after.** 1 (minimality: legitimate by the current rule), 2/15, 9, 10 (conjunct 1), 11, 12, 64, 82, 101 (c),(d), 110, 124 (alternative (iii) `ReplacementSupport`, excluded through 101) remain; they are shared with other residuals (entry prefix, sparse-exit survivor) and are not repaired here. 125-128 are gone with the closed arm.
+**nonG items.** 1 (minimality: legitimate by the current rule), 2/15, 9, 10 (conjunct 1), 11, 12, 64, 82, 101 (c),(d), 110, 124 (alternative (iii) `ReplacementSupport`, excluded through 101) remain; they are shared with other residuals (entry prefix, sparse-exit survivor). 125-128 are on the empty increment arm.
 
 
-### Second pass (gaps H07, B06, G03, H10 built; hub facts at h)
+### Handoff facts at the hub h (rows 132-136)
 
-Keys 8353-8357, published by `pairHandoffFactsRow` right after the early row (statements `Statements/PairHandoffFacts.lean`, contracts `Contracts/Spine/PairHandoffFacts.lean`; each choice is the `canonicalChoice` of its spec or fixed by G's data):
+Keys 8353-8357, published by `pairHandoffFactsRow` after the early row (statements `Statements/PairHandoffFacts.lean`, contracts `Contracts/Spine/PairHandoffFacts.lean`; each choice is the `canonicalChoice` of its spec or fixed by G's data):
 
 | # | Key | Statement at G | Coordinates | Certificate |
 |---|---|---|---|---|
 | 132 | `pairHandoffHubCharge` (8353) | every pair of the obstruction family has an extended charge in the canonical capacity's tokens (integral flow); if the pair-deficit coefficient is positive the canonical overloaded token and its charged pair set are a Hall violator (`load > M0`) | H07~ H03~ | flow, cut |
 | 133 | `pairHandoffBoundaryType` (8354) | boundary vertices of U, `e(U,G-U)` as their deficit sum, `e(U,G-U) + sum_U d_U = delta|U| + sigma(U)`, `sigma(U) >= 1`, and the response of every reading of U glued into `G - U` has no accepted cycle | B06~ A11 A10 | decomposition, identity |
-| 134 | `pairHandoffCriticalCoordinate` (8355) | for every exposure order of the obstruction family some level has `N_{k+1} < 2 N_k` (uses the new level bound `N_{k+1} <= 2 N_k`) | G03~ | bound |
+| 134 | `pairHandoffCriticalCoordinate` (8355) | for every exposure order of the obstruction family some level has `N_{k+1} < 2 N_k` (uses the level bound `N_{k+1} <= 2 N_k`) | G03~ | bound |
 | 135 | `pairObstructionDescent` (8356) | `2 <= |U-family| <= |Pi|`, the family is not realizing, every one-step peel is realizing | H10~ | descent measure |
 | 136 | `pairHandoffHubForces` (8357) | at the canonical first separator h: vertex split forced, same-vertex switch, endpoint switch at cubic neighbours, length-3 fan and chain 3,3,3 | D07~ C06~ C07~ | classification |
 
-Also removed from this residual: facts `pairArmAPattern`, `pairArmARoleAlphabet` (vacuous on all four paths).
+Facts `pairArmAPattern`, `pairArmARoleAlphabet` are not facts of this residual (vacuous on both returned paths).
 
 
-### Third pass: rows 132 and 134 re-derived at the handoff
+### Rows 132 and 134 at the handoff
 
-Row 132 `pairHandoffHubCharge` (8353): each pair of the obstruction family is charged to the port token of one of its own ports (high centre); `h` has `d(h) - delta` port tokens; the pairs of the family charged at `h` are at most `sum over h's ports of newLoadBound`. Coordinates: H07~ (flow-cut restricted to h's tokens; the Hall-violator token of the global version is dropped), H03~.
+Row 132 `pairHandoffHubCharge` (8353): each pair of the obstruction family is charged to the port token of one of its own ports (high centre); `h` has `d(h) - delta` port tokens; the pairs of the family charged at `h` are at most `sum over h's ports of newLoadBound`. Coordinates: H07~ (flow-cut restricted to h's tokens; no global Hall-violator token), H03~.
 Row 134 `pairHandoffCriticalCoordinate` (8355): every coordinate of the obstruction is critical (deficit exactly at it in the order exposing it last); canonical members with `h`, `nextFirst`, `nextSecond` in their supports exist. Coordinates: G03~ (fibre-size count at the coordinate h decides), H10~.
 
 
-### Fourth pass: rows 137-139
+### Rows 137-139
 
 Row 137 `pairHandoffDemandEnds` (8358): endpoints of the ports of 𝒰's pairs lie in their response supports and in U; cubic; centres high. Coordinates: B06~ D07~.
 Row 138 `pairHandoffHubBalance` (8359): conjunction of rows 129-131 (8352), 132 (8353), 136 (8357) with the combined bound (negative charge, or d(h) < 3 delta, fewer than 2 delta tokens, load at most (2 delta - 1)((|H|-1)+sigma)). Coordinates: H03~ H07~ A05.

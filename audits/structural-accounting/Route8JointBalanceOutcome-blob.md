@@ -1,19 +1,18 @@
 # Structural accounting addendum: `Route8JointBalanceOutcome` — blob structure (keys 9900–9902)
 
-> Status (2026-09-30): **Superseded by keys 9800-9807 and 9975-9980.** This addendum covers only 9900-9902. The generic `Route8JointBalanceOutcome` now has 146 facts, including 9975-9980 (dominance irreducibility) and 9800-9807 (packing exchange, landing cap, hub-piece mass, net-cap excess, arm-closure residual), which are not accounted here. No full accounting of `[186]` exists on this base. Checked by comparing the keys of this report (Table 2 rows and addenda) with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`; the accounting itself was not re-run.
-
-Branch `g-blob-structure` (base `g-repair-base` 53135b04).  This base carries no full
-accounting report for `Route8JointBalanceOutcome` (the full Table 1/Table 2 report is being
-written in the unmerged worktree `hs-wt-P2R8J`, keys 9300–9304); this addendum lists the
-three new facts (Table 2 rows) and the coordinates they touch (Table 1 deltas), to be merged
-into that report.  The same three facts are on `Route8QuotientOutcome` (common prefix).
+Scope: this addendum accounts the three blob-structure facts 9900-9902 of the generic
+`Route8JointBalanceOutcome` (node `[186]`, 146 facts). The other facts of the residual,
+including the dominance-irreducibility keys 9975-9980 and the packing-exchange keys
+9800-9807 (packing exchange, landing cap, hub-piece mass, net-cap excess, arm-closure
+residual), are not accounted in this directory; there is no full Table 1/Table 2 report of
+`[186]`. The same three facts are on `Route8QuotientOutcome` (common prefix).
 
 **Defining failure (rate arm).**  `K .route8Rate`: `13|∂R| + 3·slack < 3|R|` at `P₀`
 (`δ = 3`, `s = 4`).  With the joint balance `3|R| ≤ 13|∂R| + 3h + O`, the open demand units
-`O` are positive.  The uncontrolled term is `R`; the new facts name its canonical pieces `X`,
+`O` are positive.  The uncontrolled term is `R`; facts 9900-9902 name its canonical pieces `X`,
 their exits into windows of `P₀`, and the rate term.
 
-## Table 2 — new facts
+## Table 2 — facts 9900-9902
 
 | Fact | Key | Statement (at G) | Coordinates | Certificate |
 |---|---|---|---|---|
@@ -23,7 +22,7 @@ their exits into windows of `P₀`, and the rate term.
 
 ## Table 1 — coordinates touched
 
-| Code | Property | Change |
+| Code | Property | Contribution |
 |---|---|---|
 | A10 | Incidence between two regions | `|∂R|` split exactly over the pieces (9902). |
 | B01 | Connected-component structure | the canonical pieces carry the rate (9902). |
