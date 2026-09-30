@@ -7366,3 +7366,73 @@ Lean improvement (external-type compression of G's pieces).  Base 53135b04.
   these facts alone: the defining failures (`K .route8QuotientEntriesAtG`,
   `K .route8JointBalance`) are about unified entries and loads, and no fact on
   those ledgers relates two two-exit pieces' length sets.
+
+## Density theorem (branch g-density-cert, idx 9700–9706) (2026-09-30)
+
+Lean improvement (the paper states the density statement as a conjecture, `rem:r8-density-conjecture`; tex 18206–18525).  Base 6ef0ffd2.
+
+### The theorem (generic, `Graph/DensityCert/`, vocabulary-free)
+
+`density_le_of_admissible_in (G : SimpleGraph V) (W : Finset V) (hc : ConnIn G W) (ha : AdmIn G W) : dIn G W ≤ 0 ∨ EmbOnto CG.x15.graph G W`.
+Here `AdmIn` means G[W] is subcubic, has no cycle of length 4, 8, 16 or 32, and has no induced path on 13 vertices.  `dIn G W = 8e(G[W]) − 11|W|`, and `CG.x15` is the graph6 graph `N?AA@AODAOP_KGGoGH?`.
+Whole-graph form: `density_le_of_admissible (hc : G.Connected) (ha : AdmIn G univ) : 8·|E| ≤ 11·|V| ∨ Nonempty (G ≃g X15)`.
+The axioms are propext, Classical.choice, Quot.sound and the `native_decide` helper axioms.
+
+- `Basic.lean`: the vocabulary.  Paths and cycles are vertex lists, the relative notions are `ConnIn`, `TwoConnIn`, `degIn`, `AdmIn`, `dIn`, `lamIn` (longest induced path from `v`) and `LIn` (longest induced `u`–`v` path).  It also holds `fTab` (the rooted table −11, −9, −9, −8, −5, −5, −3, −2, 0, 0, 3, 3 for λ = 1..12), the computable graphs `CG` with `CG.ear`, and the certificate statements `ClosureCert` and `DPCert`.
+- `Transport.lean`: heredity of `AdmIn`, and transport of every notion along an onto induced embedding.
+- `BlocksAux.lean` and `Blocks.lean` (P1, P2):
+  - `blk G W r` is the bridgeless component of the root.  It is `{r}`, or it is 2-connected with minimum degree ≥ 2.
+  - `kids` are the components of `W \ blk`, each attached by exactly one bridge `port – att`, and `dIn W = dIn blk + Σ_C (dIn C + 8)`.
+  - Induced paths concatenate across bridges: `λ_blk(port) + λ_C(att) ≤ 12`, `λ_C + L_blk(port, port') + λ_C' ≤ 12`, and `λ_W(r) ≥ L_blk(r, port) + λ_C`.
+- `Ear.lean` (P3): `closure_of_cert`.  Every 2-connected admissible G[W] is a copy of a member of any list `L ∋ K₂` with `ClosureCert L`.  The proof takes a maximal proper 2-connected T and a shortest ear.  The ear is an induced path; each of its ends has exactly one neighbour in T when it has ≥ 2 vertices; its interior vertices have no neighbour in T; it has m ≤ 11 vertices; and T ∪ ear = W.
+- `DP.lean` (C2):
+  - `rooted_bound`: `degIn W r ≤ 2 → dIn W ≤ fTab (lamIn W r)`, by strong induction over the block of `r` and its hanging pieces.  Pieces with value ≤ 4 are dominated, and at most two pieces have value ≥ 5.
+  - `density_le_in`: for a bridge split, `fTab a + fTab b + 8 ≤ 0` when `a + b ≤ 12`; a bridgeless W is a single block.
+- `Checker`, `Search`, `Data`, `CertShard00`–`15` and `Cert.lean` (C1 and the block profiles):
+  - `Lcert` = K₂ plus the 5519 two-connected admissible blocks (110 KB of graph6).
+  - `closure_cert : ClosureCert Lcert` checks every ear extension (m = 1..11) of every member.  An extension is either rejected by a verified witness (a degree-4 vertex, a forbidden cycle, or an induced P13, each found in Lean), or matched to a member by one of 29,557 isomorphism records whose permutations are verified.
+  - `dp_cert : DPCert Lcert` uses exact δ and degrees, and verified lower bounds on λ and L.
+  - The check runs as 16 `native_decide` shards of 345 members each, taking 127–313 s user time per shard (65 CPU-min in total, about 6.5 GB peak per shard).
+- `X15Landing.lean`: `x15_exit_landings`.  Glue X15 to an induced 13-vertex path.  Under two conditions, the three exits of X15 never all land on the path, and two exits land at distance ≥ 10:
+  - the only X–path edges are exits of the vertices 4, 6, 9, one per exit;
+  - there is no forbidden cycle and there are no two disjoint induced P13s inside X ∪ path.
+
+  The certificate has 497 verified witnesses and runs in 2–3.5 s under `native_decide`.  `x15_exit_arm` shows that each exit ends an induced 11-vertex path, and `x15_degree` gives the degrees of X15.
+
+### Facts at G (rows `Strategy/SpineRows/Route8Density.lean`; contracts in `Graph/Route8HubFree.lean`, `Graph/Route8X15Landing.lean`, `Contracts/RouteEight/Density.lean`)
+
+The rows are placed in `selectedRouteEightUnifiedResidual` (`Assembly/RouteEight/Local.lean`), after `route8ArmClosureResidual` (9807), on the common prefix of `Route8JointBalanceOutcome` and `Route8QuotientOutcome`.
+
+- **9700 `route8HubFreeDensity`**: every canonical piece X of R with σ_X = 0 has `excess X ≤ 0 ∨ EmbOnto CG.x15.graph G S_X`.
+  - Inputs: `cubicBaseline`, `selection` (no cycle of power-of-two length), `minDegreeBaseline` (σ_X = 0 gives d_G = 3 on X, so X is subcubic), and `remainderPathBounds` (no induced P13 in R).
+  - On a hub-free piece, `excess X = 8e − 11|X|`.
+- **9701 `route8X15LongLandings`**: for every valid placement system, a hub-free X15 copy has `2 ≤ ν(X)`.
+  - Inputs: 9800 with Q = {P} (no two disjoint windows inside P ∪ R), `selection`, and `x15_exit_landings`.
+  - Every landing is a clean 11-landing.
+- **9702 `route8HubFreePi`**: Π for thick hub-free pieces, `13·excess X ≤ 30·ν(X)`.  Such a piece is an X15 copy with excess 3, and 39 ≤ 60.
+- **9703 `route8HubPieceExcess`**: `0 < σ_X → excess X ≤ (F−1)·s·σ_X` (28σ_X at spineData).
+  - Inputs: 9803 for pieces with negative net charge, and def⁺ ≤ |∂X|.
+  - This is the first part of `lem:r8-hub-free-suffices`.
+- **9704 `route8ArmClosure`**: `F ≤ 14 → SufficientlyLargeForNetCap … n → False`.
+  - Inputs: 9807 at c = 30, with a placement system of P₀ fixed by choice, together with 9702, 9703 and `surplusAtOrBelow`.
+  - The hub-free terms are ≤ 0, the hub terms are ≤ 52(F−1)σ_X, and σ_W + σ_R ≤ T.  So the right side of 9807 is ≤ (4+48F)T − 30σ_W, which is its left side.
+- **9705 `route8NetCapLarge`** = `F ≤ 14 ∧ SufficientlyLargeForNetCap … n`, and **9706 `route8NetCapSmall`** is its literal negation.
+  - `route8NetCapDichotomy` is the exact split.
+  - The large arm is closed by `closeIncompatible` (9704 against 9705).
+  - At spineData (F = 8), 9706 is `¬ SufficientlyLargeForNetCap 3 4 13 windowRate spineScale densitySlack n`.
+  - F enters the key because no ledger fact publishes F = 8.
+
+### Residual shape
+
+`Route8JointBalanceOutcome` and `Route8QuotientOutcome` are each their conjunction up to `route8ArmClosureResidual`, followed by
+`∧ route8HubFreeDensity ∧ route8X15LongLandings ∧ route8HubFreePi ∧ route8HubPieceExcess ∧ route8ArmClosure ∧ route8NetCapSmall`.
+Both residuals therefore live in the bounded window `¬ SufficientlyLargeForNetCap(n)`, which includes the explicit cutoff `netCapCutoff`.
+
+### Shared-file edits and root type
+
+- `SpineVocabulary.lean`: 7 keys × 6 entries (idx 9700–9706), plus the import of `Statements.Route8Density`.
+- `Assembly/Residuals.lean`: both outcomes gain 6 trailing conjuncts, and both returns gain 6 `Has` and 6 `get`.  `Residuals/Route8JointBalanceOutcome.lean` and `Residuals/Route8QuotientOutcome.lean` add 6 `Has` each.
+- `Assembly/RouteEight/Local.lean`: the five rows, the split and the closure.  It also sets `synthInstance.maxHeartbeats 400000` and `synthInstance.maxSize 2048`.
+- Freshness parameters for the 7 keys are added in `RouteEight/{TypeBContinuation, Residual}` and `TypeB/{Continuation, HighSurplusContinuation, DecoratedContinuation, Internal/Certificate}`.
+- Key lists are extended in `NetCharge/Continuation` and `TypeA/{DecoratedHandoff, VisibleExitChain, ExitFiveToSeven, ExitFourDischargedRetest, ExitFourChain, LowSurplusContinuation}`.
+- Root type: no outcome appears or disappears, and the two route-8 residuals are restricted to `¬ SufficientlyLargeForNetCap(n)`.
