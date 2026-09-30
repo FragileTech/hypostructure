@@ -2,7 +2,7 @@
 
 This workflow benchmarks structural mathematical reasoning: identifying relevant structure, applying established textbook mathematics, and implementing the resulting deductions in an unfamiliar controlled setting. Execute the assigned local task from its supplied hypotheses and accepted results. Assess the actual inference required; the surrounding research topic does not determine the difficulty of that inference.
 
-This manual describes the current execution procedure. Each assignment evaluates
+This manual describes the execution procedure. Each assignment evaluates
 how a model identifies structure, matches textbook hypotheses, carries out a
 local deduction, and implements its result. Routine steps receive concise,
 sufficient justification. Accepted inputs are reused at their exact statements.

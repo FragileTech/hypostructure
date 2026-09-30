@@ -1,9 +1,9 @@
 # Illegal data carriers in Core and Graph
 
-**Some are back in the build.**  `scripts/check_quarantine.py` (wired into
-`make lint`) currently fails with 13 violations:
+**Gate status.**  `scripts/check_quarantine.py` (wired into `make lint`)
+fails with 13 violations:
 
-- six quarantined modules are imported by live code again:
+- six quarantined modules are imported by live code:
   `Graph.TypeBFanClosedPorts` and `Graph.TypeBPostLedgerCore` (from
   `Graph.Statements.Parameters`), `Graph.TypeABCertificate` (from
   `Graph.TypeBGlobalLocalReflection` and `Graph.TypeBPostLedgerCore`), and,
@@ -21,50 +21,26 @@
 There is one allowed API: `Core.Residual.ExactLedger` and the accessors it
 exposes.
 
-## How it was cleared
+## Quarantine
 
-Two mechanisms, in this order.
-
-**Deleted, carrier by carrier, as their rows ported.**  `RateLedger`,
-`CriticalityLedger`, `SlackIncompatibilityLedger`, `deletionCriticalityOfLedger`,
-`VisibleLoadLedger`, `inheritedOverflowLedger`, `classifiedCapacityLedger`,
-`classifiedDensityLedger`, and the `Execution`/`Routing` stage chains.  The
-mathematics survived every one -- in several cases it got shorter, because the
-carrier had been the long way round to say something about two natural numbers.
-
-**Quarantined, once the spine no longer needed them.**  The entry spine was
-first severed from the legacy stage stack by splitting ten files along the seam
-between their mathematics and their `Ledger.Extension` plumbing.  With the
-spine's import closure clean, the whole legacy-ledger cone -- 226 live modules
-at that point -- could leave the build without touching it.
-
-The quarantined modules still on disk are the porting reference for the rows
-that have not been rewritten yet.  See `quarantine.txt`: all 78 of its entries
-are on disk (entries for modules since deleted have been removed).
-
-**Deleted outright, once their rows had exactly one implementation.**  Block A's
-legacy layer is no longer quarantined beside the spine -- it is gone.  Twenty-two
-`Core.Strategy` modules (the counterexample-reduction chain, obstruction
-packing, the exact finite local algebra, the scale-threshold and barrier
-dichotomies, the density budget, and the row-37/38 normalization and
-boundary-demand pair) and seven `Graph.Strategy` modules were removed, together
-with `Graph.External.HegdeSandeepShashank`, `Graph.WindowCurvatureTypeB` and
-`Graph.Strategy.Official.Universal`.  The EG registration layer that drove them
-(`Official/`, `AB/`, `Presentation.lean`) went with them.
+The modules listed in `quarantine.txt` (78 entries, all on disk) are kept
+out of the build closure, except the six listed above that live code imports.
+They are the porting reference for the rows that have not
+been rewritten on `ExactLedger`. The legacy `Core.Residual.Ledger` /
+`Ledger.Extension` stage stack is not in the build.
 
 **The framework names the problem only through `Spine.Data`.**  The curvature
 algebra is order-generic.  The Hegde--Sandeep--Shashank axiom
 (`p13Free_hasPowerOfTwoCycle`) lives in the proof's `WindowAlgebra.lean` and
 reaches the framework as the `freeForcesTarget` field, and `windowOrder` is a
 field whose value the proof supplies.  The field types of `Spine.Data` in
-`Graph/Strategy/SpineVocabulary.lean` do still pin the manuscript's values
+`Graph/Strategy/SpineVocabulary.lean` pin the manuscript's values
 (`threshold_eq_three`, `labelCount : ... = 399`, `labelSizeDistribution`), and
 the `.localAlgebra` fact statement repeats `399` and the size distribution.
 
-## Where things stand
+## Counts
 
-Counted 2026-09-30 on the g-repair-base tree (6ef0ffd2): live modules are the
-gate's own `build_closure()` (transitive imports of `Hypostructure.lean`),
+Live modules are the gate's own `build_closure()` (transitive imports of `Hypostructure.lean`),
 the spine closure is the same walk from `SpineVocabulary` (itself included),
 and the gate result is a run of `scripts/check_quarantine.py`.
 
@@ -87,6 +63,6 @@ This gate is name-based -- it matches declarations named `...Ledger`.  A carrier
 named `Summary`, `Profile`, `Store`, or `Registration` passes it untouched, so a
 clean run is necessary and not sufficient.  The structural guarantee is
 `FactSystem.value_subsingleton`, which makes a fact value unable to hold data at
-all; and the legacy side channel that the name gate never saw --
-`Ledger.Extension`, a dependent pair that let a stage carry anything -- is now
-outside the build entirely: no live module mentions it.
+all; and the side channel that the name gate does not see --
+`Ledger.Extension`, a dependent pair that lets a stage carry anything -- is
+outside the build: no live module mentions it.

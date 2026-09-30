@@ -5,7 +5,7 @@ description: Perform a complete structural accounting check of one open residual
 
 # Structural accounting of one residual
 
-This skill carries out the accounting that the methodology workflow (repair_and_closure.md, stages 1–2) was meant to do: record exactly which structure of G the residual already measures, and exhibit every structural coordinate that is present at G but still unmeasured. The output is a fixed, problem-independent grid (Table 1) and a complete fact-by-fact map (Table 2). The two are cross-checked, so an omission in either table is visible.
+This skill carries out the accounting that the methodology workflow (repair_and_closure.md, stages 1–2) prescribes: record exactly which structure of G the residual already measures, and exhibit every structural coordinate that is present at G but still unmeasured. The output is a fixed, problem-independent grid (Table 1) and a complete fact-by-fact map (Table 2). The two are cross-checked, so an omission in either table is visible.
 
 It is read-only analysis. **Never edit Lean, never build, never commit.** The only file you write is the report.
 

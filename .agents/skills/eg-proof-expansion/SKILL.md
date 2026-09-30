@@ -307,15 +307,12 @@ strengthen, or replace a mathematical alternative.  Correct the Lean topology
 only when it differs from the paper; never invent a new strategy to make Lean
 easier.
 
-(Superseded by the user's no-deviation rule below: from now on, even a strictly
-better Lean argument is not substituted. Deviations already registered stay
-documented, and new ones are not made.) Earlier exception: when the Lean argument is kernel-checked, weakens no
-paper fact, closes the node the paper closes, and is better than the paper's
-argument, the Lean prevails. Register that deviation in
-`audits/erdos-64-red-team/lean-vs-paper-discrepancies.md`, giving the node,
-the paper argument with tex lines, the Lean argument with its declarations,
-and the reason it is at least as strong. An unregistered deviation is a
-defect.
+The deviations registered in
+`audits/erdos-64-red-team/lean-vs-paper-discrepancies.md` stay documented
+there, each with the node, the paper argument with tex lines, the Lean
+argument with its declarations, and the reason it is at least as strong. No
+further deviation is made, even for a kernel-checked Lean argument stronger
+than the paper's. An unregistered deviation is a defect.
 
 Never repair and never deviate. Implement the paper exactly as written,
 through the Hypostructure machinery as prescribed. When a step of the paper
@@ -330,13 +327,13 @@ paper's claim exactly at its node, and make its proof `sorry` tagged
 sorry only for a genuine paper error, never as a placeholder for unfinished
 work. `#print axioms` on the root then shows `sorryAx` exactly for these.
 
-User decision (2026-09-26), node [144]: the residual left by the paper's
+Node [144] (user decision): the residual left by the paper's
 error at [144] is carried by the open leaf [144a]. Its retained content is the
 handoff, or the unresolved same-label pattern-pair residual about G's
-canonical pattern pair. The root keeps its six outcomes.
+canonical pattern pair. The root returns six outcome families.
 
 Repairs are quarantined, never deleted. Any repair lemma, alternative argument
-or reverted repair goes to `hypostructure/Hypostructure/Quarantine/PaperRepairs/`
+or reverted repair belongs in `hypostructure/Hypostructure/Quarantine/PaperRepairs/`
 (listed in `hypostructure/quarantine.txt`, described in that folder's
 README.md). No live module may import it; `hypostructure/scripts/check_quarantine.py`
 enforces this. Quarantined modules listed in `quarantine.txt` are reference

@@ -24,12 +24,10 @@ WEB_SOURCES := to_formalize/erdos_64_proof.tex \
                to_formalize/type_II_regularity.aux
 WEB_TOOLS := $(wildcard $(WEB_DIR)/tools/*.py) $(wildcard $(WEB_DIR)/tools/papers/*.py)
 
-# The sealed-frontend run/export targets (`ab`, `ab-json`, `erdos-json`) drove
-# `reduceDag%` and `ofDag%` over the authored Blueprint
-# topology.  That topology is retired for the EG package root: it imports the
-# problem presentation plus the framework-owned `Graph.Strategy.Spine`
-# exact-ledger continuation surface directly.  Those export targets return only
-# if the sealed frontend is restored as a checked framework component.
+# The EG package root imports the problem presentation plus the
+# framework-owned `Graph.Strategy.Spine` exact-ledger continuation surface
+# directly; there are no sealed-frontend run/export targets (`ab`, `ab-json`,
+# `erdos-json`) over an authored Blueprint topology.
 
 help:
 	@printf '%s\n' \
