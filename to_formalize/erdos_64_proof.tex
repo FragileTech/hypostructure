@@ -338,8 +338,8 @@ of the Lean root theorem (\cref{rem:formal-root-type}).  Nodes [144a],
 other returned outcomes without declaring each a separate mathematical gap.
 The reduction proves that every counterexample leads to a selected minimal
 counterexample in at least one of these six outcomes.  The strict-surplus
-target defect [20a] of earlier versions is excluded by
-\cref{lem:sparse-exit-b-empty}.
+target defect [20a] closes at the selected graph: its sparse target-defect
+exit is empty by \cref{lem:sparse-exit-b-empty}.
 
 \begin{theorem}[Reduction to the exact current boundary]\label[theorem]{thm:main}
 Suppose that a finite simple graph of minimum degree at least three exists
@@ -347,10 +347,11 @@ with no cycle whose length is a power of two.  Choose a minimal such graph
 $G$ in the order specified below, with the retained refinements used by the
 local replacement arguments.  Then the branch analysis reaches at least one
 of the following residuals, carrying every hypothesis and constructed object
-from its respective incoming branch.  The items keep the numbering of earlier
-versions; their item~(i), the strict-surplus target defect [20a], is not
-reached: \textbf{[Lean, key~7800]} the sparse target-defect exit is empty at
-\(G\) (\cref{lem:sparse-exit-b-empty}), on both arms of [19].
+from its respective incoming branch.  The items are labelled
+(ii)--(vii); label~(i) belongs to the strict-surplus target defect [20a],
+which returns no residual: \textbf{[Lean, key~7800]} the sparse
+target-defect exit is empty at \(G\) (\cref{lem:sparse-exit-b-empty}), on
+both arms of [19].
 \begin{enumerate}[label=(\roman*), leftmargin=2.2em, start=2]
 \item \textbf{Node [144a]: same-token Type B handoff.}
 On the strict-surplus survivor, [144] retains the overloaded token and role
@@ -398,9 +399,9 @@ quotient-failure alternative carries the same rate-arm facts as [186]
 (\cref{sec:route8-rate-arm}).  Every private-carrier rate subtype and the two
 cold-terminal subtypes on the realized window package retain the explicit
 order bound \(n<N_0\) of item~\textup{(vii)} \textbf{[Lean, keys~6602,
-6605]}.  The sparse target-defect exit on the at-or-below-surplus arm, an
-alternative of this item in earlier versions, is not reached
-(\cref{lem:sparse-exit-b-empty}).
+6605]}.  The sparse target-defect exit on the at-or-below-surplus arm is
+empty at \(G\) (\cref{lem:sparse-exit-b-empty}) and contributes no
+alternative to this item.
 \item \textbf{Node [54]: failed joint realization of the entropy cap.}
 \textbf{[Lean, key~3205].}  On the active arm of [53] (key~41), the step of
 \cref{prop:entropy-high-theta} that reads the window-package bits, the
@@ -461,7 +462,7 @@ survivor.  The first case runs the exact exit classification: exits
 \textup{(a)}, \textup{(c)}, \textup{(d)}, and \textup{(e)} of
 \cref{def:named-surplus-exits} are terminal, and exit \textup{(b)} is empty
 at \(G\) by \cref{lem:sparse-exit-b-empty}, so this case does not occur
-and [20a] is not reached.  On the survivor, the pair-code decisions retain any first uncovered implication at
+and [20a] returns no residual.  On the survivor, the pair-code decisions retain any first uncovered implication at
 [182], case~\textup{(iv)}.  Their covered Type B outcomes have their own
 [179] or [180] source facts and enter [187].  The homogeneous bottleneck
 decision of \cref{thm:homogeneous-overload-geometric-closure} retains its
@@ -614,11 +615,11 @@ In particular, the nonrepetitive low-entropy case in \cref{prop:two-budget} is
 not a terminal leaf; it is routed to the large-budget net-charge analysis and
 therefore enters the same Type A route-8, peeled-demand, and Type B bridge
 routing.
-Results obtained after this routing was fixed are recorded, with their
+Further facts on the retained ledgers are recorded, with their
 status labels, in \cref{sec:144a-formal-status} (node [144a]),
 \cref{sec:170-record-fibres} (nodes [170]--[172a]), and
-\cref{sec:route8-rate-arm} (the route-8 rate arm of [186] and [187]).  None
-of them changes the list of outcomes of \cref{thm:main}.
+\cref{sec:route8-rate-arm} (the route-8 rate arm of [186] and [187]).  They
+refine the retained ledgers inside the outcomes of \cref{thm:main}.
 \end{remark}
 
 The proof assumes such a counterexample exists and chooses one, $G$,
@@ -632,13 +633,13 @@ the peeled target-defect demand ledger at node~[181] into its strict
 exit-\textup{(4)}-witness descendant at node~[183], and then into the
 all-visible descendant at node~[184] and its actual-overload descendant at
 node~[185], followed by the joint-balance descendant at node~[186].
-Node~[186] is the current
-local frontier of that route-8 branch after its silent terminal has been eliminated.  The separate sparse pair-code branch
+Node~[186] is the
+local frontier of that route-8 branch; its silent terminal is excluded.  The separate sparse pair-code branch
 retains node~[182], and the dense conditional graph-count failure retains
 node~[172a].  The same-token Type B handoff [144a], the failed joint
 realization of the entropy cap [54], and the explicit other outcomes [187]
-complete \cref{thm:main}; the strict sparse-exit target defect [20a] is
-excluded by \cref{lem:sparse-exit-b-empty}.
+complete \cref{thm:main}; the strict sparse-exit target defect [20a]
+closes at \(G\) by \cref{lem:sparse-exit-b-empty}.
 The main route uses the $P_{13}$-free theorem of
 Hegde, Sandeep, and Shashank (\cref{thm:p13free}) as a black box.  The
 dense-window and route-8 bounded-block bookkeeping is recorded in the appendix as
@@ -1434,7 +1435,7 @@ every node/.style={font=\scriptsize}
 \draw[arrow] (twostrand.south east)--node[sloped,above,pos=0.5]{survives}(twosurvivor.north);
 \end{tikzpicture}%
 }
-\caption[Proof-dependency diagram, Part XII]{Proof-dependency diagram, Part XII.  The dense residual [159] passes through the two exact rate tests at [160].  Only the arm satisfying both the net-deficiency rate \(\tau(\theta)<1/4\) and the route-8 private-carrier rate \(\tau(\theta)<3/13\) enters [161].  Failure of either comparison enters the dense hot/cold pass [162] on its literal residual.  The all-cold arm closes at [164]; the neutral arm [163] splits into the replacement route [165]--[166] and the two-strand route [167], [155], [168].  The dashed ellipse names the already drawn closure [155].  The trivial neutral residual [169] reaches the proved closure [171] through the positive decision at [170], carrying both the graph-count inequalities and the exact overflow from [159].  The negative arm retains the first failed conditional graph-count inequality, its outside record and prefix, and every inherited fact, and stops at the open leaf [172a].  At the selected graph the positive decision is empty (\cref{cor:170-positive-arm-empty}): the aggregate inequalities hold only for an empty blocked class, so every selected graph reaching [169] stops at [172a].  No overlap support or serial system has been constructed from that failure.  The proposed exact-lift and full-state arguments formerly numbered [172b] and [172c] are not live continuations.}
+\caption[Proof-dependency diagram, Part XII]{Proof-dependency diagram, Part XII.  The dense residual [159] passes through the two exact rate tests at [160].  Only the arm satisfying both the net-deficiency rate \(\tau(\theta)<1/4\) and the route-8 private-carrier rate \(\tau(\theta)<3/13\) enters [161].  Failure of either comparison enters the dense hot/cold pass [162] on its literal residual.  The all-cold arm closes at [164]; the neutral arm [163] splits into the replacement route [165]--[166] and the two-strand route [167], [155], [168].  The dashed ellipse names the already drawn closure [155].  The trivial neutral residual [169] reaches the proved closure [171] through the positive decision at [170], carrying both the graph-count inequalities and the exact overflow from [159].  The negative arm retains the first failed conditional graph-count inequality, its outside record and prefix, and every inherited fact, and stops at the open leaf [172a].  At the selected graph the positive decision is empty (\cref{cor:170-positive-arm-empty}): the aggregate inequalities hold only for an empty blocked class, so every selected graph reaching [169] stops at [172a].  No overlap support or serial system has been constructed from that failure, and no exact-lift or full-state step follows [172a] in the proof graph.}
 \label{fig:proof-diagram-part-xii}
 \end{figure}
 
@@ -1742,11 +1743,11 @@ Type B fan-certificate residual centers and B2 failures made sublinear by
 \end{quote}
 \noindent\emph{Auxiliary path.}  The auxiliary invariants (spectral masks
 17--19, tree--cotree / Kleitman--West, marked length-rank, HIST branch) are not
-used as load-bearing inputs in \cref{thm:main}.  They record possible repair
-directions if one later replaces a quantitative estimate in invariants 27--29.
+used as load-bearing inputs in \cref{thm:main}.  They record alternative
+routes to the quantitative estimates in invariants 27--29.
 Likewise,
 \cref{cor:quantitative-homogeneous-overload,cor:same-token-pattern-caps-close,cor:quantified-homogeneous-class-overload,cor:sparse-pair-entropy-saturation}
-are recorded for the surplus-token repair path; the proof of
+are recorded for the surplus-token route; the proof of
 \cref{thm:main} uses the sharper routed statements
 \cref{thm:tokenized-surplus-accounting-closure,thm:sharp-surplus-overload-audit,thm:homogeneous-overload-geometric-closure}.
 
@@ -2914,9 +2915,9 @@ with key~7800 (\texttt{SparseTargetDefectEmptyStatement}).
 The lemma reads the separating context of clause~\textup{(b)} as \(G-Z\),
 the only outside graph of \(G\) at \(\partial Z\).  This is the form in
 which the root routing of \cref{thm:main} and its Lean counterpart test the
-exit at \(G\).  Earlier versions of \cref{thm:main} retained the exit as the
-open residual [20a] (strict arm) and as an alternative of [187] (at-or-below
-arm); both are removed by this lemma.
+exit at \(G\).  On the strict arm of [19] the lemma closes node [20a], and on
+the at-or-below arm it closes the sparse target-defect exit; neither returns a
+residual in \cref{thm:main}.
 \end{remark}
 
 \begin{lemma}[Excess-port extraction]\label[lemma]{lem:sparse-excess-port-extraction}
@@ -6488,9 +6489,8 @@ Bounded by \cref{lem:independent-target-entropy}.
 
 \paragraph{Status labels.}
 This subsection, \cref{sec:170-record-fibres}, and \cref{sec:route8-rate-arm}
-record results obtained after the routing of \cref{thm:main} was fixed
-(status of 30 September 2026).  They concern only the selected minimal
-counterexample \(G\), and every item carries one label.
+record facts on the retained ledgers of \cref{thm:main}.  They concern only
+the selected minimal counterexample \(G\), and every item carries one label.
 \textbf{[Lean, key~\(k\)]}: a fact about \(G\), published on the named
 residual by the Lean assembly under the fact key with index \(k\), and
 kernel-checked with the axioms \texttt{propext}, \texttt{Classical.choice}
@@ -6503,9 +6503,8 @@ is used only as an exclusion over an explicitly described finite class of
 graphs, each of which could be a piece of \(G\).
 \textbf{[Conjecture]}: not proved.
 ``Lean improvement'' marks a Lean-checked fact that the manuscript's routing
-does not use.  None of these items changes the list of outcomes in
-\cref{thm:main}; each residual listed there is still returned, with a longer
-retained ledger.
+does not use.  These items lengthen the retained ledgers of the outcomes
+of \cref{thm:main}; the list of outcomes is the one stated there.
 
 \begin{remark}[The formal root type]\label[remark]{rem:formal-root-type}
 \textbf{[Lean.]}  The Lean root theorem
@@ -6524,8 +6523,8 @@ retain the explicit order bound \(n<N_0\).  This is the list of
 the strict-surplus exit [20a] and the at-or-below sparse target-defect exit
 close against key~7800 (\cref{lem:sparse-exit-b-empty}) and return no
 residual; \cref{thm:main} states the same.  The results recorded in this
-subsection and in \cref{sec:170-record-fibres,sec:route8-rate-arm} leave this
-result type unchanged.
+subsection and in \cref{sec:170-record-fibres,sec:route8-rate-arm} are facts
+on the retained ledgers of these outcomes.
 \end{remark}
 
 \begin{definition}[Walk witnesses on the handoff-fails arm of {[144]}]\label[definition]{def:144a-walk-witness}
@@ -6641,15 +6640,16 @@ contradiction.
 
 \begin{remark}[What remains at {[144a]}]\label[remark]{rem:144a-remaining}
 \textbf{[Lean; exact statement of the residual.]}  The three handoff subtypes
-of [144a] are unchanged.  All six subtypes also carry the window and exchange
+of [144a] retain the Type B handoff and its fan entry
+(\cref{def:144a-walk-witness}).  All six subtypes also carry the window and exchange
 facts along the port walks (keys 9850--9851, Lean improvement): every 13
 consecutive vertices of a triangular walk, other than the whole walk, induce
 a \(P_{13}\) meeting the canonical packing, and the packing exchange of
 \cref{lem:r8-packing-exchange}(a) holds for them.  These facts give no
 contradiction on their own.  On the three handoff-fails subtypes the
-retained ledger now includes
+retained ledger includes
 \cref{lem:144a-walk-cycles,lem:144a-separated-empty,lem:144a-tri-arm-empty}
-and the earlier keys 8100--8107.  By \cref{lem:144a-tri-arm-empty}, what
+and keys 8100--8107.  By \cref{lem:144a-tri-arm-empty}, what
 remains at every walk witness of each pair seed is the complement of
 \textup{(B1)}\,\(\wedge\)\,\textup{(B2)}\,\(\wedge\)\,\textup{(B3)}: an open
 (non-triangular) port, a walk using the other port's end edge, or failure of
@@ -8191,13 +8191,13 @@ restriction of the extraction to interior half-edges), recorded in the audit.
 
 \subsection{The small-order repair: nodes [173]--[177]}
 
-The collision of node [56] was written with asymptotic allowances: the
+The collision of node [56] can be stated with asymptotic allowances: the
 surplus bound \(\sigma(G)\le C_{\rm sp}\sqrt n\) of node [19], the
 configuration-extraction loss \(B_{\rm cold}\,\sigma(G)\) of the bounded arm of node
-[153], and the dyadic-scale factor of the density cap.  Read that way, the
+[153], and the dyadic-scale factor of the density cap.  Stated that way, the
 collision needs \(n\) larger than a threshold \(N_0\) determined by those
 allowances, and the range \(n<N_0\) would be a separate obligation.  The
-allowances are, however, bounds on quantities that the residual already
+allowances are, however, bounds on quantities that the residual
 carries exactly (\(\sigma_W\), \(\sigma_R\), \(|\mathcal P_{\rm hot}|\),
 \(C=|\mathcal P_{\rm cold}|\), and the skeleton budget \(|\mathcal G_{n,m}|\)),
 so the collision is decided on the object, and its failure is a structural
@@ -8362,24 +8362,23 @@ Even when completions are present, a bound on the number of surviving state
 values is not a bound on their graph multiplicities: two of three graphs may
 have the single surviving value among two realized values.
 
-The former proposed proof applied the finite label table after conditioning
-and inferred a product bound from disjoint supports.  The first unresolved
-step is a graph-count comparison establishing that inference, with absent
-completions and multiplicities accounted for.  Only after such a comparison
+Applying the finite label table after conditioning and inferring a product
+bound from disjoint supports would require a graph-count comparison
+establishing that inference, with absent completions and multiplicities
+accounted for; this comparison is the first unresolved step.  Only after such a comparison
 could cardinality-minimality and connectedness of an actual overlap be used.
 Moreover, the graph selecting \((d,q)\) is an arbitrary member of
 \(\mathcal B(\mathcal P)\); the selected graph's minimality and neutral-piece
 facts cannot be transferred to it without a proof.
 No transition to a serial system, an exact lift, or a full-state routing step
-is asserted here.  The former diagram nodes [172b] and [172c] describe proposed
-downstream arguments whose graph input has not been constructed; they are
-therefore absent from the live proof graph.
+is asserted here.  The exact-lift and full-state arguments require a graph
+input that has not been constructed, so the proof graph has no node after
+[172a] on this branch.
 
 \paragraph{Status of the proposed geometric continuation.}
 The definitions and arguments through \cref{lem:system-increment-arithmetic}
 below record the proposed continuation after constructing an overlap support.
-They are retained for further work and are not invoked to close [172a] in
-\cref{thm:main}.  The proved counting decision and positive-branch
+They are not invoked to close [172a] in \cref{thm:main}.  The proved counting decision and positive-branch
 closure resume at \cref{lem:scale-additivity}.
 
 \begin{definition}[Serial window system and system increments]
@@ -8745,8 +8744,7 @@ budget comparison is already present from [159], by
  1\le|\mathcal B(\mathcal P)|
  \le\frac{|\mathcal G_{n,m}|}{2^{b_{\mathcal P}}}<1,
 \]
-which closes [171].  No conclusion from [172a] or its proposed descendants
-is used.
+which closes [171].  No conclusion from [172a] is used.
 \end{proof}
 
 \noindent\emph{Branch status.}
@@ -8781,10 +8779,9 @@ Each block is a chain of seven triangles with nine pendant subdivided-edge
 the gadgets contain four-cycles away from the window.  These graphs belong
 to \(\mathcal B(\mathcal P)\), at density \(1/66>\theta_{\rm win}\).
 Consequently the displayed compression estimate cannot hold on the whole
-defined class without its additional conditional graph-count hypothesis.
-The former incidence discussion and its \(1/81\) threshold did not justify
-such an estimate or the claimed existence of overlapping completions.
-Indeed, in this construction every component outside the window has at most
+defined class without its additional conditional graph-count hypothesis,
+and overlapping completions need not exist:
+in this construction every component outside the window has at most
 two vertices adjacent to it, whereas the positive two-arm completion support
 requires three distinct such vertices in one component.  Supports are absent
 at every scale.  This obstruction concerns the defined counting class; it
@@ -8965,9 +8962,9 @@ The sharper cap in \cref{prop:p13-density}.
 \sloppy
 
 The status labels are those of \cref{sec:144a-formal-status}.  This
-subsection clarifies which arm of the exhaustive decision
-\cref{lem:scale-additivity} the selected graph takes.  It does not alter the
-decision or the closure \cref{lem:blocked-graphs-compress}.
+subsection determines which arm of the exhaustive decision
+\cref{lem:scale-additivity} the selected graph takes; the decision and the
+closure \cref{lem:blocked-graphs-compress} are as stated there.
 
 \begin{lemma}[Record-fibre equivalence]\label[lemma]{lem:record-fibre-equivalence}
 \textbf{[Lean, generic: \texttt{Hypostructure/Graph/RecordFibreCompression.lean},
@@ -9031,17 +9028,17 @@ contradicting \(G\in\mathcal B(\mathcal P)\) (\cref{def:blocked-class}).  The
 first failure is the last assertion of \cref{lem:record-fibre-equivalence}.
 \end{proof}
 
-\begin{remark}[Clarification of the dichotomy at {[170]}]\label[remark]{rem:170-clarification}
+\begin{remark}[The dichotomy at {[170]} on the blocked class]\label[remark]{rem:170-clarification}
 \textbf{[Paper.]}
 \begin{enumerate}[label=\textup{(\alph*)}, leftmargin=2.2em]
-\item \Cref{lem:scale-additivity} remains an exhaustive decision, and
-\cref{lem:blocked-graphs-compress} remains a valid implication.
+\item \Cref{lem:scale-additivity} is an exhaustive decision, and
+\cref{lem:blocked-graphs-compress} is a valid implication.
 \Cref{cor:170-positive-arm-empty} shows that, on the blocked class, the
 hypothesis of that implication is equivalent to its conclusion
 \(\mathcal B(\mathcal P)=\varnothing\).  Consequently the node-[171] closure
 removes no configuration of a selected graph, and the entire [169] residual
-is the open leaf [172a], as case~\textup{(iii)} of \cref{thm:main} already
-records.  No new open node arises.
+is the open leaf [172a], as case~\textup{(iii)} of \cref{thm:main}
+records.
 \item The form of \cref{lem:scale-additivity}\textup{(b)} that names no member
 of the class is the aggregate first failure of
 \cref{cor:170-positive-arm-empty}.  The
@@ -9744,7 +9741,7 @@ denoted \(s\), and its cycle rank is denoted \(\beta_Z\).
 \end{definition}
 
 \begin{lemma}[Enlarged nonlocal supports are repair networks]\label[lemma]{lem:smearing-support-repair}
-Let $Z$ be a connected support on which a formerly nonlocal dependence becomes internal.  Suppose $Z$ is target-safe, contains no proper subgraph of minimum degree at least $3$, and has no passive degree-two subdivision vertices.  Then each delayed compensation component of $Z$ is a $1$--$3$ repair network up to surplus.  More precisely, if such a connected component has $p$ boundary leaves, $s$ internal vertices, cycle rank $\beta_Z$, and surplus $\sigma_Z$, then
+Let $Z$ be a connected support on which a dependence that is nonlocal on a smaller support becomes internal.  Suppose $Z$ is target-safe, contains no proper subgraph of minimum degree at least $3$, and has no passive degree-two subdivision vertices.  Then each delayed compensation component of $Z$ is a $1$--$3$ repair network up to surplus.  More precisely, if such a connected component has $p$ boundary leaves, $s$ internal vertices, cycle rank $\beta_Z$, and surplus $\sigma_Z$, then
 \[
 s=p-2+2\beta_Z-\sigma_Z.
 \]
@@ -16586,7 +16583,7 @@ on the stated branch such a unit has routed away from the open demand
 ledger.  If (O4) holds, the data are exactly Type B fan-window data.  The local
 B1 entry is supplied by \cref{def:typeB-bridge-statements}; if disjointness
 fails, \cref{lem:typeB-bridge-to-overlap} records the B2 residual.  In either
-case the triple is no longer an open Type A demand overload.  Therefore a
+case the triple is not an open Type A demand overload.  Therefore a
 surviving same-window overload triple has none of (O1)--(O4), and is primitive
 by definition.
 \end{proof}
@@ -18430,12 +18427,13 @@ of~(R8.3).  The second follows from
 \(30\sigma_W+364\sigma_R\le364(\sigma_W+\sigma_R)=364\,\sigma(G)\le364\,T\).
 \end{proof}
 
-\noindent\emph{Comparison.}  An earlier derivation used only the summed form
-of \cref{lem:r8-hub-piece-mass} with the weaker constant
-\(64\sigma(G)\) (the last conjunct of key~9803).  It reached the same
-conclusion only under the additional condition
+\noindent\emph{The per-piece bound is needed.}  The summed form
+of \cref{lem:r8-hub-piece-mass} with the constant
+\(64\sigma(G)\) (the last conjunct of key~9803) yields the conclusion of
+\cref{lem:r8-hub-free-suffices} only under the additional condition
 \(862\,\sigma(G)\le388\,T+82\,\sigma_R\), for instance
-\(\sigma(G)\le0.45\,T\).  The per-piece form removes that condition.
+\(\sigma(G)\le0.45\,T\).  The per-piece form used in the proof above
+requires no such condition.
 
 \begin{remark}[Computed catalogue of thick hub-free pieces]\label[remark]{rem:r8-catalogue}
 Let \(\mathcal A\) be the class of connected graphs of maximum degree at most
@@ -18502,7 +18500,7 @@ net-cap cutoff are not affected.
 
 \begin{remark}[Exact remaining proposition on the rate arm]\label[remark]{rem:r8-remaining}
 \textbf{[Paper and Computation.]}  On [186] and on the route-8
-quotient-failure alternative of [187], the full retained ledger now includes
+quotient-failure alternative of [187], the full retained ledger includes
 \cref{lem:r8-packing-exchange,lem:r8-landing-cap,lem:r8-hub-piece-mass,lem:r8-piece-structure,lem:r8-dominance,lem:r8-arm-closure-residual}.
 When \texttt{SufficientlyLargeForNetCap}\((n)\) holds, inequality~(R8.3) and
 \cref{rem:r8-catalogue} leave exactly the following.  Every thick hub-free
@@ -18515,7 +18513,7 @@ satisfy
 \]
 This is the open statement.  If the density conjecture holds for the pieces
 of \(G\), the sum has no terms and the inequality is false.  Below the net-cap cutoff, keys 9804 and 9807
-are vacuous and the residuals are unchanged.  No closure of [186] or of
+are vacuous and impose no constraint on the residuals.  No closure of [186] or of
 [187] is asserted.
 \end{remark}
 
@@ -18986,7 +18984,7 @@ These do not degrade to nontrivial residual reductions: their negation is either
 {[183]} \texttt{reduced} (unpaid exit-\textup{(4)}-witness residual) & \cref{thm:typeA-unpaid-exit4-reduction,lem:typeA-unified-visible-ownership} & every entry in \(\Xi_2(P)\mathbin{\dot\cup}\Xi_{\rm res}(P)\) has at most two private essential carriers and a canonical exit-\textup{(4)} witness & the two obstruction counts \(\lvert H_{181}(P)\rvert\) and \(\lvert N_{181}(P)\rvert\) are exactly zero; all entries and all inherited ledger facts remain available & \textbf{Shortest-trace boundary-support exhaustion.} For a silent owner, the selected trace is an induced boundary-only complete basin; coordinate independence then contradicts the same entry's retained \(\alpha\ge2\) fact. & No silent owner remains; the same entries and ledger continue to [184]. \\
 {[184]} \texttt{reduced} (all-visible unified-entry residual) & \cref{lem:typeA-unified-visible-ownership,lem:typeA-unified-visible-overload} & the complete node-[183] ledger, together with \(\mathfrak S_{184}=\varnothing\) and \(|\mathfrak S_{184}|=0\) & every unified entry is owned by an actual scheduled receiver-entry return; no entry, demand unit, witness, assignment, absorber, or blocker has been removed & \textbf{Visible-first prefix exhaustion.} If the same excess entry had no overloaded port, the completion-port capacity bound would put its visible load in the payable prefix, contradicting literal excess membership. & No non-overloaded owner remains; the same entries and ledger continue to [185]. \\
 {[185]} \texttt{reduced} (actual visible-four package residual) & \cref{lem:typeA-unified-visible-overload,lem:typeA-unified-joint-balance} & the complete node-[184] ledger, together with \(\mathfrak O_{185}=\varnothing\), \(|\mathfrak O_{185}|=0\), and a canonical actual visible-four package at every retained entry receiver & the selected overloaded port, its four distinct visible loads, and their selected scheduled returns all belong to the unchanged graph; every earlier demand and exit-\textup{(4)} record remains attached & \textbf{Simultaneous exact accounting.} Read the unchanged peel, deficit, demand, empty-dependence absorption, and visibility coordinates together. & Every saturated routed load is visible and the exact joint balance is appended at [186]. \\
-{[186]} \texttt{open} (joint visible-overload balance) & \cref{lem:typeA-unified-joint-balance} & the complete node-[185] ledger and the exact relations \textup{(168.15)}--\textup{(168.20)} & every entry, peel, assigned incidence, absorber, open unit, component, and actual visible-four package remains attached to the same selected object & \textbf{Strict descendant of [185].} The uncorrelated projection profile has been replaced by the coupled pressure and peel constraints, and silent routed loads at saturated receivers have been eliminated. & A survivor is the literal incoming residual subject simultaneously to the coupled open-pressure and peel lower bounds.  On the route-8 rate arm it also carries the facts of \cref{sec:route8-rate-arm}; above the net-cap cutoff it must satisfy the aggregate inequality of \cref{rem:r8-remaining}. \\
+{[186]} \texttt{open} (joint visible-overload balance) & \cref{lem:typeA-unified-joint-balance} & the complete node-[185] ledger and the exact relations \textup{(168.15)}--\textup{(168.20)} & every entry, peel, assigned incidence, absorber, open unit, component, and actual visible-four package remains attached to the same selected object & \textbf{Strict descendant of [185].} It carries the coupled pressure and peel constraints in place of the uncorrelated projection profile, and it has no silent routed load at a saturated receiver. & A survivor is the literal incoming residual subject simultaneously to the coupled open-pressure and peel lower bounds.  On the route-8 rate arm it also carries the facts of \cref{sec:route8-rate-arm}; above the net-cap cutoff it must satisfy the aggregate inequality of \cref{rem:r8-remaining}. \\
 \bottomrule
 \end{longtable}
 }
@@ -19226,7 +19224,7 @@ is being formalized separately in order to force the models to account for its
 hypotheses, dependencies, and conclusion within a modular proof state.
 The current explorer has 189 live nodes: five individually named open
 residuals [144a], [172a], [182], [186], and [54], together with [187],
-which aggregates the other returned outcomes.  This version of the manuscript states the corresponding
+which aggregates the other returned outcomes.  The manuscript states the corresponding
 reduction and its unresolved obligations explicitly.
 
 The author's role throughout was to select the problem and research direction,
