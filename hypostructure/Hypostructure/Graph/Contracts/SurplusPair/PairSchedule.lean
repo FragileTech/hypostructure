@@ -24,30 +24,28 @@ namespace Hypostructure.Graph.Contracts.SurplusPair
 open Hypostructure
 open Hypostructure.Graph.Strategy.Spine
 
-universe u
+universe u v
 
 variable {data : Parameters} {object : Graph.FiniteObject.{u}}
 
-/-- Node `[131]`, `lem:mixed-sparse-spine-dependence` (tex 4872-4930): on the
-node-`[129]` baseline spine family of G and G's full pair-response schedule at
-its canonical activation, if the mixed family is not independently
-target-testable then G has a sparse surplus exit of its declared family or a
-scheduled pair has a blocker of type (d) or (e).
+/-- Node `[131]`, `lem:mixed-sparse-spine-dependence` (tex 4872-4930), decided
+at G: on the node-`[129]` baseline spine family of G and G's full pair-response
+schedule at its canonical activation, the mixed family is independently
+target-testable.
 
-The proof follows the paper's case order.  The rank-reducing quotient is an
-admissible declared quotient of G, so it preserves the boundary-degree profile
-(`DeclaredQuotient.fibrewise`) and G's own rest `G − Z` separates no two
-constructed pieces it identifies (`DeclaredQuotient.contextUniversal`): the
-paper's first two cases (a profile-crossing or a target-defective
-determination) do not arise.
-It is therefore target-complete, and `DeclaredQuotient.localize` gives the
-remaining two: a proper determination support admits a replacement (exit (c)),
-and the whole-graph support has a strictly smaller closed baseline
-representative with no power-of-two cycle (the whole-graph support-dependence
-exit (d)).  In both cases the exit disjunct of the paper's
-conclusion holds; for a pair coordinate the paper additionally reads the same
-event as a blocker of type (e), which is not needed for the disjunction. -/
+A rank-reducing quotient of the mixed family is an admissible declared quotient
+of G, so it preserves the boundary-degree profile (`DeclaredQuotient.fibrewise`)
+and G's own rest `G − Z` separates no two constructed pieces it identifies
+(`DeclaredQuotient.contextUniversal`).  It is therefore target-complete, and
+`DeclaredQuotient.localize` gives a replacement of a proper determination
+support or a strictly smaller closed baseline representative with no accepted
+cycle.  G's minimality (`[4]`'s selection) refutes both, so G's canonical
+rank-reducing quotient is `none`. -/
 theorem mixedSparseSpineDependence_of_baseline
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation}
+    (selected : SelectionStatement BranchState Presentation presentation data
+      object)
     (active : ActiveSurplusDemandsStatement data object)
     (baselineDemand : BaselineSpineDemandStatement data object) :
     MixedSparseSpineDependenceStatement data object := by
@@ -55,12 +53,17 @@ theorem mixedSparseSpineDependence_of_baseline
   obtain ⟨spine, spineSelected, _spec⟩ := baselineDemand
   refine ⟨Graph.pairResponseActivation active,
     canonicalPairActivation_eq data object active, spine, spineSelected, ?_⟩
-  intro declared selected
-  obtain ⟨_functional, reducing⟩ := canonicalChoice_spec_of_eq_some selected
-  rcases declared.localize reducing with replacement |
-      ⟨representative, smaller, baseline, noTarget⟩
-  · exact Or.inl (.compression declared.support replacement)
-  · exact Or.inl (.delocalization representative smaller baseline noTarget)
+  cases quotient : canonicalMixedDependenceQuotient data
+      (Graph.pairResponseActivation active) spine with
+  | none => rfl
+  | some declared =>
+      exfalso
+      obtain ⟨_functional, reducing⟩ := canonicalChoice_spec_of_eq_some quotient
+      rcases declared.localize reducing with replacement |
+          ⟨representative, smaller, baseline, noTarget⟩
+      · exact Graph.Strategy.InterfaceReplacement.not_replacementSupport_of_minimal
+          (fun H smaller baseline => selected.2 H smaller baseline) _ replacement
+      · exact noTarget (selected.2 representative smaller baseline)
 
 /-- Node `[130]`, `lem:degree-profile-fibres` at G's pair family: at G's
 canonical activation (read from the blocked arm's pinned activation), every
@@ -90,15 +93,18 @@ theorem not_pairProfileObstruction_of_fibres
     determination.2.2.1 _ (determination.2.2.2.1 identifiedMem) same.symm)
 
 /-- Node `[130]`, clause (e) at G: a type-(e) obstruction of a scheduled pair
-at G's canonical activation is a named sparse surplus exit of G's declared
-family (`declaredSparseSurplusExit_of_responseObstruction`), so G's survivor
-fact refutes it. -/
-theorem not_pairResponseObstruction_of_survivor
-    (survivor : SparseSurplusSurvivorStatement data object)
+at G's canonical activation is refuted by `[4]`'s selection
+(`not_responseObstruction_of_selection`: the target-defective identification by
+the avoidance, the compression and the whole-graph representative by the
+minimality). -/
+theorem not_pairResponseObstruction_of_selection
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation}
+    (selected : SelectionStatement BranchState Presentation presentation data
+      object)
     (obstruction : PairResponseObstructionStatement data object) : False := by
-  obtain ⟨activation, selected, _pair, _member, obstruction⟩ := obstruction
-  obtain ⟨active, rfl⟩ := exists_active_of_canonicalPairActivation_eq_some selected
-  exact survivor (declaredSparseSurplusExit_of_responseObstruction active obstruction)
+  obtain ⟨_activation, _selected, _pair, _member, obstruction⟩ := obstruction
+  exact not_responseObstruction_of_selection selected obstruction
 
 /-- Node `[131]`, `lem:exact-cubic-baseline-budget`, two-sided with
 logarithms cleared. -/

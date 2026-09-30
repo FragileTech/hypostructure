@@ -86,7 +86,7 @@ particular neither coordinate's declared support) is a replacement
 representative of `Z`: when `Z` is proper, the reading does not keep the
 piece's boundary-degree profile, or the glued graph loses the baseline, or it
 is not lexicographically smaller than G.  (Any reading meeting all three would
-be the compression exit (c) of G, via `replacementSupport_of_retainedReading`.) -/
+be the compression of clause (c) of G, via `replacementSupport_of_retainedReading`.) -/
 noncomputable abbrev SameTokenReadingsNotReplacementStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :

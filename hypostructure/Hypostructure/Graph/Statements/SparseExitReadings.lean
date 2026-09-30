@@ -16,8 +16,8 @@ Facts about G and its fixed objects, each stated over the registered
 * **The readings of every clause-(b) witness triple in `G − Z`**: both are
   target-free (the path-spectrum split stated about G, in G's own surroundings).
 
-The `[20a]` exit is empty at G (lem:sparse-exit-b-empty), so no reading of
-`[125]`'s pinned witness is stated here.
+Clause (b) of `[125]`, stated about G, is empty at G (lem:sparse-exit-b-empty);
+no reading of `[125]`'s pinned witness is stated here.
 
 Every registered constant is an explicit `Parameters` argument; this module
 imports no strategy, row, or vocabulary module.

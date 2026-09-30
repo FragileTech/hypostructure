@@ -480,7 +480,7 @@ theorem closed_reaches_W (base : MinimumDegreeAtLeast 3 object) (noProper : NoPr
     by_contra hno; push Not at hno; exact hwR (mem_remainderSupport.2 hno)
   exact mem_windowSupport.2 this
 
-/-- **Item 3 at `[20a]`**: pairwise disjoint nonempty closed sets of hubs of `R` number at most
+/-- **Item 3**: pairwise disjoint nonempty closed sets of hubs of `R` number at most
 `e(R, W)`; and `e(R, W) + 2e× = 15ν + σ_W` (the join identity). -/
 theorem closed_classes_le (base : MinimumDegreeAtLeast 3 object) (noProper : NoProperCubic object)
     (hind : ∀ a ∈ hubs object, ∀ b ∈ hubs object, ¬ object.graph.Adj a b)
@@ -1096,10 +1096,10 @@ theorem split_Bw {s : Finset object.Vertex} :
     · exact mem_union_left _ (mem_filter.2 ⟨hx, h⟩)
   exact (card_le_card this).trans (card_union_le _ _)
 
-/-- **The slot relation, linear in `h_R`, at `[20a]`**:
+/-- **The slot relation, linear in `h_R`, at a maximal packing**:
 `4σ + 15|H| ≤ 3n + (300 + 49148·36858) h_R + 8|B_W|`, `|B_W| ≤ 13ν + 4e(R,W)`,
 `e(R,W) + 2e× = 15ν + σ_W`. -/
-theorem slot_linear_at20a (hmax : JointObject.PackingMaximal object packing) (base : MinimumDegreeAtLeast 3 object)
+theorem slot_linear_packing (hmax : JointObject.PackingMaximal object packing) (base : MinimumDegreeAtLeast 3 object)
     (noProper : NoProperCubic object) (slack : SlackIndependent object)
     (avoid : ¬ HasCycleWithLength Core.DyadicLength.PowerOfTwoLength object)
     (valid : object.IsWindowPacking 13 packing) :
@@ -1372,7 +1372,7 @@ theorem slotLinear {packing : Finset (Finset object.Vertex)}
     (noProper : NoProperCubic object) (slack : SlackIndependent object)
     (avoid : ¬ HasCycleWithLength Core.DyadicLength.PowerOfTwoLength object)
     (valid : object.IsWindowPacking 13 packing) : SlotLinear object packing := by
-  obtain ⟨h1, h2, h3⟩ := slot_linear_at20a hmax base noProper slack avoid valid
+  obtain ⟨h1, h2, h3⟩ := slot_linear_packing hmax base noProper slack avoid valid
   exact ⟨Bw_card base valid, a2_count hmax base noProper slack avoid valid,
     ml_count hmax base noProper slack avoid valid, ll_count hmax base noProper slack avoid valid,
     h1, by omega⟩

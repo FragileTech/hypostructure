@@ -97,35 +97,24 @@ theorem obstructionCoordinates_subset (returns : PairDemandReturns data object) 
   obtain ⟨retained, -, rfl⟩ := Finset.mem_image.mp member
   exact returns.overlap.system.first.pairSet_subset_schedule retained.2
 
-/-- Alternatives (ii) and (iii) about the obstruction's own coordinates and
-support are sparse surplus exits of G's declared family. -/
-theorem declaredSparseSurplusExit_of_obstructionDefect
-    (returns : PairDemandReturns data object)
-    (defect : Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK)
-      object returns.obstructionCoordinates pairCoordinateSupport) :
-    DeclaredSparseSurplusExit data object :=
-  declaredSparseSurplusExit_of_pairDefect data object
-    returns.overlap.system.first.active (obstructionCoordinates_subset returns)
-    defect
-
 /-- Alternatives (i)--(iv) of `lem:pair-system-realizability` for G's canonical
-return system, on an object with no accepted cycle that survives the sparse
-exits of its declared family: only alternative (iv) remains, the first-separator
+return system, on G: (i) contradicts the avoidance, (ii) is empty at G (two
+readings of G agree in G's own surroundings `G − Z`), (iii) contradicts the
+replacement exclusion; only alternative (iv) remains, the first-separator
 handoff of that return system's own obstruction. -/
 theorem pairObstructionHandoff_of_pairSystemEarlyOutcome
     (early : PairSystemEarlyOutcomeStatement data object)
     (noCycle : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (survives : SparseSurplusSurvivorStatement data object) :
+    (replacementExcluded : ReplacementExclusionStatement data object) :
     ∃ returns, canonicalPairDemandReturns data object = some returns ∧
       PairObstructionHandoff data object returns := by
   obtain ⟨returns, returnsSelected, ⟨early⟩⟩ := early
   cases early with
   | targetCycle cycle => exact (noCycle cycle).elim
   | targetDefect defect =>
-      exact (survives (declaredSparseSurplusExit_of_obstructionDefect returns
-        defect)).elim
+      exact (Graph.not_residualTargetDefect_of_avoids noCycle _ _ defect).elim
   | compression support _inside replacement =>
-      exact (survives (.compression support replacement)).elim
+      exact (replacementExcluded support replacement).elim
   | typeB handoff => exact ⟨returns, returnsSelected, handoff⟩
 
 /-- G's canonical serial system is built on G's canonical return system. -/
@@ -141,21 +130,21 @@ theorem canonicalPairDemandReturns_of_serial
       rw [canonicalChoice_spec_of_eq_some selected]
 
 /-- The periodic alternatives of `lem:pair-system-increment-arithmetic` for G's
-canonical serial system, on an object surviving the sparse exits of its
-declared family: only the first-separator handoff of the serial system's own
-obstruction remains. -/
+canonical serial system, on G: the target-defective identification is empty at
+G and the compression contradicts the replacement exclusion; only the
+first-separator handoff of the serial system's own obstruction remains. -/
 theorem pairObstructionHandoff_of_pairIncrementEarlyOutcome
     (early : PairIncrementEarlyOutcomeStatement data object)
-    (survives : SparseSurplusSurvivorStatement data object) :
+    (noCycle : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (replacementExcluded : ReplacementExclusionStatement data object) :
     ∃ returns, canonicalPairDemandReturns data object = some returns ∧
       PairObstructionHandoff data object returns := by
   obtain ⟨serial, serialSelected, ⟨early⟩⟩ := early
   cases early with
   | targetDefect defect =>
-      exact (survives (declaredSparseSurplusExit_of_obstructionDefect
-        serial.returns defect)).elim
+      exact (Graph.not_residualTargetDefect_of_avoids noCycle _ _ defect).elim
   | compression support _inside replacement =>
-      exact (survives (.compression support replacement)).elim
+      exact (replacementExcluded support replacement).elim
   | typeB handoff =>
       exact ⟨serial.returns, canonicalPairDemandReturns_of_serial serialSelected,
         handoff⟩

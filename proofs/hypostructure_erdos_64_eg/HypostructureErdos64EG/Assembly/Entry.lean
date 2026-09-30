@@ -63,7 +63,7 @@ noncomputable def selectedEntryPrefix
         K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
         K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
-  -- Hoisted from `[20a]`: facts of G read from `[4]`'s selection alone; no decision.
+  -- Facts of G read from `[4]`'s selection alone; no decision.
   let hSelectionFacts :=
     (entrySelectionFactsRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -120,7 +120,7 @@ noncomputable def selectedEntryPrefix
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       hSwitch (by key_fresh)
-  -- Hoisted from `[20a]`: the canonical packing `P₀` of G, from the baseline; no decision.
+  -- Facts of G: the canonical packing `P₀` of G, from the baseline; no decision.
   let hPacking :=
     (sparseExitPackingRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -133,7 +133,7 @@ noncomputable def selectedEntryPrefix
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       hPacking (by key_fresh)
-  -- Hoisted from `[20a]`: the primitive carrier count of G; no decision.
+  -- Facts of G: the primitive carrier count of G; no decision.
   -- Joint hubs (Lean improvement): paths and cycles inside the remainder of `P₀`, the
   -- window-free geometry of `P₀` and the attachments to induced `P13`s; no decision.
   let hRemainderGeometry :=
@@ -173,7 +173,7 @@ noncomputable def selectedEntryPrefix
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           hSameVertex (by
             key_fresh)
-      -- Hoisted from `[20a]`: the single-boundary shape, from `[8]` and `lem:bridgeless`; no decision.
+      -- Facts of G: the single-boundary shape, from `[8]` and `lem:bridgeless`; no decision.
       -- Joint hubs (Lean improvement): density of G in excess form and the remainder slack
       -- of `P₀` with its hanging windows, from `[8]` and `lem:bridgeless`; no decision.
       let hDensitySlack :=
@@ -234,7 +234,7 @@ noncomputable def selectedEntryPrefix
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           hPortEnd (by key_fresh)
-      -- Hoisted from `[20a]`: the dart identity and the high-degree count, from `[9]`/`[10]`; no decision.
+      -- Facts of G: the dart identity and the high-degree count, from `[9]`/`[10]`; no decision.
       let hDegreeCount :=
         (degreeCountRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -272,7 +272,7 @@ noncomputable def selectedEntryPrefix
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run h12 (by
             key_fresh)
-      -- Hoisted from `[20a]`: admissible quotients of G are label-injective, from `[13]`; no decision.
+      -- Facts of G: admissible quotients of G are label-injective, from `[13]`; no decision.
       let hQuotients :=
         (sparseExitQuotientsRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)

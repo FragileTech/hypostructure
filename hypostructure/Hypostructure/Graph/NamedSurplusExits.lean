@@ -26,22 +26,17 @@ import Hypostructure.Graph.ActualContext
 > A graph *survives the sparse surplus exits* when none of these conclusions
 > occurs.
 
-This module declares the five alternatives and their joint negation.  Node
-`[125]` performs the manuscript's branch test through `ExactLedger`: an exit is
-published on one arm, and `SurvivesSparseExits` is published on the other.  In
-particular, this declaration does not claim that selection or replacement
-alone rules out target defects, delocalizations, or suppression chords.
-
-Every clause is stated about G.  Clause (b)
-is stated at the residual's declared coordinate family: two distinct
-coordinates, read on G's own piece at the canonical connected support `Z` of
-their union (`ResidualTargetDefect`), lie in one boundary-degree fibre and are
-separated by a context **of G**.  The only context of G at `∂Z` is G's own
-surroundings `G − Z`, and every reading of G's piece glued there is a subgraph
-of G (`ActualContext.actualGlue_hom`), so on a target-avoiding G two readings
-always agree there (`ActualContext.actualGlue_agree`): clause (b) is empty at
-G (`not_residualTargetDefect_of_avoids`).  This is a correct closure of the
-arm, not a vacuity: the paper's test, stated about G, is decided at G.
+The named exits are the conclusions of this list that are objects of G: (a)
+an accepted cycle of G, and (e) a cycle certificate of G's suppressed graph
+whose lifted length is accepted, which expands to an accepted cycle of G.
+Clauses (b)--(d) conclude about objects built from G (readings of G's pieces
+glued into `G − Z`, a replacement piece glued in, another finite object); on the
+selected G each is refuted by G's own facts where it arises: (b) by the
+selection's avoidance (`not_residualTargetDefect_of_avoids`: two readings of G
+agree in G's own surroundings `G − Z`), (c) and (d) by the selection's
+minimality (`Strategy.InterfaceReplacement.not_replacementSupport_of_minimal`).
+`SparseSurplusExit` has the two constructors (a) and (e), and
+`SurvivesSparseExits` is their joint negation.
 -/
 
 namespace Hypostructure.Graph
@@ -88,7 +83,7 @@ theorem not_target_retainedGlue {LengthOK : Nat → Prop}
 
 /-- **A retained reading of G's piece is an explicit replacement candidate**
 (`lem:replacement` with `def:proper-quotient-representative`, the
-representative `Z'` that exit (c) needs), stated about G: replacing G's piece at
+representative `Z'` that clause (c) names), stated about G: replacing G's piece at
 a connected proper support `Z` by its reading restricted to `retained` is a
 `ReplacementSupport` of `Z` as soon as the reading keeps the piece's
 boundary-degree profile, the glued graph `glue X' (G − Z)` keeps the baseline,
@@ -136,8 +131,8 @@ def ResidualTargetDefect (Target : FiniteObject.{u} → Prop)
       ¬ (Target (ActualContext.actualGlue object support (coordinateSupport first)) ↔
           Target (ActualContext.actualGlue object support (coordinateSupport second)))
 
-/-- **Exit (b) is empty at a target-avoiding G** (Lean improvement: the test of
-clause (b), stated about G, is decided at G): two readings of G always agree
+/-- **Clause (b) is empty at a target-avoiding G** (Lean improvement: the test
+of clause (b), stated about G, is decided at G): two readings of G always agree
 in G's own surroundings `G − Z` (`ActualContext.actualGlue_agree`). -/
 theorem not_residualTargetDefect_of_avoids {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}} (avoids : ¬ HasCycleWithLength LengthOK object)
@@ -199,35 +194,16 @@ theorem ResidualTargetDefect.map {Target : FiniteObject.{u} → Prop}
   rw [supports first firstMem, supports second secondMem]
   exact ⟨selected, profile, separated⟩
 
-/-- **A sparse surplus exit** of `def:named-surplus-exits` (tex 2754-2772), at
-the residual's declared coordinate family. -/
+/-- **A sparse surplus exit** of `def:named-surplus-exits` (tex 2754-2772):
+one of the two conclusions of the list that are objects of G.  The declared
+family and the baseline and target predicates are the parameters of the
+paper's list; the two constructors read G alone. -/
 inductive SparseSurplusExit (Baseline Target : FiniteObject.{u} → Prop)
     (LengthOK : Nat → Prop) (object : FiniteObject.{u}) {Coordinate : Type w}
     (family : Finset Coordinate)
     (coordinateSupport : Coordinate → Finset object.Vertex) : Prop
-  /-- (a) a direct dyadic contradiction: an accepted cycle. -/
+  /-- (a) a direct dyadic contradiction: an accepted cycle of G. -/
   | dyadic (cycle : Graph.HasCycleWithLength LengthOK object)
-  /-- (b) a target-defective quotient, as `lem:context-universality` defines
-  it, among the family's own coordinates read on G's own pieces, stated about
-  G: G's own surroundings `G − Z` separate them.  Empty at a target-avoiding G
-  (`not_residualTargetDefect_of_avoids`). -/
-  | targetDefect
-      (defect : ResidualTargetDefect Target object family coordinateSupport)
-  /-- (c) a nontrivial target-complete compression of a proper atom, recorded
-  at the `ReplacementSupport` strength used by `lem:replacement`: a piece `X'`
-  with G's boundary-degree profile at `Z`, `glue X' (G − Z)` strictly smaller,
-  with the baseline and no target cycle (`ReplacementSupport` in its G form). -/
-  | compression (support : Finset object.Vertex)
-      (replacement : ReplacementSupport Baseline Target object support)
-  /-- (d) a proper or global delocalization coordinate, stated about G: the
-  replacement of the whole of G (`Z = V(G)`, so `G − Z = ∅`) by a strictly
-  smaller representative `X'` meeting the baseline with no target cycle in
-  `glue X' (G − Z) = X'` (the closed clause of the G-form admissible
-  quotient, `DeclaredQuotient.localize`).  Minimality of G refutes it. -/
-  | delocalization (representative : FiniteObject.{u})
-      (smaller : representative.LexicographicallySmaller object)
-      (baseline : Baseline representative)
-      (noTarget : ¬ Target representative)
   /-- (e) an open-port suppression cycle whose chord set violates the arithmetic
   conclusion of `lem:suppressed-family-critical-cycle`: the lifted length
   `2^j + |𝒮|` is accepted, where that lemma concludes it is not. -/
@@ -237,7 +213,7 @@ inductive SparseSurplusExit (Baseline Target : FiniteObject.{u} → Prop)
         (tvs.usedChords certificate.walk).card))
 
 /-- **A graph survives the sparse surplus exits** of its declared family when
-none of the five conclusions occurs. -/
+neither of the two cycle conclusions occurs. -/
 def SurvivesSparseExits (Baseline Target : FiniteObject.{u} → Prop)
     (LengthOK : Nat → Prop) (object : FiniteObject.{u}) {Coordinate : Type w}
     (family : Finset Coordinate)

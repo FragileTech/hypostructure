@@ -14,8 +14,8 @@ facts:
 - the top of the strict arm of `[19]` (`Assembly/Final.lean`, before `[20]`):
   where the surplus sits and the switch at every high/baseline edge.
 
-The `[20a]` exit is empty at G (lem:sparse-exit-b-empty), so no row runs at
-`[20a]`'s canonical witness.
+Clause (b) of `[125]`, stated about G, is empty at G (lem:sparse-exit-b-empty);
+no row runs at `[125]`'s pinned witness.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine

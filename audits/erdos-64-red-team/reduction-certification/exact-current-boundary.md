@@ -37,10 +37,11 @@ Inside each of the three products, the 400 of 750 paths through
 `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove`
 (`Residuals/Route8Blocks.lean`) carry it as well.
 
-`[20a]` and the near-cubic target defect of `[187]` close at G: exit (b) of
-`[125]`, stated about G, is empty (`lem:sparse-exit-b-empty`;
-`K .sparseTargetDefectEmpty`, key 7800, `selectedSparseExitClosed`,
-`Assembly/NearCubic/Local.lean`).  `[153]`'s equal-state pair is the repeat
+The named sparse exits of `[125]` are the two cycle conclusions in G (an
+accepted cycle, and a suppression-chord certificate whose lifted length is
+accepted), refuted by `[4]`'s selection, so `[125]`'s survivor fact is a theorem
+about G (`sparseSurplusSurvivorRow`,
+`Graph.Contracts.SurplusPair.not_declaredSparseSurplusExit`).  `[153]`'s equal-state pair is the repeat
 subcase of (F5) and continues into the germ routing, reaching `[187]` as the
 `_repeated` cold-terminal subtypes.  The dense cold pass `[162]` continues to
 `[187]` and `[54]`.
@@ -49,11 +50,9 @@ The selected root's returns map exhaustively to these families:
 
 | Producer return | Outcome |
 | --- | --- |
-| Strict [20] sparse target defect (exit arm of `sparseSurplusSurvivorDichotomy`) | closed at G (exit (b) empty) |
 | Strict same-token bottleneck: the Type B handoff, or the unresolved same-label pattern pair (`selectedBottleneckDischarge`) | [144a] |
 | Strict uncovered pair-system implication | [182] |
 | Strict [179] Type B entry (system arm; the [180] periodic arm is empty at G) | [187] |
-| Near-cubic sparse target defect | closed at G (exit (b) empty) |
 | Near-cubic blocked barrier overlap | [172a] |
 | Near-cubic route-8 joint balance | [186] |
 | Near-cubic Type B sublinear, route-8 quotient, route-8 rate, or cold-terminal return (incl. the `[153]` repeat arm) | [187] |

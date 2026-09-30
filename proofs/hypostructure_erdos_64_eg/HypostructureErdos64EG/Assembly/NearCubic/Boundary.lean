@@ -40,10 +40,9 @@ abbrev SelectedNearCubicSurvivorBoundary (selected : EGInput.{u}) :=
         ColdBranchClosedLinearSubtypes selected ∨
         Node54ResidualSubtypes selected
 
-/-- The near-cubic branch, after all sparse exits have been excluded, follows
-the surviving-cold/net-charge continuation.  The paper's named target-defect
-exit `[187]` is closed at G -- exit (b), stated about G, is empty
-(lem:sparse-exit-b-empty) -- so it returns no residual. -/
+/-- The near-cubic branch, on G's survivor fact (the named sparse exits are
+the two cycle conclusions in G, refuted by `[4]`'s selection), follows the
+surviving-cold/net-charge continuation. -/
 abbrev SelectedNearCubicBoundary (selected : EGInput.{u}) :=
   SelectedNearCubicSurvivorBoundary selected
 

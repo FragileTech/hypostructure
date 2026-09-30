@@ -17,9 +17,8 @@ clause (b).  Each is a fact about G and its fixed objects (the canonical window
 packing `P₀`, every certified capacity presentation of G), so it can be carried
 on the one ledger and used later as a budget term or a structural constraint.
 
-Exit (b) of `[125]`, stated about G, is empty at G (two readings of G always
-agree in G's own surroundings `G − Z`; lem:sparse-exit-b-empty), so the `[20a]`
-exit is closed.
+Clause (b) of `[125]`, stated about G, is empty at G (two readings of G always
+agree in G's own surroundings `G − Z`; lem:sparse-exit-b-empty).
 
 Every registered constant is an explicit `Parameters` argument; this module
 imports no strategy, row, or vocabulary module.
@@ -321,7 +320,7 @@ configuration holds at the canonical objects (blocked pair, `[137]` count,
 canonical pattern, overload, caps fail), or G's canonical first failure exists
 and yields the `[182]` residual, or the canonical return system's obstruction
 handoff together with the Type B fan entry `[65]`.  (The target defect of the
-obstruction coordinates, exit (b) stated about G, is empty at G -- two readings
+obstruction coordinates, clause (b) stated about G, is empty at G -- two readings
 of G agree in `G − Z` -- and is not an outcome.) -/
 noncomputable def PairCodeConfigurationStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
@@ -339,7 +338,7 @@ noncomputable def PairCodeConfigurationStatement (data : Parameters)
 end CanonicalCapacity
 
 open Classical in
-/-- **The witness triples of clause (b) at G, stated about G** (the `[20a]`
+/-- **The witness triples of clause (b) at G, stated about G** (the
 structure at every clause-(b) witness): at every witness triple `w = (A, B, Z)` of G
 whose `Z` is the canonical support of `A ∪ B`, `Z` is connected, contains `A`
 and `B`, and is a minimum connected set containing `A ∪ B`; and no witness of G

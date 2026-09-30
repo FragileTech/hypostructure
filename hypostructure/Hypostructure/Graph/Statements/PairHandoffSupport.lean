@@ -5,7 +5,7 @@ import Hypostructure.Graph.Statements.SurplusPairOutcome
 # Statements: the Type B support of G's pair-obstruction handoff (residual `[187]`)
 
 Node `[187]`'s Type B entry is produced by the `[179]`/`[180]` early outcome, whose only
-surviving alternative is `PairObstructionHandoff` (sparse exits (b), (c) and the target cycle
+surviving alternative is `PairObstructionHandoff` (clauses (b), (c) of `def:named-surplus-exits` and the target cycle
 are excluded at G).  The entry key `K .typeBFanEntry` pins the support `(Y, H)` as an
 existential; the two facts below are the quantitative shape of that one canonical support,
 stated about G's retained obstruction only:

@@ -52,10 +52,6 @@ The three products have `15 × 50 = 750` paths: `Route8LaneEntry` has 15 arms
 (`Assembly/Residuals/Route8Blocks.lean`).
 
 Nodes that return no residual:
-- `[20a]` and the near-cubic target defect of `[187]`: exit (b) of `[125]`,
-  stated about G, is empty at G (`lem:sparse-exit-b-empty`; key 7800
-  `K .sparseTargetDefectEmpty`, closure `selectedSparseExitClosed`,
-  `Assembly/NearCubic/Local.lean`).  See "Closed from G's facts".
 - `[153]`: its equal-state pair is the repeat subcase of (F5) of
   `lem:cold-corridor-first-failure` and continues into the germ routing
   `[154]`--`[157]`; it reaches `[187]` as the `_repeated` cold-terminal subtypes.
@@ -557,18 +553,34 @@ leave the failure at `j = 2`; the statements of `[170]`--`[172a]` follow the pap
 Branches the paper keeps that are refuted at G by facts on G's ledger at the
 node, closed there with `closeIncompatible`.
 
-- **Exit (b) of [125] (`[20a]`, near-cubic target defect).**  A reading of G glued
-  into `G − Z` is a subgraph of G, so no clause-(b) defect exists
-  (`Graph.not_residualTargetDefect_of_avoids`; key 7800; instance
-  `instIncompatibleSparseTargetDefectResidualSparseTargetDefectEmpty`).  The paper
-  states this as `lem:sparse-exit-b-empty`.
+- **The named sparse exits of [125] are empty at G.**  `Graph.SparseSurplusExit`
+  has the two conclusions of `def:named-surplus-exits` that are objects of G:
+  (a) an accepted cycle of G and (e) a suppression-chord cycle certificate whose
+  lifted length is accepted, which expands to an accepted cycle of G.  `[4]`'s
+  selection refutes both, so `[125]`'s survivor fact `K .sparseSurplusSurvivor`
+  is a theorem about G (`Graph.Contracts.SurplusPair.not_declaredSparseSurplusExit`),
+  published by the fact-only row `sparseSurplusSurvivorRow` (reads `K .selection`)
+  on the strict arm of `[20]` and on the near-cubic arm before `[21]`; neither arm
+  has an exit branch.  Clauses (b)--(d) of the paper's list conclude about
+  objects built from G (readings of G's pieces glued into `G − Z`, a replacement
+  piece glued in, another finite object); wherever the proof meets one, G's
+  selection refutes it: (b) by the avoidance (two readings of G agree in
+  `G − Z`, `Graph.not_residualTargetDefect_of_avoids`, `lem:sparse-exit-b-empty`),
+  (c) and (d) by the minimality (`not_replacementSupport_of_minimal`).
 - **[130] blocker (d).**  The determination quotient is admissible, so it never
   identifies states in different fibres (`not_sparsePairDEProfileObstructionAt`,
   `not_pairProfileObstruction_of_fibres`); closed against
   `K .pairDegreeProfileFibres` (2902).
-- **[130]--[134] blocker (e).**  Each event of (e) is a named sparse surplus exit
-  (`declaredSparseSurplusExit_of_responseObstruction`), refuted by
-  `K .sparseSurplusSurvivor` (`not_pairResponseObstruction_of_survivor`).
+- **[130]--[134] blocker (e).**  Each event of (e) (a target-defective
+  identification, a compression of the determination support, a whole-graph
+  closed representative) is refuted by `[4]`'s selection
+  (`not_responseObstruction_of_selection`); the arm is closed against
+  `K .selection` (`not_pairResponseObstruction_of_selection`).
+- **[131] mixed dependence.**  G's canonical rank-reducing quotient of the mixed
+  family does not exist: it would localize to a replacement or a smaller closed
+  representative, refuted by `[4]`'s selection
+  (`mixedSparseSpineDependence_of_baseline`; `K .mixedSparseSpineDependence`
+  states the quotient is `none`).
 - **[144] capped arm.**  The audit's pattern `K .homogeneousBottleneckPattern`
   refutes the caps at the same canonical ledger
   (`not_homogeneousCapsHold_of_pattern`, `selectedBottleneckDischarge`,

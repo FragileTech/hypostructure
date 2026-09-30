@@ -17,7 +17,7 @@ namespace Hypostructure.Graph.Contracts.SurplusPair
 open Hypostructure
 open Hypostructure.Graph.Strategy.Spine
 
-universe u
+universe u v
 
 set_option maxHeartbeats 4000000 in
 /-- `lem:same-token-bottleneck-routing` at the object: from the homogeneous
@@ -27,6 +27,8 @@ high-centre normal form, the pattern routes to a sparse surplus exit or to the d
 same-token Type B handoff; the routed statement records the pattern with that
 alternative. -/
 theorem sameTokenBottleneckRouting_of_pattern
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation}
     {data : Parameters} {object : Graph.FiniteObject.{u}}
     (patternFact : HomogeneousBottleneckPatternSchema data object)
     (active : ActiveSurplusDemandsStatement data object)
@@ -37,13 +39,15 @@ theorem sameTokenBottleneckRouting_of_pattern
     (objectBaseline : Graph.MinimumDegreeAtLeast data.threshold object)
     (threeLe : 3 ≤ data.threshold)
     (degenerateClosureRejected : ¬ data.LengthOK 2)
-    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (selected : SelectionStatement BranchState Presentation presentation data
+      object)
     (survivor : DeclaredSparseSurvivor data object) :
     BottleneckRoutingStatement data object ∧
       (DeclaredSparseSurplusExit data object ∨
         SameTokenTypeBHandoffStatement data object ∨
         SameTokenPatternPairUnresolvedStatement data object) := by
   classical
+  have avoids : ¬ Graph.HasCycleWithLength data.LengthOK object := selected.1
   refine (fun (outcome :
       DeclaredSparseSurplusExit data object ∨
         SameTokenTypeBHandoffStatement data object ∨
@@ -308,16 +312,16 @@ theorem sameTokenBottleneckRouting_of_pattern
   -- Every recorded type-(e) obstruction of a scheduled pair witnesses a
   -- target-defective identification among G's own pair coordinates, a
   -- target-complete compression of the determination support, or a
-  -- whole-graph closed representative (`def:surplus-blockers` (e)):
-  -- literally sparse exit (b), (c) or (d) of G.  This applies even when an
-  -- earlier blocker clause (a)--(d) is the pair's canonical capacity charge.
+  -- whole-graph closed representative (`def:surplus-blockers` (e)); `[4]`'s
+  -- selection refutes each (`not_responseObstruction_of_selection`).  This
+  -- applies even when an earlier blocker clause (a)--(d) is the pair's
+  -- canonical capacity charge.
   have responseObstructionRoutes
       (pair : Finset (object.Vertex × object.Vertex))
       (_pairSchedule : pair ∈ object.portPairSchedule data.threshold)
       (coordinate : Graph.FiniteObject.PairCoordinate object)
       (obstructs : coordinate ∈
-        capacity.activation.responseObstructions pair) :
-      DeclaredSparseSurplusExit data object := by
+        capacity.activation.responseObstructions pair) : False := by
     have recordedObstructs : coordinate ∈
         ((Graph.recordSparsePairDEBlockers
           (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
@@ -337,7 +341,7 @@ theorem sameTokenBottleneckRouting_of_pattern
       split at recordedObstructs
       next present => exact present
       next absent => simp at recordedObstructs
-    exact declaredSparseSurplusExit_of_responseObstruction active obstruction
+    exact not_responseObstruction_of_selection selected obstruction
 
   -- If type (e) is the canonical role, canonical-blocker membership
   -- supplies the recorded response coordinate consumed above.
@@ -346,8 +350,7 @@ theorem sameTokenBottleneckRouting_of_pattern
       (pairSchedule : pair ∈ object.portPairSchedule data.threshold)
       (assigned : capacity.role pair = role)
       (targetRole : role.blocker =
-        Graph.SameTokenBlockerRoles.BlockerKind.targetResponse) :
-      DeclaredSparseSurplusExit data object := by
+        Graph.SameTokenBlockerRoles.BlockerKind.targetResponse) : False := by
     have canonicalKind :
         ((Graph.FiniteObject.canonicalBlocker capacity.activation pair).map
             Graph.FiniteObject.Blocker.kind).getD
@@ -801,7 +804,7 @@ theorem sameTokenBottleneckRouting_of_pattern
     -- a recorded type-(e) obstruction or the type-(e) role routes directly.
     -- Otherwise the two coordinates are read on G's own piece at their
     -- canonical support: a separating context with equal profiles is sparse
-    -- exit (b).  The paper claims the two remaining cases (different fibres,
+    -- clause (b).  The paper claims the two remaining cases (different fibres,
     -- tex 5589; target-complete readings, tex 5594) are sparse exits; that
     -- claim is an open construction (`lean-vs-paper-discrepancies.md#open-constructions`),
     -- and the unresolved pair is carried by the open leaf `[144a]`.
@@ -868,7 +871,7 @@ theorem sameTokenBottleneckRouting_of_pattern
         let secondReading :=
           Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
             canonical (responseCoordinateSupport secondResponseCoordinate)
-        -- Stated about G, the test of exit (b) at equal profiles is whether G's own
+        -- Stated about G, the test of clause (b) at equal profiles is whether G's own
         -- surroundings `G − Z` separate the two readings; they never do
         -- (`ActualContext.actualGlue_agree`), so the equal-profile pair is the
         -- unresolved pair of `[144a]` with its readings agreeing in `G − Z`.
@@ -880,16 +883,16 @@ theorem sameTokenBottleneckRouting_of_pattern
       by_cases firstResponded : ∃ coordinate, coordinate ∈
           capacity.activation.responseObstructions first.1
       · obtain ⟨coordinate, obstructs⟩ := firstResponded
-        exact Or.inl (responseObstructionRoutes first.1 firstSchedule coordinate obstructs)
+        exact (responseObstructionRoutes first.1 firstSchedule coordinate obstructs).elim
       · by_cases secondResponded : ∃ coordinate, coordinate ∈
             capacity.activation.responseObstructions second.1
         · obtain ⟨coordinate, obstructs⟩ := secondResponded
-          exact Or.inl (responseObstructionRoutes second.1 secondSchedule coordinate
-            obstructs)
+          exact (responseObstructionRoutes second.1 secondSchedule coordinate
+            obstructs).elim
         · by_cases targetRole : role.blocker =
               Graph.SameTokenBlockerRoles.BlockerKind.targetResponse
-          · exact Or.inl (targetResponseRoleRoutes first.1 firstSchedule firstAssignedRole
-              targetRole)
+          · exact (targetResponseRoleRoutes first.1 firstSchedule firstAssignedRole
+              targetRole).elim
           · exact supportDependenceExit
     let commonSelectedSupport : Finset object.Vertex :=
       capacity.activation.localBuffer left ∪
@@ -1616,6 +1619,8 @@ of G's declared family, `lem:same-token-bottleneck-routing` yields the
 decorated same-token Type B handoff, or the unresolved pattern pair that the
 paper error at `[144]` leaves to the open leaf `[144a]`. -/
 theorem sameTokenTypeBHandoff_of_pattern
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation}
     {data : Parameters} {object : Graph.FiniteObject.{u}}
     (patternFact : HomogeneousBottleneckPatternSchema data object)
     (active : ActiveSurplusDemandsStatement data object)
@@ -1626,7 +1631,8 @@ theorem sameTokenTypeBHandoff_of_pattern
     (objectBaseline : Graph.MinimumDegreeAtLeast data.threshold object)
     (threeLe : 3 ≤ data.threshold)
     (degenerateClosureRejected : ¬ data.LengthOK 2)
-    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (selected : SelectionStatement BranchState Presentation presentation data
+      object)
     (survivor : DeclaredSparseSurvivor data object) :
     BottleneckRoutingStatement data object ∧
       (SameTokenTypeBHandoffStatement data object ∨
@@ -1634,30 +1640,34 @@ theorem sameTokenTypeBHandoff_of_pattern
   obtain ⟨routing, outcome⟩ := sameTokenBottleneckRouting_of_pattern
     patternFact active cubicFact capacityLedger bridgeless
     highCentreNormalForm objectBaseline threeLe
-    degenerateClosureRejected avoids survivor
+    degenerateClosureRejected selected survivor
   exact ⟨routing, outcome.resolve_left survivor⟩
 
 /-- Node `[144a]`, tex 5594 attempted at G: the explicit replacement
 candidates -- the readings of G's piece at the canonical support `Z` of the
 two pattern coordinates -- are not replacement representatives of `Z`, because
-any one that were would be the compression exit (c) of G
+any one that were would be a replacement support of G
 (`replacementSupport_of_retainedReading`; its target clause, no target cycle in
 `glue X' (G − Z)`, holds since the glued reading is a subgraph of G), which G's
-survivor refutes. -/
+minimality refutes (`not_replacementSupport_of_minimal`). -/
 theorem sameTokenReadingsNotReplacement_of_unresolved
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation}
     {data : Parameters} {object : Graph.FiniteObject.{u}}
     (unresolved : SameTokenPatternPairUnresolvedStatement data object)
-    (survivor : SparseSurplusSurvivorStatement data object)
-    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object) :
+    (selected : SelectionStatement BranchState Presentation presentation data
+      object) :
     SameTokenReadingsNotReplacementStatement data object := by
-  obtain ⟨routing, routingSelected, _different, support, selected, _cases⟩ :=
-    unresolved
-  refine ⟨routing, routingSelected, support, selected, ?_⟩
+  obtain ⟨routing, routingSelected, _different, support, supportSelected,
+    _cases⟩ := unresolved
+  refine ⟨routing, routingSelected, support, supportSelected, ?_⟩
   intro retained proper ⟨profile, baseline, smaller⟩
   have connected := (Graph.CanonicalSupport.mem_candidates_iff.mp
-    (Graph.CanonicalSupport.select?_mem_candidates selected)).2
-  exact survivor (.compression support
+    (Graph.CanonicalSupport.select?_mem_candidates supportSelected)).2
+  exact Graph.Strategy.InterfaceReplacement.not_replacementSupport_of_minimal
+    (fun H smaller baseline => selected.2 H smaller baseline) support
     (Graph.replacementSupport_of_retainedReading (LengthOK := data.LengthOK)
-      object support retained avoids connected proper profile baseline smaller))
+      object support retained selected.1 connected proper profile baseline
+      smaller)
 
 end Hypostructure.Graph.Contracts.SurplusPair

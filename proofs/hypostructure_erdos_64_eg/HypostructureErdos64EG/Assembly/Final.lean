@@ -27,9 +27,9 @@ set_option maxHeartbeats 1000000 in
 set_option synthInstance.maxHeartbeats 400000 in
 set_option synthInstance.maxSize 2048 in
 /-- Establish `def:surviving-cold-branch` before entering any hot/cold or
-net-charge descendant.  The exhaustive sparse-exit split belongs to the
-enclosing routing; its survivor ledger enters `[21]` directly and is then
-retained monotonically by every later ExactLedger. -/
+net-charge descendant.  G survives the named sparse exits
+(`sparseSurplusSurvivorRow`, a theorem about G); the survivor ledger enters
+`[21]` directly and is retained monotonically by every later ExactLedger. -/
 noncomputable def selectedNearCubicBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -44,22 +44,16 @@ noncomputable def selectedNearCubicBranch
         K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     SelectedNearCubicBoundary selected := by
-  match sparseSurplusSurvivorDichotomy
-      (BranchState := BranchState)
+  -- G survives the named sparse exits (Lean improvement: a theorem about G,
+  -- from `[4]`'s selection); no decision.
+  let survivorHistory :=
+    (sparseSurplusSurvivorRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile)
-      (data := spineData) history
-      (by key_fresh) (by key_fresh) with
-  | .left exitHistory =>
-      -- `[187]`'s near-cubic target defect (Lean improvement: exit (b) is empty
-      -- at G, lem:sparse-exit-b-empty).  The exit arm routes the literal exits to clause (b), stated
-      -- about G, and `K .sparseTargetDefectEmpty` (two readings of G agree in
-      -- `G − Z`) closes it.  No residual is returned.
-      exact (selectedSparseExitClosed exitHistory).elim
-  | .right survivorHistory =>
-      -- The at-or-below survivor goes to `[21]`; `[125]` is entered only
-      -- from the strict arm `[20]`.
-      exact selectedNearCubicSurvivorBranch survivorHistory
+      (data := spineData)).run history (by key_fresh)
+  -- The at-or-below survivor goes to `[21]`; `[125]` is entered only
+  -- from the strict arm `[20]`.
+  exact selectedNearCubicSurvivorBranch survivorHistory
 
 /-- Node `[187]` collects only the other literal selected-root outcomes, each
 with every fact of its ledger at its return (`Assembly/Residuals/`): the two
@@ -69,9 +63,9 @@ rate failure subtypes, and the local cold-terminal exclusion as its one
 reachable linear-arm singleton `linearRealizedSilent` and the two subtypes
 reached through `[153]`'s repeat on the dense arms (its absorbed-germ product
 is not entered: `[173]`'s no-arm is closed against `K .route8Rate`).
-The pair-system entry retains its own source key and is not `[144a]`.  The
-near-cubic target defect of `[187]` is closed at G: exit (b), stated about G,
-is empty (lem:sparse-exit-b-empty).  `[154]`'s G2 yes-arm is a live test (the
+The pair-system entry retains its own source key and is not `[144a]`.  G
+survives the named sparse exits of `[125]` (a theorem about G: the named exits
+are the two cycle conclusions in G, refuted by `[4]`'s selection).  `[154]`'s G2 yes-arm is a live test (the
 second representative `E` is a piece constructed from G, not a reading carrying
 G's response), and it returns the cold-terminal subtypes
 `linearDenseAtOrAbove`, `linearDenseRateFailed` and
@@ -112,9 +106,10 @@ subtypes; the `[186]` joint balance product; the remaining `[187]` outcomes;
 and the structural exhaustion residual `[54]` (5 subtypes).  `[153]`'s
 equal-state pair is the repeat subcase of (F5) and continues into the germ
 routing (`[187]`).  The dense pass needs no terminality of a heavy-entry
-corridor.  `[20a]` and the near-cubic target defect of `[187]` close at G --
-exit (b) of `[125]`, stated about G, is empty (lem:sparse-exit-b-empty) -- and
-return no residual.  On `[154]`'s G2 yes-arm the second representative `E` is a
+corridor.  The named sparse exits of `[125]` are the two cycle conclusions in G
+-- an accepted cycle (a) and a suppression-chord certificate whose lifted length
+is accepted (e) -- and `[4]`'s selection refutes both, so `[125]`'s survivor
+fact is a theorem about G.  On `[154]`'s G2 yes-arm the second representative `E` is a
 piece constructed from G, so G2 is a live test and returns the cold-terminal
 subtypes (five subtypes, one per root path).  The realizations of a trace basin
 are read on the pieces constructed from G, so the essential carrier cores are
@@ -169,8 +164,7 @@ noncomputable def selectedLedgerBoundary
   match selectedSurplusDichotomy history with
   | .left strictHistory =>
       -- Top of the strict arm of `[19]`: every fact that reads only entry facts
-      -- and `K .surplusAbove` is published here, once, so both `[20]` arms
-      -- (`[20a]` and `[125]`) carry it.  No decision.
+      -- and `K .surplusAbove` is published here, once.  No decision.
       -- `[135]`'s exact window-join load, hoisted to the top of the strict arm; no decision.
       let windowJoinHistory :=
         (exactWindowJoinPressureRow (BranchState := BranchState)
@@ -183,7 +177,7 @@ noncomputable def selectedLedgerBoundary
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run windowJoinHistory (by key_fresh)
-      -- hoisted from `[20a]`: the budget identities; no decision.
+      -- facts of G: the budget identities; no decision.
       let budgetHistory :=
         (sparseExitBudgetRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -220,25 +214,25 @@ noncomputable def selectedLedgerBoundary
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run highSwitchHistory (by key_fresh)
-      -- hoisted from `[20a]`: the sharpened envelope; no decision.
+      -- facts of G: the sharpened envelope; no decision.
       let envelopeHistory :=
         (sparseExitEnvelopeRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run pairArmBHistory (by key_fresh)
-      -- hoisted from `[20a]`: the high-degree range; no decision.
+      -- facts of G: the high-degree range; no decision.
       let highDegreeHistory :=
         (highDegreeSurplusRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run envelopeHistory (by key_fresh)
-      -- hoisted from `[20a]`: G's canonical capacity presentation; no decision.
+      -- facts of G: G's canonical capacity presentation; no decision.
       let canonicalCapacityHistory :=
         (sparseExitCanonicalCapacityRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run highDegreeHistory (by key_fresh)
-      -- hoisted from `[20a]`: the canonical capacity counts; no decision.
+      -- facts of G: the canonical capacity counts; no decision.
       -- Joint hubs (Lean improvement): the window structure of G's canonical charge and the
       -- target-response obstructions at its canonical active family; no decision.
       let windowChargeHistory :=
@@ -283,37 +277,28 @@ noncomputable def selectedLedgerBoundary
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run freeSideHubsHistory (by key_fresh)
-      -- hoisted from `[20a]`: the paper budget and the pair-code chain; no decision.
+      -- facts of G: the paper budget and the pair-code chain; no decision.
       let pairChainHistory :=
         (sparseExitPairChainRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run extendedChargeHistory (by key_fresh)
       -- EG-NODE [20] surplus-pair accounting branch
-      -- The enclosing `[20]` routing tests `def:named-surplus-exits` before
-      -- node `[125]`: the exit arm is closed at G (exit (b), stated about G, is
-      -- empty); the survivor arm is `[125]`.
-      match sparseSurplusSurvivorDichotomy
-          (BranchState := BranchState)
+      -- Node `[125]`: G survives the named sparse exits of
+      -- `def:named-surplus-exits` (Lean improvement: a theorem about G; the
+      -- named exits are the two cycle conclusions in G, refuted by `[4]`'s
+      -- selection); no decision.
+      let survivorHistory :=
+        (sparseSurplusSurvivorRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
-          (data := spineData) pairChainHistory
-          (by key_fresh) (by key_fresh) with
-      | .left exitHistory =>
-          -- `[20a]` (Lean improvement: exit (b) is empty at G,
-          -- lem:sparse-exit-b-empty).  The exit arm
-          -- routes the literal exits (a), (c), (d), (e) as terminals and clause
-          -- (b), stated about G, to its payload; `K .sparseTargetDefectEmpty`
-          -- (two readings of G agree in `G − Z`) closes the arm.  G is routed
-          -- onto the survivor arm `[125]`; no `[20a]` residual is returned.
-          exact (selectedSparseExitClosed exitHistory).elim
-      | .right survivorHistory =>
-          match selectedStrictSurplusBranch survivorHistory with
-          | .inl handoff => exact Or.inl handoff
-          | .inr (.inl pairEntry) =>
-              exact other (Or.inl pairEntry)
-          | .inr (.inr pair) =>
-              exact Or.inr (Or.inr (Or.inl pair))
+          (data := spineData)).run pairChainHistory (by key_fresh)
+      match selectedStrictSurplusBranch survivorHistory with
+      | .inl handoff => exact Or.inl handoff
+      | .inr (.inl pairEntry) =>
+          exact other (Or.inl pairEntry)
+      | .inr (.inr pair) =>
+          exact Or.inr (Or.inr (Or.inl pair))
   | .right nearCubicHistory =>
       have survivor := selectedNearCubicBranch nearCubicHistory
       have liftRoute : SelectedRouteEightBoundary selected →

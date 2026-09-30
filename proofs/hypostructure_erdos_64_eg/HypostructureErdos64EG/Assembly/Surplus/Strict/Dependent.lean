@@ -64,9 +64,9 @@ noncomputable def Assembly.Internal.strictSurplusDependent
           K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
     StrictSurplusBoundaryResult selected := by
   -- Top of the dependent arm of `[130]` (reuse): `[131]`'s full-schedule
-  -- entropy count fails at G's canonical objects, unconditionally.  The same
-  -- row and contract as on `[20a]` (`sparseExitFreePairCountRow`, reading only
-  -- strict-arm facts), run once on this arm; on the independent arm the key
+  -- entropy count fails at G's canonical objects, unconditionally
+  -- (`sparseExitFreePairCountRow`, reading only strict-arm facts), run once
+  -- on this arm; on the independent arm the key
   -- is published by `[131]`'s own decision (`freePairEntropyDichotomy`), so
   -- no ledger publishes it twice.  No decision.
   let freePairCountHistory :=
@@ -89,12 +89,11 @@ noncomputable def Assembly.Internal.strictSurplusDependent
         (by infer_instance) |>.elim
   | .right noProfileHistory =>
       -- `[130]`, blocked arm: blocker clause (e) at G's canonical activation.  A
-      -- type-(e) obstruction is a named sparse exit of G, so that arm closes
-      -- against node `[125]`'s survivor on the same ledger.
+      -- type-(e) obstruction contradicts `[4]`'s selection on the same ledger.
       match pairResponseObstructionDichotomy (data := spineData) noProfileHistory
           (by key_fresh) (by key_fresh) with
       | .left obstructionHistory =>
-          exact (closeIncompatible obstructionHistory (K .sparseSurplusSurvivor)
+          exact (closeIncompatible obstructionHistory (K .selection)
             (K .pairResponseObstruction) (by key_fresh)).elimClosed
             (by infer_instance) |>.elim
       | .right dependentHistory =>

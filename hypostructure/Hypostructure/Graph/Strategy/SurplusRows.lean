@@ -160,39 +160,6 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
 
 /-! ## Node `[129]`: the active family and baseline demand -/
 
-/-- `def:baseline-spine-demand` on the literal sparse-surplus survivor.
-
-The family is not an empty or numerically supplied coordinate carrier.  It is
-the clause-(D8) family of labelled Boolean quotient images of the full-support
-clause-(D2) return-data profile.  Its cardinality is the cubic-baseline exponent
-computed from the current object and the registered baseline.  A functional
-quotient that identified two of these declared coordinates would localize to
-exactly one of the paper's replacement or delocalization exits, both excluded
-by the incoming survivor fact.  The row publishes the stronger realization the
-paper requires: every Boolean response word is read from an actual labelled
-graph in the current fixed-edge stratum.  Its exponent is the largest uniform
-cubic-baseline rate supplied by the current sparse envelope, and the resulting
-deficit is bounded linearly using the registered coefficient inequality. -/
-@[reducible] noncomputable def baselineSpineDemandRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
-    { Requires := [K .sparseSurplusSurvivor, K .surplusAbove, K .noProperBaseline, K .tightEndpoint,
-        K .cubicBaseline]
-      Produces := [K .baselineSpineDemand]
-      requiresUnique := by key_fresh
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      .cons (key := K .baselineSpineDemand)
-        ⟨Graph.Contracts.SurplusPair.baselineSpineDemand_of_survivor inputs.current.baseline
-          (inputs.get (K .sparseSurplusSurvivor)).down
-          (inputs.get (K .surplusAbove)).down
-          (inputs.get (K .noProperBaseline)).down
-          (inputs.get (K .tightEndpoint)).down
-          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
-          (inputs.get (K .cubicBaseline)).down.2.2.1.1⟩
-        .nil)
-
 /-! ## Node `[132]`: route the dependent pair family -/
 
 /-- Node `[130]`, canonical pair split "blocker-free?": read the diagram
@@ -329,27 +296,29 @@ noncomputable def pairResponseObstructionDichotomy
     obstructionFresh noObstructionFresh
 
 /-- Node `[130]`, clause (e) closed at G: a type-(e) obstruction at G's
-canonical activation is a named sparse surplus exit of G's declared family, so
-it contradicts node `[125]`'s survivor fact on the same ledger. -/
-noncomputable instance instIncompatibleSparseSurplusSurvivorPairResponseObstruction :
+canonical activation contradicts `[4]`'s selection on the same ledger (the
+target-defective identification by the avoidance, the compression and the
+whole-graph representative by the minimality). -/
+noncomputable instance instIncompatibleSelectionPairResponseObstruction :
     Incompatible (Input BranchState Presentation presentation data)
-      (K .sparseSurplusSurvivor) (K .pairResponseObstruction) where
-  contradiction := fun _current survivor obstruction =>
-    Graph.Contracts.SurplusPair.not_pairResponseObstruction_of_survivor
-      survivor.down obstruction.down
+      (K .selection) (K .pairResponseObstruction) where
+  contradiction := fun _current selection obstruction =>
+    Graph.Contracts.SurplusPair.not_pairResponseObstruction_of_selection
+      selection.down obstruction.down
 
 /-! ## Node `[131]`: mixed sparse-spine dependence -/
 
 /-- `lem:mixed-sparse-spine-dependence` on the literal blocker-free residual of
-`[130]`: at G's canonical spine family and canonical activation, a failure of
-independent target-testability of `ℐ_spine ∪ ℛ_{𝒜₀}` gives a sparse exit or a
-blocker of type (d)/(e).  Node `[131]`'s count is a registered branch test, so
+`[130]`, decided at G: at G's canonical spine family and canonical activation,
+`ℐ_spine ∪ ℛ_{𝒜₀}` is independently target-testable (a rank-reducing quotient
+would localize to a replacement or a smaller closed representative, refuted by
+`[4]`'s selection).  Node `[131]`'s count is a registered branch test, so
 no later row consumes this fact; it is the paper's lemma at `[131]`, published
 on that node's ledger. -/
 @[reducible] noncomputable def mixedSparseSpineDependenceRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.mixedSparseSpineDependence
-    { Requires := [K .activeSurplusDemands, K .baselineSpineDemand]
+    { Requires := [K .selection, K .activeSurplusDemands, K .baselineSpineDemand]
       Produces := [K .mixedSparseSpineDependence]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -357,6 +326,7 @@ on that node's ledger. -/
     (fun inputs =>
       .cons (key := K .mixedSparseSpineDependence)
         ⟨Graph.Contracts.SurplusPair.mixedSparseSpineDependence_of_baseline
+          (inputs.get (K .selection)).down
           (inputs.get (K .activeSurplusDemands)).down
           (inputs.get (K .baselineSpineDemand)).down⟩
         .nil)
