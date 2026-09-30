@@ -4,8 +4,8 @@ import HypostructureErdos64EG.Assembly.Residuals
 # Assembly: Residuals / PairTypeBOutcome
 
 Node `[187]` ([179]/[180] Type B entry), split by distinct fact set.  The
-generic residual `PairTypeBOutcome` (`Assembly/Residuals.lean`) lists the facts
-common to every path, then the `[179]` early outcome.  It is reached along two
+generic residual `PairTypeBOutcome` (`Assembly/Residuals.lean`) lists the 133 facts
+common to every path, the last of them the `[179]` early outcome.  It is reached along two
 paths with two distinct literal ledgers: the entry into the pair-code chain
 `[178]` is either the free side of `[131]` (node `[130]`'s independent arm) or the
 free side of `[137]` (node `[130]`'s dependent arm), and the chain returns on the
@@ -29,10 +29,10 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **Node `[187]` ([179]/[180] Type B entry), `independentSystem`** (thm:main
-(vi), tex 369-378): the generic residual `PairTypeBOutcome` on the ledger
+(vi), tex 386-403): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] independent arm (canonical pair split), [131] free-pair count
 fails; then [179] early outcome.  Every fact of its ledger: the generic residual's
-facts and 2 explicit extra facts. -/
+133 facts and 2 explicit extra facts (135 facts in all). -/
 abbrev PairTypeBOutcome_independentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -323,11 +323,11 @@ theorem pairTypeBIndependentSystemReturn
     (history.get (K .freePairCodeUnrealized)).down⟩
 
 /-- **Node `[187]` ([179]/[180] Type B entry), `dependentSystem`** (thm:main
-(vi), tex 369-378): the generic residual `PairTypeBOutcome` on the ledger
+(vi), tex 386-403): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] dependent arm (canonical pair split: fibres, no blocker (d), no
 blocker (e)), [132] blocker arm, [137] blocked-side count fails; then [179]
-early outcome.  Every fact of its ledger: the generic residual's facts and 11
-explicit extra facts. -/
+early outcome.  Every fact of its ledger: the generic residual's 133 facts and 11
+explicit extra facts (144 facts in all). -/
 abbrev PairTypeBOutcome_dependentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile

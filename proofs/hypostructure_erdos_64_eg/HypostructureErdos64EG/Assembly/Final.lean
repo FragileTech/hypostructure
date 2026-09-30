@@ -52,7 +52,7 @@ noncomputable def selectedNearCubicBranch
       (by key_fresh) (by key_fresh) with
   | .left exitHistory =>
       -- `[187]`'s near-cubic target defect (Lean improvement: exit (b) is empty
-      -- at G).  The exit arm routes the literal exits to clause (b), stated
+      -- at G, lem:sparse-exit-b-empty).  The exit arm routes the literal exits to clause (b), stated
       -- about G, and `K .sparseTargetDefectEmpty` (two readings of G agree in
       -- `G − Z`) closes it.  No residual is returned.
       exact (selectedSparseExitClosed exitHistory).elim
@@ -71,7 +71,7 @@ reached through `[153]`'s repeat on the dense arms (its absorbed-germ product
 is not entered: `[173]`'s no-arm is closed against `K .route8Rate`).
 The pair-system entry retains its own source key and is not `[144a]`.  (G-only
 restatement: the near-cubic target defect of `[187]` is closed at G -- exit
-(b), stated about G, is empty.)  g-pieces-constructed: `[154]`'s G2 yes-arm is
+(b), stated about G, is empty; lem:sparse-exit-b-empty.)  g-pieces-constructed: `[154]`'s G2 yes-arm is
 live again (the second representative `E` is a piece constructed from G, not a
 reading carrying G's response), so the cold-terminal subtypes
 `linearDenseAtOrAbove`, `linearDenseRateFailed` and
@@ -114,8 +114,8 @@ residual: it is the repeat subcase of (F5) and continues into the germ routing
 (`[187]`).  (`[162]` is no longer returned: the dense pass needs no terminality
 of a heavy-entry corridor.)
 (G-only restatement: `[20a]` and the near-cubic target defect of `[187]` are
-closed at G -- exit (b) of `[125]`, stated about G, is empty -- and return no
-residual.  The cold-terminal subtypes on `[154]`'s G2 yes-arm are restored:
+closed at G -- exit (b) of `[125]`, stated about G, is empty
+(lem:sparse-exit-b-empty) -- and return no residual.  The cold-terminal subtypes on `[154]`'s G2 yes-arm are restored:
 with the second representative `E` a piece constructed from G, G2 is a live
 test (five subtypes, one per root path).  The
 `[186]` joint balance product is restored: with the realizations of a trace
@@ -129,8 +129,8 @@ decided exactly on G's order (`realizedOrderDichotomy`,
 `boundedOrderDichotomy`); the arm `N₀ ≤ n` is closed and every residual below
 the other arm carries the combined bound and `n < N₀` (`K .realizedOrderSmall`
 or `K .boundedOrderSmall`): all eleven private-carrier rate failure subtypes,
-the three bounded `[54]` subtypes, the realized cold-terminal singleton
-`linearRealizedSilent`, and the product
+the three bounded `[54]` subtypes, the two realized cold-terminal subtypes
+`linearRealizedSilent` and `linearRealizedDistinguished`, and the product
 paths through the prefix blocks `Route8LanePrefixBlock_realizedColdAtOrAbove` /
 `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove`. -/
 abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
@@ -301,7 +301,8 @@ noncomputable def selectedLedgerBoundary
           (data := spineData) pairChainHistory
           (by key_fresh) (by key_fresh) with
       | .left exitHistory =>
-          -- `[20a]` (Lean improvement: exit (b) is empty at G).  The exit arm
+          -- `[20a]` (Lean improvement: exit (b) is empty at G,
+          -- lem:sparse-exit-b-empty).  The exit arm
           -- routes the literal exits (a), (c), (d), (e) as terminals and clause
           -- (b), stated about G, to its payload; `K .sparseTargetDefectEmpty`
           -- (two readings of G agree in `G − Z`) closes the arm.  G is routed

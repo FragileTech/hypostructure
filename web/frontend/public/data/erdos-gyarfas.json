@@ -18553,7 +18553,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `Holds .uncompressible` = ∀ support, ¬ `ReplacementSupport` (one-way obstruction inclusion), the first assertion of cor:uncompressible under def:target-complete-compression; equal in content to [13]."
+    "note": "FAITHFUL — `Holds .uncompressible` = ∀ support, ¬ `CompressibleSupport` (`UncompressibleStatement`, Statements/Spine.lean:2871). At G `CompressibleSupport` (hypostructure/Hypostructure/Graph/InterfaceReplacement.lean:438) is exactly the clauses of `ReplacementSupport` (`compressibleSupport_iff_replacementSupport` is `Iff.rfl`, InterfaceReplacement.lean:462): the boundary-degree profile of G's piece, the baseline and no target cycle in glue X′ (G − Z), and strictly smaller size, i.e. the one-way hypotheses of lem:replacement that def:target-complete-compression asks for. This is the first assertion of cor:uncompressible, derived from [13] by `replacementSupportOfCompressibleSupport`."
    },
    "15": {
     "lean": "verified",
@@ -18847,7 +18847,7 @@
     "lean": "verified",
     "kernel": "verified",
     "wired": "verified",
-    "local": "partial",
+    "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — High and low arms are the exact rate test and its negation on the remainder of the fixed maximum packing (`packing = canonicalWindowPacking`)."
    },
@@ -19153,7 +19153,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `ZeroSurplusRoutingAt` pinned at X₀, from [13] and [63]."
+    "note": "FAITHFUL-TRIVIAL — `K .typeAReceiverRouting` = `ZeroSurplusRoutingAt` at the pinned Type A support X₀ (Statements/TypeA.lean:424): every vertex of X₀ of internal degree δ is routed by the canonical trace to a receiver (lem:typeA-receiver-loads), and a receiver with internal degree δ−1−j has s·q(w) = s·(j+1) ≤ s·δ (lem:typeA-threshold-algebra: H_j = 4(j+1), H₀ ≤ 4, H₁ ≤ 8, H₂ ≤ 12). The row is a thin adapter: σ(X₀) = 0 ([63]) and X₀ ⊆ R(P₀), so [13]'s empty internal baseline core of R(P₀) routes X₀ (`zeroSurplusRoutingAt_of_normalized`, Support.lean:234). Both manuscript proofs are immediate (tex 10900-10908 and 11654-11669), so the triviality is inherited."
    },
    "89": {
     "lean": "verified",
@@ -19337,7 +19337,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Each member of 𝒳_A has σ=0 and s·def⁺ < |V|; |𝒳_A| ≤ s·D_A(𝒳_A)."
+    "note": "FAITHFUL-TRIVIAL — 𝒳_A := the canonical pieces of R(P₀) passing `Route8Survives` (all saturated receivers survive in the route-8 residual); D_A := `route8Deficit`. No key is published: the node is the definition, as in the manuscript. Its 'carrying D_A(𝒳_A)' clause is the node-[113] inequality `Route8LargeBudgetDeficit`, which is decided at [113], not asserted here."
    },
    "112": {
     "lean": "verified",
@@ -19377,7 +19377,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .route8SmallCoreCollapse` (`Route8SmallCoreCollapse`, hypostructure/Hypostructure/Graph/Statements/RouteEightPinned.lean:181): at the pinned entry ι₁ (`∃ e, canonicalRoute8SmallCoreEntry G = some e ∧ …`), one of the trace-basin alternatives of exits (4)-(7). It is closed against [332]'s target-complete minimality at the same ι₁."
+    "note": "FAITHFUL — `K .route8SmallCoreCollapse` (`Route8SmallCoreCollapse`, hypostructure/Hypostructure/Graph/Statements/RouteEightPinned.lean:278): at the pinned entry ι₁ (`∃ e, canonicalRoute8SmallCoreEntry G = some e ∧ …`), one of the trace-basin alternatives of exits (4)-(7). It is closed against [332]'s target-complete minimality at the same ι₁."
    },
    "117": {
     "lean": "verified",
@@ -19393,7 +19393,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Both keys are at the two-support entry `ι₂ = canonicalRoute8TwoCarrierIndex G` fixed by [117]: `K .route8TrueTwoCarrierEntry` = (T2), no exit-(4) witness at ι₂ (hypostructure/Hypostructure/Graph/Statements/RouteEightPinned.lean:144); `K .route8CarrierDeletionWitnesses` = (T5), the declared deletion witnesses of ι₂'s essential core (hypostructure/Hypostructure/Graph/Statements/RouteEightPinned.lean:153), which is read by [124]."
+    "note": "FAITHFUL — Both keys are at the two-support entry `ι₂ = canonicalRoute8TwoCarrierIndex G` fixed by [117]: `K .route8TrueTwoCarrierEntry` = (T2), no exit-(4) witness at ι₂ (hypostructure/Hypostructure/Graph/Statements/RouteEightPinned.lean:243); `K .route8CarrierDeletionWitnesses` = (T5), the declared deletion witnesses of ι₂'s essential core (hypostructure/Hypostructure/Graph/Statements/RouteEightPinned.lean:252), which is read by [124]."
    },
    "119": {
     "lean": "verified",
@@ -19505,7 +19505,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Decision `K .sparsePairExit` / `K .canonicalBlockerRoute`, by classical case analysis on `Graph.SparseSurplusExit` itself. The yes arm publishes the sparse surplus exit of def:named-surplus-exits (closed at [133]). The no arm publishes `canonicalBlockerRoute` (SpineVocabulary.lean:11515): the exact complement `Graph.SurvivesSparseExits`, together with the active family, the pair-specific (d)/(e) certificate read from `K .dependentPairFamily`, a pair of the schedule with nonempty recorded blockers, and its canonical blocker `canonicalBlocker recorded pair = some blocker` (Phi_can(pi) = min Blk(pi) of def:canonical-blocker-ledger). This is the lemma's disjunction 'exit or canonical (d)/(e) blocker': the paper's split at [132] with both arms, each carrying exactly the paper's data."
+    "note": "FAITHFUL — Decision `K .sparsePairExit` / `K .canonicalBlockerRoute`, by classical case analysis on `Graph.SparseSurplusExit` itself. The yes arm publishes the sparse surplus exit of def:named-surplus-exits (closed at [133]). The no arm publishes `canonicalBlockerRoute` (`CanonicalBlockerRouteStatement`, hypostructure/Hypostructure/Graph/Statements/SurplusPair.lean:1383): the exact complement `Graph.SurvivesSparseExits`, together with the active family, the pair-specific (d)/(e) certificate read from `K .dependentPairFamily`, a pair of the schedule with nonempty recorded blockers, and its canonical blocker `canonicalBlocker recorded pair = some blocker` (Phi_can(pi) = min Blk(pi) of def:canonical-blocker-ledger). This is the lemma's disjunction 'exit or canonical (d)/(e) blocker': the paper's split at [132] with both arms, each carrying exactly the paper's data."
    },
    "133": {
     "lean": "verified",
@@ -19553,7 +19553,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL-TRIVIAL — Reads `K .spineSurplusEstimate` (sigma(G) <= C_sp ceil(sqrt n)) and `K .surplusAbove` (the [19] strict lower bound) from the ledger and returns False. The quadratic sigma bound itself is proved upstream by `surplus_le_scale_of_capped` (the [137] D_all = 0 arm and the [144] caps arm) or `surplus_le_scale_of_pairSandwich` (the [131] arm)."
+    "note": "FAITHFUL-TRIVIAL — Reads `K .spineSurplusEstimate` (sigma(G) <= C_sp ceil(sqrt n)) and `K .surplusAbove` (the [19] strict lower bound) from the ledger and returns False. The quadratic sigma bound itself is proved upstream by `surplus_le_scale_of_capped` (the [137] D_all = 0 arm) or `surplus_le_scale_of_pairSandwich` (the [131] arm)."
    },
    "139": {
     "lean": "verified",
@@ -19561,7 +19561,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Case split on `ledger.presented.tokenClass token` for the concrete overload witness in `K .sparsePressureOverload`. `K .windowClassOverload` is `SparsePressureOverloadInClass ... .windowIncidence` and `K .windowClassAbsent` is `SparsePressureOverloadOutsideClass ... .windowIncidence`. This is 'token in T_W?'."
+    "note": "FAITHFUL — Reads [137]'s `K .sparsePressureOverload`, takes the class of G's canonical overloading token (`Contracts.SurplusPair.canonicalOverloadClass_of_overload`) and decides whether it is `.windowIncidence`: the yes arm is `K .windowClassOverload`, the no arm `K .windowClassAbsent` (that class, its witness, and class ≠ windowIncidence). This is 'token in T_W?' about one token of G."
    },
    "140": {
     "lean": "verified",
@@ -19577,7 +19577,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — On `K .windowClassAbsent`, a case split on the witness token's class: `.windowIncidence` is refuted, `.remainderSurplus` gives `K .remainderClassOverload` (to [142]), and `.primitiveCarrier` gives `K .remainderClassAbsent`, whose Holds is the primitive-class overload (to [143]). This is 'token in T_R?' with the three-class exhaustion carried out inline."
+    "note": "FAITHFUL — On `K .windowClassAbsent`, reads the class of G's overloading token outside T_W and decides whether it is `.remainderSurplus`: yes gives `K .remainderClassOverload` (to [142]); no gives `K .remainderClassAbsent` (class ≠ remainderSurplus), from which `primitiveClassOverloadRow` (WindowOverloadClass.lean:71, run at Dependent.lean:237) derives `K .primitiveClassOverload` (to [143]). This is 'token in T_R?' with the three-class exhaustion done by the two decisions."
    },
    "142": {
     "lean": "verified",
@@ -19601,7 +19601,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Decision `K .homogeneousCapsFail` / `K .homogeneousCapsHold` by classical case analysis on `Graph.HomogeneousCapsHold` (L_W = L_R = L_P = L_geom); `homogeneousCapsFail` (SpineVocabulary.lean:11858) is its exact negation. Caps-fail arm: `sameTokenBottleneckRoutingRow` reads the audited `K .homogeneousBottleneckPattern` and the standing facts and proves lem:same-token-bottleneck-routing (sparse exit or `SameTokenTypeBHandoffStatement`); the exit case is refuted by the sparse-exit survival carried in `K .activeSurplusDemands`, so it publishes `K .bottleneckRouting` and `K .typeBHandoff`, and `sameTokenTypeBFanEntryRow` appends `K .typeBFanEntry` (the first assertion of thm:homogeneous-overload-geometric-closure), handed to [144a]. Caps arm: `homogeneousCapsCloseRow` publishes `K .homogeneousBottleneck` (cor:homogeneous-same-token-caps-close) and `K .spineSurplusEstimate` (sigma <= spineScale * ceil(sqrt n) via `Graph.surplus_le_scale_of_capped`), closed at [138] against `K .surplusAbove`."
+    "note": "FAITHFUL — Decision `K .homogeneousCapsFail` / `K .homogeneousCapsHold` by classical case analysis on `Graph.HomogeneousCapsHold` (L_W = L_R = L_P = L_geom); `homogeneousCapsFail` (`HomogeneousCapsFailStatement`, hypostructure/Hypostructure/Graph/Statements/SurplusPair.lean:1817) is its exact negation. Caps-fail arm: `sameTokenBottleneckRoutingRow` reads the audited `K .homogeneousBottleneckPattern` and the standing facts and proves lem:same-token-bottleneck-routing (sparse exit or `SameTokenTypeBHandoffStatement`); the exit case is refuted by the sparse-exit survival carried in `K .activeSurplusDemands`, so it publishes `K .bottleneckRouting` and `K .typeBHandoff`, and `sameTokenTypeBFanEntryRow` appends `K .typeBFanEntry` (the first assertion of thm:homogeneous-overload-geometric-closure), handed to [144a]. Caps arm: dead at G; the audited `K .homogeneousBottleneckPattern` at G's overloading token refutes `K .homogeneousCapsHold` on the same ledger (`closeIncompatible`, Local.lean:1010)."
    },
    "144a": {
     "lean": "verified",
@@ -19681,7 +19681,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Corridor state [30] at G's cut-state presentation, second representative pinned to `rowRepresentative`; [153]'s (★) is an exact decision (`coldCutStatesDichotomy`): the (★) arm continues, the other arm returns `Node153ResidualOutcome` (42 facts, Assembly/Residuals.lean:2490) through `node153Return`."
+    "note": "FAITHFUL — Bounded arm: `densityBudgetRow` and the spine at [25] ([54]'s bounded subtypes carry it). Linear arm: corridor state [30] at G's cut-state presentation and the first failures. (★) is an exact decision (`coldCutStatesDichotomy`) taken only where a consumer reads it, on the dense arms ([162]); both arms continue: the (★) arm into [162], the ¬(★) arm, G's constructed first equal-state pair `K .coldRepeatedStateResidual` (the repeat subcase of (F5)), into the germ routing [154]-[157], whose outcomes are the repeated `ColdBranchClosed` subtypes of [187]. No residual is returned at [153]: the former `Node153ResidualOutcome` has been removed."
    },
    "154": {
     "lean": "verified",
@@ -19753,7 +19753,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — On the (★) arm of the dense pass, the heavy-entry test decides [162]: its test arm proves terminality (`denseColdCorridorsTerminal_of_distinct`), its other arm returns `Node162ResidualOutcome` (46 facts)."
+    "note": "FAITHFUL — On the (★) arm the first failure of every retained corridor of G is read within Q_cold states and is the terminal (F5) event or an (F4) heavy centre (`K .coldHeavyEntryTerminal`, a fact, no split); `K .denseColdCorridorsTerminal` states that every retained return corridor of G is terminal or has a heavy handoff centre as its first failure (`denseColdCorridorsTerminal_of_distinct`). There is no decision at [162] and no returned residual: the former heavy-entry test and `Node162ResidualOutcome` have been removed, since the pass needs no terminality of a heavy-entry corridor."
    },
    "163": {
     "lean": "verified",
@@ -19897,7 +19897,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — The serial system is tested for a `PairIncrementOutcome`: full-modulus `PairSerialArithmetic` on the canonical spectrum, or a periodic sparse-exit/Type B outcome. On the arithmetic arm `pairPowerOfTwoCycleRow` publishes an actual `HasCycleWithLength` in the selected graph, closed against `K .selection`. Periodic outcomes are refuted against the survivor or become `K .typeBFanEntry`."
+    "note": "FAITHFUL — The serial system is tested for a `PairIncrementOutcome`: full-modulus `PairSerialArithmetic` on the canonical spectrum, or a periodic sparse-exit/Type B outcome. On the arithmetic arm `pairPowerOfTwoCycleRow` publishes an actual `HasCycleWithLength` in the selected graph, closed against `K .selection`. The periodic (early) alternatives are closed by `closeIncompatible` against `K .pairSystemNoEarlyOutcome`: they are [179]'s early alternatives at the same returns, empty after [179]'s no-early arm (Lean improvement)."
    },
    "181": {
     "lean": "verified",
@@ -19913,7 +19913,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — The outcome carries the 33 facts common to the six pair-code paths (strict-surplus prefix, activation, baseline, [135]'s envelope, [131]'s dependence prefix/budget/room, [21]'s domination, the [178] first failure and system) and `K .pairConditionalFactorizationResidual`, one `get` each; matches thm:main (iv)."
+    "note": "FAITHFUL — The generic outcome is the explicit conjunction of the 120 facts common to the six pair-code paths (the entry prefix and spine facts, the strict-surplus prefix and activation, `K .sparseSurplusSurvivor`, the [131] dependence prefix/budget/room/domination, the [178] first failure and system, `K .pairConditionalFactorizationResidual` and `K .pairCorrelation`), one `get` each (120 `Holds` conjuncts in the abbrev, 120 `get`s in `pairConditionalFactorizationReturn`, Residuals.lean:1359); the six subtypes add 3, 8, 12, 12, 17 and 21 arm facts. Matches thm:main (iv)."
    },
    "183": {
     "lean": "verified",

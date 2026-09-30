@@ -9,7 +9,7 @@ Node `[187] ([348], route-8 quotient failure)` as a PRODUCT OF ARM BLOCKS.
 The 750 paths from `selectedLedgerBoundary` to the one return site
 (`route8QuotientReturn` in `selectedRouteEightUnifiedResidual`,
 `Assembly/RouteEight/Local.lean`) carry 750 distinct fact sets.  Each is
-exactly the 65 common keys of `Route8QuotientOutcome` together with one block
+exactly the 133 common keys of `Route8QuotientOutcome` together with one block
 per factor of
 
   `15 lane entries × 50 continuation`,  `50 = 2·22 + 6`,
@@ -36,10 +36,10 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **Node `[187] ([348])` as a product of arm blocks**: the generic
-residual (93 common facts), one lane entry (a near-cubic prefix block with an
+residual (133 common facts), one lane entry (a near-cubic prefix block with an
 entropy block), and one net-charge continuation (Type A lane or Type B
 high-surplus lane, each a nested product of its own blocks).  Totals run from
-107 to 146 facts. -/
+153 to 192 facts. -/
 abbrev Route8QuotientOutcome_product (selected : EGInput.{u}) : Prop :=
   Route8QuotientOutcome selected ∧ Route8LaneEntry selected ∧
     NetChargeContinuation selected
@@ -50,7 +50,7 @@ theorem Route8QuotientOutcome_product.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- The return of `Route8QuotientOutcome_product`, parameterised by the arm
-choices: the 93 common facts are read from the ledger by
+choices: the 133 common facts are read from the ledger by
 `route8QuotientReturn`, and each factor is the arm block the path took, built
 by that block's `.ret` from the same ledger (one `get` per key). -/
 theorem route8QuotientProductReturn

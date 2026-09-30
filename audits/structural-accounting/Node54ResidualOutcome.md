@@ -1,5 +1,7 @@
 # Structural accounting: `Node54ResidualOutcome`
 
+> Status (2026-09-30): **Current.** The Lean ledger equals this report's fact list with its second-pass addendum: generic `Node54ResidualOutcome` 92 facts (90 in Table 2 + `stubDeficitIdentity`, `remainderCycleSpectrum`, keys 8550-8551), and the 14 subtype extras of rows 91-104 (subtypes +3/+6/+7/+8/+3). None of today's keys is on this residual. Checked by comparing the keys of this report (Table 2 rows and addenda) with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`; the accounting itself was not re-run.
+
 Residual: `Node54ResidualOutcome` (node [54], prop:entropy-high-theta, tex 9921), `Assembly/Residuals.lean` line 5119, with its five subtypes in `Assembly/Residuals/Node54ResidualOutcome.lean`. Worktree `/home/guillem/hs-wt-S54`, branch `g-audit-54`. Read-only: no Lean edited, no build.
 
 ## Header

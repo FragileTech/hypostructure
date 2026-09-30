@@ -1,5 +1,14 @@
 # Contract-lemma migration: family map
 
+> Superseded (2026-09-30) in its root-state claims: this map was written for the
+> 2026-09-27 migration.  Its key counts ("maximum key index `3205` (343 keys)")
+> and its description of `Assembly/Residuals.lean` ("the 14 returned
+> residuals", `[153]`, `[162]`) are stale: the root type now has six families
+> and 43 subtypes (generic abbrevs in `Residuals.lean`, subtypes in
+> `Assembly/Residuals/`), and `[20a]`, `[153]`, `[162]` are not returned.  See
+> "Current state (2026-09-30)" in `lean-vs-paper-discrepancies.md`.  The family
+> ownership rules are kept as history.
+
 Serial preparation for the parallel contract-lemma migration.  Every key of
 `Graph.Strategy.Spine.Key` belongs to exactly one family; every file below has
 exactly one owning family.  A family edits only the files it owns, plus its own

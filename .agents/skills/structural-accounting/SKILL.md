@@ -34,13 +34,13 @@ python3 .agents/skills/structural-accounting/scripts/structural_template.py <Res
   --out <report path>
 ```
 
-`<ResidualName>` is the residual's `abbrev` in `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean` (for example `Node20aOutcome`, `Node144aOutcome`). The script extracts every fact key of that residual in ledger order and the register rows. It never marks anything.
+`<ResidualName>` is the residual's `abbrev`: a generic residual in `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean` (for example `Node144aOutcome`, `Node54ResidualOutcome`), or one of the subtypes that the root type `SelectedLedgerBoundaryResult` (`Assembly/Final.lean`) actually returns, stated in `Assembly/Residuals/*.lean` (for example `Node144aOutcome_windowFails`, `BlockedBarrierOverlapOutcome_DeficiencyAtOrAbove`). The script extracts every fact key of that residual in ledger order, expanding a subtype's generic residual in place, and the register rows. For a product path (for example `Route8JointBalanceOutcome_product`) it lists the disjunctive arm blocks without expanding them; add the keys of the arm the path took. It never marks anything.
 
 ## Required reading, before marking
 
 1. The register JSON, all of it: observables, techniques, certificates and caveats.
 2. The methodology page's account of accounting: `web/frontend/src/components/MethodologySection.tsx`, parts "Cost as constraint", "Cost as quantity: structural accounting" and "Cost as compression". These define what "accounted" means: demands, payers, canonical assignment, certified capacity, distinct currencies, and the moves × budgets check.
-3. The residual's `abbrev` in `Residuals.lean`, and for **every** key the exact `Holds` statement. Follow `Holds` in `hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean` to its Statement in `hypostructure/Hypostructure/Graph/Statements/*.lean`. Read the proposition itself, not its docstring.
+3. The residual's `abbrev` in `Residuals.lean` or `Residuals/*.lean`, and for **every** key the exact `Holds` statement. Follow `Holds` in `hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean` to its Statement in `hypostructure/Hypostructure/Graph/Statements/*.lean`. Read the proposition itself, not its docstring.
 4. The residual's entry in `audits/erdos-64-red-team/lean-vs-paper-discrepancies.md` and the manuscript node (`to_formalize/erdos_64_proof.tex`), to know the canonical objects and the test whose failure defines the residual.
 
 ## Procedure

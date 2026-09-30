@@ -358,9 +358,11 @@ def test_faithful_triviality_is_not_reported_as_a_defect() -> None:
 
     audit = load_audit(REPO_ROOT)["nodes"]
     states = ERDOS["review"]["nodes"]
+    # [108] is no longer here: its row now builds the decorated handoff fan
+    # envelope of lem:typeA-high-degree-handoff (501aac50), a contentful step.
     for node in (
         6, 7, 11, 12, 23, 26, 31, 35, 36, 37, 55, 66, 88,
-        108, 110, 111, 126, 138, 145, 154, 155,
+        110, 111, 126, 138, 145, 154, 155,
     ):
         assert audit[str(node)]["fidelity"] == "FAITHFUL-TRIVIAL", node
         assert states[str(node)]["fidelity"] == "verified", node
@@ -369,23 +371,26 @@ def test_faithful_triviality_is_not_reported_as_a_defect() -> None:
 def test_weakened_or_divergent_statements_are_reported_as_defects() -> None:
     """A producer publishing less than, or other than, the paper is not verified.
 
-    Each node was checked against its manuscript statement: [14] requires a
-    two-way context equivalence where the paper's compression is one-way; [69]
-    omits the triangular half on the heavy arm; [156] never turns G2 into a
-    contradiction; [165]-[166] decide the refined decrease at construction;
-    [49], [50], [53] state a different remainder class, packing quantifier,
-    and entropy-cap comparison.
+    Each node was checked against its manuscript statement: [165]-[166] decide
+    the refined decrease at construction; [49] states a different remainder
+    class.  [14], [50], [53], [69] and [156] were re-derived against their
+    repaired Lean statements (the F2, F5 and SD passes of 2026-09-26/27; for
+    [14], the compression is now the one-way replacement hypotheses) and now
+    read as faithful.
     """
     from lean_review import load_audit
 
     audit = load_audit(REPO_ROOT)["nodes"]
     states = ERDOS["review"]["nodes"]
-    for node in (14, 69, 156, 165, 166):
+    for node in (165, 166):
         assert audit[str(node)]["fidelity"] == "WEAKER", node
         assert states[str(node)]["fidelity"] == "partial", node
-    for node in (49, 50, 53):
+    for node in (49,):
         assert audit[str(node)]["fidelity"] == "DIVERGENT", node
         assert states[str(node)]["fidelity"] == "partial", node
+    for node in (14, 50, 53, 69, 156):
+        assert audit[str(node)]["fidelity"] == "FAITHFUL", node
+        assert states[str(node)]["fidelity"] == "verified", node
 
 
 def test_surrogate_triviality_is_reported_as_a_defect() -> None:

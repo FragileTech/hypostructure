@@ -1,5 +1,7 @@
 # Structural accounting: `Route8RateFailsOutcome`
 
+> Status (2026-09-30): **Current through its addenda; not affected by today's keys.** The generic `Route8RateFailsOutcome` has 113 facts (the header's 92 is the Table 2 count before the passes); the 21 keys added since (8250-8269 and the hoisted `route8BasinBurden`, idx 161) are accounted in the pass sections at the end, and the 18 subtype extras match. None of today's keys is on this residual (9800-9807 are on `[186]` and `[348]` only). Checked by comparing the keys of this report (Table 2 rows and addenda) with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`; the accounting itself was not re-run.
+
 Residual: node `[187]` (private-carrier rate failure, thm:main (vi), tex 369-378). Worktree `/home/guillem/hs-wt-SR8R`.
 
 **Defining failure.** At G's `canonicalWindowPacking` P0 (p = |P0|, R = `remainderSupport`), the private-carrier rate `Graph.Route8Census.Rate` fails (`K .route8RateFails`, fact #92):

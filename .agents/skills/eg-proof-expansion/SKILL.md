@@ -357,9 +357,10 @@ Permit problem-specific code in exactly two places:
   Strategy combinators, and canonical `ExactLedger` runs.  The root reduction
   `officialCounterexample_reaches_selectedLedgerBoundary` is in
   `Assembly/Final.lean`; `Basic` holds the problem/input aliases, `Boundary`
-  modules hold shared result types, and the branch directories (`Surplus/`,
-  `NearCubic/`, `RouteEight/`, `NetCharge/`, `Absorbed/`, `TypeA/`, `TypeB/`)
-  hold the per-branch compositions.
+  modules hold shared result types, the branch directories (`Surplus/`,
+  `NearCubic/`, `RouteEight/`, `NetCharge/`, `TypeA/`, `TypeB/`) hold the
+  per-branch compositions, and `Residuals.lean` with `Residuals/` states the
+  returned residuals of the root type `SelectedLedgerBoundaryResult`.
 
 Add no other proof-specific declaration. Within the selected label, replace
 only the illegal carrier, callback, transport helper, routing helper, or

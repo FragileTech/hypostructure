@@ -13,10 +13,10 @@ others (its prerequisite is an arm of a decision that path did not take) is
 listed in `audits/erdos-64-red-team/lean-vs-paper-discrepancies.md`.
 
 port-joint (2026-09-28): every residual also carries the 21 entry-prefix facts of
-`SpineRows/JointHubs.lean` (after `K .windowAttachmentGap`), every strict-surplus residual
-the 16 strict-arm facts (after `K .highSurplusConfiguration`), and `[20a]` also
-`K .pairArmBDefect`; per-residual counts quoted below that predate this note are +21 (+37
-on the strict arm, +38 at `[20a]`).
+`SpineRows/JointHubs.lean` (after `K .windowAttachmentGap`), and every strict-surplus
+residual the 16 strict-arm facts (after `K .highSurplusConfiguration`).  The fact counts
+quoted below (2026-09-30) are the numbers of `Holds` conjuncts of each abbrev, equal to
+the numbers of `get`s in its return theorem, and include these facts.
 
 g-repair (G-only restatement): the former residuals `Node20aOutcome` (node `[20a]`)
 and `NearCubicTargetDefectOutcome` (node `[187]`'s near-cubic target defect), with
@@ -36,7 +36,7 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
-/-- **Node `[144a]`** (thm:main (ii), tex 347-353): the same-token Type B
+/-- **Node `[144a]`** (thm:main (ii), tex 355-364): the same-token Type B
 handoff of [144] on the strict-surplus survivor, or (the paper error at
 [144]) the unresolved same-label pattern pair.  The generic residual: the
 explicit conjunction of the 136 facts common to every path.  Its six distinct
@@ -595,10 +595,10 @@ theorem node144aReturn
     (history.get (K .sameTokenCrossingCount)).down,
     (history.get (K .sameTokenHubCount)).down⟩
 
-/-- **Node `[172a]`** (thm:main (iii), tex 354-358): the first failed
+/-- **Node `[172a]`** (thm:main (iii), tex 365-372): the first failed
 conditional graph-count inequality of lem:scale-additivity on the dense-
 packing branch, with its minimal same-scale barrier overlap.  The explicit
-conjunction of every fact on its maximal ledger (99 common facts). -/
+conjunction of every fact on its maximal ledger (125 common facts). -/
 abbrev BlockedBarrierOverlapOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -1108,9 +1108,9 @@ theorem blockedBarrierOverlapReturn
     (history.get (K .blockedFailingSetCarries)).down,
     (history.get (K .blockedOverlapSupport)).down⟩
 
-/-- **Node `[182]`** (thm:main (iv), tex 359-363): the first failed coverage
+/-- **Node `[182]`** (thm:main (iv), tex 373-377): the first failed coverage
 implication of [178], [179] or [180] on the strict-surplus pair-code chain.
-The explicit conjunction of every fact on its maximal ledger (62 common
+The explicit conjunction of every fact on its maximal ledger (120 common
 facts). -/
 abbrev PairConditionalFactorizationOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -1601,17 +1601,16 @@ theorem pairConditionalFactorizationReturn
     (history.get (K .pairConditionalFactorizationResidual)).down,
     (history.get (K .pairCorrelation)).down⟩
 
-/-- **Node `[186]`** (thm:main (v), tex 364-368): the visible-entry route-8
+/-- **Node `[186]`** (thm:main (v), tex 378-385): the visible-entry route-8
 residual after [181], [183]-[185], with the joint balances of lem:typeA-
 unified-joint-balance.  The explicit conjunction of every fact on its
-maximal ledger (113 common facts, the last six the CT3 facts
+maximal ledger (146 common facts).  The last seventeen, in order: the
+blob-structure keys 9900--9902 (the pieces of `R` against the windows of `P₀`
+and the rate `K .route8Rate` over the pieces); the six CT3 facts
 `pieceDominanceIrreducible`, `twoExitNewLength`, `canonicalPieceDominance`,
 `canonicalTwoExitNewLength`, `twoExitSizeMonotone`, `canonicalTwoExitSizeMonotone`
-(keys 9975--9980), then the blob-structure keys 9900--9902: the pieces of `R` against
-the windows of `P₀` and the rate `K .route8Rate` over the pieces; then the
-packing-exchange keys 9800--9802, the hub-piece mass 9803, and the arm-cap keys
-9804--9807).  The conjunction lists the keys 9900--9902 before the six CT3 facts,
-and the keys 9800--9807 after them. -/
+(keys 9975--9980); then the packing-exchange keys 9800--9802, the hub-piece mass
+9803, and the arm-cap keys 9804--9807. -/
 abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -2205,10 +2204,10 @@ theorem route8JointBalanceReturn
     (history.get (K .route8CleanLandingCap)).down,
     (history.get (K .route8ArmClosureResidual)).down⟩
 
-/-- **Node `[187] ([179]/[180] Type B entry)`** (thm:main (vi), tex 369-378): a
+/-- **Node `[187] ([179]/[180] Type B entry)`** (thm:main (vi), tex 386-403): a
 Type B entry produced by the [179] or [180] pair-system outcome, with its
 strict-surplus and sparse-survivor ancestry.  The explicit conjunction of
-every fact on its maximal ledger (the common facts, then the `[179]` early outcome).
+every fact on its maximal ledger (133 common facts, the last the `[179]` early outcome).
 (G audit, `[187]`: the `[180]` increment arm is empty at G and closed -- `[180]`'s periodic
 alternatives are alternatives of `[179]`'s early outcome at the same returns, so
 `K .pairIncrementEarlyOutcome` is incompatible with `K .pairSystemNoEarlyOutcome`; the
@@ -2754,9 +2753,9 @@ theorem pairTypeBSystemReturn
     (history.get (K .pairHandoffFibreAtG)).down,
     (history.get (K .pairSystemEarlyOutcome)).down⟩
 
-/-- **Node `[187] (Type B sublinear failure)`** (thm:main (vi), tex 369-378):
+/-- **Node `[187] (Type B sublinear failure)`** (thm:main (vi), tex 386-403):
 failure of the Type B sublinear hypothesis package on the unified route-8
-ledger.  The explicit conjunction of every fact on its maximal ledger (90
+ledger.  The explicit conjunction of every fact on its maximal ledger (128
 common facts). -/
 abbrev TypeBSublinearOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -3280,8 +3279,9 @@ theorem typeBSublinearReturn
     (history.get (K .traceIntoAbsorbedStructure)).down⟩
 
 /-- **Node `[187] ([348], route-8 quotient failure)`** (thm:main (vi), tex
-369-378, 388-390): failure of route-8 quotient freeness of the unified
-census.  The explicit conjunction of every fact on its maximal ledger; the fact
+386-403): failure of route-8 quotient freeness of the unified
+census.  The explicit conjunction of every fact on its maximal ledger (133
+common facts); the fact
 `K .route8QuotientEntriesAtG` decides the quotient test at G (the failure
 is the non-emptiness of the unified entry family, with the aggregate bound
 `|∂R| < δ·|\tilde\Xi|`) and the one before it, `K .route8PeelingDescent`, is the
@@ -3833,7 +3833,7 @@ theorem route8QuotientReturn
     (history.get (K .route8ArmClosureResidual)).down⟩
 
 /-- **Node `[187] (private-carrier rate failure)`** (thm:main (vi), tex
-369-378): failure of the exact private-carrier rate at the entry of the
+386-403): failure of the exact private-carrier rate at the entry of the
 route-8 continuation.  The explicit conjunction of every fact on its maximal
 ledger (113 common facts: the 92 earlier ones and the G-audit facts
 `route8RateFailsJoin`, `route8RateFailsPiece`, `route8RateFailsCrossBound`,
@@ -4306,9 +4306,9 @@ theorem route8RateFailsReturn
     (history.get (K .route8AchievableLengths)).down⟩
 
 /-- **Node `[187] (local cold-terminal exclusion)`** (thm:main (vi), tex
-369-378): the local cold-terminal exclusion of thm:cold-branch-quantitative-
+386-403): the local cold-terminal exclusion of thm:cold-branch-quantitative-
 closure without a global terminal contradiction.  The explicit conjunction
-of every fact on its maximal ledger (84 common facts). -/
+of every fact on its maximal ledger (105 common facts). -/
 abbrev ColdBranchClosedOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -4738,9 +4738,9 @@ theorem coldBranchClosedReturn
     (history.get (K .coldBranchClosed)).down,
     (history.get (K .absorbedGermFanData)).down⟩
 
-/-- **Node `[54]`** (prop:entropy-high-theta, tex 9921): the configuration at G
+/-- **Node `[54]`** (thm:main (vii), tex 404-443; prop:entropy-high-theta, tex 10368): the configuration at G
 where the joint realization inequality RS(R0)*2^(rate*s*p13)*2^F <= B fails.
-The explicit conjunction of every fact on its maximal ledger (52 common
+The explicit conjunction of every fact on its maximal ledger (92 common
 facts). -/
 abbrev Node54ResidualOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile

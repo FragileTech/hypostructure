@@ -411,7 +411,7 @@ describe("referee mode", () => {
     // the manuscript's statement.  [7] counts as proved even though it is a
     // terminal the proof only ever refutes -- discharging the branch is the
     // proof of it.  [172a] is one of the six open boundary outcomes; the routing
-    // that reaches it kernel-checks, so it carries a check like [144a].  [14]
+    // that reaches it kernel-checks, so it carries a check like [144a].  [165]
     // kernel-checks but publishes a weaker statement than the paper, so it
     // carries none.
     const badge = (id: string) =>
@@ -421,8 +421,8 @@ describe("referee mode", () => {
     expect(badge("7")).not.toBeNull();
     expect(view.container.querySelector(`.react-flow__node[data-id="172a"]`)).not.toBeNull();
     expect(badge("172a")).not.toBeNull();
-    expect(view.container.querySelector(`.react-flow__node[data-id="14"]`)).not.toBeNull();
-    expect(badge("14")).toBeNull();
+    expect(view.container.querySelector(`.react-flow__node[data-id="165"]`)).not.toBeNull();
+    expect(badge("165")).toBeNull();
     expect(screen.getByRole("status")).toHaveTextContent("clear");
 
     changes.length = 0;

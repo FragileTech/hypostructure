@@ -63,11 +63,16 @@ the `.localAlgebra` fact statement repeats `399` and the size distribution.
 
 ## Where things stand
 
+Counted 2026-09-30 on the g-repair-base tree (6ef0ffd2): live modules are the
+gate's own `build_closure()` (transitive imports of `Hypostructure.lean`),
+the spine closure is the same walk from `SpineVocabulary` (itself included),
+and the gate result is a run of `scripts/check_quarantine.py`.
+
 | | |
 |---|---|
-| live modules in the build | 511 |
+| live modules in the build | 656 |
 | quarantined (`quarantine.txt` entries) | 78 |
-| `Graph.Strategy.SpineVocabulary` import closure | 214 modules |
+| `Graph.Strategy.SpineVocabulary` import closure | 356 modules |
 | quarantined modules reachable from the spine | 6 |
 | legacy `Core.Residual.Ledger` / `Ledger.Extension` in the build | none |
 | gate violations | 13 |

@@ -8,7 +8,7 @@ import HypostructureErdos64EG.Assembly.Residuals.Route8Blocks
 at one Lean site, the negative arm of `typeBSublinearDichotomy` in
 `selectedRouteEightUnifiedResidual` (`Assembly/RouteEight/Local.lean`), and
 is reached there by 750 selected-root paths whose ledgers hold 750 distinct
-fact sets.  Those fact sets are exactly the 80 common keys of the generic
+fact sets.  Those fact sets are exactly the 128 common keys of the generic
 residual `TypeBSublinearOutcome` together with one choice in each factor of the
 nested arm-block product of `Assembly/Residuals/Route8Blocks.lean`; the
 product is full (all 15 × 50 combinations of lane entry and continuation
@@ -31,9 +31,9 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **Node `[187]` (Type B sublinear failure), as a product of arm blocks**:
-the 102 common facts of the generic residual, one of the 15 lane entries
+the 128 common facts of the generic residual, one of the 15 lane entries
 (prefix block with entropy block) and one of the 50 continuation
-combinations. -/
+combinations (148 to 187 facts in all). -/
 abbrev TypeBSublinearOutcome_product (selected : EGInput.{u}) : Prop :=
   TypeBSublinearOutcome selected ∧
   Route8LaneEntry selected ∧

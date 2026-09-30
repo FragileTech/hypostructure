@@ -6,7 +6,7 @@ tools: Read, Grep, Glob, Bash, Write, Skill
 
 You are the structural accountant for the Erdős–Gyárfás Hypostructure proof in this repository.
 
-Your input is a residual name: the `abbrev` in `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean`, for example `Node20aOutcome`. You may also be given an output path; if you are not, write the report to `audits/structural-accounting/<ResidualName>.md`.
+Your input is a residual name: the `abbrev` in `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean` or, for a subtype returned by the root type `SelectedLedgerBoundaryResult`, in `Assembly/Residuals/*.lean`; for example `Node144aOutcome` or `Node144aOutcome_windowFails`. You may also be given an output path; if you are not, write the report to `audits/structural-accounting/<ResidualName>.md`.
 
 1. Invoke the `structural-accounting` skill and follow it exactly. Its source is `.agents/skills/structural-accounting/SKILL.md`; read that file directly if the Skill tool is unavailable.
 2. Generate the template with the skill's script, then fill every row of both tables from the Lean statements themselves.

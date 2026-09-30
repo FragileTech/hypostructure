@@ -8,12 +8,12 @@ sets.  They differ only by the arm of the `[160]` rate split
 (`lem:dense-deficiency-routing`) through which the dense-packing residual
 enters the dense hot/cold pass `[162]`:
 
-* `τ(θ) ≥ 1/4` (`K .denseDeficiencyAtOrAbove`): 95 facts;
+* `τ(θ) ≥ 1/4` (`K .denseDeficiencyAtOrAbove`): 126 facts;
 * `τ(θ) < 1/4` and the private-carrier rate `τ(θ) < 3/13` fails
-  (`K .denseDeficiencyBelow`, `K .route8RateFails`): 96 facts.
+  (`K .denseDeficiencyBelow`, `K .route8RateFails`): 127 facts.
 
 Each fact set is its own residual, stated as a subtype of the generic
-`BlockedBarrierOverlapOutcome` (the 94 facts common to both paths), with one
+`BlockedBarrierOverlapOutcome` (the 125 facts common to both paths), with one
 return theorem that reads every fact with one `ExactLedger.get`.
 -/
 
@@ -27,7 +27,7 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **Node `[172a]`, `[160]` arm `τ(θ) ≥ 1/4`.**  The generic residual and
-the arm's own fact (95 facts). -/
+the arm's own fact (126 facts). -/
 abbrev BlockedBarrierOverlapOutcome_DeficiencyAtOrAbove
     (selected : EGInput.{u}) : Prop :=
   BlockedBarrierOverlapOutcome selected ∧
@@ -35,7 +35,7 @@ abbrev BlockedBarrierOverlapOutcome_DeficiencyAtOrAbove
       erdosReceiverLoadProfile spineData .denseDeficiencyAtOrAbove selected.object
 
 /-- **Node `[172a]`, `[160]` arm `τ(θ) < 1/4`, private-carrier rate failed.**
-The generic residual and the arm's own two facts (96 facts). -/
+The generic residual and the arm's own two facts (127 facts). -/
 abbrev BlockedBarrierOverlapOutcome_DeficiencyBelowRateFails
     (selected : EGInput.{u}) : Prop :=
   BlockedBarrierOverlapOutcome selected ∧

@@ -1,5 +1,7 @@
 # Structural accounting: `BlockedBarrierOverlapOutcome` (node [172a]), final state
 
+> Status (2026-09-30): **Current.** The Lean ledger equals this report's fact list: generic `BlockedBarrierOverlapOutcome` 125 facts, `_DeficiencyAtOrAbove` +1, `_DeficiencyBelowRateFails` +2 (128 keys, same set). None of today's keys (9800-9807, 9850-9855, 9900-9902, 9975-9980, 9990-9991) is on this residual. Checked by comparing the keys of this report (Table 2 rows and addenda) with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`; the accounting itself was not re-run.
+
 Worktree `/home/guillem/hs-wt-S172a`, branch `g-audit-172a`, uncommitted edits included. Recomputed from scratch on the exact `Holds` / Statement propositions (`Graph/Statements/Spine.lean`, `BlockedFailureG.lean`, `BlockedOverlapG.lean`, `Strategy/SpineVocabulary.lean`). Read-only.
 
 ## Header

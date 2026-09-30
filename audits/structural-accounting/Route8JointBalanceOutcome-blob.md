@@ -1,5 +1,7 @@
 # Structural accounting addendum: `Route8JointBalanceOutcome` — blob structure (keys 9900–9902)
 
+> Status (2026-09-30): **Superseded by keys 9800-9807 and 9975-9980.** This addendum covers only 9900-9902. The generic `Route8JointBalanceOutcome` now has 146 facts, including 9975-9980 (dominance irreducibility) and 9800-9807 (packing exchange, landing cap, hub-piece mass, net-cap excess, arm-closure residual), which are not accounted here. No full accounting of `[186]` exists on this base. Checked by comparing the keys of this report (Table 2 rows and addenda) with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`; the accounting itself was not re-run.
+
 Branch `g-blob-structure` (base `g-repair-base` 53135b04).  This base carries no full
 accounting report for `Route8JointBalanceOutcome` (the full Table 1/Table 2 report is being
 written in the unmerged worktree `hs-wt-P2R8J`, keys 9300–9304); this addendum lists the

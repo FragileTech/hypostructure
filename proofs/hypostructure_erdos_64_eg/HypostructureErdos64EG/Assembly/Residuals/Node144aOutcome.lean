@@ -4,12 +4,12 @@ import HypostructureErdos64EG.Assembly.Residuals
 # Assembly: Residuals / Node `[144a]`
 
 The distinct fact sets of the residual `Node144aOutcome` (node `[144a]`,
-thm:main (ii), tex 347-353).  Every path into `[144a]` passes through the
+thm:main (ii), tex 355-364).  Every path into `[144a]` passes through the
 class decisions of `[139]`/`[141]` (window, remainder, or primitive class of
 the overloading token, audited at `[140]`/`[142]`/`[143]`) and then through
 the handoff decision of `[144]` (handoff, or handoff fails).  The six paths
 carry six distinct fact sets, each stated here as a subtype of the generic
-`Node144aOutcome` (its 87 common facts) with every extra fact as an explicit
+`Node144aOutcome` (its 136 common facts) with every extra fact as an explicit
 `Holds` conjunct, plus one return theorem per subtype reading each fact with
 one `ExactLedger.get`.
 -/
@@ -24,7 +24,7 @@ open Hypostructure.Graph.Strategy.Spine
 universe u
 
 /-- **Node `[144a]`**, subtype `windowHandoff`: [139] token in 𝔗_W, yes arm; audited at [140]; handoff arm of [144].
-The generic 87 common facts and 3 extra facts (90 facts in all). -/
+The generic 136 common facts and 3 extra facts (139 facts in all). -/
 abbrev Node144aOutcome_windowHandoff (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -40,7 +40,7 @@ theorem Node144aOutcome_windowHandoff.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `windowFails`: [139] token in 𝔗_W, yes arm; audited at [140]; handoff-fails arm of [144] (the paper error).
-The generic common facts (see `Node144aOutcome`) and 18 extra facts. -/
+The generic 136 common facts (see `Node144aOutcome`) and 18 extra facts (154 facts in all). -/
 abbrev Node144aOutcome_windowFails (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -86,7 +86,7 @@ theorem Node144aOutcome_windowFails.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `remainderHandoff`: [139] no, [141] token in 𝔗_R, yes arm; audited at [142]; handoff arm of [144].
-The generic 87 common facts and 4 extra facts (91 facts in all). -/
+The generic 136 common facts and 4 extra facts (140 facts in all). -/
 abbrev Node144aOutcome_remainderHandoff (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -104,7 +104,7 @@ theorem Node144aOutcome_remainderHandoff.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `remainderFails`: [139] no, [141] token in 𝔗_R, yes arm; audited at [142]; handoff-fails arm of [144] (the paper error).
-The generic common facts (see `Node144aOutcome`) and 19 extra facts. -/
+The generic 136 common facts (see `Node144aOutcome`) and 19 extra facts (155 facts in all). -/
 abbrev Node144aOutcome_remainderFails (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -152,7 +152,7 @@ theorem Node144aOutcome_remainderFails.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `primitiveHandoff`: [139] no, [141] no: the primitive class; audited at [143]; handoff arm of [144].
-The generic 87 common facts and 5 extra facts (92 facts in all). -/
+The generic 136 common facts and 5 extra facts (141 facts in all). -/
 abbrev Node144aOutcome_primitiveHandoff (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -172,7 +172,7 @@ theorem Node144aOutcome_primitiveHandoff.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- **Node `[144a]`**, subtype `primitiveFails`: [139] no, [141] no: the primitive class; audited at [143]; handoff-fails arm of [144] (the paper error).
-The generic common facts (see `Node144aOutcome`) and 20 extra facts. -/
+The generic 136 common facts (see `Node144aOutcome`) and 20 extra facts (156 facts in all). -/
 abbrev Node144aOutcome_primitiveFails (selected : EGInput.{u}) : Prop :=
   Node144aOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile

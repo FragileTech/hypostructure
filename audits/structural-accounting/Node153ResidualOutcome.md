@@ -1,5 +1,7 @@
 # Structural accounting: `Node153ResidualOutcome` (node [153], pre-edit state at HEAD)
 
+> Status (2026-09-30): **Superseded: the residual no longer exists.** `Node153ResidualOutcome` and its subtypes were deleted; `[153]`'s equal-state pair continues into `[187]` (the `_repeated` cold-terminal subtypes of `ColdBranchClosedOutcome`). Kept as history. Checked by comparing the keys of this report (Table 2 rows and addenda) with the `Holds` conjuncts of the Lean abbrevs in `Assembly/Residuals.lean` and `Assembly/Residuals/`; the accounting itself was not re-run.
+
 Source text: `git show HEAD:` of `Assembly/Residuals.lean` (`abbrev Node153ResidualOutcome`, generic residual) and of `Assembly/Residuals/Node153ResidualOutcome.lean` (the three linear subtypes `denseAtOrAbove_linear`, `denseRateFails_linear`, `realized_linear`). Statements were read from the HEAD tree (`Holds` in `SpineVocabulary.lean` followed to `Graph/Statements/*.lean` and, where the statement is an `abbrev` of a `Graph.*Object` predicate, to that predicate). The working tree, which has deleted this residual, was not read for it.
 
 ## Header
