@@ -1,0 +1,86 @@
+{
+  "residual_binding": "7fe020ac66d4b12cc98885731bd5a8faa507b6b3671cdd45bf44efa33c43d603",
+  "selected_aspect": "a03",
+  "incoming_residual_key": "K .sparseTargetDefectResidual",
+  "lean_inputs": [
+    "K .sparseTargetDefectResidual",
+    "K .witnessReadingsCycleFree",
+    "K .witnessReadingCounts",
+    "K .positiveCyclePrivateEdge",
+    "K .tightEndpoint"
+  ],
+  "ledger_row": "Hypostructure.Graph.Strategy.Spine.originalCyclePassageRow",
+  "structure_fact_id": "f129_originalCyclePassage",
+  "structure_key": "K .originalCyclePassage",
+  "lean_declaration": "Hypostructure.Graph.Strategy.Spine.OriginalCyclePassageStatement",
+  "bound_witness": "G = selected.object; w is the f021 witness with sparseTargetDefectWitness data G = some w and w.Spec; alpha=w.first, beta=w.second, A=sparseDeclaredSupport data G alpha, B=sparseDeclaredSupport data G beta, Z=w.support, D=cutBoundary G Z, O=w.outside; (P,N) is its Separates orientation; c is each original CycleCertificate (glue (retainedPiece G Z P) O) data.LengthOK.",
+  "source_path": "hypostructure/Hypostructure/Graph/Statements/Node20aStructure.lean",
+  "claim_projections": [
+    {
+      "claim": "S1: exact original-cycle interval, injective positive-reading lift, active common endpoints and two-contact component",
+      "declaration": "Hypostructure.Graph.Strategy.Spine.OriginalCyclePassageStatement.S1",
+      "residual_clause": "f021/f022 positive-certificate support at the same O; f118 supplied private endpoint; f115 endpoint profiles",
+      "bound_witness": "G = selected.object; w is the f021 witness with sparseTargetDefectWitness data G = some w and w.Spec; alpha=w.first, beta=w.second, A=sparseDeclaredSupport data G alpha, B=sparseDeclaredSupport data G beta, Z=w.support, D=cutBoundary G Z, O=w.outside; (P,N) is its Separates orientation; c is each original CycleCertificate (glue (retainedPiece G Z P) O) data.LengthOK.",
+      "evidence": [
+        "s3b_statement",
+        "s3b_library",
+        "s3b_row",
+        "s3b_certificate_log",
+        "s3b_reasoning"
+      ]
+    },
+    {
+      "claim": "S2: two distinct original-cycle private edges, piece exclusivity, and negative-reading/gluing isolation of that same vertex",
+      "declaration": "Hypostructure.Graph.Strategy.Spine.OriginalCyclePassageStatement.S2",
+      "residual_clause": "f021 separation at the same O; the private part of its original positive certificate",
+      "bound_witness": "G = selected.object; w is the f021 witness with sparseTargetDefectWitness data G = some w and w.Spec; alpha=w.first, beta=w.second, A=sparseDeclaredSupport data G alpha, B=sparseDeclaredSupport data G beta, Z=w.support, D=cutBoundary G Z, O=w.outside; (P,N) is its Separates orientation; c is each original CycleCertificate (glue (retainedPiece G Z P) O) data.LengthOK.",
+      "evidence": [
+        "s3b_statement",
+        "s3b_library",
+        "s3b_row",
+        "s3b_certificate_log",
+        "s3b_reasoning"
+      ]
+    },
+    {
+      "claim": "S3: tight endpoint on each of those two ambient edges; a high private vertex forces both neighbours tight",
+      "declaration": "Hypostructure.Graph.Strategy.Spine.OriginalCyclePassageStatement.S3",
+      "residual_clause": "f007 degree placement on the actual f118 private-cycle wedge",
+      "bound_witness": "G = selected.object; w is the f021 witness with sparseTargetDefectWitness data G = some w and w.Spec; alpha=w.first, beta=w.second, A=sparseDeclaredSupport data G alpha, B=sparseDeclaredSupport data G beta, Z=w.support, D=cutBoundary G Z, O=w.outside; (P,N) is its Separates orientation; c is each original CycleCertificate (glue (retainedPiece G Z P) O) data.LengthOK.",
+      "evidence": [
+        "s3b_statement",
+        "s3b_library",
+        "s3b_row",
+        "s3b_certificate_log",
+        "s3b_reasoning"
+      ]
+    },
+    {
+      "claim": "Weakest case c18_02 intersected with c16_04, c12_04 and c14_03/c14_04: all S1–S3 jointly, without whole, realization or high-vertex assumptions",
+      "declaration": "Hypostructure.Graph.Strategy.Spine.OriginalCyclePassageStatement.weakest_case",
+      "residual_clause": "Unchanged f021 positive-certificate clause in the three-label both-nonwhole case",
+      "bound_witness": "G = selected.object; w is the f021 witness with sparseTargetDefectWitness data G = some w and w.Spec; alpha=w.first, beta=w.second, A=sparseDeclaredSupport data G alpha, B=sparseDeclaredSupport data G beta, Z=w.support, D=cutBoundary G Z, O=w.outside; (P,N) is its Separates orientation; c is each original CycleCertificate (glue (retainedPiece G Z P) O) data.LengthOK.",
+      "evidence": [
+        "s3b_statement",
+        "s3b_library",
+        "s3b_row",
+        "s3b_certificate_log",
+        "s3b_reasoning"
+      ]
+    }
+  ],
+  "weakest_case_id": "c18_02",
+  "evidence": [
+    "s3b_inputs",
+    "s3b_reasoning",
+    "s3b_library",
+    "s3b_statement",
+    "s3b_row",
+    "s3b_vocabulary",
+    "s3b_residuals",
+    "s3b_final",
+    "s3b_kernel",
+    "s3b_certificate",
+    "s3b_certificate_log"
+  ]
+}

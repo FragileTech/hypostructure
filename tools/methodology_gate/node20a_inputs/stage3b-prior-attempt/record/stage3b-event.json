@@ -1,0 +1,298 @@
+{
+ "event": {
+  "node": "node20a",
+  "stage": "3b",
+  "result": "done",
+  "evidence": [
+   "s3b_inputs",
+   "s3b_reasoning",
+   "s3b_library",
+   "s3b_statement",
+   "s3b_row",
+   "s3b_vocabulary",
+   "s3b_residuals",
+   "s3b_final",
+   "s3b_kernel",
+   "s3b_certificate",
+   "s3b_certificate_log",
+   "s3b_artifact",
+   "s3b_record_checks",
+   "s3b_record_checker"
+  ],
+  "inputs": {
+   "1": "46226a007716c7b2274a267f8abd0da08732aa5d7dc2ccf8a42938dc90a8f3f2",
+   "2": "0011353258e1b1a4917981a00977723da0d78b35ca85b433686b84b279d6a301",
+   "3": "002b4dda9a8c1ac782cda8f11d293b6ccc1a543a6513d08c626c27c608e31ce2"
+  },
+  "artifact": {
+   "residual_binding": "7fe020ac66d4b12cc98885731bd5a8faa507b6b3671cdd45bf44efa33c43d603",
+   "selected_aspect": "a03",
+   "incoming_residual_key": "K .sparseTargetDefectResidual",
+   "lean_inputs": [
+    "K .sparseTargetDefectResidual",
+    "K .witnessReadingsCycleFree",
+    "K .witnessReadingCounts",
+    "K .positiveCyclePrivateEdge",
+    "K .tightEndpoint"
+   ],
+   "ledger_row": "Hypostructure.Graph.Strategy.Spine.originalCyclePassageRow",
+   "structure_fact_id": "f129_originalCyclePassage",
+   "structure_key": "K .originalCyclePassage",
+   "lean_declaration": "Hypostructure.Graph.Strategy.Spine.OriginalCyclePassageStatement",
+   "bound_witness": "G = selected.object; w is the f021 witness with sparseTargetDefectWitness data G = some w and w.Spec; alpha=w.first, beta=w.second, A=sparseDeclaredSupport data G alpha, B=sparseDeclaredSupport data G beta, Z=w.support, D=cutBoundary G Z, O=w.outside; (P,N) is its Separates orientation; c is each original CycleCertificate (glue (retainedPiece G Z P) O) data.LengthOK.",
+   "source_path": "hypostructure/Hypostructure/Graph/Statements/Node20aStructure.lean",
+   "claim_projections": [
+    {
+     "claim": "S1: exact original-cycle interval, injective positive-reading lift, active common endpoints and two-contact component",
+     "declaration": "Hypostructure.Graph.Strategy.Spine.OriginalCyclePassageStatement.S1",
+     "residual_clause": "f021/f022 positive-certificate support at the same O; f118 supplied private endpoint; f115 endpoint profiles",
+     "bound_witness": "G = selected.object; w is the f021 witness with sparseTargetDefectWitness data G = some w and w.Spec; alpha=w.first, beta=w.second, A=sparseDeclaredSupport data G alpha, B=sparseDeclaredSupport data G beta, Z=w.support, D=cutBoundary G Z, O=w.outside; (P,N) is its Separates orientation; c is each original CycleCertificate (glue (retainedPiece G Z P) O) data.LengthOK.",
+     "evidence": [
+      "s3b_statement",
+      "s3b_library",
+      "s3b_row",
+      "s3b_certificate_log",
+      "s3b_reasoning"
+     ]
+    },
+    {
+     "claim": "S2: two distinct original-cycle private edges, piece exclusivity, and negative-reading/gluing isolation of that same vertex",
+     "declaration": "Hypostructure.Graph.Strategy.Spine.OriginalCyclePassageStatement.S2",
+     "residual_clause": "f021 separation at the same O; the private part of its original positive certificate",
+     "bound_witness": "G = selected.object; w is the f021 witness with sparseTargetDefectWitness data G = some w and w.Spec; alpha=w.first, beta=w.second, A=sparseDeclaredSupport data G alpha, B=sparseDeclaredSupport data G beta, Z=w.support, D=cutBoundary G Z, O=w.outside; (P,N) is its Separates orientation; c is each original CycleCertificate (glue (retainedPiece G Z P) O) data.LengthOK.",
+     "evidence": [
+      "s3b_statement",
+      "s3b_library",
+      "s3b_row",
+      "s3b_certificate_log",
+      "s3b_reasoning"
+     ]
+    },
+    {
+     "claim": "S3: tight endpoint on each of those two ambient edges; a high private vertex forces both neighbours tight",
+     "declaration": "Hypostructure.Graph.Strategy.Spine.OriginalCyclePassageStatement.S3",
+     "residual_clause": "f007 degree placement on the actual f118 private-cycle wedge",
+     "bound_witness": "G = selected.object; w is the f021 witness with sparseTargetDefectWitness data G = some w and w.Spec; alpha=w.first, beta=w.second, A=sparseDeclaredSupport data G alpha, B=sparseDeclaredSupport data G beta, Z=w.support, D=cutBoundary G Z, O=w.outside; (P,N) is its Separates orientation; c is each original CycleCertificate (glue (retainedPiece G Z P) O) data.LengthOK.",
+     "evidence": [
+      "s3b_statement",
+      "s3b_library",
+      "s3b_row",
+      "s3b_certificate_log",
+      "s3b_reasoning"
+     ]
+    },
+    {
+     "claim": "Weakest case c18_02 intersected with c16_04, c12_04 and c14_03/c14_04: all S1–S3 jointly, without whole, realization or high-vertex assumptions",
+     "declaration": "Hypostructure.Graph.Strategy.Spine.OriginalCyclePassageStatement.weakest_case",
+     "residual_clause": "Unchanged f021 positive-certificate clause in the three-label both-nonwhole case",
+     "bound_witness": "G = selected.object; w is the f021 witness with sparseTargetDefectWitness data G = some w and w.Spec; alpha=w.first, beta=w.second, A=sparseDeclaredSupport data G alpha, B=sparseDeclaredSupport data G beta, Z=w.support, D=cutBoundary G Z, O=w.outside; (P,N) is its Separates orientation; c is each original CycleCertificate (glue (retainedPiece G Z P) O) data.LengthOK.",
+     "evidence": [
+      "s3b_statement",
+      "s3b_library",
+      "s3b_row",
+      "s3b_certificate_log",
+      "s3b_reasoning"
+     ]
+    }
+   ],
+   "weakest_case_id": "c18_02",
+   "evidence": [
+    "s3b_inputs",
+    "s3b_reasoning",
+    "s3b_library",
+    "s3b_statement",
+    "s3b_row",
+    "s3b_vocabulary",
+    "s3b_residuals",
+    "s3b_final",
+    "s3b_kernel",
+    "s3b_certificate",
+    "s3b_certificate_log"
+   ]
+  },
+  "reason": "Selected a03 structure derived inline on the incoming canonical tuple and published as one new exact-ledger fact, with checked S1–S3 and weakest-case projections. Local lane-locked Lean checks passed through Assembly.Final and the preservation fixture. The prescribed Python runner is absent; its invocation failure is recorded and the controller check remains pending. Accepted Stages 1–3 and the complete incoming residual are preserved; independent review is pending."
+ },
+ "new_facts": {},
+ "evidence": {
+  "stage1_prior_use_ledger": {
+   "path": "evidence/stage1-prior-use-ledger.json",
+   "sha256": "dab4ab45cc2d8196d05b9e96e7d3f36b329f30cccdf4f7cee867f9a73bb29362",
+   "locator": "prior_uses, pu01–pu27; coverage_evidence",
+   "proves": "Stage 1 compact account of supplied prior moves and their effects on the unchanged Node20aOutcome selected; scratch-only history is not promoted to ledger facts."
+  },
+  "s2_defs": {
+   "path": "evidence/stage2-witness-definitions.md",
+   "sha256": "1d48a5df2f9b890004c4ec3a2aa01ffad8d52c247fb5e1dbb90950d9e89907b9",
+   "locator": "Named sections, verbatim defining declarations",
+   "proves": "Exact coordinate constructors, support selector, witness Spec, boundary/gluing types and same-cycle geometry."
+  },
+  "s2_res": {
+   "path": "evidence/stage2-SparseExitResidual.lean",
+   "sha256": "946a7ebbb758df70b4fe3db16b2224bab2e169b4b93b2f265795671a2b329c49",
+   "locator": "Definitions named in component map; source Statements/SparseExitResidual.lean",
+   "proves": "Exact types of retained statements and their witness-local predicates; proofs are not re-audited."
+  },
+  "s2_read": {
+   "path": "evidence/stage2-SparseExitReadings.lean",
+   "sha256": "9d654f5d3ce0603c2736f4806f3caffee563d5ba215caed2a5f38c7ded86dfe2",
+   "locator": "Definitions named in component map; source Statements/SparseExitReadings.lean",
+   "proves": "Exact types of retained statements and their witness-local predicates; proofs are not re-audited."
+  },
+  "s2_arms": {
+   "path": "evidence/stage2-ReadingSpectrumArms.lean",
+   "sha256": "f4811641594484127efcba3205eee6a02ccfcc8bea0d3250bb64c75e4a917f4a",
+   "locator": "Definitions named in component map; source ReadingSpectrumArms.lean",
+   "proves": "Exact types of retained statements and their witness-local predicates; proofs are not re-audited."
+  },
+  "s2_domains": {
+   "path": "evidence/stage2-realization-domains.md",
+   "sha256": "48c585d9e58ebeac4549841b775939ad6ff2a5c827f78b689eab5c77eeb1e0f5",
+   "locator": "RealizedIn, KeepsAll, DroppedAreBoundary, canonical support",
+   "proves": "Distinguishes induced support realization, label-fixing outside embedding, and retaining all actual-outside edges."
+  },
+  "s2_canonical": {
+   "path": "evidence/stage2-canonical-guards.md",
+   "sha256": "4229fc65aec53d2ac14fb3e84e781dc0c9abb5107a077d546d4b51f2576f8212",
+   "locator": "CanonicalSurplus declarations and NamedSurplusExits.SparseSurplusExit",
+   "proves": "Canonical guard existence, exact three support branches, and five named exit constructors."
+  },
+  "s2_helpers": {
+   "path": "evidence/stage2-counting-rigidity-domains.md",
+   "sha256": "ae987a9cf9f62f181c3e2578d2c8c51f8cf00801191fad8c239639e99a348026",
+   "locator": "Exact declaration bodies; no upstream proof reconstruction",
+   "proves": "Underlying quantifiers of the cycle-counting and local-rigidity conjuncts."
+  },
+  "s2_analysis": {
+   "path": "evidence/stage2-analysis.md",
+   "sha256": "776c6f644edb10d57e07908ec543a66e6bad0042b50ae16d24a9016185db8b51",
+   "locator": "Object binding; exhaustive witness axes; exact statement fidelity; interaction coverage",
+   "proves": "Stage 2 classification justifications and limitations on the same residual-bound objects; no technique selected."
+  },
+  "s2_inventory": {
+   "path": "evidence/stage2-inventory.json",
+   "sha256": "bbd31838630bf97ca52acd5f5cda4e993e311a88067e300db3404b024ac3a4d0",
+   "locator": "Entire artifact, with all exact statements and generated coordinates",
+   "proves": "Component map, exhaustive factored witness classification, register coverage and unused-aspect inventory."
+  },
+  "s3_bound_input": {
+   "path": "evidence/stage3-bound-input.json",
+   "sha256": "ba8fe70269d8c1c11571270be87f8059a187f9717ec8d8f02d44269a9ace4c5b",
+   "locator": "Exact accepted component and case enumeration",
+   "proves": "Pins all 128 conjuncts and their accepted binders, constructor, support, realization and case domains; no reclassification."
+  },
+  "s3_reasoning": {
+   "path": "evidence/stage3-structural-opportunity.md",
+   "sha256": "acbdc4dc3eca81e47f13631d10a37bc1ee57bbeebe26d2e163bd62c26d370b69",
+   "locator": "S1-S3; case scope; rival and joint proposal",
+   "proves": "Derives the same-cycle structural signature, compares all eligible aspects and records weakest-case obligations."
+  },
+  "s3_sources": {
+   "path": "evidence/stage3-source-excerpts.md",
+   "sha256": "0253c16c7c4d9acd39a6a8ce03a604b9b69f2be87c233bbe783a3002f35be2a0",
+   "locator": "Exact selected declarations and definitions",
+   "proves": "Supports precise cycle, orientation, profile and gluing domains in S1-S3."
+  },
+  "s3_artifact": {
+   "path": "evidence/stage3-conflict.json",
+   "sha256": "22e5e5673b8a9d56e0ed84c74ece68026600c2d2665609e6bf5fb29fd7e801e7",
+   "locator": "Entire artifact",
+   "proves": "Stage 3 ranked comparisons, complete grouped case coverage and selected same-witness opportunity."
+  },
+  "s3b_library": {
+   "path": "evidence/stage3b-structure.lean",
+   "sha256": "35dd135a58d83269670001ec058c0058e23a2328d0fa95574c4d8b27bd42fa94",
+   "locator": "S1child1–3 accepted generic declarations; CyclePassage.Supplied, PrivateWedge, TightWedge, Passage and their proofs",
+   "proves": "Exact same-cycle dependent signature and checked remaining S1–S3 deductions."
+  },
+  "s3b_statement": {
+   "path": "evidence/stage3b-statements.lean",
+   "sha256": "eb2666ded527e23fcd1e09b2717eaf01e343b14cf0d5d35b8c7a7a3f6cb27b40",
+   "locator": "OriginalCyclePassageAtWitness; OriginalCyclePassageStatement; S1, S2, S3, weakest_case",
+   "proves": "Single value schema and all selected same-witness projections."
+  },
+  "s3b_row": {
+   "path": "evidence/stage3b-row.lean",
+   "sha256": "3362675db0430ec5cbfc9af36deae0d55cc291ca943d559999b19cd8b6adb660",
+   "locator": "originalCyclePassageRow, entire definition",
+   "proves": "Owner-local FactInputs elimination of f021 and f118; singleton publication of the same tuple."
+  },
+  "s3b_vocabulary": {
+   "path": "evidence/stage3b-vocabulary.lean",
+   "sha256": "211e45f2384efe6fbbef57dad01773382ba7a347f9b32aaf437df5f5552365eb",
+   "locator": "originalCyclePassage constructor, Holds, label, LabelPins, idx, ofIdx, name",
+   "proves": "New semantic key with fresh index 7104 and unchanged inherited indices."
+  },
+  "s3b_residuals": {
+   "path": "evidence/stage3b-residuals.lean",
+   "sha256": "ed6e12d88c2e57f89fd5368d8c04e323c6e56e382275856cafa94ed3aca35347",
+   "locator": "Node20aPassageOutcome and node20aPassageReturn; original Node20aOutcome/node20aReturn unchanged",
+   "proves": "The returned structure retains the entire original 128-conjunct residual."
+  },
+  "s3b_final": {
+   "path": "evidence/stage3b-final.lean",
+   "sha256": "c112481a8f17beb7398854fede296b53f2829310857949eecd14f26af4713390",
+   "locator": "SelectedLedgerBoundaryResult first arm; passageHistory immediately after privateSwitchHistory",
+   "proves": "Actual canonical AtomicCT.run on the literal incoming ledger and direct consumer wiring."
+  },
+  "s3b_reasoning": {
+   "path": "evidence/stage3b-reasoning.md",
+   "sha256": "50893ff9a97e062990d19dba614dba9cc780d455153a31c4a030a30369ba3965",
+   "locator": "Exact inputs, accepted prerequisite reuse, S1–S3, weakest case, canonical publication and validation limits",
+   "proves": "Residual-specific inference and source-to-claim binding without later-stage work."
+  },
+  "s3b_inputs": {
+   "path": "evidence/stage3b-lean-inputs.json",
+   "sha256": "df826d71148f05cfcce4b8ac74ac1918556222536882a433c1d0195c47276100",
+   "locator": "Five inherited keys actually read; exact retained statements copied verbatim",
+   "proves": "Exact owner-local Lean input types and canonical witness identification."
+  },
+  "s3b_kernel": {
+   "path": "evidence/stage3b-kernel.log",
+   "sha256": "b35a1f2da40a383a31600c68a5f10f03534a9d29bb674d7f79c2f6a7e57c2335",
+   "locator": "All six replacement module source hashes and EXIT 0 statuses, ending at Assembly.Final",
+   "proves": "Local direct Lean elaboration under the lane lock; explicitly records unavailable prescribed Python runner."
+  },
+  "s3b_kernel_driver": {
+   "path": "evidence/stage3b-kernel-driver.py",
+   "sha256": "583dc41c9d8321f73cae8401291cee78cf1857c0d824f05e72f53ec83246915b",
+   "locator": "Dependency-ordered direct Lean driver invoked under /runtime/lake-W.lock",
+   "proves": "Reproducible source-hashed local narrow check."
+  },
+  "s3b_lean_environment": {
+   "path": "evidence/stage3b-lean-environment.sh",
+   "sha256": "672049503d6c68f1dfae5b66c3e32a15b1b2201bad25cd9877352bae50177789",
+   "locator": "LEAN_PATH and mounted toolchain command",
+   "proves": "Exact local check environment using pinned accepted prerequisite caches."
+  },
+  "s3b_certificate": {
+   "path": "evidence/stage3b-kernel-certificate.lean",
+   "sha256": "7fac7b1d444d39998ff62f9629a4b81c58fc142de2499d6e0aeefe69bdacd2f2",
+   "locator": "ExactHistory examples; axiom queries limited to new generic deductions, row and projections",
+   "proves": "Kernel-checked singleton production, unchanged current, and every inherited key in the exact output index."
+  },
+  "s3b_certificate_log": {
+   "path": "evidence/stage3b-certificate.log",
+   "sha256": "fc01faf453408a6b8df0fb510e26e7d395ae701ab0ba2be8ef3d3dc842c72b9a",
+   "locator": "Successful fixture exit; standard propext/Classical.choice/Quot.sound axioms only for new generic proofs",
+   "proves": "No added axiom or unfinished proof in the new derivation, row or projections; full inherited ledger index checks."
+  },
+  "s3b_artifact": {
+   "path": "evidence/stage3b-artifact.json",
+   "sha256": "02e63f23ec74088f8410c4d183244841989730522bf1b69fd71e3443be3821ee",
+   "locator": "Complete Stage 3b artifact",
+   "proves": "Exact current-stage decision and proof index; not an independent proposition."
+  },
+  "s3b_record_checks": {
+   "path": "evidence/stage3b-record-checks.log",
+   "sha256": "2fb2eb896b3e55eab4a5dcea100e06dbf4b69645ed6a397f23af7e2736738caa",
+   "locator": "Stage 3b schema, full record, prefix, source and hash assertions",
+   "proves": "Representation and preservation checks passed; no claim of independent mathematical acceptance."
+  },
+  "s3b_record_checker": {
+   "path": "evidence/stage3b-record-checker.py",
+   "sha256": "5160a0874bb70704da20d8b4c37a1e08537b3a40df5f85348315a0df911bb89e",
+   "locator": "Exact stage validator function bodies, record validator and preservation assertions",
+   "proves": "Reproducible stage-only record checks without loading the structural register."
+  }
+ }
+}

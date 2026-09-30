@@ -1,0 +1,420 @@
+{
+  "prior_uses": [
+    {
+      "id": "pu01",
+      "property_ids": [
+        "E01",
+        "A04",
+        "C03"
+      ],
+      "structure": "Selected finite simple G = selected.object; registered presentation and baseline.",
+      "move": "Entry [1]–[4], minDegreeBaselineRow; presentation laws published once.",
+      "effect_on_residual": "f001–f003: G avoids accepted (dyadic) cycles, has minimum degree at least δ = 3, and every strictly smaller baseline object satisfies the target. All registered Type B, surplus and spine presentation laws remain at their stated domains.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu02",
+      "property_ids": [
+        "C02",
+        "C04",
+        "E04"
+      ],
+      "structure": "Edge-rooted returns and open-port suppression in G.",
+      "move": "[5]–[7] return avoidance; entrySelectionFactsRow after [4].",
+      "effect_on_residual": "f004, f032: every dart return-length set is disjoint from the shifted accepted set; no suppression cycle has accepted lifted length |walk| + |chords|. These exclude targets, not all returns.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu03",
+      "property_ids": [
+        "E02",
+        "E03",
+        "A06",
+        "B01",
+        "B02"
+      ],
+      "structure": "Proper subgraphs, tight endpoints, and high vertices of G.",
+      "move": "[8] no proper baseline; [9] tight endpoint; [10] slack independence; bridgelessRow.",
+      "effect_on_residual": "f005–f007, f023: no proper subgraph retains the baseline; G is connected and bridgeless, every edge has a threshold endpoint, and vertices above the threshold are independent.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu04",
+      "property_ids": [
+        "A12",
+        "A05",
+        "A06",
+        "H01"
+      ],
+      "structure": "Cycle rank and degree-surplus accounts at G.",
+      "move": "lem:cycle-rank; sparseExitBudgetRow; degreeCountRow; highDegreeSurplusRow.",
+      "effect_on_residual": "f008, f033–f035, f087–f088: n+2 ≤ 2(m+1−n), 2m=δn+σ, σ+2δ|H|+lowDarts=δn, |H|≤σ; on the strict arm H is nonempty and σ≤|H|(n−|H|−δ).",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu05",
+      "property_ids": [
+        "B06",
+        "B07",
+        "E05",
+        "E06"
+      ],
+      "structure": "Boundary-degree fibres and contextual responses of G’s declared coordinates and proper atoms.",
+      "move": "[11] degree-profile fibres; [12] context universality; [13] replacement; [14] uncompressibility; sparseExitQuotientsRow.",
+      "effect_on_residual": "f009–f012, f047: admissible quotients cannot identify different degree fibres and must be target-complete in all compatible contexts; validity only at G’s outside is insufficient. Smaller signature-preserving replacements with one-way obstruction inclusion and nontrivial target-complete compressions of proper atoms are excluded; admissible label maps are injective.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu06",
+      "property_ids": [
+        "C08",
+        "C09",
+        "C10",
+        "D01",
+        "G02"
+      ],
+      "structure": "Induced windows, canonical packing P₀ and legal attachment labels.",
+      "move": "[15] no arm, [15]–[17] maximal packing, [18] label census; entrySelectionFactsRow.",
+      "effect_on_residual": "f013–f015, f036: induced windows exist, the maximal vertex-disjoint packing is nonempty, legal labels obey the exact registered-order census, and order·ν≤n. Maximality is not maximum packing.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu07",
+      "property_ids": [
+        "A01",
+        "A02",
+        "A13",
+        "H01",
+        "I04"
+      ],
+      "structure": "Strict surplus and sparsity at G, remainder R and packed region W of P₀.",
+      "move": "[19] above arm; exactWindowJoinPressureRow; sparseExitBudgetRow, sparseExitEnvelopeRow, sparseExitPackingRow.",
+      "effect_on_residual": "f017, f024, f037–f041: σ>C⌈√n⌉; m+2≤(δ−1)n with the exact window-join identity; C+1≤⌈√n⌉, C(C+1)+9≤n and m+4≤2n (using ex(6,C₄)=7). At P₀, def⁺(R)≤e(R,W) and e(R,W)+2(order−1)p≤δ·order·p+σ_W.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu08",
+      "property_ids": [
+        "F07",
+        "E06",
+        "E09",
+        "F04",
+        "B08"
+      ],
+      "structure": "Attempted response quotient and canonical clause-(b) witness w=(A,B,Z,O) at G.",
+      "move": "[132] named sparse exit; [125] nonterminal payload; [20] boundTargetDefectGeometryAt_of_separated on that witness.",
+      "effect_on_residual": "f020–f022: retain sparse exit, ∃w, sparseTargetDefectWitness=some w ∧ w.Spec, and geometry at that same canonical w. Its identified declared coordinates have different responses at O, on their canonical connected support Z. An attempted label collision is not an admissible quotient and does not itself give a target cycle in G.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu09",
+      "property_ids": [
+        "B07",
+        "D09",
+        "E01",
+        "E05"
+      ],
+      "structure": "The canonical readings, actual outside G−Z, and separating context O.",
+      "move": "SparseExitResidual Type A reading/gluing enrichment (excerpt items 24–28, 39–42).",
+      "effect_on_residual": "f027–f031, f042–f045: readings are not target-complete; both pieces are cycle-free and both actual-outside gluings are target-negative; |Z|+1≤n. O is not realized in G−Z; all realized contexts are negative. Actual-outside gluings and negative sub-gluings at O′≤O are not smaller baseline objects. A positive-cycle sub-context still separates, has internal degree ≤2, and its negative gluing fails baseline.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu10",
+      "property_ids": [
+        "C01",
+        "C03",
+        "C04",
+        "C13"
+      ],
+      "structure": "Positive/negative readings P,N at the bound context O.",
+      "move": "everyWitnessSpectrumRow; SparseExitResidual pathSpectrumSplit and armOneForcedPath; SparseExitReadings spectrumArmOneRefined.",
+      "effect_on_residual": "f016, f046, f091, f121: spectrum alternative is a two-label P-path π plus O-path of total 2^k (k≥2), excluding the corresponding N lengths, or every positive accepted cycle meets three labels. The split holds at every Spec witness. Arm (i) yields a simple path in G[Z], and its refinement forces active common labels, a private edge and |π|≥2, with the recorded adjacency, modulo-4 and outside-path exclusions; it does not realize the O-path in G.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu11",
+      "property_ids": [
+        "B03",
+        "B05",
+        "A11",
+        "E02"
+      ],
+      "structure": "Boundary of Z and its actual outside; singleton-boundary supports of G.",
+      "move": "singleBoundaryShapeRow; SparseExitResidual boundary/cut and two-boundary closure enrichment (items 45–54, 74–77).",
+      "effect_on_residual": "f048, f061–f069, f089–f090, f092: a singleton-boundary nontrivial proper support has a degree-4 2+2 cut vertex. The witness has two positive-support boundary labels and at least two cut edges, with low-degree vertices on the specified inside/outside sides. For two boundary labels the pair arm is excluded, an interior exists, arm (i) is forced, and conditional 2-sum closures coexist with exclusion of accepted inside/outside path sums (not both single edges). Outside size ≥2 or boundary size ≥3.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu12",
+      "property_ids": [
+        "A11",
+        "E03",
+        "E01",
+        "B06"
+      ],
+      "structure": "Dropped edges and whole-reading alternatives at the canonical pair.",
+      "move": "SparseExitResidual droppedEdgeTightDeficit, whole-orientation/deficit rows and keeps-all rows (items 55–64, 70–71).",
+      "effect_on_residual": "f070–f079, f085–f086: every dropped G-edge has an endpoint below baseline in the actual-outside gluing; both readings cannot be whole. If Z⊆A (respectively B), that reading is positive, the other negative, and S=Z∖B (respectively Z∖A) is nonempty, internal, has no boundary neighbour and is isolated in every opposite-reading gluing, contributing δ|S| to the deficit lower bound. Keeps-all without wholeness forces both nonwhole and both profiles different from the whole piece.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu13",
+      "property_ids": [
+        "E01",
+        "E03",
+        "A11",
+        "H01",
+        "C01"
+      ],
+      "structure": "Deleted-support object G−S in each whole orientation.",
+      "move": "SparseExitResidual deletedSupportReduction, deficient-vertex, deficit-sum and restoration enrichment (items 65–69, 81–82).",
+      "effect_on_residual": "f080–f084, f096–f097: G−S is smaller and target-free but fails baseline; deficient vertices lie in the retained internal part and meet S. With retained side T, 1≤D_T=Σ_T(d_S−(deg−3))≤e(S,T), equality under the stated tight-neighbour condition; |S|+|∂Z|≤|Z| and e(S,T)≤D_T+σ. A baseline-restoring edge forces an accepted closing path; a restoring edge set forces a cycle through a new edge. Restoration remains conditional.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu14",
+      "property_ids": [
+        "B08",
+        "B03",
+        "F04",
+        "D08"
+      ],
+      "structure": "Canonical support Z of the identified A,B.",
+      "move": "SparseExitResidual supportSteinerMinimal, steinerVerticesCut, wholeSupportEqual; entrySelectionFactsRow specWitnessStructure.",
+      "effect_on_residual": "f093–f095, f114: Z is a minimum connected set containing A∪B; Steiner vertices are cut vertices of G[Z]. Z⊆A forces Z=A and B⊆A, symmetrically for B. Every Spec witness has the recorded same-witness geometry, unrealized outside, proper support, boundary lower bounds, pair exclusion and whole orientation; these universal facts do not replace the canonical witness.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu15",
+      "property_ids": [
+        "B06",
+        "B05",
+        "D09",
+        "I03"
+      ],
+      "structure": "Boundary reading counts and membership of the same A,B,Z.",
+      "move": "SparseExitReadings witnessReadingCounts, witnessActiveLabels, boundaryPartition, twoBoundaryAllActive.",
+      "effect_on_residual": "f115–f117, f123: boundary counts c_A=c_B with membership transfer; at least two active labels lie in A∩B with 1≤c_A=c_B≤deg−1. Boundary partitions into active common labels, zero-count isolated labels in A∪B, and Steiner cut vertices. If |∂Z|=2 all labels are active; boundary-free readings and at most one active label are excluded.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu16",
+      "property_ids": [
+        "C03",
+        "C12",
+        "E03",
+        "E09"
+      ],
+      "structure": "Positive glued cycles and private edges of the bound reading P.",
+      "move": "SparseExitReadings positiveCyclePrivateEdge, wholeCycleMeetsDeficit, wholePrivateEdges, privateEdgeSwap, privateEdgeSwitch.",
+      "effect_on_residual": "f118–f120, f124, f127: each positive cycle uses a P-private edge with an internal endpoint absent from N; ret_P is not a subreading of ret_N. Whole cycles meet the deficit and private edges are exactly those incident to it. G−Priv(P) fails baseline at a tight endpoint; a private edge either has two tight ends losing it, or a high end with the retained forced switch path.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu17",
+      "property_ids": [
+        "C01",
+        "C02",
+        "B07",
+        "D09"
+      ],
+      "structure": "Separating edge contexts and outside returns at the witness boundary.",
+      "move": "SparseExitReadings separatingEdgeContextWitness/Spectrum, cubicLabelOutsidePath, twoBoundaryOutsideBoth.",
+      "effect_on_residual": "f122, f125–f126, f128: a separating single-edge context a—b has a≁b and yields the stated Spec witness and spectrum split. A degree-δ boundary label has an outside path of length ≥2 to another label; with exactly two boundary labels and a tight label there are outside paths in both orientations. This does not assert that the original separating O is realized.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu18",
+      "property_ids": [
+        "E03",
+        "D03",
+        "C01",
+        "C02",
+        "C13"
+      ],
+      "structure": "High centres and switched edges of the same G.",
+      "move": "entrySwitchPathsRow; highCentreSplitForcedRow; sameVertexSwitchForcedPathRow; highSurplusConfigurationRow and highEndpointSwitchRow.",
+      "effect_on_residual": "f018–f019, f110–f113: strict surplus forces a ≥δ+2 vertex or two distinct δ+1 vertices. The specified two-edge and same-centre switches force paths of accepted closing length; the latter splits into avoiding-centre or two-return cases. Cross-vertex paths obey the dyadic-star incompatibility. High-centre splitting forces an accepted cycle avoiding the centre through a newly added neighbour-pair edge. Every high/baseline edge has the specified forced-path switch alternative.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu19",
+      "property_ids": [
+        "D03",
+        "C05",
+        "A09",
+        "A05",
+        "G07"
+      ],
+      "structure": "Neighbour pairs, path meetings and high-vertex cycle counts in G.",
+      "move": "cycleNeighbourhoodRow; highDegreePairSumRow; cycleDoubleCountRow.",
+      "effect_on_residual": "f049–f052, f056: G[N(h)] is a matching, giving ≥binom(d_h,2)−⌊d_h/2⌋ nonadjacent pairs and ≥d_h−2 partners per neighbour. Star and meeting constraints exclude the stated dyadic sums. High-degree pair-sum bounds include 5σ≤Σ_H binom(d_h,2) and σ²+5σ|H|+6|H|²≤2|H|Σ_H binom(d_h,2). Independent high vertices give 2Σ_H #cycles(h)≤n·#cycles(G) and the corresponding lower-bound count, with #cycles(G)≤2^m.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu20",
+      "property_ids": [
+        "B03",
+        "C01",
+        "C02",
+        "C04"
+      ],
+      "structure": "Components of G−h and cycles through h.",
+      "move": "cutVertexCyclesRow after [8] and bridgelessness.",
+      "effect_on_residual": "f053–f055: either G−h is connected or d_h is even and each component meeting N(h) contains exactly two neighbours. These give binom(d_h,2) or d_h/2 cycle lower bounds respectively. At cut vertices, returns and paths within/between blocks have the recorded decomposition, forbidden dyadic sums and conditional modulo/parity restrictions.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu21",
+      "property_ids": [
+        "D03",
+        "D01",
+        "C12",
+        "C13",
+        "G02"
+      ],
+      "structure": "Length-three routes and placed windows of P₀.",
+      "move": "threeRouteRow and windowRigidityRow (excerpt final items 104–107).",
+      "effect_on_residual": "f057–f060: length-three fans share their first step with the stated remaining vertex inequalities; a 3,3,3 chain pins its middle internal vertices. Window interiors have d−2 outside neighbours, ends d−1. Cross-edge gaps avoid accepted lengths, external labels are legal and adjacent labels C₁-safe; two windows cannot form the stated ladder. Local rigidity does not close this residual.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu22",
+      "property_ids": [
+        "H01",
+        "H09",
+        "G03",
+        "G05"
+      ],
+      "structure": "Canonical spine demand and full-schedule count at G.",
+      "move": "sparseExitBaselineSpineDemandRow (replacement exclusion and selection); sparseExitFreePairCountRow.",
+      "effect_on_residual": "f025–f026: baseline spine demand is retained on the strict arm; the full-schedule entropy count fails at G’s canonical objects on [20a]. These are the existing accounts, not a new independence certificate.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu23",
+      "property_ids": [
+        "G07",
+        "H05",
+        "H09",
+        "D04"
+      ],
+      "structure": "Canonical capacity presentation, tokens, blocked/free partition and spine family.",
+      "move": "sparseExitCanonicalCapacityRow/CountsRow; primitiveCarrierCountRow; sparseExitPairChainRow.",
+      "effect_on_residual": "f098–f109: explicit recorded-blocker presentation; |𝔘_sp|=4n+2σ; |𝔗|+2(order−1)ν=4n+3σ+3order·ν; blocked+free=binom(σ,2). Retain the exact ledger/pair-count deficits. Certification iff free≤B; free fitting forces blocked overload with a role-homogeneous matching/star, while capped tokens force free excess. E_paper≤B and free≤E_paper certifies. pairCodeConfiguration retains all four alternatives: [137]→[143] configuration; canonical first failure yielding [182]; return-system obstruction target defect; or obstruction handoff with Type B fan entry. No cap or closure is inferred.",
+      "evidence": [
+        "prior_use_excerpt"
+      ]
+    },
+    {
+      "id": "pu24",
+      "property_ids": [
+        "A01",
+        "G08",
+        "H09",
+        "G09"
+      ],
+      "structure": "Prior scratch counting and hub/window accounts (not additional ledger premises).",
+      "move": "Supplied Stage 1 history: joint/Joint.lean, hubwin, hublink.",
+      "effect_on_residual": "Reported partial restrictions: master range 0.253√n ≲ s < n−C√n; minimal order/first band closed via 8n≤32s+125s², and few-window hubs-in-R restricted by C√n+15h<3s+K·h_R+584ν+32σ_W. No closing effect on the full residual; scratch notation and estimates are retained only as history, not imported as new facts.",
+      "evidence": [
+        "stage12_existing"
+      ]
+    },
+    {
+      "id": "pu25",
+      "property_ids": [
+        "A13",
+        "C08",
+        "C10",
+        "H01",
+        "I06"
+      ],
+      "structure": "Prior scratch density, window and remainder analyses.",
+      "move": "Supplied Stage 1 history: density/, windows/, grs/.",
+      "effect_on_residual": "Density forced paths only add slack, recorded as slack(S)=|S|+∂S−6−σ_S. Window/remainder budgets and charge kinds were analyzed. GRS reports P13-free R, bags ≤6142 and path order ≤6143h_R+6142, not an h-independent path bound. These scratch results have no new ledger or closing effect.",
+      "evidence": [
+        "stage12_existing"
+      ]
+    },
+    {
+      "id": "pu26",
+      "property_ids": [
+        "H05",
+        "H06",
+        "G07",
+        "D04"
+      ],
+      "structure": "Prior scratch capacity and overloaded-pattern analyses.",
+      "move": "Supplied Stage 1 history: account/ and armA/.",
+      "effect_on_residual": "Reported Π_free⊆Π_tri∪Π_cs; extended charge empties its free side and forces overload, but caps are missing (singleton port loads can be about σ). Arm A records four pattern kinds, (a), its return variant (b), target defects (e), and singleton-blocked star (f,P); only 10/36 roles carry load. These are scratch history, not a cap or closure on the canonical residual.",
+      "evidence": [
+        "stage12_existing"
+      ]
+    },
+    {
+      "id": "pu27",
+      "property_ids": [
+        "B04",
+        "B09",
+        "C13",
+        "E09"
+      ],
+      "structure": "Prior scratch linkage, local rigidity and K1–K7/matrix analyses.",
+      "move": "Supplied Stage 1 history: armB/, sim/, k20a-K*, analysis-20a-matrix, combine-20a.",
+      "effect_on_residual": "Arm B reports exact B1–B3 and end-degree facts, but G8/G12 linkage failed (C4 counterexample to the needed Menger application). Local simulation reported consistency; sim/ has no citable file. Only its ported four rigidity keys are ledger facts (pu21). K1–K7 closures are already represented by the enrichment/reading keys above, not a second source of premises. No new branch closure follows from this history.",
+      "evidence": [
+        "stage12_existing"
+      ]
+    }
+  ],
+  "coverage_evidence": [
+    "prior_use_excerpt",
+    "stage12_existing"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "current_object": "inputs.current.object = selected.object at the assembly specialization",
+  "parameters": "data.toParameters = spineData.toParameters at the assembly specialization",
+  "reads": [
+    {
+      "key": "K .sparseTargetDefectResidual",
+      "fact_id": "f021_sparseTargetDefectResidual",
+      "exact_retained_statement": "Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile erdosReceiverLoadProfile spineData .sparseTargetDefectResidual selected.object — conjunct 21 of 128 of `Node20aOutcome selected`, carried on the incoming ExactLedger as `K .sparseTargetDefectResidual`. By `Holds` (SpineVocabulary.lean) it is `SparseTargetDefectResidualStatement data.toParameters object` with data := spineData, object := selected.object (G). Exact Lean declaration (hypostructure/Hypostructure/Graph/Statements/SurplusPair.lean:1200-1212):\n/-- Node `[125]`, the sole nonterminal named-exit payload: clause (b) of\n`def:named-surplus-exits` at G's declared sparse family\n(`lem:context-universality`, tex 6106-6112), at G's canonical witness\n`sparseTargetDefectWitness` -- two distinct declared coordinates of G, read on\nG's own piece at their canonical connected support `Z`, agree in G's actual\noutside context and are separated by the witness's `∂Z`-boundaried context\n`O`. -/\nnoncomputable abbrev SparseTargetDefectResidualStatement\n    (data : Parameters)\n    (object : Graph.FiniteObject.{u}) :\n    Prop :=\n  ∃ witness, sparseTargetDefectWitness data object = some witness ∧\n    witness.Spec"
+    },
+    {
+      "key": "K .witnessReadingsCycleFree",
+      "fact_id": "f029_witnessReadingsCycleFree",
+      "exact_retained_statement": "Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile erdosReceiverLoadProfile spineData .witnessReadingsCycleFree selected.object — conjunct 29 of 128 of `Node20aOutcome selected`, carried on the incoming ExactLedger as `K .witnessReadingsCycleFree`. By `Holds` (SpineVocabulary.lean) it is `WitnessReadingsCycleFreeStatement data.toParameters object` with data := spineData, object := selected.object (G). Exact Lean declaration (hypostructure/Hypostructure/Graph/Statements/SparseExitResidual.lean:171-174):\n/-- **Both reading pieces are cycle-free** (each embeds in G). -/\nnoncomputable def WitnessReadingsCycleFreeStatement (data : Parameters)\n    (object : Graph.FiniteObject.{u}) : Prop :=\n  AtSparseTargetDefectWitness data object WitnessReadingsCycleFreeAtWitness"
+    },
+    {
+      "key": "K .witnessReadingCounts",
+      "fact_id": "f115_witnessReadingCounts",
+      "exact_retained_statement": "Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile erdosReceiverLoadProfile spineData .witnessReadingCounts selected.object — conjunct 115 of 128 of `Node20aOutcome selected`, carried on the incoming ExactLedger as `K .witnessReadingCounts`. By `Holds` (SpineVocabulary.lean) it is `WitnessReadingCountsStatement data.toParameters object` with data := spineData, object := selected.object (G). Exact Lean declaration (hypostructure/Hypostructure/Graph/Statements/SparseExitReadings.lean:203-208):\n/-- **Reading counts and transfer at the canonical witness**: `c_A(b) = c_B(b)`\nat every `b ∈ ∂Z`; a boundary vertex of `A` with an `A`-neighbour lies in `B`,\nand conversely. -/\nnoncomputable def WitnessReadingCountsStatement (data : Parameters)\n    (object : Graph.FiniteObject.{u}) : Prop :=\n  AtSparseTargetDefectWitness data object WitnessReadingCountsAtWitness"
+    },
+    {
+      "key": "K .positiveCyclePrivateEdge",
+      "fact_id": "f118_positiveCyclePrivateEdge",
+      "exact_retained_statement": "Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile erdosReceiverLoadProfile spineData .positiveCyclePrivateEdge selected.object — conjunct 118 of 128 of `Node20aOutcome selected`, carried on the incoming ExactLedger as `K .positiveCyclePrivateEdge`. By `Holds` (SpineVocabulary.lean) it is `PositiveCyclePrivateEdgeStatement data.toParameters object` with data := spineData, object := selected.object (G). Exact Lean declaration (hypostructure/Hypostructure/Graph/Statements/SparseExitReadings.lean:280-287):\n/-- **Every positive cycle uses a private edge, so `ret_P ⊄ ret_N`**: at the\ncanonical witness, with `P` the positive and `N` the negative reading at `O`,\nevery accepted cycle of `glue ret_P O` traverses a private edge `xy` of `P`\n(`x, y ∈ P`, `y ∉ N`, `y` internal to `Z`), and `ret_P` has an edge that is not\nan edge of `ret_N`. -/\nnoncomputable def PositiveCyclePrivateEdgeStatement (data : Parameters)\n    (object : Graph.FiniteObject.{u}) : Prop :=\n  AtSparseTargetDefectWitness data object PositiveCyclePrivateEdgeAtWitness"
+    },
+    {
+      "key": "K .tightEndpoint",
+      "fact_id": "f007_tightEndpoint",
+      "exact_retained_statement": "Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile erdosReceiverLoadProfile spineData .tightEndpoint selected.object — conjunct 7 of 128 of `Node20aOutcome selected`, carried on the incoming ExactLedger as `K .tightEndpoint`. By `Holds` (SpineVocabulary.lean) it is `TightEndpointStatement data.toParameters object` with data := spineData, object := selected.object (G). Exact Lean declaration (hypostructure/Hypostructure/Graph/Statements/Spine.lean:2665-2673):\n/-- Node `[9]`: every oriented edge has an endpoint exactly at the\nthreshold. -/\nnoncomputable abbrev TightEndpointStatement\n    (data : Parameters)\n    (object : Graph.FiniteObject.{u}) :\n    Prop :=\n  (∀ dart : object.graph.Dart,\n    object.degree dart.fst = data.threshold ∨\n      object.degree dart.snd = data.threshold)"
+    }
+  ],
+  "canonical_binding": "Option.some.inj (canonicalOther.symm.trans canonical) inside the owner-local row",
+  "accepted_source_spans": {
+    "S1child3.lean": [
+      {
+        "namespace": "S1child1",
+        "lines": "8–276"
+      },
+      {
+        "namespace": "S1child2",
+        "lines": "368–528"
+      },
+      {
+        "namespace": "S1child3",
+        "lines": "616–704"
+      }
+    ]
+  }
+}

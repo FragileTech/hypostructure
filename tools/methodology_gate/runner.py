@@ -210,14 +210,14 @@ def review_schema(stage):
                   'gates': {'type': 'object', 'additionalProperties': False,
                             'properties': {k: gate for k in keys}, 'required': keys},
                   'first_failure': {'type': 'string'}, 'repair': {'type': 'string'},
-                  'repair_stage': {'enum': list(STAGE_ORDER[:ordinal(stage) + 1])},
+                  'repair_stage': {'type': ['integer', 'string'], 'enum': list(STAGE_ORDER[:ordinal(stage) + 1])},
                   'reviewed_facts': {'type': 'array', 'items': {'type': 'string'}},
                   'invalid_inherited_facts': {'type': 'array', 'items': {'type': 'string'}},
                   'revalidated_facts': {'type': 'array', 'items': {'type': 'string'}},
                   'unnecessary_facts': {'type': 'array', 'items': {'type': 'string'}}}
     properties['accepted_stage_revocation'] = {
         'type': ['object', 'null'], 'additionalProperties': False,
-        'properties': {'stage': {'enum': list(STAGE_ORDER[:ordinal(stage)])},
+        'properties': {'stage': {'type': ['integer', 'string'], 'enum': list(STAGE_ORDER[:ordinal(stage)])},
                        'defect': {'type': 'string'},
                        'evidence': {'type': 'array', 'minItems': 1, 'items': evidence}},
         'required': ['stage', 'defect', 'evidence']}
@@ -252,6 +252,8 @@ def launch(role, view, output, assignment, log, auth, timeout):
     prompt += '\n\nCONTROLLER ASSIGNMENT\n' + json.dumps(assignment, indent=2)
     argv = ['/usr/local/bin/codex', 'exec', '--ignore-user-config', '--ignore-rules',
             '--ephemeral', '--skip-git-repo-check', '-c', 'approval_policy="never"',
+            # --ignore-user-config otherwise leaves the model at reasoning effort "none".
+            '-c', 'model_reasoning_effort="xhigh"',
             '--sandbox', 'danger-full-access', '--output-schema', '/output/schema.json',
             '--output-last-message', '/output/response.json', '-']
     # The inner CLI runs without a second sandbox because this entire process,
