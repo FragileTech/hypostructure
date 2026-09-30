@@ -1,9 +1,10 @@
 import Hypostructure.Graph.Statements.Spine
 import Hypostructure.Graph.LocalRigidity
 import Hypostructure.Graph.WindowExchange.X15Data
+import Hypostructure.Graph.WindowExchange.Rungs
 
 /-!
-# Statements: exchanges at one window of `P₀` (route 8, keys `9810`–`9811`)
+# Statements: exchanges at one window of `P₀` (route 8, keys `9810`–`9812`)
 
 `P₀ = canonicalWindowPacking` is a maximum window packing and `R` its remainder.
 
@@ -17,6 +18,11 @@ import Hypostructure.Graph.WindowExchange.X15Data
   paths) landing at positions `i < j` of one window `P ∈ P₀`, on at least `order − 1 − i` and
   `j` vertices, meeting `p[0..i]` resp. `p[j..order−1]` only at their landing edges, do not
   exist.  At order 13: arms of lengths `(12 − i, j)` trigger.
+* `Route8X15HeavyPairStatement` (key `9812`, window order 13): two distinct windows
+  `P, Q ∈ P₀` whose vertices have degree at most 3, and an induced copy of `X15` inside `R`
+  with exits `x ≠ y` landing on `P` and on `Q`: at most 6 rungs `P — Q` when `4 ∈ {x, y}`,
+  at most 8 when `{x, y} = {6, 9}`.  So a heavy pair (at least 9 rungs) carries no copy of
+  `X15` with exits on both of its windows.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -71,5 +77,25 @@ def Route8ArmPairTriggerStatement (data : Parameters)
         (∀ k (t : Fin data.windowOrder), j.1 ≤ t.1 →
           object.graph.Adj (β k) (p t) → k = Fin.last b ∧ t = j) →
         False
+
+/-- **Key `9812`: a copy of `X15` with exits on two windows of `P₀` bounds their rungs.**  At
+window order 13, for distinct windows `P, Q ∈ P₀` placed by `p`, `q`, every vertex of which
+has degree at most 3, an induced copy `e : X15 ↪g G` with every vertex in `R`, and two
+distinct exits `x`, `y` of `X15` with `e x ~ p a` and `e y ~ q b`: the rungs
+`{(i, j) : p i ~ q j}` number at most `6` if `4 ∈ {x, y}` and at most `8` otherwise. -/
+def Route8X15HeavyPairStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  let packing := canonicalWindowPacking data object
+  let remainder := object.remainderSupport packing
+  data.windowOrder = 13 →
+  ∀ P ∈ packing, ∀ Q ∈ packing, P ≠ Q → ∀ p q : Fin 13 → object.Vertex,
+    Graph.LocalRigidity.IsWindowPlacement object P p →
+    Graph.LocalRigidity.IsWindowPlacement object Q q →
+    (∀ k, object.degree (p k) ≤ 3 ∧ object.degree (q k) ≤ 3) →
+    ∀ e : Graph.WindowExchange.x15Graph ↪g object.graph, (∀ u, e u ∈ remainder) →
+    ∀ x y : Fin 15, x.1 ∈ Graph.WindowExchange.x15Exits →
+      y.1 ∈ Graph.WindowExchange.x15Exits → x ≠ y →
+    ∀ a b : Fin 13, object.graph.Adj (e x) (p a) → object.graph.Adj (e y) (q b) →
+      Graph.WindowExchange.rungCount p q ≤ if x.1 = 4 ∨ y.1 = 4 then 6 else 8
 
 end Hypostructure.Graph.Strategy.Spine

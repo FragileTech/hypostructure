@@ -227,4 +227,9 @@ import Hypostructure.Graph.WindowExchange.X15Data
 import Hypostructure.Graph.WindowExchange.Transport
 import Hypostructure.Graph.WindowExchange.DoubleLanding
 import Hypostructure.Graph.WindowExchange.Arms
+import Hypostructure.Graph.WindowExchange.Rungs
+import Hypostructure.Graph.WindowExchange.HeavyPairSearch
+import Hypostructure.Graph.WindowExchange.HeavyPairSound
+import Hypostructure.Graph.WindowExchange.HeavyPairCert
+import Hypostructure.Graph.WindowExchange.HeavyPair
 import Hypostructure.Graph.Contracts.RouteEight.WindowExchange
