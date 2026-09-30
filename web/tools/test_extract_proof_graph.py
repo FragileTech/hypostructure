@@ -358,8 +358,8 @@ def test_faithful_triviality_is_not_reported_as_a_defect() -> None:
 
     audit = load_audit(REPO_ROOT)["nodes"]
     states = ERDOS["review"]["nodes"]
-    # [108] is no longer here: its row now builds the decorated handoff fan
-    # envelope of lem:typeA-high-degree-handoff (501aac50), a contentful step.
+    # [108] is not in this list: its row builds the decorated handoff fan
+    # envelope of lem:typeA-high-degree-handoff, a contentful step.
     for node in (
         6, 7, 11, 12, 23, 26, 31, 35, 36, 37, 55, 66, 88,
         110, 111, 126, 138, 145, 154, 155,

@@ -17,9 +17,9 @@ The Erdős–Gyárfás paper and Lean root theorem give a conditional reduction.
 Every counterexample leads to a selected minimal counterexample in one of five
 named residuals, [144a], [172a], [182], [186], and [54], or in [187], the
 explicit disjunction of the other returned outcomes. These six alternatives
-exhaust the current formal routing and are the result type of the Lean root
-theorem. The strict-surplus target defect [20a] is closed: the sparse
-target-defect exit is empty at the selected graph. Excluding all six for selected minimal
+exhaust the formal routing and are the result type of the Lean root
+theorem. The strict-surplus target defect [20a] closes at the selected graph:
+its sparse target-defect exit is empty there (lem:sparse-exit-b-empty). Excluding all six for selected minimal
 counterexamples would prove the conjecture; their exclusion remains open.
 
 The Navier–Stokes argument is written across three manuscripts, each numbering
@@ -127,7 +127,7 @@ the fact vocabulary, opening the minimal-counterexample scope), **Assembling a
 proof** (how steps, decisions and closures compose into the public statement,
 and the interface-replacement exclusion), and **Reference** (verbatim
 signatures for the ledger/execution, problem, semantics/replacement and utility
-modules). Only live, current-API code is documented, and always in a
+modules). Only code of the framework API is documented, and always in a
 problem-agnostic way; when a framework signature changes, the reference pages
 under `content/*Api.tsx` are the place to update.
 
@@ -191,7 +191,7 @@ Both extractors use only the Python standard library. From each manuscript,
 | The `tikzpicture` panels | every numbered step, its shape, and each arrow with its branch label; a red `open` ellipse is a terminal the paper leaves open, and is flagged as such |
 | Dangling arrows (`continue at [14]`, `from [16]`) | the joins between panels |
 | Dashed `route` ellipses | collapsed onto the terminal they re-draw, not counted twice |
-| Figure captions | the detail each panel adds, with the drawing legend removed |
+| Figure captions | the detail each panel adds, without the drawing legend |
 | The diagram map (`Part / Nodes / Branch resolved / …`) | what each panel of the argument does |
 | The node-by-node audit table | what each step is, the results behind it, and its successor |
 | The constraint / retained-fact ledger | the standing constraints and where each is tracked |

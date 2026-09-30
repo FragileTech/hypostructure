@@ -24,7 +24,7 @@ export function App() {
         <Route path=":proof/explore" element={<ExplorePage />} />
         <Route path=":proof/tables" element={<TablesPage />} />
         <Route path=":proof/notation" element={<NotationPage />} />
-        {/* The site used to serve one proof from the root. */}
+        {/* Root-level explore and notation paths redirect to the Erdős–Gyárfás proof. */}
         <Route path="explore" element={<Navigate to="/erdos-gyarfas/explore" replace />} />
         <Route path="notation" element={<Navigate to="/erdos-gyarfas/notation" replace />} />
         <Route path="*" element={<NotFoundPage />} />
