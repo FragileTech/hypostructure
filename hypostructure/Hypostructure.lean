@@ -223,3 +223,8 @@ import Hypostructure.Graph.WalkWindows
 import Hypostructure.Graph.WalkHubEscape
 import Hypostructure.Graph.PackingExchange
 import Hypostructure.Graph.CleanLanding
+import Hypostructure.Graph.WindowExchange.X15Data
+import Hypostructure.Graph.WindowExchange.Transport
+import Hypostructure.Graph.WindowExchange.DoubleLanding
+import Hypostructure.Graph.WindowExchange.Arms
+import Hypostructure.Graph.Contracts.RouteEight.WindowExchange
