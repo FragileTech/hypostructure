@@ -1,7 +1,7 @@
 {
  "status": "exact selected-root reduction to [20a], [144a], [172a], [182], [186], and [187]",
- "updated_at": "2026-09-27T18:08:02.080565+00:00",
- "aggregate_validation": "Full HypostructureErdos64EG package build passed on the working tree at ae44b9b plus the removal of Assembly/Surplus/TypeBContinuation.lean and TypeBCertificateOutcome, the [132] exit/blocker decision, the single [140]/[142]/[143] audit row `homogeneousBottleneckAuditRow`, and the [144] caps-fail/caps-hold decision (9029 jobs); every node entry re-derived on 2026-09-25 from the live Lean producers and the manuscript. Kernel axiom audit (web/tools/lean_axiom_audit.py): 153 assembly declarations, all clean, no frontier stubs.",
+ "updated_at": "2026-09-30T05:34:37.196007+00:00",
+ "aggregate_validation": "Full build of both packages (hypostructure and HypostructureErdos64EG) at 6abf8f58 in the integration worktree: `lake build --no-build` reports all 9291 targets up to date. Kernel axiom audit (web/tools/lean_axiom_audit.py, run on that build): 347 assembly declarations, all clean, no frontier stubs. Entries [144a], [172a], [186] and [187] re-derived on 2026-09-30 from the live Lean residuals and the manuscript; the other entries are as re-derived on 2026-09-25.",
  "nodes": {
   "1": {
    "producer": "`OfficialStatement` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Problem.lean:58); `target` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Problem.lean:105); `officialCounterexample_reaches_selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:157)",
@@ -1790,13 +1790,13 @@
    "on_probed_closed_arm": false
   },
   "172a": {
-   "producer": "`BlockedBarrierOverlapOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:504), `blockedBarrierOverlapReturn` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:650), returned by `selectedCanonicalReplacementContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Replacement.lean:65); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:71)",
+   "producer": "`BlockedBarrierOverlapOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:602) and its two subtypes `BlockedBarrierOverlapOutcome_DeficiencyAtOrAbove` / `_DeficiencyBelowRateFails` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals/BlockedBarrierOverlapOutcome.lean:31, 39), returned by `blockedBarrierOverlapReturn_DeficiencyAtOrAbove` / `_DeficiencyBelowRateFails` (lines 63, 200) from `selectedCanonicalReplacementContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Replacement.lean:69); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:164)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "The outcome carries all 71 facts of the dense-pass ledger at [172a] (including [25]-[34], [48], the cold stubs [149]-[152], the corridor chain, the family, [163]-[169] and `K .blockedBarrierOverlap`), one `get` each; matches thm:main (iii).",
+   "fidelity_note": "The generic outcome is the explicit conjunction of the 125 facts common to every path into [172a] (dense-pass ledger including [163]-[169] and `K .blockedBarrierOverlap`), one `get` each; the two subtypes add the [160] arm facts (1 or 2). Matches thm:main (iii). The generic module `Hypostructure/Graph/RecordFibreCompression.lean` (`chain_iff_empty`) proves that the aggregate graph-count tests hold iff the class is empty; its instantiation at G (the positive arm of [170] is empty, so [172a] carries the whole [169] residual) is proved on paper (cor:170-positive-arm-empty) and is not wired into the assembly.",
    "complete": "YES: exact routing; endpoint remains open",
    "local": "YES",
    "api": "OK",
-   "difference": "The [160] arm facts (`denseDeficiencyBelow`/`AtOrAbove`, `route8RateFails`) differ between the two dense passes and are not carried.",
+   "difference": "The [160] arm facts differ between the two dense passes and are carried by the two subtypes, not by the generic outcome.",
    "on_probed_closed_arm": false
   },
   "181": {
@@ -1848,13 +1848,13 @@
    "on_probed_closed_arm": false
   },
   "186": {
-   "producer": "`Route8JointBalanceOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:946), `route8JointBalanceReturn` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:1108), called by `selectedRouteEightUnifiedResidual` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean:205) after `route8JointBalanceRow`; `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:71)",
+   "producer": "`Route8JointBalanceOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:1615) as the product `Route8JointBalanceOutcome_product` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals/Route8JointBalanceOutcome.lean:46), returned by `route8JointBalanceProductReturn` (line 59) from `selectedRouteEightUnifiedResidual` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean:216); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:164)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "The outcome carries the 79 facts common to all 2080 paths into [186] (near-cubic prefix, cold stubs, spine [25]-[56], cold corridors, landing lemmas, bridge prefix, unified census, descent, [181], [183]-[185], `K .route8JointBalance`), one `get` each; matches thm:main (v).",
+   "fidelity_note": "The generic outcome is the explicit conjunction of the 146 facts common to every path into [186], one `get` each; matches thm:main (v). Since 2026-09-29/30 it also carries the route-8 rate-arm facts at G: blob structure (keys 9900-9902), CT3 dominance irreducibility (9975-9980) and the packing exchange (9800-9807: k-fold and arm exchange, full-arm cap, hub-piece mass, net-cap excess, clean-landing rules, long-landing cap, and the arm-closure residual 9807, the exact negation at G of the aggregate landing inequality Π above the net-cap cutoff). Manuscript: sec:route8-rate-arm.",
    "complete": "YES: exact routing; endpoint remains open",
    "local": "YES",
    "api": "OK",
-   "difference": "None",
+   "difference": "The rate-arm keys are Lean improvements recorded in sec:route8-rate-arm; the reduction to Π and the computed catalogue (X15) are paper/computation, not Lean.",
    "on_probed_closed_arm": false
   },
   "20a": {
@@ -1868,23 +1868,23 @@
    "on_probed_closed_arm": false
   },
   "144a": {
-   "producer": "`Node144aOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:200), `node144aHandoffReturn` / `node144aFailsReturn` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:302, 401), called by `selectedBottleneckDischarge` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean:262); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:71)",
+   "producer": "`Node144aOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:45) and its six subtypes `Node144aOutcome_{window,remainder,primitive}{Handoff,Fails}` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals/Node144aOutcome.lean:28-176), returned by `node144aWindowHandoffReturn` … `node144aPrimitiveFailsReturn` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals/Node144aOutcome.lean:366-494), called by `selectedBottleneckDischarge` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean:741); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:164)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`Node144aOutcome` carries the 44 facts common to the three audit arms ([140]/[142]/[143]) of the strict-surplus ledger (entry prefix, activation, pair split, blocker ledger, capacity tokens, fibre pressure, overload, `K .bridgeless`, `K .highCentreNormalForm`, pattern, caps-fail, routing), then [144]'s own arms: (`K .typeBHandoff`, `K .typeBFanEntry`) or (`K .typeBHandoffFails`, `K .sameTokenPatternUnresolved`, `K .sameTokenReadingsNotReplacement`); 49 facts, one `get` each.",
+   "fidelity_note": "`Node144aOutcome` is the explicit conjunction of the 136 facts common to every path into [144a], one `get` each; the six subtypes (token class of [139]/[141] times the arm of [144]) add 3-5 facts on the handoff arm and 18-20 on the handoff-fails arm. Since 2026-09-30 the generic ledger also carries the port-walk window/exchange facts (keys 9850-9851) and the W0 escape, crossing and hub counts (9852-9854); the three handoff-fails subtypes carry the walk attachment/chain cycles (9990), the separated-configuration exclusion (9991) and `K .sameTokenTriArmEmpty` (9855): the sub-arm boundary-free transplants ∧ triangular ports ∧ EndEdgesFree is empty at G (Lean improvement). Matches thm:main (ii); manuscript: sec:144a-formal-status.",
    "complete": "YES: exact routing; endpoint remains open",
    "local": "YES",
    "api": "OK. No carrier: each of the eight conjuncts is read with `.get (K …) .down` from the literal routed ExactLedger returned by `selectedBottleneckDischarge` (Dependent.lean:288-296, 324-332, 357-365), at the leaf boundary, as the other root outcomes are. No wrapper or Prop projection of a continuation remains on this lane.",
-   "difference": "The class-test keys of [139]/[141] (`windowClassOverload`/`Absent`, `remainderClassOverload`/`Absent`, `primitiveClassOverload`) are arm facts of those decisions and are not carried (see lean-vs-paper-discrepancies.md#residual-144a).",
+   "difference": "Lean improvements not routed by the manuscript's diagram (keys 8100-8107, 9850-9855, 9990-9991) are recorded in sec:144a-formal-status and lean-vs-paper-discrepancies.md; the residual that remains on the handoff-fails subtypes is the complement: an open port, a walk using the other end edge, or the boundary-free/transplant antecedent failing.",
    "on_probed_closed_arm": false
   },
   "187": {
-   "producer": "`OtherReturnedOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:49) over `NearCubicTargetDefectOutcome`, `PairTypeBOutcome`, `TypeBSublinearOutcome`, `Route8QuotientOutcome`, `Route8RateFailsOutcome`, `ColdBranchClosedOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:71)",
+   "producer": "`OtherReturnedOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:81) over `PairTypeBOutcome` subtypes, `TypeBSublinearOutcome_product`, `Route8QuotientOutcome_product`, the eleven `Route8RateFailsOutcome` subtypes and the `ColdBranchClosedOutcome` subtypes (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean and proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals/); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:164)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Each disjunct is the explicit conjunction of every fact on its maximal ledger (18, 42, 62, 64, 42, 57 facts), one `get` per fact; the pair-system entry keeps its [179]/[180] arm facts as its own disjunction.",
+   "fidelity_note": "Each disjunct is the explicit conjunction of every fact on its maximal ledger, one `get` per fact (generic outcomes: PairTypeB 133, TypeBSublinear 128, Route8Quotient 133, Route8RateFails 113, ColdBranchClosed 105 facts, plus the subtype extras). The near-cubic target defect is closed at G in Lean (exit (b), stated about G, is empty) and returns no residual. The route-8 quotient failure carries the same rate-arm facts as [186] (keys 9800-9807, 9900-9902, 9975-9980).",
    "complete": "YES: exact routing; endpoint remains open",
    "local": "YES",
    "api": "OK",
-   "difference": "None. No case is relabelled as [20a] or [144a], and the aggregate asserts no closure.",
+   "difference": "None in routing. No case is relabelled as [20a] or [144a], and the aggregate asserts no closure.",
    "on_probed_closed_arm": false
   }
  },

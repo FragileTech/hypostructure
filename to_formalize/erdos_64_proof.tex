@@ -205,6 +205,10 @@ selected residual at the open leaf [172a].  The connected overlap proposed in
 \cref{lem:barrier-failure-overlap} has not been constructed from this failure.
 The proposed uncrossing and serial arithmetic therefore supply no further
 established continuation from [172a].
+At the selected graph the positive decision does not occur: the aggregate
+graph-count inequalities hold exactly when the blocked class is empty
+(\cref{cor:170-positive-arm-empty}), so the whole residual of [169] stops at
+[172a].
 
 On branches carrying the window-package comparison, the density calculation
 in \cref{prop:p13-density} gives
@@ -350,12 +354,18 @@ fibre, the active-demand and capacity presentations, its selected
 homogeneous matching or star, and the resulting maximal packing, core, and
 decorated Type B envelope.  The common Type B fan-entry fact is appended on
 the same ledger.  Neither a homogeneous cap nor a near-cubic estimate has
-been derived on this handoff arm.
+been derived on this handoff arm.  In the formal ledger, the configuration
+with boundary-free transplants, triangular ports and free end edges is
+empty on the handoff-fails subtypes (\cref{lem:144a-tri-arm-empty}); the
+retained alternatives are listed in \cref{rem:144a-remaining}.
 \item \textbf{Node [172a]: conditional graph-count failure.}
 The dense-packing branch has a first failed conditional graph-count
 inequality from \cref{lem:scale-additivity}, with its outside record and
 earlier prefix.  The overlap support required by
-\cref{lem:barrier-failure-overlap} remains to be constructed.
+\cref{lem:barrier-failure-overlap} remains to be constructed.  The positive
+arm of [170] is empty at the selected graph
+(\cref{cor:170-positive-arm-empty}), so this case carries the whole residual
+of [169].
 \item \textbf{Node [182]: uncovered pair-code implication.}
 One of the coverage implications at nodes [178], [179], and [180] fails.
 The residual retains the exact input and the negation of the first such
@@ -365,7 +375,10 @@ implication, as specified in
 The surviving entries carry the reductions through nodes [181], [183],
 [184], and [185], together with the joint balances and silent-terminal
 exclusion of \cref{lem:typeA-unified-joint-balance}.  Exclusion of the
-remaining visible-entry history is open.
+remaining visible-entry history is open.  The ledger also carries the
+rate-arm facts of \cref{sec:route8-rate-arm}; above the net-cap cutoff they
+reduce this case to the aggregate landing inequality of
+\cref{rem:r8-remaining}.
 \item \textbf{Node [187]: other returned outcomes.}
 This is the explicit disjunction of: failure of the Type B sublinear
 hypothesis package; failure of route-8 quotient freeness; failure of the
@@ -375,7 +388,9 @@ at-or-below-surplus arm; or a Type B entry produced by the [179] or [180]
 pair-system outcome.  The first five alternatives retain
 \(\sigma(G)\le C_{\rm sp}\lceil\sqrt n\rceil\); the pair-system Type B entry
 retains its strict-surplus and sparse-survivor ancestry and its [179] or
-[180] source fact.  None is relabelled as [20a] or [144a].
+[180] source fact.  None is relabelled as [20a] or [144a].  The route-8
+quotient-failure alternative carries the same rate-arm facts as [186]
+(\cref{sec:route8-rate-arm}).
 \end{enumerate}
 These six outcomes exhaust the returned cases for a selected minimal
 counterexample.  In particular, if none can occur for such a graph, then
@@ -542,6 +557,11 @@ In particular, the nonrepetitive low-entropy case in \cref{prop:two-budget} is
 not a terminal leaf; it is routed to the large-budget net-charge analysis and
 therefore enters the same Type A route-8, peeled-demand, and Type B bridge
 routing.
+Results obtained after this routing was fixed are recorded, with their
+status labels, in \cref{sec:144a-formal-status} (node [144a]),
+\cref{sec:170-record-fibres} (nodes [170]--[172a]), and
+\cref{sec:route8-rate-arm} (the route-8 rate arm of [186] and [187]).  None
+of them changes the list of outcomes of \cref{thm:main}.
 \end{remark}
 
 The proof assumes such a counterexample exists and chooses one, $G$,
@@ -1167,7 +1187,7 @@ every node/.style={font=\scriptsize}
 \draw[arrow] (lower)--(contrad);
 \end{tikzpicture}%
 }
-\caption[Proof-dependency diagram, Part IX]{Proof-dependency diagram, Part IX.  Rectangles, diamonds, ellipses, bracketed node numbers, and edge labels use the convention of \cref{fig:proof-diagram-part-i}.  The figure expands exit (8) from \cref{fig:proof-diagram-part-viii} and records how it feeds the demand routing.  On the derived spine branch, the route-8 response-support reduction closes the no-two-support branch: the global squeeze extracts $\mathcal X_A$ carrying $D_A$, the route-8 burden gives \(N_{\rm basin}\ge4D_A\), zero/one-essential-core entries trigger exits (4)--(7), and absence of a two-support entry gives \(3N_{\rm basin}\le\tau_{\rm win}|R|+o(|R|)\), contradicting \(3N_{\rm basin}\ge12(1/4-\tau_{\rm win})|R|-o(|R|)\) and \(\tau_{\rm win}<3/13\).  A two-support entry enters the exhaustive decision at node [123].  Every target-defect peel decreases \(\Lambda_4\), and the exact identities \(\tilde\Xi=\tilde\Xi^{P_4}\mathbin{\dot\cup}\tilde P_4\) and \(4\tilde D_A=4\tilde D_A^{P_4}+p_4\) retain its contribution.  Termination in a true route-8 entry is sent to node [124], where the local exclusion theorem closes that branch.  The complementary failed reduced-rate outcome runs the full demand, absorption, and unique-window blocker ledgers and reaches node [181].  There a one-entry maximal-ledger augmentation proves that every unpaid entry has at most two private carriers.  An unpaid entry without an exit-\textup{(4)} witness is exactly the already excluded node-[124] input; hence the only survivor is node [183], where every unpaid entry has both the two-carrier bound and its canonical exit-\textup{(4)} witness.  On that literal survivor, the shortest-trace boundary-support argument proves that the silent subfamily of the unchanged unified entries has cardinality zero and reaches node [184].  On that all-visible state, the port-cap inequality and the visible-first prefix show that a non-overloaded receiver would pay its retained excess load, an immediate contradiction.  Hence every entry receiver has a canonical actual visible-four package and the branch reaches node [185].  Node [185] then reads the peel, deficit, demand, absorption, and visibility ledgers together, proves universal saturated-load visibility and the coupled exact balances of \cref{lem:typeA-unified-joint-balance}, and reaches node [186].  The dashed arrow below [186] denotes the next strict local reduction only; it does not assert closure.}
+\caption[Proof-dependency diagram, Part IX]{Proof-dependency diagram, Part IX.  Rectangles, diamonds, ellipses, bracketed node numbers, and edge labels use the convention of \cref{fig:proof-diagram-part-i}.  The figure expands exit (8) from \cref{fig:proof-diagram-part-viii} and records how it feeds the demand routing.  On the derived spine branch, the route-8 response-support reduction closes the no-two-support branch: the global squeeze extracts $\mathcal X_A$ carrying $D_A$, the route-8 burden gives \(N_{\rm basin}\ge4D_A\), zero/one-essential-core entries trigger exits (4)--(7), and absence of a two-support entry gives \(3N_{\rm basin}\le\tau_{\rm win}|R|+o(|R|)\), contradicting \(3N_{\rm basin}\ge12(1/4-\tau_{\rm win})|R|-o(|R|)\) and \(\tau_{\rm win}<3/13\).  A two-support entry enters the exhaustive decision at node [123].  Every target-defect peel decreases \(\Lambda_4\), and the exact identities \(\tilde\Xi=\tilde\Xi^{P_4}\mathbin{\dot\cup}\tilde P_4\) and \(4\tilde D_A=4\tilde D_A^{P_4}+p_4\) retain its contribution.  Termination in a true route-8 entry is sent to node [124], where the local exclusion theorem closes that branch.  The complementary failed reduced-rate outcome runs the full demand, absorption, and unique-window blocker ledgers and reaches node [181].  There a one-entry maximal-ledger augmentation proves that every unpaid entry has at most two private carriers.  An unpaid entry without an exit-\textup{(4)} witness is exactly the already excluded node-[124] input; hence the only survivor is node [183], where every unpaid entry has both the two-carrier bound and its canonical exit-\textup{(4)} witness.  On that literal survivor, the shortest-trace boundary-support argument proves that the silent subfamily of the unchanged unified entries has cardinality zero and reaches node [184].  On that all-visible state, the port-cap inequality and the visible-first prefix show that a non-overloaded receiver would pay its retained excess load, an immediate contradiction.  Hence every entry receiver has a canonical actual visible-four package and the branch reaches node [185].  Node [185] then reads the peel, deficit, demand, absorption, and visibility ledgers together, proves universal saturated-load visibility and the coupled exact balances of \cref{lem:typeA-unified-joint-balance}, and reaches node [186].  On the route-8 rate arm, [186] also retains the packing-exchange, landing, piece and dominance facts of \cref{sec:route8-rate-arm}; above the net-cap cutoff they reduce it to the aggregate landing inequality of \cref{rem:r8-remaining}.  The dashed arrow below [186] denotes the next strict local reduction only; it does not assert closure.}
 \label{fig:proof-diagram-part-ix}
 \end{figure}
 
@@ -1252,7 +1272,7 @@ every node/.style={font=\scriptsize}
 \draw[arrow] (capcontra.south)--node[right]{caps: to [138]}(cappedroute);
 \end{tikzpicture}%
 }
-\caption[Proof-dependency diagram, Part X]{Proof-dependency diagram, Part X.  This panel expands the sparse non-near-cubic branch [20].  Nodes [126]--[129] build the full active surplus family.  Node [130] splits canonical pairs.  Free pairs are charged by the entropy sandwich [131], while blocked pairs pass through the blocker route [132]--[136]; the role fibres in [136] partition \(\Pi_{\rm blk}\), so this ledger has no double counting.  Node [137] is the coupled single-graph test of \cref{cor:coupled-single-graph-overload-budget,cor:numerical-single-graph-budget,prop:single-graph-sparse-pressure-routing}: all three token classes use the same \(n,p_{13},\sigma_W,\sigma_R\).  If \(D_{\rm all}=0\), the explicit quadratic bound routes to [138].  If \(D_{\rm all}>0\), the role-fibre excess enters the window-incidence, remainder-surplus, or primitive blocker-support geometric audit [140], [142], [143].  Node [144] applies \cref{thm:homogeneous-overload-geometric-closure}: its actual same-token Type B handoff reaches open [144a], while only its capped arm routes to [138].  Node [187] collects typeBSublinearResidual, route8QuotientResidual, route8RateFails, coldBranchClosed, the near-cubic target defect with surplusAtOrBelow, and Type B entries from [179] and [180] with their distinct source facts.  The cold fact is a local exclusion, and [187] does not assert closure of any survivor.  The entropy counts of [131] and of the free side of [137] are branch tests.  On the covered pair-code arm, [178] retains the exact conditional factorization and minimal connected overlap obstruction, [179] retains either an already routed outcome or the graph-realized serial system, and [180] retains either an already routed periodic outcome or the exact full-modulus arithmetic data from which an actual power-of-two cycle is constructed.  The manuscript does not prove that these three classifications are exhaustive on the retained residual.  Their literal failures therefore meet only at the explicit open node [182]; none is renamed as a blocker, quotient, exit, or Type B witness.}
+\caption[Proof-dependency diagram, Part X]{Proof-dependency diagram, Part X.  This panel expands the sparse non-near-cubic branch [20].  Nodes [126]--[129] build the full active surplus family.  Node [130] splits canonical pairs.  Free pairs are charged by the entropy sandwich [131], while blocked pairs pass through the blocker route [132]--[136]; the role fibres in [136] partition \(\Pi_{\rm blk}\), so this ledger has no double counting.  Node [137] is the coupled single-graph test of \cref{cor:coupled-single-graph-overload-budget,cor:numerical-single-graph-budget,prop:single-graph-sparse-pressure-routing}: all three token classes use the same \(n,p_{13},\sigma_W,\sigma_R\).  If \(D_{\rm all}=0\), the explicit quadratic bound routes to [138].  If \(D_{\rm all}>0\), the role-fibre excess enters the window-incidence, remainder-surplus, or primitive blocker-support geometric audit [140], [142], [143].  Node [144] applies \cref{thm:homogeneous-overload-geometric-closure}: its actual same-token Type B handoff reaches open [144a], while only its capped arm routes to [138].  On the handoff-fails subtypes of [144a] the configuration with boundary-free transplants, triangular ports and free end edges is empty (\cref{lem:144a-tri-arm-empty}).  Node [187] collects typeBSublinearResidual, route8QuotientResidual, route8RateFails, coldBranchClosed, the near-cubic target defect with surplusAtOrBelow, and Type B entries from [179] and [180] with their distinct source facts.  The cold fact is a local exclusion, and [187] does not assert closure of any survivor.  The entropy counts of [131] and of the free side of [137] are branch tests.  On the covered pair-code arm, [178] retains the exact conditional factorization and minimal connected overlap obstruction, [179] retains either an already routed outcome or the graph-realized serial system, and [180] retains either an already routed periodic outcome or the exact full-modulus arithmetic data from which an actual power-of-two cycle is constructed.  The manuscript does not prove that these three classifications are exhaustive on the retained residual.  Their literal failures therefore meet only at the explicit open node [182]; none is renamed as a blocker, quotient, exit, or Type B witness.}
 \label{fig:proof-diagram-part-x}
 \end{figure}
 
@@ -1352,7 +1372,7 @@ every node/.style={font=\scriptsize}
 \draw[arrow] (twostrand.south east)--node[sloped,above,pos=0.5]{survives}(twosurvivor.north);
 \end{tikzpicture}%
 }
-\caption[Proof-dependency diagram, Part XII]{Proof-dependency diagram, Part XII.  The dense residual [159] passes through the two exact rate tests at [160].  Only the arm satisfying both the net-deficiency rate \(\tau(\theta)<1/4\) and the route-8 private-carrier rate \(\tau(\theta)<3/13\) enters [161].  Failure of either comparison enters the dense hot/cold pass [162] on its literal residual.  The all-cold arm closes at [164]; the neutral arm [163] splits into the replacement route [165]--[166] and the two-strand route [167], [155], [168].  The dashed ellipse names the already drawn closure [155].  The trivial neutral residual [169] reaches the proved closure [171] through the positive decision at [170], carrying both the graph-count inequalities and the exact overflow from [159].  The negative arm retains the first failed conditional graph-count inequality, its outside record and prefix, and every inherited fact, and stops at the open leaf [172a].  No overlap support or serial system has been constructed from that failure.  The proposed exact-lift and full-state arguments formerly numbered [172b] and [172c] are not live continuations.}
+\caption[Proof-dependency diagram, Part XII]{Proof-dependency diagram, Part XII.  The dense residual [159] passes through the two exact rate tests at [160].  Only the arm satisfying both the net-deficiency rate \(\tau(\theta)<1/4\) and the route-8 private-carrier rate \(\tau(\theta)<3/13\) enters [161].  Failure of either comparison enters the dense hot/cold pass [162] on its literal residual.  The all-cold arm closes at [164]; the neutral arm [163] splits into the replacement route [165]--[166] and the two-strand route [167], [155], [168].  The dashed ellipse names the already drawn closure [155].  The trivial neutral residual [169] reaches the proved closure [171] through the positive decision at [170], carrying both the graph-count inequalities and the exact overflow from [159].  The negative arm retains the first failed conditional graph-count inequality, its outside record and prefix, and every inherited fact, and stops at the open leaf [172a].  At the selected graph the positive decision is empty (\cref{cor:170-positive-arm-empty}): the aggregate inequalities hold only for an empty blocked class, so every selected graph reaching [169] stops at [172a].  No overlap support or serial system has been constructed from that failure.  The proposed exact-lift and full-state arguments formerly numbered [172b] and [172c] are not live continuations.}
 \label{fig:proof-diagram-part-xii}
 \end{figure}
 
@@ -1414,7 +1434,7 @@ The table records every named object in the proof-dependency diagram.  The \emph
 44 & --- & Enumeration appendix & reproduces all finite constants including $c_{13}$ & constants are checkable & \cref{app:curv-code} \\
 52 & [158]--[168] & Dense-packing residual & the realization sentence of \cref{lem:p13-window-package} is decided at [158]; on its no-branch [159], [160] decides both the exact \(\tau(\theta)<1/4\) deficiency comparison and, on that yes-arm, the exact \(\tau(\theta)<3/13\) private-carrier comparison; only the double-yes arm enters [161], while either complement runs the hot/cold pass [162]; the neutral equal-length terminal configuration [163] is a symmetry, split into the canonical-replacement case closed by refined minimality [165]--[166] and the symmetric strand pair closed by the two-strand finite check [167]; the surviving symmetric pairs attach only at window endpoints and are never selected interior half-edges [168]; the all-cold comparison [164] closes by the remainder glue injection & closed only after every [162] continuation is discharged & \cref{def:window-realization-test}, \cref{lem:dense-deficiency-routing}, \cref{lem:dense-cold-pass}, \cref{def:neutral-equal-length-germ}, \cref{lem:neutral-germ-symmetry}, \cref{lem:refined-minimality-swap}, \cref{lem:two-strand-check}, \cref{lem:symmetric-pair-endpoint}, \cref{def:all-cold-comparison}, \cref{lem:remainder-glue-injection} \\
 53 & [173]--[177] & Small-order repair & node [56]'s collision is decided exactly on the object at [173]; its failure forces linearly many cold windows on the bounded arm of [153] whose corridors were charged as the configuration-extraction loss; [175] restores that charge: subcubic supports are genuine (F5) configurations [176], supports through a high-degree vertex are decorated handoff fan data entering Type B at [65] [177] & no sufficient-order condition remains & \cref{lem:exact-collision-test}, \cref{lem:absorbed-germ-fan-data} \\
-54 & [169]--[172] & Trivial neutral configuration: proved additive closure or open counting residual & the residual left by [166] is exposed barrier by barrier; the uniform conditional graph-count inequalities give [171]; their first failure retains the outside record, earlier prefix, graph multiplicities, and inherited selected residual at the open leaf [172a]; no connected overlap support or serial system is yet produced & [171] closes its additive arm; [172a] has no proved outgoing transition & \cref{def:blocked-class}, \cref{def:barrier-overlap-system}, \cref{lem:barrier-failure-overlap}, \cref{def:serial-window-system}, \cref{lem:window-system-realizability}, \cref{lem:serial-system-sumset}, \cref{lem:system-increment-arithmetic}, \cref{lem:scale-additivity}, \cref{lem:blocked-graphs-compress} \\
+54 & [169]--[172] & Trivial neutral configuration: proved additive closure or open counting residual & the residual left by [166] is exposed barrier by barrier; the uniform conditional graph-count inequalities give [171]; their first failure retains the outside record, earlier prefix, graph multiplicities, and inherited selected residual at the open leaf [172a]; no connected overlap support or serial system is yet produced; by the record-fibre equivalence the aggregate inequalities hold exactly when the blocked class is empty, so at the selected graph the additive arm is empty and [172a] carries the whole [169] residual & [171] closes its additive arm, which is empty at the selected graph; [172a] has no proved outgoing transition & \cref{def:blocked-class}, \cref{def:barrier-overlap-system}, \cref{lem:barrier-failure-overlap}, \cref{def:serial-window-system}, \cref{lem:window-system-realizability}, \cref{lem:serial-system-sumset}, \cref{lem:system-increment-arithmetic}, \cref{lem:scale-additivity}, \cref{lem:blocked-graphs-compress}, \cref{lem:record-fibre-equivalence}, \cref{cor:170-positive-arm-empty}, \cref{rem:170-clarification} \\
 55 & [178]--[180], [182] & Pair-code unrealized residual & the entropy counts of [131] and of the free side of [137] are branch tests; on the covered arm their failure supplies a minimal connected pair overlap obstruction [178], an actual routed outcome or graph-realized serial demand system [179], and an actual routed periodic outcome or full-modulus arithmetic closure [180] & open only at [182], which retains the exact input and negation of the first uncovered implication & \cref{def:pair-overlap-system}, \cref{lem:pair-failure-overlap}, \cref{lem:pair-system-realizability}, \cref{lem:pair-system-increment-arithmetic}, \cref{lem:pair-count-or-arithmetic} \\
 56 & [181], [183] & Maximal-ledger exit-\textup{(4)} reduction & the failed reduced-rate stage retains the disjoint reduced/peeled entry partition, the exact identity \(4\tilde D_A=4\tilde D_A^{P_4}+p_4\), both burden inequalities, every recorded witness, the maximal demand and absorption ledgers, and the unique-window blocker partition; one-entry augmentation forces every unpaid entry to have at most two private carriers, while absence of an exit-\textup{(4)} witness routes to [124] & the sole surviving child is [183], on which both obstruction counts in \textup{(168.3)} are zero; no entry or inherited fact is discarded & \cref{lem:typeA-peeling-stage-accounting}, \cref{def:typeA-peeled-demand-residual}, \cref{thm:typeA-unpaid-exit4-reduction} \\
 57 & [183], [184] & Shortest-trace boundary-support reduction & on the literal retained unified entry, silence eliminates every actual-return ownership reading; the length-first canonical trace is induced and boundary-only, so its trace-complete basin has coordinate-independent response state and empty essential core & the incoming census contradiction \(0=\alpha(\xi)\ge2\) makes the exact silent-entry count zero; the unchanged family and full ledger reach [184] & \cref{lem:typeA-unified-visible-ownership} \\
@@ -1428,8 +1448,9 @@ The table records every named object in the proof-dependency diagram.  The \emph
 50 & [137]--[143] & Coupled high-load split & the single-graph high-load test splits the forced homogeneous pattern into window-incidence, remainder-surplus, and primitive-blocker-support token classes & [139]--[143] are the three token-class audits & \cref{def:same-token-patterns}, \cref{def:same-token-blocker-roles}, \cref{def:homogeneous-token-charge}, \cref{lem:exact-surplus-pair-charge-partition}, \cref{lem:same-token-matching-star}, \cref{thm:sharp-classwise-homogeneous-token-budget}, \cref{thm:tokenized-surplus-accounting-closure} \\
 51 & [140], [142]--[144] & Geometric bottleneck discharge & a large same-token fibre gives a homogeneous matching or star, then realizes a sparse exit, Type B fan data, or fixed homogeneous caps & [144] sends the strict same-token handoff to [144a], its capped arm to [138], and other producer histories to [187] & \cref{def:same-token-routing-germs}, \cref{lem:same-token-bottleneck-routing}, \cref{thm:homogeneous-overload-geometric-closure}, \cref{cor:homogeneous-same-token-caps-close} \\
 60 & [20a] & Strict-surplus sparse target defect & the [20] exit retains surplusAbove, sparsePairExit, an attempted quotient with noninjective labels, identified reduced/full realizations differing on the target, and the structured witness & no target cycle in the selected graph is inferred; the exit is a named open residual & \cref{def:named-surplus-exits,thm:main} \\
-61 & [144a] & Same-token Type B handoff & the [144] handoff retains its overload pattern and capacity presentation, actual packing, core, decorated envelope, source pattern, strict-surplus ancestry, and typeBFanEntry & no homogeneous cap or near-cubic estimate follows on this arm & \cref{thm:homogeneous-overload-geometric-closure,thm:main} \\
+61 & [144a] & Same-token Type B handoff & the [144] handoff retains its overload pattern and capacity presentation, actual packing, core, decorated envelope, source pattern, strict-surplus ancestry, and typeBFanEntry; on the handoff-fails subtypes the formal ledger adds the port-walk attachment, chain, window and hub-escape facts, and the configuration with boundary-free transplants, triangular ports and free end edges is empty & no homogeneous cap or near-cubic estimate follows on this arm; what remains on the handoff-fails subtypes is an open port, a walk using the other end edge, or a transplant that meets the boundary or loses the degree baseline & \cref{thm:homogeneous-overload-geometric-closure,thm:main}, \cref{def:144a-walk-witness}, \cref{lem:144a-walk-cycles}, \cref{lem:144a-separated-empty}, \cref{lem:144a-tri-arm-empty}, \cref{rem:144a-remaining} \\
 62 & [187] & Other returned outcomes & the four root keys typeBSublinearResidual, route8QuotientResidual, route8RateFails, and coldBranchClosed; the near-cubic sparse target defect with surplusAtOrBelow, and Type B entries with the [179] or [180] source key & one explicit aggregate disjunction; coldBranchClosed is a local exclusion and no case is asserted closed & \cref{thm:main} \\
+63 & [186], [187] & Route-8 rate arm at the selected graph & exchange at the maximum packing, landing rules and the long-landing cap, hub-piece mass, piece exits and chains, the piecewise rate, dominance irreducibility of pieces, and the net-cap excess, retained on [186] and on the route-8 quotient-failure alternative of [187]; above the net-cap cutoff, the landing inequality \(\Pi\) for all thick hub-free pieces would exclude both; computed: \(X_{15}\) is the only thick hub-free piece with at most 24 vertices or with one rod & open: the aggregate landing inequality over multi-rod hub-free pieces with at least 25 vertices; conditional exclusion under the density conjecture & \cref{def:r8-pieces-landings}, \cref{lem:r8-packing-exchange}, \cref{lem:r8-landing-cap}, \cref{lem:r8-hub-piece-mass}, \cref{lem:r8-piece-structure}, \cref{lem:r8-dominance}, \cref{lem:r8-arm-closure-residual}, \cref{cor:r8-reduction-to-pi}, \cref{lem:r8-hub-free-suffices}, \cref{rem:r8-catalogue}, \cref{rem:r8-density-conjecture}, \cref{cor:r8-conditional}, \cref{rem:r8-remaining} \\
 \bottomrule
 \end{longtable}
 }
@@ -1894,6 +1915,26 @@ Ledger-invariant numbers and diagram-node numbers are separate namespaces.  The 
 \cref{lem:typeA-unified-visible-ownership} & EXC & [183] \texttt{(reduction)}, [184] \texttt{(consumed)} & \cref{thm:typeA-unpaid-exit4-reduction}, \cref{lem:typeA-unified-carriers}, \cref{def:typeA-trace-basin}, \cref{def:typeA-visible-load} & A silent entry forces its shortest canonical trace basin to be boundary-only and hence to admit the empty complete carrier, contradicting the retained \(\alpha\ge2\) census. & Retains the complete [183] ledger and appends the exact zero-cardinality silent residual at [184]. \\
 \cref{lem:typeA-unified-visible-overload} & EXC & [184] \texttt{(reduction)}, [185] \texttt{(consumed)} & \cref{lem:typeA-unified-visible-ownership}, \cref{def:typeA-visible-load}, \cref{lem:typeA-entry-budget}, \cref{def:typeA-excess-basin} & If an all-visible excess entry had no overloaded port, the port-cap count would put every visible load inside the retained visible-first payable prefix, contradicting that entry's excess membership. & Retains the complete [184] ledger, appends the zero non-overload count, and selects the canonical actual visible-four package at [185]. \\
 \cref{lem:typeA-unified-joint-balance} & EXC & [185] \texttt{(reduction)}, [186] \texttt{(open)} & \cref{lem:typeA-unified-visible-ownership}, \cref{lem:typeA-unified-visible-overload}, \cref{lem:typeA-peeling-stage-accounting}, \cref{def:typeA-pressure-ledger}, \cref{def:typeA-pressure-absorbers}, \cref{lem:typeA-unified-deficit} & Uses the exact visible-first order to upgrade [184] to all saturated routed loads, then eliminates the shared deficit and demand variables without subtraction. & Retains the complete [185] ledger and appends the exact joint balance at [186]. \\
+\cref{def:144a-walk-witness} & EXC & [144a] \texttt{(handoff fails)} & \cref{thm:homogeneous-overload-geometric-closure} & Defines the pair seeds, their walk witnesses, and the conditions (B1)--(B3) on the handoff-fails subtypes. & Fixes the objects of the formal [144a] facts. \\
+\cref{lem:144a-walk-cycles} & EXC & [144a] \texttt{(open)} & \cref{def:144a-walk-witness} & Attachment and chain configurations along the port walks close cycles of \(G\), so their lengths are not powers of two. & Lean key 9990. \\
+\cref{lem:144a-separated-empty} & EXC & [144a] \texttt{(open)} & \cref{def:144a-walk-witness} & Under (B1) and (B2), every vertex off the seed has a cubic neighbour in \(T\); the separated configuration is empty. & Lean key 9991; Lean improvement. \\
+\cref{lem:144a-tri-arm-empty} & EXC & [144a] \texttt{(open)} & \cref{lem:144a-separated-empty} & Bounds \(\sigma(G)\le2637\) under (B1)--(B3), against the strict surplus. & Lean key 9855; the sub-arm (B1)\,\(\wedge\)\,(B2)\,\(\wedge\)\,(B3) is empty. \\
+\cref{rem:144a-remaining} & EXC & [144a] \texttt{(open)} & \cref{lem:144a-tri-arm-empty} & States the retained alternatives: an open port, a used end edge, or failure of (B1). & Exact residual; no closure asserted. \\
+\cref{lem:record-fibre-equivalence} & ENT & [170] \texttt{(decision)} & --- & With a record-fibre gap, the aggregate tests hold if and only if the class is empty; a nonempty class has a first aggregate failure. & Lean, generic. \\
+\cref{cor:170-positive-arm-empty} & ENT & [170] \texttt{(decision)}, [172a] \texttt{(open)} & \cref{lem:record-fibre-equivalence}, \cref{lem:blocked-graphs-compress}, \cref{def:window-realization-test} & The retained overflow gives the gap; \(G\in\mathcal B(\mathcal P)\) makes the positive arm empty. & Paper; [172a] carries the whole [169] residual. \\
+\cref{rem:170-clarification} & ENT & [172a] \texttt{(open)} & \cref{cor:170-positive-arm-empty}, \cref{rem:blocked-class-checks} & Clarifies the dichotomy; restricting to connected bridgeless target-free members excludes the external example but not the equivalence. & Paper; no new open node. \\
+\cref{lem:r8-packing-exchange} & EXC & [186] \texttt{(open)}, [187] \texttt{(open)} & \cref{def:r8-pieces-landings} & Exchange at the maximum packing, for window families and for arms landing on one window. & Lean keys 9800--9802. \\
+\cref{lem:r8-landing-cap} & EXC & [186] \texttt{(open)}, [187] \texttt{(open)} & \cref{lem:r8-packing-exchange} & Pair and triple landing rules; \(\sum_P\Lambda(P)\le2p+\sigma_W\). & Lean keys 9805--9806. \\
+\cref{lem:r8-hub-piece-mass} & EXC & [186] \texttt{(open)}, [187] \texttt{(open)} & \cref{def:r8-pieces-landings} & Mass of negative hub pieces at most \(32\sigma_X\) per piece. & Lean key 9803. \\
+\cref{lem:r8-piece-structure} & EXC & [186] \texttt{(open)}, [187] \texttt{(open)} & \cref{def:r8-pieces-landings} & Exit-length exclusions, cyclic chains through pieces and windows, and the rate written over the pieces. & Lean keys 9900--9902. \\
+\cref{lem:r8-dominance} & EXC & [186] \texttt{(open)}, [187] \texttt{(open)} & \cref{lem:replacement} & No smaller dominated gadget; two-exit pieces are ordered by their length sets. & Lean keys 9975--9980; Lean improvement. \\
+\cref{lem:r8-arm-closure-residual} & EXC & [186] \texttt{(open)}, [187] \texttt{(open)} & \cref{lem:r8-piece-structure}, \cref{lem:r8-landing-cap} & Net-cap excess and the exact negation of the aggregate landing inequality, above the net-cap cutoff. & Lean keys 9804, 9807. \\
+\cref{cor:r8-reduction-to-pi} & EXC & [186] \texttt{(open)}, [187] \texttt{(open)} & \cref{lem:r8-arm-closure-residual} & Any proof of the aggregate landing inequality excludes both residuals above the cutoff. & Paper. \\
+\cref{lem:r8-hub-free-suffices} & EXC & [186] \texttt{(open)}, [187] \texttt{(open)} & \cref{lem:r8-hub-piece-mass}, \cref{lem:r8-arm-closure-residual} & Hub pieces are paid by the surplus; \(\Pi\) on thick hub-free pieces suffices. & Paper. \\
+\cref{rem:r8-catalogue} & EXC & [186] \texttt{(open)}, [187] \texttt{(open)} & \cref{def:r8-pieces-landings} & \(X_{15}\) is the only thick hub-free piece with at most 24 vertices or with one rod, and it satisfies \(\Pi\). & Computation, with its scope. \\
+\cref{rem:r8-density-conjecture} & EXC & [186] \texttt{(open)}, [187] \texttt{(open)} & \cref{rem:r8-catalogue} & Multi-rod hub-free pieces with at least 25 vertices are not thick. & Conjecture. \\
+\cref{cor:r8-conditional} & EXC & [186] \texttt{(open)}, [187] \texttt{(open)} & \cref{rem:r8-density-conjecture}, \cref{lem:r8-hub-free-suffices} & Under the conjecture, both residuals lie below the net-cap cutoff. & Conditional; not asserted. \\
+\cref{rem:r8-remaining} & EXC & [186] \texttt{(open)}, [187] \texttt{(open)} & \cref{lem:r8-hub-free-suffices}, \cref{rem:r8-catalogue} & The aggregate landing inequality over multi-rod hub-free pieces with at least 25 vertices. & Exact open statement. \\
 \cref{thm:main} & (root theorem) & [2] \texttt{(bad)} $\to$ [20a], [144a], [172a], [182], [186], or [187] & \cref{thm:p13free} $+$ surplus-token routing $+$ all spine invariants & Every minimal counterexample reaches [20a], [144a], [172a], [182], [186], or an explicit [187] case. & Reduction theorem; each endpoint retains its source facts and none is asserted closed. \\
 \bottomrule
 \end{longtable}
@@ -6338,6 +6379,179 @@ Bounded by \cref{lem:independent-target-entropy}.
 \bottomrule
 \end{longtable}
 
+
+\subsection{The same-token handoff [144a]: status of the handoff-fails arm}\label{sec:144a-formal-status}
+\sloppy
+
+\paragraph{Status labels.}
+This subsection, \cref{sec:170-record-fibres}, and \cref{sec:route8-rate-arm}
+record results obtained after the routing of \cref{thm:main} was fixed
+(status of 30 September 2026).  They concern only the selected minimal
+counterexample \(G\), and every item carries one label.
+\textbf{[Lean, key~\(k\)]}: a fact about \(G\), published on the named
+residual by the Lean assembly under the fact key with index \(k\), and
+kernel-checked with the axioms \texttt{propext}, \texttt{Classical.choice}
+and \texttt{Quot.sound} only.
+\textbf{[Lean, generic]}: a vocabulary-free Lean lemma whose instantiation
+at \(G\) is carried out on paper.
+\textbf{[Paper]}: proved here and not formalized.
+\textbf{[Computation]}: a finite computer search, with its scope stated; it
+is used only as an exclusion over an explicitly described finite class of
+graphs, each of which could be a piece of \(G\).
+\textbf{[Conjecture]}: not proved.
+``Lean improvement'' marks a Lean-checked fact that the manuscript's routing
+does not use.  None of these items changes the list of outcomes in
+\cref{thm:main}; each residual listed there is still returned, with a longer
+retained ledger.
+
+\begin{remark}[The formal root type]\label[remark]{rem:formal-root-type}
+\textbf{[Lean.]}  The Lean root theorem (\texttt{selectedLedgerBoundary},
+\texttt{Assembly/Final.lean}) returns the disjunction of: six subtypes of
+[144a]; two subtypes of [172a]; six subtypes of [182]; the joint-balance
+product at [186]; the explicit disjunction [187] (pair-system Type B entries,
+failure of the Type B sublinear package, route-8 quotient failure, the
+private-carrier rate failure subtypes, and the cold-terminal subtypes); and
+five subtypes at node [54], three of which retain an explicit order bound
+\(n<N_0\).  In that formal routing the strict-surplus exit [20a] and the
+near-cubic target-defect alternative of [187] are decided on \(G\)'s own
+readings and return no residual.  The results recorded in this subsection
+and in \cref{sec:170-record-fibres,sec:route8-rate-arm} leave this result
+type unchanged.  \Cref{thm:main} is stated as the manuscript routes it.
+\end{remark}
+
+\begin{definition}[Walk witnesses on the handoff-fails arm of {[144]}]\label[definition]{def:144a-walk-witness}
+In the formal ledger, node [144a] has six subtypes: the token class of the
+overload (window-incidence, remainder-surplus, or primitive blocker-support)
+times the arm of [144].  The \emph{handoff} arm retains the Type B handoff
+and its fan entry.  The \emph{handoff-fails} arm retains an unresolved
+same-token pair, its pinned pattern supports \(X_p,X_q\), and their canonical
+common support \(Z\supseteq X_p\cup X_q\).  Each of the two demands of
+\(G\)'s canonical same-token routing has a \emph{pair seed}
+\[
+ \mathrm{seed}=T\cup V(w_1)\cup V(w_2),\qquad |T|\le 6,
+\]
+where \(w_1\colon a_1\leadsto b_1\) and \(w_2\colon a_2\leadsto b_2\) are the
+canonical port walks of its two ports.  For a triangular port the walk is a
+shortest path, in \(G\) minus the port edge, between the two ends of that
+edge; for an open port it is the port's suppression path.  A triple
+\((T,w_1,w_2)\) with these properties is a \emph{walk witness} of the seed.
+Put
+\[
+ Y=V(G)\setminus\bigl(V(w_1)\cup V(w_2)\bigr),\qquad
+ H=\{v:d_G(v)\ge4\},\qquad \sigma=\sigma(G).
+\]
+The following conditions are used.
+\begin{enumerate}[label=\textup{(B\arabic*)}, leftmargin=2.6em]
+\item \emph{Boundary-free transplants.}  Neither \(X_p\) nor \(X_q\) meets
+\(\partial Z\), and for \(X\in\{X_p,X_q\}\) the transplant of \(X\) into
+\(Z\) (the \(\partial Z\)-boundaried subgraph of \(G\) on
+\(\partial Z\cup(\interior Z\cap X)\)), glued to \(G-Z\), has minimum degree
+at least three.  This is the hypothesis of the boundary-free lemma of the
+ledger (key~8104); the formal register calls it~W.
+\item \emph{Triangular ports.}  \(a_1b_1\in E(G)\) and \(a_2b_2\in E(G)\).
+\item \emph{Free end edges.}  Neither walk uses the end edge \(a_jb_j\) of
+the other.
+\end{enumerate}
+\end{definition}
+
+\begin{lemma}[Attachment and chain cycles of the port walks]\label[lemma]{lem:144a-walk-cycles}
+\textbf{[Lean, key 9990 (\texttt{sameTokenWalkAttachment}).]}  For both pair
+seeds there is a walk witness \((T,w_1,w_2)\) with the following properties.
+\begin{enumerate}[label=\textup{(\roman*)}, leftmargin=2.2em]
+\item If \(r\colon x\leadsto y\) is a path avoiding the segment
+\(w[i..j]\) of one walk \(w\), with \(w(i)\sim x\) and \(y\sim w(j)\), then
+\(|r|+|i-j|+2\notin\Pow\).
+\item If \(r\colon x\leadsto y\) and \(r'\colon x'\leadsto y'\) are disjoint
+paths avoiding vertex-disjoint segments \(w_1[i..i']\) and \(w_2[j..j']\),
+with \(w_1(i)\sim x\), \(y\sim w_2(j)\), \(w_2(j')\sim x'\) and
+\(y'\sim w_1(i')\), then
+\[
+ |r|+|r'|+|i-i'|+|j-j'|+4\notin\Pow .
+\]
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Each configuration closes a cycle of \(G\) of the displayed length (the
+generic lemmas \texttt{walk\_attach\_cycle} and \texttt{walk\_pair\_cycle}),
+and \(G\) has no cycle whose length lies in \(\Pow\).
+\end{proof}
+
+\begin{lemma}[The separated configuration is empty]\label[lemma]{lem:144a-separated-empty}
+\textbf{[Lean, key 9991 (\texttt{sameTokenSeparatorExcluded}); Lean
+improvement.]}  On the handoff-fails arm, for both pair seeds there is a walk
+witness \((T,w_1,w_2)\) such that, if \textup{(B1)} and \textup{(B2)} hold,
+every vertex outside the seed has a neighbour of degree three in \(T\).
+Consequently
+\[
+ |V(G)\setminus\mathrm{seed}|\le 3|T|,
+ \qquad
+ n\le 4|T|+|w_1|+|w_2|+2 .
+\]
+\end{lemma}
+
+\begin{proof}
+Under \textup{(B1)} the boundary-free lemma (key~8104) gives \(Z=V(G)\) and
+makes every vertex outside a pair seed a cut vertex of even degree at least
+four.  Its neighbours are cubic, since hubs are independent, and lie in the
+seed.  If such a vertex has no neighbour in \(T\), it separates the two walks.
+Then no rung joins them, every other vertex outside the seed has a cubic
+neighbour in \(T\), every interior walk vertex has a neighbour off both walks,
+and the hub-degree bound \(d(h)\le|T|+8\) gives \(n\le729\).  This contradicts
+\(n\ge C_{\rm sp}(C_{\rm sp}+1)+9\ge 730\) (key \texttt{orderAboveScaleSquare},
+with \(C_{\rm sp}\ge102\)).
+\end{proof}
+
+\begin{lemma}[The triangular sub-arm is empty]\label[lemma]{lem:144a-tri-arm-empty}
+\textbf{[Lean, key 9855 (\texttt{sameTokenTriArmEmpty}); Lean improvement.]}
+On the handoff-fails arm of [144a], at \(G\)'s canonical routing and pinned
+\(X_p,X_q,Z\), for both pair seeds and \emph{every} walk witness, the
+conditions \textup{(B1)}, \textup{(B2)} and \textup{(B3)} do not hold
+together.
+\end{lemma}
+
+\begin{proof}
+Fix a walk witness satisfying \textup{(B1)}--\textup{(B3)}.  The argument of
+\cref{lem:144a-separated-empty}, run at this witness, gives
+\(|V(G)\setminus\mathrm{seed}|\le3|T|\), hence \(|Y|\le4|T|\le24\).  The
+following hold at every walk witness satisfying \textup{(B2)} and
+\textup{(B3)} (keys 9852--9854, Lean).  A hub on one walk, off the other, with
+no neighbour in \(Y\) has exactly two consecutive neighbours on the other
+walk, and one of its two walk neighbours has a neighbour in \(Y\).  Between
+consecutive common vertices of the walks some position is exceptional.  At
+most \(25|Y|+17\) hubs are crossings.  Therefore
+\[
+ |H|\le37|Y|+21,\qquad |H_Y|\le3|Y|,\qquad \sigma\le|H|+|H_Y|\,|Y|,
+\]
+where \(H_Y\) is the set of hubs with a neighbour in \(Y\).  With \(|Y|\le24\)
+this gives \(\sigma\le37\cdot24+21+72\cdot24=2637\).  The strict-surplus
+ancestry of [144a] retains \(\sigma>C_{\rm sp}\lceil\sqrt n\rceil\) with
+\(\lceil\sqrt n\rceil>C_{\rm sp}\ge102\), so \(\sigma>102\cdot103\), a
+contradiction.
+\end{proof}
+
+\begin{remark}[What remains at {[144a]}]\label[remark]{rem:144a-remaining}
+\textbf{[Lean; exact statement of the residual.]}  The three handoff subtypes
+of [144a] are unchanged.  All six subtypes also carry the window and exchange
+facts along the port walks (keys 9850--9851, Lean improvement): every 13
+consecutive vertices of a triangular walk, other than the whole walk, induce
+a \(P_{13}\) meeting the canonical packing, and the packing exchange of
+\cref{lem:r8-packing-exchange}(a) holds for them.  These facts give no
+contradiction on their own.  On the three handoff-fails subtypes the
+retained ledger now includes
+\cref{lem:144a-walk-cycles,lem:144a-separated-empty,lem:144a-tri-arm-empty}
+and the earlier keys 8100--8107.  By \cref{lem:144a-tri-arm-empty}, what
+remains at every walk witness of each pair seed is the complement of
+\textup{(B1)}\,\(\wedge\)\,\textup{(B2)}\,\(\wedge\)\,\textup{(B3)}: an open
+(non-triangular) port, a walk using the other port's end edge, or failure of
+\textup{(B1)}.  In the last case the boundary configurations of keys
+8100--8103 apply: a support meets \(\partial Z\), or a transplant loses the
+degree baseline at its canonical exceptional vertex.  No closure of [144a] is
+asserted.
+\end{remark}
+
+\fussy
+
 \section{Sparse rank parameters}
 
 Define
@@ -8431,7 +8645,10 @@ Node [170] is a proved exhaustive decision and [171] is a proved terminal
 closure on its full incoming branch.  The word ``conditional'' in a
 conditional graph fibre refers to fixing its outside record and earlier
 prefix.  It does not mark [171] as an unresolved theorem.  The entire
-unresolved negative arm is retained at the open leaf [172a].
+unresolved negative arm is retained at the open leaf [172a].  By
+\cref{cor:170-positive-arm-empty}, the positive arm is empty at every selected
+graph reaching [169]: the aggregate inequalities hold exactly when
+\(\mathcal B(\mathcal P)=\varnothing\).  See \cref{rem:170-clarification}.
 
 \begin{remark}[Two checks on the blocked class]\label[remark]{rem:blocked-class-checks}
 \emph{(a) The class must be near-cubic.}  If \(\mathcal B(\mathcal P)\) were
@@ -8463,7 +8680,10 @@ two vertices adjacent to it, whereas the positive two-arm completion support
 requires three distinct such vertices in one component.  Supports are absent
 at every scale.  This obstruction concerns the defined counting class; it
 is not a graph satisfying the full selected residual or a counterexample to
-the Erd\H{o}s--Gy\'arf\'as conjecture.
+the Erd\H{o}s--Gy\'arf\'as conjecture.  The graphs \(H_p\) are not in the
+restricted class of connected bridgeless target-free members; restricting to
+that class does not make the positive arm of [170] available at the selected
+graph (\cref{rem:170-clarification}).
 \end{remark}
 
 \begin{remark}[Where the entropy sentence lives]\label[remark]{rem:entropy-lives-here}
@@ -8630,6 +8850,126 @@ The sharper cap in \cref{prop:p13-density}.
 \bottomrule
 \end{longtable}
 
+
+
+\subsection{Record fibres and the decision at [170]}\label{sec:170-record-fibres}
+\sloppy
+
+The status labels are those of \cref{sec:144a-formal-status}.  This
+subsection clarifies which arm of the exhaustive decision
+\cref{lem:scale-additivity} the selected graph takes.  It does not alter the
+decision or the closure \cref{lem:blocked-graphs-compress}.
+
+\begin{lemma}[Record-fibre equivalence]\label[lemma]{lem:record-fibre-equivalence}
+\textbf{[Lean, generic: \texttt{Hypostructure/Graph/RecordFibreCompression.lean},
+theorems \texttt{class\_compression}, \texttt{chain\_iff\_empty},
+\texttt{first\_failure\_of\_nonempty}.]}  Let \(\alpha\) be a finite set with a
+record map \(r\) and state maps \(s_0,s_1,\ldots\), let
+\(\mathcal B\subseteq\alpha\), and put
+\[
+ A_k=\{x\in\alpha:\ \exists b\in\mathcal B,\ r(x)=r(b)\text{ and }
+ s_i(x)=s_i(b)\text{ for all }i<k\}.
+\]
+Let \(W_k,F_k\) be positive integers.  Suppose that every record fibre
+\(\{x\in\alpha:r(x)=r(b)\}\) with \(b\in\mathcal B\) has at most \(K\) members,
+and that
+\[
+ K\prod_{k<N}F_k<\prod_{k<N}W_k .
+\]
+Then the aggregate tests \(W_k|A_{k+1}|\le F_k|A_k|\) hold for every \(k<N\)
+if and only if \(\mathcal B=\varnothing\).  If \(\mathcal B\ne\varnothing\),
+there is a least \(k^*<N\) with \(F_{k^*}|A_{k^*}|<W_{k^*}|A_{k^*+1}|\), and
+every aggregate test with \(k<k^*\) holds.
+\end{lemma}
+
+\begin{proof}
+If every test holds, telescoping gives \(|A_N|\prod W_k\le|A_0|\prod F_k\).
+Since \(\mathcal B\subseteq A_N\) and \(|A_0|\le K|\mathcal B|\), this gives
+\(|\mathcal B|\prod W_k\le K|\mathcal B|\prod F_k\), so the gap forces
+\(|\mathcal B|=0\).  If \(\mathcal B=\varnothing\), every \(A_k\) is empty and
+every test holds.  The last assertion takes the least failing index.
+\end{proof}
+
+\begin{corollary}[The positive arm of {[170]} is empty at the selected graph]\label[corollary]{cor:170-positive-arm-empty}
+\textbf{[Paper, from \cref{lem:record-fibre-equivalence}.]}  Let \(G\) reach
+node [169], and use the exposure coordinates \(c_1,\ldots,c_N\), table counts
+\(W_i,F_i\) and reached sets \(A_k\) of the proof of
+\cref{lem:blocked-graphs-compress}.  The aggregate inequalities
+\(W_k|A_k|\le F_k|A_{k-1}|\) hold for all \(1\le k\le N\) if and only if
+\(\mathcal B(\mathcal P)=\varnothing\).  Since \(G\in\mathcal B(\mathcal P)\),
+alternative~\textup{(a)} of \cref{lem:scale-additivity} is false for \(G\), and
+there is a first coordinate \(k^*\) at which the aggregate inequality fails
+while all earlier aggregate inequalities hold.  Hence every selected graph
+reaching [169] continues to [172a]; the closure at [171] applies to no
+selected graph, and [172a] carries the whole residual of [169].
+\end{corollary}
+
+\begin{proof}
+Take \(\alpha\) to be the a-priori class of that proof, the record to be the
+outside record, and the states to be the barrier states in exposure order.
+Every record fibre lies in \(\mathcal G_{n,m}\), so \(K=|\mathcal G_{n,m}|\)
+bounds it.  The certified table product gives
+\(2^{b_{\mathcal P}}\prod_iF_i\le\prod_iW_i\), and [159] retains the strict
+overflow \(2^{b_{\mathcal P}}>|\mathcal G_{n,m}|\)
+(\cref{def:window-realization-test}).  Hence
+\(K\prod_iF_i<\prod_iW_i\), and \cref{lem:record-fibre-equivalence} gives the
+equivalence.  Alternative~\textup{(a)} asserts the inequality
+\(W|S_{d,q,c}|\le F|A_{d,q,c}|\) at every reached outside record and prefix;
+summing over the disjoint parts of \(A_{k-1}\), exactly as in the proof of
+\cref{lem:blocked-graphs-compress}, gives the aggregate inequality at every
+coordinate.  So~\textup{(a)} would force \(\mathcal B(\mathcal P)=\varnothing\),
+contradicting \(G\in\mathcal B(\mathcal P)\) (\cref{def:blocked-class}).  The
+first failure is the last assertion of \cref{lem:record-fibre-equivalence}.
+\end{proof}
+
+\begin{remark}[Clarification of the dichotomy at {[170]}]\label[remark]{rem:170-clarification}
+\textbf{[Paper.]}
+\begin{enumerate}[label=\textup{(\alph*)}, leftmargin=2.2em]
+\item \Cref{lem:scale-additivity} remains an exhaustive decision, and
+\cref{lem:blocked-graphs-compress} remains a valid implication.
+\Cref{cor:170-positive-arm-empty} shows that, on the blocked class, the
+hypothesis of that implication is equivalent to its conclusion
+\(\mathcal B(\mathcal P)=\varnothing\).  Consequently the node-[171] closure
+removes no configuration of a selected graph, and the entire [169] residual
+is the open leaf [172a], as case~\textup{(iii)} of \cref{thm:main} already
+records.  No new open node arises.
+\item The form of \cref{lem:scale-additivity}\textup{(b)} that names no member
+of the class is the aggregate first failure of
+\cref{cor:170-positive-arm-empty}.  The
+per-fibre form in \cref{lem:scale-additivity}(b) also retains ``the blocked
+member selecting that record and prefix''.  That member need not be \(G\), so
+only the aggregate form is a fact about \(G\).
+\item Let \(\mathcal B^+(\mathcal P)\subseteq\mathcal B(\mathcal P)\) consist of
+the connected, bridgeless members with no power-of-two cycle anywhere.  Then
+\(G\in\mathcal B^+(\mathcal P)\), by minimality, \cref{lem:bridgeless}, and the
+counterexample hypothesis.  The graphs \(H_p\) of the external note cited in
+\cref{rem:blocked-class-checks}(b) (\emph{A counterexample to the
+blocked-class bound as stated}, 20 September 2026) lie in
+\(\mathcal B(\mathcal P_p)\) but not in \(\mathcal B^+(\mathcal P_p)\): their
+inter-triangle edges and gadget attachments are bridges, \(H_p\) is
+disconnected for \(p\ge2\), and the gadgets contain four-cycles.  Restricting
+the counting class to \(\mathcal B^+\) nevertheless does not make the
+positive arm of [170] available at \(G\).
+\Cref{lem:record-fibre-equivalence} places no hypothesis on the class, so the
+aggregate tests on \(\mathcal B^+(\mathcal P)\) hold if and only if
+\(\mathcal B^+(\mathcal P)=\varnothing\), which is false because
+\(G\in\mathcal B^+(\mathcal P)\).
+\item The equivalence does not depend on the crude bound
+\(K=|\mathcal G_{n,m}|\).  For the outside-edge record, the number of \(m\)-sets
+with a prescribed outside part \(d\) is at most
+\(\binom{|\mathrm{Pairs}(U)|}{m-|d|}\), where \(U\) is the union of the windows
+and \(|U|=13p_{13}\) (\textbf{[Lean, generic]}
+\texttt{card\_fibre\_le\_choose}).  For a member of minimum degree at least
+three, the degree sum over \(U\) is at most \(3|U|+\sigma\), so
+\(\log_2K\le(39p_{13}+\sigma)\log_2n\).  The gap of
+\cref{lem:record-fibre-equivalence} therefore holds whenever
+\(\sigma\le(c_{13}-39-o(1))\,p_{13}\).
+\end{enumerate}
+Thus an exclusion of [172a] needs input beyond the outside-edge record and
+the certified window package.  No such input is supplied here.
+\end{remark}
+
+\fussy
 
 \section{The \texorpdfstring{$P_{13}$}{P13}-free remainder and positive deficiency}\label{sec:remainder}
 
@@ -17738,6 +18078,324 @@ The canonical response-support core.
 \end{longtable}
 
 
+
+\subsection{The route-8 rate arm at the selected graph}\label{sec:route8-rate-arm}
+\sloppy
+
+The status labels are those of \cref{sec:144a-formal-status}.  In the formal
+assembly the facts of this subsection are published at the entry of the
+route-8 unified residual, on the arm where the route-8 rate inequality holds:
+\[
+ 13\,|\partial R|+3\cdot32\,T<3|R|,\qquad T:=C_{\rm sp}\lceil\sqrt n\rceil .
+\]
+This is the common prefix of node [186] and of the route-8 quotient-failure
+alternative of [187].  Every fact below is therefore retained on both, and
+both also retain \(\sigma(G)\le T\).
+
+\begin{definition}[Pieces, excess, and long landings]\label[definition]{def:r8-pieces-landings}
+Let \(\mathcal P_0\) be \(G\)'s canonical window packing.  It is a
+\emph{maximum} family of vertex-disjoint induced \(P_{13}\)'s.  Put
+\(p=|\mathcal P_0|\), let \(W\) be the set of covered vertices, and let
+\(R=V(G)\setminus W\).  The \emph{pieces} are the vertex sets of the components
+of \(G[R]\).  For a piece \(X\):
+\begin{itemize}
+\item \(\mathsf e(X)\) is the number of edges of \(G\) with exactly one end in
+\(X\); all of them end in \(W\), and \(|\partial R|=\sum_X\mathsf e(X)\);
+\item \(\operatorname{ex}(X)=|X|-4\,\mathsf e(X)\) is its \emph{excess}, and
+\(X\) is \emph{thick} if \(\operatorname{ex}(X)>0\);
+\item \(\sigma_X=\sum_{v\in X}(d_G(v)-3)\), and \(X\) is \emph{hub-free} if
+\(\sigma_X=0\);
+\item \(\defp(X)=\sum_{v\in X}\max(0,3-d_X(v))\).
+\end{itemize}
+Write \(\sigma_W\) and \(\sigma_R\) for the surplus carried by \(W\) and by
+\(R\).  Place each window \(P\in\mathcal P_0\) as \(p_0\ldots p_{12}\), and put
+\(\sigma_P=\sum_{v\in P}(d_G(v)-3)\).  A \emph{clean \(a\)-landing} of \(X\) at
+position \(i\) is an edge \(xp_i\) with \(x\in X\), together with an induced
+path \(A\) of \(G[X]\) on \(a\) vertices ending at \(x\), such that
+\(u\sim p_k\) with \(u\in A\) and \(|k-i|\le12-a\) happens only for \(u=x\) and
+\(k=i\).  A \emph{long landing} is a clean \(11\)- or \(12\)-landing.  For the
+fixed placements let \(\Lambda(P)\) be the number of pieces with a long
+landing on \(P\), and let \(\nu(X)\) be the number of windows of
+\(\mathcal P_0\) on which \(X\) has a long landing.  Double counting gives
+\(\sum_P\Lambda(P)=\sum_X\nu(X)\).
+\end{definition}
+
+\begin{lemma}[Exchange at the maximum packing]\label[lemma]{lem:r8-packing-exchange}
+\textbf{[Lean, keys 9800--9802 (\texttt{route8PackingExchange},
+\texttt{route8ArmExchange}, \texttt{route8FullArmLandingCap}).]}
+\begin{enumerate}[label=\textup{(\alph*)}, leftmargin=2.2em]
+\item For every \(\mathcal Q\subseteq\mathcal P_0\), every family of
+vertex-disjoint induced \(P_{13}\)'s of \(G\) inside
+\(\bigcup\mathcal Q\cup R\) has at most \(|\mathcal Q|\) members.
+\item Let \(P\in\mathcal P_0\), and let \(\alpha,\beta\) be vertex-disjoint
+induced paths of \(G\) inside \(R\), on \(a+1\) and \(b+1\) vertices, ending at
+\(x\sim p_i\) and \(y\sim p_j\).  There are no disjoint runs \(S_x\ni p_i\) and
+\(S_y\ni p_j\) of \(P\) with \(p_i\) an end of \(S_x\), \(p_j\) an end of
+\(S_y\), \(|S_x|=12-a\) and \(|S_y|=12-b\), such that \(xp_i\) is the only edge
+between \(\alpha\) and \(S_x\) and \(yp_j\) is the only edge between \(\beta\) and
+\(S_y\).
+\item Two induced \(12\)-vertex paths of \(G\) inside \(R\) that end at
+neighbours of distinct positions \(p_i\ne p_j\), and each meet their landing
+vertex only at their end, share a vertex.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+For (a), replacing \(\mathcal Q\) by the family gives a packing, and
+\(\mathcal P_0\) is maximum.  In (b), \(\alpha\cup S_x\) and \(\beta\cup S_y\)
+would be two disjoint induced \(P_{13}\)'s inside \(P\cup R\), contrary to (a)
+with \(\mathcal Q=\{P\}\).  Part (c) is (b) with singleton runs.
+\end{proof}
+
+\begin{lemma}[Landing rules and the long-landing cap]\label[lemma]{lem:r8-landing-cap}
+\textbf{[Lean, keys 9805--9806 (\texttt{route8CleanLandingRules},
+\texttt{route8CleanLandingCap}).]}  On every placed window
+\(P\in\mathcal P_0\) the following hold.
+\begin{enumerate}[label=\textup{(\alph*)}, leftmargin=2.2em]
+\item Long landings of two distinct pieces are at one position, or at
+\(\{p_0,p_1\}\), or at \(\{p_{11},p_{12}\}\).
+\item For pairwise distinct pieces \(X,Y,Z\), clean \(a\)- and
+\(b\)-landings of \(X\) and \(Y\) at one position \(p_e\) with
+\(a,b\le12\) and \(a+b\ge12\) do not coexist with a clean \(c\)-landing of
+\(Z\) at \(p_k\) together with a run of \(13-c\) consecutive positions that
+has \(p_k\) at one end and avoids \(p_e\).
+\item \(\Lambda(P)\le2+\sigma_P\).  Summed over the windows,
+\[
+ \sum_X\nu(X)=\sum_{P\in\mathcal P_0}\Lambda(P)\le 2p+\sigma_W .
+\]
+\end{enumerate}
+\end{lemma}
+
+\begin{lemma}[Hub-piece mass]\label[lemma]{lem:r8-hub-piece-mass}
+\textbf{[Lean, key 9803 (\texttt{route8HubPieceMass}).]}  Every piece \(X\)
+with \(\sigma_X>0\) and negative net charge,
+\(4\defp(X)<|X|+4\sigma_X\), satisfies
+\[
+ |X|+4\sigma_X-4\defp(X)\le 32\,\sigma_X .
+\]
+Summed over these pieces, the left side is at most
+\(32\sigma_R\le32\,\sigma(G)\).
+\end{lemma}
+
+\begin{lemma}[Pieces: exits, chains and the piecewise rate]\label[lemma]{lem:r8-piece-structure}
+\textbf{[Lean, keys 9900--9902 (\texttt{route8PieceWindowAttachment},
+\texttt{route8PieceChainCycle}, \texttt{route8PiecewiseRate}).]}  Write
+\(L_X(a,b)\) for the set of lengths of \(a\)--\(b\) paths inside \(G[X]\).
+\begin{enumerate}[label=\textup{(\alph*)}, leftmargin=2.2em]
+\item Let \(X\) be a piece and \(P\in\mathcal P_0\) a placed window, with exit
+edges \(p_ia\) and \(bp_{i'}\) (\(a,b\in X\); \(i\ne i'\) or \(a\ne b\)), and
+put \(d=|i-i'|\).  Then \(d+\ell+2\notin\Pow\) for every
+\(\ell\in L_X(a,b)\).  Every interval \([\mathrm{lo},\mathrm{hi}]\subseteq
+L_X(a,b)\) satisfies \(\mathrm{hi}+d+2<4\) or
+\(\mathrm{hi}+d+3<2(\mathrm{lo}+d+2)\).
+\item For \(k\ge1\) distinct pieces \(X_1,\dots,X_k\) and distinct windows
+\(P_1,\dots,P_k\) joined cyclically by exit edges, every choice of internal
+lengths \(\ell_i\in L_{X_i}(a_i,b_i)\) with total at least three gives
+\(\sum_i(\ell_i+|j_i-j'_i|)+2k\notin\Pow\).  Here \(j_i,j'_i\) are the
+positions on \(P_i\) of the entry and exit edges.
+\item \(|R|=\sum_X|X|\) and \(|\partial R|=\sum_X\mathsf e(X)\).  Moreover
+\(96\,T<\sum_X\bigl(3|X|-13\,\mathsf e(X)\bigr)\), and some piece has
+\(13\,\mathsf e(X)<3|X|\).
+\end{enumerate}
+\end{lemma}
+
+\begin{lemma}[Dominance irreducibility of pieces]\label[lemma]{lem:r8-dominance}
+\textbf{[Lean, keys 9975--9980 (\texttt{pieceDominanceIrreducible},
+\texttt{canonicalPieceDominance}, \texttt{twoExitNewLength},
+\texttt{canonicalTwoExitNewLength}, \texttt{twoExitSizeMonotone},
+\texttt{canonicalTwoExitSizeMonotone}); Lean improvement.]}  Let \(Z\) be a
+proper connected support of \(G\); every piece of \(R\) is one.
+\begin{enumerate}[label=\textup{(\alph*)}, leftmargin=2.2em]
+\item Consider a \(\partial Z\)-boundaried gadget \(Y\) with fewer interior
+vertices than \(Z\), with the boundary-degree profile of \(G[Z]\), such that
+\(Y\) glued to \(G-Z\) has minimum degree at least three.  Then \(Y\) is not
+\emph{dominated}.  Dominated means that every acyclic linkage system of \(Y\)
+is realized in \(G[Z]\) with the same terminal pairing and length vector and
+with interiors in \(\interior Z\), and that \(Y\) has no power-of-two cycle.
+\item If \(\partial Z=\{u,v\}\), every such gadget without a power-of-two
+cycle has a \(u\)--\(v\) path whose length is not in \(L_Z(u,v)\).
+\item Let \(\partial Z=\{u,v\}\) and \(\partial Z'=\{u',v'\}\) with
+\(|N(u')\cap Z'|=|N(u)\cap Z|\) and \(|N(v')\cap Z'|=|N(v)\cap Z|\).  If
+\(L_{Z'}(u',v')\subseteq L_Z(u,v)\), then \(|Z|\le|Z'|\).
+\end{enumerate}
+\end{lemma}
+
+\noindent These consequences of \cref{lem:replacement} bite only against a
+constructed gadget; the copy of one two-exit piece onto another is such a
+gadget, and it gives~(c).  No route-8 residual closes from
+\cref{lem:r8-piece-structure,lem:r8-dominance} alone.
+
+\begin{lemma}[Net-cap excess and the arm-closure residual]\label[lemma]{lem:r8-arm-closure-residual}
+\textbf{[Lean, keys 9804 and 9807 (\texttt{route8NetCapExcess},
+\texttt{route8ArmClosureResidual}).]}  Assume that \(n\) is large enough for
+the net-deficiency cap, i.e.\ the finite predicate
+\texttt{SufficientlyLargeForNetCap} of key~222 holds.  Then
+\[
+ 13\sum_X\operatorname{ex}(X)=13\bigl(|R|-4|\partial R|\bigr)>60p+388\,T .
+ \tag{R8.1}
+\]
+For every placement system of \(\mathcal P_0\) and every \(c\ge0\),
+\[
+ 388\,T+60p-c\,(2p+\sigma_W)
+ <\sum_{X:\ \operatorname{ex}(X)>0}\bigl(13\operatorname{ex}(X)-c\,\nu(X)\bigr).
+\]
+In particular, for \(c=30\),
+\[
+ \sum_{X:\ \operatorname{ex}(X)>0}\bigl(13\operatorname{ex}(X)-30\,\nu(X)\bigr)
+ >388\,T-30\,\sigma_W .
+ \tag{R8.2}
+\]
+\end{lemma}
+
+\begin{proof}
+Inequality~(R8.1) is the combination \(\tfrac1{13}\)(key~222)\,+\,\(\tfrac4{13}\)(key~9902)
+of \(|R|>60p+4T\) with \(3|R|-13|\partial R|>96T\).  Here the spine term of
+key~222 is \(4C_{\rm sp}\lceil\sqrt n\rceil=4T\) and the slack is
+\(3\cdot4\cdot32T=384T\).  For the second inequality, write
+\(\sum_X\operatorname{ex}(X)\le\sum_{\operatorname{ex}(X)>0}\operatorname{ex}(X)\)
+and subtract \(c\sum_X\nu(X)\le c(2p+\sigma_W)\)
+(\cref{lem:r8-landing-cap}(c)).
+\end{proof}
+
+\begin{corollary}[Reduction to the landing inequality \(\Pi\)]\label[corollary]{cor:r8-reduction-to-pi}
+\textbf{[Paper, from key 9807.]}  Say that a piece \(X\) satisfies \(\Pi\) if
+\(13\operatorname{ex}(X)\le30\,\nu(X)\).  Under the hypothesis of
+\cref{lem:r8-arm-closure-residual}, the aggregate inequality
+\[
+ (\Pi_{\rm agg})\qquad
+ \sum_{X:\ \operatorname{ex}(X)>0}\bigl(13\operatorname{ex}(X)-30\,\nu(X)\bigr)
+ \le 388\,T-30\,\sigma_W
+\]
+is false at \(G\), because~(R8.2) is its exact negation.  In particular, if
+every thick piece satisfies \(\Pi\), then the left side of \((\Pi_{\rm agg})\)
+is at most \(0\), while its right side is at least \(358T>0\) since
+\(\sigma_W\le\sigma(G)\le T\).  Every proof of \((\Pi_{\rm agg})\) at \(G\)
+therefore excludes both [186] and the route-8 quotient-failure alternative
+of [187] for \(n\) above the net-cap cutoff.
+\end{corollary}
+
+\begin{lemma}[Hub pieces are paid by the surplus]\label[lemma]{lem:r8-hub-free-suffices}
+\textbf{[Paper, from keys 9803, 9806, 9807 and \(\sigma(G)\le T\).]}
+Every piece with \(\sigma_X>0\) has \(\operatorname{ex}(X)\le28\,\sigma_X\),
+and has \(\operatorname{ex}(X)\le-4\sigma_X<0\) unless its net charge is
+negative.  Hence, under the hypothesis of \cref{lem:r8-arm-closure-residual},
+\[
+ \sum_{\substack{X\ \text{hub-free}\\ \operatorname{ex}(X)>0}}
+ \bigl(13\operatorname{ex}(X)-30\,\nu(X)\bigr)
+ >388\,T-30\,\sigma_W-364\,\sigma_R\ \ge\ 24\,T .
+ \tag{R8.3}
+\]
+In particular, if every thick hub-free piece satisfies \(\Pi\), then \(G\)
+does not reach [186] or the route-8 quotient-failure alternative of [187]
+with \(n\) above the net-cap cutoff.  No condition on \(\sigma(G)\) is needed.
+\end{lemma}
+
+\begin{proof}
+Since \(d_G(v)\ge3\) and \(d_G(v)\ge d_X(v)\) for every \(v\),
+\(\mathsf e(X)=\sum_{v\in X}(d_G(v)-d_X(v))\ge\defp(X)\), so
+\(\operatorname{ex}(X)\le|X|-4\defp(X)\).  If \(\sigma_X>0\) and the net charge
+is negative, \cref{lem:r8-hub-piece-mass} gives
+\(|X|-4\defp(X)\le32\sigma_X-4\sigma_X=28\sigma_X\).  Otherwise
+\(|X|+4\sigma_X\le4\defp(X)\), and \(\operatorname{ex}(X)\le-4\sigma_X\).  A
+thick piece with \(\sigma_X>0\) is therefore of the first kind.  Summing
+\(13\operatorname{ex}(X)\le364\sigma_X\) over the thick pieces with
+\(\sigma_X>0\), and dropping their \(-30\nu(X)\le0\), removes them from~(R8.2)
+at a cost of at most \(364\sigma_R\).  This is the first inequality
+of~(R8.3).  The second follows from
+\(30\sigma_W+364\sigma_R\le364(\sigma_W+\sigma_R)=364\,\sigma(G)\le364\,T\).
+\end{proof}
+
+\noindent\emph{Comparison.}  An earlier derivation used only the summed form
+of \cref{lem:r8-hub-piece-mass} with the weaker constant
+\(64\sigma(G)\) (the last conjunct of key~9803).  It reached the same
+conclusion only under the additional condition
+\(862\,\sigma(G)\le388\,T+82\,\sigma_R\), for instance
+\(\sigma(G)\le0.45\,T\).  The per-piece form removes that condition.
+
+\begin{remark}[Computed catalogue of thick hub-free pieces]\label[remark]{rem:r8-catalogue}
+Let \(\mathcal A\) be the class of connected graphs of maximum degree at most
+three that are induced-\(P_{13}\)-free and contain no cycle of length
+\(4,8,16\) or \(32\).  For every hub-free piece \(X\), \(G[X]\in\mathcal A\):
+\(R\) contains no induced \(P_{13}\), because \(\mathcal P_0\) is maximal.
+Moreover \(\operatorname{ex}(X)=8\,e(G[X])-11|X|\), so \(X\) is thick if and
+only if \(e(G[X])>\tfrac{11}{8}|X|\).  Call \(X\) \emph{multi-rod} if it
+contains an induced \(P_8\) (a \emph{rod}), and \(X-V(Q)\) contains an induced
+\(P_8\) for every induced \(P_8\) \(Q\) of \(X\).  Let \(X_{15}\) be the graph
+with graph6 code \texttt{N?AA@AODAOP\_KGGoGH?}, which has \(15\) vertices,
+\(21\) edges, three exit edges and excess \(3\).
+\begin{enumerate}[label=\textup{(\roman*)}, leftmargin=2.2em]
+\item \textbf{[Computation.]}  Among connected graphs in \(\mathcal A\) with at
+most \(24\) vertices, \(X_{15}\) is the only one with \(8e>11n\).  So
+\(X_{15}\) is the unique thick hub-free piece with at most \(24\) vertices.
+\emph{Scope:} exhaustive over \(n\le24\) by \texttt{nauty}~2.8.9
+\texttt{geng} (\texttt{-cfq -D3}, edge range \(e>11n/8\)) with an exact
+hereditary pruning hook: no \(C_8\), \(C_{16}\), \(C_{32}\) and no induced
+\(P_{13}\) through the newest vertex.  All parts completed without timeout.
+The output was cross-checked for \(n=13,14,15\), at a lowered edge threshold,
+against unpruned \texttt{geng} filtered by an independent \texttt{networkx}
+checker.  The run for \(n=25\) did not complete.
+\item \textbf{[Computation.]}  The connected rod-free graphs in \(\mathcal A\)
+form a finite class: none has \(23\) vertices.  Each of them has negative
+excess when read as a hub-free piece.  Hence every thick hub-free piece
+contains a rod.
+\item \textbf{[Computation.]}  Every hub-free piece \(X\) with a rod \(Q\) such
+that \(X-V(Q)\) is rod-free, and with \(\operatorname{ex}(X)>0\), is
+isomorphic to \(X_{15}\).  \emph{Scope:} complete enumeration of one rod
+together with rod-free blobs from~(ii).  The single-blob cases were
+enumerated directly; the multi-blob cores were enumerated with sound pruning
+(position packing and known infeasible sub-configurations), leaving \(13\)
+cores, all realizing \(X_{15}\).  The infeasibility verdicts rest on one
+implementation.  All feasible witnesses were cross-checked with
+\texttt{networkx}.
+\item \textbf{[Paper, using computed arm data of \(X_{15}\).]}  Every landing of
+an exit edge of \(X_{15}\) on a window of \(\mathcal P_0\) is a clean
+\(11\)-landing, and the three exits never land on one window.  Hence
+\(\nu(X_{15})\ge2\), and \(X_{15}\) satisfies \(\Pi\):
+\(13\cdot3=39\le60\le30\,\nu\).
+\end{enumerate}
+\end{remark}
+
+\begin{remark}[Density conjecture]\label[remark]{rem:r8-density-conjecture}
+\textbf{[Conjecture.]}  Every multi-rod hub-free piece \(X\) of \(R\) with
+\(|X|\ge25\) satisfies \(e(G[X])\le\tfrac{11}{8}|X|\), i.e.\ is not thick.
+\emph{Evidence, not proof:} a randomized greedy search in \(\mathcal A\) found
+no graph with \(8e>11n\) for \(16\le n\le40\).  For \(n\ge42\) it produced no
+connected graph.  A charging argument rod by rod is refuted by explicit
+admissible configurations, so any proof must move charge between rods.
+\end{remark}
+
+\begin{corollary}[Conditional exclusion of the rate arm for large \(n\)]\label[corollary]{cor:r8-conditional}
+\textbf{[Paper; conditional on \cref{rem:r8-density-conjecture} and on the
+computations of \cref{rem:r8-catalogue}.]}  If the density conjecture holds,
+then every thick hub-free piece is isomorphic to \(X_{15}\), so every thick
+hub-free piece satisfies \(\Pi\).  By \cref{lem:r8-hub-free-suffices}, no
+selected graph then reaches [186] or the route-8 quotient-failure alternative
+of [187] with \texttt{SufficientlyLargeForNetCap}\((n)\).  The manuscript does
+not assert this exclusion: the conjecture is open, and graphs below the
+net-cap cutoff are not affected.
+\end{corollary}
+
+\begin{remark}[Exact remaining proposition on the rate arm]\label[remark]{rem:r8-remaining}
+\textbf{[Paper and Computation.]}  On [186] and on the route-8
+quotient-failure alternative of [187], the full retained ledger now includes
+\cref{lem:r8-packing-exchange,lem:r8-landing-cap,lem:r8-hub-piece-mass,lem:r8-piece-structure,lem:r8-dominance,lem:r8-arm-closure-residual}.
+When \texttt{SufficientlyLargeForNetCap}\((n)\) holds, inequality~(R8.3) and
+\cref{rem:r8-catalogue} leave exactly the following.  Every thick hub-free
+piece is either \(X_{15}\), whose term \(13\operatorname{ex}-30\nu\le-21\) is
+negative, or a multi-rod piece with at least \(25\) vertices.  The latter
+satisfy
+\[
+ \sum_{\substack{X\ \text{multi-rod, hub-free}\\ |X|\ge25,\ \operatorname{ex}(X)>0}}
+ \bigl(13\operatorname{ex}(X)-30\,\nu(X)\bigr)>24\,T .
+\]
+This is the open statement.  If the density conjecture holds for the pieces
+of \(G\), the sum has no terms and the inequality is false.  Below the net-cap cutoff, keys 9804 and 9807
+are vacuous and the residuals are unchanged.  No closure of [186] or of
+[187] is asserted.
+\end{remark}
+
+\fussy
+
 \appendix
 
 \section{Finite obstruction enumeration code}\label{app:curv-code}
@@ -18203,7 +18861,7 @@ These do not degrade to nontrivial residual reductions: their negation is either
 {[183]} \texttt{reduced} (unpaid exit-\textup{(4)}-witness residual) & \cref{thm:typeA-unpaid-exit4-reduction,lem:typeA-unified-visible-ownership} & every entry in \(\Xi_2(P)\mathbin{\dot\cup}\Xi_{\rm res}(P)\) has at most two private essential carriers and a canonical exit-\textup{(4)} witness & the two obstruction counts \(\lvert H_{181}(P)\rvert\) and \(\lvert N_{181}(P)\rvert\) are exactly zero; all entries and all inherited ledger facts remain available & \textbf{Shortest-trace boundary-support exhaustion.} For a silent owner, the selected trace is an induced boundary-only complete basin; coordinate independence then contradicts the same entry's retained \(\alpha\ge2\) fact. & No silent owner remains; the same entries and ledger continue to [184]. \\
 {[184]} \texttt{reduced} (all-visible unified-entry residual) & \cref{lem:typeA-unified-visible-ownership,lem:typeA-unified-visible-overload} & the complete node-[183] ledger, together with \(\mathfrak S_{184}=\varnothing\) and \(|\mathfrak S_{184}|=0\) & every unified entry is owned by an actual scheduled receiver-entry return; no entry, demand unit, witness, assignment, absorber, or blocker has been removed & \textbf{Visible-first prefix exhaustion.} If the same excess entry had no overloaded port, the completion-port capacity bound would put its visible load in the payable prefix, contradicting literal excess membership. & No non-overloaded owner remains; the same entries and ledger continue to [185]. \\
 {[185]} \texttt{reduced} (actual visible-four package residual) & \cref{lem:typeA-unified-visible-overload,lem:typeA-unified-joint-balance} & the complete node-[184] ledger, together with \(\mathfrak O_{185}=\varnothing\), \(|\mathfrak O_{185}|=0\), and a canonical actual visible-four package at every retained entry receiver & the selected overloaded port, its four distinct visible loads, and their selected scheduled returns all belong to the unchanged graph; every earlier demand and exit-\textup{(4)} record remains attached & \textbf{Simultaneous exact accounting.} Read the unchanged peel, deficit, demand, empty-dependence absorption, and visibility coordinates together. & Every saturated routed load is visible and the exact joint balance is appended at [186]. \\
-{[186]} \texttt{open} (joint visible-overload balance) & \cref{lem:typeA-unified-joint-balance} & the complete node-[185] ledger and the exact relations \textup{(168.15)}--\textup{(168.20)} & every entry, peel, assigned incidence, absorber, open unit, component, and actual visible-four package remains attached to the same selected object & \textbf{Strict descendant of [185].} The uncorrelated projection profile has been replaced by the coupled pressure and peel constraints, and silent routed loads at saturated receivers have been eliminated. & A survivor is the literal incoming residual subject simultaneously to the coupled open-pressure and peel lower bounds. \\
+{[186]} \texttt{open} (joint visible-overload balance) & \cref{lem:typeA-unified-joint-balance} & the complete node-[185] ledger and the exact relations \textup{(168.15)}--\textup{(168.20)} & every entry, peel, assigned incidence, absorber, open unit, component, and actual visible-four package remains attached to the same selected object & \textbf{Strict descendant of [185].} The uncorrelated projection profile has been replaced by the coupled pressure and peel constraints, and silent routed loads at saturated receivers have been eliminated. & A survivor is the literal incoming residual subject simultaneously to the coupled open-pressure and peel lower bounds.  On the route-8 rate arm it also carries the facts of \cref{sec:route8-rate-arm}; above the net-cap cutoff it must satisfy the aggregate inequality of \cref{rem:r8-remaining}. \\
 \bottomrule
 \end{longtable}
 }
