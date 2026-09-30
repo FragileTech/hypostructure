@@ -24,8 +24,6 @@ Hypostructure.Fixtures.CT5
 Hypostructure.Fixtures.CT7
 Hypostructure.Fixtures.FiniteStateCapacityDomains
 Hypostructure.Fixtures.FiniteStateCapacityRejection
-Hypostructure.Fixtures.GraphCounterexampleLocalization
-Hypostructure.Fixtures.OfficialGraphCompiler
 Hypostructure.Fixtures.PDEBasics
 Hypostructure.Fixtures.PDECounterexampleLocalization
 Hypostructure.Fixtures.PDERow10BoundaryRepair
@@ -52,16 +50,6 @@ Hypostructure.Fixtures.StrategyDagRouting
 Hypostructure.Fixtures.StrategyDagValidation
 Hypostructure.Fixtures.SupportComplementNormalizationPublishedFacts
 Hypostructure.Fixtures.WellFoundedExhaustion
-Hypostructure.Graph.AtomResponse
-Hypostructure.Graph.DecoratedFan
-Hypostructure.Graph.ReceiverExhaustion
-Hypostructure.Graph.TargetDefectivePeel
-Hypostructure.Graph.TypeABCertificate
-Hypostructure.Graph.TypeBFanClosedPorts
-Hypostructure.Graph.TypeBHybridLedger
-Hypostructure.Graph.TypeBMarkedFan
-Hypostructure.Graph.TypeBPostLedgerCore
-Hypostructure.Graph.TypeBProfileSchedule
 Hypostructure.PDE
 Hypostructure.PDE.FastTrack
 Hypostructure.PDE.FastTrack.Pipeline
@@ -74,9 +62,3 @@ Hypostructure.PDE.Strategy.CounterexampleLocalization
 Hypostructure.PDE.Strategy.LocalClosureAlgebra
 Hypostructure.PDE.Strategy.Official.SealedDag
 Hypostructure.PDE.Strategy.Official.TotalExecutionBoundary
-# Paper repairs quarantined by user decision (2026-09-26): reference only.
-Hypostructure.Quarantine.PaperRepairs.Node144Gap
-Hypostructure.Quarantine.PaperRepairs.ColdF4Charge
-Hypostructure.Quarantine.PaperRepairs.ColdF2Refutation
-Hypostructure.Quarantine.PaperRepairs.EntropyCapAllCold
-Hypostructure.Quarantine.PaperRepairs.SilentLaneClosure

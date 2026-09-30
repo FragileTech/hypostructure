@@ -1517,8 +1517,7 @@ response support already recorded in the branch state".  Its uses fix what
 
 So the declared handoff interfaces reached by a corridor are exactly G's heavy
 centres.  (The whole-support reading of tex 7234 makes (F4) fire at segment 0
-on a subcubic support, which the paper neither bounds nor excludes;
-`Quarantine/PaperRepairs/ColdF4Charge.lean`.) -/
+on a subcubic support, which the paper neither bounds nor excludes.) -/
 def ColdDeclaredHandoffSupport (data : Parameters)
     (object : Graph.FiniteObject.{u}) (support : Finset object.Vertex) : Prop :=
   ∃ centre : object.Vertex, support = {centre} ∧

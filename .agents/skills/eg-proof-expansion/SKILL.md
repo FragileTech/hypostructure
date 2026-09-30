@@ -332,12 +332,11 @@ error at [144] is carried by the open leaf [144a]. Its retained content is the
 handoff, or the unresolved same-label pattern-pair residual about G's
 canonical pattern pair. The root returns six outcome families.
 
-Repairs are quarantined, never deleted. Any repair lemma, alternative argument
-or reverted repair belongs in `hypostructure/Hypostructure/Quarantine/PaperRepairs/`
-(listed in `hypostructure/quarantine.txt`, described in that folder's
-README.md). No live module may import it; `hypostructure/scripts/check_quarantine.py`
-enforces this. Quarantined modules listed in `quarantine.txt` are reference
-only: never delete them, and never import them.
+Graph code the proof does not use is not kept in the tree; repair lemmas,
+alternative arguments and reverted repairs live in git history only.
+`hypostructure/quarantine.txt` lists the framework and PDE modules kept out of the
+build closure; no live module may import them, and
+`hypostructure/scripts/check_quarantine.py` enforces this.
 
 
 ## Enforce the proof-specific boundary

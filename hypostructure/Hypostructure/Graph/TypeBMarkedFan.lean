@@ -43,8 +43,7 @@ one: `Marked.highDegree`'s `4` (and its companions in
 `IsFanCertificateResidual`) is `baselineDegree + 1` at the registered baseline
 `k = 3`, i.e. `def:marked-typeB-fan`'s "high-degree centre".  Parameterising
 `Marked` by `k` would change the signature of every Type B lemma that consumes
-it in the live `TypeBProfileSchedule` and `TypeBHybridLedger` chain; it is
-recorded here rather than silently rewritten.
+it; it is recorded here rather than silently rewritten.
 
 Manuscript invariants used: 16 (certificate-marked fan degree) and 25 (legal
 `P₁₃` labels).
