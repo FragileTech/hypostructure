@@ -24,7 +24,7 @@ PART_TITLES = {
 # Source: the captions of Parts I-XII (Part V also joins [177] to Type B [65]).
 CONTINUATIONS = (
     ("20", "125", "strict sparse-exit survivor, expanded in Part X"),
-    ("19", "187", "no: near-cubic sparse target-defect exit with surplusAtOrBelow"),
+    ("19", "20a", "no: near-cubic sparse exit, closed at [20a]"),
     ("158", "159", "no: dense-packing residual, expanded in Part XII"),
     ("161", "25", "deficiency cap in place of [24]: enters Residual A in Part II"),
     ("22", "145", "no: cold branch, expanded in Part XI"),
@@ -53,8 +53,8 @@ PART_SUMMARIES = {
         "a Mersenne return. Minimality then forces the graph to be edge-critical with its "
         "high-degree vertices independent, and an external theorem forces it to contain "
         "induced thirteen-vertex paths. Packing those paths splits the graph into windows "
-        "and a remainder. The strict-surplus sparse exit retains the target-defect "
-        "quotient at the open endpoint [20a]; its survivor continues at [125]."
+        "and a remainder. The sparse target-defect exit is empty at the selected graph, "
+        "so [20a] closes on both surplus arms; the strict-surplus survivor continues at [125]."
     ),
     "fig:proof-diagram-part-ii": (
         "Measures the remainder. It is large, contains no cubic core of its own, and its "
@@ -71,8 +71,10 @@ PART_SUMMARIES = {
     "fig:proof-diagram-part-iv": (
         "Takes the complementary branch, where obstruction rank is full and so costs the "
         "remainder a definite amount. The argument then splits on how much entropy the "
-        "remainder has: a low-entropy remainder is repetitive enough that the cost closes "
-        "it under the entropy cap, while a high-entropy one survives into the large-budget "
+        "remainder has. On the high-entropy branch with a small remaining budget, the "
+        "entropy cap closes wherever the window, remainder and obstruction bits jointly fit "
+        "in the skeleton budget; where that joint realization inequality fails, the branch "
+        "stops at the open residual [54]. The other cases survive into the large-budget "
         "residual."
     ),
     "fig:proof-diagram-part-v": (

@@ -458,8 +458,10 @@ def test_erdos_has_189_live_nodes_across_twelve_panels() -> None:
     assert shapes.count("assertion") == 104
     assert shapes.count("decision") == 49
     assert shapes.count("terminal") == 36
+    # The Lean root type: [20a] is a closed terminal (exit (b) is empty at G),
+    # and the failed joint realization at [54] is a returned residual.
     assert {node["id"] for node in ERDOS["nodes"] if node.get("open")} == {
-        "20a", "144a", "172a", "182", "186", "187"
+        "144a", "172a", "182", "186", "187", "54"
     }
 
 
@@ -473,7 +475,9 @@ def test_every_open_erdos_node_is_a_leaf() -> None:
 def test_new_boundary_nodes_follow_their_literal_producers() -> None:
     arrows = {(edge["source"], edge["target"]) for edge in ERDOS["edges"]}
     assert ("20", "20a") in arrows
-    assert ("19", "187") in arrows
+    assert ("19", "20a") in arrows
+    assert ("19", "187") not in arrows
+    assert ("53", "54") in arrows
     assert ("144", "144a") in arrows
     assert ("179", "187") in arrows
     assert ("180", "187") in arrows

@@ -15,9 +15,11 @@ Two proofs are published:
 
 The Erdős–Gyárfás paper and Lean root theorem give a conditional reduction.
 Every counterexample leads to a selected minimal counterexample in one of five
-named residuals, [20a], [144a], [172a], [182], and [186], or in [187], the
+named residuals, [144a], [172a], [182], [186], and [54], or in [187], the
 explicit disjunction of the other returned outcomes. These six alternatives
-exhaust the current formal routing. Excluding all six for selected minimal
+exhaust the current formal routing and are the result type of the Lean root
+theorem. The strict-surplus target defect [20a] is closed: the sparse
+target-defect exit is empty at the selected graph. Excluding all six for selected minimal
 counterexamples would prove the conjecture; their exclusion remains open.
 
 The Navier–Stokes argument is written across three manuscripts, each numbering

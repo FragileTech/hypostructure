@@ -1,7 +1,7 @@
 {
- "status": "exact selected-root reduction to [20a], [144a], [172a], [182], [186], and [187]",
+ "status": "exact selected-root reduction to [144a], [172a], [182], [186], [187], and [54] ([20a] and the near-cubic target defect closed at G)",
  "updated_at": "2026-09-30T05:34:37.196007+00:00",
- "aggregate_validation": "Full build of both packages (hypostructure and HypostructureErdos64EG) at 6abf8f58 in the integration worktree: `lake build --no-build` reports all 9291 targets up to date. Kernel axiom audit (web/tools/lean_axiom_audit.py, run on that build): 347 assembly declarations, all clean, no frontier stubs. Entries [144a], [172a], [186] and [187] re-derived on 2026-09-30 from the live Lean residuals and the manuscript; the other entries are as re-derived on 2026-09-25.",
+ "aggregate_validation": "Full build of both packages (hypostructure and HypostructureErdos64EG) at 6abf8f58 in the integration worktree: `lake build --no-build` reports all 9291 targets up to date. Kernel axiom audit (web/tools/lean_axiom_audit.py, run on that build): 347 assembly declarations, all clean, no frontier stubs. Entries [144a], [172a], [186] and [187] re-derived on 2026-09-30 from the live Lean residuals and the manuscript, and [20a] and [54] re-derived on 2026-09-30 from the same Lean state (0cf0ee6a, whose Lean files match 6abf8f58) against the thm:main that lists the Lean root type; the other entries are as re-derived on 2026-09-25.",
  "nodes": {
   "1": {
    "producer": "`OfficialStatement` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Problem.lean:58); `target` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Problem.lean:105); `officialCounterexample_reaches_selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:157)",
@@ -534,13 +534,13 @@
    "on_probed_closed_arm": true
   },
   "54": {
-   "producer": "`entropyJointRealizationDichotomy` on [53]'s active arm in the four `nearCubicLargeBudget*` spines (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Spine.lean); joint arm closed by `entropyCapBoundRow.runAndCloseIncompatible`; `Node54ResidualOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:2868), `node54Return`",
+   "producer": "`entropyJointRealizationDichotomy` (hypostructure/Hypostructure/Graph/Strategy/EntropyClosure.lean:117) on [53]'s active arm in the four `nearCubicLargeBudget*` spines (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Spine.lean:900, 1107, 1320, 1529); joint arm closed by `entropyCapBoundRow.runAndCloseIncompatible`; `Node54ResidualOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:4745), `node54Return` (Residuals.lean:4933), and its five subtypes `Node54ResidualOutcome_{realizedColdBelow,realizedBounded,unrealizedTauHighBounded,unrealizedRateFailsBounded,unrealizedBothRates}` with returns `node54Return_*` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals/Node54ResidualOutcome.lean:52-599); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:164)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "[54] is the exact decision on the joint realization inequality at G; its failing arm returns `Node54ResidualOutcome` (40 facts).",
+   "fidelity_note": "[54] is the exact decision on the joint realization inequality RS(R0)·2^{rate·s·p13}·2^F ≤ B at G (key 3204 against key 3205, `K .allColdEntropyResidual`); its failing arm returns `Node54ResidualOutcome`, the explicit conjunction of 92 facts, one `get` each, in five subtypes (one per combination of the arms of [158], [160], [146], [153]; 3, 6, 7, 8 and 3 extra facts). The subtypes realizedBounded, unrealizedTauHighBounded and unrealizedRateFailsBounded carry n < N0 (`K .realizedOrderSmall` 6602 / `K .boundedOrderSmall` 6605; the arm N0 ≤ n is closed). The combination unrealized ∧ τ(θ) ≥ 1/4 ∧ θ < 1/78 is closed at [146]. Matches thm:main (vii), prop:entropy-high-theta and rem:54-formal-status.",
    "complete": "YES: exact decision; returned residual",
    "local": "YES",
    "api": "OK",
-   "difference": "The residual is returned rather than closed (the paper's step is not established at G).",
+   "difference": "None: the manuscript now lists the failing arm as the open residual [54] of thm:main (vii) and states prop:entropy-high-theta on the joint arm only.",
    "on_probed_closed_arm": true
   },
   "55": {
@@ -1858,14 +1858,14 @@
    "on_probed_closed_arm": false
   },
   "20a": {
-   "producer": "`Node20aOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:29), `node20aReturn` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:69); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:71)",
+   "producer": "`selectedSparseExitClosed` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Local.lean:93), run on the exit arm of `sparseSurplusSurvivorDichotomy` on the strict arm of [19] (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:309) and on the at-or-below arm (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:58); `sparseSurplusExitRoutingRow` and `sparseTargetDefectEmptyRow` (hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows/SparseSurplusExit.lean:78), closed by `AtomicCT.runAndCloseIncompatible`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`Node20aOutcome` is the explicit conjunction of all 18 facts on the [20a] ledger (entry prefix, `K .surplusAbove`, `K .sparsePairExit`, `K .sparseTargetDefectResidual`, `K .sparseTargetDefectStructure`), one `get` per fact; matches thm:main (i).",
-   "complete": "YES: exact routing; endpoint remains open",
+   "fidelity_note": "The exit routing sends exits (a), (c), (d), (e) of def:named-surplus-exits to contradictions with `K .selection` and `K .replacementExclusion` and exit (b) to its payload `K .sparseTargetDefectResidual`; `K .sparseTargetDefectEmpty` (key 7800, `sparseTargetDefectEmpty_of_avoids`: every reading of G's piece glued into G − Z is a target-free subgraph of G, so G − Z never separates two readings) is incompatible with that payload and closes the arm. No residual is returned: `Node20aOutcome` and `NearCubicTargetDefectOutcome` are removed from the root type. Matches lem:sparse-exit-b-empty and thm:main (item (i) excluded).",
+   "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "None. The at-or-below-surplus target defect is the separate [187] outcome `NearCubicTargetDefectOutcome`.",
-   "on_probed_closed_arm": false
+   "difference": "Lean improvement (G-only restatement): clause (b) is read with the separating context G − Z, the only outside graph of G at ∂Z (rem:sparse-exit-b-scope). The same closure removes the at-or-below-surplus sparse target defect formerly listed at [187].",
+   "on_probed_closed_arm": true
   },
   "144a": {
    "producer": "`Node144aOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:45) and its six subtypes `Node144aOutcome_{window,remainder,primitive}{Handoff,Fails}` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals/Node144aOutcome.lean:28-176), returned by `node144aWindowHandoffReturn` … `node144aPrimitiveFailsReturn` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals/Node144aOutcome.lean:366-494), called by `selectedBottleneckDischarge` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean:741); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:164)",

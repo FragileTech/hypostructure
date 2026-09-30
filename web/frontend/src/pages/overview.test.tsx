@@ -60,7 +60,7 @@ describe("the proof overview", () => {
       .closest("section")!;
     const outcomeLinks = within(outcomes).getAllByRole("link");
     expect(outcomeLinks.map((link) => link.getAttribute("href"))).toEqual(
-      ["20a", "144a", "172a", "182", "186", "187"].map(
+      ["54", "144a", "172a", "182", "186", "187"].map(
         (id) => `/erdos-gyarfas/explore?step=${id}`,
       ),
     );

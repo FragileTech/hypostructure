@@ -216,10 +216,11 @@ describe("the Erdos-Gyarfas neutral configuration at [163]", () => {
     expect(node.open).toBeUndefined();
     expect(node.shape).toBe("decision");
     expect(node.group).toBe("fig:proof-diagram-part-xii");
-    // The five named residuals and the grouped other-outcomes endpoint.
+    // The five named residuals and the grouped other-outcomes endpoint
+    // (the Lean root type: [20a] is closed, [54] is returned).
     expect(
       ERDOS.nodes.filter((candidate) => candidate.open).map((candidate) => candidate.id).sort(),
-    ).toEqual(["144a", "172a", "182", "186", "187", "20a"]);
+    ).toEqual(["144a", "172a", "182", "186", "187", "54"]);
 
     show(ERDOS, "163");
     expect(screen.getByText("Branch test")).toBeInTheDocument();
@@ -673,14 +674,14 @@ describe("the Erdős–Gyárfás counterexample boundary", () => {
       within(boundary)
         .getAllByRole("button")
         .map((button) => button.querySelector(".explorer-outcome-id")?.textContent),
-    ).toEqual(["[20a]", "[144a]", "[172a]", "[182]", "[186]", "[187]"]);
+    ).toEqual(["[54]", "[144a]", "[172a]", "[182]", "[186]", "[187]"]);
 
-    await user.click(within(boundary).getByRole("button", { name: /Open outcome 20a:/ }));
+    await user.click(within(boundary).getByRole("button", { name: /Open outcome 54:/ }));
     expect(changes).toContainEqual({
-      selected: "20a",
+      selected: "54",
       item: null,
       chapter: null,
-      group: "fig:proof-diagram-part-i",
+      group: "fig:proof-diagram-part-iv",
     });
   });
 });
