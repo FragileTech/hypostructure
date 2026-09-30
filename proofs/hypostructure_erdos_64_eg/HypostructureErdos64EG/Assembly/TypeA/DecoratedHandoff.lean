@@ -108,6 +108,9 @@ noncomputable abbrev typeADecoratedHandoffKeys : FactKeys EGInput.{u} :=
     K .pieceDominanceIrreducible, K .twoExitNewLength,
     K .canonicalPieceDominance, K .canonicalTwoExitNewLength,
     K .twoExitSizeMonotone, K .canonicalTwoExitSizeMonotone,
+    K .route8PackingExchange, K .route8ArmExchange, K .route8FullArmLandingCap,
+    K .route8HubPieceMass, K .route8NetCapExcess, K .route8CleanLandingRules,
+    K .route8CleanLandingCap, K .route8ArmClosureResidual,
     K .route8BasinBurden,
     K .route8CarrierCore,
     K .typeBAbsorbedCharge]

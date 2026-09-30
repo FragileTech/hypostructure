@@ -1608,8 +1608,10 @@ maximal ledger (113 common facts, the last six the CT3 facts
 `pieceDominanceIrreducible`, `twoExitNewLength`, `canonicalPieceDominance`,
 `canonicalTwoExitNewLength`, `twoExitSizeMonotone`, `canonicalTwoExitSizeMonotone`
 (keys 9975--9980), then the blob-structure keys 9900--9902: the pieces of `R` against
-the windows of `P₀` and the rate `K .route8Rate` over the pieces).  The conjunction
-lists the keys 9900--9902 before the six CT3 facts. -/
+the windows of `P₀` and the rate `K .route8Rate` over the pieces; then the
+packing-exchange keys 9800--9802, the hub-piece mass 9803, and the arm-cap keys
+9804--9807).  The conjunction lists the keys 9900--9902 before the six CT3 facts,
+and the keys 9800--9807 after them. -/
 abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -1886,7 +1888,23 @@ abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .twoExitSizeMonotone selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .canonicalTwoExitSizeMonotone selected.object
+      erdosReceiverLoadProfile spineData .canonicalTwoExitSizeMonotone selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8PackingExchange selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8ArmExchange selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8FullArmLandingCap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8HubPieceMass selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8NetCapExcess selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8CleanLandingRules selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8CleanLandingCap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8ArmClosureResidual selected.object
 
 /-- The return of `Route8JointBalanceOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -2030,7 +2048,15 @@ theorem route8JointBalanceReturn
     [FactKeys.Has (K .canonicalPieceDominance) known]
     [FactKeys.Has (K .canonicalTwoExitNewLength) known]
     [FactKeys.Has (K .twoExitSizeMonotone) known]
-    [FactKeys.Has (K .canonicalTwoExitSizeMonotone) known] :
+    [FactKeys.Has (K .canonicalTwoExitSizeMonotone) known]
+    [FactKeys.Has (K .route8PackingExchange) known]
+    [FactKeys.Has (K .route8ArmExchange) known]
+    [FactKeys.Has (K .route8FullArmLandingCap) known]
+    [FactKeys.Has (K .route8HubPieceMass) known]
+    [FactKeys.Has (K .route8NetCapExcess) known]
+    [FactKeys.Has (K .route8CleanLandingRules) known]
+    [FactKeys.Has (K .route8CleanLandingCap) known]
+    [FactKeys.Has (K .route8ArmClosureResidual) known] :
     Route8JointBalanceOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -2169,7 +2195,15 @@ theorem route8JointBalanceReturn
     (history.get (K .canonicalPieceDominance)).down,
     (history.get (K .canonicalTwoExitNewLength)).down,
     (history.get (K .twoExitSizeMonotone)).down,
-    (history.get (K .canonicalTwoExitSizeMonotone)).down⟩
+    (history.get (K .canonicalTwoExitSizeMonotone)).down,
+    (history.get (K .route8PackingExchange)).down,
+    (history.get (K .route8ArmExchange)).down,
+    (history.get (K .route8FullArmLandingCap)).down,
+    (history.get (K .route8HubPieceMass)).down,
+    (history.get (K .route8NetCapExcess)).down,
+    (history.get (K .route8CleanLandingRules)).down,
+    (history.get (K .route8CleanLandingCap)).down,
+    (history.get (K .route8ArmClosureResidual)).down⟩
 
 /-- **Node `[187] ([179]/[180] Type B entry)`** (thm:main (vi), tex 369-378): a
 Type B entry produced by the [179] or [180] pair-system outcome, with its
@@ -3253,8 +3287,10 @@ is the non-emptiness of the unified entry family, with the aggregate bound
 `|∂R| < δ·|\tilde\Xi|`) and the one before it, `K .route8PeelingDescent`, is the
 stage accounting that fact consumes.
 The conjunction closes with the blob-structure keys 9900--9902 (the pieces of `R`
-against the windows of `P₀`, and the rate `K .route8Rate` over the pieces) and then the
-six CT3 facts (dominance irreducibility of G's pieces, keys 9975--9980). -/
+against the windows of `P₀`, and the rate `K .route8Rate` over the pieces), then the
+six CT3 facts (dominance irreducibility of G's pieces, keys 9975--9980), then the
+packing-exchange keys 9800--9802, the hub-piece mass 9803 and the arm-cap keys
+9804--9807. -/
 abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -3505,7 +3541,23 @@ abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .twoExitSizeMonotone selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .canonicalTwoExitSizeMonotone selected.object
+      erdosReceiverLoadProfile spineData .canonicalTwoExitSizeMonotone selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8PackingExchange selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8ArmExchange selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8FullArmLandingCap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8HubPieceMass selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8NetCapExcess selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8CleanLandingRules selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8CleanLandingCap selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8ArmClosureResidual selected.object
 
 /-- The return of `Route8QuotientOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -3636,7 +3688,15 @@ theorem route8QuotientReturn
     [FactKeys.Has (K .canonicalPieceDominance) known]
     [FactKeys.Has (K .canonicalTwoExitNewLength) known]
     [FactKeys.Has (K .twoExitSizeMonotone) known]
-    [FactKeys.Has (K .canonicalTwoExitSizeMonotone) known] :
+    [FactKeys.Has (K .canonicalTwoExitSizeMonotone) known]
+    [FactKeys.Has (K .route8PackingExchange) known]
+    [FactKeys.Has (K .route8ArmExchange) known]
+    [FactKeys.Has (K .route8FullArmLandingCap) known]
+    [FactKeys.Has (K .route8HubPieceMass) known]
+    [FactKeys.Has (K .route8NetCapExcess) known]
+    [FactKeys.Has (K .route8CleanLandingRules) known]
+    [FactKeys.Has (K .route8CleanLandingCap) known]
+    [FactKeys.Has (K .route8ArmClosureResidual) known] :
     Route8QuotientOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -3762,7 +3822,15 @@ theorem route8QuotientReturn
     (history.get (K .canonicalPieceDominance)).down,
     (history.get (K .canonicalTwoExitNewLength)).down,
     (history.get (K .twoExitSizeMonotone)).down,
-    (history.get (K .canonicalTwoExitSizeMonotone)).down⟩
+    (history.get (K .canonicalTwoExitSizeMonotone)).down,
+    (history.get (K .route8PackingExchange)).down,
+    (history.get (K .route8ArmExchange)).down,
+    (history.get (K .route8FullArmLandingCap)).down,
+    (history.get (K .route8HubPieceMass)).down,
+    (history.get (K .route8NetCapExcess)).down,
+    (history.get (K .route8CleanLandingRules)).down,
+    (history.get (K .route8CleanLandingCap)).down,
+    (history.get (K .route8ArmClosureResidual)).down⟩
 
 /-- **Node `[187] (private-carrier rate failure)`** (thm:main (vi), tex
 369-378): failure of the exact private-carrier rate at the entry of the
