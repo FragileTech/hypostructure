@@ -12,6 +12,7 @@ import Hypostructure.Graph.Strategy.SpineRows.PieceDominance
 import Hypostructure.Graph.Strategy.SpineRows.Route8PackingExchange
 import Hypostructure.Graph.Strategy.SpineRows.Route8ArmCap
 import Hypostructure.Graph.Strategy.SpineRows.Route8Density
+import Hypostructure.Graph.Strategy.SpineRows.Route8WindowExchange
 import Hypostructure.Graph.Strategy.SpineRows.Route8StageOutcomeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8TwoCarrierExit
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedDeficit
@@ -291,6 +292,9 @@ noncomputable def selectedRouteEightUnifiedResidual
     (armClosureFresh : K .route8ArmClosure ∉ known := by key_fresh)
     (netCapLargeFresh : K .route8NetCapLarge ∉ known := by key_fresh)
     (netCapSmallFresh : K .route8NetCapSmall ∉ known := by key_fresh)
+    (x15DoubleLandingFresh : K .route8X15DoubleLanding ∉ known := by key_fresh)
+    (armPairTriggerFresh : K .route8ArmPairTrigger ∉ known := by key_fresh)
+    (x15HeavyPairFresh : K .route8X15HeavyPair ∉ known := by key_fresh)
     (canonicalFormFresh : K .typeBSublinearCanonicalForm ∉ known := by
       key_fresh)
     (absorbedSubsetFresh : K .groupedAbsorbedCoreSubset ∉ known := by
@@ -619,11 +623,27 @@ noncomputable def selectedRouteEightUnifiedResidual
             (K .route8NetCapLarge) (by key_fresh)).elimClosed
               (by infer_instance)).elim
       | .right smallHistory =>
+          -- The exchanges at one window of `P₀` (keys 9810--9812).
+          let x15DoubleLanding :=
+            (route8X15DoubleLandingRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              smallHistory (by key_fresh)
+          let armPairTrigger :=
+            (route8ArmPairTriggerRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              x15DoubleLanding (by key_fresh)
+          let x15HeavyPair :=
+            (route8X15HeavyPairRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              armPairTrigger (by key_fresh)
           let unifiedDeficit :=
             (route8UnifiedDeficitRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              smallHistory (by key_fresh)
+              x15HeavyPair (by key_fresh)
           -- Route 8 read on the pieces constructed from G: fold pairs of the
           -- selected basins are exit-(4) peels, and complete carrier sets hold
           -- every fold pair (idx 8700).

@@ -32,7 +32,7 @@ the abbrev bodies; "+k" is a subtype's extra conjuncts.
 | `[144a]` `Node144aOutcome` | 136 | `windowHandoff` (+3), `windowFails` (+18), `remainderHandoff` (+4), `remainderFails` (+19), `primitiveHandoff` (+5), `primitiveFails` (+20) | none |
 | `[172a]` `BlockedBarrierOverlapOutcome` | 125 | `DeficiencyAtOrAbove` (+1), `DeficiencyBelowRateFails` (+2) | none |
 | `[182]` `PairConditionalFactorizationOutcome` | 120 | `freeFactorizationFails` (+3), `freeRealizabilityFails` (+8), `freeIncrementFails` (+12), `blockedFactorizationFails` (+12), `blockedRealizabilityFails` (+17), `blockedIncrementFails` (+21) | none |
-| `[186]` `Route8JointBalanceOutcome_product` | 152 | one product: generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of its 750 paths (below); every path carries `¬ SufficientlyLargeForNetCap` (9706) |
+| `[186]` `Route8JointBalanceOutcome_product` | 155 | one product: generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of its 750 paths (below); every path carries `¬ SufficientlyLargeForNetCap` (9706) |
 | `[187]` `OtherReturnedOutcome` | see below | 23 subtypes | 13 subtypes and 400 of 750 paths of each product |
 | `[54]` `Node54ResidualOutcome` | 92 | `realizedColdBelow` (+3), `realizedBounded` (+6), `unrealizedTauHighBounded` (+7), `unrealizedRateFailsBounded` (+8), `unrealizedBothRates` (+3) | `realizedBounded`, `unrealizedTauHighBounded`, `unrealizedRateFailsBounded` |
 
@@ -42,7 +42,7 @@ the abbrev bodies; "+k" is a subtype's extra conjuncts.
 |---|---:|---|---|
 | Pair Type B (`[179]`/`[180]` entry) `PairTypeBOutcome` | 133 | `independentSystem` (+2), `dependentSystem` (+11) | none |
 | Type B sublinear failure `TypeBSublinearOutcome_product` | 128 | generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of 750 paths |
-| Route-8 quotient failure `[348]` `Route8QuotientOutcome_product` | 139 | generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of 750 paths; every path carries `¬ SufficientlyLargeForNetCap` (9706) |
+| Route-8 quotient failure `[348]` `Route8QuotientOutcome_product` | 142 | generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of 750 paths; every path carries `¬ SufficientlyLargeForNetCap` (9706) |
 | Private-carrier rate failure `Route8RateFailsOutcome` | 113 | 11: `realized_{highEntropy, lowNonrepetitive, lowWedgeFree, lowWedge}` (+6, +5, +7, +8), `denseAtOrAbove_{highEntropy, lowNonrepetitive, lowWedgeFree, lowWedge}` (+7, +6, +8, +9), `denseBelow_{lowNonrepetitive, lowWedgeFree, lowWedge}` (+6, +8, +9) | all 11 |
 | Local cold-terminal exclusion `ColdBranchClosedOutcome` | 105 | 8: `linearRealizedSilent` (+18), `linearDenseAtOrAbove_repeated` (+8), `linearDenseRateFailed_repeated` (+9), `linearDenseAtOrAbove` (+10), `linearDenseRateFailed` (+11), `linearRealizedDistinguished` (+8), `linearDenseAtOrAbove_repeatedDistinguished` (+8), `linearDenseRateFailed_repeatedDistinguished` (+9) | `linearRealizedSilent`, `linearRealizedDistinguished` |
 
@@ -183,7 +183,10 @@ part of it no fact of the ledger decides.
   (`lem:r8-packing-exchange` and the arm-closure residual, `lem:r8-arm-closure-residual`),
   9900-9902 (piece-window attachment, piece chain cycles, piecewise rate
   `Σ_X (3|X| − 13E(X)) > 3·slack` with a heavy piece), 9975-9980 (dominance
-  irreducibility, `Graph/DominatedReplacement.lean`).  On `[186]` the rate over the
+  irreducibility, `Graph/DominatedReplacement.lean`), 9810-9812 (window exchanges at G:
+  legal double landings of X15 on one window, the two-arm trigger on one window, the rung
+  bound for an X15 copy with exits on two windows; see "Window exchanges at G").  On
+  `[186]` the rate over the
   pieces is pinned: `3h < Σ_X (3|X| − 13E(X)) ≤ 3h + O`, so `O > 0`.
 - **Density facts on both.**  9700-9704 (the density theorem at G: hub-free pieces
   have `ex(X) ≤ 0` or are X15 copies; X15 copies have `ν(X) ≥ 2`; Π on thick
@@ -653,3 +656,36 @@ after 9807:
 - 9704 `route8ArmClosure`: `F ≤ 14 → SufficientlyLargeForNetCap … n → False`
   (9807 at c = 30 with 9702, 9703 and σ ≤ T).
 - 9705/9706: the exact split on `F ≤ 14 ∧ SufficientlyLargeForNetCap … n`.
+
+## Window exchanges at G
+
+Three exchange facts about G at one or two windows of G's own maximum window packing
+`P₀ = canonicalWindowPacking` (`R` its remainder).  X15 enters only as the shape of
+induced copies `e : x15Graph ↪g G` with every vertex in G's `R`.  The rows read only G's
+ledger facts: target avoidance (`selection`), the dyadic target law (`cubicBaseline`)
+and the maximality of `P₀` (`canonicalWindowPacking_spec`).  Axioms: propext,
+Classical.choice, Quot.sound and the `native_decide` helper axioms.
+
+Facts at G (`Strategy/SpineRows/Route8WindowExchange.lean`; statements in
+`Statements/Route8WindowExchange.lean`, contracts in
+`Contracts/RouteEight/WindowExchange.lean`), on the common prefix of `[186]` and `[348]`
+after 9706:
+
+- 9810 `route8X15DoubleLanding` (reads `cubicBaseline` for the dyadic target law and
+  `selection` for G's target avoidance): at window order 13, an induced copy of X15 in R
+  whose only edges to a window `P ∈ P₀` are `e a — p i` and `e b — p j`, for distinct
+  exits `a, b ∈ {4, 6, 9}`, has `{a, b} = {6, 9}` and `{i, j}` one of `{0,10}`,
+  `{0,11}`, `{1,11}`, `{1,12}`, `{2,12}`.  Exit 4 never double-lands; `{0, 12}` gives
+  two disjoint induced 13-vertex paths in G on the copy and `P`, against the maximality
+  of `P₀`.
+- 9811 `route8ArmPairTrigger` (reads no prerequisite; the maximality of `P₀` is
+  `canonicalWindowPacking_spec`): two vertex-disjoint arms in R landing at positions
+  `i < j` of one window, of lengths at least `(order − 1 − i, j)` and meeting
+  `p[0..i]` resp. `p[j..order−1]` only at their landing edges, do not exist.
+- 9812 `route8X15HeavyPair` (reads `cubicBaseline` and `selection`): at window order 13,
+  for two distinct windows of `P₀` with subcubic vertices and an induced copy of X15 in
+  R with distinct exits landing on both, the rungs between the windows number at most 6
+  when exit 4 lands and at most 8 otherwise.  A pair with at least 9 rungs carries no
+  such copy.  The proof reads a finite certificate (`HeavyPairCert*`, `native_decide`
+  shards) at G: every 7, resp. 9, rungs between the two windows give in G a cycle of
+  length 4, 8, 16 or 32 or a window vertex of degree at least 4.

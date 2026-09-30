@@ -211,6 +211,9 @@ theorem route8JointBalanceProductReturn
     [FactKeys.Has (K .route8HubPieceExcess) known]
     [FactKeys.Has (K .route8ArmClosure) known]
     [FactKeys.Has (K .route8NetCapSmall) known]
+    [FactKeys.Has (K .route8X15DoubleLanding) known]
+    [FactKeys.Has (K .route8ArmPairTrigger) known]
+    [FactKeys.Has (K .route8X15HeavyPair) known]
     (entry : Route8LaneEntry selected)
     (continuation : NetChargeContinuation selected) :
     Route8JointBalanceOutcome_product selected :=

@@ -1602,14 +1602,17 @@ theorem pairConditionalFactorizationReturn
 /-- **Node `[186]`** (thm:main (v), tex 378-385): the visible-entry route-8
 residual after [181], [183]-[185], with the joint balances of lem:typeA-
 unified-joint-balance.  The explicit conjunction of every fact on its
-maximal ledger (152 common facts).  The last twenty-three, in order: the
+maximal ledger (155 common facts).  The last twenty-six, in order: the
 blob-structure keys 9900--9902 (the pieces of `R` against the windows of `P₀`
 and the rate `K .route8Rate` over the pieces); the six CT3 facts
 `pieceDominanceIrreducible`, `twoExitNewLength`, `canonicalPieceDominance`,
 `canonicalTwoExitNewLength`, `twoExitSizeMonotone`, `canonicalTwoExitSizeMonotone`
 (keys 9975--9980); then the packing-exchange keys 9800--9802, the hub-piece mass
-9803, the arm-cap keys 9804--9807, the density keys 9700--9704, and the small arm
-9706 of the net-cap size split, `¬ (F ≤ 14 ∧ SufficientlyLargeForNetCap)`. -/
+9803, the arm-cap keys 9804--9807, the density keys 9700--9704, the small arm
+9706 of the net-cap size split, `¬ (F ≤ 14 ∧ SufficientlyLargeForNetCap)`, and the
+window-exchange keys 9810--9812 (legal double landings of `X15` on one window of `P₀`,
+the two-arm trigger on one window, and the rung bound for a copy of `X15` with exits on
+two windows). -/
 abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -1914,7 +1917,13 @@ abbrev Route8JointBalanceOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8ArmClosure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8NetCapSmall selected.object
+      erdosReceiverLoadProfile spineData .route8NetCapSmall selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8X15DoubleLanding selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8ArmPairTrigger selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8X15HeavyPair selected.object
 
 /-- The return of `Route8JointBalanceOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -2072,7 +2081,10 @@ theorem route8JointBalanceReturn
     [FactKeys.Has (K .route8HubFreePi) known]
     [FactKeys.Has (K .route8HubPieceExcess) known]
     [FactKeys.Has (K .route8ArmClosure) known]
-    [FactKeys.Has (K .route8NetCapSmall) known] :
+    [FactKeys.Has (K .route8NetCapSmall) known]
+    [FactKeys.Has (K .route8X15DoubleLanding) known]
+    [FactKeys.Has (K .route8ArmPairTrigger) known]
+    [FactKeys.Has (K .route8X15HeavyPair) known] :
     Route8JointBalanceOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -2225,7 +2237,10 @@ theorem route8JointBalanceReturn
     (history.get (K .route8HubFreePi)).down,
     (history.get (K .route8HubPieceExcess)).down,
     (history.get (K .route8ArmClosure)).down,
-    (history.get (K .route8NetCapSmall)).down⟩
+    (history.get (K .route8NetCapSmall)).down,
+    (history.get (K .route8X15DoubleLanding)).down,
+    (history.get (K .route8ArmPairTrigger)).down,
+    (history.get (K .route8X15HeavyPair)).down⟩
 
 /-- **Node `[187] ([179]/[180] Type B entry)`** (thm:main (vi), tex 386-403): a
 Type B entry produced by the [179] or [180] pair-system outcome, with its
@@ -3303,7 +3318,7 @@ theorem typeBSublinearReturn
 
 /-- **Node `[187] ([348], route-8 quotient failure)`** (thm:main (vi), tex
 386-403): failure of route-8 quotient freeness of the unified
-census.  The explicit conjunction of every fact on its maximal ledger (139
+census.  The explicit conjunction of every fact on its maximal ledger (142
 common facts); the fact
 `K .route8QuotientEntriesAtG` decides the quotient test at G (the failure
 is the non-emptiness of the unified entry family, with the aggregate bound
@@ -3314,7 +3329,9 @@ against the windows of `P₀`, and the rate `K .route8Rate` over the pieces), th
 six CT3 facts (dominance irreducibility of G's pieces, keys 9975--9980), then the
 packing-exchange keys 9800--9802, the hub-piece mass 9803 and the arm-cap keys
 9804--9807, then the density keys 9700--9704 and the small arm 9706 of the net-cap size
-split (`¬ (F ≤ 14 ∧ SufficientlyLargeForNetCap)`). -/
+split (`¬ (F ≤ 14 ∧ SufficientlyLargeForNetCap)`), then the window-exchange keys
+9810--9812 (legal double landings of `X15` on one window of `P₀`, the two-arm trigger on
+one window, and the rung bound for a copy of `X15` with exits on two windows). -/
 abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -3593,7 +3610,13 @@ abbrev Route8QuotientOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8ArmClosure selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .route8NetCapSmall selected.object
+      erdosReceiverLoadProfile spineData .route8NetCapSmall selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8X15DoubleLanding selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8ArmPairTrigger selected.object ∧
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .route8X15HeavyPair selected.object
 
 /-- The return of `Route8QuotientOutcome`: one `get` per fact of
 its maximal ledger. -/
@@ -3738,7 +3761,10 @@ theorem route8QuotientReturn
     [FactKeys.Has (K .route8HubFreePi) known]
     [FactKeys.Has (K .route8HubPieceExcess) known]
     [FactKeys.Has (K .route8ArmClosure) known]
-    [FactKeys.Has (K .route8NetCapSmall) known] :
+    [FactKeys.Has (K .route8NetCapSmall) known]
+    [FactKeys.Has (K .route8X15DoubleLanding) known]
+    [FactKeys.Has (K .route8ArmPairTrigger) known]
+    [FactKeys.Has (K .route8X15HeavyPair) known] :
     Route8QuotientOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -3878,7 +3904,10 @@ theorem route8QuotientReturn
     (history.get (K .route8HubFreePi)).down,
     (history.get (K .route8HubPieceExcess)).down,
     (history.get (K .route8ArmClosure)).down,
-    (history.get (K .route8NetCapSmall)).down⟩
+    (history.get (K .route8NetCapSmall)).down,
+    (history.get (K .route8X15DoubleLanding)).down,
+    (history.get (K .route8ArmPairTrigger)).down,
+    (history.get (K .route8X15HeavyPair)).down⟩
 
 /-- **Node `[187] (private-carrier rate failure)`** (thm:main (vi), tex
 386-403): failure of the exact private-carrier rate at the entry of the

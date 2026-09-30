@@ -153,6 +153,7 @@ noncomputable abbrev typeAExitSegmentKeys : FactKeys EGInput.{u} :=
     K .route8HubFreeDensity, K .route8X15LongLandings, K .route8HubFreePi,
     K .route8HubPieceExcess, K .route8ArmClosure, K .route8NetCapLarge,
     K .route8NetCapSmall,
+    K .route8X15DoubleLanding, K .route8ArmPairTrigger, K .route8X15HeavyPair,
     K .typeAExitFourSwitchCycle,
     K .typeAExitSevenSwitch,
     K .typeAExitSevenEnvelope,

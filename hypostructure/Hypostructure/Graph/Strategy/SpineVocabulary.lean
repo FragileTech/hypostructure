@@ -46,6 +46,7 @@ import Hypostructure.Graph.Statements.Route8PackingExchange
 import Hypostructure.Graph.Statements.Route8HubPieceMass
 import Hypostructure.Graph.Statements.Route8ArmCap
 import Hypostructure.Graph.Statements.Route8Density
+import Hypostructure.Graph.Statements.Route8WindowExchange
 import Hypostructure.Graph.Statements.PairHandoffSupport
 import Hypostructure.Graph.Statements.PairHandoffFacts
 import Hypostructure.Graph.Statements.StubDeficit
@@ -1742,6 +1743,18 @@ inductive Key where
   | route8NetCapLarge
   /-- Key `9706` (net-cap size split, small arm): the exact negation of key `9705`. -/
   | route8NetCapSmall
+  /-- Key `9810` (window exchange): at window order 13, an induced copy of `X15` in `R` with
+  exactly two edges to a window `P ∈ P₀`, from distinct exits `a, b`, at positions `i, j`, has
+  `{a, b} = {6, 9}` and `{i, j}` one of `{0,10}`, `{0,11}`, `{1,11}`, `{1,12}`, `{2,12}`. -/
+  | route8X15DoubleLanding
+  /-- Key `9811` (window exchange): two vertex-disjoint arms in `R` landing at positions
+  `i < j` of one window `P ∈ P₀`, of lengths at least `(order − 1 − i, j)`, meeting
+  `p[0..i]` resp. `p[j..order−1]` only at their landing edges, do not exist. -/
+  | route8ArmPairTrigger
+  /-- Key `9812` (window exchange): at window order 13, two distinct windows of `P₀` with
+  subcubic vertices and an induced copy of `X15` in `R` with distinct exits landing on both
+  have at most 6 rungs when exit `4` lands, at most 8 otherwise. -/
+  | route8X15HeavyPair
   -- Type B sublinear audit keys (8300–8349)
   /-- G audit of `TypeBSublinearOutcome`, `prop:typeB-bridge-sublinear`: **the
   tested hypotheses in G's canonical form** -- every existential is pinned to a
@@ -3043,6 +3056,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8NetCapLargeStatement data.toParameters object
   | .route8NetCapSmall, object =>
       Route8NetCapSmallStatement data.toParameters object
+  | .route8X15DoubleLanding, object =>
+      Route8X15DoubleLandingStatement data.toParameters object
+  | .route8ArmPairTrigger, object =>
+      Route8ArmPairTriggerStatement data.toParameters object
+  | .route8X15HeavyPair, object =>
+      Route8X15HeavyPairStatement data.toParameters object
   | .typeBSublinearCanonicalForm, object =>
       TypeBSublinearCanonicalFormStatement data.toParameters object
   | .groupedAbsorbedCoreSubset, object =>
@@ -3826,6 +3845,9 @@ def label : Key → String
   | .route8ArmClosure => "route8ArmClosure"
   | .route8NetCapLarge => "route8NetCapLarge"
   | .route8NetCapSmall => "route8NetCapSmall"
+  | .route8X15DoubleLanding => "route8X15DoubleLanding"
+  | .route8ArmPairTrigger => "route8ArmPairTrigger"
+  | .route8X15HeavyPair => "route8X15HeavyPair"
   | .typeBSublinearCanonicalForm => "typeBSublinearCanonicalForm"
   | .groupedAbsorbedCoreSubset => "groupedAbsorbedCoreSubset"
   | .typeBSublinearFailureArms => "typeBSublinearFailureArms"
@@ -4414,6 +4436,9 @@ example : label .route8HubPieceExcess = "route8HubPieceExcess" := rfl
 example : label .route8ArmClosure = "route8ArmClosure" := rfl
 example : label .route8NetCapLarge = "route8NetCapLarge" := rfl
 example : label .route8NetCapSmall = "route8NetCapSmall" := rfl
+example : label .route8X15DoubleLanding = "route8X15DoubleLanding" := rfl
+example : label .route8ArmPairTrigger = "route8ArmPairTrigger" := rfl
+example : label .route8X15HeavyPair = "route8X15HeavyPair" := rfl
 example : label .typeBSublinearCanonicalForm = "typeBSublinearCanonicalForm" := rfl
 example : label .groupedAbsorbedCoreSubset = "groupedAbsorbedCoreSubset" := rfl
 example : label .typeBSublinearFailureArms = "typeBSublinearFailureArms" := rfl
@@ -4984,6 +5009,9 @@ def idx : Key → Nat
   | .route8ArmClosure => 9704
   | .route8NetCapLarge => 9705
   | .route8NetCapSmall => 9706
+  | .route8X15DoubleLanding => 9810
+  | .route8ArmPairTrigger => 9811
+  | .route8X15HeavyPair => 9812
   | .typeBSublinearCanonicalForm => 8300
   | .groupedAbsorbedCoreSubset => 8301
   | .typeBSublinearFailureArms => 8302
@@ -5550,6 +5578,9 @@ def ofIdx : Nat → Key
   | 9704 => .route8ArmClosure
   | 9705 => .route8NetCapLarge
   | 9706 => .route8NetCapSmall
+  | 9810 => .route8X15DoubleLanding
+  | 9811 => .route8ArmPairTrigger
+  | 9812 => .route8X15HeavyPair
   | 8300 => .typeBSublinearCanonicalForm
   | 8301 => .groupedAbsorbedCoreSubset
   | 8302 => .typeBSublinearFailureArms
@@ -6582,6 +6613,12 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8NetCapLarge") 9705
   | .route8NetCapSmall =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8NetCapSmall") 9706
+  | .route8X15DoubleLanding =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8X15DoubleLanding") 9810
+  | .route8ArmPairTrigger =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8ArmPairTrigger") 9811
+  | .route8X15HeavyPair =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8X15HeavyPair") 9812
   | .typeBSublinearCanonicalForm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBSublinearCanonicalForm") 8300
   | .groupedAbsorbedCoreSubset =>
