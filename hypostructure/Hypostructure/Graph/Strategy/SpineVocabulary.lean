@@ -45,6 +45,7 @@ import Hypostructure.Graph.Statements.Route8BlobStructure
 import Hypostructure.Graph.Statements.Route8PackingExchange
 import Hypostructure.Graph.Statements.Route8HubPieceMass
 import Hypostructure.Graph.Statements.Route8ArmCap
+import Hypostructure.Graph.Statements.Route8Density
 import Hypostructure.Graph.Statements.PairHandoffSupport
 import Hypostructure.Graph.Statements.PairHandoffFacts
 import Hypostructure.Graph.Statements.StubDeficit
@@ -1721,6 +1722,26 @@ inductive Key where
   `L + s·δ·slack − c·((δ−1)p + σ_W) < Σ_{δ(X)>0} (a·δ(X) − c·ν(X))`; at `spineData`, `c = 30`:
   `384T + K − 30σ_W < Σ_{δ(X)>0} (13δ(X) − 30ν(X))`. -/
   | route8ArmClosureResidual
+  /-- Key `9700` (density theorem, rate arm): every hub-free canonical piece `X` of `R`
+  (`σ_X = 0`) has `excess X ≤ 0`, or `G[S_X]` is a copy of `X15`. -/
+  | route8HubFreeDensity
+  /-- Key `9701` (density theorem, rate arm): for every placement system of `P₀`, a hub-free
+  piece that is a copy of `X15` has a long landing on at least two windows (`ν(X) ≥ 2`). -/
+  | route8X15LongLandings
+  /-- Key `9702` (density theorem, rate arm): for every placement system of `P₀`, a hub-free
+  piece of positive excess has `(δs+1)·excess X ≤ 30·ν(X)`. -/
+  | route8HubFreePi
+  /-- Key `9703` (density theorem, rate arm): a canonical piece of `R` with `σ_X > 0` has
+  `excess X ≤ (F − 1)·s·σ_X`. -/
+  | route8HubPieceExcess
+  /-- Key `9704` (arm closure, rate arm): with the hub margin `F ≤ 14`,
+  `SufficientlyLargeForNetCap` fails at G. -/
+  | route8ArmClosure
+  /-- Key `9705` (net-cap size split, large arm): `F ≤ 14` and `SufficientlyLargeForNetCap`
+  at G's order. -/
+  | route8NetCapLarge
+  /-- Key `9706` (net-cap size split, small arm): the exact negation of key `9705`. -/
+  | route8NetCapSmall
   -- Type B sublinear audit keys (8300–8349)
   /-- G audit of `TypeBSublinearOutcome`, `prop:typeB-bridge-sublinear`: **the
   tested hypotheses in G's canonical form** -- every existential is pinned to a
@@ -3008,6 +3029,20 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8CleanLandingCapStatement data.toParameters object
   | .route8ArmClosureResidual, object =>
       Route8ArmClosureResidualStatement data.toParameters object
+  | .route8HubFreeDensity, object =>
+      Route8HubFreeDensityStatement data.toParameters object
+  | .route8X15LongLandings, object =>
+      Route8X15LongLandingsStatement data.toParameters object
+  | .route8HubFreePi, object =>
+      Route8HubFreePiStatement data.toParameters object
+  | .route8HubPieceExcess, object =>
+      Route8HubPieceExcessStatement data.toParameters object
+  | .route8ArmClosure, object =>
+      Route8ArmClosureStatement data.toParameters object
+  | .route8NetCapLarge, object =>
+      Route8NetCapLargeStatement data.toParameters object
+  | .route8NetCapSmall, object =>
+      Route8NetCapSmallStatement data.toParameters object
   | .typeBSublinearCanonicalForm, object =>
       TypeBSublinearCanonicalFormStatement data.toParameters object
   | .groupedAbsorbedCoreSubset, object =>
@@ -3784,6 +3819,13 @@ def label : Key → String
   | .route8CleanLandingRules => "route8CleanLandingRules"
   | .route8CleanLandingCap => "route8CleanLandingCap"
   | .route8ArmClosureResidual => "route8ArmClosureResidual"
+  | .route8HubFreeDensity => "route8HubFreeDensity"
+  | .route8X15LongLandings => "route8X15LongLandings"
+  | .route8HubFreePi => "route8HubFreePi"
+  | .route8HubPieceExcess => "route8HubPieceExcess"
+  | .route8ArmClosure => "route8ArmClosure"
+  | .route8NetCapLarge => "route8NetCapLarge"
+  | .route8NetCapSmall => "route8NetCapSmall"
   | .typeBSublinearCanonicalForm => "typeBSublinearCanonicalForm"
   | .groupedAbsorbedCoreSubset => "groupedAbsorbedCoreSubset"
   | .typeBSublinearFailureArms => "typeBSublinearFailureArms"
@@ -4365,6 +4407,13 @@ example : label .route8NetCapExcess = "route8NetCapExcess" := rfl
 example : label .route8CleanLandingRules = "route8CleanLandingRules" := rfl
 example : label .route8CleanLandingCap = "route8CleanLandingCap" := rfl
 example : label .route8ArmClosureResidual = "route8ArmClosureResidual" := rfl
+example : label .route8HubFreeDensity = "route8HubFreeDensity" := rfl
+example : label .route8X15LongLandings = "route8X15LongLandings" := rfl
+example : label .route8HubFreePi = "route8HubFreePi" := rfl
+example : label .route8HubPieceExcess = "route8HubPieceExcess" := rfl
+example : label .route8ArmClosure = "route8ArmClosure" := rfl
+example : label .route8NetCapLarge = "route8NetCapLarge" := rfl
+example : label .route8NetCapSmall = "route8NetCapSmall" := rfl
 example : label .typeBSublinearCanonicalForm = "typeBSublinearCanonicalForm" := rfl
 example : label .groupedAbsorbedCoreSubset = "groupedAbsorbedCoreSubset" := rfl
 example : label .typeBSublinearFailureArms = "typeBSublinearFailureArms" := rfl
@@ -4928,6 +4977,13 @@ def idx : Key → Nat
   | .route8CleanLandingRules => 9805
   | .route8CleanLandingCap => 9806
   | .route8ArmClosureResidual => 9807
+  | .route8HubFreeDensity => 9700
+  | .route8X15LongLandings => 9701
+  | .route8HubFreePi => 9702
+  | .route8HubPieceExcess => 9703
+  | .route8ArmClosure => 9704
+  | .route8NetCapLarge => 9705
+  | .route8NetCapSmall => 9706
   | .typeBSublinearCanonicalForm => 8300
   | .groupedAbsorbedCoreSubset => 8301
   | .typeBSublinearFailureArms => 8302
@@ -5487,6 +5543,13 @@ def ofIdx : Nat → Key
   | 9805 => .route8CleanLandingRules
   | 9806 => .route8CleanLandingCap
   | 9807 => .route8ArmClosureResidual
+  | 9700 => .route8HubFreeDensity
+  | 9701 => .route8X15LongLandings
+  | 9702 => .route8HubFreePi
+  | 9703 => .route8HubPieceExcess
+  | 9704 => .route8ArmClosure
+  | 9705 => .route8NetCapLarge
+  | 9706 => .route8NetCapSmall
   | 8300 => .typeBSublinearCanonicalForm
   | 8301 => .groupedAbsorbedCoreSubset
   | 8302 => .typeBSublinearFailureArms
@@ -6505,6 +6568,20 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8CleanLandingCap") 9806
   | .route8ArmClosureResidual =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8ArmClosureResidual") 9807
+  | .route8HubFreeDensity =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8HubFreeDensity") 9700
+  | .route8X15LongLandings =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8X15LongLandings") 9701
+  | .route8HubFreePi =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8HubFreePi") 9702
+  | .route8HubPieceExcess =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8HubPieceExcess") 9703
+  | .route8ArmClosure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8ArmClosure") 9704
+  | .route8NetCapLarge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8NetCapLarge") 9705
+  | .route8NetCapSmall =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8NetCapSmall") 9706
   | .typeBSublinearCanonicalForm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBSublinearCanonicalForm") 8300
   | .groupedAbsorbedCoreSubset =>

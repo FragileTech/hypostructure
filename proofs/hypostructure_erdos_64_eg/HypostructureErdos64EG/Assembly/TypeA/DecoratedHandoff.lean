@@ -111,6 +111,9 @@ noncomputable abbrev typeADecoratedHandoffKeys : FactKeys EGInput.{u} :=
     K .route8PackingExchange, K .route8ArmExchange, K .route8FullArmLandingCap,
     K .route8HubPieceMass, K .route8NetCapExcess, K .route8CleanLandingRules,
     K .route8CleanLandingCap, K .route8ArmClosureResidual,
+    K .route8HubFreeDensity, K .route8X15LongLandings, K .route8HubFreePi,
+    K .route8HubPieceExcess, K .route8ArmClosure, K .route8NetCapLarge,
+    K .route8NetCapSmall,
     K .route8BasinBurden,
     K .route8CarrierCore,
     K .typeBAbsorbedCharge]

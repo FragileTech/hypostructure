@@ -32,7 +32,7 @@ the abbrev bodies; "+k" is a subtype's extra conjuncts.
 | `[144a]` `Node144aOutcome` | 136 | `windowHandoff` (+3), `windowFails` (+18), `remainderHandoff` (+4), `remainderFails` (+19), `primitiveHandoff` (+5), `primitiveFails` (+20) | none |
 | `[172a]` `BlockedBarrierOverlapOutcome` | 125 | `DeficiencyAtOrAbove` (+1), `DeficiencyBelowRateFails` (+2) | none |
 | `[182]` `PairConditionalFactorizationOutcome` | 120 | `freeFactorizationFails` (+3), `freeRealizabilityFails` (+8), `freeIncrementFails` (+12), `blockedFactorizationFails` (+12), `blockedRealizabilityFails` (+17), `blockedIncrementFails` (+21) | none |
-| `[186]` `Route8JointBalanceOutcome_product` | 146 | one product: generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of its 750 paths (below) |
+| `[186]` `Route8JointBalanceOutcome_product` | 152 | one product: generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of its 750 paths (below); every path carries `¬ SufficientlyLargeForNetCap` (9706) |
 | `[187]` `OtherReturnedOutcome` | see below | 23 subtypes | 13 subtypes and 400 of 750 paths of each product |
 | `[54]` `Node54ResidualOutcome` | 92 | `realizedColdBelow` (+3), `realizedBounded` (+6), `unrealizedTauHighBounded` (+7), `unrealizedRateFailsBounded` (+8), `unrealizedBothRates` (+3) | `realizedBounded`, `unrealizedTauHighBounded`, `unrealizedRateFailsBounded` |
 
@@ -42,7 +42,7 @@ the abbrev bodies; "+k" is a subtype's extra conjuncts.
 |---|---:|---|---|
 | Pair Type B (`[179]`/`[180]` entry) `PairTypeBOutcome` | 133 | `independentSystem` (+2), `dependentSystem` (+11) | none |
 | Type B sublinear failure `TypeBSublinearOutcome_product` | 128 | generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of 750 paths |
-| Route-8 quotient failure `[348]` `Route8QuotientOutcome_product` | 133 | generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of 750 paths |
+| Route-8 quotient failure `[348]` `Route8QuotientOutcome_product` | 139 | generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of 750 paths; every path carries `¬ SufficientlyLargeForNetCap` (9706) |
 | Private-carrier rate failure `Route8RateFailsOutcome` | 113 | 11: `realized_{highEntropy, lowNonrepetitive, lowWedgeFree, lowWedge}` (+6, +5, +7, +8), `denseAtOrAbove_{highEntropy, lowNonrepetitive, lowWedgeFree, lowWedge}` (+7, +6, +8, +9), `denseBelow_{lowNonrepetitive, lowWedgeFree, lowWedge}` (+6, +8, +9) | all 11 |
 | Local cold-terminal exclusion `ColdBranchClosedOutcome` | 105 | 8: `linearRealizedSilent` (+18), `linearDenseAtOrAbove_repeated` (+8), `linearDenseRateFailed_repeated` (+9), `linearDenseAtOrAbove` (+10), `linearDenseRateFailed` (+11), `linearRealizedDistinguished` (+8), `linearDenseAtOrAbove_repeatedDistinguished` (+8), `linearDenseRateFailed_repeatedDistinguished` (+9) | `linearRealizedSilent`, `linearRealizedDistinguished` |
 
@@ -90,11 +90,13 @@ Realized arm (`S = 0`): `N₀ = max(2^176, (13096·C_sp + 2)²) ≈ 7.8·10⁵�
 gives the lower end `13 ≤ n` (`windowOrder_le_vertexCount`); nothing else on
 these ledgers bounds `n` from below.
 
-The net-deficiency cap `SufficientlyLargeForNetCap` (key 222) is not split on:
-the paper imposes no order condition at `[57]` and `[113]`
-(`rem:no-sufficient-order`, `lem:exact-collision-test`), and on the producers of
-`K .netDeficiencyCap` outside the `[24]` arm the absorbed arm of `[173]` is
-contradicted exactly, so a split would only add a residual.
+The net-deficiency cap `SufficientlyLargeForNetCap` (key 222) is split on only on
+the route-8 residuals `[186]` and `[348]` (9705/9706, `route8NetCapDichotomy`,
+`Assembly/RouteEight/Local.lean`), where its large arm is closed by the density
+theorem (see "Density theorem").  Elsewhere the paper imposes no order condition at
+`[57]` and `[113]` (`rem:no-sufficient-order`, `lem:exact-collision-test`), and on
+the producers of `K .netDeficiencyCap` outside the `[24]` arm the absorbed arm of
+`[173]` is contradicted exactly.
 
 <a id="open-constructions"></a>
 
@@ -183,17 +185,19 @@ part of it no fact of the ledger decides.
   `Σ_X (3|X| − 13E(X)) > 3·slack` with a heavy piece), 9975-9980 (dominance
   irreducibility, `Graph/DominatedReplacement.lean`).  On `[186]` the rate over the
   pieces is pinned: `3h < Σ_X (3|X| − 13E(X)) ≤ 3h + O`, so `O > 0`.
-- **Open.**  Above the net-cap cutoff (`SufficientlyLargeForNetCap`, key 222,
-  `netCapCutoff`, `Graph/NetCharge.lean`), 9804 and 9807 reduce both residuals
-  to the aggregate landing inequality over thick hub-free pieces and, with the
-  catalogue `rem:r8-catalogue`, to the multi-rod pieces with at least 25
-  vertices: the exact open statement is
-  `Σ_{X multi-rod, hub-free, |X| ≥ 25, ex(X) > 0} (13 ex(X) − 30 ν(X)) > 24T`.
-  Its negation follows from the density conjecture `rem:r8-density-conjecture`
-  (every such piece has `e(G[X]) ≤ 11|X|/8`), which is not proved
-  (`cor:r8-conditional`, `rem:r8-remaining`).  Below the cutoff 9804 and 9807
-  are vacuous and the residuals are open with the facts above; no fact on these
-  ledgers decides the cutoff.
+- **Density facts on both.**  9700-9704 (the density theorem at G: hub-free pieces
+  have `ex(X) ≤ 0` or are X15 copies; X15 copies have `ν(X) ≥ 2`; Π on thick
+  hub-free pieces; `ex(X) ≤ 28σ_X` on hub pieces; the arm closure for large `n`),
+  and 9706 `route8NetCapSmall`.
+- **Closed arm.**  `F ≤ 14 ∧ SufficientlyLargeForNetCap` (9705) is refuted by 9704
+  (`closeIncompatible`, **Lean improvement**; the paper states the density bound as
+  `rem:r8-density-conjecture`).
+- **Open.**  Both residuals live in the window `¬ (F ≤ 14 ∧
+  SufficientlyLargeForNetCap … n)`; at `spineData` (`F = 8`) this is
+  `¬ SufficientlyLargeForNetCap 3 4 13 windowRate spineScale densitySlack n`,
+  i.e. `n` below `netCapCutoff`.  There 9804 and 9807 are vacuous and the
+  residuals are open with the facts above.  `F` enters the split key because no
+  ledger fact publishes `F = 8`.
 
 <a id="residual-187-pair-type-b"></a>
 
@@ -608,3 +612,44 @@ node, closed there with `closeIncompatible`.
   `Graph/ExitFourFamily.lean`).  Q2, Q3, Q5 and the trace-basin alternatives (a),
   (b) are read on `GConstructedPiece` realizations and are live tests (a fold pair
   of a basin makes (a) occur, `traceLocalTargetDefect_of_foldPair`).
+
+## Density theorem
+
+**Lean improvement**: the paper states the density bound as a conjecture
+(`rem:r8-density-conjecture`).  `Graph/DensityCert/` proves, for any finite simple
+graph, `density_le_of_admissible_in (G) (W) (hc : ConnIn G W) (ha : AdmIn G W) :
+dIn G W ≤ 0 ∨ EmbOnto CG.x15.graph G W`: a connected induced subgraph that is
+subcubic, has no cycle of length 4, 8, 16 or 32 and no induced P13 has
+`8e ≤ 11|W|` unless it is X15 (graph6 `N?AA@AODAOP_KGGoGH?`).  Axioms: propext,
+Classical.choice, Quot.sound and the `native_decide` helper axioms.
+
+- Blocks and bridges (`Blocks.lean`, `BlocksAux.lean`): blocks of a subcubic graph
+  are vertex-disjoint, each bridge adds 8 to `8e − 11n`, and induced paths
+  concatenate across bridges.
+- Ear closure (`Ear.lean`, `closure_of_cert`): every 2-connected admissible graph
+  is a copy of a member of any list `L ∋ K₂` with `ClosureCert L`.
+- Certificate (`Checker`, `Search`, `Data`, `CertShard00`-`15`, `Cert.lean`): the
+  list is K₂ plus the 5519 two-connected admissible blocks (all with ≤ 21
+  vertices); every ear extension is rejected by a verified witness or matched by a
+  verified isomorphism; 16 `native_decide` shards.
+- Tree DP (`DP.lean`, `rooted_bound`): `degIn W r ≤ 2 → dIn W ≤ fTab (lamIn W r)`,
+  `fTab = −11, −9, −9, −8, −5, −5, −3, −2, 0, 0, 3, 3`.
+- X15 landings (`X15Landing.lean`, `x15_exit_landings`): glued to an induced P13
+  with no forbidden cycle and no two disjoint induced P13s, the three exits of X15
+  never all land on the path, and two land at distance ≥ 10.
+
+Facts at G (`Strategy/SpineRows/Route8Density.lean`; contracts in
+`Graph/Route8HubFree.lean`, `Graph/Route8X15Landing.lean`,
+`Contracts/RouteEight/Density.lean`), on the common prefix of `[186]` and `[348]`
+after 9807:
+
+- 9700 `route8HubFreeDensity`: every canonical hub-free piece X of R has
+  `ex(X) ≤ 0` or is an X15 copy.
+- 9701 `route8X15LongLandings`: a hub-free X15 copy has `ν(X) ≥ 2` for every valid
+  placement system (9800 with Q = {P}).
+- 9702 `route8HubFreePi`: `13·ex(X) ≤ 30·ν(X)` on thick hub-free pieces.
+- 9703 `route8HubPieceExcess`: `0 < σ_X → ex(X) ≤ (F−1)·s·σ_X` (the first part of
+  `lem:r8-hub-free-suffices`).
+- 9704 `route8ArmClosure`: `F ≤ 14 → SufficientlyLargeForNetCap … n → False`
+  (9807 at c = 30 with 9702, 9703 and σ ≤ T).
+- 9705/9706: the exact split on `F ≤ 14 ∧ SufficientlyLargeForNetCap … n`.

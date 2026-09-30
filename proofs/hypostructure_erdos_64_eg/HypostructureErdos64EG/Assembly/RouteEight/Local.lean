@@ -11,6 +11,7 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8BlobStructure
 import Hypostructure.Graph.Strategy.SpineRows.PieceDominance
 import Hypostructure.Graph.Strategy.SpineRows.Route8PackingExchange
 import Hypostructure.Graph.Strategy.SpineRows.Route8ArmCap
+import Hypostructure.Graph.Strategy.SpineRows.Route8Density
 import Hypostructure.Graph.Strategy.SpineRows.Route8StageOutcomeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8TwoCarrierExit
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedDeficit
@@ -198,6 +199,8 @@ noncomputable def selectedRouteEightUnpaidReduction
       exact residualHistory
 
 set_option maxHeartbeats 8000000 in
+set_option synthInstance.maxHeartbeats 400000 in
+set_option synthInstance.maxSize 2048 in
 /-- **The unified target-defect/route-`8` residual** (`rem:why-unified`),
 from the Type B sublinear-bridge decision to node `[186]`.
 
@@ -281,6 +284,13 @@ noncomputable def selectedRouteEightUnifiedResidual
     (cleanLandingRulesFresh : K .route8CleanLandingRules ∉ known := by key_fresh)
     (cleanLandingCapFresh : K .route8CleanLandingCap ∉ known := by key_fresh)
     (armClosureResidualFresh : K .route8ArmClosureResidual ∉ known := by key_fresh)
+    (hubFreeDensityFresh : K .route8HubFreeDensity ∉ known := by key_fresh)
+    (x15LongLandingsFresh : K .route8X15LongLandings ∉ known := by key_fresh)
+    (hubFreePiFresh : K .route8HubFreePi ∉ known := by key_fresh)
+    (hubPieceExcessFresh : K .route8HubPieceExcess ∉ known := by key_fresh)
+    (armClosureFresh : K .route8ArmClosure ∉ known := by key_fresh)
+    (netCapLargeFresh : K .route8NetCapLarge ∉ known := by key_fresh)
+    (netCapSmallFresh : K .route8NetCapSmall ∉ known := by key_fresh)
     (canonicalFormFresh : K .typeBSublinearCanonicalForm ∉ known := by
       key_fresh)
     (absorbedSubsetFresh : K .groupedAbsorbedCoreSubset ∉ known := by
@@ -572,66 +582,103 @@ noncomputable def selectedRouteEightUnifiedResidual
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           cleanLandingCap (by key_fresh)
-      let unifiedDeficit :=
-        (route8UnifiedDeficitRow (BranchState := BranchState)
+      -- The density theorem at the pieces of `R` and the arm closure (keys 9700--9704),
+      -- after key 9807 which the closure reads.
+      let hubFreeDensity :=
+        (route8HubFreeDensityRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           armClosureResidual (by key_fresh)
-      -- Route 8 read on the pieces constructed from G: fold pairs of the
-      -- selected basins are exit-(4) peels, and complete carrier sets hold
-      -- every fold pair (idx 8700).
-      let foldPeels :=
-        (route8FoldPeelsRow (BranchState := BranchState)
+      let x15LongLandings :=
+        (route8X15LongLandingsRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          unifiedDeficit (by key_fresh)
-      match route8QuotientDichotomy (data := spineData) foldPeels
+          hubFreeDensity (by key_fresh)
+      let hubFreePi :=
+        (route8HubFreePiRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          x15LongLandings (by key_fresh)
+      let hubPieceExcess :=
+        (route8HubPieceExcessRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          hubFreePi (by key_fresh)
+      let armClosure :=
+        (route8ArmClosureRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          hubPieceExcess (by key_fresh)
+      -- The net-cap size split (keys 9705 / 9706).
+      match route8NetCapDichotomy (data := spineData) armClosure
           (by key_fresh) (by key_fresh) with
-      | .right residualHistory =>
-          -- `[348]` → `[187]`: `thm:main` returns the failure of route-8
-          -- quotient freeness as an open outcome (tex 369-372, 388-390).
-          -- G audit: the failure of quotient freeness is published at G's
-          -- unified entries (`K .route8QuotientEntriesAtG`) after the
-          -- descent.
-          let descended :=
-            (route8PeelingDescentRow (BranchState := BranchState)
+      | .left largeHistory =>
+          -- Lean improvement: `lem:r8-hub-free-suffices` closes the large arm at G
+          -- (key 9704 against key 9705).
+          exact ((closeIncompatible largeHistory (K .route8ArmClosure)
+            (K .route8NetCapLarge) (by key_fresh)).elimClosed
+              (by infer_instance)).elim
+      | .right smallHistory =>
+          let unifiedDeficit :=
+            (route8UnifiedDeficitRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              residualHistory (by key_fresh)
-          let entriesAtG :=
-            (route8QuotientEntriesAtGRow (BranchState := BranchState)
+              smallHistory (by key_fresh)
+          -- Route 8 read on the pieces constructed from G: fold pairs of the
+          -- selected basins are exit-(4) peels, and complete carrier sets hold
+          -- every fold pair (idx 8700).
+          let foldPeels :=
+            (route8FoldPeelsRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run descended (by key_fresh)
-          exact Or.inr (Or.inl
-            (route8QuotientProductReturn entriesAtG arm.1 arm.2))
-      | .left quotientFreeHistory =>
-          let census :=
-            (route8UnifiedEntryCensusRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run quotientFreeHistory (by key_fresh)
-          let peeled := selectedRouteEightDescent census
-          let unpaid := selectedRouteEightUnpaidReduction peeled
-          -- `[183]` → `[184]`: the silent coordinate is zero.
-          let visibleResidual :=
-            (route8UnifiedVisibleResidualRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run unpaid (by key_fresh)
-          -- `[184]` → `[185]`: the non-overloaded coordinate is zero.
-          let visibleOverload :=
-            (route8UnifiedVisibleOverloadRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run visibleResidual (by key_fresh)
-          -- `[185]` → `[186]`: the simultaneous exact account.
-          let jointBalance :=
-            (route8JointBalanceRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run visibleOverload (by key_fresh)
-          exact Or.inr (Or.inr
-            (route8JointBalanceProductReturn jointBalance arm.1 arm.2))
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              unifiedDeficit (by key_fresh)
+          match route8QuotientDichotomy (data := spineData) foldPeels
+              (by key_fresh) (by key_fresh) with
+          | .right residualHistory =>
+              -- `[348]` → `[187]`: `thm:main` returns the failure of route-8
+              -- quotient freeness as an open outcome (tex 369-372, 388-390).
+              -- G audit: the failure of quotient freeness is published at G's
+              -- unified entries (`K .route8QuotientEntriesAtG`) after the
+              -- descent.
+              let descended :=
+                (route8PeelingDescentRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  residualHistory (by key_fresh)
+              let entriesAtG :=
+                (route8QuotientEntriesAtGRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run descended (by key_fresh)
+              exact Or.inr (Or.inl
+                (route8QuotientProductReturn entriesAtG arm.1 arm.2))
+          | .left quotientFreeHistory =>
+              let census :=
+                (route8UnifiedEntryCensusRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run quotientFreeHistory (by key_fresh)
+              let peeled := selectedRouteEightDescent census
+              let unpaid := selectedRouteEightUnpaidReduction peeled
+              -- `[183]` → `[184]`: the silent coordinate is zero.
+              let visibleResidual :=
+                (route8UnifiedVisibleResidualRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run unpaid (by key_fresh)
+              -- `[184]` → `[185]`: the non-overloaded coordinate is zero.
+              let visibleOverload :=
+                (route8UnifiedVisibleOverloadRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run visibleResidual (by key_fresh)
+              -- `[185]` → `[186]`: the simultaneous exact account.
+              let jointBalance :=
+                (route8JointBalanceRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run visibleOverload (by key_fresh)
+              exact Or.inr (Or.inr
+                (route8JointBalanceProductReturn jointBalance arm.1 arm.2))
 
 end HypostructureErdos64EG

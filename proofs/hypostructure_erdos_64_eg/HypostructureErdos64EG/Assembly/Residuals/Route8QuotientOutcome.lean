@@ -189,6 +189,12 @@ theorem route8QuotientProductReturn
     [FactKeys.Has (K .route8CleanLandingRules) known]
     [FactKeys.Has (K .route8CleanLandingCap) known]
     [FactKeys.Has (K .route8ArmClosureResidual) known]
+    [FactKeys.Has (K .route8HubFreeDensity) known]
+    [FactKeys.Has (K .route8X15LongLandings) known]
+    [FactKeys.Has (K .route8HubFreePi) known]
+    [FactKeys.Has (K .route8HubPieceExcess) known]
+    [FactKeys.Has (K .route8ArmClosure) known]
+    [FactKeys.Has (K .route8NetCapSmall) known]
     (entry : Route8LaneEntry selected)
     (continuation : NetChargeContinuation selected) :
     Route8QuotientOutcome_product selected :=
