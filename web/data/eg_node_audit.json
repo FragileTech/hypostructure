@@ -1,5 +1,5 @@
 {
- "status": "exact selected-root reduction to [144a], [172a], [182], [186], [187], and [54] ([20a] and the near-cubic target defect closed at G)",
+ "status": "exact selected-root reduction to [144a], [172a], [182], [186], [187], and [54]",
  "updated_at": "2026-09-30T12:00:00+00:00",
  "aggregate_validation": "Full build of both packages (hypostructure and HypostructureErdos64EG): `lake build --no-build` reports all 9291 targets up to date. Kernel axiom audit (web/tools/lean_axiom_audit.py, run on that build): 347 assembly declarations, all clean, no frontier stubs. Every file:line citation of every entry refers to the Lean sources of this repository revision; the fact counts of [144a], [172a], [182], [186], [187] and [54] are counted from the `Holds` conjuncts of their outcome abbrevs, and [20a] and [54] are read against the thm:main that lists the Lean root type.",
  "nodes": {
@@ -10,7 +10,7 @@
    "complete": "YES",
    "local": "N/A",
    "api": "OK",
-   "difference": "The root declaration is the reduction `officialCounterexample_reaches_selectedLedgerBoundary : ¬ OfficialStatement → ∃ selected, SelectedLedgerBoundaryResult selected` (six residual families [144a]/[172a]/[182]/[186]/[187]/[54]; [20a] closes at G by lem:sparse-exit-b-empty), matching thm:main as a reduction; no closed `erdos_64` theorem exists. `EGTarget` (Assembly/Basic.lean:25) duplicates `target` (Problem.lean:105) with an identical body; both are live (selection uses `EGTarget`, the root uses `target`).",
+   "difference": "The root declaration is the reduction `officialCounterexample_reaches_selectedLedgerBoundary : ¬ OfficialStatement → ∃ selected, SelectedLedgerBoundaryResult selected` (six residual families [144a]/[172a]/[182]/[186]/[187]/[54]), matching thm:main as a reduction; no closed `erdos_64` theorem exists. `EGTarget` (Assembly/Basic.lean:25) duplicates `target` (Problem.lean:105) with an identical body; both are live (selection uses `EGTarget`, the root uses `target`).",
    "on_probed_closed_arm": false
   },
   "2": {
@@ -194,13 +194,13 @@
    "on_probed_closed_arm": true
   },
   "20": {
-   "producer": "`sparseSurplusSurvivorDichotomy` (hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows/SparseSurplusExit.lean:33), run in `selectedNearCubicBranch` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:47) and on the strict arm (Final.lean:296); exit arm closed by `selectedSparseExitClosed` ([20a]); survivor arm consumed by `selectedStrictSurplusBranch` ([125])",
+   "producer": "`sparseSurplusSurvivorRow` (hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows/SparseSurplusExit.lean), run in `selectedNearCubicBranch` and on the strict arm in proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean; its survivor ledger is consumed by `selectedStrictSurplusBranch` ([125])",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`Decision.run` on `Graph.SparseSurplusExit` (the five named exits of def:named-surplus-exits) vs `SurvivesSparseExits` on the `.surplusAbove` ledger. The exit arm terminates four constructors against selection/replacementExclusion and retains the target-defect attempted quotient as `.sparseTargetDefectResidual`/`.sparseTargetDefectStructure` for [20a]; the survivor passes unchanged to [125].",
+   "fidelity_note": "Fact-only row from `K .selection`: `Graph.Contracts.SurplusPair.not_declaredSparseSurplusExit` proves that G survives the sparse surplus exits of def:named-surplus-exits, the two cycle conclusions in G (a power-of-two cycle, and the open-port suppression cycle of lem:suppressed-family-critical-cycle), both excluded by the selection (lem:sparse-exit-b-empty). It publishes `K .sparseSurplusSurvivor` on the `.surplusAbove` ledger.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "None; the branch continues into [125]–[144] and open [20a], which are separate nodes.",
+   "difference": "None; the survivor continues into [125]–[144].",
    "on_probed_closed_arm": false
   },
   "21": {
@@ -1857,16 +1857,6 @@
    "difference": "The rate-arm keys are Lean improvements recorded in sec:route8-rate-arm; the reduction to Π and the computed catalogue (X15) are paper/computation, not Lean.",
    "on_probed_closed_arm": false
   },
-  "20a": {
-   "producer": "`selectedSparseExitClosed` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Local.lean:93), run on the exit arm of `sparseSurplusSurvivorDichotomy` on the strict arm of [19] (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:309) and on the at-or-below arm (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:58); `sparseSurplusExitRoutingRow` and `sparseTargetDefectEmptyRow` (hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows/SparseSurplusExit.lean:78), closed by `AtomicCT.runAndCloseIncompatible`",
-   "fidelity": "FAITHFUL",
-   "fidelity_note": "The exit routing sends exits (a), (c), (d), (e) of def:named-surplus-exits to contradictions with `K .selection` and `K .replacementExclusion` and exit (b) to its payload `K .sparseTargetDefectResidual`; `K .sparseTargetDefectEmpty` (key 7800, `sparseTargetDefectEmpty_of_avoids`: every reading of G's piece glued into G − Z is a target-free subgraph of G, so G − Z never separates two readings) is incompatible with that payload and closes the arm. The arm closes at G; the root type has no [20a] or near-cubic target-defect family. Matches lem:sparse-exit-b-empty and thm:main (item (i) excluded).",
-   "complete": "YES",
-   "local": "YES",
-   "api": "OK",
-   "difference": "Lean improvement (G-only restatement): clause (b) is read with the separating context G − Z, the only outside graph of G at ∂Z (rem:sparse-exit-b-scope). The same closure closes the at-or-below-surplus sparse target defect (the near-cubic target defect of [187]) at G.",
-   "on_probed_closed_arm": true
-  },
   "144a": {
    "producer": "`Node144aOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:45) and its six subtypes `Node144aOutcome_{window,remainder,primitive}{Handoff,Fails}` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals/Node144aOutcome.lean:28-176), returned by `node144aWindowHandoffReturn` … `node144aPrimitiveFailsReturn` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals/Node144aOutcome.lean:366-494), called by `Assembly.Internal.strictSurplusDependent` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean:38) at Dependent.lean:215-217, 231-233, 249-251 on the two ledgers returned by `selectedBottleneckDischarge` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean:741); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:164)",
    "fidelity": "FAITHFUL",
@@ -1884,7 +1874,7 @@
    "complete": "YES: exact routing; endpoint remains open",
    "local": "YES",
    "api": "OK",
-   "difference": "None in routing. No case is relabelled as [20a] or [144a], and the aggregate asserts no closure.",
+   "difference": "None in routing. No case is relabelled as [144a], and the aggregate asserts no closure.",
    "on_probed_closed_arm": false
   }
  },

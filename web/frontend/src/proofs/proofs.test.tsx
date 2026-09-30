@@ -272,7 +272,7 @@ describe("referee mode", () => {
     // Its own result, what it builds on, and where it falls.
     expect(within(panel).getAllByText("cor:p13-exists").length).toBeGreaterThan(0);
     expect(within(panel).getByText("Rests on").parentElement).toHaveTextContent(/Hegde/);
-    expect(within(panel).getByText(/174 later steps/)).toBeInTheDocument();
+    expect(within(panel).getByText(/173 later steps/)).toBeInTheDocument();
     const where = locate(ERDOS, "erdos-gyarfas", "cor:p13-exists")!;
     expect(within(panel).getAllByText(`page ${where.page} of The paper`)[0]).toHaveAttribute(
       "href",

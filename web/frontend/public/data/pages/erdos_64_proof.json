@@ -17,2599 +17,2605 @@
    "anchor": "section.1"
   },
   "thm:main": {
-   "line": 344,
+   "line": 343,
    "page": 6,
    "number": "1.1",
    "anchor": "theorem.1.1"
   },
   "rem:formal-status": {
-   "line": 532,
+   "line": 526,
    "page": 8,
    "number": "1.2",
    "anchor": "theorem.1.2"
   },
   "fig:proof-diagram-part-i": {
-   "line": 862,
+   "line": 852,
    "page": 14,
    "number": "1",
    "anchor": "figure.caption.10"
   },
   "fig:proof-diagram-part-ii": {
-   "line": 899,
+   "line": 889,
    "page": 15,
    "number": "2",
    "anchor": "figure.caption.11"
   },
   "fig:proof-diagram-part-iii": {
-   "line": 942,
+   "line": 932,
    "page": 16,
    "number": "3",
    "anchor": "figure.caption.12"
   },
   "fig:proof-diagram-part-iv": {
-   "line": 982,
+   "line": 972,
    "page": 17,
    "number": "4",
    "anchor": "figure.caption.13"
   },
   "fig:proof-diagram-part-v": {
-   "line": 1028,
+   "line": 1018,
    "page": 18,
    "number": "5",
    "anchor": "figure.caption.14"
   },
   "fig:proof-diagram-part-vi": {
-   "line": 1081,
+   "line": 1071,
    "page": 19,
    "number": "6",
    "anchor": "figure.caption.15"
   },
   "fig:proof-diagram-part-vii": {
-   "line": 1119,
+   "line": 1109,
    "page": 20,
    "number": "7",
    "anchor": "figure.caption.16"
   },
   "fig:proof-diagram-part-viii": {
-   "line": 1189,
+   "line": 1179,
    "page": 21,
    "number": "8",
    "anchor": "figure.caption.17"
   },
   "fig:proof-diagram-part-ix": {
-   "line": 1254,
+   "line": 1244,
    "page": 22,
    "number": "9",
    "anchor": "figure.caption.18"
   },
   "fig:proof-diagram-part-x": {
-   "line": 1339,
+   "line": 1329,
    "page": 23,
    "number": "10",
    "anchor": "figure.caption.19"
   },
   "fig:proof-diagram-part-xi": {
-   "line": 1388,
+   "line": 1378,
    "page": 24,
    "number": "11",
    "anchor": "figure.caption.20"
   },
   "fig:proof-diagram-part-xii": {
-   "line": 1439,
+   "line": 1429,
    "page": 25,
    "number": "12",
    "anchor": "figure.caption.21"
   },
   "rem:two-distinct-integer-scales": {
-   "line": 1761,
+   "line": 1750,
    "page": 43,
    "number": "1.3",
    "anchor": "theorem.1.3"
   },
   "def:mersenne-return-set": {
-   "line": 2062,
+   "line": 2051,
    "page": 57,
    "number": "2.1",
    "anchor": "theorem.2.1"
   },
   "lem:return-equivalence": {
-   "line": 2073,
+   "line": 2062,
    "page": 57,
    "number": "2.2",
    "anchor": "theorem.2.2"
   },
   "fig:mersenne-return-gadget": {
-   "line": 2115,
+   "line": 2104,
    "page": 58,
    "number": "13",
    "anchor": "figure.caption.43"
   },
   "lem:two-path-criterion": {
-   "line": 2118,
+   "line": 2107,
    "page": 57,
    "number": "2.3",
    "anchor": "theorem.2.3"
   },
   "def:counterexample": {
-   "line": 2131,
+   "line": 2120,
    "page": 57,
    "number": "2.4",
    "anchor": "theorem.2.4"
   },
   "def:target-safe": {
-   "line": 2140,
+   "line": 2129,
    "page": 57,
    "number": "2.5",
    "anchor": "theorem.2.5"
   },
   "lem:no-proper-core": {
-   "line": 2202,
+   "line": 2191,
    "page": 58,
    "number": "3.1",
    "anchor": "theorem.3.1"
   },
   "lem:deletion-critical": {
-   "line": 2210,
+   "line": 2199,
    "page": 59,
    "number": "3.2",
    "anchor": "theorem.3.2"
   },
   "lem:sparse-upper-envelope": {
-   "line": 2218,
+   "line": 2207,
    "page": 59,
    "number": "3.3",
    "anchor": "theorem.3.3"
   },
   "lem:bridgeless": {
-   "line": 2248,
+   "line": 2237,
    "page": 59,
    "number": "3.4",
    "anchor": "theorem.3.4"
   },
   "lem:cycle-rank": {
-   "line": 2268,
+   "line": 2257,
    "page": 60,
    "number": "3.5",
    "anchor": "theorem.3.5"
   },
   "def:surplus-ports": {
-   "line": 2283,
+   "line": 2272,
    "page": 60,
    "number": "3.6",
    "anchor": "theorem.3.6"
   },
   "def:heavy-center-triangular-port": {
-   "line": 2327,
+   "line": 2316,
    "page": 61,
    "number": "3.7",
    "anchor": "theorem.3.7"
   },
   "lem:heavy-neighbourhood-normal-form": {
-   "line": 2344,
+   "line": 2333,
    "page": 61,
    "number": "3.8",
    "anchor": "theorem.3.8"
   },
   "def:fan-compatible-open-ports": {
-   "line": 2375,
+   "line": 2364,
    "page": 61,
    "number": "3.9",
    "anchor": "theorem.3.9"
   },
   "lem:same-center-open-port-compatibility": {
-   "line": 2386,
+   "line": 2375,
    "page": 61,
    "number": "3.10",
    "anchor": "theorem.3.10"
   },
   "lem:heavy-center-triangular-alternative": {
-   "line": 2402,
+   "line": 2391,
    "page": 61,
    "number": "3.11",
    "anchor": "theorem.3.11"
   },
   "cor:heavy-center-local-dichotomy": {
-   "line": 2426,
+   "line": 2415,
    "page": 62,
    "number": "3.12",
    "anchor": "theorem.3.12"
   },
   "cor:degree-four-local-activation": {
-   "line": 2440,
+   "line": 2429,
    "page": 62,
    "number": "3.13",
    "anchor": "theorem.3.13"
   },
   "def:triangular-fan-core": {
-   "line": 2481,
+   "line": 2470,
    "page": 62,
    "number": "3.14",
    "anchor": "theorem.3.14"
   },
   "lem:triangular-shoulder-completion": {
-   "line": 2516,
+   "line": 2505,
    "page": 63,
    "number": "3.15",
    "anchor": "theorem.3.15"
   },
   "lem:triangular-port-return": {
-   "line": 2555,
+   "line": 2544,
    "page": 63,
    "number": "3.16",
    "anchor": "theorem.3.16"
   },
   "lem:triangular-first-landing": {
-   "line": 2592,
+   "line": 2581,
    "page": 64,
    "number": "3.17",
    "anchor": "theorem.3.17"
   },
   "lem:triangular-cross-shoulder": {
-   "line": 2624,
+   "line": 2613,
    "page": 64,
    "number": "3.18",
    "anchor": "theorem.3.18"
   },
   "rem:degree-greater-four-leaf": {
-   "line": 2656,
+   "line": 2645,
    "page": 65,
    "number": "3.19",
    "anchor": "theorem.3.19"
   },
   "rem:near-cubic-remaining-packing": {
-   "line": 2686,
+   "line": 2675,
    "page": 65,
    "number": "3.20",
    "anchor": "theorem.3.20"
   },
   "def:open-port-suppression": {
-   "line": 2707,
+   "line": 2696,
    "page": 65,
    "number": "3.21",
    "anchor": "theorem.3.21"
   },
   "lem:open-port-suppression-safe": {
-   "line": 2746,
+   "line": 2735,
    "page": 66,
    "number": "3.22",
    "anchor": "theorem.3.22"
   },
   "lem:single-open-port-suppression-witness": {
-   "line": 2779,
+   "line": 2768,
    "page": 66,
    "number": "3.23",
    "anchor": "theorem.3.23"
   },
   "lem:suppressed-family-critical-cycle": {
-   "line": 2799,
+   "line": 2788,
    "page": 66,
    "number": "3.24",
    "anchor": "theorem.3.24"
   },
   "lem:sparse-slack-surplus": {
-   "line": 2835,
+   "line": 2824,
    "page": 67,
    "number": "3.25",
    "anchor": "theorem.3.25"
   },
   "def:named-surplus-exits": {
-   "line": 2858,
+   "line": 2847,
    "page": 67,
    "number": "3.26",
    "anchor": "theorem.3.26"
   },
   "lem:sparse-exit-b-empty": {
-   "line": 2882,
+   "line": 2866,
    "page": 67,
    "number": "3.27",
    "anchor": "theorem.3.27"
   },
-  "rem:sparse-exit-b-scope": {
-   "line": 2914,
-   "page": 68,
+  "lem:sparse-alternatives-close-at-g": {
+   "line": 2883,
+   "page": 67,
    "number": "3.28",
    "anchor": "theorem.3.28"
   },
-  "lem:sparse-excess-port-extraction": {
-   "line": 2923,
+  "rem:sparse-exit-b-scope": {
+   "line": 2915,
    "page": 68,
    "number": "3.29",
    "anchor": "theorem.3.29"
   },
-  "lem:sparse-port-activation": {
-   "line": 2956,
+  "lem:sparse-excess-port-extraction": {
+   "line": 2928,
    "page": 68,
    "number": "3.30",
    "anchor": "theorem.3.30"
   },
-  "def:active-surplus-demands": {
-   "line": 2992,
-   "page": 69,
+  "lem:sparse-port-activation": {
+   "line": 2961,
+   "page": 68,
    "number": "3.31",
    "anchor": "theorem.3.31"
   },
-  "lem:surviving-active-family": {
-   "line": 3005,
+  "def:active-surplus-demands": {
+   "line": 2997,
    "page": 69,
    "number": "3.32",
    "anchor": "theorem.3.32"
   },
-  "def:surplus-blockers": {
-   "line": 3027,
+  "lem:surviving-active-family": {
+   "line": 3010,
    "page": 69,
    "number": "3.33",
    "anchor": "theorem.3.33"
   },
-  "def:canonical-sparse-blocker-order": {
-   "line": 3058,
-   "page": 70,
+  "def:surplus-blockers": {
+   "line": 3032,
+   "page": 69,
    "number": "3.34",
    "anchor": "theorem.3.34"
   },
-  "def:canonical-blocker-ledger": {
-   "line": 3070,
+  "def:canonical-sparse-blocker-order": {
+   "line": 3063,
    "page": 70,
    "number": "3.35",
    "anchor": "theorem.3.35"
   },
-  "lem:canonical-blocker-ledger-no-overcount": {
-   "line": 3100,
+  "def:canonical-blocker-ledger": {
+   "line": 3075,
    "page": 70,
    "number": "3.36",
    "anchor": "theorem.3.36"
   },
-  "def:primitive-sparse-blocker-carrier": {
-   "line": 3130,
-   "page": 71,
+  "lem:canonical-blocker-ledger-no-overcount": {
+   "line": 3105,
+   "page": 70,
    "number": "3.37",
    "anchor": "theorem.3.37"
   },
-  "lem:primitive-carrier-supply": {
-   "line": 3167,
+  "def:primitive-sparse-blocker-carrier": {
+   "line": 3135,
    "page": 71,
    "number": "3.38",
    "anchor": "theorem.3.38"
   },
-  "def:capacity-token-ledger": {
-   "line": 3191,
+  "lem:primitive-carrier-supply": {
+   "line": 3172,
    "page": 71,
    "number": "3.39",
    "anchor": "theorem.3.39"
   },
+  "def:capacity-token-ledger": {
+   "line": 3196,
+   "page": 72,
+   "number": "3.40",
+   "anchor": "theorem.3.40"
+  },
   "fig:sparse-surplus-token-gadget": {
-   "line": 3332,
+   "line": 3337,
    "page": 73,
    "number": "14",
    "anchor": "figure.caption.45"
   },
   "lem:capacity-token-supply": {
-   "line": 3335,
-   "page": 72,
-   "number": "3.40",
-   "anchor": "theorem.3.40"
-  },
-  "lem:token-ledger-no-overcount": {
-   "line": 3378,
+   "line": 3340,
    "page": 73,
    "number": "3.41",
    "anchor": "theorem.3.41"
   },
-  "def:same-token-patterns": {
-   "line": 3417,
+  "lem:token-ledger-no-overcount": {
+   "line": 3383,
    "page": 74,
    "number": "3.42",
    "anchor": "theorem.3.42"
   },
-  "def:same-token-blocker-roles": {
-   "line": 3434,
+  "def:same-token-patterns": {
+   "line": 3422,
    "page": 74,
    "number": "3.43",
    "anchor": "theorem.3.43"
   },
-  "def:homogeneous-token-charge": {
-   "line": 3483,
-   "page": 75,
+  "def:same-token-blocker-roles": {
+   "line": 3439,
+   "page": 74,
    "number": "3.44",
    "anchor": "theorem.3.44"
   },
-  "lem:same-token-homogeneous-extraction": {
-   "line": 3506,
+  "def:homogeneous-token-charge": {
+   "line": 3488,
    "page": 75,
    "number": "3.45",
    "anchor": "theorem.3.45"
   },
-  "cor:homogeneous-same-token-caps-close": {
-   "line": 3533,
+  "lem:same-token-homogeneous-extraction": {
+   "line": 3511,
    "page": 75,
    "number": "3.46",
    "anchor": "theorem.3.46"
   },
-  "cor:forced-homogeneous-same-token-scale": {
-   "line": 3588,
-   "page": 76,
+  "cor:homogeneous-same-token-caps-close": {
+   "line": 3538,
+   "page": 75,
    "number": "3.47",
    "anchor": "theorem.3.47"
   },
-  "cor:quantitative-homogeneous-overload": {
-   "line": 3631,
-   "page": 77,
+  "cor:forced-homogeneous-same-token-scale": {
+   "line": 3593,
+   "page": 76,
    "number": "3.48",
    "anchor": "theorem.3.48"
   },
-  "lem:same-token-matching-star": {
-   "line": 3726,
-   "page": 78,
+  "cor:quantitative-homogeneous-overload": {
+   "line": 3636,
+   "page": 77,
    "number": "3.49",
    "anchor": "theorem.3.49"
   },
-  "cor:same-token-pattern-caps-close": {
-   "line": 3765,
+  "lem:same-token-matching-star": {
+   "line": 3731,
    "page": 78,
    "number": "3.50",
    "anchor": "theorem.3.50"
   },
-  "cor:forced-same-token-scale": {
-   "line": 3804,
-   "page": 79,
+  "cor:same-token-pattern-caps-close": {
+   "line": 3770,
+   "page": 78,
    "number": "3.51",
    "anchor": "theorem.3.51"
   },
-  "lem:exact-surplus-pair-charge-partition": {
-   "line": 3853,
+  "cor:forced-same-token-scale": {
+   "line": 3809,
    "page": 79,
    "number": "3.52",
    "anchor": "theorem.3.52"
   },
-  "thm:sharp-classwise-homogeneous-token-budget": {
-   "line": 3913,
+  "lem:exact-surplus-pair-charge-partition": {
+   "line": 3858,
    "page": 80,
    "number": "3.53",
    "anchor": "theorem.3.53"
   },
-  "cor:quantified-homogeneous-class-overload": {
-   "line": 4073,
-   "page": 82,
+  "thm:sharp-classwise-homogeneous-token-budget": {
+   "line": 3918,
+   "page": 80,
    "number": "3.54",
    "anchor": "theorem.3.54"
   },
-  "cor:coupled-single-graph-overload-budget": {
-   "line": 4250,
-   "page": 84,
+  "cor:quantified-homogeneous-class-overload": {
+   "line": 4078,
+   "page": 82,
    "number": "3.55",
    "anchor": "theorem.3.55"
   },
-  "cor:numerical-single-graph-budget": {
-   "line": 4381,
+  "cor:coupled-single-graph-overload-budget": {
+   "line": 4255,
    "page": 85,
    "number": "3.56",
    "anchor": "theorem.3.56"
   },
-  "prop:single-graph-sparse-pressure-routing": {
-   "line": 4506,
-   "page": 87,
+  "cor:numerical-single-graph-budget": {
+   "line": 4386,
+   "page": 86,
    "number": "3.57",
    "anchor": "theorem.3.57"
   },
-  "thm:tokenized-surplus-accounting-closure": {
-   "line": 4629,
+  "prop:single-graph-sparse-pressure-routing": {
+   "line": 4511,
    "page": 88,
    "number": "3.58",
    "anchor": "theorem.3.58"
   },
-  "lem:capacity-token-high-load": {
-   "line": 4690,
+  "thm:tokenized-surplus-accounting-closure": {
+   "line": 4634,
    "page": 89,
    "number": "3.59",
    "anchor": "theorem.3.59"
   },
-  "def:sparse-pair-response": {
-   "line": 4774,
+  "lem:capacity-token-high-load": {
+   "line": 4695,
    "page": 90,
    "number": "3.60",
    "anchor": "theorem.3.60"
   },
-  "lem:sparse-pair-dependence-exit": {
-   "line": 4801,
-   "page": 90,
+  "def:sparse-pair-response": {
+   "line": 4779,
+   "page": 91,
    "number": "3.61",
    "anchor": "theorem.3.61"
   },
-  "prop:sparse-pair-independence-dichotomy": {
-   "line": 4866,
+  "lem:sparse-pair-dependence-exit": {
+   "line": 4806,
    "page": 91,
    "number": "3.62",
    "anchor": "theorem.3.62"
   },
-  "cor:sparse-pair-entropy-saturation": {
-   "line": 4886,
-   "page": 91,
+  "prop:sparse-pair-independence-dichotomy": {
+   "line": 4869,
+   "page": 92,
    "number": "3.63",
    "anchor": "theorem.3.63"
   },
-  "def:baseline-spine-demand": {
-   "line": 4928,
+  "cor:sparse-pair-entropy-saturation": {
+   "line": 4888,
    "page": 92,
    "number": "3.64",
    "anchor": "theorem.3.64"
   },
-  "lem:exact-cubic-baseline-budget": {
-   "line": 4947,
-   "page": 92,
+  "def:baseline-spine-demand": {
+   "line": 4930,
+   "page": 93,
    "number": "3.65",
    "anchor": "theorem.3.65"
   },
-  "lem:incremental-skeleton-room": {
-   "line": 4983,
+  "lem:exact-cubic-baseline-budget": {
+   "line": 4949,
    "page": 93,
    "number": "3.66",
    "anchor": "theorem.3.66"
   },
-  "lem:mixed-sparse-spine-dependence": {
-   "line": 5017,
+  "lem:incremental-skeleton-room": {
+   "line": 4985,
    "page": 93,
    "number": "3.67",
    "anchor": "theorem.3.67"
   },
-  "prop:sparse-entropy-sandwich": {
-   "line": 5076,
+  "lem:mixed-sparse-spine-dependence": {
+   "line": 5019,
    "page": 94,
    "number": "3.68",
    "anchor": "theorem.3.68"
   },
-  "prop:sparse-entropy-sandwich-with-blockers": {
-   "line": 5130,
-   "page": 95,
+  "prop:sparse-entropy-sandwich": {
+   "line": 5080,
+   "page": 94,
    "number": "3.69",
    "anchor": "theorem.3.69"
   },
-  "def:pair-overlap-system": {
-   "line": 5206,
-   "page": 96,
+  "prop:sparse-entropy-sandwich-with-blockers": {
+   "line": 5134,
+   "page": 95,
    "number": "3.70",
    "anchor": "theorem.3.70"
   },
-  "lem:pair-failure-overlap": {
-   "line": 5228,
+  "def:pair-overlap-system": {
+   "line": 5208,
    "page": 96,
    "number": "3.71",
    "anchor": "theorem.3.71"
   },
-  "lem:pair-system-realizability": {
-   "line": 5255,
+  "lem:pair-failure-overlap": {
+   "line": 5230,
    "page": 96,
    "number": "3.72",
    "anchor": "theorem.3.72"
   },
-  "lem:pair-system-increment-arithmetic": {
-   "line": 5318,
+  "lem:pair-system-realizability": {
+   "line": 5257,
    "page": 97,
    "number": "3.73",
    "anchor": "theorem.3.73"
   },
-  "lem:pair-count-or-arithmetic": {
-   "line": 5368,
+  "lem:pair-system-increment-arithmetic": {
+   "line": 5321,
    "page": 98,
    "number": "3.74",
    "anchor": "theorem.3.74"
   },
-  "def:spine-lower-bound-deficits": {
-   "line": 5386,
+  "lem:pair-count-or-arithmetic": {
+   "line": 5373,
    "page": 98,
    "number": "3.75",
    "anchor": "theorem.3.75"
   },
-  "cor:spine-lower-bound-surplus-estimates": {
-   "line": 5447,
-   "page": 99,
+  "def:spine-lower-bound-deficits": {
+   "line": 5391,
+   "page": 98,
    "number": "3.76",
    "anchor": "theorem.3.76"
   },
-  "thm:sharp-surplus-overload-audit": {
-   "line": 5539,
-   "page": 100,
+  "cor:spine-lower-bound-surplus-estimates": {
+   "line": 5452,
+   "page": 99,
    "number": "3.77",
    "anchor": "theorem.3.77"
   },
-  "def:same-token-routing-germs": {
-   "line": 5680,
-   "page": 102,
+  "thm:sharp-surplus-overload-audit": {
+   "line": 5544,
+   "page": 100,
    "number": "3.78",
    "anchor": "theorem.3.78"
   },
-  "lem:same-token-bottleneck-routing": {
-   "line": 5710,
+  "def:same-token-routing-germs": {
+   "line": 5685,
    "page": 102,
    "number": "3.79",
    "anchor": "theorem.3.79"
   },
-  "thm:homogeneous-overload-geometric-closure": {
-   "line": 5798,
-   "page": 103,
+  "lem:same-token-bottleneck-routing": {
+   "line": 5715,
+   "page": 102,
    "number": "3.80",
    "anchor": "theorem.3.80"
   },
+  "thm:homogeneous-overload-geometric-closure": {
+   "line": 5815,
+   "page": 103,
+   "number": "3.81",
+   "anchor": "theorem.3.81"
+  },
   "fig:same-token-bottleneck-gadget": {
-   "line": 5906,
-   "page": 104,
+   "line": 5923,
+   "page": 105,
    "number": "15",
    "anchor": "figure.caption.46"
   },
   "rem:surplus-pair-sharp-frontier": {
-   "line": 5909,
-   "page": 104,
-   "number": "3.81",
-   "anchor": "theorem.3.81"
-  },
-  "prop:nonnear-cubic-sharp-overload-routing": {
    "line": 5926,
-   "page": 105,
+   "page": 104,
    "number": "3.82",
    "anchor": "theorem.3.82"
   },
-  "def:boundaried-gluing": {
-   "line": 5967,
-   "page": 105,
+  "prop:nonnear-cubic-sharp-overload-routing": {
+   "line": 5943,
+   "page": 104,
    "number": "3.83",
    "anchor": "theorem.3.83"
   },
-  "def:atom": {
-   "line": 5975,
+  "def:boundaried-gluing": {
+   "line": 5984,
    "page": 105,
    "number": "3.84",
    "anchor": "theorem.3.84"
   },
-  "def:boundary-degree-profile": {
-   "line": 5979,
+  "def:atom": {
+   "line": 5992,
    "page": 105,
    "number": "3.85",
    "anchor": "theorem.3.85"
   },
-  "def:obstruction-profile": {
-   "line": 5987,
+  "def:boundary-degree-profile": {
+   "line": 5996,
    "page": 106,
    "number": "3.86",
    "anchor": "theorem.3.86"
   },
-  "def:target-complete-quotient": {
-   "line": 6003,
+  "def:obstruction-profile": {
+   "line": 6004,
    "page": 106,
    "number": "3.87",
    "anchor": "theorem.3.87"
   },
-  "lem:target-complete-quotient-composition": {
-   "line": 6013,
+  "def:target-complete-quotient": {
+   "line": 6020,
    "page": 106,
    "number": "3.88",
    "anchor": "theorem.3.88"
   },
-  "def:declared-coordinate-signature": {
-   "line": 6040,
+  "lem:target-complete-quotient-composition": {
+   "line": 6030,
    "page": 106,
    "number": "3.89",
    "anchor": "theorem.3.89"
   },
-  "def:exact-response-profile": {
-   "line": 6080,
+  "def:declared-coordinate-signature": {
+   "line": 6057,
    "page": 107,
    "number": "3.90",
    "anchor": "theorem.3.90"
   },
-  "def:proper-quotient-representative": {
-   "line": 6110,
-   "page": 108,
+  "def:exact-response-profile": {
+   "line": 6097,
+   "page": 107,
    "number": "3.91",
    "anchor": "theorem.3.91"
   },
-  "def:closed-quotient-representative": {
-   "line": 6136,
+  "def:proper-quotient-representative": {
+   "line": 6127,
    "page": 108,
    "number": "3.92",
    "anchor": "theorem.3.92"
   },
-  "def:admissible-rank-quotient": {
-   "line": 6163,
+  "def:closed-quotient-representative": {
+   "line": 6153,
    "page": 108,
    "number": "3.93",
    "anchor": "theorem.3.93"
   },
-  "def:functional-rank-quotient": {
-   "line": 6198,
-   "page": 109,
+  "def:admissible-rank-quotient": {
+   "line": 6180,
+   "page": 108,
    "number": "3.94",
    "anchor": "theorem.3.94"
   },
-  "rem:rank-coordinate-entropy-interface": {
-   "line": 6220,
+  "def:functional-rank-quotient": {
+   "line": 6215,
    "page": 109,
    "number": "3.95",
    "anchor": "theorem.3.95"
   },
-  "lem:degree-profile-fibres": {
-   "line": 6233,
+  "rem:rank-coordinate-entropy-interface": {
+   "line": 6237,
    "page": 109,
    "number": "3.96",
    "anchor": "theorem.3.96"
   },
-  "lem:context-universality": {
-   "line": 6251,
-   "page": 110,
+  "lem:degree-profile-fibres": {
+   "line": 6250,
+   "page": 109,
    "number": "3.97",
    "anchor": "theorem.3.97"
   },
-  "lem:replacement": {
-   "line": 6261,
+  "lem:context-universality": {
+   "line": 6268,
    "page": 110,
    "number": "3.98",
    "anchor": "theorem.3.98"
   },
-  "def:target-complete-compression": {
-   "line": 6283,
+  "lem:replacement": {
+   "line": 6278,
    "page": 110,
    "number": "3.99",
    "anchor": "theorem.3.99"
   },
-  "cor:uncompressible": {
-   "line": 6287,
-   "page": 111,
+  "def:target-complete-compression": {
+   "line": 6300,
+   "page": 110,
    "number": "3.100",
    "anchor": "theorem.3.100"
   },
+  "cor:uncompressible": {
+   "line": 6304,
+   "page": 111,
+   "number": "3.101",
+   "anchor": "theorem.3.101"
+  },
   "fig:boundaried-replacement-gadget": {
-   "line": 6377,
+   "line": 6394,
    "page": 111,
    "number": "16",
    "anchor": "figure.caption.47"
   },
   "def:target-rank": {
-   "line": 6380,
-   "page": 111,
-   "number": "3.101",
-   "anchor": "theorem.3.101"
-  },
-  "lem:independent-target-entropy": {
-   "line": 6386,
+   "line": 6397,
    "page": 111,
    "number": "3.102",
    "anchor": "theorem.3.102"
   },
+  "lem:independent-target-entropy": {
+   "line": 6403,
+   "page": 111,
+   "number": "3.103",
+   "anchor": "theorem.3.103"
+  },
   "sec:144a-formal-status": {
-   "line": 6487,
+   "line": 6504,
    "page": 112,
    "number": "3.2",
    "anchor": "subsection.3.2"
   },
   "rem:formal-root-type": {
-   "line": 6509,
-   "page": 113,
-   "number": "3.103",
-   "anchor": "theorem.3.103"
-  },
-  "def:144a-walk-witness": {
-   "line": 6530,
+   "line": 6526,
    "page": 113,
    "number": "3.104",
    "anchor": "theorem.3.104"
   },
-  "lem:144a-walk-cycles": {
-   "line": 6565,
-   "page": 114,
+  "def:144a-walk-witness": {
+   "line": 6547,
+   "page": 113,
    "number": "3.105",
    "anchor": "theorem.3.105"
   },
-  "lem:144a-separated-empty": {
-   "line": 6588,
-   "page": 114,
+  "lem:144a-walk-cycles": {
+   "line": 6582,
+   "page": 113,
    "number": "3.106",
    "anchor": "theorem.3.106"
   },
-  "lem:144a-tri-arm-empty": {
-   "line": 6613,
+  "lem:144a-separated-empty": {
+   "line": 6605,
    "page": 114,
    "number": "3.107",
    "anchor": "theorem.3.107"
   },
-  "rem:144a-remaining": {
-   "line": 6641,
+  "lem:144a-tri-arm-empty": {
+   "line": 6630,
    "page": 114,
    "number": "3.108",
    "anchor": "theorem.3.108"
   },
+  "rem:144a-remaining": {
+   "line": 6658,
+   "page": 114,
+   "number": "3.109",
+   "anchor": "theorem.3.109"
+  },
   "def:near-cubic-spine": {
-   "line": 6691,
+   "line": 6708,
    "page": 115,
    "number": "4.1",
    "anchor": "theorem.4.1"
   },
   "lem:skeleton-dominates": {
-   "line": 6723,
+   "line": 6740,
    "page": 116,
    "number": "4.2",
    "anchor": "theorem.4.2"
   },
   "lem:variable-edge-budget": {
-   "line": 6745,
+   "line": 6762,
    "page": 116,
    "number": "4.3",
    "anchor": "theorem.4.3"
   },
   "lem:near-cubic-budget": {
-   "line": 6757,
+   "line": 6774,
    "page": 116,
    "number": "4.4",
    "anchor": "theorem.4.4"
   },
   "rem:near-cubic-budget-scope": {
-   "line": 6795,
+   "line": 6812,
    "page": 117,
    "number": "4.5",
    "anchor": "theorem.4.5"
   },
   "rem:budget-robustness": {
-   "line": 6802,
+   "line": 6819,
    "page": 117,
    "number": "4.6",
    "anchor": "theorem.4.6"
   },
   "lem:state-count-comparison": {
-   "line": 6806,
+   "line": 6823,
    "page": 117,
    "number": "4.7",
    "anchor": "theorem.4.7"
   },
   "thm:p13free": {
-   "line": 6896,
+   "line": 6913,
    "page": 118,
    "number": "5.1",
    "anchor": "theorem.5.1"
   },
   "cor:p13-exists": {
-   "line": 6904,
+   "line": 6921,
    "page": 118,
    "number": "5.2",
    "anchor": "theorem.5.2"
   },
   "lem:labels": {
-   "line": 6984,
+   "line": 7001,
    "page": 119,
    "number": "6.1",
    "anchor": "theorem.6.1"
   },
   "fig:p13-curvature-label-gadget": {
-   "line": 7075,
+   "line": 7092,
    "page": 120,
    "number": "17",
    "anchor": "figure.caption.52"
   },
   "lem:curv-enum": {
-   "line": 7078,
+   "line": 7095,
    "page": 120,
    "number": "6.2",
    "anchor": "theorem.6.2"
   },
   "sec:entropy-bound": {
-   "line": 7176,
+   "line": 7193,
    "page": 122,
    "number": "7",
    "anchor": "section.7"
   },
   "lem:p13-window-package": {
-   "line": 7185,
+   "line": 7202,
    "page": 122,
    "number": "7.1",
    "anchor": "theorem.7.1"
   },
   "def:cold-window-ledger": {
-   "line": 7260,
+   "line": 7277,
    "page": 123,
    "number": "7.2",
    "anchor": "theorem.7.2"
   },
   "def:surviving-cold-branch": {
-   "line": 7305,
+   "line": 7322,
    "page": 123,
    "number": "7.3",
    "anchor": "theorem.7.3"
   },
   "lem:hot-failure-cold-mass": {
-   "line": 7323,
+   "line": 7340,
    "page": 124,
    "number": "7.4",
    "anchor": "theorem.7.4"
   },
   "def:cold-skeleton-excess": {
-   "line": 7369,
+   "line": 7386,
    "page": 124,
    "number": "7.5",
    "anchor": "theorem.7.5"
   },
   "lem:cold-window-stub-excess": {
-   "line": 7410,
+   "line": 7427,
    "page": 125,
    "number": "7.6",
    "anchor": "theorem.7.6"
   },
   "lem:cold-short-self-return-filter": {
-   "line": 7439,
+   "line": 7456,
    "page": 125,
    "number": "7.7",
    "anchor": "theorem.7.7"
   },
   "def:cold-bounded-germ": {
-   "line": 7468,
+   "line": 7485,
    "page": 126,
    "number": "7.8",
    "anchor": "theorem.7.8"
   },
   "def:cold-corridor-first-failure": {
-   "line": 7487,
+   "line": 7504,
    "page": 126,
    "number": "7.9",
    "anchor": "theorem.7.9"
   },
   "lem:cold-corridor-first-failure": {
-   "line": 7557,
+   "line": 7574,
    "page": 127,
    "number": "7.10",
    "anchor": "theorem.7.10"
   },
   "lem:cold-germ-extraction": {
-   "line": 7620,
+   "line": 7640,
    "page": 128,
    "number": "7.11",
    "anchor": "theorem.7.11"
   },
   "lem:cold-bounded-germ-trichotomy": {
-   "line": 7684,
+   "line": 7704,
    "page": 129,
    "number": "7.12",
    "anchor": "theorem.7.12"
   },
   "def:cold-same-interface-table": {
-   "line": 7732,
+   "line": 7754,
    "page": 129,
    "number": "7.13",
    "anchor": "theorem.7.13"
   },
   "lem:cold-same-interface-table": {
-   "line": 7753,
+   "line": 7775,
    "page": 130,
    "number": "7.14",
    "anchor": "theorem.7.14"
   },
   "lem:cold-increment-arithmetic": {
-   "line": 7789,
+   "line": 7811,
    "page": 130,
    "number": "7.15",
    "anchor": "theorem.7.15"
   },
   "tab:cold-branch-ledger": {
-   "line": 7849,
+   "line": 7871,
    "page": 131,
    "number": "22",
    "anchor": "table.22"
   },
   "thm:cold-branch-quantitative-closure": {
-   "line": 7878,
+   "line": 7900,
    "page": 132,
    "number": "7.16",
    "anchor": "theorem.7.16"
   },
   "def:window-realization-test": {
-   "line": 7942,
+   "line": 7964,
    "page": 133,
    "number": "7.17",
    "anchor": "theorem.7.17"
   },
   "lem:dense-deficiency-routing": {
-   "line": 7971,
+   "line": 7993,
    "page": 133,
    "number": "7.18",
    "anchor": "theorem.7.18"
   },
   "lem:dense-cold-pass": {
-   "line": 7997,
+   "line": 8019,
    "page": 134,
    "number": "7.19",
    "anchor": "theorem.7.19"
   },
   "def:neutral-equal-length-germ": {
-   "line": 8023,
+   "line": 8045,
    "page": 134,
    "number": "7.20",
    "anchor": "theorem.7.20"
   },
   "lem:neutral-germ-symmetry": {
-   "line": 8038,
+   "line": 8060,
    "page": 134,
    "number": "7.21",
    "anchor": "theorem.7.21"
   },
   "lem:refined-minimality-swap": {
-   "line": 8055,
+   "line": 8077,
    "page": 134,
    "number": "7.22",
    "anchor": "theorem.7.22"
   },
   "lem:two-strand-check": {
-   "line": 8082,
+   "line": 8104,
    "page": 135,
    "number": "7.23",
    "anchor": "theorem.7.23"
   },
   "lem:symmetric-pair-endpoint": {
-   "line": 8108,
+   "line": 8130,
    "page": 135,
    "number": "7.24",
    "anchor": "theorem.7.24"
   },
   "def:all-cold-comparison": {
-   "line": 8139,
+   "line": 8161,
    "page": 136,
    "number": "7.25",
    "anchor": "theorem.7.25"
   },
   "lem:remainder-glue-injection": {
-   "line": 8146,
+   "line": 8168,
    "page": 136,
    "number": "7.26",
    "anchor": "theorem.7.26"
   },
   "rem:dense-residual-status": {
-   "line": 8175,
+   "line": 8197,
    "page": 136,
    "number": "7.27",
    "anchor": "theorem.7.27"
   },
   "lem:exact-collision-test": {
-   "line": 8206,
+   "line": 8228,
    "page": 136,
    "number": "7.28",
    "anchor": "theorem.7.28"
   },
   "lem:absorbed-germ-fan-data": {
-   "line": 8238,
+   "line": 8260,
    "page": 137,
    "number": "7.29",
    "anchor": "theorem.7.29"
   },
   "rem:no-sufficient-order": {
-   "line": 8283,
+   "line": 8305,
    "page": 137,
    "number": "7.30",
    "anchor": "theorem.7.30"
   },
   "def:blocked-class": {
-   "line": 8299,
+   "line": 8321,
    "page": 138,
    "number": "7.31",
    "anchor": "theorem.7.31"
   },
   "def:barrier-overlap-system": {
-   "line": 8314,
+   "line": 8336,
    "page": 138,
    "number": "7.32",
    "anchor": "theorem.7.32"
   },
   "lem:barrier-failure-overlap": {
-   "line": 8341,
+   "line": 8363,
    "page": 138,
    "number": "7.33",
    "anchor": "theorem.7.33"
   },
   "def:serial-window-system": {
-   "line": 8385,
+   "line": 8407,
    "page": 139,
    "number": "7.34",
    "anchor": "theorem.7.34"
   },
   "lem:window-system-realizability": {
-   "line": 8407,
+   "line": 8429,
    "page": 139,
    "number": "7.35",
    "anchor": "theorem.7.35"
   },
   "lem:serial-system-sumset": {
-   "line": 8485,
+   "line": 8507,
    "page": 140,
    "number": "7.36",
    "anchor": "theorem.7.36"
   },
   "lem:system-increment-arithmetic": {
-   "line": 8529,
+   "line": 8551,
    "page": 141,
    "number": "7.37",
    "anchor": "theorem.7.37"
   },
   "lem:scale-additivity": {
-   "line": 8654,
+   "line": 8676,
    "page": 142,
    "number": "7.38",
    "anchor": "theorem.7.38"
   },
   "lem:blocked-graphs-compress": {
-   "line": 8688,
+   "line": 8710,
    "page": 143,
    "number": "7.39",
    "anchor": "theorem.7.39"
   },
   "rem:blocked-class-checks": {
-   "line": 8760,
+   "line": 8782,
    "page": 144,
    "number": "7.40",
    "anchor": "theorem.7.40"
   },
   "rem:entropy-lives-here": {
-   "line": 8795,
+   "line": 8817,
    "page": 144,
    "number": "7.41",
    "anchor": "theorem.7.41"
   },
   "prop:p13-density": {
-   "line": 8805,
+   "line": 8827,
    "page": 145,
    "number": "7.42",
    "anchor": "theorem.7.42"
   },
   "eq:feasibility": {
-   "line": 8869,
+   "line": 8891,
    "page": 145,
    "number": "1",
    "anchor": "equation.1"
   },
   "sec:170-record-fibres": {
-   "line": 8961,
+   "line": 8983,
    "page": 146,
    "number": "7.4",
    "anchor": "subsection.7.4"
   },
   "lem:record-fibre-equivalence": {
-   "line": 8969,
+   "line": 8991,
    "page": 146,
    "number": "7.43",
    "anchor": "theorem.7.43"
   },
   "cor:170-positive-arm-empty": {
-   "line": 8999,
+   "line": 9021,
    "page": 147,
    "number": "7.44",
    "anchor": "theorem.7.44"
   },
   "rem:170-clarification": {
-   "line": 9031,
+   "line": 9053,
    "page": 147,
    "number": "7.45",
    "anchor": "theorem.7.45"
   },
   "sec:remainder": {
-   "line": 9080,
+   "line": 9102,
    "page": 148,
    "number": "8",
    "anchor": "section.8"
   },
   "def:internal-3-core": {
-   "line": 9092,
+   "line": 9114,
    "page": 148,
    "number": "8.1",
    "anchor": "theorem.8.1"
   },
   "lem:remainder-empty-internal-3-core": {
-   "line": 9101,
+   "line": 9123,
    "page": 148,
    "number": "8.2",
    "anchor": "theorem.8.2"
   },
   "fig:p13-remainder-ledger": {
-   "line": 9175,
+   "line": 9197,
    "page": 149,
    "number": "18",
    "anchor": "figure.caption.56"
   },
   "def:deficiency-surplus": {
-   "line": 9178,
+   "line": 9200,
    "page": 148,
    "number": "8.3",
    "anchor": "theorem.8.3"
   },
   "def:window-remainder-surplus-split": {
-   "line": 9194,
+   "line": 9216,
    "page": 148,
    "number": "8.4",
    "anchor": "theorem.8.4"
   },
   "lem:stub-positive": {
-   "line": 9213,
+   "line": 9235,
    "page": 149,
    "number": "8.5",
    "anchor": "theorem.8.5"
   },
   "lem:exact-window-join-identity": {
-   "line": 9265,
+   "line": 9287,
    "page": 150,
    "number": "8.6",
    "anchor": "theorem.8.6"
   },
   "lem:surplus-aware-window-stub": {
-   "line": 9289,
+   "line": 9311,
    "page": 150,
    "number": "8.7",
    "anchor": "theorem.8.7"
   },
   "cor:stub-boundary-supply": {
-   "line": 9317,
+   "line": 9339,
    "page": 151,
    "number": "8.8",
    "anchor": "theorem.8.8"
   },
   "lem:wedge-lower": {
-   "line": 9413,
+   "line": 9435,
    "page": 152,
    "number": "9.1",
    "anchor": "theorem.9.1"
   },
   "def:curvature-target-rank": {
-   "line": 9540,
+   "line": 9562,
    "page": 153,
    "number": "10.1",
    "anchor": "theorem.10.1"
   },
   "def:curvature-target-dependence": {
-   "line": 9562,
+   "line": 9584,
    "page": 154,
    "number": "10.2",
    "anchor": "theorem.10.2"
   },
   "lem:target-rank-circuit": {
-   "line": 9606,
+   "line": 9628,
    "page": 154,
    "number": "10.3",
    "anchor": "theorem.10.3"
   },
   "lem:curvature-dependence-routing": {
-   "line": 9650,
+   "line": 9672,
    "page": 155,
    "number": "10.4",
    "anchor": "theorem.10.4"
   },
   "lem:separated-testers": {
-   "line": 9682,
+   "line": 9704,
    "page": 155,
    "number": "10.5",
    "anchor": "theorem.10.5"
   },
   "lem:proper-smearing": {
-   "line": 9710,
+   "line": 9732,
    "page": 156,
    "number": "10.6",
    "anchor": "theorem.10.6"
   },
   "def:repair-network-terms": {
-   "line": 9726,
+   "line": 9748,
    "page": 156,
    "number": "10.7",
    "anchor": "theorem.10.7"
   },
   "lem:smearing-support-repair": {
-   "line": 9743,
+   "line": 9765,
    "page": 156,
    "number": "10.8",
    "anchor": "theorem.10.8"
   },
   "lem:no-silent-global-smearing": {
-   "line": 9769,
+   "line": 9791,
    "page": 157,
    "number": "10.9",
    "anchor": "theorem.10.9"
   },
   "lem:full-rank": {
-   "line": 9814,
+   "line": 9836,
    "page": 157,
    "number": "10.10",
    "anchor": "theorem.10.10"
   },
   "cor:forced-curvature-cost": {
-   "line": 9860,
+   "line": 9882,
    "page": 158,
    "number": "10.11",
    "anchor": "theorem.10.11"
   },
   "rem:curvature-provenance": {
-   "line": 9887,
+   "line": 9909,
    "page": 158,
    "number": "10.12",
    "anchor": "theorem.10.12"
   },
   "fig:curvature-budget-squeeze": {
-   "line": 9954,
+   "line": 9976,
    "page": 159,
    "number": "19",
    "anchor": "figure.caption.60"
   },
   "def:remainder-entropy": {
-   "line": 10021,
+   "line": 10043,
    "page": 159,
    "number": "11.1",
    "anchor": "theorem.11.1"
   },
   "lem:dominant-type": {
-   "line": 10041,
+   "line": 10063,
    "page": 160,
    "number": "11.2",
    "anchor": "theorem.11.2"
   },
   "rem:cheap-regime-link": {
-   "line": 10071,
+   "line": 10093,
    "page": 160,
    "number": "11.3",
    "anchor": "theorem.11.3"
   },
   "lem:translates-independent": {
-   "line": 10084,
+   "line": 10106,
    "page": 160,
    "number": "11.4",
    "anchor": "theorem.11.4"
   },
   "rem:positive-fraction": {
-   "line": 10127,
+   "line": 10149,
    "page": 161,
    "number": "11.5",
    "anchor": "theorem.11.5"
   },
   "prop:two-budget": {
-   "line": 10131,
+   "line": 10153,
    "page": 161,
    "number": "11.6",
    "anchor": "theorem.11.6"
   },
   "fig:two-budget-routing-funnel": {
-   "line": 10243,
+   "line": 10265,
    "page": 164,
    "number": "20",
    "anchor": "figure.caption.62"
   },
   "rem:forced-cost-role": {
-   "line": 10246,
+   "line": 10268,
    "page": 162,
    "number": "11.7",
    "anchor": "theorem.11.7"
   },
   "eq:entropy-cap": {
-   "line": 10344,
+   "line": 10366,
    "page": 163,
    "number": "2",
    "anchor": "equation.2"
   },
   "def:Theta": {
-   "line": 10349,
+   "line": 10371,
    "page": 163,
    "number": "12.1",
    "anchor": "theorem.12.1"
   },
   "prop:entropy-high-theta": {
-   "line": 10365,
+   "line": 10387,
    "page": 164,
    "number": "12.2",
    "anchor": "theorem.12.2"
   },
   "rem:54-formal-status": {
-   "line": 10381,
+   "line": 10403,
    "page": 164,
    "number": "12.3",
    "anchor": "theorem.12.3"
   },
   "rem:entropy-argument-order": {
-   "line": 10391,
+   "line": 10413,
    "page": 164,
    "number": "12.4",
    "anchor": "theorem.12.4"
   },
   "rem:closure-robust": {
-   "line": 10395,
+   "line": 10417,
    "page": 165,
    "number": "12.5",
    "anchor": "theorem.12.5"
   },
   "sec:large-budget": {
-   "line": 10484,
+   "line": 10506,
    "page": 166,
    "number": "13",
    "anchor": "section.13"
   },
   "def:canonical-decomp": {
-   "line": 10523,
+   "line": 10545,
    "page": 166,
    "number": "13.1",
    "anchor": "theorem.13.1"
   },
   "def:admissible": {
-   "line": 10554,
+   "line": 10576,
    "page": 166,
    "number": "13.2",
    "anchor": "theorem.13.2"
   },
   "def:net-charge": {
-   "line": 10577,
+   "line": 10599,
    "page": 167,
    "number": "13.3",
    "anchor": "theorem.13.3"
   },
   "fig:netcharge-localization-gadget": {
-   "line": 10619,
+   "line": 10641,
    "page": 167,
    "number": "21",
    "anchor": "figure.caption.65"
   },
   "lem:netcharge-superadd": {
-   "line": 10623,
+   "line": 10645,
    "page": 167,
    "number": "13.4",
    "anchor": "theorem.13.4"
   },
   "cor:global-window-join-pressure": {
-   "line": 10664,
+   "line": 10686,
    "page": 168,
    "number": "13.5",
    "anchor": "theorem.13.5"
   },
   "rem:window-join-pressure-meaning": {
-   "line": 10729,
+   "line": 10751,
    "page": 169,
    "number": "13.6",
    "anchor": "theorem.13.6"
   },
   "prop:negative-net-charge": {
-   "line": 10738,
+   "line": 10760,
    "page": 169,
    "number": "13.7",
    "anchor": "theorem.13.7"
   },
   "sec:local-analysis": {
-   "line": 10808,
+   "line": 10830,
    "page": 170,
    "number": "14",
    "anchor": "section.14"
   },
   "rem:local-reading": {
-   "line": 10816,
+   "line": 10838,
    "page": 170,
    "number": "14.1",
    "anchor": "theorem.14.1"
   },
   "def:typeA-support": {
-   "line": 10851,
+   "line": 10873,
    "page": 171,
    "number": "14.2",
    "anchor": "theorem.14.2"
   },
   "def:typeA-receiver-load": {
-   "line": 10862,
+   "line": 10884,
    "page": 171,
    "number": "14.3",
    "anchor": "theorem.14.3"
   },
   "lem:typeA-receiver-loads": {
-   "line": 10891,
+   "line": 10913,
    "page": 171,
    "number": "14.4",
    "anchor": "theorem.14.4"
   },
   "def:typeA-visible-load": {
-   "line": 10907,
+   "line": 10929,
    "page": 171,
    "number": "14.5",
    "anchor": "theorem.14.5"
   },
   "fig:typeA-receiver-gadget": {
-   "line": 10992,
+   "line": 11014,
    "page": 172,
    "number": "22",
    "anchor": "figure.caption.67"
   },
   "lem:typeA-common-port-return-cycle": {
-   "line": 10995,
+   "line": 11017,
    "page": 172,
    "number": "14.6",
    "anchor": "theorem.14.6"
   },
   "lem:typeA-first-entry": {
-   "line": 11011,
+   "line": 11033,
    "page": 173,
    "number": "14.7",
    "anchor": "theorem.14.7"
   },
   "lem:typeA-entry-budget": {
-   "line": 11023,
+   "line": 11045,
    "page": 173,
    "number": "14.8",
    "anchor": "theorem.14.8"
   },
   "lem:typeA-port-return": {
-   "line": 11043,
+   "line": 11065,
    "page": 173,
    "number": "14.9",
    "anchor": "theorem.14.9"
   },
   "def:typeA-channel-spectrum": {
-   "line": 11053,
+   "line": 11075,
    "page": 173,
    "number": "14.10",
    "anchor": "theorem.14.10"
   },
   "def:typeA-continuation-classes": {
-   "line": 11071,
+   "line": 11093,
    "page": 173,
    "number": "14.11",
    "anchor": "theorem.14.11"
   },
   "lem:typeA-spectral-pressure": {
-   "line": 11112,
+   "line": 11134,
    "page": 174,
    "number": "14.12",
    "anchor": "theorem.14.12"
   },
   "rem:typeA-witness-pressure": {
-   "line": 11138,
+   "line": 11160,
    "page": 174,
    "number": "14.13",
    "anchor": "theorem.14.13"
   },
   "def:typeA-trace-basin": {
-   "line": 11155,
+   "line": 11177,
    "page": 175,
    "number": "14.14",
    "anchor": "theorem.14.14"
   },
   "def:typeA-silent-core-residual": {
-   "line": 11250,
+   "line": 11272,
    "page": 176,
    "number": "14.15",
    "anchor": "theorem.14.15"
   },
   "def:typeA-saturated-exits": {
-   "line": 11271,
+   "line": 11293,
    "page": 176,
    "number": "14.16",
    "anchor": "theorem.14.16"
   },
   "def:typeB-fan-safe": {
-   "line": 11305,
+   "line": 11327,
    "page": 177,
    "number": "14.17",
    "anchor": "theorem.14.17"
   },
   "def:marked-typeB-fan": {
-   "line": 11323,
+   "line": 11345,
    "page": 177,
    "number": "14.18",
    "anchor": "theorem.14.18"
   },
   "def:decorated-fan-envelope": {
-   "line": 11358,
+   "line": 11380,
    "page": 178,
    "number": "14.19",
    "anchor": "theorem.14.19"
   },
   "def:decorated-typeB-envelope-support": {
-   "line": 11404,
+   "line": 11426,
    "page": 178,
    "number": "14.20",
    "anchor": "theorem.14.20"
   },
   "lem:decorated-envelope-no-double-count": {
-   "line": 11450,
+   "line": 11472,
    "page": 179,
    "number": "14.21",
    "anchor": "theorem.14.21"
   },
   "lem:window-handoff-center-accounting": {
-   "line": 11481,
+   "line": 11503,
    "page": 179,
    "number": "14.22",
    "anchor": "theorem.14.22"
   },
   "lem:typeA-continuation-routing": {
-   "line": 11499,
+   "line": 11521,
    "page": 179,
    "number": "14.23",
    "anchor": "theorem.14.23"
   },
   "lem:typeA-cubic-switch-absorption": {
-   "line": 11530,
+   "line": 11552,
    "page": 180,
    "number": "14.24",
    "anchor": "theorem.14.24"
   },
   "lem:typeA-high-degree-handoff": {
-   "line": 11570,
+   "line": 11592,
    "page": 180,
    "number": "14.25",
    "anchor": "theorem.14.25"
   },
   "lem:decorated-fan-admissibility": {
-   "line": 11602,
+   "line": 11624,
    "page": 181,
    "number": "14.26",
    "anchor": "theorem.14.26"
   },
   "lem:typeA-threshold-algebra": {
-   "line": 11634,
+   "line": 11656,
    "page": 181,
    "number": "14.27",
    "anchor": "theorem.14.27"
   },
   "lem:typeA-visible-entry": {
-   "line": 11668,
+   "line": 11690,
    "page": 182,
    "number": "14.28",
    "anchor": "theorem.14.28"
   },
   "def:typeA-excess-basin": {
-   "line": 11713,
+   "line": 11735,
    "page": 182,
    "number": "14.29",
    "anchor": "theorem.14.29"
   },
   "lem:typeA-silent-excess-count": {
-   "line": 11736,
+   "line": 11758,
    "page": 182,
    "number": "14.30",
    "anchor": "theorem.14.30"
   },
   "lem:typeA-reduced-silent-residual": {
-   "line": 11807,
+   "line": 11829,
    "page": 183,
    "number": "14.31",
    "anchor": "theorem.14.31"
   },
   "lem:typeA-silent-excess": {
-   "line": 11838,
+   "line": 11860,
    "page": 184,
    "number": "14.32",
    "anchor": "theorem.14.32"
   },
   "def:typeA-exit4-peeling": {
-   "line": 11895,
+   "line": 11917,
    "page": 185,
    "number": "14.33",
    "anchor": "theorem.14.33"
   },
   "lem:typeA-exit4-peeling-charge": {
-   "line": 11916,
+   "line": 11938,
    "page": 185,
    "number": "14.34",
    "anchor": "theorem.14.34"
   },
   "lem:typeA-unpeeled-visible-routing": {
-   "line": 11944,
+   "line": 11966,
    "page": 185,
    "number": "14.35",
    "anchor": "theorem.14.35"
   },
   "lem:typeA-unpeeled-silent-routing": {
-   "line": 12000,
+   "line": 12022,
    "page": 186,
    "number": "14.36",
    "anchor": "theorem.14.36"
   },
   "lem:typeA-exit4-residual-routing": {
-   "line": 12066,
+   "line": 12088,
    "page": 187,
    "number": "14.37",
    "anchor": "theorem.14.37"
   },
   "lem:typeA-exit4-discharge": {
-   "line": 12088,
+   "line": 12110,
    "page": 187,
    "number": "14.38",
    "anchor": "theorem.14.38"
   },
   "lem:typeA-exits-discharged": {
-   "line": 12118,
+   "line": 12140,
    "page": 188,
    "number": "14.39",
    "anchor": "theorem.14.39"
   },
   "fig:typeA-saturated-exit-drain": {
-   "line": 12210,
+   "line": 12232,
    "page": 188,
    "number": "23",
    "anchor": "figure.caption.69"
   },
   "lem:typeA-saturated-handoff": {
-   "line": 12213,
+   "line": 12235,
    "page": 188,
    "number": "14.40",
    "anchor": "theorem.14.40"
   },
   "rem:typeA-exit4-peeling-use": {
-   "line": 12245,
+   "line": 12267,
    "page": 189,
    "number": "14.41",
    "anchor": "theorem.14.41"
   },
   "rem:typeA-typeB-stratification": {
-   "line": 12254,
+   "line": 12276,
    "page": 189,
    "number": "14.42",
    "anchor": "theorem.14.42"
   },
   "lem:typeA-unsaturated-discharge": {
-   "line": 12276,
+   "line": 12298,
    "page": 189,
    "number": "14.43",
    "anchor": "theorem.14.43"
   },
   "lem:density-mersenne": {
-   "line": 12309,
+   "line": 12331,
    "page": 190,
    "number": "14.44",
    "anchor": "theorem.14.44"
   },
   "lem:typeA-exclusion": {
-   "line": 12350,
+   "line": 12372,
    "page": 190,
    "number": "14.45",
    "anchor": "theorem.14.45"
   },
   "def:typeA-large-budget-deficit": {
-   "line": 12379,
+   "line": 12401,
    "page": 191,
    "number": "14.46",
    "anchor": "theorem.14.46"
   },
   "lem:typeA-route8-burden": {
-   "line": 12394,
+   "line": 12416,
    "page": 191,
    "number": "14.47",
    "anchor": "theorem.14.47"
   },
   "def:typeA-route8-carriers": {
-   "line": 12452,
+   "line": 12474,
    "page": 192,
    "number": "14.48",
    "anchor": "theorem.14.48"
   },
   "def:typeA-exit4-family": {
-   "line": 12555,
+   "line": 12577,
    "page": 193,
    "number": "14.49",
    "anchor": "theorem.14.49"
   },
   "def:typeA-true-route8-residual": {
-   "line": 12597,
+   "line": 12619,
    "page": 194,
    "number": "14.50",
    "anchor": "theorem.14.50"
   },
   "fig:typeA-route8-carrier-gadget": {
-   "line": 12676,
+   "line": 12698,
    "page": 194,
    "number": "24",
    "anchor": "figure.caption.70"
   },
   "def:typeA-carrier-deletion-witness": {
-   "line": 12679,
+   "line": 12701,
    "page": 195,
    "number": "14.51",
    "anchor": "theorem.14.51"
   },
   "lem:typeA-essential-deletion-witness": {
-   "line": 12711,
+   "line": 12733,
    "page": 195,
    "number": "14.52",
    "anchor": "theorem.14.52"
   },
   "lem:typeA-deletion-witness-declared": {
-   "line": 12745,
+   "line": 12767,
    "page": 195,
    "number": "14.53",
    "anchor": "theorem.14.53"
   },
   "lem:typeA-two-carrier-deletion-canonical": {
-   "line": 12775,
+   "line": 12797,
    "page": 196,
    "number": "14.54",
    "anchor": "theorem.14.54"
   },
   "lem:typeA-carrier-deletion-exit": {
-   "line": 12794,
+   "line": 12816,
    "page": 196,
    "number": "14.55",
    "anchor": "theorem.14.55"
   },
   "lem:typeA-carrier-cut-parity": {
-   "line": 12847,
+   "line": 12869,
    "page": 197,
    "number": "14.56",
    "anchor": "theorem.14.56"
   },
   "lem:typeA-internal-quotient-mixed": {
-   "line": 12882,
+   "line": 12904,
    "page": 197,
    "number": "14.57",
    "anchor": "theorem.14.57"
   },
   "lem:typeA-one-terminal-collapse": {
-   "line": 12919,
+   "line": 12941,
    "page": 198,
    "number": "14.58",
    "anchor": "theorem.14.58"
   },
   "prop:typeA-route8-carrier-reduction": {
-   "line": 12969,
+   "line": 12991,
    "page": 198,
    "number": "14.59",
    "anchor": "theorem.14.59"
   },
   "fig:typeA-route8-carrier-reduction-squeeze": {
-   "line": 13093,
+   "line": 13115,
    "page": 199,
    "number": "25",
    "anchor": "figure.caption.71"
   },
   "def:typeA-terminal-two-carrier": {
-   "line": 13096,
+   "line": 13118,
    "page": 199,
    "number": "14.60",
    "anchor": "theorem.14.60"
   },
   "thm:typeA-two-carrier-nogo": {
-   "line": 13130,
+   "line": 13152,
    "page": 200,
    "number": "14.61",
    "anchor": "theorem.14.61"
   },
   "fig:typeA-terminal-route8-nogo-gadget": {
-   "line": 13215,
+   "line": 13237,
    "page": 201,
    "number": "26",
    "anchor": "figure.caption.72"
   },
   "prop:typeA-route8-closure-from-nogo": {
-   "line": 13218,
+   "line": 13240,
    "page": 200,
    "number": "14.62",
    "anchor": "theorem.14.62"
   },
   "rem:typeA-two-carrier-closure": {
-   "line": 13246,
+   "line": 13268,
    "page": 201,
    "number": "14.63",
    "anchor": "theorem.14.63"
   },
   "rem:typeA-step2": {
-   "line": 13259,
+   "line": 13281,
    "page": 201,
    "number": "14.64",
    "anchor": "theorem.14.64"
   },
   "def:typeB-assigned-ledger": {
-   "line": 13369,
+   "line": 13391,
    "page": 202,
    "number": "14.65",
    "anchor": "theorem.14.65"
   },
   "lem:fan-certificate": {
-   "line": 13467,
+   "line": 13489,
    "page": 204,
    "number": "14.66",
    "anchor": "theorem.14.66"
   },
   "rem:fan-finite": {
-   "line": 13568,
+   "line": 13590,
    "page": 205,
    "number": "14.67",
    "anchor": "theorem.14.67"
   },
   "def:typeB-window-incidence-profile": {
-   "line": 13584,
+   "line": 13606,
    "page": 205,
    "number": "14.68",
    "anchor": "theorem.14.68"
   },
   "def:fan-closed-port": {
-   "line": 13618,
+   "line": 13640,
    "page": 206,
    "number": "14.69",
    "anchor": "theorem.14.69"
   },
   "lem:compatible-pair-fan-closure": {
-   "line": 13641,
+   "line": 13663,
    "page": 206,
    "number": "14.70",
    "anchor": "theorem.14.70"
   },
   "def:typeB-multiclosed-residual": {
-   "line": 13687,
+   "line": 13709,
    "page": 206,
    "number": "14.71",
    "anchor": "theorem.14.71"
   },
   "def:typeB-hybrid-incidence": {
-   "line": 13717,
+   "line": 13739,
    "page": 207,
    "number": "14.72",
    "anchor": "theorem.14.72"
   },
   "fig:typeB-fan-window-ledger-gadget": {
-   "line": 13814,
+   "line": 13836,
    "page": 208,
    "number": "27",
    "anchor": "figure.caption.75"
   },
   "def:closed-fan-window-pair": {
-   "line": 13817,
+   "line": 13839,
    "page": 207,
    "number": "14.73",
    "anchor": "theorem.14.73"
   },
   "def:direct-cycle-free-closed-pair": {
-   "line": 13839,
+   "line": 13861,
    "page": 207,
    "number": "14.74",
    "anchor": "theorem.14.74"
   },
   "lem:typeB-direct-fan-window-cycles": {
-   "line": 13858,
+   "line": 13880,
    "page": 208,
    "number": "14.75",
    "anchor": "theorem.14.75"
   },
   "lem:typeB-two-window-cycles": {
-   "line": 13904,
+   "line": 13926,
    "page": 209,
    "number": "14.76",
    "anchor": "theorem.14.76"
   },
   "lem:typeB-multiclosed-budget": {
-   "line": 13935,
+   "line": 13957,
    "page": 209,
    "number": "14.77",
    "anchor": "theorem.14.77"
   },
   "lem:typeB-hybrid-incidence-budget": {
-   "line": 14037,
+   "line": 14059,
    "page": 211,
    "number": "14.78",
    "anchor": "theorem.14.78"
   },
   "lem:typeB-hybrid-B1": {
-   "line": 14107,
+   "line": 14129,
    "page": 212,
    "number": "14.79",
    "anchor": "theorem.14.79"
   },
   "prop:fan-closed-port-typeB-routing": {
-   "line": 14125,
+   "line": 14147,
    "page": 212,
    "number": "14.80",
    "anchor": "theorem.14.80"
   },
   "cor:compatible-pair-typeB-routing": {
-   "line": 14211,
+   "line": 14233,
    "page": 213,
    "number": "14.81",
    "anchor": "theorem.14.81"
   },
   "prop:triangular-port-typeB-routing": {
-   "line": 14239,
+   "line": 14261,
    "page": 213,
    "number": "14.82",
    "anchor": "theorem.14.82"
   },
   "def:typeB-ledger-carriers": {
-   "line": 14272,
+   "line": 14294,
    "page": 214,
    "number": "14.83",
    "anchor": "theorem.14.83"
   },
   "def:typeB-candidate-ledger": {
-   "line": 14309,
+   "line": 14331,
    "page": 214,
    "number": "14.84",
    "anchor": "theorem.14.84"
   },
   "def:typeB-overlap-obstruction": {
-   "line": 14337,
+   "line": 14359,
    "page": 215,
    "number": "14.85",
    "anchor": "theorem.14.85"
   },
   "lem:typeB-maximal-completion": {
-   "line": 14359,
+   "line": 14381,
    "page": 215,
    "number": "14.86",
    "anchor": "theorem.14.86"
   },
   "lem:typeB-bridge-to-overlap": {
-   "line": 14387,
+   "line": 14409,
    "page": 215,
    "number": "14.87",
    "anchor": "theorem.14.87"
   },
   "lem:typeB-global-local-reflection": {
-   "line": 14419,
+   "line": 14441,
    "page": 216,
    "number": "14.88",
    "anchor": "theorem.14.88"
   },
   "prop:typeB-global-local-bridge": {
-   "line": 14488,
+   "line": 14510,
    "page": 217,
    "number": "14.89",
    "anchor": "theorem.14.89"
   },
   "fig:typeB-overlap-obstruction-routing": {
-   "line": 14576,
+   "line": 14598,
    "page": 218,
    "number": "28",
    "anchor": "figure.caption.76"
   },
   "def:typeB-bridge-statements": {
-   "line": 14579,
+   "line": 14601,
    "page": 217,
    "number": "14.90",
    "anchor": "theorem.14.90"
   },
   "fig:typeB-bridge-fanmass-gadget": {
-   "line": 14714,
+   "line": 14736,
    "page": 219,
    "number": "29",
    "anchor": "figure.caption.77"
   },
   "lem:typeB-postledger-core-hygiene": {
-   "line": 14717,
+   "line": 14739,
    "page": 219,
    "number": "14.91",
    "anchor": "theorem.14.91"
   },
   "prop:typeB-bridge-reduction": {
-   "line": 14749,
+   "line": 14771,
    "page": 220,
    "number": "14.92",
    "anchor": "theorem.14.92"
   },
   "lem:typeB-exclusion": {
-   "line": 14809,
+   "line": 14831,
    "page": 220,
    "number": "14.93",
    "anchor": "theorem.14.93"
   },
   "rem:typeB-status": {
-   "line": 14936,
+   "line": 14958,
    "page": 222,
    "number": "14.94",
    "anchor": "theorem.14.94"
   },
   "def:typeB-residual-mass": {
-   "line": 15142,
+   "line": 15164,
    "page": 224,
    "number": "14.95",
    "anchor": "theorem.14.95"
   },
   "lem:decorated-envelope-deficit-bound": {
-   "line": 15184,
+   "line": 15206,
    "page": 225,
    "number": "14.96",
    "anchor": "theorem.14.96"
   },
   "lem:decorated-envelope-with-route8-core": {
-   "line": 15226,
+   "line": 15248,
    "page": 226,
    "number": "14.97",
    "anchor": "theorem.14.97"
   },
   "lem:typeB-bridge-deficit-bound": {
-   "line": 15263,
+   "line": 15285,
    "page": 226,
    "number": "14.98",
    "anchor": "theorem.14.98"
   },
   "lem:typeB-bridge-with-route8-core": {
-   "line": 15350,
+   "line": 15372,
    "page": 227,
    "number": "14.99",
    "anchor": "theorem.14.99"
   },
   "prop:typeB-bridge-sublinear": {
-   "line": 15415,
+   "line": 15437,
    "page": 228,
    "number": "14.100",
    "anchor": "theorem.14.100"
   },
   "thm:branch-kill": {
-   "line": 15533,
+   "line": 15555,
    "page": 229,
    "number": "15.1",
    "anchor": "theorem.15.1"
   },
   "sec:exit4-closure": {
-   "line": 15682,
+   "line": 15704,
    "page": 231,
    "number": "15.1",
    "anchor": "subsection.15.1"
   },
   "def:typeA-unified-negative": {
-   "line": 15698,
+   "line": 15720,
    "page": 231,
    "number": "15.2",
    "anchor": "theorem.15.2"
   },
   "rem:unified-covers-exit4": {
-   "line": 15713,
+   "line": 15735,
    "page": 231,
    "number": "15.3",
    "anchor": "theorem.15.3"
   },
   "lem:typeA-unified-deficit": {
-   "line": 15723,
+   "line": 15745,
    "page": 231,
    "number": "15.4",
    "anchor": "theorem.15.4"
   },
   "def:typeA-unified-entries": {
-   "line": 15763,
+   "line": 15785,
    "page": 232,
    "number": "15.5",
    "anchor": "theorem.15.5"
   },
   "lem:typeA-unified-burden": {
-   "line": 15780,
+   "line": 15802,
    "page": 232,
    "number": "15.6",
    "anchor": "theorem.15.6"
   },
   "lem:typeA-unified-carriers": {
-   "line": 15810,
+   "line": 15832,
    "page": 232,
    "number": "15.7",
    "anchor": "theorem.15.7"
   },
   "prop:typeA-unified-reduction": {
-   "line": 15855,
+   "line": 15877,
    "page": 233,
    "number": "15.8",
    "anchor": "theorem.15.8"
   },
   "rem:unified-margin": {
-   "line": 15888,
+   "line": 15910,
    "page": 233,
    "number": "15.9",
    "anchor": "theorem.15.9"
   },
   "def:typeA-exit4-pressure-token": {
-   "line": 15907,
+   "line": 15929,
    "page": 234,
    "number": "15.10",
    "anchor": "theorem.15.10"
   },
   "lem:typeA-pressure-token-two-carriers": {
-   "line": 15948,
+   "line": 15970,
    "page": 234,
    "number": "15.11",
    "anchor": "theorem.15.11"
   },
   "def:typeA-pressure-ledger": {
-   "line": 15974,
+   "line": 15996,
    "page": 234,
    "number": "15.12",
    "anchor": "theorem.15.12"
   },
   "lem:typeA-pressure-ledger-no-overcount": {
-   "line": 16016,
+   "line": 16038,
    "page": 235,
    "number": "15.13",
    "anchor": "theorem.15.13"
   },
   "def:typeA-two-terminal-pressure-records": {
-   "line": 16059,
+   "line": 16081,
    "page": 235,
    "number": "15.14",
    "anchor": "theorem.15.14"
   },
   "lem:typeA-pressure-records-canonical": {
-   "line": 16081,
+   "line": 16103,
    "page": 236,
    "number": "15.15",
    "anchor": "theorem.15.15"
   },
   "prop:typeA-external-pressure-reduction": {
-   "line": 16104,
+   "line": 16126,
    "page": 236,
    "number": "15.16",
    "anchor": "theorem.15.16"
   },
   "def:typeA-actual-profile-pressure-defects": {
-   "line": 16142,
+   "line": 16164,
    "page": 236,
    "number": "15.17",
    "anchor": "theorem.15.17"
   },
   "lem:typeA-pressure-defect-split": {
-   "line": 16162,
+   "line": 16184,
    "page": 237,
    "number": "15.18",
    "anchor": "theorem.15.18"
   },
   "lem:typeA-profile-pressure-dependence-routing": {
-   "line": 16187,
+   "line": 16209,
    "page": 237,
    "number": "15.19",
    "anchor": "theorem.15.19"
   },
   "def:typeA-pressure-absorbers": {
-   "line": 16231,
+   "line": 16253,
    "page": 237,
    "number": "15.20",
    "anchor": "theorem.15.20"
   },
   "lem:typeA-pressure-absorber-no-overcount": {
-   "line": 16266,
+   "line": 16288,
    "page": 238,
    "number": "15.21",
    "anchor": "theorem.15.21"
   },
   "prop:typeA-exit4-closure-from-open-pressure": {
-   "line": 16325,
+   "line": 16347,
    "page": 239,
    "number": "15.22",
    "anchor": "theorem.15.22"
   },
   "def:typeA-open-window-blocker": {
-   "line": 16373,
+   "line": 16395,
    "page": 239,
    "number": "15.23",
    "anchor": "theorem.15.23"
   },
   "lem:typeA-open-window-blocker-count": {
-   "line": 16400,
+   "line": 16422,
    "page": 239,
    "number": "15.24",
    "anchor": "theorem.15.24"
   },
   "fig:exit4-p13-attachment-accounting": {
-   "line": 16511,
+   "line": 16533,
    "page": 240,
    "number": "30",
    "anchor": "figure.caption.83"
   },
   "def:typeA-same-window-overload-triple": {
-   "line": 16515,
+   "line": 16537,
    "page": 240,
    "number": "15.25",
    "anchor": "theorem.15.25"
   },
   "lem:typeA-routed-overload-not-open": {
-   "line": 16565,
+   "line": 16587,
    "page": 241,
    "number": "15.26",
    "anchor": "theorem.15.26"
   },
   "def:typeA-primitive-window-overload-excess": {
-   "line": 16592,
+   "line": 16614,
    "page": 241,
    "number": "15.27",
    "anchor": "theorem.15.27"
   },
   "def:typeA-window-attachment-shadow": {
-   "line": 16608,
+   "line": 16630,
    "page": 241,
    "number": "15.28",
    "anchor": "theorem.15.28"
   },
   "lem:typeA-singleton-shadow-table": {
-   "line": 16630,
+   "line": 16652,
    "page": 242,
    "number": "15.29",
    "anchor": "theorem.15.29"
   },
   "def:typeA-recorded-window-shadow-hit": {
-   "line": 16688,
+   "line": 16710,
    "page": 243,
    "number": "15.30",
    "anchor": "theorem.15.30"
   },
   "lem:typeA-window-shadow-hit-routes": {
-   "line": 16714,
+   "line": 16736,
    "page": 243,
    "number": "15.31",
    "anchor": "theorem.15.31"
   },
   "def:typeA-zero-shadow-primitive-excess": {
-   "line": 16742,
+   "line": 16764,
    "page": 243,
    "number": "15.32",
    "anchor": "theorem.15.32"
   },
   "lem:typeA-primitive-excess-zero-shadow": {
-   "line": 16756,
+   "line": 16778,
    "page": 244,
    "number": "15.33",
    "anchor": "theorem.15.33"
   },
   "lem:typeA-open-pressure-zero-shadow-excess": {
-   "line": 16782,
+   "line": 16804,
    "page": 244,
    "number": "15.34",
    "anchor": "theorem.15.34"
   },
   "lem:typeA-window-blocker-accounting-audit": {
-   "line": 16816,
+   "line": 16838,
    "page": 244,
    "number": "15.35",
    "anchor": "theorem.15.35"
   },
   "lem:typeA-final-open-pressure-exhaustion": {
-   "line": 16855,
+   "line": 16877,
    "page": 245,
    "number": "15.36",
    "anchor": "theorem.15.36"
   },
   "prop:typeA-exit4-closure-from-zero-shadow": {
-   "line": 16931,
+   "line": 16953,
    "page": 246,
    "number": "15.37",
    "anchor": "theorem.15.37"
   },
   "rem:typeA-zero-shadow-numerics": {
-   "line": 16994,
+   "line": 17016,
    "page": 246,
    "number": "15.38",
    "anchor": "theorem.15.38"
   },
   "def:typeA-same-window-open-blocker-cap": {
-   "line": 17027,
+   "line": 17049,
    "page": 247,
    "number": "15.39",
    "anchor": "theorem.15.39"
   },
   "lem:typeA-same-window-cap-overload-excess": {
-   "line": 17046,
+   "line": 17068,
    "page": 247,
    "number": "15.40",
    "anchor": "theorem.15.40"
   },
   "lem:typeA-window-blocker-numerics": {
-   "line": 17080,
+   "line": 17102,
    "page": 247,
    "number": "15.41",
    "anchor": "theorem.15.41"
   },
   "prop:typeA-exit4-closure-from-window-blockers": {
-   "line": 17130,
+   "line": 17152,
    "page": 248,
    "number": "15.42",
    "anchor": "theorem.15.42"
   },
   "fig:exit4-external-pressure-ledger": {
-   "line": 17230,
+   "line": 17252,
    "page": 268,
    "number": "31",
    "anchor": "figure.caption.84"
   },
   "prop:typeA-external-pressure-criterion": {
-   "line": 17234,
+   "line": 17256,
    "page": 248,
    "number": "15.43",
    "anchor": "theorem.15.43"
   },
   "lem:typeA-pressure-is-exit4-peel": {
-   "line": 17291,
+   "line": 17313,
    "page": 249,
    "number": "15.44",
    "anchor": "theorem.15.44"
   },
   "def:typeA-peeling-reduced-ledger": {
-   "line": 17322,
+   "line": 17344,
    "page": 249,
    "number": "15.45",
    "anchor": "theorem.15.45"
   },
   "lem:typeA-peeling-stage-accounting": {
-   "line": 17357,
+   "line": 17379,
    "page": 249,
    "number": "15.46",
    "anchor": "theorem.15.46"
   },
   "lem:typeA-peeling-reduced-reduction": {
-   "line": 17411,
+   "line": 17433,
    "page": 250,
    "number": "15.47",
    "anchor": "theorem.15.47"
   },
   "lem:typeA-exit4-finite-descent": {
-   "line": 17481,
+   "line": 17503,
    "page": 251,
    "number": "15.48",
    "anchor": "theorem.15.48"
   },
   "def:typeA-peeled-demand-residual": {
-   "line": 17525,
+   "line": 17547,
    "page": 251,
    "number": "15.49",
    "anchor": "theorem.15.49"
   },
   "thm:large-budget-route8-only": {
-   "line": 17547,
+   "line": 17569,
    "page": 251,
    "number": "15.50",
    "anchor": "theorem.15.50"
   },
   "thm:typeA-unpaid-exit4-reduction": {
-   "line": 17604,
+   "line": 17626,
    "page": 252,
    "number": "15.51",
    "anchor": "theorem.15.51"
   },
   "lem:typeA-unified-visible-ownership": {
-   "line": 17689,
+   "line": 17711,
    "page": 253,
    "number": "15.52",
    "anchor": "theorem.15.52"
   },
   "lem:typeA-unified-visible-overload": {
-   "line": 17770,
+   "line": 17792,
    "page": 254,
    "number": "15.53",
    "anchor": "theorem.15.53"
   },
   "lem:typeA-unified-joint-balance": {
-   "line": 17844,
+   "line": 17866,
    "page": 255,
    "number": "15.54",
    "anchor": "theorem.15.54"
   },
   "lem:typeA-unified-silent-terminal-exclusion": {
-   "line": 17937,
+   "line": 17959,
    "page": 256,
    "number": "15.55",
    "anchor": "theorem.15.55"
   },
   "cor:typeA-large-budget-closure-open-pressure": {
-   "line": 17965,
+   "line": 17987,
    "page": 257,
    "number": "15.56",
    "anchor": "theorem.15.56"
   },
   "rem:why-unified": {
-   "line": 17991,
+   "line": 18013,
    "page": 257,
    "number": "15.57",
    "anchor": "theorem.15.57"
   },
   "fig:branch-closure-mass-ledger": {
-   "line": 18114,
+   "line": 18136,
    "page": 269,
    "number": "32",
    "anchor": "figure.caption.107"
   },
   "sec:route8-rate-arm": {
-   "line": 18204,
+   "line": 18226,
    "page": 258,
    "number": "15.2",
    "anchor": "subsection.15.2"
   },
   "def:r8-pieces-landings": {
-   "line": 18217,
+   "line": 18239,
    "page": 259,
    "number": "15.58",
    "anchor": "theorem.15.58"
   },
   "lem:r8-packing-exchange": {
-   "line": 18245,
+   "line": 18267,
    "page": 259,
    "number": "15.59",
    "anchor": "theorem.15.59"
   },
   "lem:r8-landing-cap": {
-   "line": 18272,
+   "line": 18294,
    "page": 259,
    "number": "15.60",
    "anchor": "theorem.15.60"
   },
   "lem:r8-hub-piece-mass": {
-   "line": 18291,
+   "line": 18313,
    "page": 260,
    "number": "15.61",
    "anchor": "theorem.15.61"
   },
   "lem:r8-piece-structure": {
-   "line": 18302,
+   "line": 18324,
    "page": 260,
    "number": "15.62",
    "anchor": "theorem.15.62"
   },
   "lem:r8-dominance": {
-   "line": 18324,
+   "line": 18346,
    "page": 260,
    "number": "15.63",
    "anchor": "theorem.15.63"
   },
   "lem:r8-arm-closure-residual": {
-   "line": 18350,
+   "line": 18372,
    "page": 260,
    "number": "15.64",
    "anchor": "theorem.15.64"
   },
   "cor:r8-reduction-to-pi": {
-   "line": 18382,
+   "line": 18404,
    "page": 261,
    "number": "15.65",
    "anchor": "theorem.15.65"
   },
   "lem:r8-hub-free-suffices": {
-   "line": 18399,
+   "line": 18421,
    "page": 261,
    "number": "15.66",
    "anchor": "theorem.15.66"
   },
   "rem:r8-catalogue": {
-   "line": 18438,
+   "line": 18460,
    "page": 261,
    "number": "15.67",
    "anchor": "theorem.15.67"
   },
   "rem:r8-density-conjecture": {
-   "line": 18481,
+   "line": 18503,
    "page": 262,
    "number": "15.68",
    "anchor": "theorem.15.68"
   },
   "cor:r8-conditional": {
-   "line": 18490,
+   "line": 18512,
    "page": 262,
    "number": "15.69",
    "anchor": "theorem.15.69"
   },
   "rem:r8-remaining": {
-   "line": 18501,
+   "line": 18523,
    "page": 262,
    "number": "15.70",
    "anchor": "theorem.15.70"
   },
   "app:curv-code": {
-   "line": 18524,
+   "line": 18546,
    "page": 263,
    "number": "A",
    "anchor": "appendix.A"
   },
   "rem:fan-packing-reproducibility": {
-   "line": 18764,
+   "line": 18786,
    "page": 267,
    "number": "A.1",
    "anchor": "theorem.A.1"
   },
   "app:resilience": {
-   "line": 18831,
+   "line": 18853,
    "page": 270,
    "number": "B",
    "anchor": "appendix.B"
   },
   "rem:route8-carrier-margin": {
-   "line": 18992,
+   "line": 19014,
    "page": 278,
    "number": "B.1",
    "anchor": "theorem.B.1"
   },
   "lem:app-dense-window-closure": {
-   "line": 19018,
+   "line": 19040,
    "page": 279,
    "number": "B.2",
    "anchor": "theorem.B.2"
   },
   "lem:app-global-smearing-closure": {
-   "line": 19049,
+   "line": 19071,
    "page": 279,
    "number": "B.3",
    "anchor": "theorem.B.3"
   },
   "lem:app-typeA-quiet-bound": {
-   "line": 19066,
+   "line": 19088,
    "page": 280,
    "number": "B.4",
    "anchor": "theorem.B.4"
   },
   "rem:app-typeB-finite-only": {
-   "line": 19105,
+   "line": 19127,
    "page": 280,
    "number": "B.5",
    "anchor": "theorem.B.5"
