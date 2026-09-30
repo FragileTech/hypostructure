@@ -15,7 +15,7 @@ first failure of every selected half-edge is (F5) or (F4)
 first-failure prefix is subcubic is charged in full as an (F5) candidate.
 
 The (F4) registry `ColdDeclaredHandoffSupport` is G's heavy handoff centres
-(user-approved repair, `lean-vs-paper-discrepancies.md`, "(F4) registry: the
+(user-approved, `lean-vs-paper-discrepancies.md`, "(F4) registry: the
 heavy handoff centres"; tex 7326-7329, 7926-7930).  An (F4) first failure then
 precedes the germ segment, whose head lies in the germ support, which the trace
 prefix covers; so the trace prefix contains the heavy centre and is not
@@ -142,8 +142,8 @@ prefix, no earlier index), and no such core exists there: the entry-side
 corridor segment at the foot is `[ε's window endpoint]`, which lies in
 `X_cold ⊆ ⋃P₀` and so meets no subset of `R(P₀)`.  Such `ε` fall on node
 `[177]`'s no arm and are charged by the exact (F4) count
-(`AbsorbedF4ChargeStatement`; `lean-vs-paper-discrepancies.md`, "User-approved
-repairs"). -/
+(`AbsorbedF4ChargeStatement`; `lean-vs-paper-discrepancies.md`, "(F4) registry: the
+heavy handoff centres"). -/
 theorem coldAbsorbedRemainderCore_heavyEntryFoot (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (routing : ColdFailureRoutingStatement data object)

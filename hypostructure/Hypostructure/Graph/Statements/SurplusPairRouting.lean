@@ -53,9 +53,8 @@ of their supports: the readings lie in different boundary-degree fibres, or
 they agree in G's own surroundings `G − Z` (target-complete, stated about G:
 the only context of G at `∂Z` is `G − Z`).  The paper claims both cases are
 sparse exits (tex 5589, 5594); neither is established, and the pair is carried
-by the open leaf `[144a]`.  (G-only restatement: the former second disjunct was
-context equivalence against every `∂Z`-boundaried context, which is not part of
-G; at a target-avoiding G the G-form holds for every pair.) -/
+by the open leaf `[144a]`.  (The second disjunct is stated about G; at a
+target-avoiding G it holds for every pair.) -/
 noncomputable abbrev SameTokenPatternPairUnresolvedStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :

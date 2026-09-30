@@ -62,10 +62,10 @@ theorem skeletonBudget_pos (object : Graph.FiniteObject.{v}) :
   Nat.choose_pos (object.edgeCount_le_choose_two)
 
 /-- The near-cubic skeleton budget never exceeds the count of *all* labelled
-graphs on the same vertex set, which is the capacity the adapter used to
-register.  Fixing the edge count is therefore a strict sharpening of the
-ambient class, and every cap the density comparison now survives is at least
-as strong as the one it survived before. -/
+graphs on the same vertex set.  Fixing the edge count is therefore a strict
+sharpening of the ambient class of all labelled graphs, and every cap the
+density comparison survives at the skeleton budget is at least as strong as
+the corresponding cap at `2^(n choose 2)`. -/
 theorem skeletonBudget_le_two_pow (object : Graph.FiniteObject.{v}) :
     skeletonBudget object ≤ 2 ^ (object.vertexCount.choose 2) :=
   Nat.choose_le_two_pow _ _

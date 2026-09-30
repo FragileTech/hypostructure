@@ -19,7 +19,7 @@ variable {data : Data.{u}}
 
 /-! ## Node `[178]`: normalize the first failed pair extension
 
-The two count-failure routes retain different pair sets, but both now carry
+The two count-failure routes retain different pair sets, but both carry
 the same mathematical datum: an actually realized baseline code and the least
 pair extension at which the mixed count fails.  These rows read that witness
 from the route's exact key and attach the failed pair's canonical connected

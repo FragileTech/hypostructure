@@ -11,7 +11,7 @@ import Hypostructure.Graph.ColdGermOverlap
 Proof-agnostic contract lemmas for `lem:cold-corridor-first-failure` (the
 retained corridor state: presentations, readings, first repeat, table record,
 and terminal/repeated exchange germ) and `lem:cold-germ-extraction` (the
-repaired (F5) candidate family with its loss accounting).  Each lemma is stated
+(F5) candidate family with its loss accounting).  Each lemma is stated
 over a `Graph.FiniteObject` with the registered `Parameters` as a parameter and
 every paper hypothesis explicit; its conclusion is exactly the statement of the
 fact it proves.  This module imports no strategy, row, or vocabulary module.
@@ -371,7 +371,7 @@ theorem coldCorridorState_of_corridors (data : Parameters)
 
 set_option maxHeartbeats 4000000 in
 /-- **Node `[153]`, `lem:cold-germ-extraction`: the (F5) candidate family.**
-The candidates are exactly the complete repaired occurrence family: the
+The candidates are exactly the complete occurrence family: the
 outside-corridor F5 prefixes and the immediate two-vertex terminal germs of the
 selected cross-window incidences.  A noncandidate occurrence is charged at its
 first high-to-subcubic edge, so the corridor loss is bounded by

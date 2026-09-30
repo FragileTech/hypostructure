@@ -68,7 +68,7 @@ routing and the exact swaps of its two readings. -/
           (inputs.get (K .cubicBaseline)).down.2.1.2.1⟩
       .nil)
 
-/-- Node `[144a]` (G repair R5): the transplants of G's pattern supports into
+/-- Node `[144a]` (Lean improvement): the transplants of G's pattern supports into
 `Z`, with the size equality, and their exact failure. -/
 @[reducible] noncomputable def sameTokenTransplantRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=

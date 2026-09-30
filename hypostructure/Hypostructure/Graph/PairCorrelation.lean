@@ -244,8 +244,7 @@ theorem signatureCount_le_succ (k : Nat) :
     _ ≤ _ := Set.ncard_image_le (Set.toFinite _)
 
 /-- Two exposure orders (of possibly different families) that agree on their
-first `k` coordinates have the same number of realized signatures at depth `k`.
-(Re-homed from g-audit-pairTypeB's `SparseEntropySandwich.signatureCount_congr`.) -/
+first `k` coordinates have the same number of realized signatures at depth `k`. -/
 theorem signatureCount_congr
     (family' : Finset {pair // pair ∈ model.pairSet})
     (order' : Fin family'.card ≃ {pair // pair ∈ family'})

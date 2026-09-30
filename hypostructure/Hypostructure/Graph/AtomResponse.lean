@@ -63,7 +63,7 @@ def ContextEquivalent (system : CoordinateSystem.{u, v} certificate Target)
 fixed atom piece to a context. Without an additional coordinate-specific
 realization relation, that target response cannot distinguish coordinate
 labels. The definitions below state that literal reading directly rather than
-passing through the legacy total `CoordinateSystem.realize` field. -/
+passing through the total `CoordinateSystem.realize` field. -/
 
 /-- Target response obtained by gluing one fixed atom piece to an outside
 context. The coordinate is only an index and does not alter the gluing. -/

@@ -183,8 +183,8 @@ noncomputable def AbsorbedHandoffCoreStatement (data : Parameters)
 
 /-- Node `[177]`, no: at G's canonical absorbed half-edge `ε` there is no
 counted remainder core at its heavy centre (the canonical absorbed handoff is
-undefined).  User-approved extension of the cold (F4) exact-count repair
-(`lean-vs-paper-discrepancies.md`, "User-approved repairs"): `ε` is charged by
+undefined).  Extension of the cold (F4) exact count
+(`lean-vs-paper-discrepancies.md`, "(F4) registry: the heavy handoff centres"): `ε` is charged by
 the exact (F4) count to node `[219]`'s corridor loss
 (`AbsorbedF4ChargeStatement`), not through the Type B handoff. -/
 noncomputable def AbsorbedHandoffCoreAbsentStatement (data : Parameters)

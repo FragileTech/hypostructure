@@ -21,7 +21,7 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
--- The port-joint entry facts lengthen this ledger; `FactKeys.Available` then
+-- The entry-prefix facts lengthen this ledger; `FactKeys.Available` then
 -- needs more than the default instance budget.
 set_option maxHeartbeats 1000000 in
 set_option synthInstance.maxHeartbeats 400000 in
@@ -69,13 +69,13 @@ rate failure subtypes, and the local cold-terminal exclusion as its one
 reachable linear-arm singleton `linearRealizedSilent` and the two subtypes
 reached through `[153]`'s repeat on the dense arms (its absorbed-germ product
 is not entered: `[173]`'s no-arm is closed against `K .route8Rate`).
-The pair-system entry retains its own source key and is not `[144a]`.  (G-only
-restatement: the near-cubic target defect of `[187]` is closed at G -- exit
-(b), stated about G, is empty; lem:sparse-exit-b-empty.)  g-pieces-constructed: `[154]`'s G2 yes-arm is
-live again (the second representative `E` is a piece constructed from G, not a
-reading carrying G's response), so the cold-terminal subtypes
+The pair-system entry retains its own source key and is not `[144a]`.  The
+near-cubic target defect of `[187]` is closed at G: exit (b), stated about G,
+is empty (lem:sparse-exit-b-empty).  `[154]`'s G2 yes-arm is a live test (the
+second representative `E` is a piece constructed from G, not a reading carrying
+G's response), and it returns the cold-terminal subtypes
 `linearDenseAtOrAbove`, `linearDenseRateFailed` and
-`linearRealizedDistinguished` are restored, with the two repeat-arm subtypes
+`linearRealizedDistinguished`, with the two repeat-arm subtypes
 `linearDenseAtOrAbove_repeatedDistinguished` and
 `linearDenseRateFailed_repeatedDistinguished`. -/
 abbrev OtherReturnedOutcome (selected : EGInput.{u}) :=
@@ -109,19 +109,18 @@ fact sets are different residuals, stated as subtypes of the generic residual
 or, where the paths form a full product, as the product of their arm blocks:
 the six `[144a]` subtypes; the two `[172a]` subtypes; the six `[182]`
 subtypes; the `[186]` joint balance product; the remaining `[187]` outcomes;
-and the structural exhaustion residual `[54]` (5 subtypes).  `[153]`'s equal-state pair is no longer a
-residual: it is the repeat subcase of (F5) and continues into the germ routing
-(`[187]`).  (`[162]` is no longer returned: the dense pass needs no terminality
-of a heavy-entry corridor.)
-(G-only restatement: `[20a]` and the near-cubic target defect of `[187]` are
-closed at G -- exit (b) of `[125]`, stated about G, is empty
-(lem:sparse-exit-b-empty) -- and return no residual.  The cold-terminal subtypes on `[154]`'s G2 yes-arm are restored:
-with the second representative `E` a piece constructed from G, G2 is a live
-test (five subtypes, one per root path).  The
-`[186]` joint balance product is restored: with the realizations of a trace
-basin read on the pieces constructed from G, the essential carrier cores are no
-longer empty, node `[123]`'s failed-rate arm is reached, and `[181]`,
-`[183]`--`[186]` run as in the manuscript.)
+and the structural exhaustion residual `[54]` (5 subtypes).  `[153]`'s
+equal-state pair is the repeat subcase of (F5) and continues into the germ
+routing (`[187]`).  The dense pass needs no terminality of a heavy-entry
+corridor.  `[20a]` and the near-cubic target defect of `[187]` close at G --
+exit (b) of `[125]`, stated about G, is empty (lem:sparse-exit-b-empty) -- and
+return no residual.  On `[154]`'s G2 yes-arm the second representative `E` is a
+piece constructed from G, so G2 is a live test and returns the cold-terminal
+subtypes (five subtypes, one per root path).  The realizations of a trace basin
+are read on the pieces constructed from G, so the essential carrier cores are
+nonempty, node `[123]`'s failed-rate arm is reached, and `[181]`,
+`[183]`--`[186]` run as in the manuscript, returning the `[186]` joint balance
+product.
 
 Bounded-size residuals: on `[146]` no, the density order (`[158]`'s realized
 package, or `[24]` on the bounded arm of `[153]`, against `θ ≥ 1/78`) is

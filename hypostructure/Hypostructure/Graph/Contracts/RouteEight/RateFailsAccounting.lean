@@ -22,8 +22,8 @@ theorem boundaryIncidence_add_excess (object : FiniteObject.{u})
         remainderInternalExcess object support threshold =
       object.positiveDeficiency support threshold +
         object.ambientSurplus support threshold := by
-  -- The generic identity is `Graph/StubDeficit.lean`'s (single proof; dedup
-  -- g-audit-int with g-audit-54's `K .stubDeficitIdentity`).
+  -- The generic identity is `Graph/StubDeficit.lean`'s (single proof, shared
+  -- with `K .stubDeficitIdentity`).
   unfold remainderInternalExcess
   rw [object.boundaryIncidence_add_internalExcess support threshold baseline, Nat.add_comm]
 

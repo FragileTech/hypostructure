@@ -173,8 +173,8 @@ The package of one attachment coordinate per packed window realizes
 inside the ambient labelled class.  `p` is the packing's own length, read by
 `card_packedWindow`; no rate constant and no numeral is named.
 
-This is the first consumed realization in the tree: it discharges the antecedent
-of `demand_le_card_labelled_of_injective`, which until now nothing supplied. -/
+This realization discharges the antecedent of
+`demand_le_card_labelled_of_injective`. -/
 theorem two_pow_order_mul_packing_le_card_labelled
     (profile : InducedPathMaximalPacking.Profile object order)
     (designated : object.Vertex)

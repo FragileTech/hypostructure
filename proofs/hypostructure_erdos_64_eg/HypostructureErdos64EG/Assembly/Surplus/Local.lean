@@ -985,7 +985,7 @@ noncomputable def selectedBottleneckDischarge
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run partitioned (by key_fresh)
-          -- `[144a]` (G repair R5, Lean improvement): the transplants of the
+          -- `[144a]` (Lean improvement): the transplants of the
           -- two pattern supports into `Z`, their conditions (i)--(iv), the size
           -- equality minimality gives, and their exact failure.  No decision:
           -- the arm "both transplants valid" does not close at G.

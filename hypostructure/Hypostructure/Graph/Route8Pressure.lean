@@ -256,7 +256,7 @@ inductive PeelChain (packing : Finset (Finset object.Vertex))
       PeelChain packing entries threshold discharge slack LengthOK (index :: chain)
 
 /-- **Exact accounting at one peeling stage.**  This is the denominator-cleared
-form of the repaired `def:typeA-peeling-reduced-ledger`.  The full entry ledger
+form of `def:typeA-peeling-reduced-ledger`.  The full entry ledger
 is the disjoint union of the reduced ledger and the recorded peels; the latter
 remain charged in the original deficit.  Consequently the reduced deficit
 `s*D - |P₄|` is bounded by the reduced census, while the full large-budget

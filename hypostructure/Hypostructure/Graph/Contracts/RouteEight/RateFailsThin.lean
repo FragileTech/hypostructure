@@ -4,9 +4,9 @@ import Hypostructure.Graph.Statements.Route8RateFailsJoin
 /-!
 # Contracts: the failed private-carrier rate, read on the boundary incidence
 
-(g-pieces-constructed: `K .route8Rate` is the manuscript rate again, so the failed rate
-is `δ|R| ≤ (δs+1)|∂R| + δ·F·s·T(n)`; the thin remainder `|R| ≤ s|∂R| + F·s·T(n)` is a
-sub-case of it, not its reading.)
+`K .route8Rate` is the manuscript rate, so the failed rate is
+`δ|R| ≤ (δs+1)|∂R| + δ·F·s·T(n)`; the thin remainder `|R| ≤ s|∂R| + F·s·T(n)` is a
+sub-case of it, not its reading.
 -/
 
 namespace Hypostructure.Graph.Contracts.RouteEight

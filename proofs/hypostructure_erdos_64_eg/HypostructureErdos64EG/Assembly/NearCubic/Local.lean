@@ -30,7 +30,7 @@ universe u w
 is the strict-surplus sibling; only the at-or-below sibling reaches node `[21]`.
 Neither branch reads or publishes a fact owned by the other. -/
 
--- The port-joint entry facts lengthen this ledger; `FactKeys.Available` needs more than the
+-- The entry-prefix facts lengthen this ledger; `FactKeys.Available` needs more than the
 -- default instance budget.
 set_option synthInstance.maxHeartbeats 400000 in
 set_option synthInstance.maxSize 2048 in

@@ -4,7 +4,7 @@ import Hypostructure.Graph.Contracts.TypeA.Exits
 /-!
 # The switch at the separator, stated about G (nodes `[102]` and `[108]`)
 
-G repair (R3b).  The identification of two separated response coordinates is
+The identification of two separated response coordinates is
 the switch at their separator `z`, constructed from G: the two configurations
 exchange their continuations after `z`'s next incidences
 (`DecoratedHandoff.Separation.switched`).  On the exit-(4) arm the canonical

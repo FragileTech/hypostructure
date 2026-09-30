@@ -804,7 +804,7 @@ noncomputable def blockerMultiplicity
   exact ((activation.blockedPairs threshold).filter fun pair =>
     canonicalBlocker activation pair = some blocker).card
 
-/-- **The split is exhaustive**: `|Π_blk| + |Π_free| = |Π(𝒜₀)|`, now at
+/-- **The split is exhaustive**: `|Π_blk| + |Π_free| = |Π(𝒜₀)|`, at
 `def:surplus-blockers`' own relation. -/
 theorem card_chargedPairs_add_card_freePairs
     (activation : DemandActivation object Coordinate Chord) (threshold : Nat) :

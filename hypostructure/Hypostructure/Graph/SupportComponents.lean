@@ -9,7 +9,7 @@ namespace Hypostructure.Graph.SupportComponents
 
 Core owns the ordered label partition machinery; Graph specializes it for
 connected components of an induced support and proves the ambient connectivity
-and disjoint coverage laws needed by the legacy support-localization nodes. -/
+and disjoint coverage laws needed by the support-localization nodes. -/
 
 namespace Connected
 

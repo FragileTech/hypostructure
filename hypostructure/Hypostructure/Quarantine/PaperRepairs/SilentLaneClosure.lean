@@ -6,17 +6,17 @@ import Hypostructure.Graph.Statements.RouteEight
 
 Reference only; no live module imports this file (`quarantine.txt`).
 
-Before the final fix pass the Lean split node `[109]` by the node-`[94]`
+This file splits node `[109]` by the node-`[94]`
 silent-excess provenance of the route-`8` residual state (keys
 `typeASilentExitSevenFree` / `typeAExitEightNotSilent`, a diamond the paper does
-not have) and closed the silent lane at node `[184]` with the argument below:
+not have) and closes the silent lane at node `[184]` with the argument below:
 the lane's selected excess load is a unified entry, and
 `lem:typeA-unified-visible-ownership` makes every unified entry visible.  The
 paper sends node `[109]` to node `[110]` on every lane and reaches the open leaf
-`[186]`; the extra split and closure were removed.  The lemma is kept verbatim
-(it no longer elaborates: its input statement `SelectedSilentExitSevenFree`
-was deleted with the split, and node `[107]`'s exit `(7)` is now asked at the
-terminal state rather than of the whole piece).
+`[186]`, and so does the live proof.  The file does not elaborate against the
+live tree: its input statement `SelectedSilentExitSevenFree` is not in it, and
+node `[107]`'s exit `(7)` is asked at the terminal state rather than of the
+whole piece.
 -/
 
 namespace Hypostructure.Graph.Contracts.TypeA

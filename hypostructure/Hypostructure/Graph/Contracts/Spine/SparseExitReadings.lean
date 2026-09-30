@@ -13,9 +13,8 @@ ledger facts: the selection (target avoidance), the presentation laws
 `surplusAbove` and `C + 1 ≤ ⌈√n⌉`.  The mathematics is in the vocabulary-free
 modules `Graph/EdgeSwitchPaths` and `Graph/ActualContext`.
 
-G-only restatement (`g-repair`): the reading contracts at `[125]`'s pinned
-witness (at its separating context `O`, not part of G) belonged to the `[20a]`
-exit, which is empty at G, and are removed with it.
+The `[20a]` exit is empty at G (lem:sparse-exit-b-empty), so no reading
+contract is stated at `[125]`'s pinned witness.
 
 This module imports no strategy, row, or vocabulary module.
 -/

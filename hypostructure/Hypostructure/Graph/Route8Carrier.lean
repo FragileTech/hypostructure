@@ -148,7 +148,7 @@ theorem retained_carriers :
 restricted reading `ρ|_D` has, in the entry's actual surroundings (G − B_u for a
 graph-owned entry), the target truth of the full reading.
 
-G-only restatement: the paper's "for every outside context compatible with the
+Stated about G, the paper's "for every outside context compatible with the
 boundary profile, all realizations of the quotient" reads the one context of G
 and the realizations built from G. -/
 def Complete (D : Finset Carrier) : Prop :=

@@ -14,12 +14,10 @@ Facts about G and its fixed objects, each stated over the registered
   in G minus two edges whose length plus one is accepted; where the surplus of G
   sits; the switch at every high/baseline edge.
 * **The readings of every clause-(b) witness triple in `G − Z`**: both are
-  target-free (G-only restatement of the former path-spectrum split, which read
-  a positive reading at a separating context `O` that is not part of G).
+  target-free (the path-spectrum split stated about G, in G's own surroundings).
 
-G-only restatement (`g-repair`): the readings of `[125]`'s pinned witness and
-their consequences were facts of the `[20a]` exit, which is empty at G; they are
-removed together with it.
+The `[20a]` exit is empty at G (lem:sparse-exit-b-empty), so no reading of
+`[125]`'s pinned witness is stated here.
 
 Every registered constant is an explicit `Parameters` argument; this module
 imports no strategy, row, or vocabulary module.
@@ -63,11 +61,11 @@ def HighEndpointSwitchStatement (data : Parameters) (object : Graph.FiniteObject
 /-! ## The readings of every clause-(b) witness triple in G − Z -/
 
 /-- **The readings of every clause-(b) witness triple of G are negative in G's own
-surroundings** (G-only restatement of the path-spectrum split at every
-clause-(b) witness; key name kept for ledger stability): for every witness
+surroundings** (the path-spectrum split at every clause-(b) witness, stated
+about G): for every witness
 triple `w = (A, B, Z)` of G and each `X ∈ {A, B}`, the reading `ret_X` glued into
 `G − Z` has no accepted cycle.  So the split's positive reading never exists in
-G; the former arms read it at a separating context `O`, which is not part of G. -/
+G. -/
 noncomputable def EveryWitnessSpectrumSplitStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ w : SparseTargetDefectWitness data object, ∀ X ∈ w.pairSupports,

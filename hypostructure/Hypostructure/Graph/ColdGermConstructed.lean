@@ -7,9 +7,8 @@ import Hypostructure.Graph.GConstructedPiece
 `lem:cold-bounded-germ-trichotomy` (G2, *hit-distinguished*): "some compatible outside
 context distinguishes the two representatives by target truth value".  The context
 stays G's own surroundings `G − Z`, and the second representative `E = germ.canonical`
-is a piece constructed from G at the germ's support (`GConstructedPiece`; the G repair's
-cut-state reading, which carried G's response by construction and made G2 empty, is
-withdrawn).  `DistinguishingAt germ P` is the test at any constructed piece `P`;
+is a piece constructed from G at the germ's support (`GConstructedPiece`).
+`DistinguishingAt germ P` is the test at any constructed piece `P`;
 `germ.Distinguishing` is the test at `E` (`distinguishing_iff_at`).
 
 * it is exactly the target response of the constructed piece in `G − Z`

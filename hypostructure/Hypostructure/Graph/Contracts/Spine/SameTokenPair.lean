@@ -12,10 +12,8 @@ and the survivor (`K .sparseSurplusSurvivor`), which pin G's canonical routing;
 `K .noProperBaseline` (G connected); `K .tightEndpoint`; the unresolved pair
 (`K .sameTokenPatternUnresolved`); the selection and the presentation laws.
 The mathematics is the vocabulary-free library (`Graph/ReadingProfiles.lean`,
-`Graph/ActualContext.lean`).  (G-only restatement: the equal-count readings
-agree in G's own surroundings `G − Z`; the former path-length equality through
-single-edge contexts is removed with those contexts.)  The transplant facts
-(G repair R5) read the partition, `K .noProperBaseline`, the selection (G avoids
+`Graph/ActualContext.lean`).  The equal-count readings agree in G's own
+surroundings `G − Z`.  The transplant facts (Lean improvement) read the partition, `K .noProperBaseline`, the selection (G avoids
 the target and is minimal) and `K .minDegreeBaseline`; their mathematics is
 `Graph/Transplant.lean`.
 
@@ -242,7 +240,7 @@ theorem sameTokenPairPartition_holds
     · obtain ⟨bR, w, wR, adj⟩ := readingCount_pos pos
       exact Or.inr ⟨pos, bR, ⟨w, wR, adj⟩, alt⟩
 
-/-! ## G repair R5: the transplants of the pattern supports into `Z` -/
+/-! ## The transplants of the pattern supports into `Z` -/
 
 /-- **The transplant conditions (i)--(iv) and the size equality at G**, for a
 `Y` with a vertex: G avoids the target and every strictly smaller baseline

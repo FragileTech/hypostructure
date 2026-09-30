@@ -23,10 +23,9 @@ strict arm of `[19]` carries (selection, the presentation laws, the baseline,
 noProperBaseline, tightEndpoint, the replacement exclusion, the maximal
 packing, surplusAbove).  One contract per statement: `<statement>_holds`.
 
-G-only restatement (`g-repair`): exit (b) of `[125]`, stated about G, is empty
-at G, so the `[20a]` exit and its witness-level facts (the former
-`<key>_of_spec` contracts at `[125]`'s pinned witness and its separating
-context `O`) are removed together with the `[20a]` residual.
+Exit (b) of `[125]`, stated about G, is empty at G (lem:sparse-exit-b-empty),
+so the `[20a]` exit is closed and no contract is stated at `[125]`'s pinned
+witness.
 
 This module imports no strategy, row, or vocabulary module.
 -/
@@ -1190,8 +1189,8 @@ theorem pairCodeConfiguration_holds (three : data.threshold = 3)
   · exact Or.inl other
 
 open Classical in
-/-- **The entry-prefix witness fact, stated about G** (G-only restatement of the
-former `[20a]` structure at every clause-(b) witness): at every witness triple
+/-- **The entry-prefix witness fact, stated about G** (the `[20a]` structure at
+every clause-(b) witness): at every witness triple
 `w = (A, B, Z)` of G whose `Z` is the canonical support of `A ∪ B`, `Z` is
 connected, contains `A` and `B`, and is a minimum connected set containing
 `A ∪ B`; and no witness of G satisfies clause (b) (`G − Z` never separates two

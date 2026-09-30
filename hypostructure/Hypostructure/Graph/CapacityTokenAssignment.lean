@@ -593,9 +593,8 @@ theorem chargedPairs_eq_filter :
   refine Finset.ext fun pair => ?_
   simp only [Finset.mem_filter, canonicalLabel_eq_capacityCharge]
 
-/-- **`lem:token-ledger-no-overcount` at `Θ_cap`**: `|Π_blk| = Σ_t ℓ_cap(t)`, now
-at the manuscript's own token universe and its own four-case assignment rather
-than at a quantified alphabet.  The identity is
+/-- **`lem:token-ledger-no-overcount` at `Θ_cap`**: `|Π_blk| = Σ_t ℓ_cap(t)`,
+at the manuscript's own token universe and its own four-case assignment.  The identity is
 `Graph/CanonicalFibreLedger`'s, read here; nothing is proved twice. -/
 theorem card_chargedPairs_eq_sum_load :
     (object.chargedPairs threshold (capacityTokenOrder object threshold packing)

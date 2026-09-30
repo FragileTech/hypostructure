@@ -8,7 +8,7 @@ import Hypostructure.Graph.ReceiverRouting
 
 This is the generic mathematical content of
 `lem:typeB-postledger-core-hygiene`.  It decomposes the literal remaining core
-of the canonical `TypeBRefinedSupport.DisjointLedger`; no legacy residual, receiver
+of the canonical `TypeBRefinedSupport.DisjointLedger`; no residual, receiver
 classification, Type A outcome, or routing payload is introduced here.
 -/
 
@@ -150,8 +150,7 @@ theorem refinedComponent_has_no_highCentre
     member).1
 
 /-- The exact unconsumed ordinary-reserve units whose remainder-side anchor
-lies in one canonical post-ledger component.  This replaces the former raw
-count of deleted neighbouring vertices. -/
+lies in one canonical post-ledger component. -/
 noncomputable def refinedComponentReserveUnits
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
       packing core demands)

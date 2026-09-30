@@ -11,16 +11,15 @@ import Hypostructure.Graph.ObjectCapacityLedger
 # Statements: the strict-surplus facts of `[20]`, made explicit
 
 The bounds, ratios, identities and obstructions that the strict arm of `[19]`
-forces at G (hoisted from the former `[20a]` exit to the top of the strict arm),
+forces at G (stated at the top of the strict arm),
 the pair-code chain, and the entry-prefix fact about the witness triples of
 clause (b).  Each is a fact about G and its fixed objects (the canonical window
 packing `P₀`, every certified capacity presentation of G), so it can be carried
 on the one ledger and used later as a budget term or a structural constraint.
 
-G-only restatement (`g-repair`): exit (b) of `[125]`, stated about G, is empty
-at G (two readings of G always agree in G's own surroundings `G − Z`), so the
-`[20a]` exit is closed and its witness-level statements (at `[125]`'s pinned
-witness `(first, second, Z, O)` and its separating context `O`) are removed.
+Exit (b) of `[125]`, stated about G, is empty at G (two readings of G always
+agree in G's own surroundings `G − Z`; lem:sparse-exit-b-empty), so the `[20a]`
+exit is closed.
 
 Every registered constant is an explicit `Parameters` argument; this module
 imports no strategy, row, or vocabulary module.
@@ -321,9 +320,9 @@ noncomputable def CanonicalFreeExcessOfCappedStatement (data : Parameters)
 configuration holds at the canonical objects (blocked pair, `[137]` count,
 canonical pattern, overload, caps fail), or G's canonical first failure exists
 and yields the `[182]` residual, or the canonical return system's obstruction
-handoff together with the Type B fan entry `[65]`.  (G-only restatement: the
-target defect of the obstruction coordinates, exit (b) stated about G, is empty
-at G -- two readings of G agree in `G − Z` -- and is not an outcome.) -/
+handoff together with the Type B fan entry `[65]`.  (The target defect of the
+obstruction coordinates, exit (b) stated about G, is empty at G -- two readings
+of G agree in `G − Z` -- and is not an outcome.) -/
 noncomputable def PairCodeConfigurationStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   (DependentPairFamilyStatement data object ∧
@@ -340,14 +339,12 @@ noncomputable def PairCodeConfigurationStatement (data : Parameters)
 end CanonicalCapacity
 
 open Classical in
-/-- **The witness triples of clause (b) at G, stated about G** (G-only
-restatement of the former `[20a]` structure at every clause-(b) witness; key
-name kept for ledger stability): at every witness triple `w = (A, B, Z)` of G
+/-- **The witness triples of clause (b) at G, stated about G** (the `[20a]`
+structure at every clause-(b) witness): at every witness triple `w = (A, B, Z)` of G
 whose `Z` is the canonical support of `A ∪ B`, `Z` is connected, contains `A`
 and `B`, and is a minimum connected set containing `A ∪ B`; and no witness of G
 satisfies clause (b): G's own surroundings `G − Z` never separate two readings
-of G.  (The former clauses read the separating context `O`, which is not part of
-G, and are removed.) -/
+of G.  No clause reads a separating context other than G's own `G − Z`. -/
 noncomputable def SpecWitnessStructureStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ w : SparseTargetDefectWitness data object,

@@ -21,15 +21,13 @@ about G at those canonical objects:
   support `Z = select?(X_p ∪ X_q)` into three regions with their constraints
   (`SameTokenPairPartitionStatement`): (U1) a separating boundary count;
   (U2-free) equal counts and neither support on `∂Z`; (U2-shared) equal counts
-  and a boundary vertex in both supports (G-only restatement: the equal-count
-  readings agree in G's own surroundings `G − Z`; the former context
-  equivalence and the path-length equality it gave through single-edge
-  contexts read contexts that are not part of G and are removed).  The fourth region (U2-onesided:
+  and a boundary vertex in both supports (the equal-count readings agree in
+  G's own surroundings `G − Z`).  The fourth region (U2-onesided:
   equal counts, one support on `∂Z` and no shared boundary vertex) is empty
   at G.
 
 On `[144a]`, at the same canonical objects, the transplants of `X_q` and of
-`X_p` into `Z` (`Graph.Transplant.transplant`, G repair R5, Lean improvement):
+`X_p` into `Z` (`Graph.Transplant.transplant`, Lean improvement):
 their replacement conditions (i)--(iv) and the size equality that minimality
 gives (`SameTokenTransplantSizeStatement`), and their exact failure at G's
 canonical exceptional vertex (`SameTokenTransplantDeficitStatement`).
@@ -202,7 +200,7 @@ def SameTokenTransplantAt (data : Parameters) (object : Graph.FiniteObject.{u})
         ∀ v ∈ Z, v ∉ Strategy.InterfaceReplacement.SupportAtom.cutBoundary object Z → v ∈ Y)
 
 /-- **Node `[144a]`: the transplants of G's pattern supports into `Z`, with the
-size equality minimality gives** (G repair R5, Lean improvement).  At G's
+size equality minimality gives** (Lean improvement).  At G's
 canonical routing, with `X_p`, `X_q` its pattern supports and
 `Z = select?(X_p ∪ X_q)`, the transplant of `X_q` into `Z` and the transplant
 of `X_p` into `Z` each satisfy `SameTokenTransplantAt`. -/
@@ -233,7 +231,7 @@ def SameTokenTransplantExactAt (data : Parameters) (object : Graph.FiniteObject.
       Graph.Transplant.keptDegree object Z Y v < data.threshold
 
 /-- **Node `[144a]`: the exact failure of the transplants of G's pattern
-supports** (G repair R5, Lean improvement).  At G's canonical routing, with
+supports** (Lean improvement).  At G's canonical routing, with
 `X_p`, `X_q` its pattern supports and `Z = select?(X_p ∪ X_q)`, the transplant
 of `X_q` into `Z` and the transplant of `X_p` into `Z` are each exact in the
 sense of `SameTokenTransplantExactAt`.  The linkage condition never fails:

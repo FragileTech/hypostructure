@@ -78,4 +78,4 @@ lake env lean -Dprofiler=true HypostructureErdos64EG/Assembly/TypeA/ExitFourChai
 
 A change to a common framework module can still invalidate many proofs.
 Splitting modules reduces the work for local edits; it does not remove genuine
-import dependencies. See `BUILD_MEASUREMENTS.md` for this refactor's results.
+import dependencies.

@@ -6,8 +6,7 @@ import Hypostructure.Graph.GluedReadingMaps
 A vertex of degree exactly the baseline in a support `Z` of G with an outside
 neighbour has an outside return to another vertex of `Z` (on a connected
 bridgeless G with no proper baseline subgraph).  Statements about G's own
-walks; the former arm-(i) refinement of the path-spectrum split, which read a
-boundaried context other than `G − Z`, is removed (G-only restatement).
+walks; no boundaried context other than `G − Z` is read.
 -/
 
 namespace Hypostructure.Graph.ReadingSpectrumArms

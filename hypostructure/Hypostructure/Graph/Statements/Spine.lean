@@ -91,7 +91,7 @@ theorem refinedProgress_smaller_of_size_smaller
   Prod.Lex.left _ _ sizeSmaller
 
 /-- The two minimality interfaces published by node `[4]`.  `sizeMinimal` is
-the old `(|V|,|E|)` consequence used by all earlier nodes; `refinedMinimal` is
+the `(|V|,|E|)` consequence used by the nodes before `[166]`; `refinedMinimal` is
 the paper's third-coordinate tie-break consumed at `[166]`. -/
 structure SelectionMinimality
     (BranchState : Graph.FiniteObject.{u} → Type v)
@@ -1022,7 +1022,7 @@ of the ambient-cubic cold windows ... Delete the interiors of these windows and
 look at a connected component `K` of the remaining outside graph."  Only the
 ambient-cubic cold windows are deleted; hot and non-ambient-cubic cold windows
 of `P₀` stay in the outside graph, so a corridor may leave the remainder
-`R = G − ⋃P₀` (user ruling 2026-09-27). -/
+`R = G − ⋃P₀`. -/
 noncomputable def coldCorridorWindows (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Finset object.Vertex := by
   classical
@@ -1124,7 +1124,7 @@ noncomputable instance coldEligibleHalfEdgeFintype (data : Parameters)
   unfold ColdEligibleHalfEdge
   infer_instance
 
-/-- A selected repaired branch-excess incidence whose other endpoint is
+/-- A selected branch-excess incidence whose other endpoint is
 already in the packed-window union.  In the contracted cold skeleton this is
 the immediate terminal-corridor case. -/
 noncomputable def ColdCrossWindowHalfEdge (data : Parameters)
@@ -1147,7 +1147,7 @@ noncomputable instance coldCrossWindowHalfEdgeFintype (data : Parameters)
   unfold ColdCrossWindowHalfEdge
   infer_instance
 
-/-- The complete occurrence index of the repaired cold extraction: an actual
+/-- The complete occurrence index of the cold extraction: an actual
 outside return corridor, or an immediate cross-window terminal exchange. -/
 abbrev ColdGermOccurrence (data : Parameters)
     (object : Graph.FiniteObject.{u}) :=
@@ -1496,8 +1496,8 @@ def SeparatorHandoffAt (data : Parameters) (object : Graph.FiniteObject.{u})
 /-- **The (F4) registry** of `def:cold-corridor-first-failure`: the heavy
 handoff centres of G, the singletons `{z}` with `d_G(z) > δ`.
 
-User-approved repair (2026-09-26; `lean-vs-paper-discrepancies.md`, "(F4)
-registry: the heavy handoff centres").  The paper's (F4) (tex 7234) reads "the
+Reading of (F4) recorded in `lean-vs-paper-discrepancies.md`, "(F4)
+registry: the heavy handoff centres".  The paper's (F4) (tex 7234) reads "the
 corridor first enters a declared Type B handoff envelope or the route-8
 response support already recorded in the branch state".  Its uses fix what
 "enters" means:
@@ -2831,10 +2831,8 @@ noncomputable abbrev DegreeProfileFibresStatement
   swaps, splices, switches); an admissible quotient never identifies a
   separated pair (first clause).
 
-(G-only restatement: the quantification over every `∂Z`-boundaried context
-spoke about contexts that are not part of G, the quotient was an arbitrary
-`CurvatureQuotient` structure with free label and value types, and its
-realizations are the pieces constructed from G.) -/
+(The statement quantifies over G's own surroundings `G − Z` only, and the
+quotient's realizations are the pieces constructed from G.) -/
 noncomputable abbrev TargetCompleteContextUniversalityStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
@@ -3331,8 +3329,6 @@ noncomputable abbrev ColdGermDistinguishedStatement
   -- is the target response of `E` in `G − Z` (`Q[x,y]` glued there is G,
   -- which avoids the target), and at the minimal G every fold of two interior
   -- vertices of the support with no common neighbour distinguishes.
-  -- (g-pieces-constructed: the former clause "no germ is distinguishing" rested
-  -- on `E` carrying G's response by construction; it is withdrawn.)
   ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
       (Graph.MinimumDegreeAtLeast data.threshold)
       (Graph.HasCycleWithLength data.LengthOK) object,
@@ -3600,8 +3596,6 @@ noncomputable abbrev ColdGermRoutedStatement
   -- counterexample `glue E (G − Z)` refuted by `cor:uncompressible`; so every
   -- shortening configuration of node `[153]`'s extracted family
   -- (`CanonicalActiveColdGerm`) is hit-distinguished (G2).
-  -- (g-pieces-constructed: the former "no configuration is shortening" rested
-  -- on G2 being empty by the choice of `E`; it is withdrawn.)
   ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object,

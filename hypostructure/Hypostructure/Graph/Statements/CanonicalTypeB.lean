@@ -196,7 +196,7 @@ def TypeBLedgerSpec (data : Parameters) (object : Graph.FiniteObject.{u})
 
 /-- **The B2 disjoint ledger of `(Y, H)`**: the `Classical.choice` of the B2
 disjoint choice, exactly as `Contracts.TypeB.typeBDisjointLedger` builds it
-(`⟨Classical.choice (choice …), high, subset⟩`), now one named object so that
+(`⟨Classical.choice (choice …), high, subset⟩`), as one named object so that
 `[74]`, `[76]` and `[85]` all speak about the same ledger. -/
 noncomputable def canonicalTypeBDisjointChoice (data : Parameters)
     (object : Graph.FiniteObject.{u}) (core centres : Finset object.Vertex) :

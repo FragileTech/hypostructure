@@ -57,8 +57,8 @@ against every literal outside context.  This is symbolic universal coverage;
 no context family is enumerated.
 
 This is the specialization of `ContextEquivalentOn` at
-`InterfaceTarget.ofObject`; it is definitionally the old statement, so every
-existing caller is unaffected. -/
+`InterfaceTarget.ofObject`; it agrees definitionally with the object-target
+statement its callers read. -/
 def ContextEquivalent {boundary : Boundary.{u}}
     (Target : FiniteObject.{u} -> Prop)
     (left right : BoundaryPiece boundary) : Prop :=

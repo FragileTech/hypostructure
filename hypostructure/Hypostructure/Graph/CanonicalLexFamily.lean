@@ -97,7 +97,7 @@ theorem lexLeast_le (candidates : Finset (Finset (Finset object.Vertex)))
   exact (Classical.choose_spec (object.existsUnique_lexLeast candidates nonempty).exists).2
     other member
 
-/- Integration g-audit-int: `lexLeast` is read only through `lexLeast_mem` and
+/- `lexLeast` is read only through `lexLeast_mem` and
 `lexLeast_le`; left reducible, `whnf` tries to decide the candidate set's
 nonemptiness (a powerset filter) wherever `canonicalWindowPacking` occurs. -/
 attribute [irreducible] lexLeast

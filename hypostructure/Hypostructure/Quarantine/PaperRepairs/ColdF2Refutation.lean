@@ -16,22 +16,22 @@ error at node `[153]`, `lem:cold-corridor-first-failure` (ii), tex 7265-7270
   clause-(b) sparse exit; the survivor fact does not refute (F2).
 * Part 2 (`coldF2_not_clauseB`, `coldFailureDefect_excluded_is_false`): the
   Lean (F2) fires at segment 1 of every corridor whose states 0 and 1 agree.
-  In particular the former statement of
-  `Contracts.Spine.coldFailureDefect_excluded`, quantified over all
-  presentations and indices, was false (constant index).  The live statement
-  is restated at G's retained occurrence (injective retained index, G's chosen
+  In particular the statement of
+  `Contracts.Spine.coldFailureDefect_excluded` quantified over all
+  presentations and indices is false (constant index).  The live statement
+  is stated at G's retained occurrence (injective retained index, G's chosen
   states), where this construction does not apply.
 * Part 3 (`edge_twoPath_sameFibre_targetDefect`): reading prefixes through the
   two-label cut-state interface instead would make clause (b) fire on every
   corridor of length `≥ 2`, i.e. the surviving branch vacuous.
 
-Part 0 (below, through `targetDefect_of_size`) is the stopped `mathf2` analysis
-`F2PathContext.lean`, copied verbatim (namespace renamed).  Parts 1-3 are new.
-Part 4 (group F2, 2026-09-27) proves that at G the Lean (F2) at a segment is
+Part 0 (below, through `targetDefect_of_size`) is the `mathf2` analysis
+`F2PathContext.lean` (namespace renamed).
+Part 4 proves that at G the Lean (F2) at a segment is
 exactly an earlier equal cut state, and that every (F2) pair is a `d_∂`
 separation.
 
-Part 0 original header: a path context between two boundary labels, and the
+Part 0 header: a path context between two boundary labels, and the
 cycles it closes.  The one context used to separate two readings of corridor
 prefixes: a path with `m ≥ 2` edges from label `x` to label `y`, whose
 interior is fresh.  Every glued cycle through its interior contains the whole
@@ -925,7 +925,7 @@ theorem coldFirstFailureDefectAt_one_iff (data : Parameters)
       prefix_zero_one_targetDefect data.LengthOK four baseline outside corridor long⟩
 
 open Hypostructure.Graph.Strategy.Spine in
-/-- **The former all-presentations/all-indices form of `coldFailureDefect_excluded` is false** on
+/-- **The all-presentations/all-indices form of `coldFailureDefect_excluded` is false** on
 every object that has a corridor of length `≥ 1` in an outside component and a
 presentation with one segment: with the constant index the states agree, so
 (F2) occurs at segment 1. -/
@@ -1093,7 +1093,7 @@ end TwoLabel
 
 end Hypostructure.Graph.ColdRepairF2
 
-/-! ## Part 4: at G, (F2) is exactly an earlier equal state (group F2, 2026-09-27)
+/-! ## Part 4: at G, (F2) is exactly an earlier equal state
 
 * `prefix_profile_ne`, `not_residualTargetDefect_prefixPair`: for **every** pair
   `left < right` of a corridor of G in an outside component, the two (F2)

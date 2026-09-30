@@ -38,8 +38,7 @@ Every clause is built here from an object the framework already owns.
   `sparseSurplus`, which is clause (D7)'s own name for *"sparse surplus-pair
   response coordinates"*, with label `π` and support `X_π`.  Its value is read
   inside G where it is consumed: the target response of G's reading at `X_π` in
-  G's own surroundings `G − X_π` (G-only restatement; no other boundaried
-  context is read).  No truth table or response bit is supplied by a caller.
+  G's own surroundings `G − X_π` (no other boundaried context is read).  No truth table or response bit is supplied by a caller.
 * The manuscript's closing sentence — each `r_π` viewed inside
   `ρ^ex_{∂X_Π}(X_Π)` by restriction — is `support_restrict_pairCoordinate`
   below, a proved equation between the declared support of the (D7) coordinate

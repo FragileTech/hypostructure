@@ -38,7 +38,7 @@ Simplicity of the two germs then makes the root incidence and the two next
 incidences three distinct neighbours of `z`, which is `d_G(z) ≥ 3`; the
 separator being surviving rules out equality, which is `d_G(z) ≥ 4`.
 
-The switch is constructed from G (G repair).  The identification of the two
+The switch is constructed from G.  The identification of the two
 separated response coordinates is realized on G itself, at the separator `z`:
 the two configurations leave `z` through `a` (`nextLeft`) and `b`
 (`nextRight`) and continue to `a⁺`, `b⁺`; the switch at `z` exchanges the two
@@ -241,8 +241,7 @@ carried by G itself.
 
 Stated about G, that third conjunct is decided: the two coordinates' readings
 on `S_z` are G's readings of `S_z`, which keep every labelled incidence and so
-lie in one boundary-degree fibre.  The former free `leftReading` /
-`rightReading` fields (arbitrary pieces that nothing built from G) are removed.
+lie in one boundary-degree fibre.
 `S_z` is the manuscript's own *"finite connected support consisting of the
 common prefix from `h` to `z`, the two connector tails from `z` to their
 first-entry receivers, the two receiver-entry channels in `X`, the completion
@@ -928,8 +927,8 @@ identification on the switch support `S_z` is target-defective,
 target-complete on a nontrivial response quotient, or target-complete only
 after adjoining a larger connected support.
 
-The identification of the two separated response coordinates is realized on G
-(G repair), at the separator itself.  The two configurations share the prefix
+The identification of the two separated response coordinates is realized on G,
+at the separator itself.  The two configurations share the prefix
 up to `z` and leave it through distinct next incidences `a = nextLeft`,
 `b = nextRight`; each continues along its germ to `a⁺`, `b⁺` (the heads of the
 two tails).  **The switch at `z`** exchanges the two continuations:

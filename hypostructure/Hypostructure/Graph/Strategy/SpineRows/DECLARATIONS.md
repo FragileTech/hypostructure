@@ -1,183 +1,181 @@
 # Spine row declaration locations
 
-Original line numbers refer to the working-tree snapshot before this refactor.
-Rows written directly as their own modules have no original line (`—`).
-Public names remain in `Hypostructure.Graph.Strategy.Spine`.
+Public names live in `Hypostructure.Graph.Strategy.Spine`.
 
-| Declaration | Original line | Current source |
-|---|---:|---|
-| `contextOfSelection` | 44 | [Basic.lean:27](Basic.lean#L27) |
-| `rowManifest` | 63 | [Basic.lean:46](Basic.lean#L46) |
-| `sourceFreeManifest` | 78 | [Basic.lean:61](Basic.lean#L61) |
-| `pairManifest` | 88 | [Basic.lean:71](Basic.lean#L71) |
-| `openPortSuppressionRow` | 583 | [OpenPortSuppression.lean:19](OpenPortSuppression.lean#L19) |
-| `openPortSuppressionSafeRow` | 670 | [OpenPortSuppressionSafe.lean:19](OpenPortSuppressionSafe.lean#L19) |
-| `singleOpenPortSuppressionWitnessRow` | 721 | [SingleOpenPortSuppressionWitness.lean:19](SingleOpenPortSuppressionWitness.lean#L19) |
-| `suppressedFamilyCriticalCycleRow` | 765 | [SuppressedFamilyCriticalCycle.lean:19](SuppressedFamilyCriticalCycle.lean#L19) |
-| `triangularCrossShoulderRow` | 838 | [TriangularCrossShoulder.lean:19](TriangularCrossShoulder.lean#L19) |
-| `triangularFirstLandingRow` | 1043 | [TriangularFirstLanding.lean:19](TriangularFirstLanding.lean#L19) |
-| `triangularPortReturnRow` | 1218 | [TriangularPortReturn.lean:19](TriangularPortReturn.lean#L19) |
-| `noProperBaselineRow` | 1540 | [NoProperBaseline.lean:28](NoProperBaseline.lean#L28) |
-| `deletionCriticalityRow` | 1591 | [DeletionCriticality.lean:35](DeletionCriticality.lean#L35) |
-| `cycleRankConstraintRow` | 1645 | [CycleRankConstraint.lean:28](CycleRankConstraint.lean#L28) |
-| `bridgelessRow` | 1762 | [Bridgeless.lean:29](Bridgeless.lean#L29) |
-| `replacementExclusionRow` | 1820 | [ReplacementExclusion.lean:39](ReplacementExclusion.lean#L39) |
-| `interfaceReplacementRow` | 1908 | [InterfaceReplacement.lean:20](InterfaceReplacement.lean#L20) |
-| `obstructionPackingRow` | 1957 | [ObstructionPacking.lean:98](ObstructionPacking.lean#L98) |
-| `localAlgebraRow` | 2016 | [LocalAlgebra.lean:30](LocalAlgebra.lean#L30) |
-| `barrierEnumerationRow` | 2055 | [BarrierEnumeration.lean:31](BarrierEnumeration.lean#L31) |
-| `windowPackageRow` | 2123 | [WindowPackage.lean:69](WindowPackage.lean#L69) |
-| `hotColdPartitionRow` | 2297 | [HotColdPartition.lean:30](HotColdPartition.lean#L30) |
-| `liveHotBarrierCapRow` | 2375 | [LiveHotBarrierCap.lean:35](LiveHotBarrierCap.lean#L35) |
-| `remainderNormalizationRow` | 2454 | [RemainderNormalization.lean:41](RemainderNormalization.lean#L41) |
-| `boundaryDemandRow` | 2599 | [BoundaryDemand.lean:37](BoundaryDemand.lean#L37) |
-| `stubSupplyRow` | 2646 | [StubSupply.lean:25](StubSupply.lean#L25) |
-| `wedgeSupplyRow` | 2719 | [WedgeSupply.lean:53](WedgeSupply.lean#L53) |
-| `curvatureTargetRankRow` | 2812 | [CurvatureTargetRank.lean:67](CurvatureTargetRank.lean#L67) |
-| `targetRankCircuitRow` | 2869 | [TargetRankCircuit.lean:30](TargetRankCircuit.lean#L30) |
-| `curvatureRankDichotomy` | 2944 | [CurvatureRankDichotomy.lean:29](CurvatureRankDichotomy.lean#L29) |
-| `branchDependenceRow` | 3054 | [BranchDependence.lean:32](BranchDependence.lean#L32) |
-| `contextValidityDichotomy` | 3211 | [ContextValidityDichotomy.lean:31](ContextValidityDichotomy.lean#L31) |
-| `atomCompressionDichotomy` | 3297 | [AtomCompressionDichotomy.lean:51](AtomCompressionDichotomy.lean#L51) |
-| `delocalizationScopeDichotomy` | 3413 | [DelocalizationScopeDichotomy.lean:29](DelocalizationScopeDichotomy.lean#L29) |
-| `repairIdentityRow` | 3488 | [RepairIdentity.lean:37](RepairIdentity.lean#L37) |
-| `globalBarrierRow` | 3511 | [GlobalBarrier.lean:20](GlobalBarrier.lean#L20) |
-| `forcedCurvatureCostRow` | 3547 | [ForcedCurvatureCost.lean:32](ForcedCurvatureCost.lean#L32) |
-| `remainderEntropyDichotomy` | 3607 | [RemainderEntropyDichotomy.lean:32](RemainderEntropyDichotomy.lean#L32) |
-| `localTypeCoordinateDichotomy` | 3657 | [LocalTypeCoordinateDichotomy.lean:27](LocalTypeCoordinateDichotomy.lean#L27) |
-| `dominantRootedTypeRow` | 3709 | [DominantRootedType.lean:27](DominantRootedType.lean#L27) |
-| `dominantRootedTypeWedgeDichotomy` | 3743 | [DominantRootedTypeWedgeDichotomy.lean:25](DominantRootedTypeWedgeDichotomy.lean#L25) |
-| `independentObstructionTranslatesRow` | 3809 | [IndependentObstructionTranslates.lean:38](IndependentObstructionTranslates.lean#L38) |
-| `lowEntropyLargeBudgetRow` | 4108 | [LowEntropyLargeBudget.lean:26](LowEntropyLargeBudget.lean#L26) |
-| `netDeficiencyCapRow` | 4142 | [NetDeficiencyCap.lean:28](NetDeficiencyCap.lean#L28) |
-| `routeEightNetDeficiencyCapRow` | 4225 | [RouteEightNetDeficiencyCap.lean:29](RouteEightNetDeficiencyCap.lean#L29) |
-| `denseNetDeficiencyCapRow` | 4300 | [DenseNetDeficiencyCap.lean:52](DenseNetDeficiencyCap.lean#L52) |
-| `route8RateFromColdBelowRow` | 4368 | [Route8RateFromColdBelow.lean:19](Route8RateFromColdBelow.lean#L19) |
-| `route8RateDichotomy` | 4453 | [Route8RateDichotomy.lean:23](Route8RateDichotomy.lean#L23) |
-| `route8CensusRow` | 4491 | [Route8Census.lean:12](Route8Census.lean#L12) |
-| `entropyPackageRow` | 4686 | [EntropyPackage.lean:36](EntropyPackage.lean#L36) |
-| `entropyCapDichotomy` | 4721 | [EntropyCapDichotomy.lean:33](EntropyCapDichotomy.lean#L33) |
-| `exactCollisionDichotomy` | 4763 | [ExactCollisionDichotomy.lean:32](ExactCollisionDichotomy.lean#L32) |
-| `absorbedConfigurationResidualRow` | 4812 | [AbsorbedConfigurationResidual.lean:36](AbsorbedConfigurationResidual.lean#L36) |
-| `netChargeLocalizationRow` | 4910 | [NetChargeLocalization.lean:36](NetChargeLocalization.lean#L36) |
-| `netChargeDichotomy` | 4939 | [NetChargeDichotomy.lean:45](NetChargeDichotomy.lean#L45) |
-| `negativeSupportRow` | 4991 | [NegativeSupport.lean:28](NegativeSupport.lean#L28) |
-| `typeSplitDichotomy` | 5038 | [TypeSplitDichotomy.lean:25](TypeSplitDichotomy.lean#L25) |
-| `cubicBaselineRow` | 5102 | [CubicBaseline.lean:30](CubicBaseline.lean#L30) |
-| `highCentreNormalFormRow` | 5125 | [HighCentreNormalForm.lean:21](HighCentreNormalForm.lean#L21) |
-| `typeBAssignedSupportRow` | 5204 | [TypeBAssignedSupport.lean:20](TypeBAssignedSupport.lean#L20) |
-| `typeBFanDegreeDichotomy` | 5278 | [TypeBFanDegreeDichotomy.lean:23](TypeBFanDegreeDichotomy.lean#L23) |
-| `sameCenterOpenPortCompatibilityRow` | 5363 | [SameCenterOpenPortCompatibility.lean:20](SameCenterOpenPortCompatibility.lean#L20) |
-| `typeBFanLocalDichotomyRow` | 5396 | [TypeBFanLocalDichotomy.lean:23](TypeBFanLocalDichotomy.lean#L23) |
-| `typeBFanDegreeFourProfileRow` | 5524 | [TypeBFanDegreeFourProfile.lean:20](TypeBFanDegreeFourProfile.lean#L20) |
-| `triangularFanCoreRow` | 5631 | [TriangularFanCore.lean:19](TriangularFanCore.lean#L19) |
-| `triangularShoulderCompletionRow` | 5746 | [TriangularShoulderCompletion.lean:19](TriangularShoulderCompletion.lean#L19) |
-| `compatiblePairFanClosureRow` | 6001 | [CompatiblePairFanClosure.lean:20](CompatiblePairFanClosure.lean#L20) |
-| `fanClosedPortTypeBRoutingRow` | 6038 | [FanClosedPortTypeBRouting.lean:19](FanClosedPortTypeBRouting.lean#L19) |
-| `compatiblePairTypeBRoutingRow` | 6072 | [CompatiblePairTypeBRouting.lean:19](CompatiblePairTypeBRouting.lean#L19) |
-| `triangularPortTypeBRoutingRow` | 6127 | [TriangularPortTypeBRouting.lean:21](TriangularPortTypeBRouting.lean#L21) |
-| `fanCertificateCapRow` | 6193 | [FanCertificateCap.lean:22](FanCertificateCap.lean#L22) |
-| `fanCertificateDichotomy` | 6261 | [FanCertificateDichotomy.lean:22](FanCertificateDichotomy.lean#L22) |
-| `hybridEntryRow` | 6372 | [HybridEntry.lean:21](HybridEntry.lean#L21) |
-| `b2AssignmentDichotomy` | 6600 | [B2AssignmentDichotomy.lean:25](B2AssignmentDichotomy.lean#L25) |
-| `typeBGlobalLocalBridgeRow` | 6702 | [TypeBGlobalLocalBridge.lean:19](TypeBGlobalLocalBridge.lean#L19) |
-| `disjointPostLedgerComponentsRow` | 6771 | [DisjointPostLedgerComponents.lean:20](DisjointPostLedgerComponents.lean#L20) |
-| `typeBBridgeReductionRow` | 6958 | [TypeBBridgeReduction.lean:20](TypeBBridgeReduction.lean#L20) |
-| `bridgeFanMassRow` | 7141 | [BridgeFanMass.lean:20](BridgeFanMass.lean#L20) |
-| `typeBBridgeSublinearRow` | 7188 | [TypeBBridgeSublinear.lean:19](TypeBBridgeSublinear.lean#L19) |
-| `fanCertificateResidualMassRow` | 7226 | [FanCertificateResidualMass.lean:20](FanCertificateResidualMass.lean#L20) |
-| `typeBOverlapObstructionMassRow` | 7275 | [TypeBOverlapObstructionMass.lean:19](TypeBOverlapObstructionMass.lean#L19) |
-| `typeABoundedSupportRow` | 7456 | [TypeABoundedSupport.lean:26](TypeABoundedSupport.lean#L26) |
-| `typeAReceiverRoutingRow` | 7630 | [TypeAReceiverRouting.lean:22](TypeAReceiverRouting.lean#L22) |
-| `typeASaturationDichotomy` | 7702 | [TypeASaturationDichotomy.lean:24](TypeASaturationDichotomy.lean#L24) |
-| `typeAUnsaturatedDischargeRow` | 7752 | [TypeAUnsaturatedDischarge.lean:24](TypeAUnsaturatedDischarge.lean#L24) |
-| `typeAVisibleEntryDichotomy` | 7838 | [TypeAVisibleEntryDichotomy.lean:25](TypeAVisibleEntryDichotomy.lean#L25) |
-| `typeAPortReturnRow` | 7989 | [TypeAPortReturn.lean:23](TypeAPortReturn.lean#L23) |
-| `typeBDecoratedAssignedSupportRow` | 8129 | [TypeBDecoratedAssignedSupport.lean:21](TypeBDecoratedAssignedSupport.lean#L21) |
-| `route8ResidualProfileRow` | 8222 | [Route8ResidualProfile.lean:12](Route8ResidualProfile.lean#L12) |
-| `route8BasinBurdenRow` | 8289 | [Route8BasinBurden.lean:13](Route8BasinBurden.lean#L13) |
-| `route8LargeBudgetDeficitRow` | 8478 | [Route8LargeBudgetDeficit.lean:20](Route8LargeBudgetDeficit.lean#L20) |
-| `route8CarrierCoreRow` | 8512 | [Route8CarrierCore.lean:12](Route8CarrierCore.lean#L12) |
-| `route8TrueResidualRow` | 8553 | [Route8TrueResidual.lean:11](Route8TrueResidual.lean#L11) |
-| `route8CarrierCutParityRow` | 8628 | [Route8CarrierCutParity.lean:12](Route8CarrierCutParity.lean#L12) |
-| `route8SmallCoreCollapseRow` | 8708 | [Route8SmallCoreCollapse.lean:24](Route8SmallCoreCollapse.lean#L24) |
-| `route8SmallCoreExitRow` | 8764 | [Route8SmallCoreExit.lean:21](Route8SmallCoreExit.lean#L21) |
-| `route8UnifiedNegativeRow` | 8962 | [Route8UnifiedNegative.lean:11](Route8UnifiedNegative.lean#L11) |
-| `route8PiecesClassifiedRow` | 9030 | [Route8PiecesClassified.lean:11](Route8PiecesClassified.lean#L11) |
-| `typeBSublinearDichotomy` | 9102 | [TypeBSublinearDichotomy.lean:28](TypeBSublinearDichotomy.lean#L28) |
-| `route8QuotientDichotomy` | 9153 | [Route8QuotientDichotomy.lean:42](Route8QuotientDichotomy.lean#L42) |
-| `route8UnifiedDeficitRow` | 9185 | [Route8UnifiedDeficit.lean:12](Route8UnifiedDeficit.lean#L12) |
-| `route8UnifiedEntryCensusRow` | 9940 | [Route8UnifiedEntryCensus.lean:12](Route8UnifiedEntryCensus.lean#L12) |
-| `route8ExtractedEntryCensusRow` | 10227 | [Route8ExtractedEntryCensus.lean:12](Route8ExtractedEntryCensus.lean#L12) |
-| `route8CarrierDichotomy` | 10477 | [Route8CarrierDichotomy.lean:20](Route8CarrierDichotomy.lean#L20) |
-| `route8TrueTwoCarrierEntryRow` | 10519 | [Route8TrueTwoCarrierEntry.lean:12](Route8TrueTwoCarrierEntry.lean#L12) |
-| `typeAExclusionRow` | 10649 | [TypeAExclusion.lean:24](TypeAExclusion.lean#L24) |
-| `route8PeelingDescentRow` | 10977 | [Route8PeelingDescent.lean:20](Route8PeelingDescent.lean#L20) |
-| `route8StageOutcomeDichotomy` | 11228 | [Route8StageOutcomeDichotomy.lean:50](Route8StageOutcomeDichotomy.lean#L50) |
-| `route8DemandAbsorptionRow` | 11516 | [Route8DemandAbsorption.lean:13](Route8DemandAbsorption.lean#L13) |
-| `route8WindowBlockersRow` | 11594 | [Route8WindowBlockers.lean:13](Route8WindowBlockers.lean#L13) |
-| `route8UnpaidExitFourDichotomy` | 11757 | [Route8UnpaidExitFourDichotomy.lean:73](Route8UnpaidExitFourDichotomy.lean#L73) |
-| `route8UnifiedVisibleResidualRow` | 11879 | [Route8UnifiedVisibleResidual.lean:12](Route8UnifiedVisibleResidual.lean#L12) |
-| `route8UnifiedVisibleOverloadRow` | 12511 | [Route8UnifiedVisibleOverload.lean:12](Route8UnifiedVisibleOverload.lean#L12) |
-| `route8JointBalanceRow` | 12667 | [Route8JointBalance.lean:21](Route8JointBalance.lean#L21) |
-| `route8CarrierDeletionWitnessesRow` | 13016 | [Route8CarrierDeletionWitnesses.lean:12](Route8CarrierDeletionWitnesses.lean#L12) |
-| `route8PrivateCarrierBudgetRow` | 13061 | [Route8PrivateCarrierBudget.lean:23](Route8PrivateCarrierBudget.lean#L23) |
-| `typeAExitOneDichotomy` | 13372 | [TypeAExitOneDichotomy.lean:25](TypeAExitOneDichotomy.lean#L25) |
-| `typeAExitTwoDichotomy` | 13445 | [TypeAExitTwoDichotomy.lean:24](TypeAExitTwoDichotomy.lean#L24) |
-| `typeAExitThreeDichotomy` | 13526 | [TypeAExitThreeDichotomy.lean:26](TypeAExitThreeDichotomy.lean#L26) |
-| `typeAVisibleExitEntryRow` | 13577 | [TypeAVisibleExitEntry.lean:23](TypeAVisibleExitEntry.lean#L23) |
-| `typeASilentExitEntryRow` | 13618 | [TypeASilentExitEntry.lean:22](TypeASilentExitEntry.lean#L22) |
-| `typeAExitFourFiniteDescentRow` | 13666 | [TypeAExitFourFiniteDescent.lean:22](TypeAExitFourFiniteDescent.lean#L22) |
-| `typeAExitFourDichotomy` | 13719 | [TypeAExitFourDichotomy.lean:26](TypeAExitFourDichotomy.lean#L26) |
-| `typeAExitFourPeelingStepRow` | 13807 | [TypeAExitFourPeelingStep.lean:22](TypeAExitFourPeelingStep.lean#L22) |
-| `typeAExitFourRetestDichotomy` | 13871 | [TypeAExitFourRetestDichotomy.lean:31](TypeAExitFourRetestDichotomy.lean#L31) |
-| `typeAExitFiveDichotomy` | 13981 | [TypeAExitFiveDichotomy.lean:24](TypeAExitFiveDichotomy.lean#L24) |
-| `typeAExitSixDichotomy` | 14059 | [TypeAExitSixDichotomy.lean:23](TypeAExitSixDichotomy.lean#L23) |
-| `typeAExitSixScopeDichotomy` | 14102 | [TypeAExitSixScopeDichotomy.lean:27](TypeAExitSixScopeDichotomy.lean#L27) |
-| `typeAExitSevenDichotomy` | 14145 | [TypeAExitSevenDichotomy.lean:29](TypeAExitSevenDichotomy.lean#L29) |
-| `route8OpenBoundarySaturatedRow` | — | [Route8OpenBoundarySaturated.lean:12](Route8OpenBoundarySaturated.lean#L12) |
-| `windowShadowHitCycleRow` | — | [WindowShadowHitCycle.lean:11](WindowShadowHitCycle.lean#L11) |
-| `windowShadowHitExcludedRow` | — | [WindowShadowHitExcluded.lean:12](WindowShadowHitExcluded.lean#L12) |
-| `degreeProfileFibresRow` | — | [DegreeProfileFibres.lean:30](DegreeProfileFibres.lean#L30) |
-| `targetCompleteContextUniversalityRow` | — | [TargetCompleteContextUniversality.lean:30](TargetCompleteContextUniversality.lean#L30) |
-| `hssTargetCycleRow` | — | [ObstructionPacking.lean:52](ObstructionPacking.lean#L52) |
-| `degreeFourLedgerDichotomy` | — | [B2AssignmentDichotomy.lean:52](B2AssignmentDichotomy.lean#L52) |
-| `denseDeficiencyDichotomy` | — | [DenseNetDeficiencyCap.lean:23](DenseNetDeficiencyCap.lean#L23) |
-| `typeBDegreeFourClosedRow` | — | [DisjointPostLedgerComponents.lean:41](DisjointPostLedgerComponents.lean#L41) |
-| `highEntropyLargeBudgetRow` | — | [LowEntropyLargeBudget.lean:56](LowEntropyLargeBudget.lean#L56) |
-| `windowFreeDichotomy` | — | [ObstructionPacking.lean:28](ObstructionPacking.lean#L28) |
-| `returnAvoidanceDichotomy` | — | [ReturnAvoidance.lean:34](ReturnAvoidance.lean#L34) |
-| `route8DemandLedgerRow` | — | [Route8DemandPartition.lean:21](Route8DemandPartition.lean#L21) |
-| `route8StageTrueEntryRow` | — | [Route8StageOutcomeDichotomy.lean:24](Route8StageOutcomeDichotomy.lean#L24) |
-| `route8TwoCarrierExitRow` | — | [Route8TwoCarrierExit.lean:26](Route8TwoCarrierExit.lean#L26) |
-| `route8UnifiedTwoCarrierExitRow` | — | [Route8TwoCarrierExit.lean:50](Route8TwoCarrierExit.lean#L50) |
-| `route8UnpaidTwoCarrierRow` | — | [Route8UnpaidExitFourDichotomy.lean:25](Route8UnpaidExitFourDichotomy.lean#L25) |
-| `route8UnpaidTrueEntryRow` | — | [Route8UnpaidExitFourDichotomy.lean:47](Route8UnpaidExitFourDichotomy.lean#L47) |
-| `typeAExitFourFreeEntryRow` | — | [TypeAExitFourDichotomy.lean:50](TypeAExitFourDichotomy.lean#L50) |
-| `typeAPeeledUnsaturatedDischargeRow` | — | [TypeAExitFourRetestDichotomy.lean:62](TypeAExitFourRetestDichotomy.lean#L62) |
-| `typeAExitSevenEnvelopeRow` | — | [TypeAExitSevenDichotomy.lean:59](TypeAExitSevenDichotomy.lean#L59) |
-| `typeAExitSixProperRow` | — | [TypeAExitSixScopeDichotomy.lean:55](TypeAExitSixScopeDichotomy.lean#L55) |
-| `typeAExitSixGlobalRow` | — | [TypeAExitSixScopeDichotomy.lean:70](TypeAExitSixScopeDichotomy.lean#L70) |
-| `typeAExitThreeCycleRow` | — | [TypeAExitThreeDichotomy.lean:54](TypeAExitThreeDichotomy.lean#L54) |
-| `typeAPeeledVisibleEntryDichotomy` | — | [TypeAPeeledExits.lean:32](TypeAPeeledExits.lean#L32) |
-| `typeAPeeledSilentExcessRow` | — | [TypeAPeeledExits.lean:61](TypeAPeeledExits.lean#L61) |
-| `typeAPeeledExitOneDichotomy` | — | [TypeAPeeledExits.lean:79](TypeAPeeledExits.lean#L79) |
-| `typeAPeeledExitTwoDichotomy` | — | [TypeAPeeledExits.lean:112](TypeAPeeledExits.lean#L112) |
-| `typeAPeeledExitThreeDichotomy` | — | [TypeAPeeledExits.lean:141](TypeAPeeledExits.lean#L141) |
-| `typeAPeeledExitThreeCycleRow` | — | [TypeAPeeledExits.lean:170](TypeAPeeledExits.lean#L170) |
-| `typeAPeeledVisibleExitFourFreeRow` | — | [TypeAPeeledExits.lean:187](TypeAPeeledExits.lean#L187) |
-| `typeAPeeledSilentExitFourFreeRow` | — | [TypeAPeeledExits.lean:205](TypeAPeeledExits.lean#L205) |
-| `typeASupportRow` | — | [TypeASupport.lean:22](TypeASupport.lean#L22) |
-| `typeAVisibleFirstExcessRow` | — | [TypeAVisibleFirstExcess.lean:25](TypeAVisibleFirstExcess.lean#L25) |
-| `typeBExcludedRow` | — | [TypeBExclusion.lean:21](TypeBExclusion.lean#L21) |
-| `typeBExclusionResidualRow` | — | [TypeBExclusion.lean:37](TypeBExclusion.lean#L37) |
-| `typeBCertificateMassExclusionRow` | — | [TypeBExclusion.lean:55](TypeBExclusion.lean#L55) |
-| `typeBObstructionMassExclusionRow` | — | [TypeBExclusion.lean:72](TypeBExclusion.lean#L72) |
-| `typeBDegreeFourGlobalLocalBridgeRow` | — | [TypeBGlobalLocalBridge.lean:36](TypeBGlobalLocalBridge.lean#L36) |
-| `windowPackageRealizationDichotomy` | — | [WindowPackage.lean:22](WindowPackage.lean#L22) |
-| `degreeFourFanCertificateCapRow` | — | [FanCertificateCap.lean:39](FanCertificateCap.lean#L39) |
-| `typeBAssignedEntryRow` | — | [TypeBAssignedSupport.lean:36](TypeBAssignedSupport.lean#L36) |
-| `typeBDecoratedEntryRow` | — | [TypeBDecoratedAssignedSupport.lean:42](TypeBDecoratedAssignedSupport.lean#L42) |
-| `typeBDirectCycleFreeRow` | — | [TypeBDirectCycleFree.lean:24](TypeBDirectCycleFree.lean#L24) |
-| `typeBDegreeFourExclusionResidualRow` | — | [TypeBExclusion.lean:90](TypeBExclusion.lean#L90) |
-| `typeBRoute8EntryRow` | — | [TypeBExclusion.lean:115](TypeBExclusion.lean#L115) |
+| Declaration | Source |
+|---|---|
+| `contextOfSelection` | [Basic.lean:27](Basic.lean#L27) |
+| `rowManifest` | [Basic.lean:46](Basic.lean#L46) |
+| `sourceFreeManifest` | [Basic.lean:61](Basic.lean#L61) |
+| `pairManifest` | [Basic.lean:71](Basic.lean#L71) |
+| `openPortSuppressionRow` | [OpenPortSuppression.lean:19](OpenPortSuppression.lean#L19) |
+| `openPortSuppressionSafeRow` | [OpenPortSuppressionSafe.lean:19](OpenPortSuppressionSafe.lean#L19) |
+| `singleOpenPortSuppressionWitnessRow` | [SingleOpenPortSuppressionWitness.lean:19](SingleOpenPortSuppressionWitness.lean#L19) |
+| `suppressedFamilyCriticalCycleRow` | [SuppressedFamilyCriticalCycle.lean:19](SuppressedFamilyCriticalCycle.lean#L19) |
+| `triangularCrossShoulderRow` | [TriangularCrossShoulder.lean:19](TriangularCrossShoulder.lean#L19) |
+| `triangularFirstLandingRow` | [TriangularFirstLanding.lean:19](TriangularFirstLanding.lean#L19) |
+| `triangularPortReturnRow` | [TriangularPortReturn.lean:19](TriangularPortReturn.lean#L19) |
+| `noProperBaselineRow` | [NoProperBaseline.lean:28](NoProperBaseline.lean#L28) |
+| `deletionCriticalityRow` | [DeletionCriticality.lean:35](DeletionCriticality.lean#L35) |
+| `cycleRankConstraintRow` | [CycleRankConstraint.lean:28](CycleRankConstraint.lean#L28) |
+| `bridgelessRow` | [Bridgeless.lean:29](Bridgeless.lean#L29) |
+| `replacementExclusionRow` | [ReplacementExclusion.lean:39](ReplacementExclusion.lean#L39) |
+| `interfaceReplacementRow` | [InterfaceReplacement.lean:20](InterfaceReplacement.lean#L20) |
+| `obstructionPackingRow` | [ObstructionPacking.lean:98](ObstructionPacking.lean#L98) |
+| `localAlgebraRow` | [LocalAlgebra.lean:30](LocalAlgebra.lean#L30) |
+| `barrierEnumerationRow` | [BarrierEnumeration.lean:31](BarrierEnumeration.lean#L31) |
+| `windowPackageRow` | [WindowPackage.lean:69](WindowPackage.lean#L69) |
+| `hotColdPartitionRow` | [HotColdPartition.lean:30](HotColdPartition.lean#L30) |
+| `liveHotBarrierCapRow` | [LiveHotBarrierCap.lean:35](LiveHotBarrierCap.lean#L35) |
+| `remainderNormalizationRow` | [RemainderNormalization.lean:41](RemainderNormalization.lean#L41) |
+| `boundaryDemandRow` | [BoundaryDemand.lean:37](BoundaryDemand.lean#L37) |
+| `stubSupplyRow` | [StubSupply.lean:25](StubSupply.lean#L25) |
+| `wedgeSupplyRow` | [WedgeSupply.lean:53](WedgeSupply.lean#L53) |
+| `curvatureTargetRankRow` | [CurvatureTargetRank.lean:67](CurvatureTargetRank.lean#L67) |
+| `targetRankCircuitRow` | [TargetRankCircuit.lean:30](TargetRankCircuit.lean#L30) |
+| `curvatureRankDichotomy` | [CurvatureRankDichotomy.lean:29](CurvatureRankDichotomy.lean#L29) |
+| `branchDependenceRow` | [BranchDependence.lean:32](BranchDependence.lean#L32) |
+| `contextValidityDichotomy` | [ContextValidityDichotomy.lean:31](ContextValidityDichotomy.lean#L31) |
+| `atomCompressionDichotomy` | [AtomCompressionDichotomy.lean:51](AtomCompressionDichotomy.lean#L51) |
+| `delocalizationScopeDichotomy` | [DelocalizationScopeDichotomy.lean:29](DelocalizationScopeDichotomy.lean#L29) |
+| `repairIdentityRow` | [RepairIdentity.lean:37](RepairIdentity.lean#L37) |
+| `globalBarrierRow` | [GlobalBarrier.lean:20](GlobalBarrier.lean#L20) |
+| `forcedCurvatureCostRow` | [ForcedCurvatureCost.lean:32](ForcedCurvatureCost.lean#L32) |
+| `remainderEntropyDichotomy` | [RemainderEntropyDichotomy.lean:32](RemainderEntropyDichotomy.lean#L32) |
+| `localTypeCoordinateDichotomy` | [LocalTypeCoordinateDichotomy.lean:27](LocalTypeCoordinateDichotomy.lean#L27) |
+| `dominantRootedTypeRow` | [DominantRootedType.lean:27](DominantRootedType.lean#L27) |
+| `dominantRootedTypeWedgeDichotomy` | [DominantRootedTypeWedgeDichotomy.lean:25](DominantRootedTypeWedgeDichotomy.lean#L25) |
+| `independentObstructionTranslatesRow` | [IndependentObstructionTranslates.lean:38](IndependentObstructionTranslates.lean#L38) |
+| `lowEntropyLargeBudgetRow` | [LowEntropyLargeBudget.lean:26](LowEntropyLargeBudget.lean#L26) |
+| `netDeficiencyCapRow` | [NetDeficiencyCap.lean:28](NetDeficiencyCap.lean#L28) |
+| `routeEightNetDeficiencyCapRow` | [RouteEightNetDeficiencyCap.lean:29](RouteEightNetDeficiencyCap.lean#L29) |
+| `denseNetDeficiencyCapRow` | [DenseNetDeficiencyCap.lean:52](DenseNetDeficiencyCap.lean#L52) |
+| `route8RateFromColdBelowRow` | [Route8RateFromColdBelow.lean:19](Route8RateFromColdBelow.lean#L19) |
+| `route8RateDichotomy` | [Route8RateDichotomy.lean:23](Route8RateDichotomy.lean#L23) |
+| `route8CensusRow` | [Route8Census.lean:12](Route8Census.lean#L12) |
+| `entropyPackageRow` | [EntropyPackage.lean:36](EntropyPackage.lean#L36) |
+| `entropyCapDichotomy` | [EntropyCapDichotomy.lean:33](EntropyCapDichotomy.lean#L33) |
+| `exactCollisionDichotomy` | [ExactCollisionDichotomy.lean:32](ExactCollisionDichotomy.lean#L32) |
+| `absorbedConfigurationResidualRow` | [AbsorbedConfigurationResidual.lean:36](AbsorbedConfigurationResidual.lean#L36) |
+| `netChargeLocalizationRow` | [NetChargeLocalization.lean:36](NetChargeLocalization.lean#L36) |
+| `netChargeDichotomy` | [NetChargeDichotomy.lean:45](NetChargeDichotomy.lean#L45) |
+| `negativeSupportRow` | [NegativeSupport.lean:28](NegativeSupport.lean#L28) |
+| `typeSplitDichotomy` | [TypeSplitDichotomy.lean:25](TypeSplitDichotomy.lean#L25) |
+| `cubicBaselineRow` | [CubicBaseline.lean:30](CubicBaseline.lean#L30) |
+| `highCentreNormalFormRow` | [HighCentreNormalForm.lean:21](HighCentreNormalForm.lean#L21) |
+| `typeBAssignedSupportRow` | [TypeBAssignedSupport.lean:20](TypeBAssignedSupport.lean#L20) |
+| `typeBFanDegreeDichotomy` | [TypeBFanDegreeDichotomy.lean:23](TypeBFanDegreeDichotomy.lean#L23) |
+| `sameCenterOpenPortCompatibilityRow` | [SameCenterOpenPortCompatibility.lean:20](SameCenterOpenPortCompatibility.lean#L20) |
+| `typeBFanLocalDichotomyRow` | [TypeBFanLocalDichotomy.lean:23](TypeBFanLocalDichotomy.lean#L23) |
+| `typeBFanDegreeFourProfileRow` | [TypeBFanDegreeFourProfile.lean:20](TypeBFanDegreeFourProfile.lean#L20) |
+| `triangularFanCoreRow` | [TriangularFanCore.lean:19](TriangularFanCore.lean#L19) |
+| `triangularShoulderCompletionRow` | [TriangularShoulderCompletion.lean:19](TriangularShoulderCompletion.lean#L19) |
+| `compatiblePairFanClosureRow` | [CompatiblePairFanClosure.lean:20](CompatiblePairFanClosure.lean#L20) |
+| `fanClosedPortTypeBRoutingRow` | [FanClosedPortTypeBRouting.lean:19](FanClosedPortTypeBRouting.lean#L19) |
+| `compatiblePairTypeBRoutingRow` | [CompatiblePairTypeBRouting.lean:19](CompatiblePairTypeBRouting.lean#L19) |
+| `triangularPortTypeBRoutingRow` | [TriangularPortTypeBRouting.lean:21](TriangularPortTypeBRouting.lean#L21) |
+| `fanCertificateCapRow` | [FanCertificateCap.lean:22](FanCertificateCap.lean#L22) |
+| `fanCertificateDichotomy` | [FanCertificateDichotomy.lean:22](FanCertificateDichotomy.lean#L22) |
+| `hybridEntryRow` | [HybridEntry.lean:21](HybridEntry.lean#L21) |
+| `b2AssignmentDichotomy` | [B2AssignmentDichotomy.lean:25](B2AssignmentDichotomy.lean#L25) |
+| `typeBGlobalLocalBridgeRow` | [TypeBGlobalLocalBridge.lean:19](TypeBGlobalLocalBridge.lean#L19) |
+| `disjointPostLedgerComponentsRow` | [DisjointPostLedgerComponents.lean:20](DisjointPostLedgerComponents.lean#L20) |
+| `typeBBridgeReductionRow` | [TypeBBridgeReduction.lean:20](TypeBBridgeReduction.lean#L20) |
+| `bridgeFanMassRow` | [BridgeFanMass.lean:20](BridgeFanMass.lean#L20) |
+| `typeBBridgeSublinearRow` | [TypeBBridgeSublinear.lean:19](TypeBBridgeSublinear.lean#L19) |
+| `fanCertificateResidualMassRow` | [FanCertificateResidualMass.lean:20](FanCertificateResidualMass.lean#L20) |
+| `typeBOverlapObstructionMassRow` | [TypeBOverlapObstructionMass.lean:19](TypeBOverlapObstructionMass.lean#L19) |
+| `typeABoundedSupportRow` | [TypeABoundedSupport.lean:26](TypeABoundedSupport.lean#L26) |
+| `typeAReceiverRoutingRow` | [TypeAReceiverRouting.lean:22](TypeAReceiverRouting.lean#L22) |
+| `typeASaturationDichotomy` | [TypeASaturationDichotomy.lean:24](TypeASaturationDichotomy.lean#L24) |
+| `typeAUnsaturatedDischargeRow` | [TypeAUnsaturatedDischarge.lean:24](TypeAUnsaturatedDischarge.lean#L24) |
+| `typeAVisibleEntryDichotomy` | [TypeAVisibleEntryDichotomy.lean:25](TypeAVisibleEntryDichotomy.lean#L25) |
+| `typeAPortReturnRow` | [TypeAPortReturn.lean:23](TypeAPortReturn.lean#L23) |
+| `typeBDecoratedAssignedSupportRow` | [TypeBDecoratedAssignedSupport.lean:21](TypeBDecoratedAssignedSupport.lean#L21) |
+| `route8ResidualProfileRow` | [Route8ResidualProfile.lean:12](Route8ResidualProfile.lean#L12) |
+| `route8BasinBurdenRow` | [Route8BasinBurden.lean:13](Route8BasinBurden.lean#L13) |
+| `route8LargeBudgetDeficitRow` | [Route8LargeBudgetDeficit.lean:20](Route8LargeBudgetDeficit.lean#L20) |
+| `route8CarrierCoreRow` | [Route8CarrierCore.lean:12](Route8CarrierCore.lean#L12) |
+| `route8TrueResidualRow` | [Route8TrueResidual.lean:11](Route8TrueResidual.lean#L11) |
+| `route8CarrierCutParityRow` | [Route8CarrierCutParity.lean:12](Route8CarrierCutParity.lean#L12) |
+| `route8SmallCoreCollapseRow` | [Route8SmallCoreCollapse.lean:24](Route8SmallCoreCollapse.lean#L24) |
+| `route8SmallCoreExitRow` | [Route8SmallCoreExit.lean:21](Route8SmallCoreExit.lean#L21) |
+| `route8UnifiedNegativeRow` | [Route8UnifiedNegative.lean:11](Route8UnifiedNegative.lean#L11) |
+| `route8PiecesClassifiedRow` | [Route8PiecesClassified.lean:11](Route8PiecesClassified.lean#L11) |
+| `typeBSublinearDichotomy` | [TypeBSublinearDichotomy.lean:28](TypeBSublinearDichotomy.lean#L28) |
+| `route8QuotientDichotomy` | [Route8QuotientDichotomy.lean:42](Route8QuotientDichotomy.lean#L42) |
+| `route8UnifiedDeficitRow` | [Route8UnifiedDeficit.lean:12](Route8UnifiedDeficit.lean#L12) |
+| `route8UnifiedEntryCensusRow` | [Route8UnifiedEntryCensus.lean:12](Route8UnifiedEntryCensus.lean#L12) |
+| `route8ExtractedEntryCensusRow` | [Route8ExtractedEntryCensus.lean:12](Route8ExtractedEntryCensus.lean#L12) |
+| `route8CarrierDichotomy` | [Route8CarrierDichotomy.lean:20](Route8CarrierDichotomy.lean#L20) |
+| `route8TrueTwoCarrierEntryRow` | [Route8TrueTwoCarrierEntry.lean:12](Route8TrueTwoCarrierEntry.lean#L12) |
+| `typeAExclusionRow` | [TypeAExclusion.lean:24](TypeAExclusion.lean#L24) |
+| `route8PeelingDescentRow` | [Route8PeelingDescent.lean:20](Route8PeelingDescent.lean#L20) |
+| `route8StageOutcomeDichotomy` | [Route8StageOutcomeDichotomy.lean:50](Route8StageOutcomeDichotomy.lean#L50) |
+| `route8DemandAbsorptionRow` | [Route8DemandAbsorption.lean:13](Route8DemandAbsorption.lean#L13) |
+| `route8WindowBlockersRow` | [Route8WindowBlockers.lean:13](Route8WindowBlockers.lean#L13) |
+| `route8UnpaidExitFourDichotomy` | [Route8UnpaidExitFourDichotomy.lean:73](Route8UnpaidExitFourDichotomy.lean#L73) |
+| `route8UnifiedVisibleResidualRow` | [Route8UnifiedVisibleResidual.lean:12](Route8UnifiedVisibleResidual.lean#L12) |
+| `route8UnifiedVisibleOverloadRow` | [Route8UnifiedVisibleOverload.lean:12](Route8UnifiedVisibleOverload.lean#L12) |
+| `route8JointBalanceRow` | [Route8JointBalance.lean:21](Route8JointBalance.lean#L21) |
+| `route8CarrierDeletionWitnessesRow` | [Route8CarrierDeletionWitnesses.lean:12](Route8CarrierDeletionWitnesses.lean#L12) |
+| `route8PrivateCarrierBudgetRow` | [Route8PrivateCarrierBudget.lean:23](Route8PrivateCarrierBudget.lean#L23) |
+| `typeAExitOneDichotomy` | [TypeAExitOneDichotomy.lean:25](TypeAExitOneDichotomy.lean#L25) |
+| `typeAExitTwoDichotomy` | [TypeAExitTwoDichotomy.lean:24](TypeAExitTwoDichotomy.lean#L24) |
+| `typeAExitThreeDichotomy` | [TypeAExitThreeDichotomy.lean:26](TypeAExitThreeDichotomy.lean#L26) |
+| `typeAVisibleExitEntryRow` | [TypeAVisibleExitEntry.lean:23](TypeAVisibleExitEntry.lean#L23) |
+| `typeASilentExitEntryRow` | [TypeASilentExitEntry.lean:22](TypeASilentExitEntry.lean#L22) |
+| `typeAExitFourFiniteDescentRow` | [TypeAExitFourFiniteDescent.lean:22](TypeAExitFourFiniteDescent.lean#L22) |
+| `typeAExitFourDichotomy` | [TypeAExitFourDichotomy.lean:26](TypeAExitFourDichotomy.lean#L26) |
+| `typeAExitFourPeelingStepRow` | [TypeAExitFourPeelingStep.lean:22](TypeAExitFourPeelingStep.lean#L22) |
+| `typeAExitFourRetestDichotomy` | [TypeAExitFourRetestDichotomy.lean:31](TypeAExitFourRetestDichotomy.lean#L31) |
+| `typeAExitFiveDichotomy` | [TypeAExitFiveDichotomy.lean:24](TypeAExitFiveDichotomy.lean#L24) |
+| `typeAExitSixDichotomy` | [TypeAExitSixDichotomy.lean:23](TypeAExitSixDichotomy.lean#L23) |
+| `typeAExitSixScopeDichotomy` | [TypeAExitSixScopeDichotomy.lean:27](TypeAExitSixScopeDichotomy.lean#L27) |
+| `typeAExitSevenDichotomy` | [TypeAExitSevenDichotomy.lean:29](TypeAExitSevenDichotomy.lean#L29) |
+| `route8OpenBoundarySaturatedRow` | [Route8OpenBoundarySaturated.lean:12](Route8OpenBoundarySaturated.lean#L12) |
+| `windowShadowHitCycleRow` | [WindowShadowHitCycle.lean:11](WindowShadowHitCycle.lean#L11) |
+| `windowShadowHitExcludedRow` | [WindowShadowHitExcluded.lean:12](WindowShadowHitExcluded.lean#L12) |
+| `degreeProfileFibresRow` | [DegreeProfileFibres.lean:30](DegreeProfileFibres.lean#L30) |
+| `targetCompleteContextUniversalityRow` | [TargetCompleteContextUniversality.lean:30](TargetCompleteContextUniversality.lean#L30) |
+| `hssTargetCycleRow` | [ObstructionPacking.lean:52](ObstructionPacking.lean#L52) |
+| `degreeFourLedgerDichotomy` | [B2AssignmentDichotomy.lean:52](B2AssignmentDichotomy.lean#L52) |
+| `denseDeficiencyDichotomy` | [DenseNetDeficiencyCap.lean:23](DenseNetDeficiencyCap.lean#L23) |
+| `typeBDegreeFourClosedRow` | [DisjointPostLedgerComponents.lean:41](DisjointPostLedgerComponents.lean#L41) |
+| `highEntropyLargeBudgetRow` | [LowEntropyLargeBudget.lean:56](LowEntropyLargeBudget.lean#L56) |
+| `windowFreeDichotomy` | [ObstructionPacking.lean:28](ObstructionPacking.lean#L28) |
+| `returnAvoidanceDichotomy` | [ReturnAvoidance.lean:34](ReturnAvoidance.lean#L34) |
+| `route8DemandLedgerRow` | [Route8DemandPartition.lean:21](Route8DemandPartition.lean#L21) |
+| `route8StageTrueEntryRow` | [Route8StageOutcomeDichotomy.lean:24](Route8StageOutcomeDichotomy.lean#L24) |
+| `route8TwoCarrierExitRow` | [Route8TwoCarrierExit.lean:26](Route8TwoCarrierExit.lean#L26) |
+| `route8UnifiedTwoCarrierExitRow` | [Route8TwoCarrierExit.lean:50](Route8TwoCarrierExit.lean#L50) |
+| `route8UnpaidTwoCarrierRow` | [Route8UnpaidExitFourDichotomy.lean:25](Route8UnpaidExitFourDichotomy.lean#L25) |
+| `route8UnpaidTrueEntryRow` | [Route8UnpaidExitFourDichotomy.lean:47](Route8UnpaidExitFourDichotomy.lean#L47) |
+| `typeAExitFourFreeEntryRow` | [TypeAExitFourDichotomy.lean:50](TypeAExitFourDichotomy.lean#L50) |
+| `typeAPeeledUnsaturatedDischargeRow` | [TypeAExitFourRetestDichotomy.lean:62](TypeAExitFourRetestDichotomy.lean#L62) |
+| `typeAExitSevenEnvelopeRow` | [TypeAExitSevenDichotomy.lean:59](TypeAExitSevenDichotomy.lean#L59) |
+| `typeAExitSixProperRow` | [TypeAExitSixScopeDichotomy.lean:55](TypeAExitSixScopeDichotomy.lean#L55) |
+| `typeAExitSixGlobalRow` | [TypeAExitSixScopeDichotomy.lean:70](TypeAExitSixScopeDichotomy.lean#L70) |
+| `typeAExitThreeCycleRow` | [TypeAExitThreeDichotomy.lean:54](TypeAExitThreeDichotomy.lean#L54) |
+| `typeAPeeledVisibleEntryDichotomy` | [TypeAPeeledExits.lean:32](TypeAPeeledExits.lean#L32) |
+| `typeAPeeledSilentExcessRow` | [TypeAPeeledExits.lean:61](TypeAPeeledExits.lean#L61) |
+| `typeAPeeledExitOneDichotomy` | [TypeAPeeledExits.lean:79](TypeAPeeledExits.lean#L79) |
+| `typeAPeeledExitTwoDichotomy` | [TypeAPeeledExits.lean:112](TypeAPeeledExits.lean#L112) |
+| `typeAPeeledExitThreeDichotomy` | [TypeAPeeledExits.lean:141](TypeAPeeledExits.lean#L141) |
+| `typeAPeeledExitThreeCycleRow` | [TypeAPeeledExits.lean:170](TypeAPeeledExits.lean#L170) |
+| `typeAPeeledVisibleExitFourFreeRow` | [TypeAPeeledExits.lean:187](TypeAPeeledExits.lean#L187) |
+| `typeAPeeledSilentExitFourFreeRow` | [TypeAPeeledExits.lean:205](TypeAPeeledExits.lean#L205) |
+| `typeASupportRow` | [TypeASupport.lean:22](TypeASupport.lean#L22) |
+| `typeAVisibleFirstExcessRow` | [TypeAVisibleFirstExcess.lean:25](TypeAVisibleFirstExcess.lean#L25) |
+| `typeBExcludedRow` | [TypeBExclusion.lean:21](TypeBExclusion.lean#L21) |
+| `typeBExclusionResidualRow` | [TypeBExclusion.lean:37](TypeBExclusion.lean#L37) |
+| `typeBCertificateMassExclusionRow` | [TypeBExclusion.lean:55](TypeBExclusion.lean#L55) |
+| `typeBObstructionMassExclusionRow` | [TypeBExclusion.lean:72](TypeBExclusion.lean#L72) |
+| `typeBDegreeFourGlobalLocalBridgeRow` | [TypeBGlobalLocalBridge.lean:36](TypeBGlobalLocalBridge.lean#L36) |
+| `windowPackageRealizationDichotomy` | [WindowPackage.lean:22](WindowPackage.lean#L22) |
+| `degreeFourFanCertificateCapRow` | [FanCertificateCap.lean:39](FanCertificateCap.lean#L39) |
+| `typeBAssignedEntryRow` | [TypeBAssignedSupport.lean:36](TypeBAssignedSupport.lean#L36) |
+| `typeBDecoratedEntryRow` | [TypeBDecoratedAssignedSupport.lean:42](TypeBDecoratedAssignedSupport.lean#L42) |
+| `typeBDirectCycleFreeRow` | [TypeBDirectCycleFree.lean:24](TypeBDirectCycleFree.lean#L24) |
+| `typeBDegreeFourExclusionResidualRow` | [TypeBExclusion.lean:90](TypeBExclusion.lean#L90) |
+| `typeBRoute8EntryRow` | [TypeBExclusion.lean:115](TypeBExclusion.lean#L115) |

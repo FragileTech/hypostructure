@@ -14,8 +14,7 @@ arm (or outcome) of `PairCodeConfigurationStatement` it concerns (library:
   its role in a ten-letter alphabet;
 * arm B (the first failure): its outcomes (B1), (B3) with their exact configurations,
   the demand ends and the connector routes ((B2), the target defect of the obstruction
-  coordinates, is exit (b) stated about G, empty at G; its former pinned-witness fact is
-  removed with the `[20a]` exit);
+  coordinates, is exit (b) stated about G, empty at G, lem:sparse-exit-b-empty);
 * every selected port endpoint has degree `δ`.
 
 This module imports no strategy, row, or vocabulary module.

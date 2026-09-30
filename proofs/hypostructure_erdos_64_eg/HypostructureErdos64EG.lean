@@ -22,14 +22,6 @@ generic exact-ledger continuation surface:
 
 `WindowAlgebra` and `FiniteChecks.P13Barrier` are supporting inputs of
 `Problem` rather than entry points, so they are reached through it.
-
-The legacy registration layer -- `Official/Definition.lean`,
-`Official/Problem.lean`, `Official/StructuralProgram.lean`,
-`Official/ClosureProbe.lean`, the `AB/` directory and `Presentation.lean` --
-built a `Core.ProblemDefinition`: a registry of parallel capability lists whose
-entries were resolved by list position.  The canonical API replaces that
-outright, so the layer was deleted rather than carried; it remains in git
-history.
 -/
 
 namespace HypostructureErdos64EG

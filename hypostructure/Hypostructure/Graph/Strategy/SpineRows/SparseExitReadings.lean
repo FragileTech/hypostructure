@@ -14,10 +14,8 @@ facts:
 - the top of the strict arm of `[19]` (`Assembly/Final.lean`, before `[20]`):
   where the surplus sits and the switch at every high/baseline edge.
 
-G-only restatement (`g-repair`): the rows at `[20a]`'s canonical witness
-(`sparseExitReadingsRow`, `sparseExitReadingsConsequencesRow`,
-`sparseExitPrivateSwitchRow`) are removed with the `[20a]` exit, which is empty
-at G.
+The `[20a]` exit is empty at G (lem:sparse-exit-b-empty), so no row runs at
+`[20a]`'s canonical witness.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine

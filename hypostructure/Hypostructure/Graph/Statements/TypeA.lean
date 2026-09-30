@@ -957,11 +957,11 @@ noncomputable abbrev TypeAExitSevenEnvelopeStatement (data : Parameters)
         (handoffAbsorbing data object (canonicalWindowPacking data object)) =
       some envelope
 
-/-! ## The switch at the separator, stated about G (G repair, R3b) -/
+/-! ## The switch at the separator, stated about G -/
 
 /-- **Node `[102]`, the exit-(4) peel at G** (Lean improvement: Q1 is empty at
-G).  Integration g-audit-int: on the pieces constructed from G
-(g-pieces-constructed) Q2, Q3 and Q5 are no longer empty at G, so the canonical
+G).  On the pieces constructed from G (`GConstructedPiece`) Q2, Q3 and Q5 are
+not excluded at G, so the canonical
 exit-(4) witness of the entry state is split exactly by its member: a Q2, Q3 or
 Q5 member, or a Q4 member whose separation's switch — the two connector
 configurations exchange their continuations at the separator, constructed from

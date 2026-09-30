@@ -8,28 +8,26 @@ at G along the [153] linear cold-mass arm of the realized package with a
 silent germ family (the singleton `linearRealizedSilent`), and along `[153]`'s
 repeat on the two dense linear arms (the subtypes `..._repeated`, G audit
 `[153]`).
-The 100 paths through the absorbed-germ residual `[174]`--`[177]` (formerly
-the product `ColdBranchClosedOutcome_product`) are not entered: `[173]`'s
+The 100 paths through the absorbed-germ residual `[174]`--`[177]` are not
+entered: `[173]`'s
 no-arm is closed at the node against the private-carrier rate `K .route8Rate`
 (`instIncompatibleExactCollisionFailsRoute8Rate`).
 
 The singleton lists every key of its arm as an explicit `Holds` conjunct, and
 its return theorem reads each fact with one `ExactLedger.get`.
 
-G repair (R4) removed the three singletons `linearDenseAtOrAbove`,
-`linearDenseRateFailed` and `linearRealizedDistinguished` on the `[154]` G2
-yes-arm `K .coldGermSomeDistinguishing`, because the second representative `E`
-then carried G's target response in `G − Z` by construction, so G2 was empty.
-g-pieces-constructed: `E` is a piece constructed from G at the support, G2 is
-a live test (every fold pair of the support distinguishes at the minimal G), and
-the three subtypes are restored, together with the two repeat-arm subtypes
+On the `[154]` G2 yes-arm `K .coldGermSomeDistinguishing` the second
+representative `E` is a piece constructed from G at the support, so G2 is a live
+test (every fold pair of the support distinguishes at the minimal G).  The yes-arm
+returns the three subtypes `linearDenseAtOrAbove`, `linearDenseRateFailed` and
+`linearRealizedDistinguished`, together with the two repeat-arm subtypes
 `..._repeatedDistinguished` (the G2 yes-arm after `[153]`'s repeat on the dense
 arms).
 
 G audit (`[153]`): the equal-state pair of `[153]` is the (F5) repeat subcase and
-continues into the germ path.  `K .coldCutStatesDistinct` is no longer a fact of
-the generic residual; the two dense-arm subtypes `..._repeated` carry
-`K .coldRepeatedStateResidual` instead (the dense ¬(★) arm of `[153]`).
+continues into the germ path.  `K .coldCutStatesDistinct` is not a fact of the
+generic residual; the two dense-arm subtypes `..._repeated` carry
+`K .coldRepeatedStateResidual` (the dense ¬(★) arm of `[153]`).
 -/
 
 namespace HypostructureErdos64EG
@@ -250,11 +248,11 @@ theorem coldBranchClosed_linearRealizedSilentReturn
 /-! ## The `[153]` repeat routed into the germ path (G audit)
 
 `lem:cold-corridor-first-failure` continues an (F5) repeat into the germ routing
-(`[154]`, G1/G2/G3); the returned equal-state residual of `[153]` stopped there.
+(`[154]`, G1/G2/G3).
 At G a repeat is the first failure of a retained corridor with no earlier event,
 so it is a germ of the extracted family, and the rows of `[154]`--`[157]` read
 neither `K .coldCutStatesDistinct` nor its absence.  On the dense linear arms
-of `[160]` the (★) decision is still taken (`[162]` reads it); its ¬(★) arm now
+of `[160]` the (★) decision is taken (`[162]` reads it); its ¬(★) arm
 runs the germ path to `[157]` and returns `[187]` with the constructed
 equal-state pair `K .coldRepeatedStateResidual` as one more fact of the same
 ledger.  These are the two `[187]` subtypes of that route. -/
@@ -450,7 +448,7 @@ theorem coldBranchClosed_denseRepeatedReturn
       t.1, t.2⟩
 
 
-/-! ## `[154]`'s G2 yes-arm (g-pieces-constructed)
+/-! ## `[154]`'s G2 yes-arm
 
 With the second representative `E` a piece constructed from G, G2 is a live test
 (`Graph/ColdGermConstructed.lean`); its yes-arm returns `[187]` on the linear arm

@@ -989,7 +989,7 @@ by nodes `[152]`--`[168]`: that family first restricts to the 11 one-stub
 interior incidences and then drops two, giving 9. -/
 
 /-- Generic subtraction-free transfer of any chosen per-window count across
-the non-ambient-cubic loss.  The repaired cold application instantiates
+the non-ambient-cubic loss.  The cold application instantiates
 `perWindow` with the selected interior count `9`.
 
 *"By `def:surviving-cold-branch`, only `o(n)` cold windows are not

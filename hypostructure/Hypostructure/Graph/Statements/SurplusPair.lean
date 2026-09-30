@@ -1242,9 +1242,7 @@ noncomputable abbrev SparsePairExitStatement
 /-- **One target-defective identification of G's declared sparse family**
 (node `[125]`, clause (b) of `def:named-surplus-exits`, stated about G): the
 identified pair of declared coordinates and the canonical connected support `Z`
-of their union.  (G-only restatement: the former field `outside`, a
-`∂Z`-boundaried context separating the readings, is not part of G and is
-removed; the only context of G at `∂Z` is `G − Z`.) -/
+of their union.  (The only context of G at `∂Z` is `G − Z`.) -/
 structure SparseTargetDefectWitness (data : Parameters)
     (object : Graph.FiniteObject.{u}) where
   /-- The first identified declared coordinate. -/

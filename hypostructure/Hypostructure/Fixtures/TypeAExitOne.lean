@@ -3,10 +3,9 @@ import Hypostructure.Graph.Strategy.TypeAExitRun
 /-!
 # TypeAExitOne row surface fixture
 
-The old fixture used hand-written runner/result transport.  The row declarations
-remain in the strategy modules and are exercised by ledger-specific fixtures;
-this file intentionally preserves only the import surface and declares no custom
-transport carrier.
+The row declarations live in the strategy modules and are exercised by
+ledger-specific fixtures; this file checks only the import surface and declares
+no runner/result transport carrier.
 -/
 
 namespace Hypostructure.Fixtures.TypeAExitOne

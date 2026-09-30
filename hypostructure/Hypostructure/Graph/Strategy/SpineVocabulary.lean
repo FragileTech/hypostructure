@@ -1193,7 +1193,7 @@ inductive Key where
   saturated receiver/peeling state; this is the predecessor of exit `(5)`. -/
   | typeASaturatedHandoffExitFourFree
   /-- Node `[102]`, no-loop arm: after the exit-`(4)` peel, the selected
-  receiver is no longer saturated at the peeled residual, so its remaining
+  receiver is not saturated at the peeled residual, so its remaining
   receiver charge is nonnegative by `lem:typeA-exit4-peeling-charge`. -/
   | typeAExitFourReceiverDischarged
   /-- Node `[103]`, yes arm: the exact selected saturated-handoff residual
@@ -1293,7 +1293,7 @@ inductive Key where
   at least two essential incidences, and is a route-8 entry with no exit-(4)
   witness or a target-defect entry through alternative (a) with its witness. -/
   | route8UnifiedEntryCensus
-  /-- Node `[123]`, the repaired failed-stage arm: a recorded target-defect
+  /-- Node `[123]`, the failed-stage arm: a recorded target-defect
   peel chain, the exact partition of the full ledger into reduced and peeled
   entries, both deficit inequalities, and failure of the sufficient stage
   rate. -/
@@ -1676,7 +1676,7 @@ inductive Key where
   the canonical representative of G's piece at `B_u` has the size of the piece (a
   valid replacement is not smaller), the folds carry accepted cycles and paths,
   and the exit-`(5)` datum is absent; at `α(ξ) = 0` the quotient of (b) is
-  present (g-pieces-constructed: realizations are constructed from G). -/
+  present (realizations are constructed from G). -/
   | route8QuotientEntriesAtG
   /-- Key `9900` (blob structure, rate arm): two exits of one canonical piece `X` of `R` landing
   on one window of `P₀` at positions `i`, `i'` close, with every internal path of `X` of
@@ -2012,11 +2012,11 @@ inductive Key where
   | canonicalOverloadOfFits
   /-- Node `[20a]`: **If every token carries load `≤ M₀`, the free side exceeds `B`**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B)`. -/
   | canonicalFreeExcessOfCapped
-  /-- Strict arm of `[19]` (hoisted from `[20a]`; G-only restatement): **Where G sits in the pair-code chain**: either the `[137]`→`[143]` configuration holds at the canonical objects (blocked pair, `[137]` count, canonical pattern, overload, caps fail), or G's canonical first failure exists and yields the `[182]` residual, or the canonical return system's obstruction handoff together with the Type B fan entry `[65]` (the target defect of the obstruction coordinates is exit (b) stated about G, empty at G). -/
+  /-- Strict arm of `[19]` (stated about G): **Where G sits in the pair-code chain**: either the `[137]`→`[143]` configuration holds at the canonical objects (blocked pair, `[137]` count, canonical pattern, overload, caps fail), or G's canonical first failure exists and yields the `[182]` residual, or the canonical return system's obstruction handoff together with the Type B fan entry `[65]` (the target defect of the obstruction coordinates is exit (b) stated about G, empty at G). -/
   | pairCodeConfiguration
-  /-- Entry prefix (G-only restatement; key name kept for ledger stability): **the witness triples of clause (b) at G**: at every triple `(A, B, Z)` with `Z` the canonical support of `A ∪ B`, `Z` is connected, contains `A` and `B`, and is a minimum connected set containing `A ∪ B`; and no triple satisfies clause (b) (`G − Z` never separates two readings of G). -/
+  /-- Entry prefix (stated about G): **the witness triples of clause (b) at G**: at every triple `(A, B, Z)` with `Z` the canonical support of `A ∪ B`, `Z` is connected, contains `A` and `B`, and is a minimum connected set containing `A ∪ B`; and no triple satisfies clause (b) (`G − Z` never separates two readings of G). -/
   | specWitnessStructure
-  /-- Entry prefix (G-only restatement; key name kept for ledger stability): **the readings of every clause-(b) witness triple of G are negative in G's own surroundings `G − Z`** (the split's positive reading never exists in G). -/
+  /-- Entry prefix (stated about G): **the readings of every clause-(b) witness triple of G are negative in G's own surroundings `G − Z`** (the split's positive reading never exists in G). -/
   | everyWitnessSpectrumSplit
   /-- Strict arm of `[19]`: **Where the surplus of G sits**: a vertex of degree `≥ δ + 2`, or two distinct vertices of degree exactly `δ + 1`. -/
   | highSurplusConfiguration
@@ -2121,28 +2121,28 @@ inductive Key where
   | pairArmAPattern
   /-- Strict arm of `[19]`: **Arm A → the canonical overload role is one of ten** (`liveRoles`; no incidence token, no clause (c)/(d) role; `M₀`, `C_sp` unchanged). -/
   | pairArmARoleAlphabet
-  /-- Strict arm of `[19]`: **Arm B of the pair code, exactly** (G-only restatement): the overlap system exists and G is in (B1) or (B3) ((B2), exit (b) at the obstruction coordinates, is empty at G); (B1) the `[182]` residual in three exact configurations; (B3) the obstruction handoff's separator (`deg > 3`), envelope and escape; on the realizability failure forward routes in `U` meet backward routes and the demand ends split; at the serial system the ends lie in `U`, centres high, port ends cubic, no route length accepted, and the switch at the left port. -/
+  /-- Strict arm of `[19]`: **Arm B of the pair code, exactly** (stated about G): the overlap system exists and G is in (B1) or (B3) ((B2), exit (b) at the obstruction coordinates, is empty at G); (B1) the `[182]` residual in three exact configurations; (B3) the obstruction handoff's separator (`deg > 3`), envelope and escape; on the realizability failure forward routes in `U` meet backward routes and the demand ends split; at the serial system the ends lie in `U`, centres high, port ends cubic, no route length accepted, and the switch at the left port. -/
   | pairArmB
-  -- g-repair R1 keys (7800–7849)
+  -- Sparse-exit emptiness keys (7800–7849)
   /-- Node `[125]`, clause (b) of `def:named-surplus-exits` stated about G (Lean improvement: exit (b) is empty at G): **every two readings of G agree in G's own surroundings `G − Z`** (both glued graphs are target-free subgraphs of G), so G's declared sparse family has no target-defective identification.  Published on `[125]`'s exit arm, where it closes the arm against `K .sparseTargetDefectResidual`. -/
   | sparseTargetDefectEmpty
-  -- g-repair R5 keys (8000–8049)
-  /-- Node `[144a]` (G repair R5, Lean improvement): **the transplants of G's pattern supports `X_q`, `X_p` into `Z = select?(X_p ∪ X_q)`**: each transplant (the `∂Z`-piece with interior `int(Z) ∩ X_·` and `G`'s edges) has (iii) interior at most `int(Z)`, (iv) linkage inclusion in `G[Z]`, (i) the profile of `G[Z]` iff no boundary vertex has a neighbour in `int(Z) ∖ X_·`, (ii) the baseline in `glue X′ (G − Z)` iff every vertex outside `int(Z) ∖ X_·` keeps `δ` neighbours outside it; and (ii) ∧ (iv) give `int(X′) = int(Z)` (minimality). -/
+  -- [144a] transplant keys (8000–8049)
+  /-- Node `[144a]` (Lean improvement): **the transplants of G's pattern supports `X_q`, `X_p` into `Z = select?(X_p ∪ X_q)`**: each transplant (the `∂Z`-piece with interior `int(Z) ∩ X_·` and `G`'s edges) has (iii) interior at most `int(Z)`, (iv) linkage inclusion in `G[Z]`, (i) the profile of `G[Z]` iff no boundary vertex has a neighbour in `int(Z) ∖ X_·`, (ii) the baseline in `glue X′ (G − Z)` iff every vertex outside `int(Z) ∖ X_·` keeps `δ` neighbours outside it; and (ii) ∧ (iv) give `int(X′) = int(Z)` (minimality). -/
   | sameTokenTransplantSize
-  /-- Node `[144a]` (G repair R5, Lean improvement): **the exact failure of the two transplants**: for each of `X_q`, `X_p`, either `int(Z) ⊆ X_·` and there is no exceptional vertex, or G's canonical exceptional vertex (the first vertex kept with fewer than `δ` neighbours outside `int(Z) ∖ X_·`) exists, lies in `Z`, and has a neighbour in `int(Z) ∖ X_·`. -/
+  /-- Node `[144a]` (Lean improvement): **the exact failure of the two transplants**: for each of `X_q`, `X_p`, either `int(Z) ⊆ X_·` and there is no exceptional vertex, or G's canonical exceptional vertex (the first vertex kept with fewer than `δ` neighbours outside `int(Z) ∖ X_·`) exists, lies in `Z`, and has a neighbour in `int(Z) ∖ X_·`. -/
   | sameTokenTransplantDeficit
-  -- g-audit S144a keys (8100–8149)
-  /-- Node `[144a]` (G audit S144a, Lean improvement): **the entry test of `[144a]`, decided at G**: at G's canonical routing, `X_p`, `X_q`, `Z = select?(X_p ∪ X_q)`: the coordinates differ, both readings of G at `Z` are target-free subgraphs of G and agree in `G − Z`; the arm "equal boundary profiles, separated by `G − Z`" is empty. -/
+  -- [144a] G-audit keys (8100–8149)
+  /-- Node `[144a]` (G audit, Lean improvement): **the entry test of `[144a]`, decided at G**: at G's canonical routing, `X_p`, `X_q`, `Z = select?(X_p ∪ X_q)`: the coordinates differ, both readings of G at `Z` are target-free subgraphs of G and agree in `G − Z`; the arm "equal boundary profiles, separated by `G − Z`" is empty. -/
   | sameTokenUnresolvedDecided
-  /-- Node `[144a]` (G audit S144a, Lean improvement): **each reading of G at `Z` (edge restriction to `X_p`, `X_q`), exactly**: it drops no edge of `G[Z]` with an interior end (it is G), or it drops one, is lexicographically smaller than G, and fails the baseline (minimality). -/
+  /-- Node `[144a]` (G audit, Lean improvement): **each reading of G at `Z` (edge restriction to `X_p`, `X_q`), exactly**: it drops no edge of `G[Z]` with an interior end (it is G), or it drops one, is lexicographically smaller than G, and fails the baseline (minimality). -/
   | sameTokenReadingsExact
-  /-- Node `[144a]` (G audit S144a, Lean improvement): **the rerouted swap `P → Q` at G, in both directions**: G's piece at `Z` with the interior structure of `P` replaced by a copy of that of `Q`, attached through the order-fixed contact bijection: (iii) `|int S| + |int Z ∩ P| = |int Z| + |int Z ∩ Q|`; (i) the profile of `G[Z]` iff every boundary vertex has as many interior neighbours in `Q` as in `P`; (ii) the baseline iff no vertex of G is deficient in any of four roles; (iv) linkage inclusion, or a linkage using a vertex and its copy; minimality gives `|int Z ∩ P| ≤ |int Z ∩ Q|`. -/
+  /-- Node `[144a]` (G audit, Lean improvement): **the rerouted swap `P → Q` at G, in both directions**: G's piece at `Z` with the interior structure of `P` replaced by a copy of that of `Q`, attached through the order-fixed contact bijection: (iii) `|int S| + |int Z ∩ P| = |int Z| + |int Z ∩ Q|`; (i) the profile of `G[Z]` iff every boundary vertex has as many interior neighbours in `Q` as in `P`; (ii) the baseline iff no vertex of G is deficient in any of four roles; (iv) linkage inclusion, or a linkage using a vertex and its copy; minimality gives `|int Z ∩ P| ≤ |int Z ∩ Q|`. -/
   | sameTokenSwap
-  /-- Node `[144a]` (G audit S144a, Lean improvement): **the exact failure of the two rerouted swaps**: valid (no deficient vertex, linkage-included, `|int Z ∩ P| ≤ |int Z ∩ Q|`), or G's canonical exceptional vertex exists and is deficient in the rest / copy / boundary role, or a linkage of the swap uses a vertex and its copy; both swaps valid give `|int Z ∩ X_p| = |int Z ∩ X_q|`. -/
+  /-- Node `[144a]` (G audit, Lean improvement): **the exact failure of the two rerouted swaps**: valid (no deficient vertex, linkage-included, `|int Z ∩ P| ≤ |int Z ∩ Q|`), or G's canonical exceptional vertex exists and is deficient in the rest / copy / boundary role, or a linkage of the swap uses a vertex and its copy; both swaps valid give `|int Z ∩ X_p| = |int Z ∩ X_q|`. -/
   | sameTokenSwapExact
-  /-- Node `[144a]` (G audit S144a, Lean improvement): **boundary-free configuration**: if neither support meets `∂Z` and the transplants of `X_q` and `X_p` keep the baseline, then `X_p = X_q = Z`, `∂Z = ∅`, `Z = V(G)`, and every vertex outside a pair seed is a cut vertex of G (Steiner minimality of `select?`, G connected). -/
+  /-- Node `[144a]` (G audit, Lean improvement): **boundary-free configuration**: if neither support meets `∂Z` and the transplants of `X_q` and `X_p` keep the baseline, then `X_p = X_q = Z`, `∂Z = ∅`, `Z = V(G)`, and every vertex outside a pair seed is a cut vertex of G (Steiner minimality of `select?`, G connected). -/
   | sameTokenU2FreeWhole
-  -- g-audit 172a keys (8600–8649)
+  -- [172a] G-audit keys (8600–8649)
   /-- Node `[172a]`, on the failure arm of `[170]` (`lem:scale-additivity`), G's own record: **G's own skeleton, the member of `𝓑(𝒫)` given by `K .blockedClassMember`, has a surviving barrier state at every coordinate and lies in both of its own conditional fibres**, so `1 ≤ |S| ≤ |A|` at G's own outside record and prefix at every coordinate. -/
   | blockedOwnRecord
   /-- Node `[172a]`, the aggregate failure of `[170]` quantified: **at the first failing coordinate `F·A_k < W·A_{k+1}` with `A_{k+1} ≤ A_k`, `1 ≤ |𝓑(𝒫)| ≤ A_{k+1}` and `F_{a,b} < W_{a,b}`**, all earlier aggregate tests holding. -/
@@ -2153,7 +2153,7 @@ inductive Key where
   | blockedFailingSetCarries
   /-- Node `[172a]`, G's overlap support (`def:barrier-overlap-system`): **for G's own skeleton, every completion support has at most `2^j+1` vertices; a present one is a closed walk of length `2^j` through a vertex of the root window which is not a cycle; and the overlap support of every coordinate is connected in G**. -/
   | blockedOverlapSupport
-  -- g-audit PairTypeBOutcome keys (8350–8399)
+  -- PairTypeBOutcome G-audit keys (8350–8399)
   /-- Nodes `[179]`/`[180]` → `[187]` (G audit): **the Type B support of G's pair-obstruction handoff, exactly**: on G's canonical pair returns the canonical obstruction support is `(Y, H) = ({d_p.2, d_q.2}, {h})` with `h` the canonical first separator of the obstruction's routes; `H` is nonempty and consists of high centres, and the whole support lies in the obstruction's overlap support `U`.  Published with `K .typeBFanEntry` by the `[179]`/`[180]` early rows. -/
   | pairHandoffSupport
   /-- Nodes `[179]`/`[180]` → `[187]` (G audit): **the ambient surplus of that support**: the core ends are cubic port ends (`σ(Y) = 0`), `Y ∩ H = ∅`, and `ω(H) = d_G(h) - δ ≥ 1` for the one centre `h`. -/
@@ -2180,15 +2180,15 @@ inductive Key where
   | stubDeficitIdentity
   /-- Terminal `[54]`: **the cycle spectrum of `R₀`**: `G[R₀]` and every induced subgraph of it carry no cycle of an accepted length. -/
   | remainderCycleSpectrum
-  /-- Node `[144a]` (G audit S144a, Lean improvement): **the pair seeds are covered by their canonical port paths**: each pair seed `T(p) ∪ Γ(p) ∪ T(p') ∪ Γ(p')` is at most `2δ` vertices and two canonical port paths (a triangular port's shortest return `R_p` in `G − cx`, an induced path; an open port's suppression path `Q_p`), each with its chord facts (every chord has an unaccepted span, every interior cubic vertex has exactly one off-path edge); if every degree-`3` vertex lies in both pair seeds, the degree-`3` vertices are covered by at most four such paths and `4δ` vertices, and `3n ≤ 5(|T| + |P₁| + |P₂|)` (from `5|H| + σ ≤ 2n`). -/
+  /-- Node `[144a]` (G audit, Lean improvement): **the pair seeds are covered by their canonical port paths**: each pair seed `T(p) ∪ Γ(p) ∪ T(p') ∪ Γ(p')` is at most `2δ` vertices and two canonical port paths (a triangular port's shortest return `R_p` in `G − cx`, an induced path; an open port's suppression path `Q_p`), each with its chord facts (every chord has an unaccepted span, every interior cubic vertex has exactly one off-path edge); if every degree-`3` vertex lies in both pair seeds, the degree-`3` vertices are covered by at most four such paths and `4δ` vertices, and `3n ≤ 5(|T| + |P₁| + |P₂|)` (from `5|H| + σ ≤ 2n`). -/
   | sameTokenSeedCover
-  /-- Node `[144a]` (G audit S144a, Lean improvement): **the interactions of the canonical port paths**: the pair seeds are `T ∪ supp w₁ ∪ supp w₂` and `T' ∪ supp z₁ ∪ supp z₂` with canonical port walks (simple; every chord, hub and closing cycle length unaccepted; one stub per interior cubic vertex); two vertex-disjoint segments of two of the walks joined by two edges (a rung pair, parallel or crossed) close a cycle of length `|p₂| + |q₂| + 2`, which is not accepted (all six pairs of walks); at every cubic vertex interior to a `P`-walk and a `Q`-walk the two path edges of one and the two of the other share an edge; if every degree-`3` vertex lies in both pair seeds, every neighbour of a hub lies in both. -/
+  /-- Node `[144a]` (G audit, Lean improvement): **the interactions of the canonical port paths**: the pair seeds are `T ∪ supp w₁ ∪ supp w₂` and `T' ∪ supp z₁ ∪ supp z₂` with canonical port walks (simple; every chord, hub and closing cycle length unaccepted; one stub per interior cubic vertex); two vertex-disjoint segments of two of the walks joined by two edges (a rung pair, parallel or crossed) close a cycle of length `|p₂| + |q₂| + 2`, which is not accepted (all six pairs of walks); at every cubic vertex interior to a `P`-walk and a `Q`-walk the two path edges of one and the two of the other share an edge; if every degree-`3` vertex lies in both pair seeds, every neighbour of a hub lies in both. -/
   | sameTokenPathInteractions
-  /-- Node `[144a]` (G audit S144a, Lean improvement): **the ladder count of the canonical port walks**: for both pair seeds `T ∪ supp w₁ ∪ supp w₂` (`|T| ≤ 2δ`), `|H| ≤ σ`, and when both ports are triangular (the walks are shortest paths of `G − e`) and neither walk uses the other's end edge: if every degree-`3` vertex lies in the seed, `⌊(|wᵢ| − 1)/24⌋ ≤ 16|H| + 12|T| + 30`, `n ≤ |H| + |T| + |w₁| + |w₂| + 2` and `n ≤ 769|H| + 577|T| + 1490`; if every neighbour of a hub lies in the seed, `σ ≤ (|T| + 5)|H|`. -/
+  /-- Node `[144a]` (G audit, Lean improvement): **the ladder count of the canonical port walks**: for both pair seeds `T ∪ supp w₁ ∪ supp w₂` (`|T| ≤ 2δ`), `|H| ≤ σ`, and when both ports are triangular (the walks are shortest paths of `G − e`) and neither walk uses the other's end edge: if every degree-`3` vertex lies in the seed, `⌊(|wᵢ| − 1)/24⌋ ≤ 16|H| + 12|T| + 30`, `n ≤ |H| + |T| + |w₁| + |w₂| + 2` and `n ≤ 769|H| + 577|T| + 1490`; if every neighbour of a hub lies in the seed, `σ ≤ (|T| + 5)|H|`. -/
   | sameTokenLadderCount
-  /-- Node `[144a]` (G audit S144a, Lean improvement): **the attachment and chain cycles of the canonical port walks**: for both pair seeds `T ∪ supp w₁ ∪ supp w₂` (`|T| ≤ 2δ`, port walks), a path `r : x ⇝ y` avoiding the segment `wᵢ[i..j]` with `wᵢ(i) ~ x`, `y ~ wᵢ(j)` closes a cycle of length `|r| + |i − j| + 2` (not accepted), and routes `r`, `r'` joining vertex-disjoint segments `w₁[i..i']`, `w₂[j..j']` in a chain close a cycle of length `|r| + |r'| + |i − i'| + |j − j'| + 4` (not accepted). -/
+  /-- Node `[144a]` (G audit, Lean improvement): **the attachment and chain cycles of the canonical port walks**: for both pair seeds `T ∪ supp w₁ ∪ supp w₂` (`|T| ≤ 2δ`, port walks), a path `r : x ⇝ y` avoiding the segment `wᵢ[i..j]` with `wᵢ(i) ~ x`, `y ~ wᵢ(j)` closes a cycle of length `|r| + |i − j| + 2` (not accepted), and routes `r`, `r'` joining vertex-disjoint segments `w₁[i..i']`, `w₂[j..j']` in a chain close a cycle of length `|r| + |r'| + |i − i'| + |j − j'| + 4` (not accepted). -/
   | sameTokenWalkAttachment
-  /-- Node `[144a]` (G audit S144a, Lean improvement: the separated configuration is empty at G): **every vertex off a pair seed has a cubic neighbour in `T`**: at G's canonical routing and pinned `X_p`, `X_q`, `Z`, for both pair seeds `T ∪ supp w₁ ∪ supp w₂`, in the boundary-free configuration with both ports triangular, every vertex off the seed has a degree-`3` neighbour in `T`, at most `3|T|` vertices lie off the seed, and `n ≤ 4|T| + |w₁| + |w₂| + 2` (a separating off-seed vertex would force `n ≤ 729 < C_sp(C_sp + 1) + 9`). -/
+  /-- Node `[144a]` (G audit, Lean improvement: the separated configuration is empty at G): **every vertex off a pair seed has a cubic neighbour in `T`**: at G's canonical routing and pinned `X_p`, `X_q`, `Z`, for both pair seeds `T ∪ supp w₁ ∪ supp w₂`, in the boundary-free configuration with both ports triangular, every vertex off the seed has a degree-`3` neighbour in `T`, at most `3|T|` vertices lie off the seed, and `n ≤ 4|T| + |w₁| + |w₂| + 2` (a separating off-seed vertex would force `n ≤ 729 < C_sp(C_sp + 1) + 9`). -/
   | sameTokenSeparatorExcluded
   /-- Node `[144a]` ([144a] exchange attack, Lean improvement): **induced windows along the canonical port walks**: at G's canonical routing, for both pair seeds, one walk witness `T ∪ supp w₁ ∪ supp w₂` (`|T| ≤ 2δ`, port walks) such that for each triangular walk every `13`-segment other than the whole walk induces a window and meets a member of `P₀`; `⌊|wᵢ|/13⌋ ≤ ν`; `⌊|w₁|/13⌋ + ⌊|w₂|/13⌋ ≤ ν` for two triangular walks with disjoint supports; and for `S ⊆ P₀` and disjoint segments `Q` avoiding `P₀ ∖ S`, `|Q| ≤ |S|` (no member of `P₀` has two disjoint segments avoiding all other members). -/
   | sameTokenWalkWindows
@@ -2202,7 +2202,7 @@ inductive Key where
   | sameTokenHubCount
   /-- Node `[144a]` ([144a] exchange attack, Lean improvement: the triangular sub-arm is empty at G): at G's canonical routing and pinned `X_p`, `X_q`, `Z`, for both pair seeds and every walk witness, the boundary-free configuration with both ports triangular and `EndEdgesFree` is impossible (`|Y| ≤ 4|T| ≤ 24`, so `σ ≤ 2637 < 102·103 < C_sp⌈√n⌉ < σ`). -/
   | sameTokenTriArmEmpty
-  -- g-pieces-constructed keys (8700–8799)
+  -- Route-8 constructed-piece keys (8700–8799)
   /-- Route 8 read on the pieces constructed from G: at every unified entry a fold pair of the selected basin (two interior vertices with no common neighbour) makes alternative (a) occur and the load an exit-`(4)` peel (Q3); a nonempty essential core means the declared family determines the target; every complete carrier set holds every fold pair. -/
   | route8FoldPeels
   -- CT3 dominance irreducibility keys (9975–9989)
@@ -3309,15 +3309,15 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairArmARoleAlphabetStatement data.toParameters object
   | .pairArmB, object =>
       PairArmBStatement data.toParameters object
-  -- g-repair R1 keys
+  -- Sparse-exit emptiness keys
   | .sparseTargetDefectEmpty, object =>
       SparseTargetDefectEmptyStatement data.toParameters object
-  -- g-repair R5 keys
+  -- [144a] transplant keys
   | .sameTokenTransplantSize, object =>
       SameTokenTransplantSizeStatement data.toParameters object
   | .sameTokenTransplantDeficit, object =>
       SameTokenTransplantDeficitStatement data.toParameters object
-  -- g-audit S144a keys
+  -- [144a] G-audit keys
   | .sameTokenUnresolvedDecided, object =>
       SameTokenUnresolvedDecidedStatement data.toParameters object
   | .sameTokenReadingsExact, object =>
@@ -3328,7 +3328,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SameTokenSwapExactStatement data.toParameters object
   | .sameTokenU2FreeWhole, object =>
       SameTokenU2FreeWholeStatement data.toParameters object
-  -- g-audit 172a keys
+  -- [172a] G-audit keys
   | .blockedOwnRecord, object =>
       BlockedOwnRecordStatement data.toParameters object
   | .blockedFailureSlack, object =>
@@ -3387,7 +3387,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SameTokenHubCountStatement data.toParameters object
   | .sameTokenTriArmEmpty, object =>
       SameTokenTriArmEmptyStatement data.toParameters object
-  -- g-pieces-constructed keys
+  -- Route-8 constructed-piece keys
   | .route8FoldPeels, object =>
       Route8FoldPeelsStatement data.toParameters object
   -- TA keys
@@ -3947,7 +3947,7 @@ def label : Key → String
   | .sameTokenSwap => "sameTokenSwap"
   | .sameTokenSwapExact => "sameTokenSwapExact"
   | .sameTokenU2FreeWhole => "sameTokenU2FreeWhole"
-  -- g-audit 172a keys
+  -- [172a] G-audit keys
   | .blockedOwnRecord => "blockedOwnRecord"
   | .blockedFailureSlack => "blockedFailureSlack"
   | .blockedPrefixCompression => "blockedPrefixCompression"
@@ -5091,7 +5091,7 @@ def idx : Key → Nat
   | .sameTokenSwap => 8102
   | .sameTokenSwapExact => 8103
   | .sameTokenU2FreeWhole => 8104
-  -- g-audit 172a keys
+  -- [172a] G-audit keys
   | .blockedOwnRecord => 8600
   | .blockedFailureSlack => 8601
   | .blockedPrefixCompression => 8602
@@ -5650,7 +5650,7 @@ def ofIdx : Nat → Key
   | 8102 => .sameTokenSwap
   | 8103 => .sameTokenSwapExact
   | 8104 => .sameTokenU2FreeWhole
-  -- g-audit 172a keys
+  -- [172a] G-audit keys
   | 8600 => .blockedOwnRecord
   | 8601 => .blockedFailureSlack
   | 8602 => .blockedPrefixCompression
@@ -6822,7 +6822,7 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenSwapExact") 8103
   | .sameTokenU2FreeWhole =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenU2FreeWhole") 8104
-  -- g-audit 172a keys
+  -- [172a] G-audit keys
   | .blockedOwnRecord =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "blockedOwnRecord") 8600
   | .blockedFailureSlack =>

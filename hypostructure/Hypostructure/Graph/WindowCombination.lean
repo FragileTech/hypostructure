@@ -933,7 +933,7 @@ theorem cross_region_split (A F Vb Ch Co Wch : Finset P)
 
 end Capacity
 
-/-- **The class-split G2 (ν no longer cancels class by class).**  With
+/-- **The class-split G2 (ν does not cancel class by class).**  With
 `|Π_blk| = L_W + L_R + L_P`, `|𝔗_W| = 15ν + σ_W`, `|𝔗_R| = σ_R`, `|𝔗_P| = 4n + 2σ`,
 `σ = σ_W + σ_R`, G2 reads
 `c²K + 2M₀(4n − 2σ − 15ν) ≤ 2(|Π_free| − B) + 2(L_W − M₀(15ν+σ_W)) + 2(L_R − M₀σ_R)

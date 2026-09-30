@@ -28,10 +28,9 @@ singleton, the silent germs of `[153]`'s repeat on the dense arms, and the five
 subtypes of `[154]`'s G2 yes-arm, live with the constructed second
 representative), and the
 returned residual of the structural exhaustion at `[54]` (the configuration at
-G where the joint realization fails).  `[153]`'s first equal-state pair is not
-a residual: it is the repeat subcase of (F5) and continues into the germ
-routing.  (`[162]`, a long corridor of G through a heavy centre, is no longer
-returned: the pass needs no terminality of a heavy-entry corridor.)  Each
+G where the joint realization fails).  `[153]`'s first equal-state pair is
+the repeat subcase of (F5) and continues into the germ routing.  The pass needs
+no terminality of a heavy-entry corridor.  Each
 residual is stated as the disjunction of its subtypes, one per distinct fact
 set of the ledger at its return. -/
 abbrev SelectedNearCubicSurvivorBoundary (selected : EGInput.{u}) :=
@@ -42,9 +41,9 @@ abbrev SelectedNearCubicSurvivorBoundary (selected : EGInput.{u}) :=
         Node54ResidualSubtypes selected
 
 /-- The near-cubic branch, after all sparse exits have been excluded, follows
-the surviving-cold/net-charge continuation.  (G-only restatement: the paper's
-named target-defect exit `[187]` is closed at G -- exit (b), stated about G, is
-empty -- so it returns no residual.) -/
+the surviving-cold/net-charge continuation.  The paper's named target-defect
+exit `[187]` is closed at G -- exit (b), stated about G, is empty
+(lem:sparse-exit-b-empty) -- so it returns no residual. -/
 abbrev SelectedNearCubicBoundary (selected : EGInput.{u}) :=
   SelectedNearCubicSurvivorBoundary selected
 

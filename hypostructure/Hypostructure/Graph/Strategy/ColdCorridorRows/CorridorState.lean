@@ -24,9 +24,8 @@ This is the joint owner of `K .coldCorridorState` and
 presentation `coldCutStatePresentation` (pinned in the published statement),
 and performs the terminal-or-first-repeat construction locally in this atomic
 executor.  Its support, offset, relational label, embedded-incidence, and
-labelled-degree data are all read from the current graph.  In particular, the
-former `(support.card, head ∈ support)` surrogate is absent: equal retained
-values mean equal labelled embedded data for the declared coordinate.
+labelled-degree data are all read from the current graph.  In particular,
+equal retained values mean equal labelled embedded data for the declared coordinate.
 
 The second representative is G's canonical representative of the retained
 cut-state, read in G's own surroundings `G − Z` (`rowRepresentative`,

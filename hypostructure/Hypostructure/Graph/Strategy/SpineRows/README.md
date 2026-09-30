@@ -20,12 +20,11 @@ Import a row's own module in callers. An import of the compatibility module
 makes the caller depend on every row. In particular, never import the
 compatibility module from a file in this directory.
 
-Scoped `omit` directives, attributes, universes, variable declarations,
-manifests, and proof bodies were retained when splitting the file. Each row
-still reads and publishes exactly its original facts through the existing
-sealed executor. No new proof-data interface was introduced.
+Each row module carries its own scoped `omit` directives, attributes,
+universes, variable declarations, manifest and proof body. Each row reads and
+publishes exactly its facts through the sealed executor; there is no separate
+proof-data interface.
 
-See `DECLARATIONS.md` for the declaration-to-module index and the assembly's
-`BUILD_MEASUREMENTS.md` for measured build times. A shared vocabulary change
-still affects all rows; changing an individual row no longer recompiles the
-other row declarations.
+See `DECLARATIONS.md` for the declaration-to-module index. A shared vocabulary change
+affects all rows; changing an individual row does not recompile the other row
+declarations.

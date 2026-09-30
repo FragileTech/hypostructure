@@ -24,10 +24,7 @@ Let `Z` be a vertex support of a finite object `G`, `∂Z` its cut boundary and
   side, one added edge to a cycle-free object, the vertex-deleted graph `G − S`,
   and the keeps-all split.
 
-The only outside is G's own `G − Z`.  (G-only restatement: contexts realized in
-`G − Z`, sub-contexts and cycle sub-contexts of a boundaried context `O`, the
-arc decomposition of cycles of `glue ret O` and the path-spectrum split, which
-reasoned about contexts other than `G − Z`, are removed.)
+The only outside is G's own `G − Z`; no other boundaried context is read.
 -/
 
 namespace Hypostructure.Graph.GluedReadings

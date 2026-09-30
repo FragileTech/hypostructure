@@ -3,11 +3,13 @@ import Hypostructure.Graph.Statements.SurplusPair
 import Hypostructure.Graph.ColdEqualStates
 
 /-!
-# Statements: the residuals returned at `[153]`, `[162]` and `[54]`
+# Statements: the exact decisions at `[153]`, `[162]` and `[54]`
 
 Structural exhaustion at the three nodes where the paper asserts a fact about
-G that it does not construct (`lean-vs-paper-discrepancies.md`, "Returned
-residuals").  Each node is an exact decision at G's pinned objects:
+G that it does not construct.  Each node is an exact decision at G's pinned
+objects; the equal-state pair of `[153]` is the repeat subcase of (F5) and
+continues into the germ routing (`[187]`), and the root residual of `[54]` is
+listed in `lean-vs-paper-discrepancies.md`, "Open propositions":
 
 * `[153]` (`lem:cold-corridor-first-failure` (ii), tex 7265-7270): G's cut
   states along each retained cold corridor are pairwise distinct up to the

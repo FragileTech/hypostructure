@@ -6,16 +6,15 @@ import Hypostructure.Graph.NamedSurplusExits
 `def:named-surplus-exits` (b) is a target-defective identification
 (`lem:context-universality`, tex 6106-6112) of two distinct declared
 coordinates of G, each read on G's own piece at the canonical support of their
-union.  The former clause accepted an arbitrary coordinate type with a
-caller-chosen attempted quotient and arbitrary boundaried pieces; a disjoint
-`K₄` added to one piece made it hold on every graph with a vertex.
+union.  A clause over an arbitrary coordinate type with a caller-chosen
+attempted quotient and arbitrary boundaried pieces would hold on every graph
+with a vertex (add a disjoint `K₄` to one piece); the clause below does not.
 
 1. A family with at most one coordinate has no clause-(b) defect.
-2. The former vacuity construction used two coordinates with the same (empty)
-   declared support.  Two coordinates with equal supports have the same
+2. Two coordinates with the same (empty) declared support have the same
    reading on G's piece, so G's own surroundings do not separate them: that
-   construction no longer yields clause (b), on any object.
-3. Stated about G (g-repair), clause (b) asks G's own surroundings `G − Z` to
+   vacuity construction yields no clause-(b) defect, on any object.
+3. Stated about G, clause (b) asks G's own surroundings `G − Z` to
    separate two readings of G; at a target-avoiding G it is empty
    (`not_residualTargetDefect_of_avoids`).
 -/
@@ -49,7 +48,7 @@ theorem not_residualTargetDefect_of_supports_eq
   rw [constant first firstMem, constant second secondMem] at separated
   exact separated Iff.rfl
 
-/-- (2) The former construction's data -- the two-coordinate family
+/-- (2) The vacuity construction's data -- the two-coordinate family
 `ULift Bool` with empty declared supports, on any object -- gives no
 clause-(b) exit. -/
 example (Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u}) :

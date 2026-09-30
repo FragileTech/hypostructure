@@ -831,10 +831,9 @@ noncomputable abbrev Route8CensusStatement
 /-- Node `[120]`: the private-carrier rate reading of the census alone,
 `(δs+1)·|∂R| + δ·F·s·T(n) < δ·|R|` (`τ < 3/13` with the `o(|R|)` allowance,
 `rem:route8-carrier-margin`), read from the arm's density fact.
-(g-pieces-constructed: the strong rate `Route8Census.StrongRate` of g-audit-r8rate was
-justified by empty route-`8` cores at G; with the realizations constructed from G
-(`GConstructedPiece`) the cores are not empty in general, so the manuscript rate is
-restored: it is what the no-two-carrier arm `[119]`--`[122]` needs.) -/
+With the realizations constructed from G (`GConstructedPiece`) the route-`8`
+cores are not empty in general, and the manuscript rate is what the
+no-two-carrier arm `[119]`--`[122]` needs. -/
 noncomputable abbrev Route8RateStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :

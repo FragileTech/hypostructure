@@ -4,7 +4,7 @@ import Hypostructure.Graph.Contracts.Spine.SparseExitResidual
 /-!
 # The strict-surplus facts of `[20]` at G, each published at the earliest point of the DAG
 
-Type A rows first written for the former `[20a]` path.  Each row reads its
+Type A rows of the strict-surplus arm.  Each row reads its
 prerequisites through `inputs.get` and publishes, at G, the bounds, ratios,
 identities and obstructions that those facts force (contracts:
 `Graph/Contracts/Spine/SparseExitResidual.lean`).  No row decides or splits
@@ -17,10 +17,9 @@ the shared prefix, so every branch below inherits its facts:
   (`Assembly/Surplus/Strict/Dependent.lean`); on the independent arm the key
   comes from `[131]`'s decision, so no ledger publishes it twice.
 
-G-only restatement (`g-repair`): exit (b) of `[125]` is empty at G, so the
-`[20a]` exit and `[187]`'s near-cubic target defect are closed; the six witness
-rows that read `K .sparseTargetDefectResidual` (`sparseExitWitnessFactsRow` ...
-`sparseExitCombinationRow`) are removed with them.
+Exit (b) of `[125]` is empty at G (lem:sparse-exit-b-empty), so the `[20a]`
+exit and `[187]`'s near-cubic target defect are closed and no row reads
+`K .sparseTargetDefectResidual`.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine

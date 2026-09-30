@@ -31,7 +31,7 @@ universe u w
 Type A / Type B / route-8 continuations it enters, as the freshness
 requirement of its callers.  The absorbed-lane keys of `[174]`--`[177]` stay
 reserved here although that arm is closed at `[173]` (`[175]`'s split and
-`[177]`'s fan data are still committed on the `[153]` linear arms). -/
+`[177]`'s fan data are committed on the `[153]` linear arms). -/
 noncomputable abbrev netChargeContinuationKeys : FactKeys EGInput.{u} :=
   [K .netChargeCap, K .exactCollisionFails, K .absorbedConfigurationResidual,
     K .absorbedGermSplit, K .coldReturnCorridors,

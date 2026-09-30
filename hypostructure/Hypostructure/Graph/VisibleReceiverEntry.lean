@@ -568,7 +568,7 @@ def VisibleFor (object : FiniteObject.{u}) (support : Finset object.Vertex)
                 terminalEdge trace =
               some ⟨return'.channel, return'.isChannel.1⟩)
 
-/-- Both clauses of `VisibleFor` now have the literal conclusion used by the
+/-- Both clauses of `VisibleFor` have the literal conclusion used by the
 visible-four routing proof: the selected return channel contains the selected
 canonical trace.  The second clause reaches it through the strengthened
 canonical-channel producer, not through an endpoint-ordering inference. -/

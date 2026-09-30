@@ -410,9 +410,7 @@ The last clause is what `lem:replacement`'s proof derives from (i) and (iii)
 ("We claim that `G'` has no power-of-two cycle"): a target cycle of `G'` lies in
 `Y`, or in `X'`, or crosses `∂Z`; the paper reads each case in `G' = X' ⊕ Y`.
 The only context of that argument is `Y = G − Z`, so the hypothesis is stated
-there.  (G-only restatement: the former clause, the inclusion of obstruction
-profiles against every `∂Z`-boundaried context, quantified over contexts that
-are not part of G.) -/
+there. -/
 def ReplacementSupport
     (Baseline Target : FiniteObject.{u} → Prop)
     (object : FiniteObject.{u}) (support : Finset object.Vertex) : Prop :=
@@ -432,9 +430,7 @@ def ReplacementSupport
 representative `X'` satisfying the hypotheses of `lem:replacement`"), stated
 about G only: exactly the clauses of `ReplacementSupport` — the boundary-degree
 profile of G's piece, the baseline and no target cycle in
-`glue X' (G − Z)`, and strictly smaller size.  (G-only restatement: the former
-last clause compared the two target responses against every `∂Z`-boundaried
-context.) -/
+`glue X' (G − Z)`, and strictly smaller size. -/
 def CompressibleSupport
     (Baseline Target : FiniteObject.{u} → Prop)
     (object : FiniteObject.{u}) (support : Finset object.Vertex) : Prop :=

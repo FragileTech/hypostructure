@@ -5,9 +5,8 @@ import Hypostructure.Graph.ReadingProfiles
 
 A cycle of a graph through an edge `ab` gives an `a`–`b` path avoiding that edge,
 one shorter than the cycle (`cycle_through_edge`, with `path_first_edge`).
-Statements about walks of one graph.  (G-only restatement: the single-edge and
-degree-two chain contexts, and the path-spectrum transfer between readings they
-carried, built boundaried contexts other than `G − Z` and are removed.)
+Statements about walks of one graph; no boundaried context other than `G − Z`
+is built.
 -/
 
 universe u v

@@ -110,7 +110,7 @@ after peeling (`K .typeAExitFourReceiverDischarged`, node `[90]` with `L₄`),
 and node `[91]` bounds the charge of the unpeeled loads
 (`K .typeAPeeledUnsaturatedDischarge`, `lem:typeA-exit4-peeling-charge`).  The
 diagram closes this arm at node `[92]`; with a nonempty peeling set that
-closure does not follow (see `lean-vs-paper-discrepancies.md`, Paper errors,
+closure does not follow (see `lean-vs-paper-discrepancies.md`, Paper findings,
 [92]).  The paper's own routing of the peeled loads is taken instead:
 `rem:typeA-exit4-peeling-use` sends a support with an exit-`(4)` witness through
 alternative (iii) of `lem:density-mersenne` to the unified target-defect/route-`8`

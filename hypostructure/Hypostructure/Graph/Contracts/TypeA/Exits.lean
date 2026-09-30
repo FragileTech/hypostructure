@@ -534,8 +534,8 @@ theorem typeAExitSevenEnvelope
 split exactly by its member (Q1 is empty at a target-avoiding G): a Q2, Q3 or Q5
 member, or a Q4 member whose switch is the target-cycle arm -- a proper
 double-edge switch whose switched graph carries an accepted cycle through an
-exchanged edge.  (Integration g-audit-int: Q2, Q3, Q5 are read on the pieces
-constructed from G and are no longer empty.) -/
+exchanged edge.  (Q2, Q3, Q5 are read on the pieces constructed from G and are
+not excluded at G.) -/
 theorem typeAExitFourSwitchCycle
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (exitFour : TypeASaturatedHandoffExitFourStatement data object) :

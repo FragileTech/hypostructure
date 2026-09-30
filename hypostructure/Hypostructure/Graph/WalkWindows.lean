@@ -237,9 +237,7 @@ theorem two_length_div_le {a1 b1 a2 b2 : object.Vertex} {w1 : object.graph.Walk 
 
 /-- **Local packing exchange.**  For a maximum packing `P`, a subfamily `S ⊆ P`, and a packing
 `Q` whose members avoid every member of `P` outside `S`: `|Q| ≤ |S|` (`(P ∖ S) ∪ Q` is a
-packing).
-
-dedup: generic packing exchange (g-packing-exchange) -/
+packing).  Generic packing exchange. -/
 theorem exchange_card_le {L : ℕ} (hL : 0 < L) {P S Q : Finset (Finset object.Vertex)}
     (valid : object.IsWindowPacking L P) (attains : P.card = object.windowPackingNumber L)
     (sub : S ⊆ P) (qValid : object.IsWindowPacking L Q)

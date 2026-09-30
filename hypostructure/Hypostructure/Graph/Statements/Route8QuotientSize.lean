@@ -18,10 +18,9 @@ census), stated about G only.
   at every unified entry the selected basin exists, the representative is
   size-preserving, the folds carry accepted cycles and paths, and the exit-`(5)`
   datum (`TraceTargetCompleteCompression`) is absent; at an entry with
-  `α(ξ) = 0` the quotient of alternative (b) is present.  (g-pieces-constructed:
-  over the realizations constructed from G, `α(ξ) = 0` and the presence of (b)
-  at every entry are no longer decided; they rested on readings-only
-  realizations.)
+  `α(ξ) = 0` the quotient of alternative (b) is present.  Over the realizations
+  constructed from G, `α(ξ) = 0` and the presence of (b) at every entry are not
+  decided by this statement.
 
 This module imports no strategy, row, or vocabulary module.
 -/
@@ -254,11 +253,10 @@ abbrev Route8TwoSupportEntryExists (data : Parameters)
    inside the piece are short; and the exit-`(5)` compression datum at `B_u` is
    absent.
 
-(g-pieces-constructed: the realizations of alternative (b) are the pieces
-constructed from G (`GConstructedPiece`), so neither `α(ξ) = 0` nor the presence of
-(b) at every entry is decided; the earlier clauses "quotient-free iff no entry" and
-"`α(ξ) = 0` at every entry" are withdrawn.  `K .route8Rate` is the manuscript rate
-again, so the rate clause is unconditional.) -/
+(The realizations of alternative (b) are the pieces constructed from G
+(`GConstructedPiece`), so neither `α(ξ) = 0` nor the presence of (b) at every
+entry is decided here.  `K .route8Rate` is the manuscript rate, so the rate
+clause is unconditional.) -/
 noncomputable abbrev Route8QuotientEntriesAtGStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   letI : DecidableEq object.Vertex := object.vertices.decEq

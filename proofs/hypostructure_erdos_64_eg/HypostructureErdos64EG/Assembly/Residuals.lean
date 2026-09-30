@@ -12,19 +12,17 @@ per residual (per arm of the residual's own decision) reads each fact with one
 others (its prerequisite is an arm of a decision that path did not take) is
 listed in `audits/erdos-64-red-team/lean-vs-paper-discrepancies.md`.
 
-port-joint (2026-09-28): every residual also carries the 21 entry-prefix facts of
+Every residual carries the 21 entry-prefix facts of
 `SpineRows/JointHubs.lean` (after `K .windowAttachmentGap`), and every strict-surplus
 residual the 16 strict-arm facts (after `K .highSurplusConfiguration`).  The fact counts
-quoted below (2026-09-30) are the numbers of `Holds` conjuncts of each abbrev, equal to
+quoted below are the numbers of `Holds` conjuncts of each abbrev, equal to
 the numbers of `get`s in its return theorem, and include these facts.
 
-g-repair (G-only restatement): the former residuals `Node20aOutcome` (node `[20a]`)
-and `NearCubicTargetDefectOutcome` (node `[187]`'s near-cubic target defect), with
-their returns `node20aReturn` and `nearCubicTargetDefectReturn`, are removed.  Both
-were reached only through exit (b) of `[125]`, and exit (b), stated about G, is empty
-at G: two readings of G always agree in G's own surroundings `G − Z`.  The exit arm
-of `[125]` is closed against `K .sparseTargetDefectEmpty`
-(`NearCubic/Local.lean`, `selectedSparseExitClosed`).
+Node `[20a]` and node `[187]`'s near-cubic target defect return no residual.  Both
+are reached only through exit (b) of `[125]`, and exit (b), stated about G, is empty
+at G (lem:sparse-exit-b-empty): two readings of G always agree in G's own
+surroundings `G − Z`.  The exit arm of `[125]` is closed against
+`K .sparseTargetDefectEmpty` (`NearCubic/Local.lean`, `selectedSparseExitClosed`).
 -/
 
 namespace HypostructureErdos64EG
@@ -2210,8 +2208,8 @@ strict-surplus and sparse-survivor ancestry.  The explicit conjunction of
 every fact on its maximal ledger (133 common facts, the last the `[179]` early outcome).
 (G audit, `[187]`: the `[180]` increment arm is empty at G and closed -- `[180]`'s periodic
 alternatives are alternatives of `[179]`'s early outcome at the same returns, so
-`K .pairIncrementEarlyOutcome` is incompatible with `K .pairSystemNoEarlyOutcome`; the
-increment arm's keys are no longer part of this residual.) -/
+`K .pairIncrementEarlyOutcome` is incompatible with `K .pairSystemNoEarlyOutcome`; this
+residual carries no increment-arm keys.) -/
 abbrev PairTypeBOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -3835,7 +3833,7 @@ theorem route8QuotientReturn
 /-- **Node `[187] (private-carrier rate failure)`** (thm:main (vi), tex
 386-403): failure of the exact private-carrier rate at the entry of the
 route-8 continuation.  The explicit conjunction of every fact on its maximal
-ledger (113 common facts: the 92 earlier ones and the G-audit facts
+ledger (113 common facts: the first 92 facts and the G-audit facts
 `route8RateFailsJoin`, `route8RateFailsPiece`, `route8RateFailsCrossBound`,
 `route8RateFailsFlow`, `route8CarrierInjection`, `route8RateExactSlack`,
 `route8BasinBurden`, `route8StubDeficit`, `route8DeficitVsStubs`, `route8EntryLowerBound`, `route8CoreEmpty`,
@@ -3843,7 +3841,7 @@ ledger (113 common facts: the 92 earlier ones and the G-audit facts
 `route8WindowRPathGap`, `route8HubStubs`,
 `route8WindowSelfRPathGap`, `route8PieceBoundary`,
 `route8WindowPieceRank`, `route8AchievableLengths`).  `K .route8RateFails` is the
-failed manuscript rate `δ|R| ≤ (δs+1)|∂R| + δ·F·s·T(n)` (g-pieces-constructed). -/
+failed manuscript rate `δ|R| ≤ (δs+1)|∂R| + δ·F·s·T(n)`. -/
 abbrev Route8RateFailsOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧

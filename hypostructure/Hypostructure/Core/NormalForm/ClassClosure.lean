@@ -702,8 +702,8 @@ private def decisionOfGenerated {Previous : Type uPrevious}
       profile.AvoidsTargetVisible :=
   Residual.Ledger.extend previous (binaryOfOutcome generated.outcome)
 
-/-- Compatibility assembly for consumers that still require the historical
-two-stage decision/continuation shape. -/
+/-- Compatibility assembly for consumers that require the two-stage
+decision/continuation shape. -/
 def toStage {Previous : Type uPrevious}
     {profile : Profile.{uPrevious, uCarrier, uQuotient} Previous}
     {registration : ExtensionRegistration.{uPrevious, uCarrier, uQuotient,

@@ -9,11 +9,11 @@ common to every path, the last of them the `[179]` early outcome.  It is reached
 paths with two distinct literal ledgers: the entry into the pair-code chain
 `[178]` is either the free side of `[131]` (node `[130]`'s independent arm) or the
 free side of `[137]` (node `[130]`'s dependent arm), and the chain returns on the
-`[179]` early arm.  (G audit: the former `[180]` early arm (`increment`) is empty at
+`[179]` early arm.  (G audit: the `[180]` early arm (`increment`) is empty at
 G and closed: `[180]`'s periodic alternatives are alternatives of `[179]`'s early
 outcome at the same canonical returns, so `K .pairIncrementEarlyOutcome` is
-incompatible with `K .pairSystemNoEarlyOutcome`; the subtypes `independentIncrement`
-and `dependentIncrement` are removed.)  Each distinct fact set is its own open
+incompatible with `K .pairSystemNoEarlyOutcome`, and the increment arm returns no
+subtype.)  Each distinct fact set is its own open
 node, a subtype of the generic residual: the generic residual, then every
 extra key of its ledger as an explicit `Holds` conjunct (the entry keys).  Each
 return theorem reads each key of its ledger with exactly one `ExactLedger.get`.

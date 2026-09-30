@@ -4,15 +4,13 @@ import Hypostructure.Graph.NetCharge
 /-!
 # Statements: empty or determined cores, the strong rate, the thin remainder
 
-G audit of `Route8RateFailsOutcome`, re-read over the realizations constructed from G
-(`GConstructedPiece`, g-pieces-constructed).  A route-`8` core is empty unless the entry's
+G audit of `Route8RateFailsOutcome`, read over the realizations constructed from G
+(`GConstructedPiece`).  A route-`8` core is empty unless the entry's
 declared family determines the target on every constructed realization
 (`Route8.Entry.alpha_eq_zero_of_not_determined`).  The strong rate
 `|R| > s·|∂R| + F·s·T(n)` together with the large-budget deficit `[113]` makes the
 route-`8` collection nonempty; its complement is the exact thin remainder
-`|R| ≤ s·|∂R| + F·s·T(n)`.  (The earlier reading "every core is empty at G, so an entry
-is two-carrier as soon as it exists" rested on the readings-only realizations and is
-withdrawn.)
+`|R| ≤ s·|∂R| + F·s·T(n)`.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -24,7 +22,7 @@ universe u
 /-- **Every route-`8` core is empty or determined at G**: each graph-owned entry of the
 census has `𝓒_ess(ξ) = ∅`, or its declared carrier family determines the target on every
 realization constructed from G (`Route8.Entry.Determined`, completeness read in
-`G − B_u`).  (Key name kept from g-audit-r8rate; the statement is the G-form.) -/
+`G − B_u`). -/
 noncomputable def Route8CoreEmptyStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   letI : DecidableEq object.Vertex := Graph.Route8.vertexDecEq object

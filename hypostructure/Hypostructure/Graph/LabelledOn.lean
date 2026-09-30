@@ -130,8 +130,8 @@ theorem two_pow_le_card_of_realized {State : Type*} {n k : Nat}
 
 /-- The overflow branch of a canonical assignment is empty: no canonical
 assignment can realize more states than there are labelled skeletons. This
-is the closing step of every entropy-cap argument, and it is now a theorem
-rather than a consequence of an assumed injection. -/
+is the closing step of every entropy-cap argument, and it is a theorem, not a
+consequence of an assumed injection. -/
 theorem not_card_lt_card_realized {State : Type*} (n : Nat)
     (stateOf : LabelledOn n -> State) :
     ¬ Nat.card (LabelledOn n) < Nat.card (Realized stateOf) :=

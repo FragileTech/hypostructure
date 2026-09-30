@@ -18,7 +18,7 @@ variable {data : Data.{u}}
 
 /-! ## Node `[153]`, `lem:cold-germ-extraction`: the (F5) candidate family
 
-The candidates are exactly the manuscript's complete repaired occurrence
+The candidates are exactly the manuscript's complete occurrence
 family: outside-corridor F5 prefixes and immediate two-vertex terminal germs
 for selected cross-window incidences.  A noncandidate occurrence is charged
 at its first high-to-subcubic edge; there is no separate conditional or

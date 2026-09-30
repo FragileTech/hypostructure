@@ -32,7 +32,7 @@ published on one arm, and `SurvivesSparseExits` is published on the other.  In
 particular, this declaration does not claim that selection or replacement
 alone rules out target defects, delocalizations, or suppression chords.
 
-Every clause is stated about G (G-only restatement, `g-repair`).  Clause (b)
+Every clause is stated about G.  Clause (b)
 is stated at the residual's declared coordinate family: two distinct
 coordinates, read on G's own piece at the canonical connected support `Z` of
 their union (`ResidualTargetDefect`), lie in one boundary-degree fibre and are
@@ -119,8 +119,7 @@ boundary-degree fibre and are separated by a context of G.  The paper's
 defect is an identification valid in G's actual outside context but not in
 every context; the only context of G at `∂Z` is G's own surroundings `G − Z`
 (`ActualContext.actualGlue`), so stated about G the defect is that `G − Z`
-separates the two readings.  (G-only restatement: the former clause asked for
-an arbitrary `∂Z`-boundaried context, which is not part of G.) -/
+separates the two readings. -/
 def ResidualTargetDefect (Target : FiniteObject.{u} → Prop)
     (object : FiniteObject.{u}) {Coordinate : Type w}
     (family : Finset Coordinate)
@@ -224,8 +223,7 @@ inductive SparseSurplusExit (Baseline Target : FiniteObject.{u} → Prop)
   replacement of the whole of G (`Z = V(G)`, so `G − Z = ∅`) by a strictly
   smaller representative `X'` meeting the baseline with no target cycle in
   `glue X' (G − Z) = X'` (the closed clause of the G-form admissible
-  quotient, `DeclaredQuotient.localize`).  Minimality of G refutes it.  (G-only
-  restatement: the former last field compared `X'`'s target with G's.) -/
+  quotient, `DeclaredQuotient.localize`).  Minimality of G refutes it. -/
   | delocalization (representative : FiniteObject.{u})
       (smaller : representative.LexicographicallySmaller object)
       (baseline : Baseline representative)

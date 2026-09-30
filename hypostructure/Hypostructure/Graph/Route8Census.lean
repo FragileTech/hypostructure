@@ -223,13 +223,13 @@ def Rate (packing : Finset (Finset object.Vertex)) (threshold discharge slack : 
 /-- **The strong rate** `s·|∂R| + slack < |R|`: with the census deficit
 `|R| ≤ N + s·|∂R| + slack` it makes the route-`8` collection nonempty.  It is weaker than
 the manuscript's `τ < 3/13` (`Rate`, `(δs+1)|∂R| + δ·slack < δ|R|`), which the
-no-two-carrier arm of the census needs (g-pieces-constructed: the cores are not empty in
-general once the realizations are the pieces constructed from G). -/
+no-two-carrier arm of the census needs (the cores are not empty in general, the
+realizations being the pieces constructed from G). -/
 def StrongRate (packing : Finset (Finset object.Vertex)) (discharge slack : Nat) : Prop :=
   discharge * (supply object packing).card + slack <
     (object.remainderSupport packing).card
 
-/-- The old rate implies the strong rate. -/
+/-- The manuscript rate `Rate` implies the strong rate. -/
 theorem strongRate_of_rate (packing : Finset (Finset object.Vertex))
     (threshold discharge slack : Nat)
     (rate : Rate object packing threshold discharge slack) :

@@ -597,9 +597,7 @@ admissible* rank quotient).  The attempt's quotient labels carry a value, and
 at every coordinate `c ∈ ℛ_Π` that value is G's own exact response data of `c`
 at the determination support `Z`: the boundary-degree profile of `c` read on
 G's piece at `Z` restricted to its declared support, and the target response of
-that reading in G's own surroundings `G − Z` (`ActualContext.actualGlue`; G-only
-restatement: the former component was the response against every
-`∂Z`-boundaried context, which is not part of G).  An identification of two coordinates by the
+that reading in G's own surroundings `G − Z` (`ActualContext.actualGlue`).  An identification of two coordinates by the
 quotient therefore preserves both components, as a target-complete quotient
 must (`def:target-complete-quotient` (a), (b); `def:boundary-degree-profile`:
 "All target-response states in this paper are taken fibrewise over `𝐝_∂`").
