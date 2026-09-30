@@ -1396,15 +1396,9 @@ inductive Key where
   | canonicalPairLedger
   /-- Node `[132]`, exit arm of `lem:sparse-pair-dependence-exit`: the
   dependence of a blocked pair's response coordinates is settled by a sparse
-  surplus exit of `def:named-surplus-exits` rather than by a canonical blocker.
-  It closes the branch against node `[125]`'s survivor entry at `[133]`. -/
+  surplus exit of `def:named-surplus-exits` (a cycle conclusion in G) rather
+  than by a canonical blocker.  It closes the branch against node `[125]`'s survivor entry at `[133]`. -/
   | sparsePairExit
-  /-- Node `[125]`, the named-exit payload of the exit arm: clause (b) stated
-  about G at G's canonical witness `sparseTargetDefectWitness` -- the identified
-  pair of declared coordinates and their canonical support `Z`, separated by G's
-  own surroundings `G − Z`.  Incompatible with `K .sparseTargetDefectEmpty`,
-  which closes the exit arm. -/
-  | sparseTargetDefectResidual
   /-- Node `[132]`, blocker arm: no sparse surplus exit occurs, and the blocked
   pair of `[130]` at G's canonical activation has its canonical blocker
   `Φ_can(π) = min_≺ 𝖡𝗅𝗄(π)` of `def:canonical-blocker-ledger`.  This is the arm
@@ -1569,8 +1563,9 @@ inductive Key where
   `m = (3/2)n + O(√n)`. -/
   | homogeneousBottleneck
   /-- Node `[125]`, `def:named-surplus-exits`: the selected object survives the
-  five sparse surplus exits.  This is the standing hypothesis every node of the
-  block reads, derived from the selection entry rather than assumed. -/
+  named sparse surplus exits, the two cycle conclusions in G.  This is the
+  standing hypothesis every node of the block reads, a theorem about G from the
+  selection entry. -/
   | sparseSurplusSurvivor
   /-- Node `[125]`, `def:active-surplus-demands` with
   `lem:surviving-active-family`: the active family is the excess-port family,
@@ -1587,10 +1582,10 @@ inductive Key where
   /-- Node `[130]`, blocker-free arm: the exact negation at the same
   activation (`Π_blk = ∅`). -/
   | independentPairFamily
-  /-- Node `[131]`, `lem:mixed-sparse-spine-dependence` at G's canonical spine
-  family and activation: a non-independent mixed family gives a sparse exit
-  or a type-(d)/(e) blocker.  No row consumes it: `[131]`'s count is a
-  registered branch test. -/
+  /-- Node `[131]`, `lem:mixed-sparse-spine-dependence` decided at G's canonical
+  spine family and activation: the mixed family is independently
+  target-testable (G's canonical rank-reducing quotient of it is `none`).  No
+  row consumes it: `[131]`'s count is a registered branch test. -/
   | mixedSparseSpineDependence
   /-- Node `[131]`, the two-sided exact cubic baseline budget at the current
   residual's order and registered baseline. -/
@@ -1995,58 +1990,58 @@ inductive Key where
   | coldMarkedGermPairMersenne
   /-- Node `[157]`, the chords of the marked germ's stretch: a chord whose subpath has length at least 2 closes a cycle of length span + 1, which is not accepted. -/
   | coldMarkedGermChordSpan
-  -- [20a] enrichment keys (6606-)
-  /-- Node `[20a]`: **Edge–surplus identity**: `2m = δ·n + σ`. -/
+  -- Budget and structure facts of G (6606-)
+  /-- Fact of G: **Edge–surplus identity**: `2m = δ·n + σ`. -/
   | edgeSurplusIdentity
-  /-- Node `[20a]`: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`). -/
+  /-- Fact of G: **The dart identity**: `σ + 2δ·|H| + lowDarts = δ·n` (at `δ = 3`: `σ + 6|H| + lowDarts = 3n`). -/
   | surplusDartIdentity
-  /-- Node `[20a]`: **High-degree count**: `|H| ≤ σ`. -/
+  /-- Fact of G: **High-degree count**: `|H| ≤ σ`. -/
   | highDegreeCountBound
-  /-- Node `[20a]`: **At least one high-degree vertex**: `1 ≤ |H|`. -/
+  /-- Fact of G: **At least one high-degree vertex**: `1 ≤ |H|`. -/
   | highDegreePositive
-  /-- Node `[20a]`: **The surplus fits on the high vertices**: `σ ≤ |H|·(n − |H| − δ)` (every high vertex has all its neighbours among the `n − |H|` baseline vertices). -/
+  /-- Fact of G: **The surplus fits on the high vertices**: `σ ≤ |H|·(n − |H| − δ)` (every high vertex has all its neighbours among the `n − |H|` baseline vertices). -/
   | highDegreeSurplusCapacity
-  /-- Node `[20a]`: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`). -/
+  /-- Fact of G: **Packing ratio**: `order·ν ≤ n` (at order `13`: `13ν ≤ n`). -/
   | packingOrderBound
-  /-- Node `[20a]`: **`C + 1 ≤ ⌈√n⌉`.** -/
+  /-- Fact of G: **`C + 1 ≤ ⌈√n⌉`.** -/
   | ceilSqrtAboveScale
-  /-- Node `[20a]`: **`C(C+1) + 9 ≤ n`** (¬K4, sharpened by `σ + 8 ≤ n`). -/
+  /-- Fact of G: **`C(C+1) + 9 ≤ n`** (¬K4, sharpened by `σ + 8 ≤ n`). -/
   | orderAboveScaleSquare
-  /-- Node `[20a]`: **Envelope from `ex(6, C₄) = 7`**: `m + 4 ≤ 2n`. -/
+  /-- Fact of G: **Envelope from `ex(6, C₄) = 7`**: `m + 4 ≤ 2n`. -/
   | sixVertexExtremalEnvelope
-  /-- Node `[20a]`: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`. -/
+  /-- Fact of G: **Exit (e) is excluded at G**: no open-port suppression cycle has an accepted lifted length `|walk| + |chords|`. -/
   | noSuppressionChordViolation
-  /-- Node `[20a]`: **Every admissible quotient of G is label-injective** on its family. -/
+  /-- Fact of G: **Every admissible quotient of G is label-injective** on its family. -/
   | admissibleQuotientsLabelInjective
-  /-- Node `[20a]`: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex). -/
+  /-- Fact of G: **The one-boundary shape**: every support `S` with a single boundary vertex `b`, a second vertex and a vertex outside has `b` with exactly two neighbours in `S` and two outside (`deg b = 4`, a 2+2 cut vertex). -/
   | singleBoundaryShape
-  /-- Node `[20a]`: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder). -/
+  /-- Fact of G: **`def⁺(R) ≤ e(R, W)`** at the canonical packing `P₀` (`R` its remainder). -/
   | remainderDeficiencyBelowCut
-  /-- Node `[20a]`: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`. -/
+  /-- Fact of G: **The window cut capacity** at `P₀`: `e(R, W) + 2(order − 1)·p ≤ δ·order·p + σ_W`. -/
   | windowCutCapacity
-  /-- Node `[20a]`: **G's canonical capacity presentation is the explicit one**: the recorded blocker activation of G's active family on the node-`[19]` packing. -/
+  /-- Fact of G: **G's canonical capacity presentation is the explicit one**: the recorded blocker activation of G's active family on the node-`[19]` packing. -/
   | canonicalCapacityExplicit
-  /-- Node `[20a]`: **`|𝔘_sp(G)| = 4n + 2σ`.** -/
+  /-- Fact of G: **`|𝔘_sp(G)| = 4n + 2σ`.** -/
   | primitiveCarrierCount
-  /-- Node `[20a]`: **The exact token count at the canonical presentation**: `|𝔗_cap| + 2(order − 1)·ν = 4n + 3σ + 3·order·ν` (at order `13`: `|𝔗_cap| = 4n + 3σ + 15ν`). -/
+  /-- Fact of G: **The exact token count at the canonical presentation**: `|𝔗_cap| + 2(order − 1)·ν = 4n + 3σ + 3·order·ν` (at order `13`: `|𝔗_cap| = 4n + 3σ + 15ν`). -/
   | canonicalTokenCount
-  /-- Node `[20a]`: **`|Π_blk| + |Π_free| = C(σ, 2)`** at the canonical ledger. -/
+  /-- Fact of G: **`|Π_blk| + |Π_free| = C(σ, 2)`** at the canonical ledger. -/
   | canonicalBlockedFreePartition
-  /-- Node `[20a]`: **The deficit at the canonical ledger** (G2): with `c = ⌈√n⌉`, `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B) + 2(|Π_blk| − M₀|𝔗|)`. -/
+  /-- Fact of G: **The deficit at the canonical ledger** (G2): with `c = ⌈√n⌉`, `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B) + 2(|Π_blk| − M₀|𝔗|)`. -/
   | canonicalLedgerDeficit
-  /-- Node `[20a]`: **The pair-count deficit** (G3): `c²K + 2M₀(8n + σ) ≤ 2(C(σ, 2) − B)`. -/
+  /-- Fact of G: **The pair-count deficit** (G3): `c²K + 2M₀(8n + σ) ≤ 2(C(σ, 2) − B)`. -/
   | pairCountDeficit
-  /-- Node `[20a]`: **The certification criterion at the canonical presentation**: its canonical certified ledger exists iff `|Π_free| ≤ B`. -/
+  /-- Fact of G: **The certification criterion at the canonical presentation**: its canonical certified ledger exists iff `|Π_free| ≤ B`. -/
   | canonicalCertificationCriterion
-  /-- Node `[20a]`: **The paper's budget at the canonical spine family fits the certification budget**: `E_paper ≤ B`. -/
+  /-- Fact of G: **The paper's budget at the canonical spine family fits the certification budget**: `E_paper ≤ B`. -/
   | paperBudgetBound
-  /-- Node `[20a]`: **`|Π_free| ≤ E_paper` certifies**: at the canonical spine family and presentation, `|Π_free| ≤ E_paper` makes the canonical certified ledger exist. -/
+  /-- Fact of G: **`|Π_free| ≤ E_paper` certifies**: at the canonical spine family and presentation, `|Π_free| ≤ E_paper` makes the canonical certified ledger exist. -/
   | paperBudgetCertifies
-  /-- Node `[20a]`: **If the free side fits `B`, the blocked side is overloaded**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_blk| − M₀|𝔗|)`, and some token has load `> M₀` and carries an `L_geom` role-homogeneous matching or star. -/
+  /-- Fact of G: **If the free side fits `B`, the blocked side is overloaded**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_blk| − M₀|𝔗|)`, and some token has load `> M₀` and carries an `L_geom` role-homogeneous matching or star. -/
   | canonicalOverloadOfFits
-  /-- Node `[20a]`: **If every token carries load `≤ M₀`, the free side exceeds `B`**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B)`. -/
+  /-- Fact of G: **If every token carries load `≤ M₀`, the free side exceeds `B`**: `c²K + 2M₀(8n + σ − |𝔗|) ≤ 2(|Π_free| − B)`. -/
   | canonicalFreeExcessOfCapped
-  /-- Strict arm of `[19]` (stated about G): **Where G sits in the pair-code chain**: either the `[137]`→`[143]` configuration holds at the canonical objects (blocked pair, `[137]` count, canonical pattern, overload, caps fail), or G's canonical first failure exists and yields the `[182]` residual, or the canonical return system's obstruction handoff together with the Type B fan entry `[65]` (the target defect of the obstruction coordinates is exit (b) stated about G, empty at G). -/
+  /-- Strict arm of `[19]` (stated about G): **Where G sits in the pair-code chain**: either the `[137]`→`[143]` configuration holds at the canonical objects (blocked pair, `[137]` count, canonical pattern, overload, caps fail), or G's canonical first failure exists and yields the `[182]` residual, or the canonical return system's obstruction handoff together with the Type B fan entry `[65]` (the target defect of the obstruction coordinates is clause (b) stated about G, empty at G). -/
   | pairCodeConfiguration
   /-- Entry prefix (stated about G): **the witness triples of clause (b) at G**: at every triple `(A, B, Z)` with `Z` the canonical support of `A ∪ B`, `Z` is connected, contains `A` and `B`, and is a minimum connected set containing `A ∪ B`; and no triple satisfies clause (b) (`G − Z` never separates two readings of G). -/
   | specWitnessStructure
@@ -2155,11 +2150,8 @@ inductive Key where
   | pairArmAPattern
   /-- Strict arm of `[19]`: **Arm A → the canonical overload role is one of ten** (`liveRoles`; no incidence token, no clause (c)/(d) role; `M₀`, `C_sp` unchanged). -/
   | pairArmARoleAlphabet
-  /-- Strict arm of `[19]`: **Arm B of the pair code, exactly** (stated about G): the overlap system exists and G is in (B1) or (B3) ((B2), exit (b) at the obstruction coordinates, is empty at G); (B1) the `[182]` residual in three exact configurations; (B3) the obstruction handoff's separator (`deg > 3`), envelope and escape; on the realizability failure forward routes in `U` meet backward routes and the demand ends split; at the serial system the ends lie in `U`, centres high, port ends cubic, no route length accepted, and the switch at the left port. -/
+  /-- Strict arm of `[19]`: **Arm B of the pair code, exactly** (stated about G): the overlap system exists and G is in (B1) or (B3) ((B2), clause (b) at the obstruction coordinates, is empty at G); (B1) the `[182]` residual in three exact configurations; (B3) the obstruction handoff's separator (`deg > 3`), envelope and escape; on the realizability failure forward routes in `U` meet backward routes and the demand ends split; at the serial system the ends lie in `U`, centres high, port ends cubic, no route length accepted, and the switch at the left port. -/
   | pairArmB
-  -- Sparse-exit emptiness keys (7800–7849)
-  /-- Node `[125]`, clause (b) of `def:named-surplus-exits` stated about G (Lean improvement: exit (b) is empty at G): **every two readings of G agree in G's own surroundings `G − Z`** (both glued graphs are target-free subgraphs of G), so G's declared sparse family has no target-defective identification.  Published on `[125]`'s exit arm, where it closes the arm against `K .sparseTargetDefectResidual`. -/
-  | sparseTargetDefectEmpty
   -- [144a] transplant keys (8000–8049)
   /-- Node `[144a]` (Lean improvement): **the transplants of G's pattern supports `X_q`, `X_p` into `Z = select?(X_p ∪ X_q)`**: each transplant (the `∂Z`-piece with interior `int(Z) ∩ X_·` and `G`'s edges) has (iii) interior at most `int(Z)`, (iv) linkage inclusion in `G[Z]`, (i) the profile of `G[Z]` iff no boundary vertex has a neighbour in `int(Z) ∖ X_·`, (ii) the baseline in `glue X′ (G − Z)` iff every vertex outside `int(Z) ∖ X_·` keeps `δ` neighbours outside it; and (ii) ∧ (iv) give `int(X′) = int(Z)` (minimality). -/
   | sameTokenTransplantSize
@@ -2869,8 +2861,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       CanonicalPairLedgerStatement data.toParameters object
   | .sparsePairExit, object =>
       SparsePairExitStatement data.toParameters object
-  | .sparseTargetDefectResidual, object =>
-      SparseTargetDefectResidualStatement data.toParameters object
   | .canonicalBlockerRoute, object =>
       CanonicalBlockerRouteStatement data.toParameters object
   | .dependentPairFamily, object =>
@@ -3201,7 +3191,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       BoundedOrderLargeStatement data.toParameters object
   | .boundedOrderSmall, object =>
       BoundedOrderSmallStatement data.toParameters object
-  -- [20a] enrichment keys
+  -- Budget and structure facts of G
   | .edgeSurplusIdentity, object =>
       EdgeSurplusIdentityStatement data.toParameters object
   | .surplusDartIdentity, object =>
@@ -3363,9 +3353,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairArmARoleAlphabetStatement data.toParameters object
   | .pairArmB, object =>
       PairArmBStatement data.toParameters object
-  -- Sparse-exit emptiness keys
-  | .sparseTargetDefectEmpty, object =>
-      SparseTargetDefectEmptyStatement data.toParameters object
   -- [144a] transplant keys
   | .sameTokenTransplantSize, object =>
       SameTokenTransplantSizeStatement data.toParameters object
@@ -3749,7 +3736,6 @@ def label : Key → String
   | .baselineSpineDemand => "baselineSpineDemand"
   | .canonicalPairLedger => "canonicalPairLedger"
   | .sparsePairExit => "sparsePairExit"
-  | .sparseTargetDefectResidual => "sparseTargetDefectResidual"
   | .canonicalBlockerRoute => "canonicalBlockerRoute"
   | .sparseUpperEnvelope => "sparseUpperEnvelope"
   | .capacityTokenLedger => "capacityTokenLedger"
@@ -3920,7 +3906,7 @@ def label : Key → String
   | .route8AchievableLengths => "route8AchievableLengths"
   | .boundedOrderLarge => "boundedOrderLarge"
   | .boundedOrderSmall => "boundedOrderSmall"
-  -- [20a] enrichment keys
+  -- Budget and structure facts of G
   | .edgeSurplusIdentity => "edgeSurplusIdentity"
   | .surplusDartIdentity => "surplusDartIdentity"
   | .highDegreeCountBound => "highDegreeCountBound"
@@ -4003,7 +3989,6 @@ def label : Key → String
   | .pairArmAPattern => "pairArmAPattern"
   | .pairArmARoleAlphabet => "pairArmARoleAlphabet"
   | .pairArmB => "pairArmB"
-  | .sparseTargetDefectEmpty => "sparseTargetDefectEmpty"
   | .sameTokenTransplantSize => "sameTokenTransplantSize"
   | .sameTokenTransplantDeficit => "sameTokenTransplantDeficit"
   | .sameTokenUnresolvedDecided => "sameTokenUnresolvedDecided"
@@ -4336,8 +4321,6 @@ example : label .sparsePortActivation = "sparsePortActivation" := rfl
 example : label .baselineSpineDemand = "baselineSpineDemand" := rfl
 example : label .canonicalPairLedger = "canonicalPairLedger" := rfl
 example : label .sparsePairExit = "sparsePairExit" := rfl
-example : label .sparseTargetDefectResidual =
-    "sparseTargetDefectResidual" := rfl
 example : label .canonicalBlockerRoute = "canonicalBlockerRoute" := rfl
 example : label .sparseUpperEnvelope = "sparseUpperEnvelope" := rfl
 example : label .capacityTokenLedger = "capacityTokenLedger" := rfl
@@ -4588,7 +4571,6 @@ example : label .portEndDegree = "portEndDegree" := rfl
 example : label .pairArmAPattern = "pairArmAPattern" := rfl
 example : label .pairArmARoleAlphabet = "pairArmARoleAlphabet" := rfl
 example : label .pairArmB = "pairArmB" := rfl
-example : label .sparseTargetDefectEmpty = "sparseTargetDefectEmpty" := rfl
 example : label .sameTokenTransplantSize = "sameTokenTransplantSize" := rfl
 example : label .sameTokenTransplantDeficit = "sameTokenTransplantDeficit" := rfl
 example : label .sameTokenUnresolvedDecided = "sameTokenUnresolvedDecided" := rfl
@@ -4912,7 +4894,6 @@ def idx : Key → Nat
   | .baselineSpineDemand => 112
   | .canonicalPairLedger => 113
   | .sparsePairExit => 143
-  | .sparseTargetDefectResidual => 400
   | .canonicalBlockerRoute => 144
   | .sparseUpperEnvelope => 129
   | .capacityTokenLedger => 114
@@ -5084,7 +5065,7 @@ def idx : Key → Nat
   | .route8AchievableLengths => 8269
   | .boundedOrderLarge => 6604
   | .boundedOrderSmall => 6605
-  -- [20a] enrichment keys
+  -- Budget and structure facts of G
   | .edgeSurplusIdentity => 6606
   | .surplusDartIdentity => 6607
   | .highDegreeCountBound => 6608
@@ -5167,7 +5148,6 @@ def idx : Key → Nat
   | .pairArmAPattern => 7234
   | .pairArmARoleAlphabet => 7235
   | .pairArmB => 7236
-  | .sparseTargetDefectEmpty => 7800
   | .sameTokenTransplantSize => 8000
   | .sameTokenTransplantDeficit => 8001
   | .sameTokenUnresolvedDecided => 8100
@@ -5475,7 +5455,6 @@ def ofIdx : Nat → Key
   | 112 => .baselineSpineDemand
   | 113 => .canonicalPairLedger
   | 143 => .sparsePairExit
-  | 400 => .sparseTargetDefectResidual
   | 144 => .canonicalBlockerRoute
   | 129 => .sparseUpperEnvelope
   | 114 => .capacityTokenLedger
@@ -5653,7 +5632,7 @@ def ofIdx : Nat → Key
   | 8269 => .route8AchievableLengths
   | 6604 => .boundedOrderLarge
   | 6605 => .boundedOrderSmall
-  -- [20a] enrichment keys
+  -- Budget and structure facts of G
   | 6606 => .edgeSurplusIdentity
   | 6607 => .surplusDartIdentity
   | 6608 => .highDegreeCountBound
@@ -5736,7 +5715,6 @@ def ofIdx : Nat → Key
   | 7234 => .pairArmAPattern
   | 7235 => .pairArmARoleAlphabet
   | 7236 => .pairArmB
-  | 7800 => .sparseTargetDefectEmpty
   | 8000 => .sameTokenTransplantSize
   | 8001 => .sameTokenTransplantDeficit
   | 8100 => .sameTokenUnresolvedDecided
@@ -6395,9 +6373,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalPairLedger") 113
   | .sparsePairExit =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sparsePairExit") 143
-  | .sparseTargetDefectResidual =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "sparseTargetDefectResidual") 400
   | .canonicalBlockerRoute =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalBlockerRoute") 144
   | .sparseUpperEnvelope =>
@@ -6758,7 +6733,7 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "boundedOrderLarge") 6604
   | .boundedOrderSmall =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "boundedOrderSmall") 6605
-  -- [20a] enrichment keys
+  -- Budget and structure facts of G
   | .edgeSurplusIdentity =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "edgeSurplusIdentity") 6606
   | .surplusDartIdentity =>
@@ -6920,8 +6895,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmARoleAlphabet") 7235
   | .pairArmB =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairArmB") 7236
-  | .sparseTargetDefectEmpty =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "sparseTargetDefectEmpty") 7800
   | .sameTokenTransplantSize =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenTransplantSize") 8000
   | .sameTokenTransplantDeficit =>

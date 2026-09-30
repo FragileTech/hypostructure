@@ -13,8 +13,8 @@ ledger facts: the selection (target avoidance), the presentation laws
 `surplusAbove` and `C + 1 ≤ ⌈√n⌉`.  The mathematics is in the vocabulary-free
 modules `Graph/EdgeSwitchPaths` and `Graph/ActualContext`.
 
-The `[20a]` exit is empty at G (lem:sparse-exit-b-empty), so no reading
-contract is stated at `[125]`'s pinned witness.
+Clause (b) of `[125]`, stated about G, is empty at G (lem:sparse-exit-b-empty);
+no reading contract is stated at `[125]`'s pinned witness.
 
 This module imports no strategy, row, or vocabulary module.
 -/

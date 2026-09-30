@@ -17,9 +17,8 @@ the shared prefix, so every branch below inherits its facts:
   (`Assembly/Surplus/Strict/Dependent.lean`); on the independent arm the key
   comes from `[131]`'s decision, so no ledger publishes it twice.
 
-Exit (b) of `[125]` is empty at G (lem:sparse-exit-b-empty), so the `[20a]`
-exit and `[187]`'s near-cubic target defect are closed and no row reads
-`K .sparseTargetDefectResidual`.
+G survives the named sparse exits of `[125]`, the two cycle conclusions in G
+(`sparseSurplusSurvivorRow`).
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -34,7 +33,7 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- Entry prefix, right after `[4]`'s selection: facts of G that read only `K .selection` (or nothing): the packing ratio, no suppression chord violation, and the witness triples of clause (b) (canonical support structure; no witness of G).  Hoisted from the `[20a]` path: every branch below `[4]` carries them. -/
+/-- Entry prefix, right after `[4]`'s selection: facts of G that read only `K .selection` (or nothing): the packing ratio, no suppression chord violation, and the witness triples of clause (b) (canonical support structure; no witness of G).  Every branch below `[4]` carries them. -/
 @[reducible] noncomputable def entrySelectionFactsRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.entrySelectionFacts
@@ -52,7 +51,7 @@ variable {data : Data.{u}}
         ⟨Contracts.Spine.SparseExitResidual.specWitnessStructure_holds (object := inputs.current.object) (inputs.get (K .selection)).down.1⟩
       .nil)))
 
-/-- Entry prefix, after `[1]`--`[3]`'s baseline: the canonical packing `P₀`: `def⁺(R) ≤ e(R, W)` and the window cut capacity.  Hoisted from the `[20a]` path. -/
+/-- Entry prefix, after `[1]`--`[3]`'s baseline: the canonical packing `P₀`: `def⁺(R) ≤ e(R, W)` and the window cut capacity. -/
 @[reducible] noncomputable def sparseExitPackingRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitPacking
@@ -68,7 +67,7 @@ variable {data : Data.{u}}
         ⟨Contracts.Spine.SparseExitResidual.windowCutCapacity_holds (object := inputs.current.object) (inputs.get (K .minDegreeBaseline)).down⟩
       .nil))
 
-/-- Entry prefix, after `[1]`--`[3]`'s baseline: the primitive carrier count of G.  Hoisted from the `[20a]` path. -/
+/-- Entry prefix, after `[1]`--`[3]`'s baseline: the primitive carrier count of G. -/
 @[reducible] noncomputable def primitiveCarrierCountRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.primitiveCarrierCount
@@ -82,7 +81,7 @@ variable {data : Data.{u}}
         ⟨Contracts.Spine.SparseExitResidual.primitiveCarrierCount_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .minDegreeBaseline)).down⟩
       .nil)
 
-/-- Entry prefix, after `[8]` (`lem:bridgeless` is published after the presentation laws): the single-boundary shape.  Hoisted from the `[20a]` path. -/
+/-- Entry prefix, after `[8]` (`lem:bridgeless` is published after the presentation laws): the single-boundary shape. -/
 @[reducible] noncomputable def singleBoundaryShapeRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.singleBoundaryShape
@@ -96,7 +95,7 @@ variable {data : Data.{u}}
         ⟨Contracts.Spine.SparseExitResidual.singleBoundaryShape_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .bridgeless)).down⟩
       .nil)
 
-/-- Entry prefix, after `[9]`/`[10]`: the dart identity and the high-degree count bound.  Hoisted from the `[20a]` path. -/
+/-- Entry prefix, after `[9]`/`[10]`: the dart identity and the high-degree count bound. -/
 @[reducible] noncomputable def degreeCountRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.degreeCount
@@ -112,7 +111,7 @@ variable {data : Data.{u}}
         ⟨Contracts.Spine.SparseExitResidual.highDegreeCountBound_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .tightEndpoint)).down⟩
       .nil))
 
-/-- Entry prefix, after `[13]`: admissible and attempted quotients of G at the pinned pair.  Hoisted from the `[20a]` path. -/
+/-- Entry prefix, after `[13]`: admissible and attempted quotients of G at the pinned pair. -/
 @[reducible] noncomputable def sparseExitQuotientsRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitQuotients
@@ -126,7 +125,7 @@ variable {data : Data.{u}}
         ⟨Contracts.Spine.SparseExitResidual.admissibleQuotientsLabelInjective_holds (object := inputs.current.object) (inputs.get (K .selection)).down.1 (inputs.get (K .selection)).down.2.sizeMinimal (inputs.get (K .replacementExclusion)).down⟩
       .nil)
 
-/-- Top of the strict arm of `[19]` (before `[20]`): the single budget: handshake and the square-root chain.  Hoisted from the `[20a]` path. -/
+/-- Top of the strict arm of `[19]` (before `[20]`): the single budget: handshake and the square-root chain. -/
 @[reducible] noncomputable def sparseExitBudgetRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitBudget
@@ -142,7 +141,7 @@ variable {data : Data.{u}}
         ⟨Contracts.Spine.SparseExitResidual.ceilSqrtAboveScale_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .surplusAbove)).down⟩
       .nil))
 
-/-- Top of the strict arm of `[19]`: the envelope sharpened by the absent quadrilateral and by `ex(6, C₄) = 7`.  Hoisted from the `[20a]` path. -/
+/-- Top of the strict arm of `[19]`: the envelope sharpened by the absent quadrilateral and by `ex(6, C₄) = 7`. -/
 @[reducible] noncomputable def sparseExitEnvelopeRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitEnvelope
@@ -158,7 +157,7 @@ variable {data : Data.{u}}
         ⟨Contracts.Spine.SparseExitResidual.sixVertexExtremalEnvelope_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.1.1 (inputs.get (K .selection)).down.1 (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .surplusAbove)).down⟩
       .nil))
 
-/-- Top of the strict arm of `[19]`: the high-degree range.  Hoisted from the `[20a]` path. -/
+/-- Top of the strict arm of `[19]`: the high-degree range. -/
 @[reducible] noncomputable def highDegreeSurplusRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.highDegreeSurplus
@@ -174,7 +173,7 @@ variable {data : Data.{u}}
         ⟨Contracts.Spine.SparseExitResidual.highDegreeSurplusCapacity_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .surplusAbove)).down⟩
       .nil))
 
-/-- Top of the strict arm of `[19]`: G's canonical capacity presentation is the explicit one; `|𝔘_sp(G)| = 4n + 2σ`.  Hoisted from the `[20a]` path. -/
+/-- Top of the strict arm of `[19]`: G's canonical capacity presentation is the explicit one; `|𝔘_sp(G)| = 4n + 2σ`. -/
 @[reducible] noncomputable def sparseExitCanonicalCapacityRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitCanonicalCapacity
@@ -188,7 +187,7 @@ variable {data : Data.{u}}
         ⟨Contracts.Spine.SparseExitResidual.canonicalCapacityExplicit_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .surplusAbove)).down⟩
       .nil)
 
-/-- Top of the strict arm of `[19]`: every quantity at the canonical capacity presentation and its canonical object ledger.  Hoisted from the `[20a]` path. -/
+/-- Top of the strict arm of `[19]`: every quantity at the canonical capacity presentation and its canonical object ledger. -/
 @[reducible] noncomputable def sparseExitCanonicalCapacityCountsRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitCanonicalCapacityCounts
@@ -214,7 +213,7 @@ variable {data : Data.{u}}
         ⟨Contracts.Spine.SparseExitResidual.canonicalFreeExcessOfCapped_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .cubicBaseline)).down.2.2.1.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .surplusAbove)).down⟩
       .nil)))))))
 
-/-- Top of the strict arm of `[19]`: the paper's budget at the canonical spine family and where G sits in the pair-code chain.  Hoisted from the `[20a]` path. -/
+/-- Top of the strict arm of `[19]`: the paper's budget at the canonical spine family and where G sits in the pair-code chain. -/
 @[reducible] noncomputable def sparseExitPairChainRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitPairChain
@@ -233,9 +232,10 @@ variable {data : Data.{u}}
       .nil)))
 
 /-- Node `[129]`'s baseline spine demand at the top of the strict arm of `[19]`
-(before `[20]`): its survivor premise is used only against exits (c) and (d),
-which the replacement exclusion and selection refute.  Published once there,
-it is on both `[20]` arms (`[20a]` and `[125]`--`[129]`). -/
+(before `[20]`): the paper's survivor premise is used only against clauses (c)
+and (d) of `def:named-surplus-exits`, which the replacement exclusion and
+selection refute.  Published once there,
+it is on every ledger below `[20]`. -/
 @[reducible] noncomputable def sparseExitBaselineSpineDemandRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitBaselineSpineDemand
@@ -260,8 +260,8 @@ it is on both `[20]` arms (`[20a]` and `[125]`--`[129]`). -/
         .nil)
 
 /-- Node `[131]`'s full-schedule entropy count fails at G's canonical objects
-(unconditionally); run on the `[20a]` arm and at the top of `[130]`'s dependent
-arm (it reads only strict-arm facts).  It is not run on `[130]`'s independent
+(unconditionally); run at the top of `[130]`'s dependent arm (it reads only
+strict-arm facts).  It is not run on `[130]`'s independent
 arm: there the same key is the no-arm of the paper's `[131]` decision. -/
 @[reducible] noncomputable def sparseExitFreePairCountRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=

@@ -10,7 +10,7 @@ stated over the live generic definitions, with every hypothesis explicit.
       support `X_π` of a pair of the minimal obstruction, hence lies in the
       obstruction's connected overlap support `U = ⋃_{π∈𝒰} X_π`;
 * G2  (B2) the canonical support of two meeting response supports is their
-      union (the target defect of the obstruction coordinates, exit (b)
+      union (the target defect of the obstruction coordinates, clause (b)
       stated about G, is empty at G);
 * G3  (B1(ii)) two vertex-disjoint connector routes, the forward one inside
       `U`, build a one-cell serial system, i.e. a covered `[179]` outcome;

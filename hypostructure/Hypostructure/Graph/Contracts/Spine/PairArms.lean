@@ -7,7 +7,7 @@ import Hypostructure.Graph.Contracts.Spine.JointHubs
 Proof-agnostic contract lemmas for `Statements/PairArms.lean`.  Hypotheses are ledger facts:
 the selection's avoidance, the presentation laws, the baseline, `[8]`, `[9]`, `[10]`, the
 return avoidance, the replacement exclusion, `K .surplusAbove`, `K .highEndpointSwitch`,
-and G's canonical capacity presentation.  Exit (b), stated about G, is empty at G
+and G's canonical capacity presentation.  Clause (b), stated about G, is empty at G
 (lem:sparse-exit-b-empty), so no contract is stated at its pinned witness.  One contract per statement: `<statement>_holds`.
 
 This module imports no strategy, row, or vocabulary module.

@@ -23,9 +23,8 @@ strict arm of `[19]` carries (selection, the presentation laws, the baseline,
 noProperBaseline, tightEndpoint, the replacement exclusion, the maximal
 packing, surplusAbove).  One contract per statement: `<statement>_holds`.
 
-Exit (b) of `[125]`, stated about G, is empty at G (lem:sparse-exit-b-empty),
-so the `[20a]` exit is closed and no contract is stated at `[125]`'s pinned
-witness.
+Clause (b) of `[125]`, stated about G, is empty at G (lem:sparse-exit-b-empty);
+no contract is stated at `[125]`'s pinned witness.
 
 This module imports no strategy, row, or vocabulary module.
 -/
@@ -447,9 +446,9 @@ theorem baselineSpineDemand_of_noCD
     ⟨Coordinate, family, coordinateSupport, spec⟩
 
 
-/-- **`[129]`'s baseline spine demand at the top of the strict arm**: its
-survivor premise is used only against exits (c) and (d), which G's replacement
-exclusion and minimality refute (exit (d), stated about G: a strictly smaller
+/-- **`[129]`'s baseline spine demand at the top of the strict arm**: the
+paper's survivor premise is used only against clauses (c) and (d), which G's replacement
+exclusion and minimality refute (clause (d), stated about G: a strictly smaller
 baseline representative with no target cycle, which minimality forbids). -/
 theorem baselineSpineDemand_of_selection (three : data.threshold = 3)
     (deficitSafety : Graph.baselineDeficitCoefficient data.threshold ≤ data.surplusScale)
@@ -625,8 +624,8 @@ theorem pairDeficitCoefficient_pos (three : data.threshold = 3)
   nlinarith [Int.natCast_nonneg (homogeneousTokenCap data.routingLabelBound),
     (show (1 : ℤ) ≤ data.surplusScale by exact_mod_cast S1)]
 
-/-- `ActiveSurplusDemands` at G from the `[20a]` facts (`[127]`, `[128]`,
-`[125]`), with no survivor fact. -/
+/-- `ActiveSurplusDemands` at G from the strict-arm facts of G (`[127]`,
+`[128]`, `[125]`), with no survivor fact. -/
 theorem active_of_selection (three : data.threshold = 3)
     (selection : SelectionStatement BranchState Presentation presentation data object)
     (baseline : MinDegreeBaselineStatement data object)
@@ -1044,7 +1043,7 @@ theorem coupledExcess_pos_of_above (above : SurplusAboveStatement data object)
     (Nat.eq_zero_of_not_pos h)
 
 /-- **The pair-code chain from the canonical first failure, survivor-free**,
-stated about G: the target-defect outcome of `[179]`/`[180]` (exit (b) at the
+stated about G: the target-defect outcome of `[179]`/`[180]` (clause (b) at the
 obstruction coordinates) is empty at G (`Graph.not_residualTargetDefect_of_avoids`:
 two readings of G agree in `G − Z`), so the chain ends at the `[182]` residual
 or at the obstruction handoff. -/
@@ -1189,7 +1188,7 @@ theorem pairCodeConfiguration_holds (three : data.threshold = 3)
   · exact Or.inl other
 
 open Classical in
-/-- **The entry-prefix witness fact, stated about G** (the `[20a]` structure at
+/-- **The entry-prefix witness fact, stated about G** (the structure at
 every clause-(b) witness): at every witness triple
 `w = (A, B, Z)` of G whose `Z` is the canonical support of `A ∪ B`, `Z` is
 connected, contains `A` and `B`, and is a minimum connected set containing

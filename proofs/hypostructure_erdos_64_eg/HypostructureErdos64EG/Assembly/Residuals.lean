@@ -18,11 +18,10 @@ residual the 16 strict-arm facts (after `K .highSurplusConfiguration`).  The fac
 quoted below are the numbers of `Holds` conjuncts of each abbrev, equal to
 the numbers of `get`s in its return theorem, and include these facts.
 
-Node `[20a]` and node `[187]`'s near-cubic target defect return no residual.  Both
-are reached only through exit (b) of `[125]`, and exit (b), stated about G, is empty
-at G (lem:sparse-exit-b-empty): two readings of G always agree in G's own
-surroundings `G − Z`.  The exit arm of `[125]` is closed against
-`K .sparseTargetDefectEmpty` (`NearCubic/Local.lean`, `selectedSparseExitClosed`).
+The named sparse exits of `[125]` are the two cycle conclusions in G (an
+accepted cycle, and a suppression-chord certificate whose lifted length is
+accepted), refuted by `[4]`'s selection.  `[125]`'s survivor fact is a theorem
+about G (`sparseSurplusSurvivorRow`), so no residual carries a sparse exit.
 -/
 
 namespace HypostructureErdos64EG

@@ -235,36 +235,6 @@ abbrev DeclaredSparseSurvivor (data : Parameters)
     (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
     (sparseDeclaredFamily data object) (sparseDeclaredSupport data object)
 
-/-- A target-defective identification among the scheduled pair coordinates of
-G is a clause-(b) exit of G's declared sparse family. -/
-theorem declaredSparseSurplusExit_of_pairDefect (data : Parameters)
-    (object : Graph.FiniteObject.{u})
-    (active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold)
-    {family : Finset object.PairCoordinate}
-    (subset : family ⊆ (Graph.pairResponseActivation active).pairFamily
-      (object.portPairSchedule data.threshold))
-    (defect : Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK)
-      object family (fun coordinate =>
-        @Graph.DeclaredSignature.Coordinate.support _ _
-          object.vertices.decEq coordinate)) :
-    DeclaredSparseSurplusExit data object := by
-  refine .targetDefect ?_
-  refine Graph.ResidualTargetDefect.map
-    (fun coordinate => (Sum.inr (Sum.inl coordinate) :
-      SparseDeclaredCoordinate data object)) ?_ ?_ ?_ defect
-  · intro first _ second _ equal
-    simpa using equal
-  · intro coordinate member
-    exact pairFamily_subset_sparseDeclaredFamily data object active coordinate
-      (subset member)
-  · intro coordinate _
-    show Graph.DeclaredSignature.Coordinate.support coordinate = _
-    congr 1
-    exact Subsingleton.elim _ _
-
 end
 
 end Hypostructure.Graph.Strategy.Spine

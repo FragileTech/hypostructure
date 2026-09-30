@@ -14,7 +14,7 @@ arm (or outcome) of `PairCodeConfigurationStatement` it concerns (library:
   its role in a ten-letter alphabet;
 * arm B (the first failure): its outcomes (B1), (B3) with their exact configurations,
   the demand ends and the connector routes ((B2), the target defect of the obstruction
-  coordinates, is exit (b) stated about G, empty at G, lem:sparse-exit-b-empty);
+  coordinates, is clause (b) stated about G, empty at G, lem:sparse-exit-b-empty);
 * every selected port endpoint has degree `δ`.
 
 This module imports no strategy, row, or vocabulary module.
@@ -106,7 +106,7 @@ noncomputable def PairArmARoleAlphabetStatement (data : Parameters)
 
 /-- **Arm B: its outcomes, exactly** — on arm B of the pair-code configuration, G's
 canonical overlap system exists and G is in (B1) or (B3) ((B2), the target defect of the
-obstruction coordinates, is exit (b) stated about G and is empty at G); the `[182]` residual (B1)
+obstruction coordinates, is clause (b) stated about G and is empty at G); the `[182]` residual (B1)
 is one of three exact configurations; the obstruction handoff (B3) has its canonical
 separator, envelope and escape; on the realizability failure every forward connector route in
 `U` meets every backward one and the demand ends split; at the canonical serial system the

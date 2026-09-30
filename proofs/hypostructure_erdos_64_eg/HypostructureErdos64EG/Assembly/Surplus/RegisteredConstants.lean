@@ -1,7 +1,7 @@
 import HypostructureErdos64EG.Assembly.Basic
 
 /-!
-# Assembly: the registered numbers behind the `[20a]` budget
+# Assembly: the registered numbers behind the strict-arm budget
 
 Identities of the registered presentation `spineData` (not facts about any
 graph, so not ledger keys): the routing-label count, `M₀`, `S = M₀ + 1`,

@@ -81,44 +81,12 @@ noncomputable def selectedNearCubicNode21
 functions.  Their arguments and results are exact-ledger indices, so the
 strict and near-cubic cursors cannot be accidentally exchanged. -/
 
-/-- **The named sparse exit of `[20]` is closed at G** (`def:named-surplus-exits`,
-stated about G; Lean improvement: exit (b) is empty at G): the exit arm of the
-enclosing sparse-exit classification routes the literal exit forms -- (a), (c),
-(d), (e) are literal terminals -- to the target-defect payload of clause (b),
-and clause (b), stated about G, asks G's own surroundings `G − Z` to separate
-two readings of G, which always agree there.  The emptiness fact
-`K .sparseTargetDefectEmpty` is published and closes the arm against the
-payload through `AtomicCT.runAndCloseIncompatible`.  Written once for the strict
-arm (`[20a]`) and the at-or-below arm (`[187]`'s near-cubic target defect). -/
-theorem selectedSparseExitClosed
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .sparsePairExit) known]
-    [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .replacementExclusion) known]
-    (fresh : List.Disjoint
-      [K .sparseTargetDefectResidual, K .sparseTargetDefectEmpty, closed] known := by
-        key_fresh) :
-    False :=
-  let targetDefect :=
-    (sparseSurplusExitRoutingRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by key_fresh)
-  (AtomicCT.runAndCloseIncompatible
-    (sparseTargetDefectEmptyRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData))
-    targetDefect (K .sparseTargetDefectResidual) (K .sparseTargetDefectEmpty)
-    (by key_fresh) (by key_fresh)).elimClosed (by infer_instance)
-
 /-! Node `[20]`, the strict (non-near-cubic) surplus branch, run node by node
 along the Part X/XI diagram on the literal `K .surplusAbove` ledger:
 
-* the enclosing `[20]` routing runs `sparseSurplusSurvivorDichotomy` for
-  `def:named-surplus-exits`; the five named exits form the left arm, while
-  their joint negation is exactly the incoming residual of routing-only
-  `[125]`, "after P13 label algebra and sparse exits";
+* `[125]`, "after P13 label algebra and sparse exits": G survives the named
+  exits of `def:named-surplus-exits`, the two cycle conclusions in G
+  (`sparseSurplusSurvivorRow`, a theorem about G read from `[4]`'s selection);
 * `[126]`--`[128]` activation, `[129]` baseline spine demand, `[130]` canonical
   pair split;
 * `[130]` yes: `[131]` decides the paper's full-pair code count on the exact

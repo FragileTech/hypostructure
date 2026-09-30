@@ -13,9 +13,9 @@ is the disjunction of the six `[144a]` subtypes (`Node144aOutcome_*`), the two
 (`OtherReturnedOutcome`: two `PairTypeBOutcome_*System` subtypes,
 `TypeBSublinearOutcome_product`, `Route8QuotientOutcome_product`, eleven
 `Route8RateFailsOutcome_*` subtypes and eight `ColdBranchClosedOutcome_*`
-subtypes), and the five `[54]` subtypes (`Node54ResidualOutcome_*`).  `[20a]` and
-the near-cubic target defect return no residual (exit (b) of `[125]` is empty at
-G, `selectedSparseExitClosed`).  The generic returned residuals are stated in
+subtypes), and the five `[54]` subtypes (`Node54ResidualOutcome_*`).  G survives
+the named sparse exits of `[125]`, the two cycle conclusions in G (a theorem
+about G from the selection, `sparseSurplusSurvivorRow`).  The generic returned residuals are stated in
 [Residuals.lean](Residuals.lean), their subtypes and products in
 [Residuals/](Residuals/), and the arm evidence threaded to their return sites in
 [Residuals/ArmBlocks.lean](Residuals/ArmBlocks.lean).
@@ -51,7 +51,6 @@ G, `selectedSparseExitClosed`).  The generic returned residuals are stated in
 | `denseLinearKeys` | abbrev | [NearCubic/DensePass.lean:32](NearCubic/DensePass.lean#L32) |
 | `nearCubicDenseLinear` | def | [NearCubic/DensePass.lean:85](NearCubic/DensePass.lean#L85) |
 | `selectedNearCubicNode21` | def | [NearCubic/Local.lean:38](NearCubic/Local.lean#L38) |
-| `selectedSparseExitClosed` | theorem | [NearCubic/Local.lean:93](NearCubic/Local.lean#L93) |
 | `selectedCanonicalReplacementContinuation` | def | [NearCubic/Replacement.lean:69](NearCubic/Replacement.lean#L69) |
 | `nearCubicResidualAKeys` | abbrev | [NearCubic/Spine.lean:62](NearCubic/Spine.lean#L62) |
 | `nearCubicResidualBKeys` | abbrev | [NearCubic/Spine.lean:73](NearCubic/Spine.lean#L73) |

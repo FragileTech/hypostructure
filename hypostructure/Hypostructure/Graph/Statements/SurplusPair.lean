@@ -41,72 +41,34 @@ theorem exists_active_of_canonicalPairActivation_eq_some {data : Parameters}
   · rw [(canonicalPairActivation_eq_none_iff data object).2 active] at selected
     cases selected
 
-/-- A target-defective identification of the two demands of a scheduled pair,
-read on G's own piece at their canonical support (blocker (e) of
-`def:surplus-blockers`), is a clause-(b) exit of G's declared sparse family:
-the demands are declared coordinates of that family with the same supports. -/
-theorem declaredSparseSurplusExit_of_demandDefect {data : Parameters}
+/-- **Blocker (e) is empty at G** (`def:surplus-blockers` (e); Lean improvement:
+decided at G from the selection).  Each of the three events a clause-(e)
+target-response coordinate witnesses is refuted by G's own facts: the
+target-defective identification among G's pair coordinates by the avoidance
+(two readings of G agree in G's own surroundings `G − Z`,
+`Graph.not_residualTargetDefect_of_avoids`), the compression of the
+determination support and the whole-graph closed representative by the
+minimality of G (`not_replacementSupport_of_minimal`). -/
+theorem not_responseObstruction_of_selection
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Parameters}
     {object : Graph.FiniteObject.{u}}
-    (active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold)
-    {pair : Finset (object.Vertex × object.Vertex)}
-    (pairSubset : pair ⊆ object.excessPorts data.threshold)
-    (defect : Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK)
-      object pair (Graph.pairResponseActivation active).declaredSupport) :
-    DeclaredSparseSurplusExit data object := by
-  classical
-  refine .targetDefect ?_
-  refine Graph.ResidualTargetDefect.map
-    (fun demand => (Sum.inl demand : SparseDeclaredCoordinate data object))
-    ?_ ?_ ?_ defect
-  · intro first _ second _ equal
-    simpa using equal
-  · intro demand member
-    unfold sparseDeclaredFamily
-    rw [canonicalPairActivation_eq data object active]
-    simp only [Finset.mem_union, Finset.mem_image]
-    exact Or.inl ⟨demand, pairSubset member, rfl⟩
-  · intro demand _
-    unfold sparseDeclaredSupport
-    rw [canonicalPairActivation_eq data object active]
-    rfl
-
-/-- **Blocker (e) is a named exit** (`def:surplus-blockers` (e) with
-`def:named-surplus-exits` (b)--(d)): each of the three events a clause-(e)
-target-response coordinate witnesses at a scheduled pair of G's canonical
-activation is a sparse surplus exit of G's declared family -- the
-target-defective identification among G's own pair coordinates is exit (b),
-the compression of the determination support is exit (c), and the whole-graph
-closed representative is exit (d).  This is the paper's own reading
-("This is a sparse surplus exit of type (b), and the distinguishing
-target-response coordinate is also a blocker of type (e)", tex 4693-4695). -/
-theorem declaredSparseSurplusExit_of_responseObstruction {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold)
+    (selected : SelectionStatement BranchState Presentation presentation data
+      object)
+    {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
     {pair : Finset (object.Vertex × object.Vertex)}
     (obstruction : Graph.SparsePairDEResponseObstructionAt
       (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-      (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-      (object.portPairSchedule data.threshold) pair) :
-    DeclaredSparseSurplusExit data object := by
-  obtain ⟨attempt, determiners, ⟨_functional, _reducing, coordinateMem,
-      determinersSubset, _outside, _determines, _minimal, _reads⟩, event⟩ :=
-    obstruction
+      (LengthOK := data.LengthOK) activation
+      (object.portPairSchedule data.threshold) pair) : False := by
+  obtain ⟨_attempt, _determiners, _certificate, event⟩ := obstruction
   rcases event with defect | replacement |
       ⟨_covers, representative, smaller, baseline, noTarget⟩
-  · refine declaredSparseSurplusExit_of_pairDefect data object active ?_ defect
-    intro coordinate member
-    rcases (@Finset.mem_insert _ (Classical.decEq _) _ _ _).mp member with
-      rfl | member
-    · exact coordinateMem
-    · exact determinersSubset member
-  · exact .compression attempt.support replacement
-  · exact .delocalization representative smaller baseline noTarget
+  · exact Graph.not_residualTargetDefect_of_avoids selected.1 _ _ defect
+  · exact Graph.Strategy.InterfaceReplacement.not_replacementSupport_of_minimal
+      (fun H smaller baseline => selected.2 H smaller baseline) _ replacement
+  · exact noTarget (selected.2 representative smaller baseline)
 
 /-- The actual seven-coordinate routing label on a pair of the certified
 source pattern. The cubic baseline and the same active shoulder witnesses bound
@@ -1231,8 +1193,9 @@ noncomputable abbrev CanonicalPairLedgerStatement
 
 /-- Node `[132]`, exit arm of `lem:sparse-pair-dependence-exit`: the
 dependence of a blocked pair's response coordinates is settled by a sparse
-surplus exit of `def:named-surplus-exits` rather than by a canonical blocker.
-It closes the branch against node `[125]`'s survivor entry at `[133]`. -/
+surplus exit of `def:named-surplus-exits` (a cycle conclusion in G) rather than
+by a canonical blocker.  It closes the branch against node `[125]`'s survivor
+entry at `[133]`. -/
 noncomputable abbrev SparsePairExitStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
@@ -1282,47 +1245,6 @@ def SparseTargetDefectWitness.Spec {data : Parameters}
           (Graph.ActualContext.actualGlue object witness.support
             (sparseDeclaredSupport data object witness.second)))
 
-open Classical in
-/-- **G's canonical target-defective identification**: the `Classical.choose`
-of clause (b)'s witness at G's declared sparse family, `none` when clause (b)
-fails at G (at a target-avoiding G it is `none`:
-`sparseTargetDefectWitness_eq_none`). -/
-noncomputable def sparseTargetDefectWitness (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Option (SparseTargetDefectWitness data object) :=
-  if h : ∃ witness : SparseTargetDefectWitness data object, witness.Spec then
-    some (Classical.choose h)
-  else none
-
-theorem sparseTargetDefectWitness_spec_of_eq_some {data : Parameters}
-    {object : Graph.FiniteObject.{u}} {witness : SparseTargetDefectWitness data object}
-    (selected : sparseTargetDefectWitness data object = some witness) :
-    witness.Spec := by
-  unfold sparseTargetDefectWitness at selected
-  split at selected
-  · next h =>
-      cases selected
-      exact Classical.choose_spec h
-  · cases selected
-
-/-- Clause (b) at G's declared family names a witness, so the canonical
-witness exists. -/
-theorem exists_sparseTargetDefectWitness {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (defect : Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK)
-      object (sparseDeclaredFamily data object) (sparseDeclaredSupport data object)) :
-    ∃ witness, sparseTargetDefectWitness data object = some witness := by
-  classical
-  obtain ⟨first, firstMem, second, secondMem, different, support, selectedSupport,
-    profile, separated⟩ := defect
-  have exists_spec : ∃ witness : SparseTargetDefectWitness data object,
-      witness.Spec :=
-    ⟨⟨first, second, support⟩, firstMem, secondMem, different,
-      selectedSupport, profile, separated⟩
-  exact ⟨Classical.choose exists_spec, by
-    unfold sparseTargetDefectWitness
-    rw [dif_pos exists_spec]⟩
-
 /-- **No witness of clause (b) at a target-avoiding G**: the separation clause
 of `Spec` asks `G − Z` to separate two readings of G, and both are target-free
 there (`ActualContext.actualGlue_agree`). -/
@@ -1332,46 +1254,6 @@ theorem SparseTargetDefectWitness.not_spec {data : Parameters}
     (witness : SparseTargetDefectWitness data object) : ¬ witness.Spec := by
   rintro ⟨-, -, -, -, -, separated⟩
   exact separated (Graph.ActualContext.actualGlue_agree avoids _ _ _)
-
-/-- At a target-avoiding G the canonical clause-(b) witness is `none`. -/
-theorem sparseTargetDefectWitness_eq_none {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object) :
-    sparseTargetDefectWitness data object = none := by
-  unfold sparseTargetDefectWitness
-  rw [dif_neg]
-  rintro ⟨witness, spec⟩
-  exact SparseTargetDefectWitness.not_spec avoids witness spec
-
-/-- Node `[125]`, clause (b) of `def:named-surplus-exits` at G's declared sparse
-family (`lem:context-universality`, tex 6106-6112, stated about G), at G's
-canonical witness `sparseTargetDefectWitness` -- two distinct declared
-coordinates of G, read on G's own piece at their canonical connected support
-`Z`, lie in one boundary-degree fibre and are separated by G's own
-surroundings `G − Z`.  The routing of `[125]`'s exit arm publishes it; it is
-incompatible with `SparseTargetDefectEmptyStatement`, which closes that arm. -/
-noncomputable abbrev SparseTargetDefectResidualStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ∃ witness, sparseTargetDefectWitness data object = some witness ∧
-    witness.Spec
-
-/-- **Exit (b) is empty at G** (node `[125]`, clause (b) of
-`def:named-surplus-exits`, stated about G; Lean improvement: the test is decided
-at G): every two readings of G's piece at every support `Z` agree in G's own
-surroundings `G − Z` (both glued graphs are target-free subgraphs of G), so no
-two declared coordinates of G's sparse family form a target-defective
-identification. -/
-noncomputable def SparseTargetDefectEmptyStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  (∀ Z X : Finset object.Vertex,
-      ¬ Graph.HasCycleWithLength data.LengthOK
-        (Graph.ActualContext.actualGlue object Z X)) ∧
-    ¬ Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK) object
-      (sparseDeclaredFamily data object) (sparseDeclaredSupport data object)
 
 /-- Node `[132]`, blocker arm ("exit or canonical blocker?", tex 1197): no
 sparse surplus exit of G's declared family occurs, and the blocked pair family
@@ -1475,25 +1357,19 @@ noncomputable def canonicalMixedDependenceQuotient (data : Parameters)
 
 /-- Node `[131]`, `lem:mixed-sparse-spine-dependence` (tex 4872-4887), on G's
 canonical baseline spine family (node `[129]`) and G's full pair-response
-schedule at its canonical activation (node `[125]`), at G's own rank-reducing
-quotient of the mixed family (`canonicalMixedDependenceQuotient`): if that
-quotient exists -- the union `ℐ_spine ∪ ℛ_{𝒜₀}` is not independently
-target-testable -- then G has a sparse surplus exit of its declared family, or
-some scheduled pair `{p,q}` has a sparse surplus blocker of type (d) or (e) at
-that activation. -/
+schedule at its canonical activation (node `[125]`), decided at G (Lean
+improvement): G's own rank-reducing quotient of the mixed family
+(`canonicalMixedDependenceQuotient`) does not exist -- the union
+`ℐ_spine ∪ ℛ_{𝒜₀}` is independently target-testable.  A rank-reducing quotient
+would be target-complete and localize to a replacement of a proper support or a
+strictly smaller closed representative of G, both refuted by G's minimality. -/
 noncomputable abbrev MixedSparseSpineDependenceStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   ∃ activation, canonicalPairActivation data object = some activation ∧
     ∃ spine, canonicalBaselineSpineFamily data object = some spine ∧
-      ∀ declared, canonicalMixedDependenceQuotient data activation spine =
-          some declared →
-        DeclaredSparseSurplusExit data object ∨
-          Graph.HasSparsePairDEBlocker
-            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-            (LengthOK := data.LengthOK) activation
-            (object.portPairSchedule data.threshold)
+      canonicalMixedDependenceQuotient data activation spine = none
 
 /-- Node `[130]`, `lem:degree-profile-fibres` (tex 6088-6100) at G's pair
 family: at G's canonical activation, every determination certificate of a
@@ -1858,13 +1734,13 @@ noncomputable abbrev HomogeneousBottleneckStatement
       (Graph.WindowCurvature.Label data.windowOrder))
 
 /-- Node `[125]`, `def:named-surplus-exits`: the selected object survives the
-five sparse surplus exits.  This is the standing hypothesis every node of the
+named sparse surplus exits.  This is the standing hypothesis every node of the
 block reads, derived from the selection entry rather than assumed. -/
 noncomputable abbrev SparseSurplusSurvivorStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- `def:named-surplus-exits`: none of the five sparse-surplus conclusions
+  -- `def:named-surplus-exits`: neither cycle conclusion of the named exits
   -- occurs on this branch.
   DeclaredSparseSurvivor data object
 

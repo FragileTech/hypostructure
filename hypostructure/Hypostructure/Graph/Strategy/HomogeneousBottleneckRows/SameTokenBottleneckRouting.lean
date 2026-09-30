@@ -30,7 +30,7 @@ degenerate closure), and the sealed capacity/token presentation with its
 connectedness proof.  It routes G's canonical same-token routing
 (`Statements/CanonicalSameToken.lean`): the parallel and cubic-first-separator
 cases read the two pattern coordinates on G's piece at their canonical support
-`Z`; a separating context there is exit (b), and the remaining profile-crossing
+`Z`; G's own surroundings `G − Z` never separate them, and the profile-crossing
 or context-equivalent readings are the unresolved pair of the paper error at
 `[144]`; a high-degree first separator gives the handoff envelope.  The row
 publishes `exit ∨ handoff ∨ unresolved` (`BottleneckRoutingStatement`) and
@@ -58,7 +58,7 @@ is postulated. -/
         inputs.current.baseline
         (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
         (inputs.get (K .cubicBaseline)).down.1.2.2.1
-        (inputs.get (K .selection)).down.1
+        (inputs.get (K .selection)).down
         (inputs.get (K .sparseSurplusSurvivor)).down
       .cons (key := K .bottleneckRouting) ⟨routed.1⟩ .nil)
 
@@ -115,20 +115,20 @@ unresolved pair that the paper error at `[144]` leaves to the open leaf
         inputs.current.baseline
         (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
         (inputs.get (K .cubicBaseline)).down.1.2.2.1
-        (inputs.get (K .selection)).down.1
+        (inputs.get (K .selection)).down
         (inputs.get (K .sparseSurplusSurvivor)).down
       .cons (key := K .sameTokenPatternUnresolved)
         ⟨routed.2.resolve_left (inputs.get (K .typeBHandoffFails)).down⟩ .nil)
 
 /-- Node `[144a]`: the explicit replacement candidates of tex 5594 at G.  Read
-the unresolved pattern pair (its canonical routing and support `Z`), the
-survivor and the selection's avoidance: no reading of G's piece at `Z` is a
-replacement representative of `Z`, since one would be G's compression exit (c)
-(its glued graph in `G − Z` is a target-free subgraph of G). -/
+the unresolved pattern pair (its canonical routing and support `Z`) and the
+selection: no reading of G's piece at `Z` is a replacement representative of
+`Z`, since one would be a replacement support of G (its glued graph in `G − Z`
+is a target-free subgraph of G), which G's minimality refutes. -/
 @[reducible] noncomputable def sameTokenReadingsNotReplacementRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sameTokenReadingsNotReplacement
-    { Requires := [K .sameTokenPatternUnresolved, K .sparseSurplusSurvivor, K .selection]
+    { Requires := [K .sameTokenPatternUnresolved, K .selection]
       Produces := [K .sameTokenReadingsNotReplacement]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -137,8 +137,7 @@ replacement representative of `Z`, since one would be G's compression exit (c)
       .cons (key := K .sameTokenReadingsNotReplacement)
         ⟨Graph.Contracts.SurplusPair.sameTokenReadingsNotReplacement_of_unresolved
           (inputs.get (K .sameTokenPatternUnresolved)).down
-          (inputs.get (K .sparseSurplusSurvivor)).down
-          (inputs.get (K .selection)).down.1⟩
+          (inputs.get (K .selection)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine
