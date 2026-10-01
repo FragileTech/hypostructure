@@ -25,10 +25,9 @@ variable {data : Parameters} {object : Graph.FiniteObject.{u}}
 
 /-- **Lean improvement: the `[180]` periodic alternatives are empty after `[179]`'s no-early
 arm.**  G's canonical serial system is built on G's canonical returns
-(`canonicalPairDemandReturns_of_serial`), and each periodic alternative of `[180]` (a
-target-defective identification of the obstruction's coordinates, a compression inside the
-overlap support, the obstruction's first-separator handoff) is the same-named alternative of
-`[179]`'s early outcome at those returns.  So `[180]`'s early outcome refutes `[179]`'s
+(`canonicalPairDemandReturns_of_serial`), and the periodic alternative of `[180]` (the
+obstruction's first-separator handoff) is the same-named alternative of `[179]`'s early outcome
+at those returns.  So `[180]`'s early outcome refutes `[179]`'s
 no-early arm, at G. -/
 theorem not_pairIncrementEarly_of_noEarly
     (noEarly : PairSystemNoEarlyOutcomeStatement data object)
@@ -41,9 +40,6 @@ theorem not_pairIncrementEarly_of_noEarly
         returnsSelected)
   subst same
   cases outcome with
-  | targetDefect defect => exact none ⟨.targetDefect defect⟩
-  | compression support inside replacement =>
-      exact none ⟨.compression support inside replacement⟩
   | typeB handoff => exact none ⟨.typeB handoff⟩
 
 /-- The canonical envelope of the obstruction is `envelopeOfFirstSeparator` on the core

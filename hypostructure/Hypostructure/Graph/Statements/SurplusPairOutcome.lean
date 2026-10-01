@@ -21,8 +21,8 @@ universe u
 
 /-- The response coordinates `r_π` of the pairs of the minimal overlap
 obstruction retained by the demand returns, at the obstruction's own
-activation: the coordinates alternatives (ii)/(iii) of
-`lem:pair-system-realizability` speak about. -/
+activation: the coordinates the paper's alternative (ii) of
+`lem:pair-system-realizability` speaks about. -/
 noncomputable def PairDemandReturns.obstructionCoordinates
     {data : Parameters} {object : Graph.FiniteObject.{u}}
     (returns : PairDemandReturns data object) :
@@ -36,30 +36,21 @@ noncomputable abbrev pairCoordinateSupport {object : Graph.FiniteObject.{u}}
     (coordinate : object.PairCoordinate) : Finset object.Vertex :=
   @Graph.DeclaredSignature.Coordinate.support _ _ object.vertices.decEq coordinate
 
-/-- The already-closed alternatives (i)--(iv) of
-`lem:pair-system-realizability` (tex 5110-5130) for the retained return system
-of the minimal overlap obstruction: (i) a target cycle; (ii) two of the
-obstruction's own response coordinates read on G's piece at their canonical
-support are distinguished by G's own surroundings `G − Z` (a target-defective
-quotient, clause (b) of `def:named-surplus-exits`, stated about G; empty at a target-avoiding G,
-`Graph.not_residualTargetDefect_of_avoids`); (iii) a target-complete proper-support representative inside the
-obstruction's overlap support (clause (c) of `def:named-surplus-exits`); (iv) the first nonserial
-intersection is a routed bottleneck whose first separator is a high-degree
-vertex: the first-separator handoff of the obstruction's own overlap support
-toward its two demands, at `P₀` (`PairObstructionHandoff`). -/
+/-- The alternatives (i)--(iv) of `lem:pair-system-realizability`
+(tex 5110-5130) for the retained return system of the minimal overlap
+obstruction, as objects of G: (i) an accepted cycle of G; (iv) the first
+nonserial intersection is a routed bottleneck whose first separator is a
+high-degree vertex: the first-separator handoff of the obstruction's own
+overlap support toward its two demands, at `P₀` (`PairObstructionHandoff`).
+Alternatives (ii) (a target-defective identification of the obstruction's
+response coordinates, read on readings glued into `G − Z`) and (iii) (a
+replacement inside the overlap support) conclude about objects built from G;
+`[4]`'s selection refutes both (`Graph.not_residualTargetDefect_of_avoids`,
+the replacement exclusion), so they are not alternatives of G. -/
 inductive PairSystemEarlyOutcome {data : Parameters}
     {object : Graph.FiniteObject.{u}}
     (returns : PairDemandReturns data object) : Type (u + 1) where
   | targetCycle (cycle : Graph.HasCycleWithLength data.LengthOK object)
-  | targetDefect (defect : Graph.ResidualTargetDefect
-      (Graph.HasCycleWithLength data.LengthOK) object
-      returns.obstructionCoordinates pairCoordinateSupport)
-  | compression (support : Finset object.Vertex)
-      (inside : support ⊆
-        returns.overlap.system.overlapSupport returns.overlap.family)
-      (replacement : Graph.Strategy.InterfaceReplacement.ReplacementSupport
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) object support)
   | typeB (handoff : PairObstructionHandoff data object returns)
 
 /-- The five alternatives of `lem:pair-system-realizability`, tied to the
@@ -106,27 +97,17 @@ noncomputable def spectrum {data : Parameters}
 
 end PairSerialArithmetic
 
-/-- The periodic-response alternatives of node `[180]` that are already
-routed by the paper (`lem:pair-system-increment-arithmetic`, tex 5207-5220),
-for the exact serial system: two equal-residue states distinguished by G's own
-surroundings `G − Z` -- a target-defective identification of the obstruction's
-own response coordinates (clause (b) of `def:named-surplus-exits`, stated about G; empty at a
-target-avoiding G); a target-complete proper representative inside
-the overlap support (clause (c) of `def:named-surplus-exits`); or a class reaching a routed bottleneck,
-whose first-separator reading is the Type B handoff of the serial system's own
-obstruction at `P₀` (`PairObstructionHandoff`). -/
+/-- The periodic-response alternative of node `[180]` routed by the paper
+(`lem:pair-system-increment-arithmetic`, tex 5207-5220) for the exact serial
+system, as an object of G: a class reaching a routed bottleneck, whose
+first-separator reading is the Type B handoff of the serial system's own
+obstruction at `P₀` (`PairObstructionHandoff`).  The paper's other periodic
+forms (two equal-residue states distinguished by readings glued into `G − Z`,
+a replacement inside the overlap support) conclude about objects built from G
+and are refuted by `[4]`'s selection, so they are not alternatives of G. -/
 inductive PairIncrementEarlyOutcome {data : Parameters}
     {object : Graph.FiniteObject.{u}}
     (serial : PairSerialDemandSystem data object) : Type (u + 1) where
-  | targetDefect (defect : Graph.ResidualTargetDefect
-      (Graph.HasCycleWithLength data.LengthOK) object
-      serial.returns.obstructionCoordinates pairCoordinateSupport)
-  | compression (support : Finset object.Vertex)
-      (inside : support ⊆ serial.returns.overlap.system.overlapSupport
-        serial.returns.overlap.family)
-      (replacement : Graph.Strategy.InterfaceReplacement.ReplacementSupport
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) object support)
   | typeB (handoff : PairObstructionHandoff data object serial.returns)
 
 /-- The exhaustive conclusion claimed by

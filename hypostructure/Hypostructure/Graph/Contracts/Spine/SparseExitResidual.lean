@@ -1043,15 +1043,13 @@ theorem coupledExcess_pos_of_above (above : SurplusAboveStatement data object)
     (Nat.eq_zero_of_not_pos h)
 
 /-- **The pair-code chain from the canonical first failure, survivor-free**,
-stated about G: the target-defect outcome of `[179]`/`[180]` (clause (b) at the
-obstruction coordinates) is empty at G (`Graph.not_residualTargetDefect_of_avoids`:
-two readings of G agree in `G − Z`), so the chain ends at the `[182]` residual
-or at the obstruction handoff. -/
+stated about G: the outcomes of `[179]`/`[180]` are objects of G, the target
+cycle is empty at G, so the chain ends at the `[182]` residual or at the
+obstruction handoff. -/
 theorem pairChain_outcome
     (firstFailure : PairOverlapFirstFailureStatement data object)
     (noProper : NoProperBaselineStatement data object)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (repl : ReplacementExclusionStatement data object)
     (lengthOK_iff : ∀ length, data.LengthOK length ↔
       Core.DyadicLength.PowerOfTwoLength length) :
     PairConditionalFactorizationResidualStatement data object ∨
@@ -1072,9 +1070,6 @@ theorem pairChain_outcome
   | early early =>
       cases early with
       | targetCycle cycle => exact (avoids cycle).elim
-      | targetDefect defect =>
-          exact (Graph.not_residualTargetDefect_of_avoids avoids _ _ defect).elim
-      | compression support _ replacement => exact (repl support replacement).elim
       | typeB handoff => exact Or.inr ⟨returns, hr, handoff⟩
   | serial sys same =>
       obtain ⟨serial, hs, sameR⟩ := canonicalPairSerialSystem_spec data object hr same
@@ -1088,9 +1083,6 @@ theorem pairChain_outcome
             ⟨serial, hs, ⟨input⟩⟩ lengthOK_iff)).elim
       | early early =>
           cases early with
-          | targetDefect defect =>
-              exact (Graph.not_residualTargetDefect_of_avoids avoids _ _ defect).elim
-          | compression support _ replacement => exact (repl support replacement).elim
           | typeB handoff => exact Or.inr ⟨returns, hr, sameR ▸ handoff⟩
 
 set_option maxHeartbeats 1000000 in
@@ -1107,7 +1099,6 @@ theorem pairCodeConfiguration_holds (three : data.threshold = 3)
     (slack : SlackIndependentStatement data object)
     (noProper : NoProperBaselineStatement data object)
     (tight : TightEndpointStatement data object)
-    (exclusion : ReplacementExclusionStatement data object)
     (above : SurplusAboveStatement data object)
     (demand : BaselineSpineDemandStatement data object) :
     PairCodeConfigurationStatement data object := by
@@ -1181,7 +1172,7 @@ theorem pairCodeConfiguration_holds (three : data.threshold = 3)
   rcases entry with ff | other
   · right
     refine ⟨ff, ?_⟩
-    rcases pairChain_outcome ff noProper selection.1 exclusion lengthLaw with r | h
+    rcases pairChain_outcome ff noProper selection.1 lengthLaw with r | h
     · exact Or.inl r
     · exact Or.inr ⟨h,
         Contracts.SurplusPair.typeBFanEntry_of_pairObstructionHandoff above h⟩

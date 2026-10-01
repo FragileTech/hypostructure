@@ -217,7 +217,7 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def sparseExitPairChainRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseExitPairChain
-    { Requires := [K .cubicBaseline, K .selection, K .minDegreeBaseline, K .slackIndependent, K .noProperBaseline, K .tightEndpoint, K .replacementExclusion, K .surplusAbove, K .baselineSpineDemand]
+    { Requires := [K .cubicBaseline, K .selection, K .minDegreeBaseline, K .slackIndependent, K .noProperBaseline, K .tightEndpoint, K .surplusAbove, K .baselineSpineDemand]
       Produces := [K .paperBudgetBound, K .paperBudgetCertifies, K .pairCodeConfiguration]
       requiresUnique := by key_fresh
       producesUnique := by key_fresh
@@ -228,7 +228,7 @@ variable {data : Data.{u}}
       (.cons (key := K .paperBudgetCertifies)
         ⟨Contracts.Spine.SparseExitResidual.paperBudgetCertifies_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .cubicBaseline)).down.2.2.1.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .surplusAbove)).down (inputs.get (K .baselineSpineDemand)).down⟩
       (.cons (key := K .pairCodeConfiguration)
-        ⟨Contracts.Spine.SparseExitResidual.pairCodeConfiguration_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .cubicBaseline)).down.2.2.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.2.2 (inputs.get (K .cubicBaseline)).down.2.2.1.2.2.1 (inputs.get (K .cubicBaseline)).down.2.1.2.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .replacementExclusion)).down (inputs.get (K .surplusAbove)).down (inputs.get (K .baselineSpineDemand)).down⟩
+        ⟨Contracts.Spine.SparseExitResidual.pairCodeConfiguration_holds (object := inputs.current.object) (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.1 (inputs.get (K .cubicBaseline)).down.2.2.1.1 (inputs.get (K .cubicBaseline)).down.2.2.1.2.2.2 (inputs.get (K .cubicBaseline)).down.2.2.1.2.2.1 (inputs.get (K .cubicBaseline)).down.2.1.2.1 (inputs.get (K .selection)).down (inputs.get (K .minDegreeBaseline)).down (inputs.get (K .slackIndependent)).down (inputs.get (K .noProperBaseline)).down (inputs.get (K .tightEndpoint)).down (inputs.get (K .surplusAbove)).down (inputs.get (K .baselineSpineDemand)).down⟩
       .nil)))
 
 /-- Node `[129]`'s baseline spine demand at the top of the strict arm of `[19]`

@@ -407,8 +407,14 @@ quotient is target-complete as the paper's determination quotient is.
   conditional factorization is asked at G's canonical minimal obstruction
   `F₀` only (`PairOverlapSystem.ConditionalFactorization`), with the exact
   negation `not_conditionalFactorization_iff`.
-- **[179].**  Alternatives (i)--(iii) are empty at G, so coverage is exactly
-  `PairObstructionHandoff ∨ ∃ serial system on these returns`
+- **[179].**  The outcome types name only objects of G: `PairSystemEarlyOutcome`
+  has the target cycle (i) and the handoff (iv), `PairIncrementEarlyOutcome` the
+  handoff.  The paper's (ii) (a target-defective identification of readings in
+  `G − Z`) and (iii) (a replacement inside the overlap support) conclude about
+  objects built from G and are refuted by `[4]`'s selection
+  (`Graph.not_residualTargetDefect_of_avoids`, the replacement exclusion), so
+  they are not alternatives.  The target cycle is empty at G, so coverage is
+  exactly `PairObstructionHandoff ∨ ∃ serial system on these returns`
   (`pairSystemRealizabilityOutcome_iff`).  The Type B alternative (iv) is the
   obstruction's own first-separator handoff (`PairObstructionHandoff`,
   `Statements/CanonicalPairHandoff.lean`; entry `typeBFanEntry_of_pairObstructionHandoff`).
