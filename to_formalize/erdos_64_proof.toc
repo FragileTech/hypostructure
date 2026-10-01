@@ -28,14 +28,14 @@
 \contentsline {paragraph}{Framework branch table.}{58}{section*.44}%
 \contentsline {section}{\numberline {3}Minimality and replacement}{58}{section.3}%
 \contentsline {subsubsection}{\numberline {3.0.1}The pair-code unrealized residual: nodes [178]--[180] and open node [182]}{96}{subsubsection.3.0.1}%
-\contentsline {subsection}{\numberline {3.1}Boundaried pieces, target-complete quotients, and replacement}{105}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.1}Boundaried pieces, target-complete quotients, and replacement}{106}{subsection.3.1}%
 \contentsline {paragraph}{Framework branch table.}{112}{section*.48}%
-\contentsline {subsection}{\numberline {3.2}The same-token handoff [144a]: status of the handoff-fails arm}{112}{subsection.3.2}%
-\contentsline {paragraph}{Status labels.}{112}{section*.49}%
+\contentsline {subsection}{\numberline {3.2}The same-token handoff [144a]: status of the handoff-fails arm}{113}{subsection.3.2}%
+\contentsline {paragraph}{Status labels.}{113}{section*.49}%
 \contentsline {section}{\numberline {4}Sparse rank parameters}{115}{section.4}%
-\contentsline {paragraph}{Framework branch table.}{117}{section*.50}%
+\contentsline {paragraph}{Framework branch table.}{118}{section*.50}%
 \contentsline {section}{\numberline {5}Induced $P_{13}$ windows}{118}{section.5}%
-\contentsline {paragraph}{Framework branch table.}{118}{section*.51}%
+\contentsline {paragraph}{Framework branch table.}{119}{section*.51}%
 \contentsline {section}{\numberline {6}The $P_{13}$ obstruction algebra}{119}{section.6}%
 \contentsline {paragraph}{Framework branch table.}{121}{section*.53}%
 \contentsline {section}{\numberline {7}Entropy bound on independent $P_{13}$ windows}{122}{section.7}%
