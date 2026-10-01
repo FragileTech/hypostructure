@@ -38,10 +38,10 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u
 
-/-- **Node `[186]` as a product of arm blocks**: the generic residual (146
+/-- **Node `[186]` as a product of arm blocks**: the generic residual (154
 common facts), one lane entry (a near-cubic prefix block with an entropy
 block), and one net-charge continuation (Type A lane or Type B high-surplus
-lane, each a nested product of its own blocks).  Totals run from 166 to 205
+lane, each a nested product of its own blocks).  Totals run from 174 to 213
 facts. -/
 abbrev Route8JointBalanceOutcome_product (selected : EGInput.{u}) : Prop :=
   Route8JointBalanceOutcome selected ∧ Route8LaneEntry selected ∧
@@ -53,7 +53,7 @@ theorem Route8JointBalanceOutcome_product.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- The return of `Route8JointBalanceOutcome_product`, parameterised by the
-arm choices: the 145 common facts are read from the ledger by
+arm choices: the 154 common facts are read from the ledger by
 `route8JointBalanceReturn`, and each factor is the arm block the path took,
 built by that block's `.ret` from the same ledger (one `get` per key). -/
 theorem route8JointBalanceProductReturn
