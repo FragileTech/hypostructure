@@ -33,12 +33,12 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- Entry prefix, right after `[4]`'s selection: facts of G that read only `K .selection` (or nothing): the packing ratio, no suppression chord violation, and the witness triples of clause (b) (canonical support structure; no witness of G).  Every branch below `[4]` carries them. -/
+/-- Entry prefix, right after `[4]`'s selection: facts of G that read only `K .selection` (or nothing): the packing ratio, no suppression chord violation, and the canonical connected support of every two declared coordinates of G.  Every branch below `[4]` carries them. -/
 @[reducible] noncomputable def entrySelectionFactsRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.entrySelectionFacts
     { Requires := [K .selection]
-      Produces := [K .packingOrderBound, K .noSuppressionChordViolation, K .specWitnessStructure]
+      Produces := [K .packingOrderBound, K .noSuppressionChordViolation, K .declaredPairSupportStructure]
       requiresUnique := by simp
       producesUnique := by key_fresh
       producesNonempty := by simp }
@@ -47,8 +47,8 @@ variable {data : Data.{u}}
         ⟨Contracts.Spine.SparseExitResidual.packingOrderBound_holds (object := inputs.current.object) ⟩
       (.cons (key := K .noSuppressionChordViolation)
         ⟨Contracts.Spine.SparseExitResidual.noSuppressionChordViolation_holds (object := inputs.current.object) (inputs.get (K .selection)).down.1⟩
-      (.cons (key := K .specWitnessStructure)
-        ⟨Contracts.Spine.SparseExitResidual.specWitnessStructure_holds (object := inputs.current.object) (inputs.get (K .selection)).down.1⟩
+      (.cons (key := K .declaredPairSupportStructure)
+        ⟨Contracts.Spine.SparseExitResidual.declaredPairSupportStructure_holds (object := inputs.current.object)⟩
       .nil)))
 
 /-- Entry prefix, after `[1]`--`[3]`'s baseline: the canonical packing `P₀`: `def⁺(R) ≤ e(R, W)` and the window cut capacity. -/

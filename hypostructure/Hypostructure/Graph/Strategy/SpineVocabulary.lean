@@ -2041,10 +2041,8 @@ inductive Key where
   | canonicalFreeExcessOfCapped
   /-- Strict arm of `[19]` (stated about G): **Where G sits in the pair-code chain**: either the `[137]`→`[143]` configuration holds at the canonical objects (blocked pair, `[137]` count, canonical pattern, overload, caps fail), or G's canonical first failure exists and yields the `[182]` residual, or the canonical return system's obstruction handoff together with the Type B fan entry `[65]` (the target defect of the obstruction coordinates is clause (b) stated about G, empty at G). -/
   | pairCodeConfiguration
-  /-- Entry prefix (stated about G): **the witness triples of clause (b) at G**: at every triple `(A, B, Z)` with `Z` the canonical support of `A ∪ B`, `Z` is connected, contains `A` and `B`, and is a minimum connected set containing `A ∪ B`; and no triple satisfies clause (b) (`G − Z` never separates two readings of G). -/
-  | specWitnessStructure
-  /-- Entry prefix (stated about G): **the readings of every clause-(b) witness triple of G are negative in G's own surroundings `G − Z`** (the split's positive reading never exists in G). -/
-  | everyWitnessSpectrumSplit
+  /-- Entry prefix (stated about G): **the canonical connected support of two declared coordinates of G**: for every two declared sparse coordinates `A`, `B` of G and `Z` the canonical support of `A ∪ B`, `Z` is connected, contains `A` and `B`, and is a minimum connected set containing `A ∪ B`. -/
+  | declaredPairSupportStructure
   /-- Strict arm of `[19]`: **Where the surplus of G sits**: a vertex of degree `≥ δ + 2`, or two distinct vertices of degree exactly `δ + 1`. -/
   | highSurplusConfiguration
   /-- Strict arm of `[19]`: **The switch at every high/baseline edge `hc`**: the same-vertex switch at `h` (`deg h ≥ δ + 2`) or the two-edge switch with a second high vertex forces a path from `c` whose length plus one is accepted. -/
@@ -3240,10 +3238,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       CanonicalFreeExcessOfCappedStatement data.toParameters object
   | .pairCodeConfiguration, object =>
       PairCodeConfigurationStatement data.toParameters object
-  | .specWitnessStructure, object =>
-      SpecWitnessStructureStatement data.toParameters object
-  | .everyWitnessSpectrumSplit, object =>
-      EveryWitnessSpectrumSplitStatement data.toParameters object
+  | .declaredPairSupportStructure, object =>
+      DeclaredPairSupportStructureStatement data.toParameters object
   | .highSurplusConfiguration, object =>
       HighSurplusConfigurationStatement data.toParameters object
   | .highEndpointSwitch, object =>
@@ -3928,8 +3924,7 @@ def label : Key → String
   | .canonicalOverloadOfFits => "canonicalOverloadOfFits"
   | .canonicalFreeExcessOfCapped => "canonicalFreeExcessOfCapped"
   | .pairCodeConfiguration => "pairCodeConfiguration"
-  | .specWitnessStructure => "specWitnessStructure"
-  | .everyWitnessSpectrumSplit => "everyWitnessSpectrumSplit"
+  | .declaredPairSupportStructure => "declaredPairSupportStructure"
   | .highSurplusConfiguration => "highSurplusConfiguration"
   | .highEndpointSwitch => "highEndpointSwitch"
   -- port-cycles keys
@@ -4512,8 +4507,7 @@ example : label .paperBudgetCertifies = "paperBudgetCertifies" := rfl
 example : label .canonicalOverloadOfFits = "canonicalOverloadOfFits" := rfl
 example : label .canonicalFreeExcessOfCapped = "canonicalFreeExcessOfCapped" := rfl
 example : label .pairCodeConfiguration = "pairCodeConfiguration" := rfl
-example : label .specWitnessStructure = "specWitnessStructure" := rfl
-example : label .everyWitnessSpectrumSplit = "everyWitnessSpectrumSplit" := rfl
+example : label .declaredPairSupportStructure = "declaredPairSupportStructure" := rfl
 example : label .highSurplusConfiguration = "highSurplusConfiguration" := rfl
 example : label .highEndpointSwitch = "highEndpointSwitch" := rfl
 example : label .neighbourhoodPairCount = "neighbourhoodPairCount" := rfl
@@ -5085,8 +5079,7 @@ def idx : Key → Nat
   | .canonicalOverloadOfFits => 6674
   | .canonicalFreeExcessOfCapped => 6675
   | .pairCodeConfiguration => 6676
-  | .specWitnessStructure => 6677
-  | .everyWitnessSpectrumSplit => 6702
+  | .declaredPairSupportStructure => 6677
   | .highSurplusConfiguration => 6703
   | .highEndpointSwitch => 6704
   -- port-cycles keys
@@ -5651,8 +5644,7 @@ def ofIdx : Nat → Key
   | 6674 => .canonicalOverloadOfFits
   | 6675 => .canonicalFreeExcessOfCapped
   | 6676 => .pairCodeConfiguration
-  | 6677 => .specWitnessStructure
-  | 6702 => .everyWitnessSpectrumSplit
+  | 6677 => .declaredPairSupportStructure
   | 6703 => .highSurplusConfiguration
   | 6704 => .highEndpointSwitch
   -- port-cycles keys
@@ -6776,10 +6768,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalFreeExcessOfCapped") 6675
   | .pairCodeConfiguration =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairCodeConfiguration") 6676
-  | .specWitnessStructure =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "specWitnessStructure") 6677
-  | .everyWitnessSpectrumSplit =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "everyWitnessSpectrumSplit") 6702
+  | .declaredPairSupportStructure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "declaredPairSupportStructure") 6677
   | .highSurplusConfiguration =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "highSurplusConfiguration") 6703
   | .highEndpointSwitch =>

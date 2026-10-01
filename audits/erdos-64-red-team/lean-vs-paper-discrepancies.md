@@ -29,22 +29,22 @@ the abbrev bodies; "+k" is a subtype's extra conjuncts.
 
 | Group | Generic facts | Subtypes (extra facts) | Carries `n < N₀` |
 |---|---:|---|---|
-| `[144a]` `Node144aOutcome` | 136 | `windowHandoff` (+3), `windowFails` (+18), `remainderHandoff` (+4), `remainderFails` (+19), `primitiveHandoff` (+5), `primitiveFails` (+20) | none |
-| `[172a]` `BlockedBarrierOverlapOutcome` | 125 | `DeficiencyAtOrAbove` (+1), `DeficiencyBelowRateFails` (+2) | none |
-| `[182]` `PairConditionalFactorizationOutcome` | 120 | `freeFactorizationFails` (+3), `freeRealizabilityFails` (+8), `freeIncrementFails` (+12), `blockedFactorizationFails` (+12), `blockedRealizabilityFails` (+17), `blockedIncrementFails` (+21) | none |
-| `[186]` `Route8JointBalanceOutcome_product` | 155 | one product: generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of its 750 paths (below); every path carries `¬ SufficientlyLargeForNetCap` (9706) |
+| `[144a]` `Node144aOutcome` | 135 | `windowHandoff` (+3), `windowFails` (+18), `remainderHandoff` (+4), `remainderFails` (+19), `primitiveHandoff` (+5), `primitiveFails` (+20) | none |
+| `[172a]` `BlockedBarrierOverlapOutcome` | 124 | `DeficiencyAtOrAbove` (+1), `DeficiencyBelowRateFails` (+2) | none |
+| `[182]` `PairConditionalFactorizationOutcome` | 119 | `freeFactorizationFails` (+3), `freeRealizabilityFails` (+8), `freeIncrementFails` (+12), `blockedFactorizationFails` (+12), `blockedRealizabilityFails` (+17), `blockedIncrementFails` (+21) | none |
+| `[186]` `Route8JointBalanceOutcome_product` | 154 | one product: generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of its 750 paths (below); every path carries `¬ SufficientlyLargeForNetCap` (9706) |
 | `[187]` `OtherReturnedOutcome` | see below | 23 subtypes | 13 subtypes and 400 of 750 paths of each product |
-| `[54]` `Node54ResidualOutcome` | 92 | `realizedColdBelow` (+3), `realizedBounded` (+6), `unrealizedTauHighBounded` (+7), `unrealizedRateFailsBounded` (+8), `unrealizedBothRates` (+3) | `realizedBounded`, `unrealizedTauHighBounded`, `unrealizedRateFailsBounded` |
+| `[54]` `Node54ResidualOutcome` | 91 | `realizedColdBelow` (+3), `realizedBounded` (+6), `unrealizedTauHighBounded` (+7), `unrealizedRateFailsBounded` (+8), `unrealizedBothRates` (+3) | `realizedBounded`, `unrealizedTauHighBounded`, `unrealizedRateFailsBounded` |
 
 `[187]` (`OtherReturnedOutcome`, `Assembly/Final.lean`):
 
 | Part | Generic facts | Subtypes (extra facts) | Carries `n < N₀` |
 |---|---:|---|---|
-| Pair Type B (`[179]`/`[180]` entry) `PairTypeBOutcome` | 133 | `independentSystem` (+2), `dependentSystem` (+11) | none |
-| Type B sublinear failure `TypeBSublinearOutcome_product` | 128 | generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of 750 paths |
-| Route-8 quotient failure `[348]` `Route8QuotientOutcome_product` | 142 | generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of 750 paths; every path carries `¬ SufficientlyLargeForNetCap` (9706) |
-| Private-carrier rate failure `Route8RateFailsOutcome` | 113 | 11: `realized_{highEntropy, lowNonrepetitive, lowWedgeFree, lowWedge}` (+6, +5, +7, +8), `denseAtOrAbove_{highEntropy, lowNonrepetitive, lowWedgeFree, lowWedge}` (+7, +6, +8, +9), `denseBelow_{lowNonrepetitive, lowWedgeFree, lowWedge}` (+6, +8, +9) | all 11 |
-| Local cold-terminal exclusion `ColdBranchClosedOutcome` | 105 | 8: `linearRealizedSilent` (+18), `linearDenseAtOrAbove_repeated` (+8), `linearDenseRateFailed_repeated` (+9), `linearDenseAtOrAbove` (+10), `linearDenseRateFailed` (+11), `linearRealizedDistinguished` (+8), `linearDenseAtOrAbove_repeatedDistinguished` (+8), `linearDenseRateFailed_repeatedDistinguished` (+9) | `linearRealizedSilent`, `linearRealizedDistinguished` |
+| Pair Type B (`[179]`/`[180]` entry) `PairTypeBOutcome` | 132 | `independentSystem` (+2), `dependentSystem` (+11) | none |
+| Type B sublinear failure `TypeBSublinearOutcome_product` | 127 | generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of 750 paths |
+| Route-8 quotient failure `[348]` `Route8QuotientOutcome_product` | 141 | generic ∧ `Route8LaneEntry` ∧ `NetChargeContinuation` | 400 of 750 paths; every path carries `¬ SufficientlyLargeForNetCap` (9706) |
+| Private-carrier rate failure `Route8RateFailsOutcome` | 112 | 11: `realized_{highEntropy, lowNonrepetitive, lowWedgeFree, lowWedge}` (+6, +5, +7, +8), `denseAtOrAbove_{highEntropy, lowNonrepetitive, lowWedgeFree, lowWedge}` (+7, +6, +8, +9), `denseBelow_{lowNonrepetitive, lowWedgeFree, lowWedge}` (+6, +8, +9) | all 11 |
+| Local cold-terminal exclusion `ColdBranchClosedOutcome` | 104 | 8: `linearRealizedSilent` (+18), `linearDenseAtOrAbove_repeated` (+8), `linearDenseRateFailed_repeated` (+9), `linearDenseAtOrAbove` (+10), `linearDenseRateFailed` (+11), `linearRealizedDistinguished` (+8), `linearDenseAtOrAbove_repeatedDistinguished` (+8), `linearDenseRateFailed_repeatedDistinguished` (+9) | `linearRealizedSilent`, `linearRealizedDistinguished` |
 
 The three products have `15 × 50 = 750` paths: `Route8LaneEntry` has 15 arms
 (three prefix blocks × four entropy arms, and `Route8LanePrefixBlock_unrealizedDenseBelow`

@@ -12,13 +12,10 @@ import Hypostructure.Graph.ObjectCapacityLedger
 
 The bounds, ratios, identities and obstructions that the strict arm of `[19]`
 forces at G (stated at the top of the strict arm),
-the pair-code chain, and the entry-prefix fact about the witness triples of
-clause (b).  Each is a fact about G and its fixed objects (the canonical window
+the pair-code chain, and the entry-prefix fact about the canonical connected
+supports of pairs of G's declared coordinates.  Each is a fact about G and its fixed objects (the canonical window
 packing `P₀`, every certified capacity presentation of G), so it can be carried
 on the one ledger and used later as a budget term or a structural constraint.
-
-Clause (b) of `[125]`, stated about G, is empty at G (two readings of G always
-agree in G's own surroundings `G − Z`; lem:sparse-exit-b-empty).
 
 Every registered constant is an explicit `Parameters` argument; this module
 imports no strategy, row, or vocabulary module.
@@ -30,14 +27,6 @@ open Hypostructure
 open Hypostructure.Graph.Strategy.InterfaceReplacement
 
 universe u
-
-/-! ## The witness triples of clause (b) -/
-
-/-- The two declared supports `{A, B}` of a witness triple's pair. -/
-noncomputable abbrev SparseTargetDefectWitness.pairSupports {data : Parameters}
-    {object : Graph.FiniteObject.{u}} (w : SparseTargetDefectWitness data object) :
-    Set (Finset object.Vertex) :=
-  {sparseDeclaredSupport data object w.first, sparseDeclaredSupport data object w.second}
 
 /-- The high-degree vertices `H = {deg ≠ δ}` of G. -/
 noncomputable abbrev sparseHighDegreeCount (data : Parameters)
@@ -338,25 +327,23 @@ noncomputable def PairCodeConfigurationStatement (data : Parameters)
 end CanonicalCapacity
 
 open Classical in
-/-- **The witness triples of clause (b) at G, stated about G** (the
-structure at every clause-(b) witness): at every witness triple `w = (A, B, Z)` of G
-whose `Z` is the canonical support of `A ∪ B`, `Z` is connected, contains `A`
-and `B`, and is a minimum connected set containing `A ∪ B`; and no witness of G
-satisfies clause (b): G's own surroundings `G − Z` never separate two readings
-of G.  No clause reads a separating context other than G's own `G − Z`. -/
-noncomputable def SpecWitnessStructureStatement (data : Parameters)
+/-- **The canonical connected support of two declared coordinates of G**: for
+every two declared sparse coordinates `A`, `B` of G and every `Z` that is the
+canonical support of `A ∪ B` (`select?`), `Z` is connected in G, contains `A`
+and `B`, and is a minimum connected set of G containing `A ∪ B`. -/
+noncomputable def DeclaredPairSupportStructureStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∀ w : SparseTargetDefectWitness data object,
+  ∀ (first second : SparseDeclaredCoordinate data object)
+    (support : Finset object.Vertex),
     Graph.CanonicalSupport.select? object
-        (sparseDeclaredSupport data object w.first ∪
-          sparseDeclaredSupport data object w.second) = some w.support →
-    Graph.SupportComponents.Connected.ConnectedOn object w.support ∧
-    sparseDeclaredSupport data object w.first ⊆ w.support ∧
-    sparseDeclaredSupport data object w.second ⊆ w.support ∧
+        (sparseDeclaredSupport data object first ∪
+          sparseDeclaredSupport data object second) = some support →
+    Graph.SupportComponents.Connected.ConnectedOn object support ∧
+    sparseDeclaredSupport data object first ⊆ support ∧
+    sparseDeclaredSupport data object second ⊆ support ∧
     (∀ Y : Finset object.Vertex,
-      sparseDeclaredSupport data object w.first ∪
-          sparseDeclaredSupport data object w.second ⊆ Y →
-      Graph.SupportComponents.Connected.ConnectedOn object Y → w.support.card ≤ Y.card) ∧
-    ¬ w.Spec
+      sparseDeclaredSupport data object first ∪
+          sparseDeclaredSupport data object second ⊆ Y →
+      Graph.SupportComponents.Connected.ConnectedOn object Y → support.card ≤ Y.card)
 
 end Hypostructure.Graph.Strategy.Spine

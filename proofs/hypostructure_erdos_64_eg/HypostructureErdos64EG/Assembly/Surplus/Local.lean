@@ -61,8 +61,8 @@ noncomputable def selectedSparseSurplusActivation
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .densityExcess, K .remainderSlack, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
         K .primitiveCarrierCount, K .remainderPathBounds, K .windowFreeGeometry, K .inducedPathAttachment, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
         K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
-        K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
-        K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
+        K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
+        K .noSuppressionChordViolation, K .declaredPairSupportStructure, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
@@ -86,8 +86,8 @@ noncomputable def selectedSparseSurplusActivation
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .densityExcess, K .remainderSlack, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
           K .primitiveCarrierCount, K .remainderPathBounds, K .windowFreeGeometry, K .inducedPathAttachment, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
           K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
-        K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
-          K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
+        K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
+          K .noSuppressionChordViolation, K .declaredPairSupportStructure, K .selection] := by
   -- The presentation identities the surplus rows spend are read from the one
   -- presentation-law fact `K .cubicBaseline`, published at the entry.
   let suppressionDefined :=
@@ -235,14 +235,13 @@ noncomputable def selectedPairCodeChainIndependent
     [FactKeys.Has (K .exactCubicBaselineBudget) known]
     [FactKeys.Has (K .incrementalSkeletonRoom) known]
     [FactKeys.Has (K .localAlgebra) known]
-    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
     [FactKeys.Has (K .crossSwitchFamily) known]
     [FactKeys.Has (K .highCentreSplitForced) known]
     [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
-    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .declaredPairSupportStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -525,14 +524,13 @@ noncomputable def selectedPairCodeChainDependent
     [FactKeys.Has (K .exactCubicBaselineBudget) known]
     [FactKeys.Has (K .incrementalSkeletonRoom) known]
     [FactKeys.Has (K .localAlgebra) known]
-    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
     [FactKeys.Has (K .crossSwitchFamily) known]
     [FactKeys.Has (K .highCentreSplitForced) known]
     [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
-    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .declaredPairSupportStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -831,14 +829,13 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .degreeProfileFibres) known]
     [FactKeys.Has (K .dependentPairFamily) known]
     [FactKeys.Has (K .localAlgebra) known]
-    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
     [FactKeys.Has (K .crossSwitchFamily) known]
     [FactKeys.Has (K .highCentreSplitForced) known]
     [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
-    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .declaredPairSupportStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]

@@ -1179,20 +1179,16 @@ theorem pairCodeConfiguration_holds (three : data.threshold = 3)
   · exact Or.inl other
 
 open Classical in
-/-- **The entry-prefix witness fact, stated about G** (the structure at
-every clause-(b) witness): at every witness triple
-`w = (A, B, Z)` of G whose `Z` is the canonical support of `A ∪ B`, `Z` is
-connected, contains `A` and `B`, and is a minimum connected set containing
-`A ∪ B`; and no witness of G satisfies clause (b) (`G − Z` never separates two
-readings of G). -/
-theorem specWitnessStructure_holds (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) :
-    SpecWitnessStructureStatement data object := by
-  intro w selected
+/-- **The canonical connected support of two declared coordinates of G**: the
+canonical support `select?` of `A ∪ B` is a candidate (connected, containing
+`A ∪ B`) of minimum cardinality. -/
+theorem declaredPairSupportStructure_holds :
+    DeclaredPairSupportStructureStatement data object := by
+  intro first second support selected
   have cand := CanonicalSupport.mem_candidates_iff.1
     (CanonicalSupport.select?_mem_candidates selected)
   refine ⟨cand.2, fun v hv => cand.1 (Finset.mem_union.2 (Or.inl hv)),
-    fun v hv => cand.1 (Finset.mem_union.2 (Or.inr hv)), fun Y hY conn => ?_,
-    SparseTargetDefectWitness.not_spec avoid w⟩
+    fun v hv => cand.1 (Finset.mem_union.2 (Or.inr hv)), fun Y hY conn => ?_⟩
   exact CanonicalSupport.select?_card_le selected
     (CanonicalSupport.mem_candidates_iff.2 ⟨by convert hY, conn⟩)
 

@@ -1202,59 +1202,6 @@ noncomputable abbrev SparsePairExitStatement
     Prop :=
   DeclaredSparseSurplusExit data object
 
-/-- **One target-defective identification of G's declared sparse family**
-(node `[125]`, clause (b) of `def:named-surplus-exits`, stated about G): the
-identified pair of declared coordinates and the canonical connected support `Z`
-of their union.  (The only context of G at `∂Z` is `G − Z`.) -/
-structure SparseTargetDefectWitness (data : Parameters)
-    (object : Graph.FiniteObject.{u}) where
-  /-- The first identified declared coordinate. -/
-  first : SparseDeclaredCoordinate data object
-  /-- The second identified declared coordinate. -/
-  second : SparseDeclaredCoordinate data object
-  /-- The canonical connected support `Z` of the two declared supports. -/
-  support : Finset object.Vertex
-
-/-- The clauses of clause (b) at one witness, stated about G
-(`lem:context-universality`, tex 6106-6112): the two coordinates are distinct
-members of G's declared family, `Z` is the canonical support of their union,
-their readings on G's piece at `Z` lie in one boundary-degree fibre, and G's
-own surroundings `G − Z` separate them.  This is `Graph.ResidualTargetDefect`
-at G's declared family with its existentials named by the witness. -/
-def SparseTargetDefectWitness.Spec {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (witness : SparseTargetDefectWitness data object) : Prop := by
-  classical
-  exact witness.first ∈ sparseDeclaredFamily data object ∧
-    witness.second ∈ sparseDeclaredFamily data object ∧
-    witness.first ≠ witness.second ∧
-    Graph.CanonicalSupport.select? object
-        (sparseDeclaredSupport data object witness.first ∪
-          sparseDeclaredSupport data object witness.second) =
-      some witness.support ∧
-    (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
-        witness.support
-        (sparseDeclaredSupport data object witness.first)).boundaryDegreeProfile =
-      (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
-        witness.support
-        (sparseDeclaredSupport data object witness.second)).boundaryDegreeProfile ∧
-    ¬ (Graph.HasCycleWithLength data.LengthOK
-          (Graph.ActualContext.actualGlue object witness.support
-            (sparseDeclaredSupport data object witness.first)) ↔
-        Graph.HasCycleWithLength data.LengthOK
-          (Graph.ActualContext.actualGlue object witness.support
-            (sparseDeclaredSupport data object witness.second)))
-
-/-- **No witness of clause (b) at a target-avoiding G**: the separation clause
-of `Spec` asks `G − Z` to separate two readings of G, and both are target-free
-there (`ActualContext.actualGlue_agree`). -/
-theorem SparseTargetDefectWitness.not_spec {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (witness : SparseTargetDefectWitness data object) : ¬ witness.Spec := by
-  rintro ⟨-, -, -, -, -, separated⟩
-  exact separated (Graph.ActualContext.actualGlue_agree avoids _ _ _)
-
 /-- Node `[132]`, blocker arm ("exit or canonical blocker?", tex 1197): no
 sparse surplus exit of G's declared family occurs, and the blocked pair family
 of `[130]` at G's canonical activation has a pair `π ∈ Π_blk` with its
