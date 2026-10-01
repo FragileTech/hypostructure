@@ -1428,24 +1428,11 @@ noncomputable abbrev PairNoProfileObstructionStatement
         (LengthOK := data.LengthOK) activation
         (object.portPairSchedule data.threshold) pair
 
-/-- Node `[130]`, clause (e) of `Blk(π)` at G: at G's canonical activation some
-scheduled pair has a type-(e) obstruction of `def:surplus-blockers` (a
+/-- Node `[130]`, clause (e) absent, decided at G: at G's canonical activation
+no scheduled pair has a type-(e) obstruction of `def:surplus-blockers` (a
 target-response coordinate witnessing a target-defective quotient,
-target-complete compression or support-dependence event). -/
-noncomputable abbrev PairResponseObstructionStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ∃ activation, canonicalPairActivation data object = some activation ∧
-    ∃ pair ∈ object.portPairSchedule data.threshold,
-      Graph.SparsePairDEResponseObstructionAt
-        (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-        (LengthOK := data.LengthOK) activation
-        (object.portPairSchedule data.threshold) pair
-
-/-- Node `[130]`, clause (e) absent: at the same canonical activation no
-scheduled pair has a type-(e) obstruction (the literal negation at the one
-pinned activation). -/
+target-complete compression or support-dependence event); `[4]`'s selection
+refutes each event (`not_responseObstruction_of_selection`). -/
 noncomputable abbrev PairNoResponseObstructionStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :

@@ -391,10 +391,11 @@ at `P₄(w)`, the no arm is `[90]` with `L₄` followed by `[91]`.  The no arm's
 
 `pairResponseIndependenceDichotomy` splits `Graph.HasSparsePairBlocker` over all
 six clauses of `def:surplus-blockers` at G's canonical activation.  On the
-blocked arm two further exact decisions test clause (e)
-(`pairResponseObstructionDichotomy`, keys 2900/2901) and clause (d)
-(`pairProfileObstructionDichotomy`, keys 2903/2904) and close their positive arms
-(see "Closed from G's facts").  The determination behind (d)/(e) is
+blocked arm an exact decision tests clause (d)
+(`pairProfileObstructionDichotomy`, keys 2903/2904) and closes its positive arm,
+and clause (e) is decided at G: the fact-only row `pairNoResponseObstructionRow`
+(reads `K .selection`, `K .dependentPairFamily`) publishes
+`K .pairNoResponseObstruction` (2901) (see "Closed from G's facts").  The determination behind (d)/(e) is
 `SparsePairDetermination` with the valuation `SparsePairExactValuation`, so its
 quotient is target-complete as the paper's determination quotient is.
 
@@ -574,8 +575,9 @@ node, closed there with `closeIncompatible`.
 - **[130]--[134] blocker (e).**  Each event of (e) (a target-defective
   identification, a compression of the determination support, a whole-graph
   closed representative) is refuted by `[4]`'s selection
-  (`not_responseObstruction_of_selection`); the arm is closed against
-  `K .selection` (`not_pairResponseObstruction_of_selection`).
+  (`not_responseObstruction_of_selection`), so clause (e) is empty at G and has
+  no branch: `K .pairNoResponseObstruction` is a theorem about G
+  (`pairNoResponseObstruction_of_selection`).
 - **[131] mixed dependence.**  G's canonical rank-reducing quotient of the mixed
   family does not exist: it would localize to a replacement or a smaller closed
   representative, refuted by `[4]`'s selection

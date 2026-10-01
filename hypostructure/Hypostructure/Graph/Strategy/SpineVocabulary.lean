@@ -1849,10 +1849,8 @@ inductive Key where
   cycle. -/
   | hssTargetCycle
   -- SP keys (fix2)
-  /-- Node `[130]`, blocker clause (e) at G's canonical activation: some
-  scheduled pair has a type-(e) obstruction. -/
-  | pairResponseObstruction
-  /-- Node `[130]`, blocker clause (e) absent at G's canonical activation. -/
+  /-- Node `[130]`, blocker clause (e) absent at G's canonical activation,
+  decided at G from `[4]`'s selection. -/
   | pairNoResponseObstruction
   /-- Node `[130]`, `lem:degree-profile-fibres` at G's pair family. -/
   | pairDegreeProfileFibres
@@ -3102,8 +3100,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .hssTargetCycle, object =>
       HssTargetCycleStatement data.toParameters object
   -- SP keys (fix2)
-  | .pairResponseObstruction, object =>
-      PairResponseObstructionStatement data.toParameters object
   | .pairNoResponseObstruction, object =>
       PairNoResponseObstructionStatement data.toParameters object
   | .pairDegreeProfileFibres, object =>
@@ -3861,7 +3857,6 @@ def label : Key → String
   | .targetCompleteContextUniversality => "targetCompleteContextUniversality"
   | .hssTargetCycle => "hssTargetCycle"
   -- SP keys (fix2)
-  | .pairResponseObstruction => "pairResponseObstruction"
   | .pairNoResponseObstruction => "pairNoResponseObstruction"
   | .pairDegreeProfileFibres => "pairDegreeProfileFibres"
   | .pairProfileObstruction => "pairProfileObstruction"
@@ -4448,7 +4443,6 @@ example : label .degreeProfileFibres = "degreeProfileFibres" := rfl
 example : label .targetCompleteContextUniversality = "targetCompleteContextUniversality" := rfl
 example : label .hssTargetCycle = "hssTargetCycle" := rfl
 -- SP keys (fix2)
-example : label .pairResponseObstruction = "pairResponseObstruction" := rfl
 example : label .pairNoResponseObstruction = "pairNoResponseObstruction" := rfl
 example : label .pairDegreeProfileFibres = "pairDegreeProfileFibres" := rfl
 example : label .pairProfileObstruction = "pairProfileObstruction" := rfl
@@ -5020,7 +5014,6 @@ def idx : Key → Nat
   | .targetCompleteContextUniversality => 2301
   | .hssTargetCycle => 2303
   -- SP keys (fix2)
-  | .pairResponseObstruction => 2900
   | .pairNoResponseObstruction => 2901
   | .pairDegreeProfileFibres => 2902
   | .pairProfileObstruction => 2903
@@ -5587,7 +5580,6 @@ def ofIdx : Nat → Key
   | 2301 => .targetCompleteContextUniversality
   | 2303 => .hssTargetCycle
   -- SP keys (fix2)
-  | 2900 => .pairResponseObstruction
   | 2901 => .pairNoResponseObstruction
   | 2902 => .pairDegreeProfileFibres
   | 2903 => .pairProfileObstruction
@@ -6644,8 +6636,6 @@ def name : Key → Lean.Name
   | .hssTargetCycle =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "hssTargetCycle") 2303
   -- SP keys (fix2)
-  | .pairResponseObstruction =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "pairResponseObstruction") 2900
   | .pairNoResponseObstruction =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairNoResponseObstruction") 2901
   | .pairDegreeProfileFibres =>

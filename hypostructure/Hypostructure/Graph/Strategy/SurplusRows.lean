@@ -261,50 +261,26 @@ noncomputable instance instIncompatiblePairDegreeProfileFibresPairProfileObstruc
     Graph.Contracts.SurplusPair.not_pairProfileObstruction_of_fibres
       fibres.down obstruction.down
 
-/-- Node `[130]`, blocked arm: blocker clause (e) of `def:surplus-blockers` at
-G's canonical activation, read from `K .dependentPairFamily` (which pins that
-activation).  Does some scheduled pair have a type-(e) obstruction?  The
-negative arm is the literal negation at the same activation. -/
-noncomputable def pairResponseObstructionDichotomy
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (previous : ExactLedger (Input BranchState Presentation presentation data)
-      current known)
-    [FactKeys.Has (K .dependentPairFamily) known]
-    (obstructionFresh : K .pairResponseObstruction ∉ known)
-    (noObstructionFresh : K .pairNoResponseObstruction ∉ known) :
-    Decision (K .pairResponseObstruction) (K .pairNoResponseObstruction)
-      previous :=
-  Decision.run previous (K .pairResponseObstruction)
-    (K .pairNoResponseObstruction)
-    `Hypostructure.Graph.Strategy.Spine.pairResponseObstructionDichotomy
-    (Classical.choice (show Nonempty
-        ((K .pairResponseObstruction).At current ⊕
-          (K .pairNoResponseObstruction).At current) from by
-      classical
-      obtain ⟨activation, selected, _blocked⟩ :=
-        (previous.get (K .dependentPairFamily)).down
-      by_cases obstruction : ∃ pair ∈ current.object.portPairSchedule
-          data.threshold,
-        Graph.SparsePairDEResponseObstructionAt
-          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-          (LengthOK := data.LengthOK) activation
-          (current.object.portPairSchedule data.threshold) pair
-      · exact ⟨.inl ⟨⟨activation, selected, obstruction⟩⟩⟩
-      · refine ⟨.inr ⟨⟨activation, selected, fun pair member present => ?_⟩⟩⟩
-        exact obstruction ⟨pair, member, present⟩))
-    obstructionFresh noObstructionFresh
-
-/-- Node `[130]`, clause (e) closed at G: a type-(e) obstruction at G's
-canonical activation contradicts `[4]`'s selection on the same ledger (the
+/-- Node `[130]`, blocked arm: blocker clause (e) of `def:surplus-blockers`
+decided at G (Lean improvement).  At G's canonical activation, read from
+`K .dependentPairFamily` (which pins that activation), no scheduled pair has a
+type-(e) obstruction: each of its events is refuted by `[4]`'s selection (the
 target-defective identification by the avoidance, the compression and the
-whole-graph representative by the minimality). -/
-noncomputable instance instIncompatibleSelectionPairResponseObstruction :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .selection) (K .pairResponseObstruction) where
-  contradiction := fun _current selection obstruction =>
-    Graph.Contracts.SurplusPair.not_pairResponseObstruction_of_selection
-      selection.down obstruction.down
+whole-graph representative by the minimality).  No decision. -/
+@[reducible] noncomputable def pairNoResponseObstructionRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairNoResponseObstruction
+    { Requires := [K .selection, K .dependentPairFamily]
+      Produces := [K .pairNoResponseObstruction]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairNoResponseObstruction)
+        ⟨Graph.Contracts.SurplusPair.pairNoResponseObstruction_of_selection
+          (inputs.get (K .selection)).down
+          (inputs.get (K .dependentPairFamily)).down⟩
+        .nil)
 
 /-! ## Node `[131]`: mixed sparse-spine dependence -/
 
