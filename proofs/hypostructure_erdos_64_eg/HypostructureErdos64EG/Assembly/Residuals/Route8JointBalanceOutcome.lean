@@ -53,7 +53,7 @@ theorem Route8JointBalanceOutcome_product.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- The return of `Route8JointBalanceOutcome_product`, parameterised by the
-arm choices: the 146 common facts are read from the ledger by
+arm choices: the 145 common facts are read from the ledger by
 `route8JointBalanceReturn`, and each factor is the arm block the path took,
 built by that block's `.ret` from the same ledger (one `get` per key). -/
 theorem route8JointBalanceProductReturn
@@ -74,14 +74,13 @@ theorem route8JointBalanceProductReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
-    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
     [FactKeys.Has (K .crossSwitchFamily) known]
     [FactKeys.Has (K .highCentreSplitForced) known]
     [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
-    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .declaredPairSupportStructure) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
     [FactKeys.Has (K .primitiveCarrierCount) known]

@@ -262,10 +262,10 @@ theorem pairArmB_holds (three : data.threshold = 3)
     cases r with
     | factorization system hs fails => exact Or.inl ⟨system, hs, fails⟩
     | systemRealizability returns hr fails =>
-        obtain ⟨nd, nh, ns, routes⟩ := realizabilityFails_content returns fails
+        obtain ⟨nd, nh, ns, routes⟩ := realizabilityFails_content returns avoid fails
         exact Or.inr (Or.inl ⟨returns, hr, nd, nh, ns, routes⟩)
     | incrementArithmetic serial hs fails =>
-        obtain ⟨nd, nh⟩ := incrementFails_content serial fails
+        obtain ⟨nd, nh⟩ := incrementFails_content serial avoid fails
         exact Or.inr (Or.inr ⟨serial, hs,
           Contracts.SurplusPair.canonicalPairDemandReturns_of_serial hs, nd, nh,
           fun choice mem offset offMem =>

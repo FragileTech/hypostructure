@@ -38,16 +38,14 @@ failure. -/
 
 /-- **Nodes `[179]`--`[180]`, coverage decided at G.**
 
-Reads G's canonical return system, the selection (G avoids the target), the
-replacement exclusion and the dyadic length law.  The target cycle, the target
-defect and the compression alternatives of `[179]` and `[180]` are empty at G,
-and the arithmetic input of `[180]` would produce an accepted cycle of G, so
+Reads G's canonical return system, the selection (G avoids the target) and the
+dyadic length law.  The target-cycle alternative of `[179]` is empty at G, and
+the arithmetic input of `[180]` would produce an accepted cycle of G, so
 coverage is exactly the Type B handoff or the serial system. -/
 @[reducible] noncomputable def pairCoverageRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.pairCoverage
-    { Requires := [K .pairDemandReturns, K .selection, K .replacementExclusion,
-        K .cubicBaseline]
+    { Requires := [K .pairDemandReturns, K .selection, K .cubicBaseline]
       Produces := [K .pairCoverage]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -57,8 +55,7 @@ coverage is exactly the Type B handoff or the serial system. -/
         ⟨Graph.Contracts.SurplusPair.pairCoverage_of_demandReturns
           (inputs.get (K .pairDemandReturns)).down
           (inputs.get (K .selection)).down.1
-          (inputs.get (K .cubicBaseline)).down.2.1.2.1
-          (inputs.get (K .replacementExclusion)).down⟩
+          (inputs.get (K .cubicBaseline)).down.2.1.2.1⟩
         .nil)
 
 /-- **Node `[180]`, the full-modulus arithmetic of G's canonical serial system.**

@@ -54,8 +54,8 @@ noncomputable def Assembly.Internal.nearCubicRealized
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .densityExcess, K .remainderSlack, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
          K .primitiveCarrierCount, K .remainderPathBounds, K .windowFreeGeometry, K .inducedPathAttachment, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
          K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
-        K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
-         K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
+        K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
+         K .noSuppressionChordViolation, K .declaredPairSupportStructure, K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   let cap := nearCubicHotColdCap enumerated
   match coldRoute8Dichotomy (data := spineData) cap

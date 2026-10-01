@@ -39,8 +39,10 @@ theorem serial_lengths_not_accepted (serial : PairSerialDemandSystem data object
 target defect among the obstruction coordinates, no obstruction handoff, no
 target cycle, no compression inside `U`, and no serial system on these returns;
 hence every disjoint connector-route pair with forward route in `U` is
-trivial. -/
+trivial.  The target-defect clause is read from the avoidance (two readings of
+G agree in `G − Z`). -/
 theorem realizabilityFails_content (returns : PairDemandReturns data object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (fails : ¬ Nonempty (PairSystemRealizabilityOutcome returns)) :
     ¬ Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK) object
         returns.obstructionCoordinates pairCoordinateSupport ∧
@@ -51,7 +53,7 @@ theorem realizabilityFails_content (returns : PairDemandReturns data object)
           v ∈ returns.overlap.system.overlapSupport returns.overlap.family) →
         (∀ v ∈ routes.forward.support, v ∉ routes.backward.support) →
         routes.forward.length = 0 ∧ routes.backward.length = 0) := by
-  refine ⟨fun d => fails ⟨.early (.targetDefect d)⟩,
+  refine ⟨Graph.not_residualTargetDefect_of_avoids avoid _ _,
     fun h => fails ⟨.early (.typeB h)⟩,
     fun serial e => fails ⟨.serial serial e⟩, ?_⟩
   intro routes inside disj
@@ -90,12 +92,13 @@ theorem realizabilityFails_reversed_high (returns : PairDemandReturns data objec
 /-- **G7(iii).** The exact content of the `[182]` incrementArithmetic arm: no
 target defect among the serial system's obstruction coordinates and no handoff
 of its obstruction (the arithmetic arm is excluded by `¬ HasCycle` and is not
-recorded). -/
+recorded; the target-defect clause is read from the avoidance). -/
 theorem incrementFails_content (serial : PairSerialDemandSystem data object)
+    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (fails : ¬ Nonempty (PairIncrementOutcome serial)) :
     ¬ Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK) object
         serial.returns.obstructionCoordinates pairCoordinateSupport ∧
       ¬ PairObstructionHandoff data object serial.returns :=
-  ⟨fun d => fails ⟨.early (.targetDefect d)⟩, fun h => fails ⟨.early (.typeB h)⟩⟩
+  ⟨Graph.not_residualTargetDefect_of_avoids avoid _ _, fun h => fails ⟨.early (.typeB h)⟩⟩
 
 end Hypostructure.Graph.PairArms

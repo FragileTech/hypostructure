@@ -2,8 +2,7 @@ import Hypostructure.Graph.Statements.SparseExitReadings
 import Hypostructure.Graph.Contracts.Spine.SparseExitResidual
 
 /-!
-# Contracts: the edge switches of G, and the readings of the clause-(b) witness
-# triples in G's own surroundings
+# Contracts: the edge switches of G
 
 Proof-agnostic contract lemmas for `Statements/SparseExitReadings.lean`, one
 `<statement>_holds` per statement.  Each is stated over a `Graph.FiniteObject`
@@ -11,10 +10,7 @@ with the registered `Parameters` as a parameter; its hypotheses are exactly
 ledger facts: the selection (target avoidance), the presentation laws
 (`δ = 3`), the baseline, the tight endpoint and slack independence,
 `surplusAbove` and `C + 1 ≤ ⌈√n⌉`.  The mathematics is in the vocabulary-free
-modules `Graph/EdgeSwitchPaths` and `Graph/ActualContext`.
-
-Clause (b) of `[125]`, stated about G, is empty at G (lem:sparse-exit-b-empty);
-no reading contract is stated at `[125]`'s pinned witness.
+module `Graph/EdgeSwitchPaths`.
 
 This module imports no strategy, row, or vocabulary module.
 -/
@@ -105,14 +101,5 @@ theorem highEndpointSwitch_holds (slack : SlackIndependentStatement data object)
     obtain ⟨p, pp, ok⟩ := twoSwitch a.symm hu₂.symm u2c.symm ch₂ hu (Ne.symm h2ne) cu₂
       dh d2
     exact ⟨h₂, u₂, h2ne, d2, hu₂.symm, u2c, cu₂, p, pp, ok⟩
-
-/-! ## The readings of every clause-(b) witness triple in G − Z -/
-
-/-- Every reading of G's piece glued into G's own surroundings `G − Z` is a
-subgraph of G (`ActualContext.not_target_actualGlue`). -/
-theorem everyWitnessSpectrumSplit_holds
-    (avoid : ¬ Graph.HasCycleWithLength data.LengthOK object) :
-    EveryWitnessSpectrumSplitStatement data object :=
-  fun w X _ => Graph.ActualContext.not_target_actualGlue avoid w.support X
 
 end Hypostructure.Graph.Contracts.Spine.SparseExitReadings

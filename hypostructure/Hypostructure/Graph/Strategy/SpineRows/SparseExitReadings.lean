@@ -2,20 +2,14 @@ import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Contracts.Spine.SparseExitReadings
 
 /-!
-# The edge switches of G, and the readings of the clause-(b) witness triples
+# The edge switches of G
 
 Type A rows.  Each reads its prerequisites through `inputs.get` and publishes,
 at G, one fact per key (contracts: `Graph/Contracts/Spine/SparseExitReadings.lean`).
 No row decides or splits anything.  A row runs right after the last producer
 of the keys it reads, on the shared prefix, so every branch below inherits its
-facts:
-- the entry prefix (`Assembly/Entry.lean`): the readings of every clause-(b)
-  witness triple in G's own surroundings `G − Z` (after `[4]`);
-- the top of the strict arm of `[19]` (`Assembly/Final.lean`, before `[20]`):
-  where the surplus sits and the switch at every high/baseline edge.
-
-Clause (b) of `[125]`, stated about G, is empty at G (lem:sparse-exit-b-empty);
-no row runs at `[125]`'s pinned witness.
+facts: the top of the strict arm of `[19]` (`Assembly/Final.lean`, before
+`[20]`), where the surplus sits and the switch at every high/baseline edge.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -29,22 +23,6 @@ universe u v
 variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
-
-/-- Entry prefix, right after `[4]`'s selection: the readings of every clause-(b)
-witness triple of G are negative in G's own surroundings `G − Z`. -/
-@[reducible] noncomputable def everyWitnessSpectrumRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.everyWitnessSpectrum
-    { Requires := [K .selection]
-      Produces := [K .everyWitnessSpectrumSplit]
-      requiresUnique := by simp
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      .cons (key := K .everyWitnessSpectrumSplit)
-        ⟨Contracts.Spine.SparseExitReadings.everyWitnessSpectrumSplit_holds
-          (object := inputs.current.object) (inputs.get (K .selection)).down.1⟩
-      .nil)
 
 /-- Top of the strict arm of `[19]` (after `C + 1 ≤ ⌈√n⌉` is published): where the
 surplus of G sits. -/

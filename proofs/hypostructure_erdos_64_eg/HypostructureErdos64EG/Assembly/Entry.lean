@@ -61,27 +61,20 @@ noncomputable def selectedEntryPrefix
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .densityExcess, K .remainderSlack, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
         K .primitiveCarrierCount, K .remainderPathBounds, K .windowFreeGeometry, K .inducedPathAttachment, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
         K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
-        K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
-        K .noSuppressionChordViolation, K .specWitnessStructure, K .selection] := by
+        K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
+        K .noSuppressionChordViolation, K .declaredPairSupportStructure, K .selection] := by
   -- Facts of G read from `[4]`'s selection alone; no decision.
   let hSelectionFacts :=
     (entrySelectionFactsRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
-  -- The path-spectrum split at every clause-(b) witness of G, from `[4]`'s
-  -- selection alone; no decision.
-  let hSpectrum :=
-    (everyWitnessSpectrumRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      hSelectionFacts (by key_fresh)
   -- The presentation laws of G, published once on the ledger.
   let hCubic :=
     (cubicBaselineRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      hSpectrum (by key_fresh)
+      hSelectionFacts (by key_fresh)
   -- Cycle counting (Lean improvement): the neighbourhood pairs and the star and meeting constraints at every vertex of G, from the selection and the presentation laws; no decision.
   let hCycleNeighbourhood :=
     (cycleNeighbourhoodRow (BranchState := BranchState)

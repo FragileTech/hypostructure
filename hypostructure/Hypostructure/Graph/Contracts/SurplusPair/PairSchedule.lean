@@ -92,19 +92,22 @@ theorem not_pairProfileObstruction_of_fibres
   exact different (fibres _ attempt determiners determination _
     determination.2.2.1 _ (determination.2.2.2.1 identifiedMem) same.symm)
 
-/-- Node `[130]`, clause (e) at G: a type-(e) obstruction of a scheduled pair
-at G's canonical activation is refuted by `[4]`'s selection
+/-- Node `[130]`, clause (e) decided at G (Lean improvement): at G's canonical
+activation (pinned by the blocked arm), no scheduled pair has a type-(e)
+obstruction.  Each event of clause (e) is refuted by `[4]`'s selection
 (`not_responseObstruction_of_selection`: the target-defective identification by
 the avoidance, the compression and the whole-graph representative by the
 minimality). -/
-theorem not_pairResponseObstruction_of_selection
+theorem pairNoResponseObstruction_of_selection
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation}
     (selected : SelectionStatement BranchState Presentation presentation data
       object)
-    (obstruction : PairResponseObstructionStatement data object) : False := by
-  obtain ⟨_activation, _selected, _pair, _member, obstruction⟩ := obstruction
-  exact not_responseObstruction_of_selection selected obstruction
+    (dependent : DependentPairFamilyStatement data object) :
+    PairNoResponseObstructionStatement data object := by
+  obtain ⟨activation, activationSelected, _blocked⟩ := dependent
+  exact ⟨activation, activationSelected, fun _pair _member obstruction =>
+    not_responseObstruction_of_selection selected obstruction⟩
 
 /-- Node `[131]`, `lem:exact-cubic-baseline-budget`, two-sided with
 logarithms cleared. -/

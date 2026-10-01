@@ -12,13 +12,12 @@ can:
   (`PairOverlapSystem.ConditionalFactorization`); its failure has the exact
   shape of `PairOverlapSystem.not_conditionalFactorization_iff` -- a product
   failure among mutually non-overlapping response supports.
-* `[179]`: alternatives (i)--(iii) are empty at G (no target cycle; the target
-  defect of the obstruction coordinates is empty by `actualGlue_agree`; a
-  compression contradicts `lem:replacement`), so coverage is exactly the Type B
-  handoff of the retained return system or a serial demand system on it.
+* `[179]`: the target-cycle alternative is empty at G, so coverage is exactly
+  the Type B handoff of the retained return system or a serial demand system
+  on it.
 * `[180]`: the arithmetic arm is empty at G (it would produce an accepted cycle
-  of G), and so are the target-defect and compression alternatives, so coverage
-  is exactly the Type B handoff of the serial system's returns.
+  of G), so coverage is exactly the Type B handoff of the serial system's
+  returns.
 
 None of the statements mentions keys, ledgers, branches or node numbers.
 -/
@@ -47,12 +46,10 @@ theorem not_pairSerialArithmetic_of_avoids
 
 /-- Node `[179]`, decided at G: for G's return system, coverage of
 `lem:pair-system-realizability` is exactly the Type B handoff of the retained
-obstruction or a serial demand system on those returns.  The target cycle, the
-target defect (`actualGlue_agree`) and the compression (`lem:replacement`)
-alternatives are empty at G. -/
+obstruction or a serial demand system on those returns.  The target cycle
+alternative is empty at G. -/
 theorem pairSystemRealizabilityOutcome_iff
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (repl : ReplacementExclusionStatement data object)
     (returns : PairDemandReturns data object) :
     Nonempty (PairSystemRealizabilityOutcome returns) ↔
       PairObstructionHandoff data object returns ∨
@@ -63,9 +60,6 @@ theorem pairSystemRealizabilityOutcome_iff
     | early early =>
         cases early with
         | targetCycle cycle => exact (avoids cycle).elim
-        | targetDefect defect =>
-            exact (Graph.not_residualTargetDefect_of_avoids avoids _ _ defect).elim
-        | compression support _ replacement => exact (repl support replacement).elim
         | typeB handoff => exact Or.inl handoff
     | serial system same => exact Or.inr ⟨system, same⟩
   · rintro (handoff | ⟨serial, same⟩)
@@ -76,25 +70,22 @@ theorem pairSystemRealizabilityOutcome_iff
 retained obstruction and no serial demand system on G's return system. -/
 theorem not_pairSystemRealizabilityOutcome_iff
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (repl : ReplacementExclusionStatement data object)
     (returns : PairDemandReturns data object) :
     ¬ Nonempty (PairSystemRealizabilityOutcome returns) ↔
       ¬ PairObstructionHandoff data object returns ∧
         ∀ serial : PairSerialDemandSystem data object, serial.returns ≠ returns := by
-  rw [not_congr (pairSystemRealizabilityOutcome_iff avoids repl returns)]
+  rw [not_congr (pairSystemRealizabilityOutcome_iff avoids returns)]
   push Not
   exact Iff.rfl
 
 /-- Node `[180]`, decided at G: for G's canonical serial system, coverage of
 `lem:pair-system-increment-arithmetic` is exactly the Type B handoff of the
 serial system's returns.  The arithmetic arm is empty at G
-(`not_pairSerialArithmetic_of_avoids`), and so are the target-defect and
-compression alternatives. -/
+(`not_pairSerialArithmetic_of_avoids`). -/
 theorem pairIncrementOutcome_iff_handoff
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (lengthOK_iff : ∀ length, data.LengthOK length ↔
       Core.DyadicLength.PowerOfTwoLength length)
-    (repl : ReplacementExclusionStatement data object)
     {serial : PairSerialDemandSystem data object}
     (selected : canonicalPairSerialSystem data object = some serial) :
     Nonempty (PairIncrementOutcome serial) ↔
@@ -107,9 +98,6 @@ theorem pairIncrementOutcome_iff_handoff
           ⟨input⟩).elim
     | early early =>
         cases early with
-        | targetDefect defect =>
-            exact (Graph.not_residualTargetDefect_of_avoids avoids _ _ defect).elim
-        | compression support _ replacement => exact (repl support replacement).elim
         | typeB handoff => exact handoff
   · intro handoff
     exact ⟨.early (.typeB handoff)⟩
@@ -140,14 +128,13 @@ theorem pairCoverage_of_demandReturns
     (returns : PairDemandReturnsStatement data object)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (lengthOK_iff : ∀ length, data.LengthOK length ↔
-      Core.DyadicLength.PowerOfTwoLength length)
-    (repl : ReplacementExclusionStatement data object) :
+      Core.DyadicLength.PowerOfTwoLength length) :
     PairCoverageStatement data object := by
   obtain ⟨returns, selected⟩ := returns
-  exact ⟨returns, selected, pairSystemRealizabilityOutcome_iff avoids repl returns,
+  exact ⟨returns, selected, pairSystemRealizabilityOutcome_iff avoids returns,
     fun serial serialSelected =>
       ⟨not_pairSerialArithmetic_of_avoids avoids lengthOK_iff serialSelected,
-        pairIncrementOutcome_iff_handoff avoids lengthOK_iff repl serialSelected⟩⟩
+        pairIncrementOutcome_iff_handoff avoids lengthOK_iff serialSelected⟩⟩
 
 /-- Node `[180]`: at G's canonical serial system the full-modulus arithmetic built
 from the serial system's own increments (Frobenius filling of the central range)

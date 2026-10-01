@@ -97,24 +97,17 @@ theorem obstructionCoordinates_subset (returns : PairDemandReturns data object) 
   obtain ⟨retained, -, rfl⟩ := Finset.mem_image.mp member
   exact returns.overlap.system.first.pairSet_subset_schedule retained.2
 
-/-- Alternatives (i)--(iv) of `lem:pair-system-realizability` for G's canonical
-return system, on G: (i) contradicts the avoidance, (ii) is empty at G (two
-readings of G agree in G's own surroundings `G − Z`), (iii) contradicts the
-replacement exclusion; only alternative (iv) remains, the first-separator
-handoff of that return system's own obstruction. -/
+/-- The alternatives of `lem:pair-system-realizability` for G's canonical
+return system, on G: an accepted cycle contradicts the avoidance; only the
+first-separator handoff of that return system's own obstruction remains. -/
 theorem pairObstructionHandoff_of_pairSystemEarlyOutcome
     (early : PairSystemEarlyOutcomeStatement data object)
-    (noCycle : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (replacementExcluded : ReplacementExclusionStatement data object) :
+    (noCycle : ¬ Graph.HasCycleWithLength data.LengthOK object) :
     ∃ returns, canonicalPairDemandReturns data object = some returns ∧
       PairObstructionHandoff data object returns := by
   obtain ⟨returns, returnsSelected, ⟨early⟩⟩ := early
   cases early with
   | targetCycle cycle => exact (noCycle cycle).elim
-  | targetDefect defect =>
-      exact (Graph.not_residualTargetDefect_of_avoids noCycle _ _ defect).elim
-  | compression support _inside replacement =>
-      exact (replacementExcluded support replacement).elim
   | typeB handoff => exact ⟨returns, returnsSelected, handoff⟩
 
 /-- G's canonical serial system is built on G's canonical return system. -/
@@ -129,22 +122,15 @@ theorem canonicalPairDemandReturns_of_serial
       rw [hReturns, Option.bind_some] at selected
       rw [canonicalChoice_spec_of_eq_some selected]
 
-/-- The periodic alternatives of `lem:pair-system-increment-arithmetic` for G's
-canonical serial system, on G: the target-defective identification is empty at
-G and the compression contradicts the replacement exclusion; only the
-first-separator handoff of the serial system's own obstruction remains. -/
+/-- The periodic alternative of `lem:pair-system-increment-arithmetic` for G's
+canonical serial system, on G: the first-separator handoff of the serial
+system's own obstruction. -/
 theorem pairObstructionHandoff_of_pairIncrementEarlyOutcome
-    (early : PairIncrementEarlyOutcomeStatement data object)
-    (noCycle : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (replacementExcluded : ReplacementExclusionStatement data object) :
+    (early : PairIncrementEarlyOutcomeStatement data object) :
     ∃ returns, canonicalPairDemandReturns data object = some returns ∧
       PairObstructionHandoff data object returns := by
   obtain ⟨serial, serialSelected, ⟨early⟩⟩ := early
   cases early with
-  | targetDefect defect =>
-      exact (Graph.not_residualTargetDefect_of_avoids noCycle _ _ defect).elim
-  | compression support _inside replacement =>
-      exact (replacementExcluded support replacement).elim
   | typeB handoff =>
       exact ⟨serial.returns, canonicalPairDemandReturns_of_serial serialSelected,
         handoff⟩

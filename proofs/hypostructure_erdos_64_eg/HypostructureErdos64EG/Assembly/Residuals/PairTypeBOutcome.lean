@@ -4,7 +4,7 @@ import HypostructureErdos64EG.Assembly.Residuals
 # Assembly: Residuals / PairTypeBOutcome
 
 Node `[187]` ([179]/[180] Type B entry), split by distinct fact set.  The
-generic residual `PairTypeBOutcome` (`Assembly/Residuals.lean`) lists the 133 facts
+generic residual `PairTypeBOutcome` (`Assembly/Residuals.lean`) lists the 132 facts
 common to every path, the last of them the `[179]` early outcome.  It is reached along two
 paths with two distinct literal ledgers: the entry into the pair-code chain
 `[178]` is either the free side of `[131]` (node `[130]`'s independent arm) or the
@@ -32,7 +32,7 @@ universe u
 (vi), tex 386-403): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] independent arm (canonical pair split), [131] free-pair count
 fails; then [179] early outcome.  Every fact of its ledger: the generic residual's
-133 facts and 2 explicit extra facts (135 facts in all). -/
+132 facts and 2 explicit extra facts (134 facts in all). -/
 abbrev PairTypeBOutcome_independentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -64,14 +64,13 @@ theorem pairTypeBIndependentSystemReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
-    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
     [FactKeys.Has (K .crossSwitchFamily) known]
     [FactKeys.Has (K .highCentreSplitForced) known]
     [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
-    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .declaredPairSupportStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -201,14 +200,13 @@ theorem pairTypeBIndependentSystemReturn
       (history.get (K .windowPresent)).down,
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
-      (history.get (K .everyWitnessSpectrumSplit)).down,
       (history.get (K .packingOrderBound)).down,
       (history.get (K .noSuppressionChordViolation)).down,
       (history.get (K .twoSwitchForcedPath)).down,
       (history.get (K .crossSwitchFamily)).down,
       (history.get (K .highCentreSplitForced)).down,
       (history.get (K .sameVertexSwitchForcedPath)).down,
-      (history.get (K .specWitnessStructure)).down,
+      (history.get (K .declaredPairSupportStructure)).down,
       (history.get (K .bridgeless)).down,
       (history.get (K .remainderDeficiencyBelowCut)).down,
       (history.get (K .windowCutCapacity)).down,
@@ -326,8 +324,8 @@ theorem pairTypeBIndependentSystemReturn
 (vi), tex 386-403): the generic residual `PairTypeBOutcome` on the ledger
 reached by [130] dependent arm (canonical pair split: fibres, no blocker (d), no
 blocker (e)), [132] blocker arm, [137] blocked-side count fails; then [179]
-early outcome.  Every fact of its ledger: the generic residual's 133 facts and 11
-explicit extra facts (144 facts in all). -/
+early outcome.  Every fact of its ledger: the generic residual's 132 facts and 11
+explicit extra facts (143 facts in all). -/
 abbrev PairTypeBOutcome_dependentSystem (selected : EGInput.{u}) : Prop :=
   PairTypeBOutcome selected ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -377,14 +375,13 @@ theorem pairTypeBDependentSystemReturn
     [FactKeys.Has (K .windowPresent) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .localAlgebra) known]
-    [FactKeys.Has (K .everyWitnessSpectrumSplit) known]
     [FactKeys.Has (K .packingOrderBound) known]
     [FactKeys.Has (K .noSuppressionChordViolation) known]
     [FactKeys.Has (K .twoSwitchForcedPath) known]
     [FactKeys.Has (K .crossSwitchFamily) known]
     [FactKeys.Has (K .highCentreSplitForced) known]
     [FactKeys.Has (K .sameVertexSwitchForcedPath) known]
-    [FactKeys.Has (K .specWitnessStructure) known]
+    [FactKeys.Has (K .declaredPairSupportStructure) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .remainderDeficiencyBelowCut) known]
     [FactKeys.Has (K .windowCutCapacity) known]
@@ -523,14 +520,13 @@ theorem pairTypeBDependentSystemReturn
       (history.get (K .windowPresent)).down,
       (history.get (K .maximalPacking)).down,
       (history.get (K .localAlgebra)).down,
-      (history.get (K .everyWitnessSpectrumSplit)).down,
       (history.get (K .packingOrderBound)).down,
       (history.get (K .noSuppressionChordViolation)).down,
       (history.get (K .twoSwitchForcedPath)).down,
       (history.get (K .crossSwitchFamily)).down,
       (history.get (K .highCentreSplitForced)).down,
       (history.get (K .sameVertexSwitchForcedPath)).down,
-      (history.get (K .specWitnessStructure)).down,
+      (history.get (K .declaredPairSupportStructure)).down,
       (history.get (K .bridgeless)).down,
       (history.get (K .remainderDeficiencyBelowCut)).down,
       (history.get (K .windowCutCapacity)).down,

@@ -129,18 +129,17 @@ alternative (v) supplies the graph-realized serial demand system. -/
           (inputs.get (K .pairSystemNoEarlyOutcome)).down⟩
         .nil)
 
-/-- Alternatives (i)--(iv) of node `[179]`: the target cycle and the
-target-defective identification are excluded by the selection's avoidance and
-the compression by the replacement exclusion, so alternative (iv), the
-first-separator handoff of the retained obstruction at `P₀`, remains and enters
+/-- The alternatives of node `[179]`: the target cycle is excluded by the
+selection's avoidance, so the first-separator handoff of the retained
+obstruction at `P₀` remains and enters
 the common Type B entry at its canonical support.  (G audit, `[187]`) The same handoff also
 publishes the exact shape and the ambient surplus of that one support
 (`K .pairHandoffSupport`, `K .pairHandoffCharge`, `K .pairHandoffNetCharge`). -/
 @[reducible] noncomputable def pairSystemEarlyTypeBEntryRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.pairSystemEarlyTypeBEntry
-    { Requires := [K .pairSystemEarlyOutcome, K .selection,
-        K .replacementExclusion, K .surplusAbove, K .portEndDegree]
+    { Requires := [K .pairSystemEarlyOutcome, K .selection, K .surplusAbove,
+        K .portEndDegree]
       Produces := [K .typeBFanEntry, K .pairHandoffSupport, K .pairHandoffCharge,
         K .pairHandoffNetCharge]
       requiresUnique := by key_fresh
@@ -151,7 +150,6 @@ publishes the exact shape and the ambient surplus of that one support
         Graph.Contracts.SurplusPair.pairObstructionHandoff_of_pairSystemEarlyOutcome
           (inputs.get (K .pairSystemEarlyOutcome)).down
           (inputs.get (K .selection)).down.1
-          (inputs.get (K .replacementExclusion)).down
       .cons (key := K .typeBFanEntry)
         ⟨Graph.Contracts.SurplusPair.typeBFanEntry_of_pairObstructionHandoff
           (inputs.get (K .surplusAbove)).down handoff⟩

@@ -60,8 +60,8 @@ noncomputable def Assembly.Internal.strictSurplusDependent
         K .cutVertexBlockPaths, K .singleBoundaryShape, K .densityExcess, K .remainderSlack, K .noProperBaseline, K .sameVertexSwitchForcedPath, K .returnAvoidance,
           K .primitiveCarrierCount, K .remainderPathBounds, K .windowFreeGeometry, K .inducedPathAttachment, K .windowPositionStubs, K .windowAttachmentGap, K .remainderDeficiencyBelowCut, K .windowCutCapacity,
           K .highDegreePairSum, K .twoSwitchForcedPath, K .crossSwitchFamily, K .minDegreeBaseline, K .bridgeless, K .threeRouteFan, K .threeRouteChain, K .neighbourhoodPairCount, K .starCycleConstraint,
-        K .meetingCycleConstraint, K .cubicBaseline, K .everyWitnessSpectrumSplit, K .packingOrderBound,
-          K .noSuppressionChordViolation, K .specWitnessStructure, K .selection]) :
+        K .meetingCycleConstraint, K .cubicBaseline, K .packingOrderBound,
+          K .noSuppressionChordViolation, K .declaredPairSupportStructure, K .selection]) :
     StrictSurplusBoundaryResult selected := by
   -- Top of the dependent arm of `[130]` (reuse): `[131]`'s full-schedule
   -- entropy count fails at G's canonical objects, unconditionally
@@ -88,165 +88,163 @@ noncomputable def Assembly.Internal.strictSurplusDependent
         (K .pairProfileObstruction) (by key_fresh)).elimClosed
         (by infer_instance) |>.elim
   | .right noProfileHistory =>
-      -- `[130]`, blocked arm: blocker clause (e) at G's canonical activation.  A
-      -- type-(e) obstruction contradicts `[4]`'s selection on the same ledger.
-      match pairResponseObstructionDichotomy (data := spineData) noProfileHistory
+      -- `[130]`, blocked arm: blocker clause (e) at G's canonical activation,
+      -- decided at G from `[4]`'s selection; no decision.
+      let dependentHistory :=
+        (pairNoResponseObstructionRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          noProfileHistory (by key_fresh)
+      match blockedPairRoutingDichotomy (data := spineData) dependentHistory
           (by key_fresh) (by key_fresh) with
-      | .left obstructionHistory =>
-          exact (closeIncompatible obstructionHistory (K .selection)
-            (K .pairResponseObstruction) (by key_fresh)).elimClosed
-            (by infer_instance) |>.elim
-      | .right dependentHistory =>
-          match blockedPairRoutingDichotomy (data := spineData) dependentHistory
+      | .left exitHistory =>
+          -- `[133]`: the exit contradicts the survivor fact of `[125]`.
+          exact (closeIncompatible exitHistory (K .sparseSurplusSurvivor)
+            (K .sparsePairExit) (by key_fresh) |>.elimClosed (by infer_instance)).elim
+      | .right noExitHistory =>
+          -- `[132]` blocker arm, then `[134]`--`[136]`: the canonical blocker
+          -- ledger, the exact window-join load, and the capacity-token ledger.
+          let blockerHistory :=
+            (canonicalBlockerRouteRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              noExitHistory (by key_fresh)
+          let pairs :=
+            (canonicalPairLedgerRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              blockerHistory (by key_fresh)
+          -- `[135]`'s exact window-join load (`K .sparseUpperEnvelope`) is on
+          -- the ledger since the top of the strict arm of `[19]`.
+          let tokens :=
+            (capacityTokenLedgerRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              pairs (by key_fresh)
+          -- `[137]`: the entropy setup at G's `𝔗_cap` and spine family, then
+          -- the entropy count on the free side of the capacity charge.
+          let setup :=
+            (blockedPairEntropySetupRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              tokens (by key_fresh)
+          match blockedPairEntropyDichotomy (data := spineData) setup
               (by key_fresh) (by key_fresh) with
-          | .left exitHistory =>
-              -- `[133]`: the exit contradicts the survivor fact of `[125]`.
-              exact (closeIncompatible exitHistory (K .sparseSurplusSurvivor)
-                (K .sparsePairExit) (by key_fresh) |>.elimClosed (by infer_instance)).elim
-          | .right noExitHistory =>
-              -- `[132]` blocker arm, then `[134]`--`[136]`: the canonical blocker
-              -- ledger, the exact window-join load, and the capacity-token ledger.
-              let blockerHistory :=
-                (canonicalBlockerRouteRow (BranchState := BranchState)
+          | .right failsHistory =>
+              -- The count fails on the free side: continue at `[178]`.
+              let unrealizedHistory :=
+                (blockedPairCodeUnrealizedRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run failsHistory (by key_fresh)
+              let firstFailure :=
+                (blockedPairOverlapFirstFailureRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run unrealizedHistory (by key_fresh)
+              -- `[131]`'s dependence prefix, cubic budget, skeleton room and
+              -- `[21]`'s skeleton domination are facts of G on this side too.
+              let mixed :=
+                (mixedSparseSpineDependenceRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run firstFailure (by key_fresh)
+              let cubic :=
+                (exactCubicBaselineBudgetRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run mixed (by key_fresh)
+              let room :=
+                (incrementalSkeletonRoomRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run cubic (by key_fresh)
+              let dominated :=
+                (skeletonDominatesRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run room (by key_fresh)
+              exact selectedPairCodeChainDependent dominated
+          | .left sandwichHistory =>
+              let fibres :=
+                (roleFibrePartitionRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  noExitHistory (by key_fresh)
-              let pairs :=
-                (canonicalPairLedgerRow (BranchState := BranchState)
+                  sandwichHistory (by key_fresh)
+              let pressure :=
+                (fibrePressureRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  blockerHistory (by key_fresh)
-              -- `[135]`'s exact window-join load (`K .sparseUpperEnvelope`) is on
-              -- the ledger since the top of the strict arm of `[19]`.
-              let tokens :=
-                (capacityTokenLedgerRow (BranchState := BranchState)
-                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  pairs (by key_fresh)
-              -- `[137]`: the entropy setup at G's `𝔗_cap` and spine family, then
-              -- the entropy count on the free side of the capacity charge.
-              let setup :=
-                (blockedPairEntropySetupRow (BranchState := BranchState)
-                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  tokens (by key_fresh)
-              match blockedPairEntropyDichotomy (data := spineData) setup
+                  fibres (by key_fresh)
+              match coupledExcessDichotomy (data := spineData) pressure
                   (by key_fresh) (by key_fresh) with
-              | .right failsHistory =>
-                  -- The count fails on the free side: continue at `[178]`.
-                  let unrealizedHistory :=
-                    (blockedPairCodeUnrealizedRow (BranchState := BranchState)
+              | .left nearCubicHistory =>
+                  -- `[138]`: `σ(G) ≤ R_L(n) ≤ C_sp ⌈√n⌉` against `[19]`.
+                  let closedHistory :=
+                    (pressureSpineSurplusEstimateRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile)
-                      (data := spineData)).run failsHistory (by key_fresh)
-                  let firstFailure :=
-                    (blockedPairOverlapFirstFailureRow (BranchState := BranchState)
+                      (data := spineData)).runAndCloseIncompatible
+                        nearCubicHistory (K .surplusAbove) (K .spineSurplusEstimate)
+                        (by key_fresh) (by key_fresh)
+                  exact (closedHistory.elimClosed (by infer_instance)).elim
+              | .right overloadHistory =>
+                  -- `[139]`--`[144]` on the literal overload residual.  The
+                  -- node-`[144]` routing reads `lem:bridgeless` (on the ledger
+                  -- since the entry prefix) and the high-centre normal form,
+                  -- published here, once, on this arm.
+                  let normal :=
+                    (highCentreNormalFormRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile)
-                      (data := spineData)).run unrealizedHistory (by key_fresh)
-                  -- `[131]`'s dependence prefix, cubic budget, skeleton room and
-                  -- `[21]`'s skeleton domination are facts of G on this side too.
-                  let mixed :=
-                    (mixedSparseSpineDependenceRow (BranchState := BranchState)
-                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                      (presentation := erdosReceiverLoadProfile)
-                      (data := spineData)).run firstFailure (by key_fresh)
-                  let cubic :=
-                    (exactCubicBaselineBudgetRow (BranchState := BranchState)
-                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                      (presentation := erdosReceiverLoadProfile)
-                      (data := spineData)).run mixed (by key_fresh)
-                  let room :=
-                    (incrementalSkeletonRoomRow (BranchState := BranchState)
-                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                      (presentation := erdosReceiverLoadProfile)
-                      (data := spineData)).run cubic (by key_fresh)
-                  let dominated :=
-                    (skeletonDominatesRow (BranchState := BranchState)
-                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                      (presentation := erdosReceiverLoadProfile)
-                      (data := spineData)).run room (by key_fresh)
-                  exact selectedPairCodeChainDependent dominated
-              | .left sandwichHistory =>
-                  let fibres :=
-                    (roleFibrePartitionRow (BranchState := BranchState)
-                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                      sandwichHistory (by key_fresh)
-                  let pressure :=
-                    (fibrePressureRow (BranchState := BranchState)
-                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                      fibres (by key_fresh)
-                  match coupledExcessDichotomy (data := spineData) pressure
+                      (data := spineData)).run overloadHistory (by key_fresh)
+                  match windowOverloadClassDichotomy (data := spineData) normal
                       (by key_fresh) (by key_fresh) with
-                  | .left nearCubicHistory =>
-                      -- `[138]`: `σ(G) ≤ R_L(n) ≤ C_sp ⌈√n⌉` against `[19]`.
-                      let closedHistory :=
-                        (pressureSpineSurplusEstimateRow (BranchState := BranchState)
+                  | .left windowHistory =>
+                      -- EG-NODE [140] window-incidence geometric audit: homogeneous matching/star
+                      let audited :=
+                        (windowBottleneckAuditRow (BranchState := BranchState)
                           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                           (presentation := erdosReceiverLoadProfile)
-                          (data := spineData)).runAndCloseIncompatible
-                            nearCubicHistory (K .surplusAbove) (K .spineSurplusEstimate)
-                            (by key_fresh) (by key_fresh)
-                      exact (closedHistory.elimClosed (by infer_instance)).elim
-                  | .right overloadHistory =>
-                      -- `[139]`--`[144]` on the literal overload residual.  The
-                      -- node-`[144]` routing reads `lem:bridgeless` (on the ledger
-                      -- since the entry prefix) and the high-centre normal form,
-                      -- published here, once, on this arm.
-                      let normal :=
-                        (highCentreNormalFormRow (BranchState := BranchState)
-                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                          (presentation := erdosReceiverLoadProfile)
-                          (data := spineData)).run overloadHistory (by key_fresh)
-                      match windowOverloadClassDichotomy (data := spineData) normal
-                          (by key_fresh) (by key_fresh) with
-                      | .left windowHistory =>
-                          -- EG-NODE [140] window-incidence geometric audit: homogeneous matching/star
+                          (data := spineData)).run windowHistory (by key_fresh)
+                      match selectedBottleneckDischarge audited with
+                      | .inl entered =>
+                          exact Or.inl (Or.inl (node144aWindowHandoffReturn entered))
+                      | .inr unresolved =>
+                          exact Or.inl (Or.inr (Or.inl (node144aWindowFailsReturn unresolved)))
+                  | .right windowAbsent =>
+                      match remainderOverloadClassDichotomy (data := spineData)
+                          windowAbsent (by key_fresh) (by key_fresh) with
+                      | .left remainderHistory =>
+                          -- EG-NODE [142] remainder-surplus geometric audit: homogeneous matching/star
                           let audited :=
-                            (windowBottleneckAuditRow (BranchState := BranchState)
+                            (remainderBottleneckAuditRow (BranchState := BranchState)
                               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                               (presentation := erdosReceiverLoadProfile)
-                              (data := spineData)).run windowHistory (by key_fresh)
+                              (data := spineData)).run remainderHistory
+                                (by key_fresh)
                           match selectedBottleneckDischarge audited with
                           | .inl entered =>
-                              exact Or.inl (Or.inl (node144aWindowHandoffReturn entered))
+                              exact Or.inl (Or.inr (Or.inr (Or.inl (node144aRemainderHandoffReturn entered))))
                           | .inr unresolved =>
-                              exact Or.inl (Or.inr (Or.inl (node144aWindowFailsReturn unresolved)))
-                      | .right windowAbsent =>
-                          match remainderOverloadClassDichotomy (data := spineData)
-                              windowAbsent (by key_fresh) (by key_fresh) with
-                          | .left remainderHistory =>
-                              -- EG-NODE [142] remainder-surplus geometric audit: homogeneous matching/star
-                              let audited :=
-                                (remainderBottleneckAuditRow (BranchState := BranchState)
-                                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                                  (presentation := erdosReceiverLoadProfile)
-                                  (data := spineData)).run remainderHistory
-                                    (by key_fresh)
-                              match selectedBottleneckDischarge audited with
-                              | .inl entered =>
-                                  exact Or.inl (Or.inr (Or.inr (Or.inl (node144aRemainderHandoffReturn entered))))
-                              | .inr unresolved =>
-                                  exact Or.inl (Or.inr (Or.inr (Or.inr (Or.inl (node144aRemainderFailsReturn unresolved)))))
-                          | .right remainderAbsent =>
-                              -- EG-NODE [143] primitive blocker-support geometric audit: homogeneous matching/star
-                              let primitive :=
-                                (primitiveClassOverloadRow (BranchState := BranchState)
-                                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                                  (presentation := erdosReceiverLoadProfile)
-                                  (data := spineData)).run remainderAbsent
-                                    (by key_fresh)
-                              let audited :=
-                                (primitiveBottleneckAuditRow (BranchState := BranchState)
-                                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                                  (presentation := erdosReceiverLoadProfile)
-                                  (data := spineData)).run primitive (by key_fresh)
-                              match selectedBottleneckDischarge audited with
-                              | .inl entered =>
-                                  exact Or.inl (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl (node144aPrimitiveHandoffReturn entered))))))
-                              | .inr unresolved =>
-                                  exact Or.inl (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (node144aPrimitiveFailsReturn unresolved))))))
+                              exact Or.inl (Or.inr (Or.inr (Or.inr (Or.inl (node144aRemainderFailsReturn unresolved)))))
+                      | .right remainderAbsent =>
+                          -- EG-NODE [143] primitive blocker-support geometric audit: homogeneous matching/star
+                          let primitive :=
+                            (primitiveClassOverloadRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run remainderAbsent
+                                (by key_fresh)
+                          let audited :=
+                            (primitiveBottleneckAuditRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run primitive (by key_fresh)
+                          match selectedBottleneckDischarge audited with
+                          | .inl entered =>
+                              exact Or.inl (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl (node144aPrimitiveHandoffReturn entered))))))
+                          | .inr unresolved =>
+                              exact Or.inl (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (node144aPrimitiveFailsReturn unresolved))))))
 
 end HypostructureErdos64EG

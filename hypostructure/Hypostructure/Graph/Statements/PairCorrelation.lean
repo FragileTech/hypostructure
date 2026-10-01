@@ -97,8 +97,8 @@ def PairCorrelationStatement (data : Parameters)
 /-- **Nodes `[179]`--`[180]`, coverage decided at G.**  At G's canonical return
 system and canonical serial system: coverage of
 `lem:pair-system-realizability` is exactly the Type B handoff of the retained
-obstruction or a serial demand system on those returns (the target cycle, the
-target defect and the compression alternatives are empty at G); the arithmetic
+obstruction or a serial demand system on those returns (the target-cycle
+alternative is empty at G); the arithmetic
 input of `lem:pair-system-increment-arithmetic` does not exist (it would
 produce an accepted cycle of G); and coverage of the increment test is exactly
 the Type B handoff of the serial system's returns. -/
